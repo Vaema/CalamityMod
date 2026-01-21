@@ -16,7 +16,7 @@ namespace CalamityMod.Projectiles.Summon
         }
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            ProjectileID.Sets.MinionShot[Type] = true;
         }
 
         public override void SetDefaults()
@@ -57,7 +57,7 @@ namespace CalamityMod.Projectiles.Summon
                 Time++;
                 if (Main.rand.NextBool())
                 {
-                    Dust dust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, 5, Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f, 100);
+                    Dust dust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.Blood, Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f, 100);
                     if (Main.rand.NextBool(3))
                     {
                         dust.noGravity = true;
@@ -75,6 +75,10 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.rotation += 0.3f * Projectile.direction;
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<BurningBlood>(), 180);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(ModContent.BuffType<BurningBlood>(), 120);
+            target.AddBuff(ModContent.BuffType<Laceration>(), 120);
+        }
     }
 }

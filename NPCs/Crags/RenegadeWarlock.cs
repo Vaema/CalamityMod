@@ -2,7 +2,7 @@
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.World;
+using CalamityMod.Items.Weapons.Melee;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.ItemDropRules;
@@ -14,7 +14,7 @@ namespace CalamityMod.NPCs.Crags
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
+            Main.npcFrameCount[Type] = 4;
         }
 
         public override void SetDefaults()
@@ -25,11 +25,11 @@ namespace CalamityMod.NPCs.Crags
             NPC.width = 18;
             NPC.height = 40;
             NPC.defense = 16;
-            NPC.lifeMax = 80;
+            NPC.lifeMax = 300;
             NPC.knockBackResist = 0.5f;
             AnimationType = NPCID.ZombieXmas;
             AIType = NPCID.ChaosElemental;
-            NPC.value = Item.buyPrice(0, 0, 10, 0);
+            NPC.value = Item.buyPrice(silver: 5);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath50;
             if (DownedBossSystem.downedProvidence)
@@ -49,10 +49,10 @@ namespace CalamityMod.NPCs.Crags
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheDungeon,
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.RenegadeWarlock")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.RenegadeWarlock")
             });
         }
 
@@ -64,7 +64,7 @@ namespace CalamityMod.NPCs.Crags
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 60, true);
+                target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120);
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -79,7 +79,7 @@ namespace CalamityMod.NPCs.Crags
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     int count = Main.zenithWorld ? 20 : 1; // remember that old oversight in the draedon update?
                     for (int g = 0; g < count; g++)
@@ -95,6 +95,9 @@ namespace CalamityMod.NPCs.Crags
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ModContent.ItemType<EssenceofHavoc>(), 2);
+
+            npcLoot.AddIf(() => (NPC.downedPlantBoss), ModContent.ItemType<Hellkite>(), 8);
+
             LeadingConditionRule postProv = npcLoot.DefineConditionalDropSet(DropHelper.PostProv());
             postProv.Add(ModContent.ItemType<Bloodstone>(), 4);
         }

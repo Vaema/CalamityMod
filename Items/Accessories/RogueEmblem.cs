@@ -1,6 +1,6 @@
 ﻿using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -11,7 +11,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 24;
             Item.height = 24;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.accessory = true;
         }
@@ -30,6 +30,18 @@ namespace CalamityMod.Items.Accessories
             r.AddIngredient(ItemID.SoulofFright, 5);
             r.AddTile(TileID.TinkerersWorkbench);
             r.Register();
+
+            // Sort after recipe with Summoner Emblem as ingredient
+            // There is no sort after last of X so this process needs to be manual
+            for (int i = 0; i < Recipe.maxRecipes; i++)
+            {
+                Recipe s = Main.recipe[i];
+                if (s.createItem.type == ItemID.AvengerEmblem && s.HasIngredient(ItemID.SummonerEmblem))
+                {
+                    r.SortAfter(s);
+                    break;
+                }
+            }
         }
     }
 }

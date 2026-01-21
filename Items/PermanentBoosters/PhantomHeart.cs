@@ -1,14 +1,13 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.Collections.Generic;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
-using System.Linq;
-using System.Collections.Generic;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.PermanentBoosters
 {
@@ -21,22 +20,43 @@ namespace CalamityMod.Items.PermanentBoosters
 
         public override void SetStaticDefaults()
         {
-			// For some reason Life/Mana boosting items are in this set (along with Magic Mirror+)
-			ItemID.Sets.SortingPriorityBossSpawns[Type] = 21; // Mana Crystal
+            // For some reason Life/Mana boosting items are in this set (along with Magic Mirror+)
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 21; // Mana Crystal
         }
 
         public override void SetDefaults()
         {
             Item.width = 28;
             Item.height = 46;
-            Item.useAnimation = 30;
-            Item.useTime = 30;
-            Item.useStyle = ItemUseStyleID.HoldUp;
             Item.consumable = true;
+            Item.useAnimation = Item.useTime = 30;
+            Item.useStyle = ItemUseStyleID.HoldUp;
+            Item.value = Item.sellPrice(gold: 24);
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 
-        public override bool CanUseItem(Player player) => player.ConsumedManaCrystals == Player.ManaCrystalMax;
+        public static bool HasConsumedBefore(Player player) => player.Calamity().pHeart;
+
+        public override bool CanUseItem(Player player)
+        {
+            if (player.ConsumedManaCrystals != Player.ManaCrystalMax)
+            {
+                return false;
+            }
+
+            if (HasConsumedBefore(player))
+            {
+                if (player.whoAmI == Main.myPlayer)
+                {
+                    string key = "Mods.CalamityMod.Misc.PhantomHeartText";
+                    Color messageColor = Color.Pink;
+                    Main.NewText(Language.GetTextValue(key), messageColor);
+                }
+                return false;
+            }
+
+            return true;
+        }
 
         public override bool? UseItem(Player player)
         {
@@ -47,10 +67,7 @@ namespace CalamityMod.Items.PermanentBoosters
                 player.itemTime = Item.useTime;
                 if (modPlayer.pHeart)
                 {
-                    string key = "Mods.CalamityMod.Misc.PhantomHeartText";
-                    Color messageColor = Color.Pink;
-                    CalamityUtils.DisplayLocalizedText(key, messageColor);
-                    return false;
+                    return null;
                 }
 
                 player.UseManaMaxIncreasingItem(ManaBoost);
@@ -61,18 +78,16 @@ namespace CalamityMod.Items.PermanentBoosters
 
         public override void ModifyTooltips(List<TooltipLine> list)
         {
-            TooltipLine line = list.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Tooltip1");
-
-            if (line != null && Main.LocalPlayer.Calamity().pHeart)
-                line.Text += "\n" + CalamityUtils.GetTextValue("Misc.GenericConsumedText");
+            if (HasConsumedBefore(Main.LocalPlayer))
+                list.AddConsumedTooltip();
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient<RuinousSoul>(5).
-                AddIngredient<Polterplasm>(25).
-                AddTile(TileID.LunarCraftingStation).
+                AddIngredient<Necroplasm>(25).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

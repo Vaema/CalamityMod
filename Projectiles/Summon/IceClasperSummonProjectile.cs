@@ -8,6 +8,7 @@ namespace CalamityMod.Projectiles.Summon
     public class IceClasperSummonProjectile : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Summon";
+        public override string Texture => "CalamityMod/Projectiles/Melee/DarkIceZero";
 
         public override void SetStaticDefaults()
         {
@@ -33,12 +34,12 @@ namespace CalamityMod.Projectiles.Summon
 
             if (!Main.dedServ)
             {
-                Dust trailDust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, 172, Projectile.velocity.X, Projectile.velocity.Y, 0, default, 1.5f);
+                Dust trailDust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.DungeonWater, Projectile.velocity.X, Projectile.velocity.Y, 0, default, 1.5f);
                 trailDust.noGravity = true;
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Frostburn, 180);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Frostburn2, 120);
 
         public override bool PreDraw(ref Color lightColor)
         {

@@ -1,5 +1,4 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -11,8 +10,8 @@ namespace CalamityMod.Projectiles.Ranged
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -44,7 +43,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    int poisonDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 46, 0f, 0f, 100, default, 0.75f);
+                    int poisonDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Poisoned, 0f, 0f, 100, default, 0.75f);
                     Main.dust[poisonDust].noGravity = true;
                     Main.dust[poisonDust].velocity *= 0f;
                 }
@@ -53,7 +52,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
@@ -77,7 +76,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
             for (int j = 0; j < 3; j++)
             {
-                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 46, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1.2f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Poisoned, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1.2f);
                 Main.dust[dust].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -87,10 +86,10 @@ namespace CalamityMod.Projectiles.Ranged
             }
             for (int k = 0; k < 5; k++)
             {
-                int dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 39, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1.7f);
+                int dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.JungleGrass, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1.7f);
                 Main.dust[dust2].noGravity = true;
                 Main.dust[dust2].velocity *= 5f;
-                dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 44, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1f);
+                dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.JungleSpore, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1f);
                 Main.dust[dust2].velocity *= 2f;
             }
         }

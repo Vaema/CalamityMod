@@ -1,10 +1,11 @@
-﻿using CalamityMod.Dusts;
+﻿using System;
+using System.IO;
+using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
@@ -13,6 +14,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.CeaselessVoid
 {
+    [HasPierceResist]
     public class DarkEnergy : ModNPC
     {
         private bool start = true;
@@ -27,30 +29,33 @@ namespace CalamityMod.NPCs.CeaselessVoid
         public const int HitboxSize = 64;
         public const int FrameCount = 8;
 
+        public static Asset<Texture2D> GlowTexture;
+
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = FrameCount;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            Main.npcFrameCount[Type] = FrameCount;
+            NPCID.Sets.TrailingMode[Type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 120; // 240
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.GetNPCDamage();
             NPC.dontTakeDamage = true;
             NPC.width = NPC.height = HitboxSize;
             NPC.defense = 50;
             NPC.lifeMax = BossRushEvent.BossRushActive ? MaxBossRushHP : MaxHP;
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.knockBackResist = 0f;
             NPC.Opacity = 0f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.canGhostHeal = false;
             NPC.HitSound = SoundID.NPCHit53;
             NPC.DeathSound = SoundID.NPCDeath44;
             NPC.Calamity().VulnerableToSickness = false;
@@ -61,10 +66,10 @@ namespace CalamityMod.NPCs.CeaselessVoid
             int associatedNPCType = ModContent.NPCType<CeaselessVoid>();
             bestiaryEntry.UIInfoProvider = new CommonEnemyUICollectionInfoProvider(ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[associatedNPCType], quickUnlock: true);
 
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheDungeon,
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.DarkEnergy")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.DarkEnergy")
             });
         }
 
@@ -91,7 +96,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter += 0.15f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
@@ -152,18 +157,14 @@ namespace CalamityMod.NPCs.CeaselessVoid
                 NPC.timeLeft = 1800;
 
             // Difficulty modes
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
-
-            // Gets how enraged Ceaseless Void is
-            float tileEnrageMult = Main.npc[CalamityGlobalNPC.voidBoss].ai[1];
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Distance from Ceaseless Void
-            double maxDistance = bossRush ? 1200D : death ? 1040D : revenge ? 960D : expertMode ? 880D : minMaxDistance;
+            double maxDistance = death ? 1040D : revenge ? 960D : expertMode ? 880D : minMaxDistance;
             double rateOfChangeIncrease = (maxDistance / minMaxDistance) - 1D;
-            double rateOfChange = (NPC.ai[1] * 0.5f) + 2D + (tileEnrageMult - 1f) + rateOfChangeIncrease;
+            double rateOfChange = (NPC.ai[1] * 0.5f) + 2D + rateOfChangeIncrease;
             if (NPC.Calamity().newAI[0] == 0f)
             {
                 distance += rateOfChange;
@@ -184,7 +185,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
             }
 
             // Rotation velocity
-            float minRotationVelocity = 0.5f + tileEnrageMult - 1f;
+            float minRotationVelocity = 0.5f;
             float rotationVelocityIncrease = death ? 0.2f : revenge ? 0.15f : expertMode ? 0.1f : 0f;
             rotationVelocityIncrease += rotationVelocityIncrease * (NPC.ai[1] * 0.5f);
 
@@ -199,10 +200,10 @@ namespace CalamityMod.NPCs.CeaselessVoid
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D mainTexture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D mainTexture = TextureAssets.Npc[Type].Value;
             Vector2 drawPos = NPC.Center - screenPos;
             SpriteEffects spriteEffects = SpriteEffects.None;
-            Vector2 drawOrigin = new Vector2(mainTexture.Width / 2, mainTexture.Height / Main.npcFrameCount[NPC.type] / 2);
+            Vector2 drawOrigin = new Vector2(mainTexture.Width / 2, mainTexture.Height / Main.npcFrameCount[Type] / 2);
 
             if (NPC.IsABestiaryIconDummy)
             {
@@ -210,17 +211,17 @@ namespace CalamityMod.NPCs.CeaselessVoid
                 Main.EntitySpriteDraw(mainTexture, drawPos, NPC.frame, Color.White, NPC.rotation, drawOrigin, scale, spriteEffects, 0);
                 return false;
             }
-            
+
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
             Color white = Color.White * NPC.Opacity;
             int trailCount = 5;
 
-            drawPos -= new Vector2(mainTexture.Width, mainTexture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+            drawPos -= new Vector2(mainTexture.Width, mainTexture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
             drawPos += drawOrigin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 1; i < trailCount; i += 2)
                 {
@@ -229,7 +230,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
                     trailColor = NPC.GetAlpha(trailColor);
                     trailColor *= (trailCount - i) / 15f;
                     Vector2 trailPos = NPC.oldPos[i] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                    trailPos -= new Vector2(mainTexture.Width, mainTexture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                    trailPos -= new Vector2(mainTexture.Width, mainTexture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                     trailPos += drawOrigin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                     spriteBatch.Draw(mainTexture, trailPos, NPC.frame, trailColor, NPC.rotation, drawOrigin, NPC.scale, spriteEffects, 0f);
                 }
@@ -240,10 +241,10 @@ namespace CalamityMod.NPCs.CeaselessVoid
             if (NPC.dontTakeDamage)
                 return false;
 
-            Texture2D glowTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/CeaselessVoid/DarkEnergyGlow").Value;
+            Texture2D glowTexture = GlowTexture.Value;
             Color glowColor = Color.Lerp(Color.White, Color.Fuchsia, 0.5f) * NPC.Opacity;
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 1; i < trailCount; i++)
                 {
@@ -252,7 +253,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
                     trailColor2 = NPC.GetAlpha(trailColor2);
                     trailColor2 *= (trailCount - i) / 15f;
                     Vector2 trailPos2 = NPC.oldPos[i] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                    trailPos2 -= new Vector2(glowTexture.Width, glowTexture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                    trailPos2 -= new Vector2(glowTexture.Width, glowTexture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                     trailPos2 += drawOrigin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                     spriteBatch.Draw(glowTexture, trailPos2, NPC.frame, trailColor2, NPC.rotation, drawOrigin, NPC.scale, spriteEffects, 0f);
                 }
@@ -272,10 +273,11 @@ namespace CalamityMod.NPCs.CeaselessVoid
 
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            int debufftype = Main.zenithWorld ? BuffID.Obstructed : BuffID.VortexDebuff;
-            int duration = Main.zenithWorld ? 30 : 60;
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(debufftype, duration, true);
+            if (Main.zenithWorld)
+            {
+                if (hurtInfo.Damage > 0)
+                    target.AddBuff(BuffID.Blackout, 30, true);
+            }
         }
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)

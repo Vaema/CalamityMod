@@ -2,8 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
-using System;
-using static Terraria.ModLoader.PlayerDrawLayer;
 
 namespace CalamityMod.Particles
 {
@@ -43,7 +41,7 @@ namespace CalamityMod.Particles
         {
             Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
 
-            Vector2 Size = new Vector2 (Scale);
+            Vector2 Size = new Vector2(Scale);
 
             Vector2 origin = new Vector2(tex.Width, tex.Height);
 

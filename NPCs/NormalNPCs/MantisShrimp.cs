@@ -4,6 +4,7 @@ using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
@@ -14,8 +15,8 @@ namespace CalamityMod.NPCs.NormalNPCs
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 6;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            Main.npcFrameCount[Type] = 6;
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 SpriteDirection = 1
             };
@@ -28,11 +29,10 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 40;
             NPC.height = 24;
             NPC.defense = 10;
-            NPC.DR_NERD(0.1f);
-            NPC.lifeMax = 30;
+            NPC.lifeMax = 60;
             NPC.aiStyle = NPCAIStyleID.Fighter;
             AIType = NPCID.Crab;
-            NPC.value = Item.buyPrice(0, 0, 1, 0);
+            NPC.value = Item.buyPrice(silver: 1);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             Banner = NPC.type;
@@ -45,7 +45,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Ocean,
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.MantisShrimp")
@@ -100,12 +100,16 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             if (Main.netMode != NetmodeID.MultiplayerClient)
                 Projectile.NewProjectile(NPC.GetSource_FromAI(), target.Center, Vector2.Zero, ProjectileID.SolarWhipSwordExplosion, 0, 0f, Main.myPlayer);
+
+            // Ouch, don't get hit twice in a row :)
+            if (hurtInfo.Damage > 0)
+                target.AddBuff(BuffID.BrokenArmor, 600, true);
         }
 
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter += 0.15f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
@@ -119,9 +123,10 @@ namespace CalamityMod.NPCs.NormalNPCs
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
-		{
-			npcLoot.AddIf(() => NPC.downedPlantBoss, ModContent.ItemType<MantisClaws>(), 5);
-		}
+        {
+            npcLoot.AddIf(() => NPC.downedPlantBoss, ModContent.ItemType<MantisClaws>(), 5);
+            npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.ArmorPolish, 100, 50));
+        }
 
         public override void HitEffect(NPC.HitInfo hit)
         {
@@ -135,7 +140,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("MantisShrimp").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("MantisShrimp2").Type, 1f);

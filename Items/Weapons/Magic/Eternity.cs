@@ -1,10 +1,10 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -28,20 +28,20 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.damage = BaseDamage;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 30;
-            Item.useTime = Item.useAnimation = 120;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.noMelee = true;
-            Item.knockBack = 0f;
+            Item.useAnimation = Item.useTime = 120;
+            Item.knockBack = 0.25f;
+            Item.shoot = ModContent.ProjectileType<EternityBook>();
+            Item.shootSpeed = 0f;
 
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.autoReuse = true;
+            Item.channel = true;
+            Item.noMelee = true;
+            Item.noUseGraphic = true;
+
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
-
-            Item.autoReuse = true;
-            Item.noUseGraphic = true;
-            Item.shoot = ModContent.ProjectileType<EternityBook>();
-            Item.channel = true;
-            Item.shootSpeed = 0f;
         }
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
         public override void ModifyTooltips(List<TooltipLine> list)
@@ -54,9 +54,9 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient<Heresy>().
+                AddIngredient<ShadowspecBar>(5).
                 AddIngredient<DarkPlasma>(20).
                 AddIngredient(ItemID.UnicornHorn, 5).
-                AddIngredient<ShadowspecBar>(5).
                 AddTile<DraedonsForge>().
                 Register();
         }

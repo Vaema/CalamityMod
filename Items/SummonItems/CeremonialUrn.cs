@@ -12,20 +12,20 @@ namespace CalamityMod.Items.SummonItems
         public new string LocalizationCategory => "Items.SummonItems";
         public override void SetStaticDefaults()
         {
-			ItemID.Sets.SortingPriorityBossSpawns[Type] = 19; // Celestial Sigil
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 19; // Celestial Sigil
         }
 
         public override void SetDefaults()
         {
             Item.width = 34;
             Item.height = 54;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
+        }
 
         public override void AddRecipes()
         {

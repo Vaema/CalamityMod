@@ -1,10 +1,7 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Events;
-using CalamityMod.World;
+﻿using System;
+using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.IO;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -32,8 +29,8 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
         }
 
         public override void SetDefaults()
@@ -107,7 +104,7 @@ namespace CalamityMod.Projectiles.Boss
                 if (Velocity != Vector2.Zero)
                 {
                     Projectile.extraUpdates = Main.getGoodWorld ? 4 : 3;
-                    Projectile.velocity = Velocity * (BossRushEvent.BossRushActive ? 1.25f : 1f);
+                    Projectile.velocity = Velocity;
                     Velocity = Vector2.Zero;
                     Projectile.netUpdate = true;
                 }
@@ -133,7 +130,7 @@ namespace CalamityMod.Projectiles.Boss
                 else
                 {
                     Projectile.spriteDirection = 1;
-                    Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X);
+                    Projectile.rotation = Projectile.velocity.ToRotation();
                 }
             }
             else if (Destination == Vector2.Zero)
@@ -195,14 +192,6 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool CanHitPlayer(Player target) => TelegraphDelay > TelegraphTotalTime;
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (info.Damage <= 0 || TelegraphDelay <= TelegraphTotalTime)
-                return;
-
-            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 90);
-        }
-
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             return CalamityUtils.CircularHitboxCollision(projHitbox.Center(), Projectile.Size.Length() * 0.5f, targetHitbox);
@@ -217,7 +206,7 @@ namespace CalamityMod.Projectiles.Boss
                 lightColor.B = (byte)(255 * Projectile.Opacity);
                 Vector2 drawOffset = Projectile.velocity.SafeNormalize(Vector2.Zero) * -30f;
                 Projectile.Center += drawOffset;
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
                 Projectile.Center -= drawOffset;
                 return false;
             }

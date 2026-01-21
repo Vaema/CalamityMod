@@ -1,6 +1,4 @@
-﻿using CalamityMod.Projectiles.Melee;
-using Microsoft.Xna.Framework;
-using Mono.Cecil;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -12,13 +10,13 @@ namespace CalamityMod.Projectiles.Rogue
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/PhantasmalRuin";
-        public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/Item/WulfrumKnifeThrowSingle") { Volume = 0.8f};
+        public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/Item/WulfrumKnifeThrowSingle") { Volume = 0.8f };
         private const int Lifetime = 600;
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 12;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
+            ProjectileID.Sets.TrailCacheLength[Type] = 12;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
         }
 
         public override void SetDefaults()
@@ -38,7 +36,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 3);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 3);
             return false;
         }
 
@@ -108,8 +106,8 @@ namespace CalamityMod.Projectiles.Rogue
                 for (int i = 0; i < 8; i += 2)
                 {
                     // d, du, dus, dust :)
-                    Dust du = Dust.NewDustPerfect(Projectile.Center, 180, velocity, 0, default, Main.rand.NextFloat(1.1f, 1.4f));
-                    Dust dus = Dust.NewDustPerfect(Projectile.Center, 180, -velocity, 0, default, Main.rand.NextFloat(1.1f, 1.4f));
+                    Dust du = Dust.NewDustPerfect(Projectile.Center, DustID.DungeonSpirit, velocity, 0, default, Main.rand.NextFloat(1.1f, 1.4f));
+                    Dust dus = Dust.NewDustPerfect(Projectile.Center, DustID.DungeonSpirit, -velocity, 0, default, Main.rand.NextFloat(1.1f, 1.4f));
                     du.noGravity = true;
                     dus.noGravity = true;
                     // Rotate direction for the next dust.

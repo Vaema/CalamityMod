@@ -11,30 +11,29 @@ namespace CalamityMod.Items.Weapons.Magic
     public class VenusianTrident : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
-        public static int BaseDamage = 256;
 
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 70;
             Item.height = 68;
-            Item.damage = BaseDamage;
+            Item.damage = 2800;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 20;
-            Item.useTime = 25;
-            Item.useAnimation = 25;
+            Item.mana = 40;
+            Item.useTime = 65;
+            Item.useAnimation = 65;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 9f;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.UseSound = SoundID.Item45;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<VenusianBolt>();
-            Item.shootSpeed = 19f;
+            Item.shootSpeed = 13f;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 
@@ -46,7 +45,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient(ItemID.InfernoFork).
                 AddIngredient<RuinousSoul>(2).
                 AddIngredient<TwistingNether>().
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

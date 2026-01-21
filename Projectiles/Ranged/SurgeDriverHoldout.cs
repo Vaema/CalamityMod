@@ -12,7 +12,6 @@ namespace CalamityMod.Projectiles.Ranged
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<SurgeDriver>();
         public Player Owner => Main.player[Projectile.owner];
-        public bool OwnerCanShoot => Owner.channel && !Owner.noItems && !Owner.CCed;
         public ref float ShootCountdown => ref Projectile.ai[0];
 
         public override void SetDefaults()
@@ -35,19 +34,17 @@ namespace CalamityMod.Projectiles.Ranged
             UpdateProjectileHeldVariables(armPosition);
             ManipulatePlayerVariables();
 
-            if (!OwnerCanShoot)
-            {
-                // Prevent spam clicking by letting the animation run if the player just stops holding
-                if (Owner.noItems || Owner.CCed || Owner.dead || ShootCountdown < 0f)
-                    Projectile.Kill();
-            }
+            // Prevent spam clicking by letting the animation run if the player just stops holding
+            if (Owner.CantUseHoldout() && ShootCountdown < 0f)
+                Projectile.Kill();
+
             // Can't shoot on frame 1 as it can't use ammo yet
-            else if (ShootCountdown < 0f && Owner.HasAmmo(Owner.ActiveItem()))
+            else if (ShootCountdown < 0f && Owner.HasAmmo(Owner.HeldItem))
             {
                 if (Main.myPlayer == Projectile.owner)
                 {
                     ShootProjectiles(armPosition);
-                    ShootCountdown = Owner.ActiveItem().useAnimation - 1;
+                    ShootCountdown = Owner.HeldItem.useAnimation - 1;
                     Projectile.netUpdate = true;
                 }
 
@@ -61,13 +58,14 @@ namespace CalamityMod.Projectiles.Ranged
             if (Main.myPlayer != Projectile.owner)
                 return;
 
-            Item heldItem = Owner.ActiveItem();
+            Item heldItem = Owner.HeldItem;
             Owner.PickAmmo(heldItem, out int projectileType, out float shootSpeed, out int damage, out float knockback, out _);
             damage *= 4;
             shootSpeed = heldItem.shootSpeed * Projectile.scale * 0.64f;
             projectileType = ModContent.ProjectileType<PrismaticEnergyBlast>();
 
             knockback = Owner.GetWeaponKnockback(heldItem, knockback);
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 shootDirection = (Main.MouseWorld - Projectile.Center).SafeNormalize(-Vector2.UnitY);
             Vector2 shootVelocity = shootDirection * shootSpeed;
 

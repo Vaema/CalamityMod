@@ -1,21 +1,22 @@
 ﻿using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
+using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
+    [PierceResistException]
     public class WaterLeechProj : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
+            Main.projFrames[Type] = 4;
         }
 
         public override void SetDefaults()
@@ -25,6 +26,8 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.penetrate = -1;
             Projectile.timeLeft = 540;
             Projectile.DamageType = DamageClass.Magic;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -35,14 +38,14 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.frame = 0;
             }
 
             if (Projectile.ai[0] == 0f)
             {
-                Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + MathHelper.Pi;
+                Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Pi;
             }
             //Sticky Behaviour
             Projectile.StickyProjAI(5);
@@ -70,8 +73,8 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-            int height = texture.Height / Main.projFrames[Projectile.type];
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int height = texture.Height / Main.projFrames[Type];
             int drawStart = height * Projectile.frame;
             Vector2 origin = Projectile.Size / 2;
             SpriteEffects spriteEffects = SpriteEffects.None;
@@ -85,8 +88,8 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void PostDraw(Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-            int height = texture.Height / Main.projFrames[Projectile.type];
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int height = texture.Height / Main.projFrames[Type];
             int drawStart = height * Projectile.frame;
             Vector2 origin = Projectile.Size / 2;
             SpriteEffects spriteEffects = SpriteEffects.None;
@@ -99,10 +102,10 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.NPCDeath1 with { Volume = SoundID.NPCDeath1.Volume * 0.5f }, Projectile.position);
+            SoundEngine.PlaySound(SoundID.NPCDeath1 with { Volume = SoundID.NPCDeath1.Volume * 0.5f }, Projectile.Center);
             for (int i = 0; i < 5; i++)
             {
-                int dust = Dust.NewDust(Projectile.Center, 1, 1, (int)CalamityDusts.SulfurousSeaAcid, 0, 0, 0, default, 1.5f);
+                int dust = Dust.NewDust(Projectile.Center, 1, 1, (int)CalamityDusts.SulphurousSeaAcid, 0, 0, 0, default, 1.5f);
                 Main.dust[dust].noGravity = true;
             }
         }

@@ -1,5 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.FurnitureAcidwood;
 using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -19,11 +19,11 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.damage = 28;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 9;
-            Item.useTime = Item.useAnimation = 45;
+            Item.useAnimation = Item.useTime = 45;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 1.5f;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.UseSound = SoundID.Item13;
             Item.autoReuse = true;
@@ -63,8 +63,8 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<Acidwood>(35).
-                AddIngredient<SulphuricScale>(10).
+                AddIngredient<Acidwood>(15).
+                AddIngredient<SulphuricScale>(12).
                 AddTile(TileID.Anvils).
                 Register();
         }

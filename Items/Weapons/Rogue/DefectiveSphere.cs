@@ -3,21 +3,19 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Items.Weapons.Rogue
 {
     public class DefectiveSphere : RogueWeapon
     {
-        public static int BaseDamage = 116;
         public static float Speed = 15f;
 
         public override void SetDefaults()
         {
             Item.width = 42;
             Item.height = 44;
-            Item.damage = BaseDamage;
+            Item.damage = 85;
             Item.knockBack = 5f;
             Item.useAnimation = 13;
             Item.useTime = 13;
@@ -38,25 +36,12 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override bool CanUseItem(Player player)
         {
-            if (player.Calamity().StealthStrikeAvailable())
-            {
-                return true;
-            }
-            else if ((player.ownedProjectileCounts[Item.shoot] + player.ownedProjectileCounts[ProjectileType<SphereBladed>()] + player.ownedProjectileCounts[ProjectileType<SphereYellow>()] + player.ownedProjectileCounts[ProjectileType<SphereBlue>()]) >= 5)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            return player.Calamity().StealthStrikeAvailable() || (player.ownedProjectileCounts[Item.shoot] + player.ownedProjectileCounts[ProjectileType<SphereBladed>()] + player.ownedProjectileCounts[ProjectileType<SphereYellow>()] + player.ownedProjectileCounts[ProjectileType<SphereBlue>()]) <= 4;
         }
 
-		public override float StealthDamageMultiplier => 0.9f;
-
         public override void ModifyStatsExtra(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
-		{
-			type = Utils.SelectRandom(Main.rand, new int[]
+        {
+            type = Utils.SelectRandom(Main.rand, new int[]
             {
                 type,
                 ProjectileType<SphereBladed>(),
@@ -64,8 +49,8 @@ namespace CalamityMod.Items.Weapons.Rogue
                 ProjectileType<SphereBlue>()
             });
             if (player.Calamity().StealthStrikeAvailable())
-				velocity = velocity + Main.rand.NextVector2Square(-1.5f, 1.5f);
-		}
+                velocity = velocity + Main.rand.NextVector2Square(-1.5f, 1.5f);
+        }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
@@ -73,13 +58,13 @@ namespace CalamityMod.Items.Weapons.Rogue
             {
                 // This is done to allow looping when creating projectiles, instead of having to create many projectile/velocity variables all at once,
                 // which this shoot code used to do.
-                int[] projectilesToShoot = new int[]
-                {
+                int[] projectilesToShoot =
+                [
                     ProjectileType<SphereSpiked>(),
                     ProjectileType<SphereBladed>(),
                     ProjectileType<SphereYellow>(),
                     ProjectileType<SphereBlue>()
-                };
+                ];
 
                 foreach (int projectileType in projectilesToShoot)
                 {
@@ -87,13 +72,9 @@ namespace CalamityMod.Items.Weapons.Rogue
                     if (stealth.WithinBounds(Main.maxProjectiles))
                         Main.projectile[stealth].Calamity().stealthStrike = true;
                 }
+                return false;
             }
-            else
-            {
-                //Does this even need to exist? Can't you just return true for this?
-                Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
-            }
-            return false;
+            return true;
         }
     }
 }

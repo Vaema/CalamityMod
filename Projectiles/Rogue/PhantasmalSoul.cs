@@ -1,9 +1,9 @@
 ﻿using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -17,9 +17,10 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 3;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 3;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -100,7 +101,7 @@ namespace CalamityMod.Projectiles.Rogue
             if (Projectile.timeLeft > Lifetime - NoDrawFrames)
                 return false;
 
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
@@ -131,7 +132,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
 
             // Special quieter version of this noise used by Soul Edge and similar
-            SoundEngine.PlaySound(SoulEdge.ProjectileDeathSound, Projectile.Center);
+            SoundEngine.PlaySound(VoidEdge.ProjectileDeathSound, Projectile.Center);
         }
 
         // Cannot deal damage for the first several frames of existence.

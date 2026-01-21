@@ -1,12 +1,13 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Critters;
+using CalamityMod.Packets;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
-using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -16,16 +17,35 @@ namespace CalamityMod.NPCs.TownNPCs
 {
     public class AndroombaFriendly : ModNPC
     {
+        public static Asset<Texture2D>[] FaceTextures = new Asset<Texture2D>[9];
+        public static int AstralConversionType;
+
+        // Allow for solutions from other mods. The first integer is the solution's item ID, the texture is what face shoul dappear, the Action is what modders should use for spread code
+        public static List<(int, string, Action<NPC>)> customConversionTypes = new List<(int, string, Action<NPC>)>{};
+
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 9;
-            Main.npcCatchable[NPC.type] = true;
+            Main.npcFrameCount[Type] = 9;
+            Main.npcCatchable[Type] = true;
             NPCID.Sets.NoTownNPCHappiness[Type] = true;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0);
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
             value.Position.Y += 16;
             value.PortraitPositionYOverride = 36f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
             NPCID.Sets.ShimmerTownTransform[Type] = false;
+            if (!Main.dedServ)
+            {
+                FaceTextures[0] = ModContent.Request<Texture2D>(Texture + "_Pure", AssetRequestMode.AsyncLoad);
+                FaceTextures[1] = ModContent.Request<Texture2D>(Texture + "_Corruption", AssetRequestMode.AsyncLoad);
+                FaceTextures[2] = ModContent.Request<Texture2D>(Texture + "_Hallow", AssetRequestMode.AsyncLoad);
+                FaceTextures[3] = ModContent.Request<Texture2D>(Texture + "_Mushroom", AssetRequestMode.AsyncLoad);
+                FaceTextures[4] = ModContent.Request<Texture2D>(Texture + "_Crimson", AssetRequestMode.AsyncLoad);
+                FaceTextures[5] = ModContent.Request<Texture2D>(Texture + "_Desert", AssetRequestMode.AsyncLoad);
+                FaceTextures[6] = ModContent.Request<Texture2D>(Texture + "_Snow", AssetRequestMode.AsyncLoad);
+                FaceTextures[7] = ModContent.Request<Texture2D>(Texture + "_Forest", AssetRequestMode.AsyncLoad);
+                FaceTextures[8] = ModContent.Request<Texture2D>(Texture + "_Astral", AssetRequestMode.AsyncLoad);
+            }
+            AstralConversionType = ModContent.GetInstance<AstralConversion>().Type;
         }
 
         public override void SetDefaults()
@@ -47,13 +67,15 @@ namespace CalamityMod.NPCs.TownNPCs
             NPC.catchItem = (short)ModContent.ItemType<AndroombaItem>();
             SpawnModBiomes = new int[1] { ModContent.GetInstance<ArsenalLabBiome>().Type };
             NPC.dontTakeDamage = true;
+            NPC.Calamity().VulnerableToSickness = false;
+            NPC.Calamity().VulnerableToElectricity = true;
         }
 
         public override bool CanChat() => false;
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.AndroombaFriendly")
             });
@@ -96,12 +118,8 @@ namespace CalamityMod.NPCs.TownNPCs
                     break;
             }
 
-            for (int i = 0; i < Main.maxPlayers; i++)
+            foreach (Player player in Main.ActivePlayers)
             {
-                Player player = Main.player[i];
-                if (player is null || !player.active)
-                    continue;
-
                 if (NPC.Hitbox.Intersects(player.HitboxForBestiaryNearbyCheck))
                 {
                     Main.BestiaryTracker.Chats.RegisterChatStartWith(NPC);
@@ -114,27 +132,20 @@ namespace CalamityMod.NPCs.TownNPCs
         {
             int x = (int)(NPC.Center.X / 16f);
             int y = (int)(NPC.Center.Y / 16f);
+            // Stuff for vanilla solutions
             if (conversionType <= 7)
             {
-                ConvertType type = ConvertType.Pure;
-                switch (conversionType)
-                {
-                    case 1:
-                        type = ConvertType.Corrupt;
-                        break;
-                    case 2:
-                        type = ConvertType.Hallow;
-                        break;
-                    case 4:
-                        type = ConvertType.Crimson;
-                        break;
-                }
-                AstralBiome.ConvertFromAstral(x - 2, x + 2, y - 2, y + 2, type);
                 WorldGen.Convert(x, y, conversionType, 2);
             }
+            // Calamity solution(s)
+            else if (conversionType == 8)
+            {
+                WorldGen.Convert(x, y, AstralConversionType, 2);
+            }
+            // Solutions registered by other mods
             else
             {
-                AstralBiome.ConvertToAstral(x - 2, x + 2, y - 2, y + 2);
+                customConversionTypes[conversionType - 9].Item3(NPC);
             }
         }
 
@@ -146,11 +157,7 @@ namespace CalamityMod.NPCs.TownNPCs
             }
             else
             {
-                var netMessage = Mod.GetPacket();
-                netMessage.Write((byte)CalamityModMessageType.SyncAndroombaAI);
-                netMessage.Write(NPC.whoAmI);
-                netMessage.Write(phase);
-                netMessage.Send();
+                SyncAndroombaAIPacket.Send(this, phase: phase);
             }
         }
 
@@ -164,7 +171,7 @@ namespace CalamityMod.NPCs.TownNPCs
             npc.ai[0] = phase;
             npc.ai[1] = 0;
             npc.netUpdate = true;
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, index);
         }
 
@@ -177,7 +184,7 @@ namespace CalamityMod.NPCs.TownNPCs
 
             npc.ai[3] = solutionType;
             npc.netUpdate = true;
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, index);
         }
 
@@ -233,44 +240,24 @@ namespace CalamityMod.NPCs.TownNPCs
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int i = 0; i < 6; i++)
-                Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, 226);
+                Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.Electric);
         }
+
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D critterTexture = TextureAssets.Npc[NPC.type].Value;
-            string pathextenstion = "Pure";
-            switch (NPC.ai[3])
+            Texture2D critterTexture = TextureAssets.Npc[Type].Value;
+            Texture2D glowmask = FaceTextures[0].Value;
+            // If the solution is from Calamity or vanilla, set the glowmask to grab the appropriate texture from the texture array
+            if (NPC.ai[3] <= 8)
             {
-                case 0:
-                    pathextenstion = "Pure";
-                    break;
-                case 1:
-                    pathextenstion = "Corruption";
-                    break;
-                case 2:
-                    pathextenstion = "Hallow";
-                    break;
-                case 3:
-                    pathextenstion = "Mushroom";
-                    break;
-                case 4:
-                    pathextenstion = "Crimson";
-                    break;
-                case 5:
-                    pathextenstion = "Desert";
-                    break;
-                case 6:
-                    pathextenstion = "Snow";
-                    break;
-                case 7:
-                    pathextenstion = "Forest";
-                    break;
-                case 8:
-                    pathextenstion = "Astral";
-                    break;
+                glowmask = FaceTextures[(int)NPC.ai[3]].Value;
             }
-            Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/TownNPCs/AndroombaFriendly_" + pathextenstion).Value;
+            // If the solution isn't from Calamity or vanilla, grab the appropriate solution from the custom solution list
+            else
+            {
+                glowmask = ModContent.Request<Texture2D>(customConversionTypes[(int)NPC.ai[3] - 9].Item2).Value;
+            }
             Vector2 drawPosition = NPC.Center - screenPos + Vector2.UnitY * NPC.gfxOffY;
             drawPosition.Y += DrawOffsetY;
             SpriteEffects direction = NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;

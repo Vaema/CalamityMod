@@ -1,8 +1,8 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -13,27 +13,27 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetStaticDefaults()
         {
-                   }
+        }
         public override void SetDefaults()
         {
             Item.width = 64;
             Item.height = 24;
             Item.damage = 1;
-            Item.knockBack = 0f;
-            Item.useTime = Item.useAnimation = 75;
             Item.DamageType = DamageClass.Ranged;
-            Item.noMelee = true;
-            Item.autoReuse = true;
-            Item.useAmmo = AmmoID.Bullet;
-            Item.shootSpeed = 9f;
+            Item.useAnimation = Item.useTime = 75;
+            Item.knockBack = 0.25f;
             Item.shoot = ModContent.ProjectileType<BouncingShotgunPellet>();
+            Item.shootSpeed = 18f;
 
-            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.useAmmo = AmmoID.Bullet;
             Item.UseSound = SoundID.Item38;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.autoReuse = true;
+            Item.noMelee = true;
+
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.Calamity().donorItem = true;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-7, 0);
@@ -46,7 +46,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             type = Item.shoot;
-            int bulletAmt = 30;
+            position += player.itemRotation.ToRotationVector2() * player.direction * 48f;
+            int bulletAmt = 40;
             for (int i = 0; i < bulletAmt; i++)
             {
                 float newSpeedX = velocity.X + Main.rand.NextFloat(-15f, 15f);

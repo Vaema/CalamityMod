@@ -1,5 +1,6 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
@@ -9,6 +10,7 @@ namespace CalamityMod.Projectiles.Typeless
         public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = 4;
@@ -26,7 +28,7 @@ namespace CalamityMod.Projectiles.Typeless
         {
             int cap = 2;
             float capDamageFactor = 0.05f;
-            int excessCount = Main.player[Projectile.owner].ownedProjectileCounts[Projectile.type] - cap;
+            int excessCount = Main.player[Projectile.owner].ownedProjectileCounts[Type] - cap;
             modifiers.SourceDamage *= MathHelper.Clamp(1f - (capDamageFactor * excessCount), 0f, 1f);
         }
 
@@ -37,7 +39,7 @@ namespace CalamityMod.Projectiles.Typeless
                 float x2 = Projectile.position.X - Projectile.velocity.X / 10f * (float)i;
                 float y2 = Projectile.position.Y - Projectile.velocity.Y / 10f * (float)i;
                 Vector2 dspeed = Projectile.velocity * Main.rand.NextFloat(0.7f, 0.4f);
-                int greenDust = Dust.NewDust(new Vector2(x2, y2), 1, 1, 107, 0f, 0f, 0, default, 1f);
+                int greenDust = Dust.NewDust(new Vector2(x2, y2), 1, 1, DustID.TerraBlade, 0f, 0f, 0, default, 1f);
                 Main.dust[greenDust].alpha = Projectile.alpha;
                 Main.dust[greenDust].position.X = x2;
                 Main.dust[greenDust].position.Y = y2;

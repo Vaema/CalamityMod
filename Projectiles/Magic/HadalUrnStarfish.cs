@@ -1,10 +1,10 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -13,7 +13,7 @@ namespace CalamityMod.Projectiles.Magic
         public new string LocalizationCategory => "Projectiles.Magic";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
+            Main.projFrames[Type] = 4;
         }
 
         public override void SetDefaults()
@@ -39,11 +39,11 @@ namespace CalamityMod.Projectiles.Magic
                     Projectile.frame++;
                     Projectile.frameCounter = 0;
                 }
-                if (Projectile.frame >= Main.projFrames[Projectile.type])
+                if (Projectile.frame >= Main.projFrames[Type])
                 {
                     Projectile.frame = 0;
                     Shards();
-                    SoundEngine.PlaySound(SoundID.Item42, Projectile.position);
+                    SoundEngine.PlaySound(SoundID.Item42, Projectile.Center);
                     Projectile.ai[1]++;
                     Projectile.ai[0] = 0;
                 }
@@ -61,7 +61,7 @@ namespace CalamityMod.Projectiles.Magic
         public override void OnKill(int timeLeft)
         {
             if (Projectile.ai[1] < 2) //Do not shoot more spikes if two rounds have already been shot
-            Shards();
+                Shards();
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)

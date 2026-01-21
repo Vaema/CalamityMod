@@ -1,5 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -11,7 +11,7 @@ namespace CalamityMod.Projectiles.Typeless
         public ref float Time => ref Projectile.ai[0];
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 3;
+            Main.projFrames[Type] = 3;
         }
 
         public override void SetDefaults()
@@ -27,7 +27,7 @@ namespace CalamityMod.Projectiles.Typeless
         {
             if (Projectile.localAI[0] == 0f)
             {
-                Projectile.frame = Main.rand.Next(Main.projFrames[Projectile.type]);
+                Projectile.frame = Main.rand.Next(Main.projFrames[Type]);
                 Projectile.localAI[0] = 1f;
             }
             Vector2 idealVelocity = Vector2.Zero;

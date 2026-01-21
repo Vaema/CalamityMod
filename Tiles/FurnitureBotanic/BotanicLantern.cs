@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Dusts.Furniture;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -8,7 +9,7 @@ namespace CalamityMod.Tiles.FurnitureBotanic
     public class BotanicLantern : ModTile
     {
         public override void SetStaticDefaults() => this.SetUpLantern(ModContent.ItemType<Items.Placeables.FurnitureBotanic.BotanicLantern>(), true);
-        public override void SetDrawPositions(int i, int j, ref int width, ref int offsetY, ref int height, ref short tileFrameX, ref short tileFrameY) => CalamityUtils.PlatformHangOffset(i, j, ref offsetY);
+        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch) => CalamityUtils.DrawSwayingMultiTile(i, j);
 
         public override bool CreateDust(int i, int j, ref int type)
         {
@@ -40,7 +41,7 @@ namespace CalamityMod.Tiles.FurnitureBotanic
 
         public override void HitWire(int i, int j)
         {
-            CalamityUtils.LightHitWire(Type, i, j, 1, 2);
+            FurnitureCommon.LightHitWire(Type, i, j, 1, 2);
         }
     }
 }

@@ -7,18 +7,20 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Ravager
 {
+    [HasPierceResist]
     public class RavagerLegRight : ModNPC
     {
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.RavagerBody.DisplayName");
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
         }
 
         public override void SetDefaults()
         {
             NPC.aiStyle = -1;
-            NPC.damage = 50;
+            NPC.damage = 0; // No contact damage
             NPC.width = 60;
             NPC.height = 60;
             NPC.defense = 40;
@@ -28,7 +30,6 @@ namespace CalamityMod.NPCs.Ravager
             AIType = -1;
             NPC.netAlways = true;
             NPC.noGravity = true;
-            NPC.canGhostHeal = false;
             NPC.noTileCollide = true;
             NPC.alpha = 255;
             NPC.HitSound = RavagerBody.HitSound;
@@ -42,8 +43,6 @@ namespace CalamityMod.NPCs.Ravager
             {
                 NPC.lifeMax = 40000;
             }
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
         }
@@ -57,9 +56,6 @@ namespace CalamityMod.NPCs.Ravager
 
                 return;
             }
-
-            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
-            NPC.damage = 0;
 
             if (NPC.alpha > 0)
             {
@@ -84,7 +80,7 @@ namespace CalamityMod.NPCs.Ravager
             }
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ScavengerLegRight").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ScavengerLegRight2").Type, 1f);

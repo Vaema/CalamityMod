@@ -1,8 +1,6 @@
 ﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
-using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Summon;
-using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -16,6 +14,8 @@ namespace CalamityMod.Items.Accessories
     public class HeartoftheElements : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
+        public static int ElementalDamage = 50;
+
         public override void SetStaticDefaults()
         {
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(5, 8));
@@ -26,15 +26,15 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 20;
             Item.height = 20;
-            Item.value = CalamityGlobalItem.Rarity9BuyPrice;
+            Item.value = CalamityGlobalItem.RarityCyanBuyPrice;
             Item.accessory = true;
-            Item.rare = ModContent.RarityType<Rainbow>();
+            Item.rare = ItemRarityID.Red;
         }
 
         public override bool CanEquipAccessory(Player player, int slot, bool modded)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            if (modPlayer.brimstoneWaifu || modPlayer.sandWaifu || modPlayer.sandBoobWaifu || modPlayer.cloudWaifu || modPlayer.sirenWaifu)
+            if (modPlayer.brimElemental || modPlayer.sandElemental || modPlayer.rareSandElemental || modPlayer.cloudElemental || modPlayer.waterElemental)
             {
                 return false;
             }
@@ -47,7 +47,7 @@ namespace CalamityMod.Items.Accessories
                 Lighting.AddLight((int)player.Center.X / 16, (int)player.Center.Y / 16, Main.DiscoR / 255f, Main.DiscoG / 255f, Main.DiscoB / 255f);
 
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.allWaifus = true;
+            modPlayer.allElementals = true;
             modPlayer.elementalHeart = true;
 
             int brimmy = ProjectileType<BrimstoneElementalMinion>();
@@ -59,9 +59,7 @@ namespace CalamityMod.Items.Accessories
             var source = player.GetSource_Accessory(Item);
             Vector2 velocity = new Vector2(0f, -1f);
 
-            // 08DEC2023: Ozzatron: Elementals spawned with Old Fashioned active will retain their bonus damage indefinitely. Oops. Don't care.
-            int baseDamage = player.ApplyArmorAccDamageBonusesTo(50);
-            int elementalDmg = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(baseDamage);
+            int elementalDmg = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(ElementalDamage);
 
             float kBack = 2f + player.GetKnockback<SummonDamageClass>().Additive;
 
@@ -81,31 +79,31 @@ namespace CalamityMod.Items.Accessories
                 {
                     int p = Projectile.NewProjectile(source, player.Center, velocity, brimmy, elementalDmg, kBack, player.whoAmI);
                     if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = baseDamage;
+                        Main.projectile[p].originalDamage = ElementalDamage;
                 }
                 if (player.ownedProjectileCounts[siren] < 1)
                 {
                     int p = Projectile.NewProjectile(source, player.Center, velocity, siren, elementalDmg, kBack, player.whoAmI);
                     if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = baseDamage;
+                        Main.projectile[p].originalDamage = ElementalDamage;
                 }
                 if (player.ownedProjectileCounts[healer] < 1)
                 {
                     int p = Projectile.NewProjectile(source, player.Center, velocity, healer, elementalDmg, kBack, player.whoAmI);
                     if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = baseDamage;
+                        Main.projectile[p].originalDamage = ElementalDamage;
                 }
                 if (player.ownedProjectileCounts[sandy] < 1)
                 {
                     int p = Projectile.NewProjectile(source, player.Center, velocity, sandy, elementalDmg, kBack, player.whoAmI);
                     if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = baseDamage;
+                        Main.projectile[p].originalDamage = ElementalDamage;
                 }
                 if (player.ownedProjectileCounts[cloudy] < 1)
                 {
                     int p = Projectile.NewProjectile(source, player.Center, velocity, cloudy, elementalDmg, kBack, player.whoAmI);
                     if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = baseDamage;
+                        Main.projectile[p].originalDamage = ElementalDamage;
                 }
             }
         }
@@ -113,7 +111,7 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateVanity(Player player)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.allWaifusVanity = true;
+            modPlayer.allElementalsVanity = true;
             // modPlayer.elementalHeart = true;
 
             int brimmy = ProjectileType<BrimstoneElementalMinion>();
@@ -126,8 +124,7 @@ namespace CalamityMod.Items.Accessories
             Vector2 velocity = new Vector2(0f, -1f);
 
             // 08DEC2023: Ozzatron: Elementals spawned with... Hold on a second. Why the fuck are we doing damage calculations when the accessory is in vanity?!
-            int baseDamage = player.ApplyArmorAccDamageBonusesTo(50);
-            int elementalDmg = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(baseDamage);
+            int elementalDmg = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(ElementalDamage);
 
             float kBack = 2f + player.GetKnockback<SummonDamageClass>().Additive;
 
@@ -147,31 +144,31 @@ namespace CalamityMod.Items.Accessories
                 {
                     int p = Projectile.NewProjectile(source, player.Center, velocity, brimmy, elementalDmg, kBack, player.whoAmI);
                     if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = baseDamage;
+                        Main.projectile[p].originalDamage = ElementalDamage;
                 }
                 if (player.ownedProjectileCounts[siren] < 1)
                 {
                     int p = Projectile.NewProjectile(source, player.Center, velocity, siren, elementalDmg, kBack, player.whoAmI);
                     if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = baseDamage;
+                        Main.projectile[p].originalDamage = ElementalDamage;
                 }
                 if (player.ownedProjectileCounts[healer] < 1)
                 {
                     int p = Projectile.NewProjectile(source, player.Center, velocity, healer, elementalDmg, kBack, player.whoAmI);
                     if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = baseDamage;
+                        Main.projectile[p].originalDamage = ElementalDamage;
                 }
                 if (player.ownedProjectileCounts[sandy] < 1)
                 {
                     int p = Projectile.NewProjectile(source, player.Center, velocity, sandy, elementalDmg, kBack, player.whoAmI);
                     if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = baseDamage;
+                        Main.projectile[p].originalDamage = ElementalDamage;
                 }
                 if (player.ownedProjectileCounts[cloudy] < 1)
                 {
                     int p = Projectile.NewProjectile(source, player.Center, velocity, cloudy, elementalDmg, kBack, player.whoAmI);
                     if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = baseDamage;
+                        Main.projectile[p].originalDamage = ElementalDamage;
                 }
             }
         }
@@ -179,11 +176,12 @@ namespace CalamityMod.Items.Accessories
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<WifeinaBottle>().
-                AddIngredient<WifeinaBottlewithBoobs>().
+                AddIngredient<ElementalinaBottle>().
+                AddIngredient<RareElementalinaBottle>().
                 AddIngredient<PearlofEnthrallment>().
                 AddIngredient<EyeoftheStorm>().
                 AddIngredient<RoseStone>().
+                AddIngredient(ItemID.FragmentStardust, 6).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

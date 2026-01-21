@@ -1,12 +1,12 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.IO;
+using System.Reflection;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items;
 using CalamityMod.Items.DraedonMisc;
+using CalamityMod.Packets;
 using CalamityMod.Tiles.DraedonStructures;
 using Microsoft.Xna.Framework;
-using System.IO;
-using System.Reflection;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
@@ -16,14 +16,16 @@ namespace CalamityMod.TileEntities
     public class TEChargingStation : ModTileEntity
     {
         public Vector2 Center => Position.ToWorldCoordinates(8f * ChargingStation.Width, 8f * ChargingStation.Height);
-        private short ChargingTimer = 0;
-        private short _stack = 0;
+
+        internal short Internal_ChargingTimer = 0;
+        internal short Internal_Stack = 0;
+
         public short CellStack
         {
-            get => _stack;
+            get => Internal_Stack;
             set
             {
-                _stack = value;
+                Internal_Stack = value;
                 SendSyncPacket();
             }
         }
@@ -42,7 +44,7 @@ namespace CalamityMod.TileEntities
                 return modItem.UsesCharge && modItem.Charge < modItem.MaxCharge;
             }
         }
-        public bool CanDoWork => _stack > 0 && PluggedItemCanCharge;
+        public bool CanDoWork => Internal_Stack > 0 && PluggedItemCanCharge;
 
         // Red when not actively charging an item, green when charging
         public Color LightColor => CanDoWork ? Color.MediumSpringGreen : Color.Red;
@@ -59,13 +61,13 @@ namespace CalamityMod.TileEntities
             bool canWork = CanDoWork;
             if (!canWork)
             {
-                ChargingTimer = 0;
+                Internal_ChargingTimer = 0;
                 return;
             }
 
-            ++ChargingTimer;
+            ++Internal_ChargingTimer;
 
-            if (ChargingTimer >= ChargingStation.FramesPerChargeAction)
+            if (Internal_ChargingTimer >= ChargingStation.FramesPerChargeAction)
             {
                 // Apply charge to the plugged item first, as this doesn't send a sync packet.
                 CalamityGlobalItem modItem = PluggedItem.Calamity();
@@ -80,7 +82,7 @@ namespace CalamityMod.TileEntities
 
                 // Then decrement the cell stack. With the sync flag set, this will sync both the cell stack and the plugged item.
                 CellStack--;
-                ChargingTimer = 0;
+                Internal_ChargingTimer = 0;
             }
         }
 
@@ -140,10 +142,9 @@ namespace CalamityMod.TileEntities
         // If this charging station breaks, anyone's who's viewing it is no longer viewing it.
         public override void OnKill()
         {
-            for (int i = 0; i < Main.maxPlayers; ++i)
+            foreach (Player p in Main.ActivePlayers)
             {
-                Player p = Main.player[i];
-                if (!p.active)
+                if (p.dead)
                     continue;
 
                 // Use reflection to stop TML from spitting an error here.
@@ -160,8 +161,8 @@ namespace CalamityMod.TileEntities
 
         public override void SaveData(TagCompound tag)
         {
-            tag.Add("time", ChargingTimer);
-            tag.Add("cells", _stack);
+            tag.Add("time", Internal_ChargingTimer);
+            tag.Add("cells", Internal_Stack);
             Item forSaving;
             if (PluggedItem is null)
             {
@@ -175,23 +176,23 @@ namespace CalamityMod.TileEntities
 
         public override void LoadData(TagCompound tag)
         {
-            ChargingTimer = tag.GetShort("time");
-            _stack = tag.GetShort("cells");
+            Internal_ChargingTimer = tag.GetShort("time");
+            Internal_Stack = tag.GetShort("cells");
             PluggedItem = ItemIO.Load(tag.GetCompound("item"));
         }
 
         public override void NetSend(BinaryWriter writer)
         {
-            writer.Write(ChargingTimer);
-            writer.Write(_stack);
-            ItemIO.Send(PluggedItem, writer, true);
+            writer.Write(Internal_ChargingTimer);
+            writer.Write(Internal_Stack);
+            ItemIO.Send(PluggedItem, writer, writeStack: true, writeFavorite: true);
         }
 
         public override void NetReceive(BinaryReader reader)
         {
-            ChargingTimer = reader.ReadInt16();
-            _stack = reader.ReadInt16();
-            PluggedItem = ItemIO.Receive(reader, true);
+            Internal_ChargingTimer = reader.ReadInt16();
+            Internal_Stack = reader.ReadInt16();
+            PluggedItem = ItemIO.Receive(reader, readStack: true, readFavorite: true);
         }
 
         // This packet may or may not contain the plugged item's charge value. If it doesn't, it contains a dummy value (NaN) instead.
@@ -200,102 +201,22 @@ namespace CalamityMod.TileEntities
         {
             if (Main.netMode == NetmodeID.SinglePlayer)
                 return;
-            ModPacket packet = Mod.GetPacket();
-            packet.Write((byte)CalamityModMessageType.ChargingStationStandard);
-            packet.Write(ID);
-            packet.Write(ChargingTimer);
-            packet.Write(_stack);
 
             // Either write the real charge or garbage data. If garbage data is written it will be ignored on the other end.
-            CalamityGlobalItem modItem = PluggedItem.IsAir ? null : PluggedItem.Calamity();
-            packet.Write(syncItemCharge && modItem != null ? modItem.Charge : float.NaN);
-            packet.Send(-1, -1);
+            var modItem = PluggedItem.IsAir ? null : PluggedItem.Calamity();
+            var chargeOrNaN = (syncItemCharge && modItem != null) ? modItem.Charge : float.NaN;
+            TEChargingStationStandardPacket.Send(this, Internal_ChargingTimer, Internal_Stack, chargeOrNaN);
 
             // If this flag was set to true, set it to false for any further updates (until it gets set to true again).
             syncItemCharge = false;
-        }
-
-        internal static bool ReadSyncPacket(Mod mod, BinaryReader reader)
-        {
-            int teID = reader.ReadInt32();
-            bool exists = ByID.TryGetValue(teID, out TileEntity te);
-
-            // The rest of the packet must be read even if it turns out the charging station doesn't exist for whatever reason.
-            short timer = reader.ReadInt16();
-            short cellStack = reader.ReadInt16();
-            float chargeOrNaN = reader.ReadSingle();
-
-            // When a server gets this packet, it immediately sends an equivalent packet to all clients.
-            if (Main.netMode == NetmodeID.Server)
-            {
-                ModPacket packet = mod.GetPacket();
-                packet.Write((byte)CalamityModMessageType.ChargingStationStandard);
-                packet.Write(teID);
-                packet.Write(timer);
-                packet.Write(cellStack);
-                packet.Write(chargeOrNaN);
-                packet.Send(-1, -1);
-            }
-
-            if (exists && te is TEChargingStation charger)
-            {
-                // Only clients update their timer from this packet. When a server receives this packet it ignores the time variable.
-                if (Main.netMode == NetmodeID.MultiplayerClient)
-                    charger.ChargingTimer = timer;
-                charger._stack = cellStack;
-
-                // If the charge value sent is not garbage, then try to apply the new charge to the plugged item.
-                if (!float.IsNaN(chargeOrNaN))
-                {
-                    bool itemExists = charger.PluggedItem != null && !charger.PluggedItem.IsAir;
-                    CalamityGlobalItem modItem = itemExists ? charger.PluggedItem.Calamity() : null;
-                    if (modItem != null && modItem.UsesCharge)
-                    {
-                        if (modItem.Charge != chargeOrNaN && Main.netMode == NetmodeID.MultiplayerClient)
-                            charger.ClientChargingDust = true;
-                        modItem.Charge = chargeOrNaN;
-                    }
-                }
-                return true;
-            }
-            return false;
         }
 
         internal void SendItemSyncPacket()
         {
             if (Main.netMode == NetmodeID.SinglePlayer)
                 return;
-            ModPacket packet = Mod.GetPacket(1024);
-            packet.Write((byte)CalamityModMessageType.ChargingStationItemChange);
-            packet.Write(ID);
-            ItemIO.Send(PluggedItem, packet, true);
-            packet.Send(-1, -1);
-        }
 
-        internal static bool ReadItemSyncPacket(Mod mod, BinaryReader reader)
-        {
-            int teID = reader.ReadInt32();
-            bool exists = ByID.TryGetValue(teID, out TileEntity te);
-
-            // The rest of the packet must be read even if it turns out the charging station doesn't exist for whatever reason.
-            Item thePlug = ItemIO.Receive(reader, true);
-
-            // When a server gets this packet, it immediately sends an equivalent packet to all clients.
-            if (Main.netMode == NetmodeID.Server)
-            {
-                ModPacket packet = mod.GetPacket();
-                packet.Write((byte)CalamityModMessageType.ChargingStationItemChange);
-                packet.Write(teID);
-                ItemIO.Send(thePlug, packet, true);
-                packet.Send(-1, -1);
-            }
-
-            if (exists && te is TEChargingStation charger)
-            {
-                charger.PluggedItem = thePlug;
-                return true;
-            }
-            return false;
+            TEChargingStationItemChangePacket.Send(this, PluggedItem);
         }
     }
 }

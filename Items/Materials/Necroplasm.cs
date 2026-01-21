@@ -1,0 +1,34 @@
+﻿using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.ModLoader;
+
+namespace CalamityMod.Items.Materials
+{
+    [LegacyName("Phantoplasm", "Polterplasm")]
+    public class Necroplasm : ModItem, ILocalizedModType
+    {
+        public new string LocalizationCategory => "Items.Materials";
+
+        public override void SetStaticDefaults()
+        {
+            Item.ResearchUnlockCount = 25;
+            Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(5, 6));
+            ItemID.Sets.AnimatesAsSoul[Type] = true;
+            ItemID.Sets.SortingPriorityMaterials[Type] = 110;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ItemID.Ectoplasm;
+        }
+
+        public override void SetDefaults()
+        {
+            Item.width = 24;
+            Item.height = 52;
+            Item.maxStack = Item.CommonMaxStack;
+            Item.value = Item.sellPrice(silver: 60);
+            Item.rare = ItemRarityID.Purple;
+        }
+
+        public override Color? GetAlpha(Color lightColor) => new Color(200, 200, 200, 0);
+    }
+}

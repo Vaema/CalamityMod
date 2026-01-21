@@ -15,21 +15,17 @@ namespace CalamityMod.Projectiles.Rogue
         public static readonly SoundStyle Hitsound = new("CalamityMod/Sounds/Item/WulfrumKnifeTileHit2") { PitchVariance = 0.3f, Volume = 0.5f };
 
         public int framesInAir = 0;
-        private bool initialized = false;
         public int SparkChance = 1;
 
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = 12;
             Projectile.height = 12;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.penetrate = 2;
             Projectile.timeLeft = 600;
-            AIType = 0;
             Projectile.DamageType = RogueDamageClass.Instance;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 30;
             Projectile.extraUpdates = 2;
         }
 
@@ -42,15 +38,6 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.velocity.Y += 0.3f;
             }
 
-            if (!initialized)
-            {
-                if (Projectile.Calamity().stealthStrike)
-                {
-                    Projectile.penetrate++;
-                    Projectile.tileCollide = false;
-                }
-                initialized = true;
-            }
             if (Projectile.timeLeft % 2 == 0 && Main.rand.NextBool(SparkChance) && Projectile.numHits == 0)
             {
                 SparkParticle spark = new SparkParticle(Projectile.Center - Projectile.velocity * 0.5f, Projectile.velocity * 0.01f, false, 7, 0.7f, Color.PaleGoldenrod * 0.3f);
@@ -63,16 +50,16 @@ namespace CalamityMod.Projectiles.Rogue
             float maxDistance = 200f;
             bool homeIn = false;
 
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC n in Main.ActiveNPCs)
             {
-                if (Main.npc[i].CanBeChasedBy(Projectile, false))
+                if (n.CanBeChasedBy(Projectile, false))
                 {
-                    float extraDistance = (float)(Main.npc[i].width / 2) + (float)(Main.npc[i].height / 2);
-                    bool canHit = Projectile.Calamity().stealthStrike || Collision.CanHit(Projectile.Center, 1, 1, Main.npc[i].Center, 1, 1);
+                    float extraDistance = (float)(n.width / 2) + (float)(n.height / 2);
+                    bool canHit = Projectile.Calamity().stealthStrike || Collision.CanHit(Projectile.Center, 1, 1, n.Center, 1, 1);
 
-                    if (Vector2.Distance(Main.npc[i].Center, Projectile.Center) < (maxDistance + extraDistance) && canHit)
+                    if (Vector2.Distance(n.Center, Projectile.Center) < (maxDistance + extraDistance) && canHit)
                     {
-                        center = Main.npc[i].Center;
+                        center = n.Center;
                         homeIn = true;
                         break;
                     }
@@ -92,7 +79,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             for (int i = 0; i <= 2; i++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 133, Projectile.oldVelocity.X * Main.rand.NextFloat(1.1f, 1.3f), Projectile.oldVelocity.Y * Main.rand.NextFloat(1.1f, 1.3f));
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Firework_Yellow, Projectile.oldVelocity.X * Main.rand.NextFloat(1.1f, 1.3f), Projectile.oldVelocity.Y * Main.rand.NextFloat(1.1f, 1.3f));
             }
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
@@ -108,9 +95,9 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
 
-            int frameHeight = texture.Height / Main.projFrames[Projectile.type];
+            int frameHeight = texture.Height / Main.projFrames[Type];
             int frameY = frameHeight * Projectile.frame;
             float scale = Projectile.scale;
             float rotation = Projectile.rotation;
@@ -120,7 +107,5 @@ namespace CalamityMod.Projectiles.Rogue
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), rectangle, Color.White, rotation, origin, scale, SpriteEffects.None, 0);
             return false;
         }
-
-        //public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.Ichor, 120);
     }
 }

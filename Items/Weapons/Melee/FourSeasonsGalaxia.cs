@@ -6,7 +6,7 @@ using CalamityMod.DataStructures;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
-using CalamityMod.Tiles.Furniture.CraftingStations;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -29,45 +29,38 @@ namespace CalamityMod.Items.Weapons.Melee
         public bool OnHitProc = false;
 
         #region stats
-        public static int BaseDamage = 800;
+        public static int BaseDamage = 250;
 
-        public static int PhoenixAttunement_BaseDamage = 1200;
+        public static int PhoenixAttunement_BaseDamage = 300;
         public static int PhoenixAttunement_LocalIFrames = 30; //Remember its got one extra update
         public static float PhoenixAttunement_BoltDamageReduction = 0.5f;
         public static float PhoenixAttunement_BoltThrowDamageMultiplier = 1f;
         public static float PhoenixAttunement_BaseDamageReduction = 0.5f;
         public static float PhoenixAttunement_FullChargeDamageBoost = 2.1f;
         public static float PhoenixAttunement_ThrowDamageBoost = 3.2f;
+        public static int PhoenixAttunement_FlamePillarLocalIFrames = 10;
 
-        public static int PolarisAttunement_BaseDamage = 1800;
-        public static int PolarisAttunement_FullChargeDamage = 3600;
+        public static int PolarisAttunement_BaseDamage = 400;
+        public static int PolarisAttunement_FullChargeDamage = 630;
         public static int PolarisAttunement_ShredIFrames = 10;
         public static int PolarisAttunement_LocalIFrames = 30; //Be warned its got one extra update so all the iframes should be divided in 2
         public static int PolarisAttunement_LocalIFramesCharged = 16;
         public static float PolarisAttunement_SlashDamageBoost = 6f; //Keep in mind the slice always crits
-        public static int PolarisAttunement_SlashBoltsDamage = 1300;
         public static int PolarisAttunement_SlashIFrames = 20;
         public static float PolarisAttunement_ShotDamageBoost = 0.8f; //The shots fired if the dash connects
-        public static float PolarisAttunement_ShredChargeupGain = 1f; //How much charge is gainted per second.
+        public static float PolarisAttunement_ShredChargeupGain = 1f; //How much charge is gained per second.
 
-        public static int AndromedaAttunement_BaseDamage = 2800;
+        public static int AndromedaAttunement_BaseDamage = 1120;
         public static int AndromedaAttunement_DashHitIFrames = 20;
-        public static float AndromedaAttunement_FullChargeBoost = 6f; //The EXTRA damage boost. So putting 1 here will make it deal double damage. Putting 0.5 here will make it deal 1.5x the damage.
-        public static float AndromedaAttunement_MonolithDamageBoost = 1.2f;
-        public static float AndromedaAttunement_BoltsDamageReduction = 0.2f; //The shots fired as it charges
+        public static float AndromedaAttunement_FullChargeMult = 3.5f; //The maxmimum damage multiplier of the lunge. Note that the lunge always crits.
+        public static float AndromedaAttunement_StarDamageMultiplier = 1f;
+        public static float AndromedaAttunement_ChargeupBoltDamageMultiplier = 0.2f; //Damage of shots fired as it charges
 
-        public static int AriesAttunement_BaseDamage = 1325;
+        public static int AriesAttunement_BaseDamage = 375;
         public static int AriesAttunement_LocalIFrames = 10;
         public static int AriesAttunement_Reach = 650;
         public static float AriesAttunement_ChainDamageReduction = 0.2f;
         public static float AriesAttunement_OnHitBoltDamageReduction = 0.5f;
-
-        public static int CancerPassiveDamage = 3000;
-        public static int CancerPassiveLifeSteal = 3;
-        public static float CancerPassiveLifeStealProc = 0.4f;
-        public static int CapricornPassiveDebuffTime = 200;
-
-
         #endregion
 
         public override string Texture => "CalamityMod/Items/Weapons/Melee/Galaxia"; //Base sprite for stuff like item browser and shit. yeah
@@ -81,21 +74,19 @@ namespace CalamityMod.Items.Weapons.Melee
 
             SafeCheckAttunements();
 
-            Player player = Main.player[Main.myPlayer];
+            Player player = Main.LocalPlayer;
             if (player is null)
                 return;
 
             var effectDescTooltip = list.FirstOrDefault(x => x.Text.Contains("[FUNC]") && x.Mod == "Terraria");
-            var passiveDescTooltip = list.FirstOrDefault(x => x.Text.Contains("[PASS]") && x.Mod == "Terraria");
             var mainAttunementTooltip = list.FirstOrDefault(x => x.Text.Contains("[ATT]") && x.Mod == "Terraria");
-            var blessingTooltip = list.FirstOrDefault(x => x.Text.Contains("[BLE]") && x.Mod == "Terraria");
 
             //Default stuff gets skipped here. MainAttunement is set to true in SafeCheckAttunements() above
 
             //.. but just in case
             if (mainAttunement == null)
             {
-                CalamityMod.Instance.Logger.Error("No main attunement on galaxia, couldn't edit its tooltip properly. How the hell did that happen.");
+                CalamityMod.Log.Error("No main attunement on galaxia, couldn't edit its tooltip properly. How the hell did that happen.");
                 return;
             }
 
@@ -105,22 +96,10 @@ namespace CalamityMod.Items.Weapons.Melee
                 effectDescTooltip.OverrideColor = mainAttunement.tooltipColor;
             }
 
-            if (passiveDescTooltip != null)
-            {
-                passiveDescTooltip.Text = mainAttunement.PassiveDesc.ToString();
-                passiveDescTooltip.OverrideColor = mainAttunement.tooltipPassiveColor;
-            }
-
             if (mainAttunementTooltip != null)
             {
                 mainAttunementTooltip.Text = mainAttunementTooltip.Text.Replace("ATT", mainAttunement.AttunementName.ToString());
                 mainAttunementTooltip.OverrideColor = Color.Lerp(mainAttunement.tooltipColor, mainAttunement.tooltipColor2, 0.5f + (float)Math.Sin(Main.GlobalTimeWrappedHourly) * 0.5f);
-            }
-
-            if (blessingTooltip != null)
-            {
-                blessingTooltip.Text = blessingTooltip.Text.Replace("BLE", mainAttunement.PassiveName.ToString());
-                blessingTooltip.OverrideColor = mainAttunement.tooltipPassiveColor;
             }
         }
         #endregion
@@ -137,11 +116,11 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 9f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
+            Item.rare = RarityType<Turquoise>();
             Item.shoot = ProjectileID.PurificationPowder;
             Item.shootSpeed = 24f;
-            Item.rare = RarityType<DarkBlue>();
-            Item.reuseDelay = 30;
+            Item.reuseDelay = 12;
         }
 
         #region saving and syncing attunements
@@ -149,7 +128,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             var clone = base.Clone(item);
             if (Main.mouseItem.type == ItemType<FourSeasonsGalaxia>())
-                item.ModItem?.HoldItem(Main.player[Main.myPlayer]);
+                item.ModItem?.HoldItem(Main.LocalPlayer);
 
             if (clone is FourSeasonsGalaxia a && item.ModItem is FourSeasonsGalaxia a2)
                 a.mainAttunement = a2.mainAttunement;
@@ -167,25 +146,29 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             int attunement1 = tag.GetInt("mainAttunement");
 
-            mainAttunement = Attunement.attunementArray[attunement1 != -1 ? attunement1 : Attunement.attunementArray.Length - 1];
+            mainAttunement = AttunementSystem.FindOrNull(attunement1);
         }
 
         public override void NetSend(BinaryWriter writer)
         {
-            writer.Write(mainAttunement != null ? (byte)mainAttunement.id : Attunement.attunementArray.Length - 1);
+            writer.Write(mainAttunement != null ? (byte)mainAttunement.id : AttunementSystem.EmptyID);
         }
 
         public override void NetReceive(BinaryReader reader)
         {
-            mainAttunement = Attunement.attunementArray[reader.ReadInt32()];
+            mainAttunement = AttunementSystem.FindOrNull(reader.ReadInt32());
         }
 
         #endregion
 
+        // 03FEB2024: Ozzatron: added so the Iban Blades don't break Overhaul compatibility. Weapons are functionally unchanged.
+        public override bool AltFunctionUse(Player player) => true;
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (mainAttunement == null)
+            if (mainAttunement == null || player.altFunctionUse != ItemAlternativeFunctionID.None)
                 return false;
+
             return true;
         }
 
@@ -197,10 +180,21 @@ namespace CalamityMod.Items.Weapons.Melee
         public void SafeCheckAttunements()
         {
             if (mainAttunement == null)
-                mainAttunement = Attunement.attunementArray[(int)AttunementID.Phoenix];
+                mainAttunement = AttunementSystem.FindOrNull(AttunementID.Phoenix);
 
             else
-                mainAttunement = Attunement.attunementArray[(int)MathHelper.Clamp((float)mainAttunement.id, (float)AttunementID.Phoenix, (float)AttunementID.Andromeda)];
+                mainAttunement = AttunementSystem.FindOrNull(ClampAttunementRange((int)mainAttunement.id));
+        }
+
+        private static int ClampAttunementRange(int input)
+        {
+            if (input < (int)AttunementID.Phoenix)
+                return (int)AttunementID.Phoenix;
+
+            if (input > (int)AttunementID.Andromeda)
+                return (int)AttunementID.Andromeda;
+
+            return input;
         }
 
         public override void HoldItem(Player player)
@@ -218,15 +212,7 @@ namespace CalamityMod.Items.Weapons.Melee
             }
 
             SafeCheckAttunements();
-
             mainAttunement.ApplyStats(Item);
-
-            //Passive effects only jappen player side haha
-            if (player.whoAmI != Main.myPlayer)
-                return;
-
-            var source = player.GetSource_ItemUse(Item);
-            mainAttunement.PassiveEffect(player, source, ref UseTimer, ref OnHitProc);
 
             if (player.Calamity().mouseRight && CanUseItem(player) && player.whoAmI == Main.myPlayer && !Main.mapFullscreen)
             {
@@ -234,6 +220,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 if (Main.projectile.Any(n => n.active && n.type == ProjectileType<GalaxiaHoldout>() && n.owner == player.whoAmI))
                     return;
 
+                var source = player.GetSource_ItemUse(Item);
                 Projectile.NewProjectile(source, player.Top, Vector2.Zero, ProjectileType<GalaxiaHoldout>(), 0, 0, player.whoAmI, 0, Math.Sign(player.position.X - Main.MouseWorld.X));
             }
         }
@@ -245,7 +232,8 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override bool CanUseItem(Player player)
         {
-            return !Main.projectile.Any(n => n.active && n.owner == player.whoAmI &&
+            bool isRightClicking = player.altFunctionUse != ItemAlternativeFunctionID.None;
+            return !isRightClicking && !Main.projectile.Any(n => n.active && n.owner == player.whoAmI &&
             (n.type == ProjectileType<PhoenixsPride>() ||
              n.type == ProjectileType<AndromedasStride>() ||
              n.type == ProjectileType<PolarisGaze>() ||
@@ -256,7 +244,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
             if (mainAttunement == null)
-                mainAttunement = Attunement.attunementArray[(int)AttunementID.Phoenix];
+                mainAttunement = AttunementSystem.FindOrNull(AttunementID.Phoenix);
 
             Texture2D itemTexture = Request<Texture2D>((mainAttunement.id == AttunementID.Polaris || mainAttunement.id == AttunementID.Andromeda) ? "CalamityMod/Items/Weapons/Melee/GalaxiaDusk" : "CalamityMod/Items/Weapons/Melee/GalaxiaDawn").Value;
             Texture2D outlineTexture = Request<Texture2D>((mainAttunement.id == AttunementID.Polaris || mainAttunement.id == AttunementID.Andromeda) ? "CalamityMod/Items/Weapons/Melee/GalaxiaDuskOutline" : "CalamityMod/Items/Weapons/Melee/GalaxiaDawnOutline").Value;
@@ -280,7 +268,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
         {
             if (mainAttunement == null)
-                mainAttunement = Attunement.attunementArray[(int)AttunementID.Phoenix];
+                mainAttunement = AttunementSystem.FindOrNull(AttunementID.Phoenix);
 
             Texture2D itemTexture = Request<Texture2D>((mainAttunement.id == AttunementID.Polaris || mainAttunement.id == AttunementID.Andromeda) ? "CalamityMod/Items/Weapons/Melee/GalaxiaDusk" : "CalamityMod/Items/Weapons/Melee/GalaxiaDawn").Value;
             Texture2D outlineTexture = Request<Texture2D>((mainAttunement.id == AttunementID.Polaris || mainAttunement.id == AttunementID.Andromeda) ? "CalamityMod/Items/Weapons/Melee/GalaxiaDuskOutline" : "CalamityMod/Items/Weapons/Melee/GalaxiaDawnOutline").Value;
@@ -305,9 +293,10 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CreateRecipe().
                 AddIngredient<OmegaBiomeBlade>().
-                AddIngredient<CosmiliteBar>(8).
-                AddIngredient<DarksunFragment>(8).
-                AddTile<CosmicAnvil>().
+                AddIngredient<ArmoredShell>().
+                AddIngredient<TwistingNether>().
+                AddIngredient<DarkPlasma>().
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

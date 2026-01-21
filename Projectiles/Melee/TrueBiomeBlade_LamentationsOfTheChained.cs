@@ -1,17 +1,17 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
+using CalamityMod.DataStructures;
+using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
+using CalamityMod.Sounds;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
-using CalamityMod.Particles;
-using CalamityMod.DataStructures;
-using CalamityMod.Items.Weapons.Melee;
-using Terraria.Audio;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -24,7 +24,6 @@ namespace CalamityMod.Projectiles.Melee
         public Player Owner => Main.player[Projectile.owner];
         public ref float ChainSwapTimer => ref Projectile.ai[0];
         public ref float SnapCoyoteTime => ref Projectile.ai[1];
-        private bool OwnerCanShoot => Owner.channel && !Owner.noItems && !Owner.CCed;
 
         const float MaxTangleReach = 400f; //How long can tangling vines from crits be
 
@@ -36,9 +35,6 @@ namespace CalamityMod.Projectiles.Melee
         public Particle smear;
         public Particle smear2;
 
-        public override void SetStaticDefaults()
-        {
-        }
         public override void SetDefaults()
         {
             Projectile.DamageType = DamageClass.Melee;
@@ -142,9 +138,8 @@ namespace CalamityMod.Projectiles.Melee
         {
             float longestReach = MaxTangleReach;
             NPC target = null;
-            for (int i = 0; i < Main.maxNPCs; ++i)
+            foreach (NPC npc in Main.ActiveNPCs)
             {
-                NPC npc = Main.npc[i];
                 if (!excludedTargets.Contains(npc) && npc.CanBeChasedBy() && !npc.friendly && !npc.townNPC)
                 {
                     float distance = Vector2.Distance(hitFrom, npc.Center);
@@ -162,12 +157,13 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
-            if (!OwnerCanShoot)
+            if (Owner.CantUseHoldout())
             {
                 Projectile.Kill();
                 return;
             }
 
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Projectile.velocity = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
             Projectile.velocity.Normalize();
             Projectile.rotation = Projectile.velocity.ToRotation();
@@ -179,7 +175,7 @@ namespace CalamityMod.Projectiles.Melee
             Owner.itemRotation = Projectile.rotation;
             if (Owner.direction != 1)
             {
-                Owner.itemRotation -= 3.14f;
+                Owner.itemRotation -= MathHelper.Pi;
             }
             Owner.itemRotation = MathHelper.WrapAngle(Owner.itemRotation);
             Owner.itemTime = 2;
@@ -341,24 +337,24 @@ namespace CalamityMod.Projectiles.Melee
 
             if (ChainSwapTimer % 6 == 0 || whip1.Y == 0)
             {
-                whip1.X = Projectile.velocity.RotatedBy(Main.rand.NextFloat(MathHelper.PiOver4 / 16f, -MathHelper.PiOver4 / 16f)).ToRotation(); //X is the orientation
-                whip1.Y = Main.rand.NextFloat(0.2f, 100f);//Y is the "seed"
+                whip1.X = Projectile.velocity.RotatedByRandom(MathHelper.Pi / 64f).ToRotation(); //X is the orientation
+                whip1.Y = Main.rand.NextFloat(0.2f, 50f);//Y is the "seed"
 
                 ChainSwapTimer++;
             }
 
             if ((ChainSwapTimer - 2) % 6 == 0 || whip2.Y == 0)
             {
-                whip2.X = Projectile.velocity.RotatedBy(Main.rand.NextFloat(MathHelper.Pi / 16f, -MathHelper.Pi / 16f)).ToRotation(); //X is the orientation
-                whip2.Y = Main.rand.NextFloat(0.2f, 100f);//Y is the "seed"
+                whip2.X = Projectile.velocity.RotatedByRandom(MathHelper.Pi / 32f).ToRotation(); //X is the orientation
+                whip2.Y = Main.rand.NextFloat(0.2f, 50f);//Y is the "seed"
 
                 ChainSwapTimer++;
             }
 
             if ((ChainSwapTimer - 4) % 6 == 0 || whip3.Y == 0)
             {
-                whip3.X = Projectile.velocity.RotatedBy(Main.rand.NextFloat(MathHelper.Pi / 16f, -MathHelper.Pi / 16f)).ToRotation(); //X is the orientation
-                whip3.Y = Main.rand.NextFloat(0.2f, 100f);//Y is the "seed"
+                whip3.X = Projectile.velocity.RotatedByRandom(MathHelper.Pi / 24f).ToRotation(); //X is the orientation
+                whip3.Y = Main.rand.NextFloat(0.2f, 50f);//Y is the "seed"
 
                 ChainSwapTimer++;
             }
@@ -412,7 +408,7 @@ namespace CalamityMod.Projectiles.Melee
                     Vector2 origin = new(guardFrame.Width / 2, guardFrame.Height); //Draw from center bottom of texture
                     Main.EntitySpriteDraw(tex, chainPositions[i] - Main.screenPosition, guardFrame, chainLightColor, rotation, origin, 1, SpriteEffects.None, 0);
 
-                    if ((ChainSwapTimer % OmegaBiomeBlade.FlailBladeAttunement_FlailTime) == 1 && Main.rand.Next(3) == 0f)
+                    if ((ChainSwapTimer % OmegaBiomeBlade.FlailBladeAttunement_FlailTime) == 1 && Main.rand.NextBool(3))
                     {
                         Particle Flake = new SnowflakeSparkle(chainPositions[i], Vector2.Zero, Color.PaleTurquoise, Color.MediumTurquoise, 1f + Main.rand.NextFloat(0, 1f), 30, 0.4f, 0.2f);
                         GeneralParticleHandler.SpawnParticle(Flake);

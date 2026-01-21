@@ -1,8 +1,7 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -11,6 +10,11 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class StormSurge : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
+        }
         public override void SetDefaults()
         {
             Item.width = 58;
@@ -23,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.noMelee = true;
             Item.knockBack = 5f;
             Item.UseSound = SoundID.Item122;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.autoReuse = true; //GRRRRRRRRRRRRRRRR false begone
             Item.shoot = ModContent.ProjectileType<StormSurgeTornado>();

@@ -2,16 +2,18 @@
 using CalamityMod.Items.Placeables.Banners;
 using Terraria;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
+
 namespace CalamityMod.NPCs.NormalNPCs
 {
     public class EbonianBlightSlime : ModNPC
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
+            Main.npcFrameCount[Type] = 4;
         }
 
         public override void SetDefaults()
@@ -25,7 +27,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.lifeMax = 130;
             NPC.knockBackResist = 0.3f;
             AnimationType = NPCID.RainbowSlime;
-            NPC.value = Item.buyPrice(0, 0, 2, 0);
+            NPC.value = Item.buyPrice(silver: 1);
             NPC.alpha = 105;
             NPC.lavaImmune = false;
             NPC.noGravity = false;
@@ -40,24 +42,29 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheCorruption,
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.BlightSlime")
             });
         }
 
+        public override void AI()
+        {
+            NPC.damage = (NPC.velocity.Y == 0f || NPC.velocity.Length() < 3f) ? 0 : NPC.defDamage;
+        }
+
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 3; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 14, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Demonite, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 40; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 14, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Demonite, hit.HitDirection, -1f, 0, default, 1f);
                 }
             }
         }
@@ -80,6 +87,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ItemID.Gel, 1, 10, 14);
+            npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Vitamins, 100, 50));
             npcLoot.Add(ModContent.ItemType<BlightedGel>(), 1, 15, 21);
         }
     }

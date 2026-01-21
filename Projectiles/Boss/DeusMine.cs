@@ -1,13 +1,13 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.NPCs.AstrumDeus;
 using Microsoft.Xna.Framework;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -105,7 +105,7 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.position.Y = Projectile.position.Y - (Projectile.height / 2);
                 for (int i = 0; i < 5; i++)
                 {
-                    int purpleDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 1.2f);
+                    int purpleDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 1.2f);
                     Main.dust[purpleDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -115,10 +115,10 @@ namespace CalamityMod.Projectiles.Boss
                 }
                 for (int j = 0; j < 10; j++)
                 {
-                    int astralDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1.7f);
+                    int astralDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1.7f);
                     Main.dust[astralDust].noGravity = true;
                     Main.dust[astralDust].velocity *= 1.5f;
-                    Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1f);
+                    Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1f);
                 }
 
                 // Spawn diagonal lasers
@@ -135,7 +135,7 @@ namespace CalamityMod.Projectiles.Boss
                     for (int k = 0; k < totalProjectiles; k++)
                     {
                         Vector2 velocity2 = spinningPoint.RotatedBy(radians * k);
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity2, type, (int)Math.Round(Projectile.damage * 0.75), 0f, Main.myPlayer, 1f, 0f);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity2, type, AstrumDeusBody.LaserDamage, 0f, Main.myPlayer, 1f, 0f);
                     }
                 }
             }
@@ -146,7 +146,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0 || Projectile.timeLeft > MaxTimeLeft - FadeTime || (Projectile.timeLeft < FadeTime && Projectile.ai[0] == 0f))
                 return;
 
-            target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 75);
+            target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 120);
         }
     }
 }

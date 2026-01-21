@@ -1,6 +1,8 @@
 ﻿using CalamityMod.Dusts.Furniture;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -11,11 +13,15 @@ namespace CalamityMod.Tiles.FurnitureOtherworldly
     [LegacyName("OccultStone")]
     public class OtherworldlyStone : ModTile
     {
+        public Asset<Texture2D> ClothTexture;
+
         private int extraFrameHeight = 36;
         private int extraFrameWidth = 90;
 
         public override void SetStaticDefaults()
         {
+            ClothTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureOtherworldly/OtherworldlyStone_Cloth");
+
             Main.tileSolid[Type] = true;
             Main.tileMergeDirt[Type] = false;
             Main.tileBlockLight[Type] = true;
@@ -31,30 +37,42 @@ namespace CalamityMod.Tiles.FurnitureOtherworldly
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 1, 0f, 0f, 1, new Color(125, 94, 128), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Stone, 0f, 0f, 1, new Color(125, 94, 128), 1f);
             Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, ModContent.DustType<OtherworldlyTileCloth>(), 0f, 0f, 1, new Color(255, 255, 255), 1f);
             return false;
         }
 
-        public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)
+        public override void PostTileFrame(int i, int j, int up, int down, int left, int right, int upLeft, int upRight, int downLeft, int downRight)
         {
             if (Main.tile[i - 1, j - 1].TileType != Type || Main.tile[i, j - 1].TileType != Type || Main.tile[i + 1, j - 1].TileType != Type ||
                 Main.tile[i - 1, j - 2].TileType != Type || Main.tile[i, j - 2].TileType != Type || Main.tile[i + 1, j - 2].TileType != Type)
             {
-                try
-                {
-                    Main.instance.TilesRenderer.AddSpecialLegacyPoint(i, j);
-                }
-                catch {}
+                Main.tile[i, j].Get<TileSpecialDrawData>().HasSpecialPoint = true;
+            }
+            else
+            {
+                Main.tile[i, j].Get<TileSpecialDrawData>().HasSpecialPoint = false;
+            }
+
+        }
+
+        public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)
+        {
+            if (Main.tile[i, j].Get<TileSpecialDrawData>().HasSpecialPoint)
+            {
+                Main.instance.TilesRenderer.AddSpecialLegacyPoint(i, j);
             }
         }
 
         public override void SpecialDraw(int i, int j, SpriteBatch spriteBatch)
         {
+            if (Main.tile[i, j].IsTileActuallyInvisible())
+                return;
+
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + zero;
-            Color drawColour = GetDrawColour(i, j);
-            Texture2D cloth = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureOtherworldly/OtherworldlyStone_Cloth").Value;
+            Color drawColour = CalamityUtils.ApplyPaint(Main.tile[i, j].TileColor, Lighting.GetColor(i, j), false);
+            Texture2D cloth = ClothTexture.Value;
 
             DrawExtraTop(i, j, cloth, drawOffset, drawColour);
             DrawExtraWallEnds(i, j, cloth, drawOffset, drawColour);
@@ -181,27 +199,6 @@ namespace CalamityMod.Tiles.FurnitureOtherworldly
         {
             //Subtract y so that y is vertical for ease of readability
             return Main.tile[i + x, j - y].TileType == type == equal;
-        }
-
-        private Color GetDrawColour(int i, int j)
-        {
-            int colType = Main.tile[i, j].TileColor;
-            Color paintCol = WorldGen.paintColor(colType);
-            if (colType < 13)
-            {
-                paintCol.R = (byte)((paintCol.R / 2f) + 128);
-                paintCol.G = (byte)((paintCol.G / 2f) + 128);
-                paintCol.B = (byte)((paintCol.B / 2f) + 128);
-            }
-            if (colType == 29)
-            {
-                paintCol = Color.Black;
-            }
-            Color col = Lighting.GetColor(i, j);
-            col.R = (byte)(paintCol.R / 255f * col.R);
-            col.G = (byte)(paintCol.G / 255f * col.G);
-            col.B = (byte)(paintCol.B / 255f * col.B);
-            return col;
         }
 
         private int GetExtraState(string type)

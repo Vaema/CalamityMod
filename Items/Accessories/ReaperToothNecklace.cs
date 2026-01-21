@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
 using CalamityMod.Rarities;
 using Terraria;
 using Terraria.ID;
@@ -15,13 +14,13 @@ namespace CalamityMod.Items.Accessories
             Item.width = 44;
             Item.height = 50;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.GetDamage<GenericDamageClass>() += 0.15f;
+            player.GetDamage<GenericDamageClass>() += 0.2f;
             player.GetArmorPenetration<GenericDamageClass>() += 15;
         }
 

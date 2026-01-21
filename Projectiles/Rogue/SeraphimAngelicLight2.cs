@@ -1,6 +1,7 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
@@ -15,7 +16,7 @@ namespace CalamityMod.Projectiles.Rogue
         public override string Texture => "CalamityMod/Projectiles/Rogue/SeraphimAngelicLight";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 10;
+            Main.projFrames[Type] = 10;
         }
 
         public override void SetDefaults()
@@ -35,7 +36,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.scale = CalamityUtils.Convert01To010(Projectile.timeLeft / (float)Lifetime);
             Projectile.Opacity = (float)Math.Sqrt(Projectile.scale);
             Projectile.velocity *= 0.8f;
-            Projectile.frame = (int)(Utils.GetLerpValue(Lifetime, 0f, Projectile.timeLeft, true) * Main.projFrames[Projectile.type]);
+            Projectile.frame = (int)(Utils.GetLerpValue(Lifetime, 0f, Projectile.timeLeft, true) * Main.projFrames[Type]);
         }
 
         public override void OnKill(int timeLeft)
@@ -43,7 +44,7 @@ namespace CalamityMod.Projectiles.Rogue
             // Release a puff of golden light dust.
             for (int i = 0; i < 16; i++)
             {
-                Dust light = Dust.NewDustPerfect(Projectile.Center, 267);
+                Dust light = Dust.NewDustPerfect(Projectile.Center, DustID.RainbowMk2);
                 light.color = Color.Lerp(Color.Gold, Color.White, Main.rand.NextFloat(0.5f, 1f));
                 light.velocity = (MathHelper.TwoPi * i / 16f).ToRotationVector2() * 5f;
                 light.scale = 0.9f;

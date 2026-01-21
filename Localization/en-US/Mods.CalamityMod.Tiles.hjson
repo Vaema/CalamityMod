@@ -8,6 +8,9 @@ Stalactite: Stalactite
 PirateCrate: Abandoned Crate
 // Basic Calamity Furniture
 Basin: Basin
+LavaFountain: Lava Fountain
+BaroqueCello: Baroque Cello
+Jukebox: Jukebox
 PipeOrgan: Pipe Organ
 Sconce: Sconce
 // Draedon Lab Furniture
@@ -47,13 +50,13 @@ UelibloomOre.MapEntry: Uelibloom
 ArenaTile.MapEntry: Arena
 
 AshenChest: {
-	MapEntry0: "{$Mods.CalamityMod.Items.Placeables.AshenChest.DisplayName}"
-	MapEntry1: Locked {$Mods.CalamityMod.Items.Placeables.AshenChest.DisplayName}
+	MapEntry0: "{$Items.Placeables.AshenChest.DisplayName}"
+	MapEntry1: Locked {$Items.Placeables.AshenChest.DisplayName}
 }
 
 AstralChestLocked: {
-	MapEntry0: "{$Mods.CalamityMod.Items.Placeables.AstralChest.DisplayName}"
-	MapEntry1: Locked {$Mods.CalamityMod.Items.Placeables.AstralChest.DisplayName}
+	MapEntry0: "{$Items.Placeables.AstralChest.DisplayName}"
+	MapEntry1: Locked {$Items.Placeables.AstralChest.DisplayName}
 }
 
 PlaguedPlateBed.MapEntry: "'Bed'"

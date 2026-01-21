@@ -83,6 +83,8 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void AI()
         {
+            // 15NOV2024: Ozzatron: Intentionally not clamping Wulfrum Scaffolds despite combat applicability due to them being mechanically closer to a UI feature.
+
             if (Owner.channel && CanOwnerGoOn)
             {
                 //Initialize the position
@@ -115,7 +117,7 @@ namespace CalamityMod.Projectiles.Typeless
                             Owner.ConsumeItem(ModContent.ItemType<WulfrumMetalScrap>());
                             Kit.storedScrap = WulfrumScaffoldKit.TilesPerScrap - 1;
                             SoundEngine.PlaySound(SoundID.Item65);
-                            if (Main.netMode != NetmodeID.Server)
+                            if (!Main.dedServ)
                             {
                                 Gore shard = Gore.NewGoreDirect(Projectile.GetSource_FromThis(), Owner.Center, Main.rand.NextVector2Circular(4f, 4f), Mod.Find<ModGore>("WulfrumPinger2").Type, Main.rand.NextFloat(0.5f, 1f));
                                 shard.timeLeft = 10;
@@ -140,7 +142,7 @@ namespace CalamityMod.Projectiles.Typeless
             if (Main.myPlayer != Owner.whoAmI)
                 return false;
 
-            Texture2D sprite = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D sprite = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
 
             Effect tileEffect = Filters.Scene["CalamityMod:WulfrumScaffoldSelection"].GetShader().Shader;
 
@@ -191,7 +193,7 @@ namespace CalamityMod.Projectiles.Typeless
         public override void OnKill(int timeLeft)
         {
             if (SelectedTiles.Keys.Count > 0)
-                SoundEngine.PlaySound(SoundID.Item101 with { Volume = SoundID.Item101.Volume * 0.6f}, Owner.Center);
+                SoundEngine.PlaySound(SoundID.Item101 with { Volume = SoundID.Item101.Volume * 0.6f }, Owner.Center);
 
             if (Main.myPlayer == Owner.whoAmI)
             {
@@ -201,7 +203,7 @@ namespace CalamityMod.Projectiles.Typeless
                         PipeCleanupManager = new WulfrumPipeManager();
 
                     TempTilesManagerSystem.AddTemporaryTile(pos, PipeCleanupManager);
-                    WorldGen.PlaceTile(pos.X, pos.Y, WulfrumScaffoldKit.PlacedTileType) ;
+                    WorldGen.PlaceTile(pos.X, pos.Y, WulfrumScaffoldKit.PlacedTileType);
                     NetMessage.SendTileSquare(-1, pos.X, pos.Y, TileChangeType.None);
                 }
             }
@@ -218,7 +220,7 @@ namespace CalamityMod.Projectiles.Typeless
             for (int i = 0; i < 3; i++)
             {
                 Vector2 dustpos = pos.ToWorldCoordinates();
-                Dust.NewDustPerfect(dustpos, 83, Main.rand.NextVector2Circular(3f, 3f), Scale: Main.rand.NextFloat(0.4f, 0.7f));
+                Dust.NewDustPerfect(dustpos, DustID.Tungsten, Main.rand.NextVector2Circular(3f, 3f), Scale: Main.rand.NextFloat(0.4f, 0.7f));
             }
 
             TemporaryTile tile = new TemporaryTile(pos, this, WulfrumScaffoldKit.TileTime);
@@ -230,7 +232,7 @@ namespace CalamityMod.Projectiles.Typeless
             if (tile.timeleft < WulfrumScaffoldKit.TileTime * 0.1f && Main.rand.NextBool(10))
             {
                 Vector2 dustpos = tile.position.ToWorldCoordinates();
-                Dust.NewDustPerfect(dustpos, 226, Main.rand.NextVector2Circular(4f, 4f), Scale: Main.rand.NextFloat(0.4f, 1f));
+                Dust.NewDustPerfect(dustpos, DustID.Electric, Main.rand.NextVector2Circular(4f, 4f), Scale: Main.rand.NextFloat(0.4f, 1f));
             }
         }
     }

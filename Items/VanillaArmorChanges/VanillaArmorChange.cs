@@ -1,12 +1,13 @@
-using System.Linq;
+﻿using System.Linq;
 using Terraria;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.VanillaArmorChanges
 {
     // Certain things are virtual instead of abstract because not all pieces of armor are explicitly a part of any particular set.
     // The Wizard Hat is an example of this. The IDs are left abstract so that you don't mistakenly forget to override one of them.
-    public abstract class VanillaArmorChange
+    public abstract class VanillaArmorChange : ILoadable
     {
         public abstract int? HeadPieceID { get; }
 
@@ -56,6 +57,16 @@ namespace CalamityMod.Items.VanillaArmorChanges
                 ApplyBodyPieceEffect(player);
             if ((LegPieceID ?? ItemID.None) == player.armor[2].type || AlternativeLegPieceIDs.Contains(player.armor[2].type))
                 ApplyLegPieceEffect(player);
+        }
+
+        public void Load(Mod mod)
+        {
+            VanillaArmorChangeManager.ArmorChanges.Add(this);
+        }
+
+        public void Unload()
+        {
+            // Don't really need to do anything here yet
         }
     }
 }

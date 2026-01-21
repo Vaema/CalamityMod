@@ -11,7 +11,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            ProjectileID.Sets.MinionShot[Type] = true;
         }
 
         public override void SetDefaults()
@@ -27,11 +27,13 @@ namespace CalamityMod.Projectiles.Summon
             AIType = ProjectileID.RainFriendly;
             Projectile.extraUpdates = 1;
             Projectile.DamageType = DamageClass.Summon;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
         {
-            int blood = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 5, Projectile.velocity.X, Projectile.velocity.Y, 100, default, 1f);
+            int blood = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Blood, Projectile.velocity.X, Projectile.velocity.Y, 100, default, 1f);
             Dust dust = Main.dust[blood];
             dust.velocity = Vector2.Zero;
             dust.position -= Projectile.velocity / 5f;

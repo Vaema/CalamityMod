@@ -1,9 +1,7 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Events;
-using CalamityMod.World;
+﻿using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -28,7 +26,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
         }
 
         public override void SetDefaults()
@@ -41,7 +39,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.tileCollide = false;
             Projectile.Opacity = 0f;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 600;
+            Projectile.timeLeft = 300;
             CooldownSlot = ImmunityCooldownID.Bosses;
         }
 
@@ -83,7 +81,7 @@ namespace CalamityMod.Projectiles.Boss
                 // If an old velocity is in reserve, set the true velocity to it and make it as "taken" by setting it to <0,0>
                 if (OldVelocity != Vector2.Zero)
                 {
-                    Projectile.velocity = OldVelocity * (BossRushEvent.BossRushActive ? 1.25f : 1f);
+                    Projectile.velocity = OldVelocity;
                     OldVelocity = Vector2.Zero;
                     Projectile.netUpdate = true;
                 }

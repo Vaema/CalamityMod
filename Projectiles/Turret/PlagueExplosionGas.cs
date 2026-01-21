@@ -1,11 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.DataStructures;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ID;
-using Terraria.GameContent;
 using Terraria.ModLoader;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.DataStructures;
 
 namespace CalamityMod.Projectiles.Turret
 {
@@ -42,7 +40,7 @@ namespace CalamityMod.Projectiles.Turret
         public override void AI()
         {
             Projectile.localAI[0]++;
-            Projectile.scale = 0.5f + (Projectile.localAI[0] * 0.01f) ;
+            Projectile.scale = 0.5f + (Projectile.localAI[0] * 0.01f);
             Projectile.velocity *= 0.98f;
             if (Projectile.timeLeft < 40) // Remove hitbox once the projectile is barely visible anymore
                 ableToHit = false;
@@ -64,8 +62,8 @@ namespace CalamityMod.Projectiles.Turret
             if (Projectile.localAI[0] == 0f)
                 return;
 
-            
-            Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
+
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 origin = texture.Size() * 0.5f;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             float opacity = 1f;

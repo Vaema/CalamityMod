@@ -1,10 +1,7 @@
-﻿using System;
+﻿using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
@@ -39,10 +36,13 @@ namespace CalamityMod.Projectiles.Ranged
             GeneralParticleHandler.SpawnParticle(explosion2);
             Particle explosion3 = new DetailedExplosion(Projectile.Center, Vector2.Zero, Color.Black, Vector2.One, Main.rand.NextFloat(-5, 5), 0f, ExplosionRadius * 0.0030f + 0.1f, Main.rand.Next(15, 22), false);
             GeneralParticleHandler.SpawnParticle(explosion3);
-            Particle orb = new GenericBloom(Projectile.Center, Projectile.velocity, color1, ExplosionRadius * 0.0085f + 0.05f, 10, true);
-            GeneralParticleHandler.SpawnParticle(orb);
-            Particle orb2 = new GenericBloom(Projectile.Center, Projectile.velocity, color2, ExplosionRadius * 0.006f + 0.05f, 10, true, true);
-            GeneralParticleHandler.SpawnParticle(orb2);
+
+            for (int i = 0; i < 4; i++)
+            {
+                Particle blastRing = new CustomPulse(Projectile.Center, Vector2.Zero, color1, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 0, ExplosionRadius * 0.005f + 0.05f, 25);
+                GeneralParticleHandler.SpawnParticle(blastRing);
+            }
+
             float numberOfDusts = ExplosionRadius * 0.1f + 10;
             float rotFactor = 360f / numberOfDusts;
             for (int i = 0; i < numberOfDusts; i++)
@@ -50,8 +50,8 @@ namespace CalamityMod.Projectiles.Ranged
                 float rot = MathHelper.ToRadians(i * rotFactor);
                 Vector2 offset = (Vector2.UnitX * Main.rand.NextFloat(ExplosionRadius * 0.2f, 3.1f)).RotatedBy(rot * Main.rand.NextFloat(1.1f, 9.1f));
                 Vector2 velOffset = (Vector2.UnitX * Main.rand.NextFloat(ExplosionRadius * 0.2f, 3.1f)).RotatedBy(rot * Main.rand.NextFloat(1.1f, 9.1f));
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, Main.rand.NextBool(4) ? 263 : Projectile.ai[1] == 5 ? 278 : 66, velOffset);
-                dust.noGravity = dust.type == 278? false : true;
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, Main.rand.NextBool(4) ? ModContent.DustType<LightDust>() : Projectile.ai[1] == 5 ? 278 : ModContent.DustType<VoidDustInverted>(), velOffset);
+                dust.noGravity = dust.type == 278 ? false : true;
                 dust.color = color1;
                 dust.velocity = velOffset;
                 dust.scale = dust.type == 278 ? Main.rand.NextFloat(0.7f, 1.3f) : Main.rand.NextFloat(1.6f, 2.2f);

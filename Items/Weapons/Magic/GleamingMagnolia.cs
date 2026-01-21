@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Projectiles.Magic;
-using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -11,7 +10,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
@@ -26,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5.5f;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.UseSound = SoundID.Item109;
             Item.autoReuse = true;
@@ -34,7 +33,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shootSpeed = 14f;
         }
 
-        
+
         public override void AddRecipes()
         {
             CreateRecipe().

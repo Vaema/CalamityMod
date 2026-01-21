@@ -1,4 +1,4 @@
-using CalamityMod.CalPlayer;
+﻿using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -18,18 +18,18 @@ namespace CalamityMod.Projectiles.Pets
             Normal,
             Dex,
             Wash,
-			Heat,
-			Frost,
-			Mow,
-			Fan
+            Heat,
+            Frost,
+            Mow,
+            Fan
         }
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            Main.projPet[Projectile.type] = true;
+            Main.projFrames[Type] = 4;
+            Main.projPet[Type] = true;
 
-            ProjectileID.Sets.CharacterPreviewAnimations[Projectile.type] = ProjectileID.Sets.SimpleLoop(0, Main.projFrames[Projectile.type], 6)
+            ProjectileID.Sets.CharacterPreviewAnimations[Type] = ProjectileID.Sets.SimpleLoop(0, Main.projFrames[Type], 6)
             .WithOffset(-10f, 0f).WithSpriteDirection(1).WhenNotSelected(0, 0);
         }
 
@@ -96,7 +96,7 @@ namespace CalamityMod.Projectiles.Pets
             int dustAmt = 25;
             for (int i = 0; i < dustAmt; i++)
             {
-                int electric = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, 132, 0f, 0f, 0, default, 1f);
+                int electric = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, DustID.Firework_Blue, 0f, 0f, 0, default, 1f);
                 Main.dust[electric].velocity *= 2f;
                 Main.dust[electric].scale *= 1.15f;
             }
@@ -119,7 +119,7 @@ namespace CalamityMod.Projectiles.Pets
         public override bool PreDraw(ref Color lightColor)
         {
             Drawing(lightColor,
-                ModContent.Request<Texture2D>(Texture).Value,
+                Terraria.GameContent.TextureAssets.Projectile[Type].Value,
                 ModContent.Request<Texture2D>("CalamityMod/Projectiles/Pets/RotomDex").Value,
                 ModContent.Request<Texture2D>("CalamityMod/Projectiles/Pets/RotomWash").Value,
                 ModContent.Request<Texture2D>("CalamityMod/Projectiles/Pets/RotomHeat").Value,
@@ -168,7 +168,7 @@ namespace CalamityMod.Projectiles.Pets
                     break;
             }
 
-            int height = texture.Height / Main.projFrames[Projectile.type];
+            int height = texture.Height / Main.projFrames[Type];
             int frameHeight = height * Projectile.frame;
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (Projectile.spriteDirection == -1)

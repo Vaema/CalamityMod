@@ -1,7 +1,4 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Magic;
-using CalamityMod.Rarities;
-using CalamityMod.Sounds;
+﻿using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -20,26 +17,28 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 72;
             Item.height = 20;
-            Item.damage = 150;
-            Item.mana = 40;
+            Item.damage = 160;
             Item.DamageType = DamageClass.Magic;
-            Item.useTime = Item.useAnimation = 8;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.noMelee = true;
+            Item.mana = 40;
+            Item.useAnimation = Item.useTime = 40;
             Item.knockBack = 4f;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
-            Item.rare = ModContent.RarityType<Turquoise>();
-            Item.UseSound = CommonCalamitySounds.PlasmaBlastSound;
+            Item.shoot = ModContent.ProjectileType<PlasmaRifleShot>();
+            Item.shootSpeed = 14f;
+
+            Item.UseSound = HeavyShotSound;
+            Item.useStyle = ItemUseStyleID.Shoot;
             Item.autoReuse = true;
-            Item.shootSpeed = 12f;
-            Item.shoot = ModContent.ProjectileType<PlasmaShot>();
+            Item.noMelee = true;
+
+            Item.rare = ItemRarityID.Red;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-10, 0);
@@ -48,14 +47,7 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override bool CanUseItem(Player player)
         {
-            if (player.altFunctionUse == 2)
-            {
-                Item.UseSound = FastShotSound;
-            }
-            else
-            {
-                Item.UseSound = HeavyShotSound;
-            }
+            Item.UseSound = player.altFunctionUse == 2 ? FastShotSound : HeavyShotSound;
             return base.CanUseItem(player);
         }
 
@@ -65,20 +57,18 @@ namespace CalamityMod.Items.Weapons.Magic
                 mult *= 0.25f;
         }
 
-        public override float UseSpeedMultiplier(Player player)
-        {
-            if (player.altFunctionUse == 2)
-                return 1f;
-            return 0.2f;
-        }
+        public override float UseSpeedMultiplier(Player player) => player.altFunctionUse == 2 ? 5f : 1f;
+
+        public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback) => position += velocity.SafeNormalize(Vector2.UnitX) * 56f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (player.altFunctionUse == 2)
-                Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<PlasmaBolt>(), damage * 2, knockback, player.whoAmI);
-            else
-                Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
-            return false;
+            {
+                Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 1f);
+                return false;
+            }
+            return true;
         }
 
         public override void AddRecipes()
@@ -86,7 +76,7 @@ namespace CalamityMod.Items.Weapons.Magic
             CreateRecipe().
                 AddIngredient(ItemID.ToxicFlask).
                 AddIngredient(ItemID.LaserRifle).
-                AddIngredient<UelibloomBar>(7).
+                AddIngredient(ItemID.FragmentVortex, 6).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

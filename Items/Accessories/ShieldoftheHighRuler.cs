@@ -1,6 +1,6 @@
-﻿using System;
-using CalamityMod.CalPlayer;
+﻿using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -8,9 +8,13 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Accessories
 {
     [AutoloadEquip(EquipType.Shield)]
-    public class ShieldoftheHighRuler : ModItem, ILocalizedModType
+    public class ShieldoftheHighRuler : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public bool HasFlavorTooltip => true;
+        public Color? TooltipExtensionColor => new(195, 223, 255);
+
         public const int ShieldSlamIFrames = 12;
         public const float EoCDashVelocity = 14.5f;
         public const float TabiDashVelocity = 18.9f;
@@ -20,13 +24,14 @@ namespace CalamityMod.Items.Accessories
             Item.width = 36;
             Item.height = 38;
             Item.DamageType = DamageClass.MeleeNoSpeed;
-            Item.damage = 30;
+            Item.damage = 300;
             Item.knockBack = 9f;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.Calamity().donorItem = true;
-            Item.defense = 12;
+            Item.defense = 4;
             Item.accessory = true;
+            Item.expert = true;
         }
 
         public override bool MeleePrefix() => false;

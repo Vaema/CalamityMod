@@ -1,13 +1,13 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using System;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.Audio;
 using Terraria.GameContent;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -26,13 +26,11 @@ namespace CalamityMod.Projectiles.Summon
         }
         public override void SetStaticDefaults()
         {
-
-            Main.projFrames[Projectile.type] = 8;
-
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 7;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
+            Main.projFrames[Type] = 8;
+            Main.projPet[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 7;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
         }
 
         public override void SetDefaults()
@@ -153,11 +151,14 @@ namespace CalamityMod.Projectiles.Summon
             }
             Lighting.AddLight(Projectile.Center, Color.Red.ToVector3());
         }
+
+        public override bool MinionContactDamage() => true;
+
         public override void PostDraw(Color lightColor)
         {
             if ((Projectile.ai[0] > 0f && Projectile.ai[0] <= MaxChargeTime && Projectile.velocity.Length() >= 8f) || SeekingTarget)
             {
-                Texture2D projectileTexture = ModContent.Request<Texture2D>(Texture).Value;
+                Texture2D projectileTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
                 Texture2D flameTexture = TextureAssets.Extra[ExtrasID.MeteorHeadFlame].Value;
                 SpriteEffects spriteEffects = SpriteEffects.None;
                 if (Projectile.spriteDirection == -1)
@@ -167,7 +168,7 @@ namespace CalamityMod.Projectiles.Summon
                 if (Projectile.ai[0] > 30f)
                     completionRatio = 1f - (30f - Projectile.ai[0]) / 30f;
 
-                Vector2 modifiedProjectileTexture = new Vector2(projectileTexture.Width / 2,projectileTexture.Height / Main.projFrames[Projectile.type] / 2);
+                Vector2 modifiedProjectileTexture = new Vector2(projectileTexture.Width / 2, projectileTexture.Height / Main.projFrames[Type] / 2);
                 for (int oldPositionDrawIndex = 6; oldPositionDrawIndex >= 0; oldPositionDrawIndex--)
                 {
                     Color drawColor = Color.Lerp(Color.LightGoldenrodYellow, new Color(142, 24, 67), completionRatio);
@@ -186,7 +187,7 @@ namespace CalamityMod.Projectiles.Summon
                     Rectangle flameFrameRectangle = flameTexture.Frame(1, 4, 0, yFrame);
                     Vector2 flameOrigin = new Vector2(flameTexture.Width / 2, flameTexture.Height / 8 + 14);
                     Main.EntitySpriteDraw(flameTexture,
-                                          new Vector2(Projectile.oldPos[oldPositionDrawIndex].X - Main.screenPosition.X + Projectile.width / 2 - projectileTexture.Width * Projectile.scale / 2f + modifiedProjectileTexture.X * Projectile.scale, Projectile.oldPos[oldPositionDrawIndex].Y - Main.screenPosition.Y + Projectile.height - projectileTexture.Height * Projectile.scale / Main.projFrames[Projectile.type] + 4f + modifiedProjectileTexture.Y * Projectile.scale + Projectile.gfxOffY),
+                                          new Vector2(Projectile.oldPos[oldPositionDrawIndex].X - Main.screenPosition.X + Projectile.width / 2 - projectileTexture.Width * Projectile.scale / 2f + modifiedProjectileTexture.X * Projectile.scale, Projectile.oldPos[oldPositionDrawIndex].Y - Main.screenPosition.Y + Projectile.height - projectileTexture.Height * Projectile.scale / Main.projFrames[Type] + 4f + modifiedProjectileTexture.Y * Projectile.scale + Projectile.gfxOffY),
                                           new Rectangle?(flameFrameRectangle),
                                           drawColor,
                                           Projectile.oldRot[oldPositionDrawIndex] + Projectile.oldSpriteDirection[oldPositionDrawIndex] * MathHelper.PiOver2,

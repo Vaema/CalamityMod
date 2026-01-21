@@ -1,15 +1,16 @@
 ﻿using System;
+using System.IO;
 using CalamityMod.BiomeManagers;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Placeables.Banners;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.IO;
-using System.Linq;
-using CalamityMod.Items.Placeables.Banners;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
@@ -23,12 +24,12 @@ namespace CalamityMod.NPCs.Abyss
         public bool shouldTarget = false;
         public int boomTimer = -1;
         public int currentFrame = 0;
-        
+
         public const int dyingDuration = 75;
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 8;
+            Main.npcFrameCount[Type] = 4;
         }
 
         public override void SetDefaults()
@@ -43,7 +44,7 @@ namespace CalamityMod.NPCs.Abyss
             NPC.lifeMax = 400;
             NPC.knockBackResist = 0f;
             NPC.alpha = 100;
-            NPC.value = Item.buyPrice(0, 0, 1, 5);
+            NPC.value = Item.buyPrice(silver: 4);
             NPC.HitSound = SoundID.NPCHit25;
             NPC.DeathSound = SoundID.NPCDeath28;
             Banner = NPC.type;
@@ -57,9 +58,9 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.CannonballJellyfish")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.CannonballJellyfish")
             });
         }
 
@@ -81,7 +82,7 @@ namespace CalamityMod.NPCs.Abyss
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => !dying && base.CanHitPlayer(target, ref cooldownSlot);
 
-        private void DyingAI() 
+        private void DyingAI()
         {
             if (boomTimer == 0)
             {
@@ -98,26 +99,26 @@ namespace CalamityMod.NPCs.Abyss
                     Explode();
                     return;
                 }
-                    
+
             }
 
             if (boomTimer == 60 && !shouldTarget) //happens only once
             {
                 NPC.velocity.Y = 0.75f; //sink slowly
             }
-                
 
-            if (shouldTarget) 
+
+            if (shouldTarget)
             {
                 // Get a target
                 if (NPC.target < 0 || !NPC.target.WithinBounds(Main.maxPlayers) || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
                     NPC.TargetClosest();
-                
+
                 if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > CalamityGlobalNPC.CatchUpDistance200Tiles)
                     NPC.TargetClosest();
-                
+
                 Player player = Main.player[NPC.target];
-                
+
                 if (boomTimer >= (dyingDuration - 20)) //home for the first 20 frames, not beyond that 
                 {
                     float targetXDirection = player.position.X + (float)(player.width / 2);
@@ -138,11 +139,11 @@ namespace CalamityMod.NPCs.Abyss
                     NPC.velocity.Y = (NPC.velocity.Y * 5f + targetYDist) / 6f;
 
                     NPC.velocity *= 0.9f; //slow it down a bit to be fair
-                
+
                     NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) + 1.57f;
 
                 }
-                
+
 
                 //apparently NPC.wet can return true even when out of water :skull:
                 if (!Collision.DrownCollision(NPC.position, NPC.width, NPC.height) || Collision.SolidCollision(NPC.Center, NPC.width, NPC.height) || NPC.Hitbox.Intersects(player.Hitbox)) //explode when in contact with a tile or target
@@ -155,7 +156,7 @@ namespace CalamityMod.NPCs.Abyss
 
             boomTimer--;
         }
-        
+
         public override void AI()
         {
             NPC.chaseable = !dying && hasBeenHit;
@@ -207,8 +208,8 @@ namespace CalamityMod.NPCs.Abyss
                     }
                 }
                 NPC.velocity.Y += 0.1f;
-                if (currentFrame == 5 && NPC.frameCounter == 0.0)
-                    NPC.velocity.Y = -2.748f; // manually picked value :desolate:
+                if (currentFrame == 3 && NPC.frameCounter == 0.0)
+                    NPC.velocity.Y = -1.35f; // manually picked value :desolate: // yeah this is desolate indeed _ YuH
             }
             else
             {
@@ -219,16 +220,16 @@ namespace CalamityMod.NPCs.Abyss
             }
         }
 
-        public override void FindFrame(int frameHeight) //8 frames, 78 height
+        public override void FindFrame(int frameHeight) //4 frames, 78 height
         {
             NPC.frameCounter += 1.0;
             if (NPC.frameCounter >= 7)
             {
-                currentFrame = currentFrame == 7 ? 0 : currentFrame + 1;
+                currentFrame = currentFrame == 3 ? 0 : currentFrame + 1;
                 NPC.netUpdate = true; //update current frame variable
                 NPC.frameCounter = 0;
             }
-                
+
             NPC.frame.Y = currentFrame * frameHeight;
         }
 
@@ -249,14 +250,14 @@ namespace CalamityMod.NPCs.Abyss
                 spriteEffects = SpriteEffects.FlipHorizontally;
             }
             Vector2 center = new Vector2(NPC.Center.X, NPC.Center.Y);
-            var texture = TextureAssets.Npc[NPC.type];
-            Vector2 halfSizeTexture = new Vector2((float)(texture.Value.Width / 2), (float)(texture.Value.Height / Main.npcFrameCount[NPC.type] / 2));
+            var texture = TextureAssets.Npc[Type];
+            Vector2 halfSizeTexture = new Vector2((float)(texture.Value.Width / 2), (float)(texture.Value.Height / Main.npcFrameCount[Type] / 2));
             Vector2 vector = center - screenPos;
-            var glowTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Abyss/CannonballJellyfishGlow");
-            vector -= new Vector2((float)glowTexture.Value.Width, (float)(glowTexture.Value.Height / Main.npcFrameCount[NPC.type])) * 1f / 2f;
+            var glowTexture = TextureAssets.Npc[Type];
+            vector -= new Vector2((float)glowTexture.Value.Width, (float)(glowTexture.Value.Height / Main.npcFrameCount[Type])) * 1f / 2f;
             vector += halfSizeTexture * 1f + new Vector2(0f, 4f + NPC.gfxOffY);
             Color color = new Color(127 - NPC.alpha, 127 - NPC.alpha, 127 - NPC.alpha, 0).MultiplyRGBA(new Color(67, 218, 166));
-            Main.spriteBatch.Draw(ModContent.Request<Texture2D>("CalamityMod/NPCs/Abyss/CannonballJellyfishGlow").Value, vector,
+            Main.spriteBatch.Draw(TextureAssets.Npc[Type].Value, vector,
                 new Microsoft.Xna.Framework.Rectangle?(NPC.frame), color, NPC.rotation, halfSizeTexture, 1f, spriteEffects, 0f);
         }
 
@@ -267,8 +268,14 @@ namespace CalamityMod.NPCs.Abyss
             NPC.width = NPC.height;
             NPC.position -= NPC.Size * 0.5f; //hitbox expansion + adjustments
             SoundEngine.PlaySound(SoundID.Item14, NPC.Center); //bomb sound
-            foreach (Player player in Main.player.Where(player => player.active && !player.dead && NPC.Hitbox.Intersects(player.Hitbox)))
-                player.Hurt(PlayerDeathReason.ByNPC(NPC.whoAmI), NPC.damage * 3, NPC.direction); //Due to how slow the jelly is, this might catch you unaware, but then you'll never get hit by it again
+            foreach (Player player in Main.ActivePlayers)
+            {
+                if (player.dead || !NPC.Hitbox.Intersects(player.Hitbox))
+                    continue;
+
+                //Due to how slow the jelly is, this might catch you unaware, but then you'll never get hit by it again
+                player.Hurt(PlayerDeathReason.ByNPC(NPC.whoAmI), NPC.damage * 3, NPC.direction);
+            }
             for (int k = 0; k < 25; k++)
             {
                 int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.MoonBoulder, 0f, -1f, 0, default, 2f);
@@ -280,7 +287,11 @@ namespace CalamityMod.NPCs.Abyss
             NPC.netUpdate = true;
         }
 
-        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers) => target.AddBuff(BuffID.Poisoned, 60 * (this.shouldTarget ? 10 : 5)); //10 sec for explosion, 5 sec for non explosion
+        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
+        {
+            target.AddBuff(BuffID.Poisoned, 60 * (this.shouldTarget ? 4 : 2)); //4 sec for explosion, 2 sec for non explosion
+            target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 60 * (this.shouldTarget ? 4 : 2)); //4 sec for explosion, 2 sec for non explosion
+        }
 
         public override bool CheckDead()
         {
@@ -308,8 +319,9 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(ItemID.Bomb, 1, 1, 1);
-            npcLoot.Add(ItemID.JellyfishNecklace, 100);
+            npcLoot.Add(ItemID.Bomb);
+            npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Bezoar, 100, 50));
+            npcLoot.Add(ItemID.JellyfishNecklace, 30);
         }
     }
 }

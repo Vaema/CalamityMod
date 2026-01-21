@@ -1,11 +1,11 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 7.75f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.shoot = ModContent.ProjectileType<VolcanicFireball>();
             Item.shootSpeed = 20f;
@@ -52,7 +52,7 @@ namespace CalamityMod.Items.Weapons.Melee
                     default:
                         break;
                 }
-                Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, (int)(damage * damageMult), knockback, player.whoAmI, 0f, 0f);
+                Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, (int)(damage * damageMult), knockback, player.whoAmI);
             }
             return false;
         }
@@ -63,7 +63,7 @@ namespace CalamityMod.Items.Weapons.Melee
             {
                 Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, Main.rand.NextBool(3) ? 16 : 174);
             }
-            if (Main.rand.NextBool(5) && Main.netMode != NetmodeID.Server)
+            if (Main.rand.NextBool(5) && !Main.dedServ)
             {
                 int smoke = Gore.NewGore(player.GetSource_ItemUse(Item), new Vector2(hitbox.X, hitbox.Y), default, Main.rand.Next(375, 378), 0.75f);
                 Main.gore[smoke].behindTiles = true;

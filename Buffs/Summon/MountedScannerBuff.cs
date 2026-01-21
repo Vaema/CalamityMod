@@ -1,35 +1,12 @@
-using CalamityMod.CalPlayer;
-using CalamityMod.Projectiles.DraedonsArsenal;
-using Terraria;
+﻿using CalamityMod.Projectiles.DraedonsArsenal;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.Summon
 {
-    public class MountedScannerBuff : ModBuff
+    public class MountedScannerBuff : BaseSummonBuff
     {
-        public override void SetStaticDefaults()
-        {
-            Main.buffNoTimeDisplay[Type] = true;
-            Main.buffNoSave[Type] = true;
-            //Main.persistentBuff[Type] = true;
-        }
+        protected override int MinionProjectileType => ModContent.ProjectileType<MountedScannerSummon>();
 
-        public override void Update(Player player, ref int buffIndex)
-        {
-            CalamityPlayer modPlayer = player.Calamity();
-            if (player.ownedProjectileCounts[ModContent.ProjectileType<MountedScannerSummon>()] > 0)
-            {
-                modPlayer.mountedScanner = true;
-            }
-            if (!modPlayer.mountedScanner)
-            {
-                player.DelBuff(buffIndex);
-                buffIndex--;
-            }
-            else
-            {
-                player.buffTime[buffIndex] = 18000;
-            }
-        }
+        protected override ref bool MinionBool => ref BuffModdedOwner.mountedScanner;
     }
 }

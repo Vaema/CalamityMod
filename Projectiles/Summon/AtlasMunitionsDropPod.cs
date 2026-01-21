@@ -1,13 +1,11 @@
-﻿using CalamityMod.Buffs.Summon;
-using CalamityMod.CalPlayer;
+﻿using System.Collections.Generic;
+using CalamityMod.NPCs.ExoMechs.Thanatos;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.NPCs.ExoMechs.Thanatos;
-using System.Collections.Generic;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -32,8 +30,9 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
-            Main.projFrames[Projectile.type] = 14;
+            Main.projFrames[Type] = 14;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -43,11 +42,10 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.netImportant = true;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.timeLeft = 90000;
-            Projectile.penetrate = -1;
+            Projectile.timeLeft = Projectile.SentryLifeTime;
             Projectile.tileCollide = true;
-            Projectile.hide = true;
             Projectile.DamageType = DamageClass.Summon;
+            Projectile.sentry = true;
         }
 
         public override void AI()
@@ -70,7 +68,7 @@ namespace CalamityMod.Projectiles.Summon
 
             // Calculate frames.
             Projectile.frameCounter++;
-            if (!HasCollidedWithGround) 
+            if (!HasCollidedWithGround)
                 Projectile.frame = Projectile.frameCounter / 6 % 5;
             else
             {
@@ -89,12 +87,13 @@ namespace CalamityMod.Projectiles.Summon
                         {
                             Projectile cannon = Projectile.NewProjectileDirect(Projectile.GetSource_FromAI(), Projectile.Center + Vector2.UnitY * 10f, Vector2.Zero, ModContent.ProjectileType<AtlasMunitionsAutocannon>(), Projectile.damage, 0f, Projectile.owner);
                             cannon.originalDamage = Projectile.originalDamage;
+                            cannon.ai[2] = Projectile.whoAmI;
                             Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Top + Vector2.UnitY * 72f, Vector2.Zero, ModContent.ProjectileType<AtlasMunitionsDropPodUpper>(), 0, 0f, Projectile.owner);
                         }
                     }
                 }
-                if (Projectile.frame >= Main.projFrames[Projectile.type])
-                    Projectile.frame = Main.projFrames[Projectile.type] - 1;
+                if (Projectile.frame >= Main.projFrames[Type])
+                    Projectile.frame = Main.projFrames[Type] - 1;
             }
 
             // Fall downward.
@@ -126,7 +125,7 @@ namespace CalamityMod.Projectiles.Summon
             }
 
             SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode, Projectile.Center);
-            Owner.Calamity().GeneralScreenShakePower = Utils.Remap(Owner.Distance(Projectile.Center), 1800f, 1000f, 0f, 4.5f);
+            Owner.SetScreenshake(Utils.Remap(Owner.Distance(Projectile.Center), 1800f, 1000f, 0f, 4.5f));
         }
 
         // As a means of obscuring contents when they spawn (such as ensuring that the minigun doesn't seem to pop into existence), this projectile draws above most other projectiles.
@@ -147,7 +146,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/AtlasMunitionsDropPodGlow").Value;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;

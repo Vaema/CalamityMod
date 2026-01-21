@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -17,21 +16,20 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 46;
             Item.height = 78;
-            Item.damage = 152;
+            Item.damage = 156;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 20;
             Item.useAnimation = 20;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2.5f;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
             Item.UseSound = SoundID.Item5;
             Item.autoReuse = true;
             Item.shoot = ProjectileID.WoodenArrowFriendly;
             Item.shootSpeed = 12f;
             Item.useAmmo = AmmoID.Arrow;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo spawnSource, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -67,10 +65,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                     }
                     int proj = Projectile.NewProjectile(spawnSource, source.X + offset.X, source.Y + offset.Y, velocity.X, velocity.Y, newType, (int)(damage * 1.1), knockback, player.whoAmI);
                     if (proj.WithinBounds(Main.maxProjectiles))
-                    {
-                        Main.projectile[proj].arrow = true;
                         Main.projectile[proj].extraUpdates += 1;
-                    }
                 }
                 else
                 {
@@ -88,7 +83,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient<FlarewingBow>().
                 AddIngredient<ReaperTooth>(6).
                 AddIngredient<DepthCells>(10).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

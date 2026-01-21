@@ -20,12 +20,13 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useAnimation = 12;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
-            Item.value = CalamityGlobalItem.Rarity10BuyPrice;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
             Item.rare = ItemRarityID.Red;
             Item.UseSound = SoundID.Item11;
             Item.autoReuse = true;
             Item.shoot = ProjectileID.Wasp;
             Item.shootSpeed = 12f;
+            Item.knockBack = 0.25f;
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-15, -5);

@@ -1,24 +1,23 @@
-﻿using CalamityMod.World;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Terraria;
-using Terraria.ModLoader;
-using CalamityMod.CalPlayer;
-using CalamityMod.Events;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Terraria.Localization;
-using static CalamityMod.CalamityUtils;
-using System;
-using Terraria.ID;
-using Terraria.Audio;
-using CalamityMod.Systems;
-using static CalamityMod.Systems.DifficultyModeSystem;
-using Terraria.GameInput;
-using Terraria.UI.Chat;
 using System.Text.RegularExpressions;
+using CalamityMod.CalPlayer;
+using CalamityMod.Events;
+using CalamityMod.Packets;
+using CalamityMod.Systems;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
+using Terraria;
+using Terraria.Audio;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
+using Terraria.UI.Chat;
+using static CalamityMod.CalamityUtils;
+using static CalamityMod.Systems.DifficultyModeSystem;
 using static Terraria.GameContent.FontAssets;
-using System.Runtime.InteropServices;
 
 namespace CalamityMod.UI.ModeIndicator
 {
@@ -26,15 +25,15 @@ namespace CalamityMod.UI.ModeIndicator
     {
         public static Rectangle MouseScreenArea => Utils.CenteredRectangle(Main.MouseScreen, Vector2.One * 2f);
 
-        public static Vector2 FrameSize => new Vector2(30f, 38f);
+        public static Vector2 FrameSize => new Vector2(74f, 74f);
         public static Rectangle MainClickArea => Utils.CenteredRectangle(DrawCenter, FrameSize * MainIconScale);
         public static bool ClickingMouse => Main.mouseLeft && Main.mouseLeftRelease;
         public static Vector2 DrawCenter => new Vector2(Main.screenWidth - 400f - WidthForTier(MostAlternateDifficulties) * 0.5f, 82f) + FrameSize * 0.5f;
 
-        private static int GlowFadeAnimLength = 40;
+        private static int GlowFadeAnimLength = 20;
         public static int GlowFadeTime = 0;
         //Lock icon
-        internal const int LockAnimLength = 30;
+        internal const int LockAnimLength = 15;
         private static int lockClickTime = 0;
         private static bool previousLockStatus = false;
         //Expand and shrink on hover
@@ -46,10 +45,10 @@ namespace CalamityMod.UI.ModeIndicator
         public static float MainIconScale => 1f + iconHoverScaleBoost;
         //Menu state
         private static bool menuOpen = false;
-        internal static int MenuAnimLength => MostAlternateDifficulties > 1 ? 60 : 40;
+        internal static int MenuAnimLength => MostAlternateDifficulties > 1 ? 30 : 20;
         private static int menuOpenTransitionTime = 0;
         private static DifficultyMode previouslyHoveredMode = null;
-        public static float WidthForTier(int alts) => (alts - 1) * 40f;
+        public static float WidthForTier(int alts) => (alts - 1) * 76f;
 
         private static void ClearVariables()
         {
@@ -140,9 +139,10 @@ namespace CalamityMod.UI.ModeIndicator
                 spriteBatch.End();
                 spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, Main.UIScaleMatrix);
 
-
+                /*
                 Texture2D outlineTexture = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicatorOutline").Value;
                 spriteBatch.Draw(outlineTexture, DrawCenter, null, Color.White * opacity, 0f, outlineTexture.Size() * 0.5f, MainIconScale, SpriteEffects.None, 0f);
+                */
             }
 
             string extraDescText = string.Empty;
@@ -184,8 +184,8 @@ namespace CalamityMod.UI.ModeIndicator
                 if (!Main.mouseItem.IsAir)
                     textboxStart.X += 34;
 
-                if (textboxStart.X + boxSize.X + 4f > (float)Main.screenWidth)
-                    textboxStart.X = Main.screenWidth - boxSize.X - 4f;
+                if (textboxStart.X + regexedBoxSize.X + 4f > (float)Main.screenWidth)
+                    textboxStart.X = Main.screenWidth - regexedBoxSize.X - 4f;
 
                 if (textboxStart.Y + regexedBoxSize.Y + 4f > (float)Main.screenHeight)
                     textboxStart.Y = Main.screenHeight - regexedBoxSize.Y - 4f;
@@ -193,7 +193,7 @@ namespace CalamityMod.UI.ModeIndicator
                 //It'd be great to be able to add a background to it but i don't think i know how to get the position of the text for that.
                 //Also the "get string size" thing breaks with colored lines so :(
                 Utils.DrawInvBG(spriteBatch, new Rectangle((int)textboxStart.X - 10, (int)textboxStart.Y - 10, (int)regexedBoxSize.X + 20, (int)regexedBoxSize.Y + 16), new Color(50, 20, 35) * 0.925f);
-                
+
                 //Add the hover text.
                 Main.LocalPlayer.mouseInterface = true;
                 Main.instance.MouseText(textToDisplay);
@@ -207,20 +207,20 @@ namespace CalamityMod.UI.ModeIndicator
             if (MouseScreenArea.Intersects(MainClickArea))
             {
                 //Display the first non-none difficulty by default
-                string modeToDisplay = Difficulties[1].Name.ToString();
-                bool anyActiveMode = false;
+                string modeToDisplay = Main.getGoodWorld && Difficulties[0].FTWName is not null ? Difficulties[0].FTWName.ToString() : Difficulties[1].Name.ToString();
+                bool anyActiveMode = Main.getGoodWorld ? true : false;
 
                 for (int i = 1; i < Difficulties.Count; i++)
                 {
                     if (GetCurrentDifficulty == Difficulties[i])
                     {
-                        modeToDisplay = Difficulties[i].Name.ToString();
+                        modeToDisplay = Main.getGoodWorld && Difficulties[i].FTWName is not null ? Difficulties[i].FTWName.ToString() : Difficulties[i].Name.ToString();
                         anyActiveMode = true;
                     }
                 }
-                string modeStr = CalamityUtils.GetTextValue("UI.ModeAppend");
+                string modeStr = CalamityUtils.GetText("UI.ModeAppend").Format(modeToDisplay);
                 string activeText = CalamityUtils.GetTextValue("UI." + (anyActiveMode ? "Active" : "NotActive"));
-                text = CalamityUtils.GetText("UI.DifficultyStatusText").WithFormatArgs(modeToDisplay + modeStr, activeText.ToLower());
+                text = CalamityUtils.GetText("UI.DifficultyStatusText").WithFormatArgs(modeStr, activeText.ToLower());
             }
         }
 
@@ -229,12 +229,7 @@ namespace CalamityMod.UI.ModeIndicator
         {
             locked = false;
             text = CalamityUtils.GetText("UI.DifficultyClickText");
-            if (!Main.expertMode && GetCurrentDifficulty == Difficulties[0])
-            {
-                locked = true;
-                text = CalamityUtils.GetText("UI.ExpertDifficultyLock");
-            }
-            else if (CalamityPlayer.areThereAnyDamnBosses || BossRushEvent.BossRushActive)
+            if (CalamityPlayer.areThereAnyDamnBosses || BossRushEvent.BossRushActive)
             {
                 locked = true;
                 text = CalamityUtils.GetText("UI.ChangingTheRules");
@@ -303,11 +298,9 @@ namespace CalamityMod.UI.ModeIndicator
         public static void ManageHexIcons(SpriteBatch spriteBatch, out string text)
         {
             int tiers = DifficultyTiers.Count();
-            float barLength = 60 * tiers * BarExpansionProgress;
+            float barLength = 90 * tiers * BarExpansionProgress;
             float progress = menuOpen ? 1 - menuOpenTransitionTime / (float)MenuAnimLength : menuOpenTransitionTime / (float)MenuAnimLength;
             Vector2 basePosition = DrawCenter + (barLength / (float)(tiers + 1f)) * Vector2.UnitY;
-
-            Texture2D outlineTexture = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicatorOutline").Value;
 
             text = string.Empty;
             bool modeHovered = false;
@@ -322,7 +315,7 @@ namespace CalamityMod.UI.ModeIndicator
                 for (int j = 0; j < modesAtTier; j++)
                 {
                     DifficultyMode mode = DifficultyTiers[i][j];
-                    Texture2D hexIcon = mode.Texture.Value;
+                    Texture2D hexIcon = mode.Enabled ? mode.Texture.Value : mode.TextureDisabled.Value;
                     Vector2 hexIconSize = hexIcon.Size();
 
                     // Get position.
@@ -332,7 +325,7 @@ namespace CalamityMod.UI.ModeIndicator
 
                     bool hovered = MouseScreenArea.Intersects(Utils.CenteredRectangle(iconPosition, hexIconSize));
 
-                    float usedOpacity = mode.Enabled ? 0.85f : 0.55f;
+                    float usedOpacity = 0.85f;
                     if (hovered)
                         usedOpacity = MathHelper.Lerp(usedOpacity, 1f, 0.7f);
 
@@ -340,6 +333,7 @@ namespace CalamityMod.UI.ModeIndicator
                     if (mode == GetCurrentDifficulty)
                     {
                         usedOpacity = 1f;
+                        Texture2D outlineTexture = mode.OutlineTexture.Value;
                         spriteBatch.Draw(outlineTexture, iconPosition, null, mode.ChatTextColor * progressMult, 0f, outlineTexture.Size() * 0.5f, 1f, SpriteEffects.None, 0f);
                     }
 
@@ -354,8 +348,9 @@ namespace CalamityMod.UI.ModeIndicator
                         modeHovered = true;
 
                         text = GetDifficultyText(mode);
+
                         if (ClickingMouse)
-                            SwitchToDifficulty(mode);
+                            SwitchToDifficulty(mode, broadcast: true);
                     }
                 }
             }
@@ -368,16 +363,17 @@ namespace CalamityMod.UI.ModeIndicator
         {
             Texture2D lockTexture = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicatorLock").Value;
             float rotationShift = lockClickTime == 0 ? 0f : (float)Math.Sin((1 - lockClickTime / (float)LockAnimLength) * MathHelper.TwoPi * 2f) * 0.5f * (lockClickTime / (float)LockAnimLength);
-            spriteBatch.Draw(lockTexture, DrawCenter + Vector2.UnitY * 12 * MainIconScale, null, Color.White, 0f + rotationShift, lockTexture.Size() * 0.5f, LockShakeScale * MainIconScale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(lockTexture, DrawCenter + Vector2.UnitY * 24 * MainIconScale, null, Color.White, 0f + rotationShift, lockTexture.Size() * 0.5f, LockShakeScale * MainIconScale, SpriteEffects.None, 0f);
         }
         #endregion
 
         #region Difficulty toggling
         public static string GetDifficultyText(DifficultyMode mode)
         {
-            LocalizedText preface = mode.Name;
+            bool useFTWName = mode.FTWName is not null && Main.getGoodWorld;
+            LocalizedText preface = useFTWName ? mode.FTWName : mode.Name;
             if (mode == GetCurrentDifficulty)
-                preface = CalamityUtils.GetText("UI.CurrentlySelected").WithFormatArgs(mode.Name.ToString());
+                preface = CalamityUtils.GetText("UI.CurrentlySelected").WithFormatArgs(useFTWName ? mode.FTWName.ToString() : mode.Name.ToString());
 
             string text = "\n" + mode.ShortDescription.ToString();
 
@@ -385,7 +381,7 @@ namespace CalamityMod.UI.ModeIndicator
             if (mode.ExpandedDescription != LocalizedText.Empty)
             {
                 // Show the description either if the player is holding shift.
-                if (Main.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift))
+                if (Main.keyState.PressingShift())
                     text += "\n" + mode.ExpandedDescription.ToString();
 
                 else
@@ -395,15 +391,21 @@ namespace CalamityMod.UI.ModeIndicator
             return preface.ToString() + text;
         }
 
-        public static void SwitchToDifficulty(DifficultyMode mode)
+        public static void SwitchToDifficulty(DifficultyMode mode, bool broadcast)
         {
             //No swap on server (although this doesn't matter anymore since it's not an item but dnc.
             //No swap if the requested difficulty is the same as the current one.
             if (mode == GetCurrentDifficulty)
                 return;
 
+            // This has to be put before difficulties change as to not disrupt GetCurrentDifficulty
+            BroadcastFormattedText("Mods.CalamityMod.UI.DifficultySwitch", Color.White, Main.getGoodWorld && GetCurrentDifficulty.FTWTextColor is not null ? GetCurrentDifficulty.FTWTextColor.Value.Hex3() : GetCurrentDifficulty.ChatTextColor.Hex3(), Main.getGoodWorld && GetCurrentDifficulty.FTWName is not null ? GetCurrentDifficulty.FTWName : GetCurrentDifficulty.Name
+            , Main.getGoodWorld && GetCurrentDifficulty.FTWTextColor is not null ? mode.FTWTextColor.Value.Hex3() : mode.ChatTextColor.Hex3(), Main.getGoodWorld && GetCurrentDifficulty.FTWName is not null ? mode.FTWName : mode.Name);
+
             // Todo, maybe in the future having a way to have multiple difficulty options on the same tier that can coexist, and it works in branching pathes? Not very necessary for cal & addons.
             // But would be super useful so other mods can let their own difficulties go there.
+
+            DifficultyModeSystem._newGameModeID = mode.BackBoneGameModeID;
 
             // Disable difficulties.
             for (int i = 0; i < Difficulties.Count; i++)
@@ -412,12 +414,7 @@ namespace CalamityMod.UI.ModeIndicator
                 if (Difficulties[i]._difficultyTier >= mode._difficultyTier && Difficulties[i] != mode)
                 {
                     if (Difficulties[i].Enabled)
-                    {
-                        if (Difficulties[i].DeactivationTextKey != string.Empty)
-                            DisplayLocalizedText(Difficulties[i].DeactivationTextKey, Difficulties[i].ChatTextColor);
-
                         Difficulties[i].Enabled = false;
-                    }
                 }
             }
 
@@ -436,21 +433,28 @@ namespace CalamityMod.UI.ModeIndicator
                     for (int j = 0; j < DifficultyTiers[i].Length; j++)
                         DifficultyTiers[i][j].Enabled = false;
 
-                    // Enable the one favored by the mode.
-                    DifficultyTiers[i][mode.FavoredDifficultyAtTier(i)].Enabled = true;
+                    // Enable the ones favored by the mode.
+                    for (int j = 0; j < mode.FavoredDifficultyAtTier(i).Length; j++)
+                    {
+                        DifficultyTiers[i][mode.FavoredDifficultyAtTier(i)[j]].Enabled = true;
+                    }
                 }
             }
-
-            if (mode.ActivationTextKey != string.Empty)
-                DisplayLocalizedText(mode.ActivationTextKey, mode.ChatTextColor);
 
             mode.Enabled = true;
 
             SoundEngine.PlaySound(mode.ActivationSound);
-            CalamityNetcode.SyncCalamityWorldDifficulties(Main.myPlayer);
 
-            menuOpen = false;
-            menuOpenTransitionTime = MenuAnimLength;
+            if (Main.netMode != NetmodeID.SinglePlayer && broadcast)
+            {
+                SwitchToDifficultyPacket.Send(mode);
+            }
+
+            if (menuOpen)
+            {
+                menuOpen = false;
+                menuOpenTransitionTime = MenuAnimLength;
+            }
         }
 
         #endregion

@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Materials
 {
@@ -19,8 +19,8 @@ namespace CalamityMod.Items.Materials
         {
             Item.width = 16;
             Item.height = 18;
-            Item.maxStack = 9999;
-            Item.value = Item.sellPrice(silver: 6);
+            Item.maxStack = Item.CommonMaxStack;
+            Item.value = Item.sellPrice(copper: 10);
             Item.rare = ItemRarityID.Blue;
         }
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)

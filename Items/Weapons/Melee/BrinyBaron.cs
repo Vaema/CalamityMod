@@ -1,4 +1,4 @@
-﻿using Terraria.DataStructures;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
         public override void SetDefaults()
@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item1;
 
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
         }
 
@@ -59,17 +59,18 @@ namespace CalamityMod.Items.Weapons.Melee
                 type = ModContent.ProjectileType<Razorwind>();
             }
 
-            else 
+            else
                 type = ProjectileID.None;
         }
 
         public override void MeleeEffects(Player player, Rectangle hitbox)
         {
             if (Main.rand.NextBool(3))
-                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 187, 0f, 0f, 100, new Color(53, Main.DiscoG, 255));
+                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.Flare_Blue, 0f, 0f, 100, new Color(53, Main.DiscoG, 255));
         }
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(ModContent.BuffType<CrushDepth>(), 180);
             var source = player.GetSource_ItemUse(Item);
             if (player.ownedProjectileCounts[ModContent.ProjectileType<BrinySpout>()] == 0)
                 Projectile.NewProjectile(source, target.Center, Vector2.Zero, ModContent.ProjectileType<BrinyTyphoonBubble>(), Item.damage, Item.knockBack, player.whoAmI);
@@ -77,10 +78,11 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
         {
+            target.AddBuff(ModContent.BuffType<CrushDepth>(), 180);
             var source = player.GetSource_ItemUse(Item);
             if (player.ownedProjectileCounts[ModContent.ProjectileType<BrinySpout>()] == 0)
                 Projectile.NewProjectile(source, target.Center, Vector2.Zero, ModContent.ProjectileType<BrinyTyphoonBubble>(), Item.damage, Item.knockBack, player.whoAmI);
-        }   
+        }
 
         public override void UseAnimation(Player player)
         {

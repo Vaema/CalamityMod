@@ -5,13 +5,13 @@ using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Projectiles.Enemy;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
-using Terraria.GameContent;
+using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
-using Terraria.Audio;
 
 namespace CalamityMod.NPCs.Abyss
 {
@@ -22,10 +22,15 @@ namespace CalamityMod.NPCs.Abyss
         public bool unpuffing = false;
         public int puffTimer = 0;
         public int puffingTimer = 0;
+        public static Asset<Texture2D> GlowTexture;
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 11;
+            Main.npcFrameCount[Type] = 11;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -39,7 +44,7 @@ namespace CalamityMod.NPCs.Abyss
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 0, 30, 0);
+            NPC.value = Item.buyPrice(silver: 30);
             NPC.HitSound = SoundID.NPCHit23;
             NPC.DeathSound = SoundID.NPCDeath28;
             Banner = NPC.type;
@@ -136,7 +141,7 @@ namespace CalamityMod.NPCs.Abyss
             SoundEngine.PlaySound(SoundID.NPCDeath14, NPC.Center);
             if (Main.netMode != NetmodeID.MultiplayerClient && puffedUp)
             {
-                int damageBoom = 45;
+                int damageBoom = Main.masterMode ? 30 : Main.expertMode ? 35 : 45;
                 int projectileType = ModContent.ProjectileType<PufferExplosion>();
                 Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center.X, NPC.Center.Y, 0, 0, projectileType, damageBoom, 0f, Main.myPlayer, 0f, 0f);
             }
@@ -147,11 +152,9 @@ namespace CalamityMod.NPCs.Abyss
         {
             if (!NPC.IsABestiaryIconDummy)
             {
-                Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/NPCs/Abyss/ChaoticPufferGlow").Value;
-
                 var effects = NPC.direction == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
-                Main.EntitySpriteDraw(tex, NPC.Center - Main.screenPosition + new Vector2(0, NPC.gfxOffY + 4), 
+                Main.EntitySpriteDraw(GlowTexture.Value, NPC.Center - Main.screenPosition + new Vector2(0, NPC.gfxOffY + 4),
                 NPC.frame, Color.White * 0.5f, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, effects, 0);
             }
         }
@@ -244,7 +247,7 @@ namespace CalamityMod.NPCs.Abyss
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 90);
+                target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 180);
 
             if (puffedUp)
             {

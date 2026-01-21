@@ -1,8 +1,8 @@
+﻿using CalamityMod.Buffs.StatDebuffs;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Buffs.StatDebuffs;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.Ranged
             int splash = 0;
             while (splash < 4)
             {
-                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 68, -Projectile.velocity.X * 0.15f, -Projectile.velocity.Y * 0.10f, 150, default, 0.9f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.BlueCrystalShard, -Projectile.velocity.X * 0.15f, -Projectile.velocity.Y * 0.10f, 150, default, 0.9f);
                 splash += 1;
             }
         }

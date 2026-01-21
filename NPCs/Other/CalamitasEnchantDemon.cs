@@ -14,7 +14,7 @@ namespace CalamityMod.NPCs.Other
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            Main.npcFrameCount[NPC.type] = 5;
+            Main.npcFrameCount[Type] = 5;
         }
 
         public override void SetDefaults()
@@ -30,10 +30,9 @@ namespace CalamityMod.NPCs.Other
             NPC.DeathSound = SoundID.NPCDeath18;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.value = 0f;
             NPC.knockBackResist = 0f;
             NPC.netAlways = true;
-            NPC.aiStyle = 0;
+            NPC.aiStyle = NPCAIStyleID.FaceClosestPlayer;
             NPC.Calamity().DoesNotDisappearInBossRush = true;
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToCold = true;
@@ -86,7 +85,7 @@ namespace CalamityMod.NPCs.Other
             // Create some fade dust.
             for (int i = 0; i < 3; i++)
             {
-                Dust magic = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, 223);
+                Dust magic = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.FireworkFountain_Pink);
                 magic.velocity = -Vector2.UnitY * Main.rand.NextFloat(2.8f, 3.5f);
                 magic.scale = Main.rand.NextFloat(1f, 1.125f);
                 magic.fadeIn = 0.4f;
@@ -102,7 +101,7 @@ namespace CalamityMod.NPCs.Other
             {
                 for (int i = 0; i < 50; i++)
                 {
-                    Dust magic = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, 223);
+                    Dust magic = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.FireworkFountain_Pink);
                     magic.velocity = -Vector2.UnitY * Main.rand.NextFloat(2.8f, 3.5f);
                     magic.scale = Main.rand.NextFloat(1f, 1.125f);
                     magic.fadeIn = 0.7f;
@@ -142,7 +141,7 @@ namespace CalamityMod.NPCs.Other
             if (NPC.frameCounter % 5f == 4f)
                 NPC.frame.Y += frameHeight;
 
-            if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[NPC.type])
+            if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[Type])
                 NPC.frame.Y = 0;
         }
 

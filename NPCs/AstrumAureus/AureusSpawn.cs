@@ -1,49 +1,52 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.Projectiles.Boss;
+using CalamityMod.Projectiles.Typeless;
+using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Projectiles.Typeless;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.NPCs.AstrumAureus
 {
     public class AureusSpawn : ModNPC
     {
+        public static Asset<Texture2D> GlowTexture;
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            Main.npcFrameCount[NPC.type] = 4;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            Main.npcFrameCount[Type] = 4;
+            NPCID.Sets.TrailingMode[Type] = 1;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 60; // 120
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.GetNPCDamage();
             NPC.width = 90;
             NPC.height = 60;
             NPC.Opacity = 0f;
             NPC.defense = 10;
             NPC.lifeMax = 5000;
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.knockBackResist = 0f;
             NPC.dontTakeDamage = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.canGhostHeal = false;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.Calamity().VulnerableToHeat = true;
@@ -110,24 +113,21 @@ namespace CalamityMod.NPCs.AstrumAureus
 
             // Push away from each other
             float pushVelocity = 0.5f;
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC n in Main.ActiveNPCs)
             {
-                if (Main.npc[i].active)
+                if (n.whoAmI != NPC.whoAmI && n.type == NPC.type)
                 {
-                    if (i != NPC.whoAmI && Main.npc[i].type == NPC.type)
+                    if (Vector2.Distance(NPC.Center, n.Center) < (160f + 30f * (NPC.scale - 1f)))
                     {
-                        if (Vector2.Distance(NPC.Center, Main.npc[i].Center) < (160f + 30f * (NPC.scale - 1f)))
-                        {
-                            if (NPC.position.X < Main.npc[i].position.X)
-                                NPC.velocity.X = NPC.velocity.X - pushVelocity;
-                            else
-                                NPC.velocity.X = NPC.velocity.X + pushVelocity;
+                        if (NPC.position.X < n.position.X)
+                            NPC.velocity.X = NPC.velocity.X - pushVelocity;
+                        else
+                            NPC.velocity.X = NPC.velocity.X + pushVelocity;
 
-                            if (NPC.position.Y < Main.npc[i].position.Y)
-                                NPC.velocity.Y = NPC.velocity.Y - pushVelocity;
-                            else
-                                NPC.velocity.Y = NPC.velocity.Y + pushVelocity;
-                        }
+                        if (NPC.position.Y < n.position.Y)
+                            NPC.velocity.Y = NPC.velocity.Y - pushVelocity;
+                        else
+                            NPC.velocity.Y = NPC.velocity.Y + pushVelocity;
                     }
                 }
             }
@@ -136,7 +136,7 @@ namespace CalamityMod.NPCs.AstrumAureus
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
             // Phase 2 check
-            bool phase2 = lifeRatio <= 0.5f || Main.dayTime;
+            bool phase2 = lifeRatio <= 0.5f || Main.IsItDay();
 
             // Charge towards the target and explode after some time
             int inertia = 30;
@@ -167,7 +167,7 @@ namespace CalamityMod.NPCs.AstrumAureus
 
                     for (int j = 0; j < 10; j++)
                     {
-                        int dust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1f);
+                        int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1f);
                         Main.dust[dust].velocity *= 1.66f;
                         if (Main.rand.NextBool())
                         {
@@ -179,10 +179,10 @@ namespace CalamityMod.NPCs.AstrumAureus
 
                     for (int k = 0; k < 20; k++)
                     {
-                        int dust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 173, 0f, 0f, 100, default, 2f);
+                        int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 2f);
                         Main.dust[dust].noGravity = true;
                         Main.dust[dust].velocity *= 2f;
-                        dust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1f);
+                        dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1f);
                         Main.dust[dust].velocity *= 1.33f;
                         Main.dust[dust].noGravity = true;
                     }
@@ -202,7 +202,7 @@ namespace CalamityMod.NPCs.AstrumAureus
                 Point point = NPC.Center.ToTileCoordinates();
                 Tile tileSafely = Framing.GetTileSafely(point);
                 bool explodeOnCollision = tileSafely.HasUnactuatedTile && Main.tileSolid[tileSafely.TileType] && !Main.tileSolidTop[tileSafely.TileType] && !TileID.Sets.Platforms[tileSafely.TileType];
-                bool explodeOnAureus = distanceFromAureus < (180f + 30f * (NPC.scale - 1f)) && !Main.dayTime;
+                bool explodeOnAureus = distanceFromAureus < (180f + 30f * (NPC.scale - 1f)) && !Main.IsItDay();
                 if (vector.Length() < (60f + 30f * (NPC.scale - 1f)) || explodeOnCollision || explodeOnAureus || NPC.Calamity().newAI[0] >= enlargeDuration)
                 {
                     NPC.life = 0;
@@ -239,12 +239,12 @@ namespace CalamityMod.NPCs.AstrumAureus
             if (NPC.ai[0] >= 60f)
                 NPC.DrawBackglow(Color.Lerp(Color.Cyan, Color.Orange, (float)Math.Sin(Main.GlobalTimeWrappedHourly) / 2f + 0.5f) with { A = 0 }, 2f + 8f * ((float)Math.Sin(Main.GlobalTimeWrappedHourly * MathHelper.TwoPi) + 1f), spriteEffects, NPC.frame, screenPos);
 
-            Texture2D texture2D15 = TextureAssets.Npc[NPC.type].Value;
-            Vector2 originalDrawSize = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2);
+            Texture2D texture2D15 = TextureAssets.Npc[Type].Value;
+            Vector2 originalDrawSize = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2);
             Color whiteColor = Color.White;
             int afterimageAmt = 10;
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 1; i < afterimageAmt; i += 2)
                 {
@@ -253,21 +253,21 @@ namespace CalamityMod.NPCs.AstrumAureus
                     afterimageColor = NPC.GetAlpha(afterimageColor);
                     afterimageColor *= (afterimageAmt - i) / 15f;
                     Vector2 afterimagePos = NPC.oldPos[i] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                    afterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                    afterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                     afterimagePos += originalDrawSize * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                     spriteBatch.Draw(texture2D15, afterimagePos, NPC.frame, afterimageColor, NPC.rotation, originalDrawSize, NPC.scale, spriteEffects, 0f);
                 }
             }
 
             Vector2 drawLocation = NPC.Center - screenPos;
-            drawLocation -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+            drawLocation -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
             drawLocation += originalDrawSize * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, originalDrawSize, NPC.scale, spriteEffects, 0f);
 
-            texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/AstrumAureus/AureusSpawnGlow").Value;
+            texture2D15 = GlowTexture.Value;
             Color afterimageColorLerp = Color.Lerp(Color.White, Color.Orange, 0.5f) * NPC.Opacity;
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int j = 1; j < afterimageAmt; j++)
                 {
@@ -275,7 +275,7 @@ namespace CalamityMod.NPCs.AstrumAureus
                     secondAfterimageColor = Color.Lerp(secondAfterimageColor, whiteColor, 0.5f);
                     secondAfterimageColor *= (afterimageAmt - j) / 15f;
                     Vector2 secondAfterimagePos = NPC.oldPos[j] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                    secondAfterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                    secondAfterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                     secondAfterimagePos += originalDrawSize * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                     spriteBatch.Draw(texture2D15, secondAfterimagePos, NPC.frame, secondAfterimageColor, NPC.rotation, originalDrawSize, NPC.scale, spriteEffects, 0f);
                 }
@@ -292,7 +292,7 @@ namespace CalamityMod.NPCs.AstrumAureus
                 NPC.Opacity = 1f;
 
             NPC.frameCounter += 0.15f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
@@ -308,11 +308,10 @@ namespace CalamityMod.NPCs.AstrumAureus
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    int totalProjectiles = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 36 : (3 + (int)((NPC.scale - 1f) * 3));
+                    int totalProjectiles = 3 + (int)((NPC.scale - 1f) * 3);
                     double radians = MathHelper.TwoPi / totalProjectiles;
                     int type = ModContent.ProjectileType<AstralLaser>();
-                    int damage2 = NPC.GetProjectileDamage(type);
-                    float velocity = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 10f : 6f;
+                    float velocity = 6f;
                     double angleA = radians * 0.5;
                     double angleB = MathHelper.ToRadians(90f) - angleA;
                     float velocityX = (float)(velocity * Math.Sin(angleA) / Math.Sin(angleB));
@@ -320,7 +319,7 @@ namespace CalamityMod.NPCs.AstrumAureus
                     for (int k = 0; k < totalProjectiles; k++)
                     {
                         Vector2 vector255 = spinningPoint.RotatedBy(radians * k);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, vector255, type, damage2, 0f, Main.myPlayer);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, vector255, type, AstrumAureus.LaserDamage, 0f, Main.myPlayer);
                     }
                 }
             }
@@ -330,14 +329,14 @@ namespace CalamityMod.NPCs.AstrumAureus
                 return;
 
             // Damage Aureus for a percentage of its HP if the spawn explodes on or near it
-            if (Main.netMode != NetmodeID.MultiplayerClient && (Main.npc[CalamityGlobalNPC.astrumAureus].Center - NPC.Center).Length() < (200f + 30f * (NPC.scale - 1f)) && !Main.dayTime)
-                Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), Main.npc[CalamityGlobalNPC.astrumAureus].Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), (int)(Main.npc[CalamityGlobalNPC.astrumAureus].lifeMax / 200 * NPC.scale), 0f, Main.myPlayer, Main.npc[CalamityGlobalNPC.astrumAureus].whoAmI);
+            if (Main.netMode != NetmodeID.MultiplayerClient && (Main.npc[CalamityGlobalNPC.astrumAureus].Center - NPC.Center).Length() < (200f + 30f * (NPC.scale - 1f)) && !Main.IsItDay())
+                Projectile.NewProjectile(NPC.GetSource_FromAI(), Main.npc[CalamityGlobalNPC.astrumAureus].Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), (int)(Main.npc[CalamityGlobalNPC.astrumAureus].lifeMax / 200 * NPC.scale), 0f, Main.myPlayer, Main.npc[CalamityGlobalNPC.astrumAureus].whoAmI);
         }
 
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 3; k++)
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 173, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.ShadowbeamStaff, hit.HitDirection, -1f, 0, default, 1f);
 
             if (NPC.life <= 0)
             {
@@ -345,14 +344,14 @@ namespace CalamityMod.NPCs.AstrumAureus
 
                 NPC.position.X = NPC.position.X + NPC.width / 2;
                 NPC.position.Y = NPC.position.Y + NPC.height / 2;
-                NPC.damage = (int)(NPC.defDamage * NPC.scale);
+                NPC.damage = (int)Math.Round(NPC.defDamage * (double)NPC.scale);
                 NPC.width = NPC.height = (int)(216 * NPC.scale);
                 NPC.position.X = NPC.position.X - NPC.width / 2;
                 NPC.position.Y = NPC.position.Y - NPC.height / 2;
 
                 for (int r = 0; r < 30; r++)
                 {
-                    int astralDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1f);
+                    int astralDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1f);
                     Main.dust[astralDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -364,10 +363,10 @@ namespace CalamityMod.NPCs.AstrumAureus
 
                 for (int s = 0; s < 60; s++)
                 {
-                    int astralDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 173, 0f, 0f, 100, default, 2f);
+                    int astralDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 2f);
                     Main.dust[astralDust2].noGravity = true;
                     Main.dust[astralDust2].velocity *= 5f;
-                    astralDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1f);
+                    astralDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1f);
                     Main.dust[astralDust2].velocity *= 2f;
                     Main.dust[astralDust2].noGravity = true;
                 }
@@ -379,7 +378,7 @@ namespace CalamityMod.NPCs.AstrumAureus
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             int debuffType = Main.zenithWorld ? ModContent.BuffType<GodSlayerInferno>() : ModContent.BuffType<AstralInfectionDebuff>();
-            target.AddBuff(debuffType, (int)(75 * NPC.scale), true);
+            target.AddBuff(debuffType, (int)(120 * NPC.scale));
         }
     }
 }

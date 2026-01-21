@@ -1,5 +1,4 @@
-﻿using Terraria;
-using Terraria.ID;
+﻿using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Tools
@@ -20,7 +19,7 @@ namespace CalamityMod.Items.Tools
             Item.DamageType = DamageClass.Melee;
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
@@ -30,7 +29,7 @@ namespace CalamityMod.Items.Tools
         {
             CreateRecipe().
                 AddRecipeGroup("AnySilverBar", 18).
-                AddIngredient(ItemID.Wood, 18).
+                AddIngredient(ItemID.RichMahogany, 18).
                 AddTile(TileID.Anvils).
                 Register();
         }

@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Brimflame
@@ -9,10 +10,14 @@ namespace CalamityMod.Items.Armor.Brimflame
     public class BrimflameRobes : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
+
+        public static float MagicDamageBoost = 0.07f;
+        public static int MagicCritBoost = 7; // NOTE: Tooltip shares this number with damage % as they're equal
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MagicDamageBoost.ToPercent());
+
         public override void SetStaticDefaults()
         {
-
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             int equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
@@ -27,13 +32,13 @@ namespace CalamityMod.Items.Armor.Brimflame
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
-            Item.defense = 15;
+            Item.defense = 16;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<MagicDamageClass>() += 0.05f;
-            player.GetCritChance<MagicDamageClass>() += 5;
+            player.GetDamage<MagicDamageClass>() += MagicDamageBoost;
+            player.GetCritChance<MagicDamageClass>() += MagicCritBoost;
         }
 
         public override void AddRecipes()
@@ -42,6 +47,7 @@ namespace CalamityMod.Items.Armor.Brimflame
                 AddIngredient<AshesofCalamity>(8).
                 AddIngredient<UnholyCore>(4).
                 AddTile(TileID.MythrilAnvil).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<BrimflameBoots>()).
                 Register();
         }
     }

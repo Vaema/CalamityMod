@@ -1,6 +1,6 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -18,10 +18,10 @@ namespace CalamityMod.Projectiles.Pets
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 22;
-            Main.projPet[Projectile.type] = true;
+            Main.projFrames[Type] = 22;
+            Main.projPet[Type] = true;
 
-            ProjectileID.Sets.CharacterPreviewAnimations[Projectile.type] = ProjectileID.Sets.SimpleLoop(0, 13, 6)
+            ProjectileID.Sets.CharacterPreviewAnimations[Type] = ProjectileID.Sets.SimpleLoop(0, 13, 6)
             .WithOffset(-20f, 0f).WithSpriteDirection(-1).WhenNotSelected(0, 0);
         }
 
@@ -240,7 +240,7 @@ namespace CalamityMod.Projectiles.Pets
             {
                 float flyingSpeed = 0.3f;
                 Projectile.tileCollide = false;
-                Vector2 flyDirection = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
+                Vector2 flyDirection = Projectile.Center;
                 float horiPos = Main.player[Projectile.owner].position.X + (float)(Main.player[Projectile.owner].width / 2) - flyDirection.X;
                 float vertiPos = Main.player[Projectile.owner].position.Y + (float)(Main.player[Projectile.owner].height / 2) - flyDirection.Y;
                 vertiPos += (float)Main.rand.Next(-10, 21);

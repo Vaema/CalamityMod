@@ -1,13 +1,13 @@
-﻿using CalamityMod.Items.Placeables.FurnitureSacrilegious;
+﻿using System;
+using CalamityMod.Items.Placeables.FurnitureSacrilegious;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent.ObjectInteractions;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -15,6 +15,8 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
 {
     public class MonolithOfTheAccursedTile : ModTile
     {
+        public Asset<Texture2D> IconRightTexture;
+
         public override void SetStaticDefaults()
         {
             Main.tileLighted[Type] = true;
@@ -27,11 +29,13 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
             {
                 16,
                 16,
-				16
+                16
             };
             TileObjectData.newTile.Origin = new Point16(0, 1);
             TileObjectData.newTile.UsesCustomCanPlace = true;
             TileObjectData.newTile.LavaDeath = false;
+            TileObjectData.newTile.StyleHorizontal = true;
+            TileObjectData.newTile.StyleMultiplier = 3;
             TileObjectData.addTile(Type);
 
             TileID.Sets.HasOutlines[Type] = true;
@@ -43,8 +47,8 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 60, 0f, 0f, 1, new Color(255, 255, 255), 1f);
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 8, 0f, 0f, 1, new Color(100, 100, 100), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.RedTorch, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Iron, 0f, 0f, 1, new Color(100, 100, 100), 1f);
             return false;
         }
 
@@ -52,9 +56,9 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
         {
             if (Main.tile[i, j].TileFrameX > 36)
             {
-				r = 1.2f;
-				g = 0.2f;
-				b = 0.2f;
+                r = 1.2f;
+                g = 0.2f;
+                b = 0.2f;
             }
             else
             {
@@ -66,8 +70,8 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
 
         private void ToggleMode(int i, int j)
         {
-			int tileX = 2;
-			int tileY = 3;
+            int tileX = 2;
+            int tileY = 3;
 
             int x = i - Main.tile[i, j].TileFrameX / 18 % tileX;
             int y = j - Main.tile[i, j].TileFrameY / 18 % tileY;
@@ -98,30 +102,33 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
                     }
                 }
             }
+
+            if (Main.netMode != NetmodeID.SinglePlayer)
+                NetMessage.SendTileSquare(-1, x, y, tileX, tileY);
         }
 
         public override bool RightClick(int i, int j)
-		{
-			ToggleMode(i, j);
-			SoundEngine.PlaySound(SoundID.MenuTick);
-			return true;
-		}
+        {
+            ToggleMode(i, j);
+            SoundEngine.PlaySound(SoundID.MenuTick);
+            return true;
+        }
 
         public override void HitWire(int i, int j) => ToggleMode(i, j);
 
         public override void NearbyEffects(int i, int j, bool closer)
         {
             if (Main.tile[i, j].TileFrameX < 36)
-				return;
+                return;
 
             Player player = Main.LocalPlayer;
             if (player is null)
                 return;
             if (player.active)
-			{
-				int resetAmt = Main.tile[i, j].TileFrameX < 72 ? 20 : 40;
+            {
+                int resetAmt = Main.tile[i, j].TileFrameX < 72 ? 20 : 40;
                 player.Calamity().monolithAccursedShader = resetAmt;
-			}
+            }
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
@@ -129,33 +136,34 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
             num = fail ? 1 : 3;
         }
 
-        public override void MouseOver(int i, int j) => CalamityUtils.MouseOver(i, j, ModContent.ItemType<MonolithOfTheAccursed>());
+        public override void MouseOver(int i, int j) => FurnitureCommon.MouseOver(i, j, ModContent.ItemType<MonolithOfTheAccursed>());
 
-		// For drawing the floating icon
+        // For drawing the floating icon
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            if (Main.tile[i, j].TileFrameX < 36)
-				return;
+            if (Main.tile[i, j].TileFrameX < 36 || Main.tile[i, j].IsTileActuallyInvisible())
+                return;
 
-			Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureSacrilegious/MonolithOfTheAccursedTile_IconRight").Value;
+            IconRightTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureSacrilegious/MonolithOfTheAccursedTile_IconRight");
+            Texture2D texture = IconRightTexture.Value;
             Tile tile = Main.tile[i, j];
-			int xPos = tile.TileFrameX;
+            int xPos = tile.TileFrameX;
             int yPos = tile.TileFrameY;
 
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
-			float xOffset = Main.tile[i, j].TileFrameX > 70 ? 52f : 16f;
-			Vector2 correction = new Vector2(xOffset , -10f);
+            float xOffset = Main.tile[i, j].TileFrameX > 70 ? 52f : 16f;
+            Vector2 correction = new Vector2(xOffset, -10f);
             float yOffset = (float)Math.Sin(Main.GlobalTimeWrappedHourly * MathHelper.TwoPi / 5f) * 2f;
             Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y + yOffset) + zero + correction;
 
-			Rectangle rect = new Rectangle(xPos, yPos, texture.Width, texture.Height);
-			Color color = new Color(100, 100, 100, 0);
+            Rectangle rect = new Rectangle(xPos, yPos, texture.Width, texture.Height);
+            Color color = new Color(100, 100, 100, 0);
             Vector2 origin = rect.Size() / 2f;
 
             for (int c = 0; c < 5; c++)
             {
-				spriteBatch.Draw(texture, drawOffset, rect, color, 0f, origin, 1f, SpriteEffects.None, 0f);
-			}
-		}
+                spriteBatch.Draw(texture, drawOffset, rect, color, 0f, origin, 1f, SpriteEffects.None, 0f);
+            }
+        }
     }
 }

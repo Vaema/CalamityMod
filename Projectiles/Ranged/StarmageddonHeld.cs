@@ -1,10 +1,8 @@
-﻿using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.Projectiles.Melee;
-using CalamityMod.Projectiles.Typeless;
+﻿using System;
+using System.IO;
+using CalamityMod.Items.Weapons.Ranged;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -21,8 +19,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 8;
-            ProjectileID.Sets.NeedsUUID[Projectile.type] = true;
+            Main.projFrames[Type] = 8;
+            ProjectileID.Sets.NeedsUUID[Type] = true;
         }
 
         public override void SetDefaults()
@@ -67,24 +65,23 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
                 Projectile.frame = 7;
 
             bool timeToFire = noStars && Projectile.frame == 7;
-            bool canFire = player.channel && !player.noItems && !player.CCed;
-            if (!canFire)
+            if (player.CantUseHoldout())
                 Projectile.Kill();
 
             Vector2 playerPosition = player.RotatedRelativePoint(player.MountedCenter, true);
             if (timeToFire && Main.myPlayer == Projectile.owner)
             {
-                if (canFire)
+                if (!player.CantUseHoldout())
                 {
                     SoundEngine.PlaySound(SoundID.Item92, Projectile.Center);
 
                     float shootSpeed = 12f;
-                    int damage = player.GetWeaponDamage(player.ActiveItem());
-                    float knockBack = player.ActiveItem().knockBack;
+                    int damage = player.GetWeaponDamage(player.HeldItem);
+                    float knockBack = player.HeldItem.knockBack;
 
                     Projectile.velocity = Main.screenPosition - playerPosition;
                     Projectile.velocity.X += Main.mouseX;
@@ -156,8 +153,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void PostDraw(Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-            int height = texture.Height / Main.projFrames[Projectile.type];
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int height = texture.Height / Main.projFrames[Type];
             int drawStart = height * Projectile.frame;
             Vector2 origin = Projectile.Size / 2;
             SpriteEffects spriteEffects = SpriteEffects.None;

@@ -1,10 +1,11 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
+using CalamityMod.NPCs.BrimstoneElemental;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Magic
 {
     public class BrimstoneHellfireballFriendly : ModProjectile, ILocalizedModType
@@ -14,9 +15,9 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 6;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 3;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            Main.projFrames[Type] = 6;
+            ProjectileID.Sets.TrailCacheLength[Type] = 3;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -63,19 +64,19 @@ namespace CalamityMod.Projectiles.Magic
 
             if (Projectile.localAI[0] == 0f)
             {
-                SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
+                SoundEngine.PlaySound(BrimstoneElemental.HellfireballSound, Projectile.Center);
                 Projectile.localAI[0] += 1f;
             }
 
             // Speed up as time goes on
-            Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * (Projectile.velocity.Length() + 1.2f);
+            Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * (Projectile.velocity.Length() + 0.25f);
         }
 
         public override void OnKill(int timeLeft)
         {
             if (Projectile.owner == Main.myPlayer)
             {
-                int fire = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<HellfireExplosionFriendly>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                int fire = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<HellfireExplosionFriendly>(), (int)(Projectile.damage * 0.66f), Projectile.knockBack, Projectile.owner);
             }
         }
 
@@ -86,7 +87,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

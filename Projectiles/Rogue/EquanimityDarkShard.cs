@@ -1,14 +1,17 @@
+﻿using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
     public class EquanimityDarkShard : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
+        public override string Texture => "Terraria/Images/Item_527";
         public override void SetDefaults()
         {
             Projectile.width = 12;
@@ -16,72 +19,58 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.alpha = 0;
-            Projectile.penetrate = 1;
+            Projectile.penetrate = 4;
             Projectile.tileCollide = true;
-            Projectile.timeLeft = 120;
+            Projectile.timeLeft = 45;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 10;
             Projectile.DamageType = RogueDamageClass.Instance;
         }
 
         public override void AI()
         {
-            Projectile.velocity.Y += 0.1f;
-            Projectile.rotation += 0.4f * Projectile.direction;
-            if (Projectile.timeLeft < 130)
+            Projectile.rotation += (Math.Abs(Projectile.velocity.X) + Math.Abs(Projectile.velocity.Y)) * 0.03f;
+            Projectile.velocity *= 0.94f;
+            if (Projectile.ai[0] == 1f)
             {
-                float minDist = 999f;
-                int index = 0;
-                for (int i = 0; i < Main.npc.Length; i++)
-                {
-                    NPC npc = Main.npc[i];
-                    if (npc.CanBeChasedBy(Projectile, false))
-                    {
-                        float dist = (Projectile.Center - npc.Center).Length();
-                        if (dist < minDist)
-                        {
-                            minDist = dist;
-                            index = i;
-                        }
-                    }
-                }
-
-                Vector2 velocityNew;
-                if (minDist < 999f)
-                {
-                    velocityNew = Main.npc[index].Center - Projectile.Center;
-                    velocityNew.Normalize();
-                    Projectile.velocity += velocityNew;
-                    if (Projectile.velocity.Length() > 10f)
-                    {
-                        Projectile.velocity.Normalize();
-                        Projectile.velocity *= 10f;
-                    }
-                }
-            }
-
-            if (Projectile.timeLeft < 51)
-            {
-                Projectile.alpha += 5;
+                Projectile.penetrate = -1;
             }
         }
-
-        public override bool? CanHitNPC(NPC target)
-        {
-            if (Projectile.timeLeft < 130)
-            {
-                return null;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             Collision.HitTiles(Projectile.position + Projectile.velocity, Projectile.velocity, Projectile.width, Projectile.height);
             SoundEngine.PlaySound(SoundID.Dig, Projectile.position);
             Projectile.Kill();
             return true;
+        }
+        public override void OnKill(int timeLeft)
+        {
+            if (Projectile.ai[0] == 1f)
+            {
+
+            }
+            for (int i = 0; i < 16; i++)
+            {
+                int dust = Dust.NewDust(Projectile.Center - Projectile.velocity / 2f, 0, 0, DustID.Asphalt, 0f, 0f, 100, default, 1.5f);
+                Main.dust[dust].velocity *= 0.6f;
+                Main.dust[dust].noGravity = true;
+            }
+        }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Texture2D Texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            if (Projectile.ai[0] == 1f)
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    Main.EntitySpriteDraw(Texture, Projectile.Center - Main.screenPosition, null, Color.Indigo with { A = 0 }, Projectile.rotation, Texture.Size() * 0.5f, Projectile.scale * 1.5f, SpriteEffects.None);
+                }
+            }
+            Rectangle frame = Texture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
+            Vector2 origin = frame.Size() * 0.5f;
+            Main.EntitySpriteDraw(Texture, Projectile.Center - Main.screenPosition, frame, Projectile.GetAlpha(lightColor), Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
+            return false;
         }
     }
 }

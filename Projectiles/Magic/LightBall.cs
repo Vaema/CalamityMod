@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Magic
 {
     public class LightBall : ModProjectile, ILocalizedModType
@@ -24,7 +24,7 @@ namespace CalamityMod.Projectiles.Magic
             Lighting.AddLight(Projectile.Center, 0.5f, 0.5f, 0.5f);
             Projectile.velocity.X *= 0.995f;
             Projectile.velocity.Y *= 0.995f;
-            Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 244, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+            Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.CopperCoin, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
         }
 
         public override Color? GetAlpha(Color lightColor)
@@ -34,7 +34,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
             Projectile.position.X = Projectile.position.X + (float)(Projectile.width / 2);
             Projectile.position.Y = Projectile.position.Y + (float)(Projectile.height / 2);
             Projectile.width = 300;
@@ -44,7 +44,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, 0f, 0f, ModContent.ProjectileType<LightBallExplosion>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0f);
             for (int i = 0; i < 10; i++)
             {
-                int lightDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 1.2f);
+                int lightDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 1.2f);
                 Main.dust[lightDust].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -54,10 +54,10 @@ namespace CalamityMod.Projectiles.Magic
             }
             for (int j = 0; j < 20; j++)
             {
-                int lightDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 1.7f);
+                int lightDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 1.7f);
                 Main.dust[lightDust2].noGravity = true;
                 Main.dust[lightDust2].velocity *= 5f;
-                lightDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 1f);
+                lightDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 1f);
                 Main.dust[lightDust2].velocity *= 2f;
             }
         }

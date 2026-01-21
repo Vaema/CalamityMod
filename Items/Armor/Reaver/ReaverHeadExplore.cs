@@ -1,10 +1,8 @@
-﻿using CalamityMod.Buffs.Pets;
-using CalamityMod.CalPlayer;
-using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Typeless;
+﻿using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Reaver
@@ -14,19 +12,26 @@ namespace CalamityMod.Items.Armor.Reaver
     public class ReaverHeadExplore : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
+
+        public static float MiningSpeedBoost = 0.2f;
+        public static float PlacementSpeedBoost = 0.5f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MiningSpeedBoost.ToPercent(), PlacementSpeedBoost.ToPercent());
+
+        // Set Bonus
+        public static int SetBonusAggroReduction = 400;
+        public static int SetBonusTileRangeBoost = 7;
+        public static int SetBonusGrabRangeBoost = 246; // (2.625 + 15.375 = 18 tiles)
+
         public override void SetDefaults()
         {
             Item.width = 22;
             Item.height = 22;
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
-            Item.defense = 7;
+            Item.defense = 6; // 48
         }
 
-        public override bool IsArmorSet(Item head, Item body, Item legs)
-        {
-            return body.type == ModContent.ItemType<ReaverScaleMail>() && legs.type == ModContent.ItemType<ReaverCuisses>();
-        }
+        public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ModContent.ItemType<ReaverScaleMail>() && legs.type == ModContent.ItemType<ReaverCuisses>();
 
         public override void ArmorSetShadows(Player player)
         {
@@ -36,25 +41,24 @@ namespace CalamityMod.Items.Armor.Reaver
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = this.GetLocalizedValue("SetBonus");
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusTileRangeBoost);
             var modPlayer = player.Calamity();
             modPlayer.reaverExplore = true;
             modPlayer.wearingRogueArmor = true;
             player.findTreasure = true;
-            player.blockRange += 4;
-            player.aggro -= 200;
+            player.aggro -= SetBonusAggroReduction;
+            if (player.Calamity().countsAsAnyWet)
+                player.gills = true;
+
+            DelegateMethods.v3_1 = new Vector3(1f, 1f, 1f);
+            Utils.PlotTileLine(player.Center, player.Center + player.velocity * 6f, 20f, DelegateMethods.CastLightOpen);
+            Utils.PlotTileLine(player.Left, player.Right, 20f, DelegateMethods.CastLightOpen);
 
             if (player.whoAmI == Main.myPlayer)
             {
-                var source = player.GetSource_ItemUse(Item);
-                if (player.FindBuffIndex(ModContent.BuffType<ReaverOrbBuff>()) == -1)
-                {
-                    player.AddBuff(ModContent.BuffType<ReaverOrbBuff>(), 3600, true);
-                }
-                if (player.ownedProjectileCounts[ModContent.ProjectileType<ReaverOrb>()] < 1)
-                {
-                    Projectile.NewProjectile(source, player.Center, Vector2.Zero, ModContent.ProjectileType<ReaverOrb>(), 0, 0f, player.whoAmI);
-                }
+                // These are static variables. Awesome
+                Player.tileRangeX += SetBonusTileRangeBoost;
+                Player.tileRangeY += SetBonusTileRangeBoost;
             }
         }
 
@@ -62,9 +66,9 @@ namespace CalamityMod.Items.Armor.Reaver
         {
             player.ignoreWater = true;
             player.lavaImmune = true;
-            player.pickSpeed -= 0.2f;
-            player.tileSpeed += 0.4f;
-            player.wallSpeed += 0.4f;
+            player.pickSpeed -= MiningSpeedBoost;
+            player.tileSpeed += PlacementSpeedBoost;
+            player.wallSpeed += PlacementSpeedBoost;
         }
 
         public override void AddRecipes()
@@ -73,6 +77,7 @@ namespace CalamityMod.Items.Armor.Reaver
                 AddIngredient<PerennialBar>(7).
                 AddIngredient<LivingShard>().
                 AddTile(TileID.MythrilAnvil).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<ReaverCuisses>()).
                 Register();
         }
     }

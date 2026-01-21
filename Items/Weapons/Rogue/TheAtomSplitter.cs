@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void SetDefaults()
         {
             Item.width = Item.height = 128;
-            Item.damage = 320;
+            Item.damage = 296;
             Item.knockBack = 7f;
             Item.useAnimation = Item.useTime = 25;
             Item.DamageType = RogueDamageClass.Instance;
@@ -26,16 +26,14 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
-
-		public override float StealthDamageMultiplier => 1f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             int javelin = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, -1f);
             if (player.Calamity().StealthStrikeAvailable() && Main.projectile.IndexInRange(javelin))
-			{
+            {
                 Main.projectile[javelin].Calamity().stealthStrike = true;
             }
             return false;

@@ -1,5 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -14,6 +14,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Main.projFrames[Type] = 4;
             ProjectileID.Sets.MinionShot[Type] = true;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         }
 
         public override void SetDefaults()
@@ -63,7 +64,7 @@ namespace CalamityMod.Projectiles.Summon
                 dust.velocity *= 0f;
                 dust.scale = 0.5f;
             }
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) - MathHelper.PiOver2;
+            Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
             float projX = Projectile.position.X;
             float projY = Projectile.position.Y;
             float attackDistance = 100000f;
@@ -90,9 +91,8 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 if (!canAttack)
                 {
-                    for (int j = 0; j < Main.maxNPCs; j++)
+                    foreach (NPC npc in Main.ActiveNPCs)
                     {
-                        NPC npc = Main.npc[j];
                         if (npc.CanBeChasedBy(Projectile, false))
                         {
                             float npcX = npc.position.X + (float)(npc.width / 2);
@@ -116,7 +116,7 @@ namespace CalamityMod.Projectiles.Summon
             }
             float projSpeed = 10f;
             float XSpeedMod = 0.16f;
-            Vector2 fireDirection = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
+            Vector2 fireDirection = Projectile.Center;
             float fireXVel = projX - fireDirection.X;
             float fireYVel = projY - fireDirection.Y;
             float fireVelocity = (float)Math.Sqrt((double)(fireXVel * fireXVel + fireYVel * fireYVel));

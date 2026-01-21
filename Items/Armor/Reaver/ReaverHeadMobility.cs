@@ -1,7 +1,7 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Reaver
@@ -11,20 +11,25 @@ namespace CalamityMod.Items.Armor.Reaver
     public class ReaverHeadMobility : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
-        //Jump/Flight Boosts and Movement Speed Helm
+
+        public static float MoveSpeedBoost = 0.15f;
+        public static float JumpSpeedBoost = 0.5f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MoveSpeedBoost.ToPercent(), JumpSpeedBoost.ToJumpSpeedPercent());
+
+        public static float SetBonusFlightBoost = 0.1f;
+        public static float SetBonusHookBoost = 0.5f;
+        public static int SetBonusDashDelayReductionInterval = 3;
+
         public override void SetDefaults()
         {
             Item.width = 24;
             Item.height = 28;
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
-            Item.defense = 13; //46
+            Item.defense = 13; // 55
         }
 
-        public override bool IsArmorSet(Item head, Item body, Item legs)
-        {
-            return body.type == ModContent.ItemType<ReaverScaleMail>() && legs.type == ModContent.ItemType<ReaverCuisses>();
-        }
+        public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ModContent.ItemType<ReaverScaleMail>() && legs.type == ModContent.ItemType<ReaverCuisses>();
 
         public override void ArmorSetShadows(Player player)
         {
@@ -37,17 +42,17 @@ namespace CalamityMod.Items.Armor.Reaver
             var modPlayer = player.Calamity();
             modPlayer.reaverSpeed = true;
             modPlayer.wearingRogueArmor = true;
-            player.setBonus = this.GetLocalizedValue("SetBonus");
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusFlightBoost.ToPercent(), SetBonusHookBoost.ToPercent(), (1 / (float)SetBonusDashDelayReductionInterval).ToPercent());
             player.noFallDmg = true;
             player.autoJump = true;
-            if (player.miscCounter % 3 == 2 && player.dashDelay > 0)
+            if (player.miscCounter % SetBonusDashDelayReductionInterval == 1 && player.dashDelay > 0)
                 player.dashDelay--;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.jumpSpeedBoost += 0.5f;
-            player.moveSpeed += 0.15f;
+            player.moveSpeed += MoveSpeedBoost;
+            player.jumpSpeedBoost += JumpSpeedBoost;
         }
 
         public override void AddRecipes()
@@ -56,6 +61,7 @@ namespace CalamityMod.Items.Armor.Reaver
                 AddIngredient<PerennialBar>(7).
                 AddIngredient<LivingShard>().
                 AddTile(TileID.MythrilAnvil).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<ReaverHeadExplore>()).
                 Register();
         }
     }

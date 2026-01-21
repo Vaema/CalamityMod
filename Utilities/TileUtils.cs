@@ -1,4 +1,8 @@
-﻿using CalamityMod.Tiles;
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using CalamityMod.Systems;
+using CalamityMod.Tiles;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Astral;
 using CalamityMod.Tiles.AstralDesert;
@@ -6,56 +10,29 @@ using CalamityMod.Tiles.AstralSnow;
 using CalamityMod.Tiles.Crags;
 using CalamityMod.Tiles.FurnitureAbyss;
 using CalamityMod.Tiles.FurnitureAshen;
-using CalamityMod.Tiles.FurnitureEutrophic;
+using CalamityMod.Tiles.FurnitureDriftwood;
+using CalamityMod.Tiles.FurnitureMonolith;
+using CalamityMod.Tiles.FurnitureNavystone;
+using CalamityMod.Tiles.FurnitureNavystone.FurnitureAncientNavystone;
 using CalamityMod.Tiles.FurnitureOtherworldly;
 using CalamityMod.Tiles.FurnitureProfaned;
 using CalamityMod.Tiles.FurnitureVoid;
+using CalamityMod.Tiles.FurnitureWulfrum;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.Tiles.SunkenSea;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.GameContent.Drawing;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 using static Terraria.ModLoader.ModContent;
-using System.Linq;
-using System.Collections.Generic;
 
 namespace CalamityMod
 {
     public static partial class CalamityUtils
     {
-        public static string GetMapChestName(string baseName, int x, int y)
-        {
-            // Bounds check.
-            if (!WorldGen.InWorld(x, y, 2))
-                return baseName;
-
-            Tile tile = Main.tile[x, y];
-            int left = x;
-            int top = y;
-            if (tile.TileFrameX % 36 != 0)
-                left--;
-            if (tile.TileFrameY != 0)
-                top--;
-
-            int chest = Chest.FindChest(left, top);
-
-            // Valid chest index check.
-            if (chest < 0)
-                return baseName;
-
-            string name = baseName;
-
-            // Concatenate the chest's custom name if it has one.
-            if (!string.IsNullOrEmpty(Main.chest[chest].name))
-                name += $": {Main.chest[chest].name}";
-
-            return name;
-        }
-
         public static void SafeSquareTileFrame(int x, int y, bool resetFrame = true)
         {
             for (int xIter = x - 1; xIter <= x + 1; ++xIter)
@@ -76,38 +53,20 @@ namespace CalamityMod
             }
         }
 
-        public static void LightHitWire(int type, int i, int j, int tileX, int tileY)
+        public static bool DrawSwayingMultiTile(int i, int j)
         {
-            int x = i - Main.tile[i, j].TileFrameX / 18 % tileX;
-            int y = j - Main.tile[i, j].TileFrameY / 18 % tileY;
-            int tileXX18 = 18 * tileX;
-            for (int l = x; l < x + tileX; l++)
-            {
-                for (int m = y; m < y + tileY; m++)
-                {
-                    if (Main.tile[l, m].HasTile && Main.tile[l, m].TileType == type)
-                    {
-                        if (Main.tile[l, m].TileFrameX < tileXX18)
-                            Main.tile[l, m].TileFrameX += (short)(tileXX18);
-                        else
-                            Main.tile[l, m].TileFrameX -= (short)(tileXX18);
-                    }
-                }
-            }
-
-            if (Wiring.running)
-            {
-                for (int k = 0; k < tileX; k++)
-                {
-                    for (int l = 0; l < tileY; l++)
-                        Wiring.SkipWire(x + k, y + l);
-                }
-            }
+            Tile tile = Main.tile[i, j];
+            if (TileObjectData.IsTopLeft(tile))
+                Main.instance.TilesRenderer.AddSpecialPoint(i, j, TileDrawing.TileCounterType.MultiTileVine);
+            return false;
         }
 
         public static void DrawFlameEffect(Texture2D flameTexture, int i, int j, int offsetX = 0, int offsetY = 0)
         {
             Tile tile = Main.tile[i, j];
+            if (tile.IsTileActuallyInvisible())
+                return;
+
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
 
             int width = 16;
@@ -127,6 +86,9 @@ namespace CalamityMod
 
         public static void DrawStaticFlameEffect(Texture2D flameTexture, int i, int j, int offsetX = 0, int offsetY = 0)
         {
+            if (Main.tile[i, j].IsTileActuallyInvisible())
+                return;
+
             int xPos = Main.tile[i, j].TileFrameX;
             int yPos = Main.tile[i, j].TileFrameY;
             Color drawColour = new Color(100, 100, 100, 0);
@@ -145,12 +107,12 @@ namespace CalamityMod
 
         public static void DrawFlameSparks(int dustType, int rarity, int i, int j)
         {
-            if (!Main.gamePaused && Main.instance.IsActive && (!Lighting.UpdateEveryFrame || Main.rand.NextBool(4)))
+            if (!Main.gamePaused && Main.instance.IsActive && !Main.tile[i, j].IsTileActuallyInvisible() && (!Lighting.UpdateEveryFrame || Main.rand.NextBool(4)))
             {
                 if (Main.rand.NextBool(rarity))
                 {
                     int dust = Dust.NewDust(new Vector2(i * 16 + 4, j * 16 + 2), 4, 4, dustType, 0f, 0f, 100, default, 1f);
-                    if (Main.rand.Next(3) != 0)
+                    if (!Main.rand.NextBool(3))
                         Main.dust[dust].noGravity = true;
 
                     // Prevent lag.
@@ -220,6 +182,51 @@ namespace CalamityMod
             return uniqueAnimationFrame * animationFrameLength;
         }
 
+        /// <summary>
+        /// Checks whether or not the tile is actually able to be seen.
+        /// </summary>
+        /// <param name="tile">The tile being checked.</param>
+        /// <returns>Whether</returns>
+        public static bool IsTileActuallyInvisible(this Tile tile) => tile.IsTileInvisible && !Main.ShouldShowInvisibleWalls();
+
+        /// <summary>
+        /// Gets the color of a tile/wall after paint is applied
+        /// </summary>
+        /// <param name="paintType">The ID of the paint, this can be received from the tile's TileColor or WallColor</param>
+        /// <param name="color">The base color to apply the paint to</param>
+        /// <param name="deepPaintOnly">Whether or not only deep paints should be included. Typically this should be set to false if this isn't being used for a glowmask</param>
+        /// <returns>The original color with paint applied</returns>
+        public static Color ApplyPaint(int paintType, Color color, bool deepPaintOnly = true)
+        {
+            if (paintType == PaintID.None)
+                return color;
+
+            bool isDeep = IsDeepPaint(paintType);
+            if (deepPaintOnly && !isDeep)
+                return color;
+
+            Color paintCol = WorldGen.paintColor(paintType);
+
+            if (paintType < PaintID.DeepRedPaint)
+            {
+                paintCol.R = (byte)((paintCol.R / 2f) + 128);
+                paintCol.G = (byte)((paintCol.G / 2f) + 128);
+                paintCol.B = (byte)((paintCol.B / 2f) + 128);
+            }
+            if (paintType == PaintID.ShadowPaint)
+            {
+                paintCol = Color.Black;
+            }
+            color = color.MultiplyRGB(paintCol);
+
+            return color;
+        }
+
+        private static bool IsDeepPaint(int paintType)
+        {
+            return PaintID.DeepRedPaint >= paintType && paintType <= PaintID.DeepPinkPaint;
+        }
+
         public static Tile ParanoidTileRetrieval(int x, int y)
         {
             if (!WorldGen.InWorld(x, y))
@@ -234,7 +241,7 @@ namespace CalamityMod
             {
                 for (int j = y; j != y + height; j += Math.Sign(height))
                 {
-                    if (WorldGen.InWorld(i, j))
+                    if (!WorldGen.InWorld(i, j))
                         continue;
 
                     if (WorldGen.SolidTile(Framing.GetTileSafely(i, j)))
@@ -275,10 +282,53 @@ namespace CalamityMod
             }
             return true;
         }
+        public static bool IsTileExposedToAir(int x, int y) => IsTileExposedToAir(x, y, out _);
+
+        public static bool IsTileExposedToAir(int x, int y, out float? angleToOpenAir)
+        {
+            angleToOpenAir = null;
+            if (!ParanoidTileRetrieval(x - 1, y).HasTile)
+            {
+                angleToOpenAir = MathHelper.Pi;
+                return true;
+            }
+            if (!ParanoidTileRetrieval(x + 1, y).HasTile)
+            {
+                angleToOpenAir = 0f;
+                return true;
+            }
+            if (!ParanoidTileRetrieval(x, y - 1).HasTile)
+            {
+                angleToOpenAir = MathHelper.PiOver2;
+                return true;
+            }
+            if (!ParanoidTileRetrieval(x, y + 1).HasTile)
+            {
+                angleToOpenAir = -MathHelper.PiOver2;
+                return true;
+            }
+
+            return false;
+        }
 
         public static bool TileActiveAndOfType(int x, int y, int type)
         {
             return ParanoidTileRetrieval(x, y).HasTile && ParanoidTileRetrieval(x, y).TileType == type;
+        }
+
+        // Extension shorthand for the Tile Framing System Universal Merges.
+        // As this must be defined in a static class, it's out here in CalamityUtils.
+        // Flow, 2024/OCT/31 Removing Obsolete in here as tModLoader doesn't like this
+        [Obsolete("Use TileBlendMergeSystem.RegisterBlendMergeWith Instead")]
+        public static void RegisterUniversalMerge(this ModTile tile, int mergeType, string blendSheetPath)
+        {
+            //TileFramingSystem.RegisterUniversalMerge(tile.Type, mergeType, blendSheetPath);
+            TileBlendMergeSystem.RegisterMerge(tile.Type, mergeType);
+        }
+
+        public static void RegisterBlendMergeWith(this ModTile tile, int mergeType)
+        {
+            TileBlendMergeSystem.RegisterMerge(tile.Type, mergeType);
         }
 
         /// <summary>
@@ -335,11 +385,20 @@ namespace CalamityMod
             TileType<AstralStone>(),
             TileType<AstralSand>(),
             TileType<AstralSnow>(),
+            TileType<Driftwood>(),
+            TileType<PinkPearlPile>(),
+            TileType<BlackPearlPile>(),
+            TileType<WhitePearlPile>(),
+            TileType<Shellstone>(),
+            TileType<Dunesand>(),
             TileType<Navystone>(),
             TileType<EutrophicSand>(),
+            TileType<Limestone>(),
+            TileType<LimestoneCobble>(),
             TileType<SulphurousShale>(),
             TileType<AbyssGravel>(),
             TileType<Voidstone>(),
+            TileType<MossyStone>(),
         });
 
         /// <summary>
@@ -405,9 +464,20 @@ namespace CalamityMod
             TileType<AstralSandstone>(),
             TileType<CelestialRemains>(),
             // Sunken Sea
+            TileType<Limestone>(),
+            TileType<LimestoneCobble>(),
+            TileType<PolypSand>(),
+            TileType<VolcanicSand>(),
+            TileType<PinkPearlPile>(),
+            TileType<BlackPearlPile>(),
+            TileType<WhitePearlPile>(),
+            TileType<Shellstone>(),
+            TileType<Runestone>(),
+            TileType<Dunesand>(),
             TileType<EutrophicSand>(),
             TileType<Navystone>(),
             TileType<SeaPrism>(),
+            TileType<MossyStone>(),
         });
 
         /// <summary>
@@ -492,6 +562,7 @@ namespace CalamityMod
             SetMerge(type, TileID.MarbleBlock);
             SetMerge(type, TileID.GraniteBlock);
             //Calam
+            SetMerge(type, TileType<AncientSmoothNavystone>());
             SetMerge(type, TileType<SmoothNavystone>());
             SetMerge(type, TileType<SmoothBrimstoneSlag>());
             SetMerge(type, TileType<SmoothAbyssGravel>());
@@ -515,7 +586,49 @@ namespace CalamityMod
             SetMerge(type, TileType<RunicProfanedBrick>());
             SetMerge(type, TileType<AshenSlab>());
             SetMerge(type, TileType<VoidstoneSlab>());
+            SetMerge(type, TileType<WulfrumPanels>());
+            SetMerge(type, TileType<WulfrumSiding>());
+            SetMerge(type, TileType<WulfrumPlating>());
+            SetMerge(type, TileType<WulfrumEnergyBarrier>());
+            SetMerge(type, TileType<RoundedAnodizedWulfrumPanels>());
+            SetMerge(type, TileType<AnodizedWulfrumTrim>());
+            SetMerge(type, TileType<AnodizedWulfrumPanels>());
         }
+
+        /// <summary>
+        /// The X position of the Tile
+        /// </summary>
+        /// <param name="tile"></param>
+        /// <returns></returns>
+        public static int X(this Tile tile)
+        {
+            TilePos(tile, out int x, out _);
+            return x;
+        }
+
+        /// <summary>
+        /// The Y position of the Tile
+        /// </summary>
+        /// <param name="tile"></param>
+        /// <returns></returns>
+        public static int Y(this Tile tile)
+        {
+            TilePos(tile, out _, out int y);
+            return y;
+        }
+
+        /// <summary>
+        /// Gets the Position of the tile, the same values that would be inputted in Main.tile to get this Tile
+        /// </summary>
+        /// <param name="tile"></param>
+        /// <param name="x">The outputted X value, if you want the X by itself use Tile.X</param>
+        /// <param name="y">The outputted Y value, if you want the Y by itself use Tile.Y</param>
+        public static void TilePos(this Tile tile, out int x, out int y)
+        {
+            uint tileId = Unsafe.BitCast<Tile, uint>(tile);
+            x = Math.DivRem((int)tileId, Main.tile.Height, out y); //Thanks to FoxXD_ for the help with this
+        }
+
 
         /// <summary>
         /// Determines if a tile is solid ground based on whether it's active and not actuated or if the tile is solid in any way, including just the top.
@@ -528,7 +641,7 @@ namespace CalamityMod
         /// Determines if a tile is solid based on whether it's active and not actuated or if the tile is solid. This will not count platforms and other non-solid ground tiles
         /// </summary>
         /// <param name="tile">The tile to check.</param>
-        public static bool IsTileSolid(this Tile tile) => tile != null && tile.HasUnactuatedTile && Main.tileSolid[tile.TileType] && !TileID.Sets.Platforms[tile.TileType];
+        public static bool IsTileSolid(this Tile tile) => tile != null && tile.HasUnactuatedTile && Main.tileSolid[tile.TileType] && !Main.tileSolidTop[tile.TileType];
 
         /// <summary>
         /// Determines if a tile is "full" based on if the tile is solid. This will count platforms and actuated tiles but no other non-solid ground tiles.
@@ -570,7 +683,7 @@ namespace CalamityMod
         /// </summary>
         /// <param name="theTile"></param>
         /// <returns>Wether or not the tile may be grappled onto</returns>
-        public static bool CanTileBeLatchedOnTo(this Tile theTile, bool grappleOnTrees = false) => Main.tileSolid[theTile.TileType] | (theTile.TileType == 314) | (grappleOnTrees && TileID.Sets.IsATreeTrunk[theTile.TileType]) | (grappleOnTrees && theTile.TileType == 323);
+        public static bool CanTileBeLatchedOnTo(this Tile theTile, bool grappleOnTrees = false) => Main.tileSolid[theTile.TileType] | (theTile.TileType == TileID.MinecartTrack) | (grappleOnTrees && TileID.Sets.IsATreeTrunk[theTile.TileType]) | (grappleOnTrees && theTile.TileType == TileID.PalmTree);
 
         /// <summary>
         /// Gets the required pickaxe power of a tile, accounting for both the ModTile and the vanilla tile pick requirements
@@ -658,13 +771,17 @@ namespace CalamityMod
 
             if (ignoreAbyss)
             {
-                tileExcludeList.Add(ModContent.TileType<AbyssGravel>());
-                tileExcludeList.Add(ModContent.TileType<PyreMantle>());
-                tileExcludeList.Add(ModContent.TileType<PyreMantleMolten>());
-                tileExcludeList.Add(ModContent.TileType<Voidstone>());
+                tileExcludeList.Add(TileType<AbyssGravel>());
+                tileExcludeList.Add(TileType<PyreMantle>());
+                tileExcludeList.Add(TileType<PyreMantleMolten>());
+                tileExcludeList.Add(TileType<Voidstone>());
             }
 
             return !Main.tileContainer[tile.TileType] && !tileExcludeList.Contains(tile.TileType);
         }
+
+        public static int PixelsToTiles(this int pixels) => pixels / 16;
+
+        public static int TilesToPixels(this int tiles) => tiles * 16;
     }
 }

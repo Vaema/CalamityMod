@@ -1,4 +1,5 @@
-﻿using CalamityMod.Particles;
+﻿using CalamityMod.NPCs;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -8,6 +9,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
+    [PierceResistException]
     public class EclipsesStealth : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
@@ -17,8 +19,6 @@ namespace CalamityMod.Projectiles.Rogue
         public const float RainDamageMult = 0.2f;
         public const float ExplosionDamageMult = 0.5f;
 
-        // For more consistent DPS, always alternates between spawning 1 and 2 spears instead of picking randomly
-        private bool spawnTwoSpears = true;
         private bool changedTimeLeft = false;
 
         public override void SetStaticDefaults()
@@ -32,7 +32,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.width = Projectile.height = 40;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.tileCollide = false;            
+            Projectile.tileCollide = false;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.MaxUpdates = 2;
             Projectile.penetrate = -1;
@@ -75,19 +75,15 @@ namespace CalamityMod.Projectiles.Rogue
                 if (Projectile.owner == Main.myPlayer)
                 {
                     Projectile.localAI[1] -= 1f;
-
-                    var source = Projectile.GetSource_FromThis();
                     if (Projectile.localAI[1] <= 0f)
                     {
                         // Set up the spear counter for next time. Used to be every 5 frames there was a 50% chance; now it's more reliable but slower.
-                        Projectile.localAI[1] = Main.rand.Next(10, 13); // 10 to 12 frames between each spearfall
+                        Projectile.localAI[1] = Main.rand.Next(8, 10+1); // 8 to 10 frames between each spearfall
 
                         int type = ModContent.ProjectileType<EclipsesSmol>();
-                        // Used to be a 50% chance each spearfall for 1 or 2. Now is consistent.
-                        int numSpears = spawnTwoSpears ? 2 : 1;
-                        spawnTwoSpears = !spawnTwoSpears;
-                        for (int i = 0; i < numSpears; ++i)
-                            CalamityUtils.ProjectileRain(source, Projectile.Center, 400f, 100f, 500f, 800f, 29f, type, (int)(Projectile.damage * RainDamageMult), Projectile.knockBack * RainDamageMult, Projectile.owner);
+                        Vector2 spawnPos = Projectile.Center - new Vector2(Main.rand.NextFloat(-100f, 100f), Main.rand.NextFloat(500f, 800f));
+                        Vector2 spearVel = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(spawnPos, Main.npc[(int)Projectile.ai[1]], 29f, 2) + Vector2.UnitX * Main.rand.NextFloat(-6f, 6f);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnPos, spearVel, type, (int)(Projectile.damage * RainDamageMult), Projectile.knockBack * RainDamageMult, Projectile.owner);
                     }
                 }
             }

@@ -13,13 +13,13 @@ namespace CalamityMod.Items.Accessories
             Item.width = 32;
             Item.height = 44;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.GetDamage<GenericDamageClass>() += 0.06f;
+            player.GetDamage<GenericDamageClass>() += 0.1f;
             player.GetArmorPenetration<GenericDamageClass>() += 10;
         }
 

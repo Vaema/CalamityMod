@@ -1,9 +1,8 @@
 ﻿using System;
 using CalamityMod.Balancing;
-using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Placeables.FurniturePlagued;
-using CalamityMod.Items.Potions;
-using CalamityMod.NPCs.DraedonLabThings;
+using CalamityMod.Enums;
+using CalamityMod.Projectiles.Boss;
+using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using Terraria;
@@ -19,18 +18,18 @@ namespace CalamityMod.ILEditing
 
         private static bool AdjustShimmerRequirements(On_ShimmerTransforms.orig_IsItemTransformLocked orig, int type)
         {
-            //Rod of Harmony / psc requires Draedong and SCal dead instead of Moon Lord.
-            if (type == ItemID.RodofDiscord || type == ModContent.ItemType<ProfanedSoulCrystal>())
+            //Rod of Harmony requires Draedong and SCal dead instead of Moon Lord.
+            if (type == ItemID.RodofDiscord)
             {
                 return !DownedBossSystem.downedCalamitas || !DownedBossSystem.downedExoMechs;
             }
 
             return orig(type);
         }
-        
+
         #endregion
-        
-        #region Soaring Insignia Changes
+
+        #region Remove Soaring Insignia Infinite Flight
         private static void RemoveSoaringInsigniaInfiniteWingTime(ILContext il)
         {
             // Prevent the infinite flight effect.
@@ -42,34 +41,6 @@ namespace CalamityMod.ILEditing
             }
 
             // AND with 0 (false) so that the Soaring Insignia is never considered equipped and thus infinite flight never triggers.
-            cursor.Emit(OpCodes.Ldc_I4_0);
-            cursor.Emit(OpCodes.And);
-        }
-
-        private static void NerfSoaringInsigniaRunAcceleration(ILContext il)
-        {
-            // Nerf the run acceleration boost from 2x to 1.1x.
-            var cursor = new ILCursor(il);
-            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdfld<Player>("empressBrooch")))
-            {
-                LogFailure("Soaring Insignia Mobility Nerf", "Could not locate the Soaring Insignia bool.");
-                return;
-            }
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(1.75f)))
-            {
-                LogFailure("Soaring Insignia Mobility Nerf", "Could not locate the Soaring Insignia run acceleration multiplier.");
-                return;
-            }
-            cursor.Next.Operand = 1.1f;
-
-            // Prevent the rocket boots infinite flight effect.
-            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdfld<Player>("empressBrooch")))
-            {
-                LogFailure("Soaring Insignia Mobility Nerf", "Could not locate the Soaring Insignia bool.");
-                return;
-            }
-
-            // AND with 0 (false) so that the Soaring Insignia is never considered equipped and thus infinite rocket boots never triggers.
             cursor.Emit(OpCodes.Ldc_I4_0);
             cursor.Emit(OpCodes.And);
         }
@@ -110,33 +81,16 @@ namespace CalamityMod.ILEditing
             }
             cursor.Remove();
             cursor.Emit(OpCodes.Ldc_R4, 0.5f); // Decrease to 0.5f.
-
-            // Find the Frog Leg jump speed bonus and reduce it to 1.2f.
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(2.4f)))
-            {
-                LogFailure("Jump Height Boost Fixes", "Could not locate Frog Leg jump speed boost value.");
-                return;
-            }
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_R4, 1.2f); // Decrease to 1.2f.
-
-            // Remove the jump height addition from the Werewolf buff (Moon Charm).
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcI4(2)))
-            {
-                LogFailure("Jump Height Boost Fixes", "Could not locate Moon Charm jump height boost value.");
-                return;
-            }
-            cursor.Next.Operand = 0;
         }
 
-        private const float VanillaBaseJumpHeight = 5.01f;
-        private static void BaseJumpHeightAdjustment(ILContext il)
+        private const float VanillaBaseJumpSpeed = 5.01f;
+        private static void BaseJumpSpeedAdjustment(ILContext il)
         {
             // Increase the base jump height of the player to make early game less of a slog.
             var cursor = new ILCursor(il);
 
             // The jumpSpeed variable is set to this specific value before anything else occurs.
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(VanillaBaseJumpHeight)))
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(VanillaBaseJumpSpeed)))
             {
                 LogFailure("Base Jump Height Buff", "Could not locate the jump height variable.");
                 return;
@@ -144,7 +98,7 @@ namespace CalamityMod.ILEditing
             cursor.Remove();
 
             // Increase by 10% if the higher jump speed is enabled.
-            cursor.EmitDelegate<Func<float>>(() => CalamityConfig.Instance.HigherJumpHeight ? BalancingConstants.ConfigBoostedBaseJumpHeight : VanillaBaseJumpHeight);
+            cursor.EmitDelegate<Func<float>>(() => CalamityServerConfig.Instance.FasterJumpSpeed ? BalancingConstants.ConfigBoostedBaseJumpSpeed : VanillaBaseJumpSpeed);
         }
         #endregion
 
@@ -152,16 +106,12 @@ namespace CalamityMod.ILEditing
         private static void RunSpeedAdjustments(ILContext il)
         {
             var cursor = new ILCursor(il);
-            float asphaltTopSpeedMultiplier = 1.75f; // +75%. Vanilla is +250%
+            float asphaltTopSpeedMultiplier = 2.25f; // +125%. Vanilla is +250%
             float asphaltSlowdown = 1f; // Vanilla is 2f. This should actually make asphalt faster.
-
-            // Dunerider Boots multiply all run stats by 1.75f in vanilla
-            float duneRiderBootsMultiplier = 1.25f; // Change to 1.25f
 
             // Multiplied by 0.6 on frozen slime, for +26% acceleration
             // Multiplied by 0.7 on ice, for +47% acceleration
             float iceSkateAcceleration = 2.1f;
-            float iceSkateTopSpeed = 1f; // no boost at all
 
             //
             // ASPHALT
@@ -191,22 +141,6 @@ namespace CalamityMod.ILEditing
             }
 
             //
-            // DUNERIDER BOOTS + SAND BLOCKS
-            //
-            {
-                // Find the multiplier for Dunerider Boots on Sand Blocks.
-                if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(1.75f)))
-                {
-                    LogFailure("Run Speed Adjustments", "Could not locate the Dunerdier Boots multiplier.");
-                    return;
-                }
-
-                // Massively reduce the increased speed of Dunerider Boots while on Sand Blocks.
-                cursor.Remove();
-                cursor.Emit(OpCodes.Ldc_R4, duneRiderBootsMultiplier);
-            }
-
-            //
             // ICE SKATES + FROZEN SLIME BLOCKS
             //
             {
@@ -220,17 +154,6 @@ namespace CalamityMod.ILEditing
                 // Massively reduce the acceleration bonus of Ice Skates on Frozen Slime Blocks.
                 cursor.Remove();
                 cursor.Emit(OpCodes.Ldc_R4, iceSkateAcceleration);
-
-                // Find the top speed multiplier of Ice Skates on Frozen Slime Blocks.
-                if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(1.25f)))
-                {
-                    LogFailure("Run Speed Adjustments", "Could not locate Ice Skates + Frozen Slime Block top speed multiplier.");
-                    return;
-                }
-
-                // Make Ice Skates give no top speed boost whatsoever on Frozen Slime Blocks.
-                cursor.Remove();
-                cursor.Emit(OpCodes.Ldc_R4, iceSkateTopSpeed);
             }
 
             //
@@ -247,26 +170,92 @@ namespace CalamityMod.ILEditing
                 // Massively reduce the acceleration bonus of Ice Skates on Ice Blocks.
                 cursor.Remove();
                 cursor.Emit(OpCodes.Ldc_R4, iceSkateAcceleration);
-
-                // Find the top speed multiplier of Ice Skates on Ice Blocks.
-                if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(1.25f)))
-                {
-                    LogFailure("Run Speed Adjustments", "Could not locate Ice Skates + Ice Block top speed multiplier.");
-                    return;
-                }
-
-                // Make Ice Skates give no top speed boost whatsoever on Ice Blocks.
-                cursor.Remove();
-                cursor.Emit(OpCodes.Ldc_R4, iceSkateTopSpeed);
             }
+        }
+
+        private static void NerfOverpoweredRunAccelerationSources(ILContext il)
+        {
+            // First: Soaring Insignia. Find the check for whether it's equipped for run speeds.
+            var cursor = new ILCursor(il);
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdfld<Player>("empressBrooch")))
+            {
+                LogFailure("Run Acceleration Nerfs", "Could not locate the Soaring Insignia bool.");
+                return;
+            }
+
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(1.75f)))
+            {
+                LogFailure("Run Acceleration Nerfs", "Could not locate the Soaring Insignia run acceleration multiplier.");
+                return;
+            }
+            cursor.Next.Operand = BalancingConstants.SoaringInsigniaRunAccelerationMultiplier;
+
+            // Second: Shadow Armor. Find the check for whether it's equipped for run speeds.
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdfld<Player>("shadowArmor")))
+            {
+                LogFailure("Run Acceleration Nerfs", "Could not locate the Shadow Armor bool.");
+                return;
+            }
+
+            // Load the player onto the stack as an argument to the following delegate.
+            // Emit a delegate which consumes the Shadow Armor bool, performs Calamity effects, then always returns false.
+            // Returning false ensures vanilla Shadow Armor code never runs.
+            cursor.Emit(OpCodes.Ldarg_0);
+
+            cursor.EmitDelegate((bool shadowArmor, Player p) => {
+                // If you don't even have Shadow Armor equipped, do nothing.
+                if (!shadowArmor)
+                    return 0;
+
+                // Shadow Armor does not stack with Magiluminescence if you are on the ground.
+                if (p.hasMagiluminescence && p.velocity.Y == 0)
+                    return 0;
+
+                // Shadow Armor grants reduced movement bonuses if in the air, or on the ground WITHOUT Magiluminescence.
+                p.runAcceleration *= BalancingConstants.ShadowArmorRunAccelerationMultiplier;
+                p.maxRunSpeed *= BalancingConstants.ShadowArmorMaxRunSpeedMultiplier;
+                p.accRunSpeed *= BalancingConstants.ShadowArmorAccRunSpeedMultiplier;
+                p.runSlowdown *= BalancingConstants.ShadowArmorRunSlowdownMultiplier;
+
+                // Vanilla Shadow Armor behavior should still always be skipped.
+                return 0;
+            });
+
+
+            // Finally: Back to Soaring Insignia. Prevent the rocket boots infinite flight effect, since it's in the same function.
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdfld<Player>("empressBrooch")))
+            {
+                LogFailure("Run Acceleration Nerfs", "Could not locate the Soaring Insignia bool.");
+                return;
+            }
+
+            // AND with 0 (false) so that the Soaring Insignia is never considered equipped and thus infinite rocket boots never triggers.
+            cursor.Emit(OpCodes.Ldc_I4_0);
+            cursor.Emit(OpCodes.And);
         }
         #endregion
 
         #region Life Regen Changes
-        private static void PreventWellFedFromBeingRequiredInExpertModeForFullLifeRegen(ILContext il)
+        private static void UpdateLifeRegenBalancingChanges(ILContext il)
         {
-            // Prevent the greatly reduced life regen while without the well fed buff in expert mode.
+            // This IL edit accomplishes two things related to life regen:
+            // 1. Prevents Nebula armor's Life Boosters from cancelling out negative life regen.
+            // 2. Prevents the greatly reduced life regen while without a Well Fed buff in Expert Mode.
             var cursor = new ILCursor(il);
+
+            // First, move to where the game checks if the Life Booster level is greater than 0.
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdfld<Player>("nebulaLevelLife")))
+            {
+                LogFailure("Nebula Armor DoT Ignoring Nerf", "Could not locate the Nebula Armor Life Booster variable.");
+                return;
+            }
+
+            // Pop this value off the stack and replace it with 0.
+            // 0 will never be greater than 0, so negative life regen will never be canceled out.
+            cursor.Emit(OpCodes.Pop);
+            cursor.Emit(OpCodes.Ldc_I4_0);
+
+            // Now move to where the game checks if it is Expert Mode and the player does not have a Well Fed buff.
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdfld<Player>("wellFed")))
             {
                 LogFailure("Expert Mode Well Fed Reduced Life Regen Prevention", "Could not locate the Well Fed bool.");
@@ -302,11 +291,28 @@ namespace CalamityMod.ILEditing
             cursor.Emit(OpCodes.Ldc_R4, 0.2f); // Decrease to 0.2f.
         }
 
-        private static void ManaRegenAdjustment(ILContext il)
+        private static void UpdateManaRegenBalancingChanges(ILContext il)
         {
-            // Increase the base mana regen so that mage is less annoying to play without mana regen buffs.
+            // This IL edit accomplishes two things:
+            // 1. Nerfs Nebula armor's Mana Boosters.
+            // 2. Increases the base mana regen so that mage is less annoying to play without mana regen buffs.
             var cursor = new ILCursor(il);
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(0.8f))) // The multiplier for the mana regen formula: (float)statMana / (float)statManaMax2 * 0.8f + 0.2f.
+
+            // Reduce Nebula armor mana regen.
+            // See BalancingConstants for a more in-depth explanation as to how the Mana Booster works.
+            // Just know that we need to raise this value in order to nerf it.
+            if (!cursor.TryGotoNext(MoveType.AfterLabel, i => i.MatchLdcI4(6)))
+            {
+                LogFailure("Nebula Armor Mana Regen Nerf", "Could not locate the Nebula Armor mana regeneration frame counter threshold.");
+                return;
+            }
+
+            // Swap the threshold with Calamity's value.
+            cursor.Next.Operand = BalancingConstants.NebulaManaRegenFrameCounterThreshold;
+
+            // Next, move to the mana regen formula.
+            // The multiplier for the mana regen formula: (float)statMana / (float)statManaMax2 * 0.8f + 0.2f.
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(0.8f)))
             {
                 LogFailure("Mana Regen Buff", "Could not locate the mana regen multiplier variable.");
                 return;
@@ -325,7 +331,7 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Damage Variance Dampening and Luck Removal
-        private static int AdjustDamageVariance(Terraria.On_Main.orig_DamageVar_float_int_float orig, float dmg, int percent, float luck)
+        private static int AdjustDamageVariance(On_Main.orig_DamageVar_float_int_float orig, float dmg, int percent, float luck)
         {
             // Change the default damage variance from +-15% to +-5%.
             // If other mods decide to change the scale, they can override this. We're solely killing the default value.
@@ -351,31 +357,47 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Chlorophyte Bullet Speed Nerfs
-        private static void AdjustChlorophyteBullets(ILContext il)
+        #region Vanilla Boss Resist Changes
+        private static void VanillaBossResistChanges(ILContext il)
         {
-            // Reduce dust from 10 to 5 and homing range.
+            // This IL edit accomplishes two things:
+            // 1. Reduces Expert+ Eater of Worlds' resist to explosives from 80% to 66%.
+            // 2. Effectively removes Lunatic Cultist's resistance to homing projectiles.
             var cursor = new ILCursor(il);
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcI4(ProjectileID.ChlorophyteBullet)))
-            {
-                LogFailure("Chlorophyte Bullet AI", "Could not locate the bullet ID.");
-                return;
-            }
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcI4(10))) // The number of dust spawned by the bullet.
-            {
-                LogFailure("Chlorophyte Bullet AI", "Could not locate the dust quantity.");
-                return;
-            }
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_I4_5); // Decrease dust to 5.
 
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(300f))) // The 300 unit distance required to home in.
+            // First, the EoW grenade resist. Naturally, this is 800 lines into Projectile.Damage, so we must do funky things.
+            for (int f = 0; f < 2; f++)
             {
-                LogFailure("Chlorophyte Bullet AI", "Could not locate the homing range.");
+                if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdcI4(1002)))
+                {
+                    LogFailure("Reduce EoW Grenade Resist", "Could not move to the resist factor.");
+                    return;
+                }
+            }
+            if (!cursor.TryGotoNext(MoveType.AfterLabel, i => i.MatchLdcR4(5f)))
+            {
+                LogFailure("Reduce EoW Grenade Resist", "Could not move to the resist factor.");
                 return;
             }
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_R4, 150f); // Reduce homing range by 50%.
+
+            // Pop the 5 off the stack, and replace it with a 3.
+            cursor.EmitPop();
+            cursor.EmitLdcR4(3f);
+
+            // Now, move to the Cultist resist which is right below it.
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdsfld(typeof(ProjectileID.Sets), "CultistIsResistantTo")))
+            {
+                LogFailure("Lunatic Cultist Homing Resist Removal", "Could not locate the Cultist resist set.");
+                return;
+            }
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(0.75f))) // The resist ratio.
+            {
+                LogFailure("Lunatic Cultist Homing Resist Removal", "Could not locate the resist percentage.");
+                return;
+            }
+
+            // Replace the value with 1, meaning -0% damage or no resist.
+            cursor.Next.Operand = 1f;
         }
         #endregion
 
@@ -396,46 +418,243 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Sharpening Station Nerf
-        private static void NerfSharpeningStation(ILContext il)
+        #region UpdateBuffs Balancing Changes
+        private static void UpdateBuffsBalancingChanges(ILContext il)
         {
-            // Reduce armor penetration from the Sharpening Station from 12 (it was originally 16!)
+            // This IL edit accomplishes three things:
+            // 1. Nerf Beetle Scale Mail's set bonus Beetle Might melee speed from 10% per stack to 5%.
+            // 2. Nerf Nebula armor's Damage and Life Boosters (Mana Boosters are not handled in this method).
+            // 3. Remove the vanilla implementation of Feral Bite inflicting random debuffs.
             var cursor = new ILCursor(il);
-            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdcI4(BuffID.Sharpened)))
+
+            // First, move to Beetle Scale Mail's melee speed boost from Beetle Might buff.
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdcI4(BuffID.BeetleMight1)))
             {
-                LogFailure("Sharpening Station Nerf", "Could not locate the Sharpened buff ID.");
+                LogFailure("Beetle Scale Mail Nerf", "Could not locate the Beetle Might buff ID.");
                 return;
             }
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(12f))) // The amount of armor penetration to grant.
+            for (int i = 0; i < 2; i++)
             {
-                LogFailure("Sharpening Station Nerf", "Could not locate the amount of armor penetration granted.");
-                return;
+                if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(0.1f))) // The amount of melee damage to grant.
+                {
+                    LogFailure("Beetle Scale Mail Nerf", "Could not locate the amount of melee speed granted.");
+                    return;
+                }
             }
 
             // Replace the value entirely.
             cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_R4, BalancingConstants.SharpeningStationArmorPenetration);
+            cursor.Emit(OpCodes.Ldc_R4, BalancingConstants.BeetleScaleMailMeleeSpeedPerBeetle);
+
+            // Then, Nebula armor's Life and Damage Boosters.
+            // First is the Life Boosters.
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdcI4(BuffID.NebulaUpLife1)))
+            {
+                LogFailure("Nebula Armor Nerf", "Could not locate the Nebula Life buff ID.");
+                return;
+            }
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdfld<Player>("lifeRegen")))
+            {
+                LogFailure("Nebula Armor Nerf", "Could not locate the player's life regen being loaded.");
+                return;
+            }
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcI4(6)))
+            {
+                LogFailure("Nebula Armor Nerf", "Could not locate the amount of life regen to grant.");
+                return;
+            }
+
+            // Replace the constant "load 6" opcode with a regular integer load with Calamity's value.
+            cursor.Remove();
+            cursor.Emit(OpCodes.Ldc_I4, BalancingConstants.NebulaLifeRegenPerBooster);
+
+            // And then the Damage Boosters.
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdcI4(BuffID.NebulaUpDmg1)))
+            {
+                LogFailure("Nebula Armor Nerf", "Could not locate the Nebula Damage buff ID.");
+                return;
+            }
+            if (!cursor.TryGotoNext(MoveType.AfterLabel, i => i.MatchLdcR4(0.15f)))
+            {
+                LogFailure("Nebula Armor Nerf", "Could not locate the amount of damage to grant.");
+                return;
+            }
+
+            // There are multiple branches pointing to this instruction, so it cannot be removed. Instead, swap its value directly.
+            cursor.Next.Operand = BalancingConstants.NebulaDamagePerBooster;
+
+            // Finally, removing Feral Bite's vanilla debuff infliction.
+            // Find the random debuff duration multiplier for the debuffs inflicted by Feral Bite.
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(0.01f))) // The 0.01f random debuff duration multiplier.
+            {
+                LogFailure("Remove Feral Bite Random Debuffs", "Could not locate the Feral Bite random debuff duration multiplier.");
+                return;
+            }
+
+            // Remove and change to 0f, this makes the random debuffs from Feral Bite have 0 duration.
+            // Calamity reimplements a different version of this in CalamityGlobalBuff.Update
+            cursor.Remove();
+            cursor.Emit(OpCodes.Ldc_R4, 0f);
         }
         #endregion
 
-        #region Remove Lunatic Cultist Homing Resist
-        private static void RemoveLunaticCultistHomingResist(ILContext il)
+        #region Shield of Cthulhu Buffs
+        private static void DashMovementEdits(On_Player.orig_DashMovement orig, Player self)
         {
-            // Change Lunatic Cultist's resist from 25% to 0% (effectively removing it).
-            var cursor = new ILCursor(il);
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdsfld(typeof(ProjectileID.Sets), "CultistIsResistantTo")))
+            //This is a modified version of Vanilla's Shield of Cthulhu dash collision checks
+            //This is done to be able to adjust values as needed. Here we change the iframe amount and recoil velocity
+            if (self.dash == 2 && self.eocDash > 0 && self.eocHit < 0)
             {
-                LogFailure("Lunatic Cultist Homing Resist Removal", "Could not locate the Cultist resist set.");
-                return;
+                Rectangle DashHitbox = new Rectangle((int)(self.position.X + self.velocity.X * 0.5 - 4.0), (int)(self.position.Y + self.velocity.Y * 0.5 - 4.0), self.width + 8, self.height + 8);
+                for (int i = 0; i < 200; i++)
+                {
+                    NPC hitNPC = Main.npc[i];
+                    if (!hitNPC.active || hitNPC.dontTakeDamage || hitNPC.friendly || (hitNPC.aiStyle == NPCAIStyleID.Fairy && !(hitNPC.ai[2] <= 1f)) || !self.CanNPCBeHitByPlayerOrPlayerProjectile(hitNPC))
+                    {
+                        continue;
+                    }
+                    Rectangle npcHitbox = hitNPC.getRect();
+                    if (DashHitbox.Intersects(npcHitbox) && (hitNPC.noTileCollide || self.CanHit(hitNPC)))
+                    {
+                        float dmg = self.GetTotalDamage(DamageClass.Melee).ApplyTo(self.Calamity().copyrightInfringementShield ? 300f : 30f);
+                        float kb = self.GetTotalKnockback(DamageClass.Melee).ApplyTo(self.Calamity().copyrightInfringementShield ? 12f : 9f);
+                        bool crit = false;
+                        if (Main.rand.Next(100) < self.GetTotalCritChance(DamageClass.Melee))
+                        {
+                            crit = true;
+                        }
+                        int direction = self.direction;
+                        if (self.velocity.X < 0f)
+                        {
+                            direction = -1;
+                        }
+                        if (self.velocity.X > 0f)
+                        {
+                            direction = 1;
+                        }
+                        self.eocHit = i;
+                        if (self.whoAmI == Main.myPlayer)
+                        {
+                            self.ApplyDamageToNPC(hitNPC, (int)dmg, kb, direction, crit, DamageClass.Melee);
+                        }
+                        self.eocDash = 10;
+                        self.dashDelay = BalancingConstants.OnShieldBonkCooldown;
+                        self.velocity.X = -direction * 9;
+                        self.velocity.Y = -4f;
+                        self.GiveImmuneTimeForCollisionAttack(8); //This is normally 4 in vanilla
+                        int heldDir = 0;
+                        if (self.controlLeft)
+                            heldDir--;
+                        if (self.controlRight)
+                            heldDir++;
+                        int dirSum = Math.Abs(direction + heldDir);
+                        switch (dirSum)
+                        {
+                            case 0: //Holding in direction of recoil
+                                self.velocity.X *= 1.75f;
+                                break;
+                            case 1: //Neutral direction
+                                self.velocity.X *= 1.5f;
+                                break;
+                            case 2: //Holding in direction of enemy
+                                self.velocity.X *= 1.25f;
+                                break;
+                        }
+                    }
+                }
             }
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(0.75f))) // The resist ratio.
+            orig(self);
+        }
+        #endregion
+
+        #region Stardust Guardian Buffs
+        private static void StardustGuardianAttackBuffs(ILContext il)
+        {
+            // Increase the Stardust Guardian's attack range while wearing Stardust Wings.
+            var cursor = new ILCursor(il);
+
+            // Move to the label after the instruction that sets num3 to 500f.
+            for (int i = 0; i < 2; i++)
             {
-                LogFailure("Lunatic Cultist Homing Resist Removal", "Could not locate the resist percentage.");
+                if (!cursor.TryGotoNext(MoveType.AfterLabel, i => i.MatchLdcR4(100f)))
+                {
+                    LogFailure("Stardust Guardian Buffs", "Could not move to after the Stardust Guardian's attack range.");
+                    return;
+                }
+            }
+
+            // Define a label for the branch statement.
+            var label = il.DefineLabel();
+
+            // Load Player.wingsLogic, and check if it's Stardust Wings.
+            // If it is, increase the two attack range variables.
+            cursor.Emit(OpCodes.Ldloc_0);
+            cursor.Emit(OpCodes.Ldfld, typeof(Player).GetField("wingsLogic"));
+            cursor.Emit(OpCodes.Ldc_I4, (int)VanillaWingID.WingsStardust);
+            cursor.Emit(OpCodes.Bne_Un, label);
+
+            cursor.Emit(OpCodes.Ldc_R4, 960f);
+            cursor.Emit(OpCodes.Stloc, 4);
+            cursor.Emit(OpCodes.Ldc_R4, 960f);
+            cursor.Emit(OpCodes.Stloc, 5);
+
+            cursor.MarkLabel(label);
+
+            // Now, increase the Stardust Guardian's move speed when attacking targets.
+            // This is applied regardless of having Stardust Wings.
+            // This jumps to the base speed value when moving towards a target.
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdcR4(6f)))
+            {
+                LogFailure("Stardust Guardian Buffs", "Could not locate the Stardust Guardian's attack move speed.");
                 return;
             }
 
-            // Replace the value with 1, meaning -0% damage or no resist.
-            cursor.Next.Operand = 1f;
+            // Remove and replace with a higher value.
+            cursor.EmitPop();
+            cursor.Emit(OpCodes.Ldc_R4, 12f);
+        }
+        #endregion
+
+        #region Solar Wings Change to Solar Flare Armor
+        private static bool SolarWingsDashChange(On_Player.orig_ConsumeSolarFlare orig, Player self)
+        {
+            // Solar Wings restore flight time when Solar Flare armor's shield explodes
+            // This can trigger from either ramming enemies or taking damage
+            if (orig(self))
+            {
+                if (self.wingsLogic == (int)VanillaWingID.WingsSolar)
+                    self.wingTime += 60;
+                return true;
+            }
+            return false;
+        }
+        #endregion
+
+        #region Remove Melee Armor (Beetle Shell + Solar Flare) Multiplicative DR
+        private static void RemoveBeetleAndSolarFlareMultiplicativeDR(ILContext il)
+        {
+            // Remove the multiplicative DR from Solar Flare armor's Solar Shields
+            var cursor = new ILCursor(il);
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdfld<Player>("setSolar")))
+            {
+                LogFailure("Melee Multiplicative DR Removal", "Could not locate the Solar Flare set bonus field.");
+                return;
+            }
+
+            // AND with 0 (false) so that the Solar Flare set bonus is never considered to be active. This stops the multiplicative DR from applying.
+            cursor.Emit(OpCodes.Ldc_I4_0);
+            cursor.Emit(OpCodes.And);
+
+            // Remove the multiplicative DR from Beetle Shell's beetles
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdfld<Player>("beetleDefense")))
+            {
+                LogFailure("Melee Multiplicative DR Removal", "Could not locate the Beetle Shell set bonus field.");
+                return;
+            }
+
+            // AND with 0 (false) so that the Beetle Shell set bonus is never considered to be active. This stops the multiplicative DR from applying.
+            cursor.Emit(OpCodes.Ldc_I4_0);
+            cursor.Emit(OpCodes.And);
         }
         #endregion
 
@@ -453,6 +672,18 @@ namespace CalamityMod.ILEditing
             // AND with 0 (false) so that the Ice Spike is never considered to be hitting the player and thus never trigger the Frozen debuff.
             cursor.Emit(OpCodes.Ldc_I4_0);
             cursor.Emit(OpCodes.And);
+        }
+        #endregion
+
+        #region Make GFB Nurse Meteor Undodgeable
+        private static bool GFBNurseMeteorUndodgeable(On_Projectile.orig_IsDamageDodgable orig, Projectile self)
+        {
+            // Make the Leviathan meteor that spawns when talking to the Nurse in GFB undodgeable
+            // Unfortunately the Dodgeable value in HurtModifiers cannot be set in the hook, thus On editing a vanilla function
+            if (self.type == ModContent.ProjectileType<LeviathanBomb>() && self.damage == 9999)
+                return false;
+            else
+                return orig(self);
         }
         #endregion
     }

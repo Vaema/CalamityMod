@@ -1,4 +1,5 @@
 ﻿using CalamityMod.NPCs.ExoMechs;
+using CalamityMod.Packets;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -103,10 +104,7 @@ namespace CalamityMod.UI.DraedonSummoning
 
                     if (Main.netMode != NetmodeID.SinglePlayer)
                     {
-                        var netMessage = CalamityMod.Instance.GetPacket();
-                        netMessage.Write((byte)CalamityModMessageType.ExoMechSelection);
-                        netMessage.Write((int)CalamityWorld.DraedonMechToSummon);
-                        netMessage.Send();
+                        ExoMechSelectionPacket.Send();
                     }
                 }
                 Main.blockMouse = Main.LocalPlayer.mouseInterface = true;

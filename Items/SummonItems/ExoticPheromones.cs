@@ -4,7 +4,6 @@ using CalamityMod.NPCs.Bumblebirb;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.SummonItems
 {
@@ -35,17 +34,12 @@ namespace CalamityMod.Items.SummonItems
 
         public override bool CanUseItem(Player player)
         {
-            return player.ZoneJungle && !NPC.AnyNPCs(ModContent.NPCType<Bumblefuck>()) && !BossRushEvent.BossRushActive;
+            return player.ZoneJungle && !NPC.AnyNPCs(ModContent.NPCType<Dragonfolly>()) && !BossRushEvent.BossRushActive;
         }
 
         public override bool? UseItem(Player player)
         {
-            SoundEngine.PlaySound(SoundID.Roar, player.Center);
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-                NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<Bumblefuck>());
-            else
-                NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, player.whoAmI, ModContent.NPCType<Bumblefuck>());
-
+            CalamityUtils.SpawnBossUsingItem<Dragonfolly>(player, SoundID.Roar);
             return true;
         }
 

@@ -1,18 +1,81 @@
-﻿using CalamityMod.TileEntities;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.TileEntities;
 using CalamityMod.Tiles.DraedonStructures;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ObjectData;
 
 namespace CalamityMod.Schematics
 {
-    // TODO -- This can be made into a ModSystem with simple OnModLoad and Unload hooks.
-    public static class SchematicManager
+    public sealed class SchematicManager : ModSystem
     {
+        internal const string ShimmerShrineKey = "Shimmer Shrine Key";
+        internal const string ShimmerShrineFilename = "Schematics/Shimmer_Shrine.csch";
+
+        internal const string BrimstoneAtriumType1Key = "Brimstone Atrium Type 1 Key";
+        internal const string BrimstoneAtriumType1Filename = "Schematics/Brimstone_Atrium1.csch";
+
+        internal const string BrimstoneAtriumType2Key = "Brimstone Atrium Type 2 Key";
+        internal const string BrimstoneAtriumType2Filename = "Schematics/Brimstone_Atrium2.csch";
+
+        internal const string BrimstoneAtriumType3Key = "Brimstone Atrium Type 3 Key";
+        internal const string BrimstoneAtriumType3Filename = "Schematics/Brimstone_Atrium3.csch";
+
+        internal const string BonescrapperCacheType1Key = "Bonescrapper Cache Type 1 Key";
+        internal const string BonescrapperCacheType1Filename = "Schematics/Bonescrapper_Cache1.csch";
+
+        internal const string BonescrapperCacheType2Key = "Bonescrapper Cache Type 2 Key";
+        internal const string BonescrapperCacheType2Filename = "Schematics/Bonescrapper_Cache2.csch";
+
+        internal const string BonescrapperCacheType3Key = "Bonescrapper Cache Type 3 Key";
+        internal const string BonescrapperCacheType3Filename = "Schematics/Bonescrapper_Cache3.csch";
+
+        internal const string BonescrapperCacheType4Key = "Bonescrapper Cache Type 4 Key";
+        internal const string BonescrapperCacheType4Filename = "Schematics/Bonescrapper_Cache4.csch";
+
+        internal const string BonescrapperCacheType5Key = "Bonescrapper Cache Type 5 Key";
+        internal const string BonescrapperCacheType5Filename = "Schematics/Bonescrapper_Cache5.csch";
+
+        internal const string BonescrapperCacheType6Key = "Bonescrapper Cache Type 6 Key";
+        internal const string BonescrapperCacheType6Filename = "Schematics/Bonescrapper_Cache6.csch";
+
+        internal const string SanctumofOblivionType1Key = "Sanctum of Oblivion Type 1 Key";
+        internal const string SanctumofOblivionType1Filename = "Schematics/Sanctum_of_Oblivion1.csch";
+
+        internal const string SanctumofOblivionType2Key = "Sanctum of Oblivion Type 2 Key";
+        internal const string SanctumofOblivionType2Filename = "Schematics/Sanctum_of_Oblivion2.csch";
+
+        internal const string SanctumofOblivionType3Key = "Sanctum of Oblivion Type 3 Key";
+        internal const string SanctumofOblivionType3Filename = "Schematics/Sanctum_of_Oblivion3.csch";
+
+        internal const string HellstoneStrongholdType1Key = "Hellstone Stronghold Type 1 Key";
+        internal const string HellstoneStrongholdType1Filename = "Schematics/Hellstone_Stronghold1.csch";
+
+        internal const string HellstoneStrongholdType2Key = "Hellstone Stronghold Type 2 Key";
+        internal const string HellstoneStrongholdType2Filename = "Schematics/Hellstone_Stronghold2.csch";
+
+        internal const string DemonicDungeonType1Key = "Demonic Dungeon Type 1 Key";
+        internal const string DemonicDungeonType1Filename = "Schematics/Demonic_Dungeon1.csch";
+
+        internal const string DemonicDungeonType2Key = "Demonic Dungeon Type 2 Key";
+        internal const string DemonicDungeonType2Filename = "Schematics/Demonic_Dungeon2.csch";
+
+        internal const string BarbedStockadeType1Key = "Barbed Stockade Type 1 Key";
+        internal const string BarbedStockadeType1Filename = "Schematics/Barbed_Stockade1.csch";
+
+        internal const string BarbedStockadeType2Key = "Barbed Stockade Type 2 Key";
+        internal const string BarbedStockadeType2Filename = "Schematics/Barbed_Stockade2.csch";
+
+        internal const string BarbedStockadeType3Key = "Barbed Stockade Type 3 Key";
+        internal const string BarbedStockadeType3Filename = "Schematics/Barbed_Stockade3.csch";
+
+        internal const string BarbedStockadeType4Key = "Barbed Stockade Type 4 Key";
+        internal const string BarbedStockadeType4Filename = "Schematics/Barbed_Stockade4.csch";
+
         internal const string RustedWorkshopKey = "Rusted Workshop";
         internal const string RustedWorkshopFilename = "Schematics/RustedWorkshop.csch";
 
@@ -20,22 +83,22 @@ namespace CalamityMod.Schematics
         internal const string ResearchOutpostFilename = "Schematics/ResearchOutpost.csch";
 
         internal const string SunkenSeaLabKey = "Sunken Sea Laboratory";
-        internal const string SunkenSeaLabFilename = "Schematics/DraedonsLab_SunkenSea.csch";
+        internal const string SunkenSeaLabFilename = "Schematics/Arsenal_Lab_Sunken.csch";
 
         internal const string PlanetoidLabKey = "Planetoid Laboratory";
-        internal const string PlanetoidLabFilename = "Schematics/DraedonsLab_Planetoid.csch";
+        internal const string PlanetoidLabFilename = "Schematics/Arsenal_Lab_Planetoid.csch";
 
         internal const string PlagueLabKey = "Plague Laboratory";
-        internal const string PlagueLabFilename = "Schematics/DraedonsLab_Plague.csch";
+        internal const string PlagueLabFilename = "Schematics/Arsenal_Lab_Plague.csch";
 
         internal const string HellLabKey = "Hell Laboratory";
-        internal const string HellLabFilename = "Schematics/DraedonsLab_Hell.csch";
+        internal const string HellLabFilename = "Schematics/Arsenal_Lab_Underworld.csch";
 
         internal const string IceLabKey = "Ice Laboratory";
-        internal const string IceLabFilename = "Schematics/DraedonsLab_Ice.csch";
+        internal const string IceLabFilename = "Schematics/Arsenal_Lab_Ice.csch";
 
         internal const string CavernLabKey = "Cavern Laboratory";
-        internal const string CavernLabFilename = "Schematics/DraedonsLab_Cavern.csch";
+        internal const string CavernLabFilename = "Schematics/Arsenal_Lab_Onyx.csch";
 
         internal const string CorruptionShrineKey = "Corruption Shrine";
         internal const string CorruptionShrineFilename = "Schematics/Shrine_Corruption.csch";
@@ -61,9 +124,14 @@ namespace CalamityMod.Schematics
         internal const string SurfaceShrineKey = "Surface Shrine";
         internal const string SurfaceShrineFilename = "Schematics/Shrine_Surface.csch";
 
+        internal const string RoxcaliburShrineKey1 = "Roxcalibur Shrine 1";
+        internal const string RoxcaliburShrine1Filename = "Schematics/Shrine_Roxcalibur_ShrineVariant.csch";
+        internal const string RoxcaliburShrineKey2 = "Roxcalibur Shrine 2";
+        internal const string RoxcaliburShrine2Filename = "Schematics/Shrine_Roxcalibur_TorchVariant.csch";
+
         internal const string VernalKey = "Vernal Pass";
         internal const string VernalFilename = "Schematics/VernalPass.csch";
-        
+
         internal const string MechanicShedKey = "Mechanic Key";
         internal const string MechanicShedFilename = "Schematics/MechanicShed.csch";
 
@@ -90,17 +158,42 @@ namespace CalamityMod.Schematics
         internal const string CragRuinKey3Filename = "Schematics/CragRuin3.csch";
         internal const string CragRuinKey4 = "Crag Ruin 4";
         internal const string CragRuinKey4Filename = "Schematics/CragRuin4.csch";
-        
+
         internal static Dictionary<string, SchematicMetaTile[,]> TileMaps;
         internal static Dictionary<string, PilePlacementFunction> PilePlacementMaps;
         public delegate void PilePlacementFunction(int x, int y, Rectangle placeInArea);
 
         #region Load/Unload
-        internal static void Load()
+        public override void OnModLoad()
         {
             PilePlacementMaps = new Dictionary<string, PilePlacementFunction>();
             TileMaps = new Dictionary<string, SchematicMetaTile[,]>
             {
+                // Shimmer Shrine
+                [ShimmerShrineKey] = CalamitySchematicIO.LoadSchematic(ShimmerShrineFilename),
+
+                // Underworld structures
+                [BrimstoneAtriumType1Key] = CalamitySchematicIO.LoadSchematic(BrimstoneAtriumType1Filename),
+                [BrimstoneAtriumType2Key] = CalamitySchematicIO.LoadSchematic(BrimstoneAtriumType2Filename),
+                [BrimstoneAtriumType3Key] = CalamitySchematicIO.LoadSchematic(BrimstoneAtriumType3Filename),
+                [BonescrapperCacheType1Key] = CalamitySchematicIO.LoadSchematic(BonescrapperCacheType1Filename),
+                [BonescrapperCacheType2Key] = CalamitySchematicIO.LoadSchematic(BonescrapperCacheType2Filename),
+                [BonescrapperCacheType3Key] = CalamitySchematicIO.LoadSchematic(BonescrapperCacheType3Filename),
+                [BonescrapperCacheType4Key] = CalamitySchematicIO.LoadSchematic(BonescrapperCacheType4Filename),
+                [BonescrapperCacheType5Key] = CalamitySchematicIO.LoadSchematic(BonescrapperCacheType5Filename),
+                [BonescrapperCacheType6Key] = CalamitySchematicIO.LoadSchematic(BonescrapperCacheType6Filename),
+                [SanctumofOblivionType1Key] = CalamitySchematicIO.LoadSchematic(SanctumofOblivionType1Filename),
+                [SanctumofOblivionType2Key] = CalamitySchematicIO.LoadSchematic(SanctumofOblivionType2Filename),
+                [SanctumofOblivionType3Key] = CalamitySchematicIO.LoadSchematic(SanctumofOblivionType3Filename),
+                [HellstoneStrongholdType1Key] = CalamitySchematicIO.LoadSchematic(HellstoneStrongholdType1Filename),
+                [HellstoneStrongholdType2Key] = CalamitySchematicIO.LoadSchematic(HellstoneStrongholdType2Filename),
+                [DemonicDungeonType1Key] = CalamitySchematicIO.LoadSchematic(DemonicDungeonType1Filename),
+                [DemonicDungeonType2Key] = CalamitySchematicIO.LoadSchematic(DemonicDungeonType2Filename),
+                [BarbedStockadeType1Key] = CalamitySchematicIO.LoadSchematic(BarbedStockadeType1Filename),
+                [BarbedStockadeType2Key] = CalamitySchematicIO.LoadSchematic(BarbedStockadeType2Filename),
+                [BarbedStockadeType3Key] = CalamitySchematicIO.LoadSchematic(BarbedStockadeType3Filename),
+                [BarbedStockadeType4Key] = CalamitySchematicIO.LoadSchematic(BarbedStockadeType4Filename),
+
                 // Draedon's Arsenal world gen structures
                 [RustedWorkshopKey] = CalamitySchematicIO.LoadSchematic(RustedWorkshopFilename),
                 [ResearchOutpostKey] = CalamitySchematicIO.LoadSchematic(ResearchOutpostFilename),
@@ -120,6 +213,8 @@ namespace CalamityMod.Schematics
                 [MarbleShrineKey] = CalamitySchematicIO.LoadSchematic(MarbleShrineFilename),
                 [MushroomShrineKey] = CalamitySchematicIO.LoadSchematic(MushroomShrineFilename),
                 [SurfaceShrineKey] = CalamitySchematicIO.LoadSchematic(SurfaceShrineFilename),
+                [RoxcaliburShrineKey1] = CalamitySchematicIO.LoadSchematic(RoxcaliburShrine1Filename),
+                [RoxcaliburShrineKey2] = CalamitySchematicIO.LoadSchematic(RoxcaliburShrine2Filename),
 
                 [VernalKey] = CalamitySchematicIO.LoadSchematic(VernalFilename),
 
@@ -152,7 +247,8 @@ namespace CalamityMod.Schematics
                 ["Sulphurous Scrap 7"] = CalamitySchematicIO.LoadSchematic("Schematics/SulphurousScrap7.csch").ShaveOffEdge(),
             };
         }
-        internal static void Unload()
+
+        public override void Unload()
         {
             TileMaps = null;
             PilePlacementMaps = null;
@@ -171,12 +267,12 @@ namespace CalamityMod.Schematics
         #endregion Get Schematic Area
 
         #region Place Schematic
-        public static void PlaceSchematic<T>(string name, Point pos, SchematicAnchor anchorType, ref bool specialCondition, T chestDelegate = null) where T : Delegate
+        public static void PlaceSchematic<T>(string name, Point pos, SchematicAnchor anchorType, ref bool specialCondition, T chestDelegate = null, bool flipHorizontal = false) where T : Delegate
         {
             // If no schematic exists with this name, cancel with a helpful log message.
-            if (!TileMaps.ContainsKey(name))
+            if (!TileMaps.TryGetValue(name, out SchematicMetaTile[,] schematic))
             {
-                CalamityMod.Instance.Logger.Warn($"Tried to place a schematic with name \"{name}\". No matching schematic file found.");
+                CalamityMod.Log.Warn($"Tried to place a schematic with name \"{name}\". No matching schematic file found.");
                 return;
             }
 
@@ -190,7 +286,6 @@ namespace CalamityMod.Schematics
             PilePlacementMaps.TryGetValue(name, out PilePlacementFunction pilePlacementFunction);
 
             // Grab the schematic itself from the dictionary of loaded schematics.
-            SchematicMetaTile[,] schematic = TileMaps[name];
             int width = schematic.GetLength(0);
             int height = schematic.GetLength(1);
 
@@ -236,7 +331,7 @@ namespace CalamityMod.Schematics
             // Make sure that all four corners of the target area are actually in the world.
             if (!WorldGen.InWorld(cornerX, cornerY) || !WorldGen.InWorld(cornerX + width, cornerY + height))
             {
-                CalamityMod.Instance.Logger.Warn("Schematic failed to place: Part of the target location is outside the game world.");
+                CalamityMod.Log.Warn("Schematic failed to place: Part of the target location is outside the game world.");
                 return;
             }
 
@@ -273,9 +368,213 @@ namespace CalamityMod.Schematics
             for (int x = 0; x < width; ++x)
                 for (int y = 0; y < height; ++y)
                 {
-                    SchematicMetaTile smt = schematic[x, y];
+                    //Uses the tile opposite where its placing when the schematic is flipped horizontally
+                    SchematicMetaTile smt = schematic[flipHorizontal ? width - 1 - x : x, y];
                     smt.ApplyTo(x + cornerX, y + cornerY, originalTiles[x, y]);
                     Tile worldTile = Main.tile[x + cornerX, y + cornerY];
+
+                    //Handle any additional fixes that need to be made as a result of this structure being flipped horizontally
+                    if (flipHorizontal && !smt.keepTile)
+                    {
+                        //Turns Left Slopes into Right Slopes and vice versa.
+                        if (worldTile.Slope != SlopeType.Solid)
+                            worldTile.Slope += (int)worldTile.Slope % 2 == 0 ? -1 : 1;
+
+                        //Correct Multi-Tile TileFrames
+                        int style = 0, alt = 0;
+                        TileObjectData.GetTileInfo(worldTile, ref style, ref alt);
+                        TileObjectData data = TileObjectData.GetTileData(worldTile.TileType, style, alt);
+                        if (data != null && !TileID.Sets.Platforms[worldTile.TileType])
+                        {
+                            int sheetSquare = 16 + data.CoordinatePadding;
+
+                            if (data.Width > 1)
+                            {
+                                int frameNum = worldTile.TileFrameX / sheetSquare % data.Width;
+                                //This equation gets us the amount we need to move TileFrameX to correct any issues MultiTiles that occurred during the flip process
+                                worldTile.TileFrameX += (short)((-frameNum + (data.Width - (frameNum + 1))) * (16 + data.CoordinatePadding));
+                            }
+
+                            //Flips Tiles that place directionally (Chairs, Beds, ect.)                        
+                            if (data.Direction != Terraria.Enums.TileObjectDirection.None)// && !ValidTileEntityTypes.Contains(worldTile.TileType))
+                            {
+                                int range = 1;
+                                if (data.RandomStyleRange > range)
+                                    range = data.RandomStyleRange;
+                                if (worldTile.TileFrameX / sheetSquare % (data.Width * data.StyleMultiplier * range) < data.Width)
+                                    worldTile.TileFrameX += (short)(sheetSquare * data.Width);
+                                else
+                                    worldTile.TileFrameX -= (short)(sheetSquare * data.Width);
+                            }
+                        }
+                        //Fix Platform TileFrames
+                        else if (TileID.Sets.Platforms[worldTile.TileType])
+                            switch (worldTile.TileFrameX / 18)
+                            {
+                                case 1:
+                                    worldTile.TileFrameX += 18;
+                                    break;
+                                case 2:
+                                    worldTile.TileFrameX -= 18;
+                                    break;
+                                case 3:
+                                    worldTile.TileFrameX += 18;
+                                    break;
+                                case 4:
+                                    worldTile.TileFrameX -= 18;
+                                    break;
+                                case 8:
+                                    worldTile.TileFrameX += 36;
+                                    break;
+                                case 10:
+                                    worldTile.TileFrameX -= 36;
+                                    break;
+                                case 12:
+                                    worldTile.TileFrameX += 18;
+                                    break;
+                                case 13:
+                                    worldTile.TileFrameX -= 18;
+                                    break;
+                                case 15:
+                                    worldTile.TileFrameX += 18;
+                                    break;
+                                case 16:
+                                    worldTile.TileFrameX -= 18;
+                                    break;
+                                case 19:
+                                    worldTile.TileFrameX += 18;
+                                    break;
+                                case 20:
+                                    worldTile.TileFrameX -= 18;
+                                    break;
+                                case 25:
+                                    worldTile.TileFrameX += 18;
+                                    break;
+                                case 26:
+                                    worldTile.TileFrameX -= 18;
+                                    break;
+                            }
+                        //A handful of tiles do not have any TileObjectData and/or are unqiuely sheeted. Because of this we need to correct their frames manually
+                        //Note that this is not a comprehensive list. So far only tiles which appear in existing Calamity Structures are here. There may be other tiles which need to be added in the future.
+                        else
+                        {
+                            switch (worldTile.TileType)
+                            {
+                                case TileID.Pots: //Vanilla pots do not have any TileObjectData, however Modded pots which do will be caught by the above conditions.
+                                    if (worldTile.TileFrameX / 18 == 0)
+                                        worldTile.TileFrameX += 18;
+                                    else
+                                        worldTile.TileFrameX -= 18;
+                                    break;
+                                case TileID.HolidayLights: //Christmas Lights must be fixed when facing Left or Right
+                                    if (worldTile.TileFrameY / 18 == 3)
+                                        worldTile.TileFrameY -= 18;
+                                    else if (worldTile.TileFrameY / 18 == 2)
+                                        worldTile.TileFrameY += 18;
+                                    break;
+                                case TileID.MinecartTrack: //Minecart Tracks are very similar to Platforms, and must be dealt with accordingly. Strangely, their TileFrameX and Y are handled very differently when compared to most other tiles.
+                                    switch (worldTile.TileFrameX)
+                                    {
+                                        case 2:
+                                            worldTile.TileFrameX++;
+                                            break;
+                                        case 3:
+                                            worldTile.TileFrameX--;
+                                            break;
+                                        case 4:
+                                            worldTile.TileFrameX++;
+                                            break;
+                                        case 5:
+                                            worldTile.TileFrameX--;
+                                            break;
+                                        case 6:
+                                            worldTile.TileFrameX++;
+                                            break;
+                                        case 7:
+                                            worldTile.TileFrameX--;
+                                            break;
+                                        case 8:
+                                            worldTile.TileFrameX++;
+                                            break;
+                                        case 9:
+                                            worldTile.TileFrameX--;
+                                            break;
+                                        case 14:
+                                            worldTile.TileFrameX++;
+                                            break;
+                                        case 15:
+                                            worldTile.TileFrameX--;
+                                            break;
+                                        case 18:
+                                            worldTile.TileFrameX++;
+                                            break;
+                                        case 19:
+                                            worldTile.TileFrameX--;
+                                            break;
+                                        case 24:
+                                            worldTile.TileFrameX++;
+                                            break;
+                                        case 25:
+                                            worldTile.TileFrameX--;
+                                            break;
+                                    }
+                                    if (worldTile.TileFrameY == 8)
+                                        worldTile.TileFrameY++;
+                                    else if (worldTile.TileFrameY == 9)
+                                        worldTile.TileFrameY--;
+                                    break;
+                                case TileID.ExposedGems: //Similarly to Holiday Lights, we need to determine if Exposed Gems are facing to the left or right and then flip them. However unlike holiday lights, Exposed Gems have 3 variants we must also account for. We do this by multiplying the standard size of 18 by three when dividing the TileFrameY
+                                    if (worldTile.TileFrameY / 54 == 3)
+                                        worldTile.TileFrameY -= 54;
+                                    else if (worldTile.TileFrameY / 54 == 2)
+                                        worldTile.TileFrameY += 54;
+                                    break;
+                                case TileID.Trees: //Trees need to be corrected manually as their sheets are pretty much wholely unique.
+                                    if (worldTile.TileFrameY / 22 >= 9)
+                                    {
+                                        if (worldTile.TileFrameX / 22 == 1)
+                                            break;
+                                        else if (worldTile.TileFrameX / 22 == 2)
+                                            worldTile.TileFrameX += 22;
+                                        else if (worldTile.TileFrameX / 22 == 3)
+                                            worldTile.TileFrameX -= 22;
+                                    }
+                                    else
+                                    {
+                                        switch (worldTile.TileFrameX / 22)
+                                        {
+                                            case 0:
+                                                if (worldTile.TileFrameY / 22 > 5)
+                                                    worldTile.TileFrameX += 66;
+                                                break;
+                                            case 1:
+                                                worldTile.TileFrameX += 22;
+                                                break;
+                                            case 2:
+                                                worldTile.TileFrameX -= 22;
+                                                break;
+                                            case 3:
+                                                worldTile.TileFrameX += 22;
+                                                if (worldTile.TileFrameY / 22 < 3)
+                                                    worldTile.TileFrameY += 66;
+                                                else if (worldTile.TileFrameY / 18 < 6)
+                                                    worldTile.TileFrameY -= 66;
+                                                break;
+                                            case 4:
+                                                worldTile.TileFrameX -= 22;
+                                                if (worldTile.TileFrameY / 22 < 3)
+                                                    worldTile.TileFrameY += 66;
+                                                else if (worldTile.TileFrameY / 22 < 6)
+                                                    worldTile.TileFrameY -= 66;
+                                                else if (worldTile.TileFrameY / 22 >= 6)
+                                                    worldTile.TileFrameX -= 66;
+                                                break;
+                                        }
+                                    }
+                                    break;
+                            }
+                        }
+                    }
 
                     // If the determined tile type is a chest and this is its top left corner, define it appropriately.
                     // Skip this step if this schematic position preserves tiles.
@@ -312,37 +611,80 @@ namespace CalamityMod.Schematics
         #endregion
 
         #region Place Schematic Helper Methods
+        //This list allows us to check if a tile is valid before we get its data and try to place a Tile Entity
+        private static readonly List<int> ValidTileEntityTypes =
+        [
+            ModContent.TileType<ChargingStation>(),
+            ModContent.TileType<DraedonLabTurret>(),
+            ModContent.TileType<LabHologramProjector>(),
+            ModContent.TileType<HostileFireTurret>(),
+            ModContent.TileType<HostileIceTurret>(),
+            ModContent.TileType<HostileLaserTurret>(),
+            ModContent.TileType<HostileOnyxTurret>(),
+            ModContent.TileType<HostilePlagueTurret>(),
+            ModContent.TileType<HostileWaterTurret>()
+        ];
         private static void TryToPlaceTileEntities(int x, int y, Tile t)
         {
-            // A tile entity in an empty spot would make no sense.
-            if (!t.HasTile)
-                return;
-            // Ignore tiles that aren't at the top left of the tile.
-            // All of Calamity's worldgen-placed tile entities refuse to exist except at the top left corner of their host tile.
-            if (t.TileFrameX != 0 || t.TileFrameY != 0)
+            int tileType = t.TileType;
+
+            if (!ValidTileEntityTypes.Contains(tileType))
                 return;
 
-            // This cannot be a switch because switch cases must be compile time constants, which ModContent calls are not.
-            // Therefore the only option is an if-else ladder.
-            int tileType = t.TileType;
-            if (tileType == ModContent.TileType<ChargingStation>())
-                TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TEChargingStation>());
-            else if (tileType == ModContent.TileType<DraedonLabTurret>())
-                TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TEHostileLabTurret>());
-            else if (tileType == ModContent.TileType<LabHologramProjector>())
-                TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TELabHologramProjector>());
-            else if (tileType == ModContent.TileType<HostileFireTurret>())
-                TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TEHostileFireTurret>());
-            else if (tileType == ModContent.TileType<HostileIceTurret>())
-                TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TEHostileIceTurret>());
-            else if (tileType == ModContent.TileType<HostileLaserTurret>())
-                TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TEHostileLaserTurret>());
-            else if (tileType == ModContent.TileType<HostileOnyxTurret>())
-                TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TEHostileOnyxTurret>());
-            else if (tileType == ModContent.TileType<HostilePlagueTurret>())
-                TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TEHostilePlagueTurret>());
-            else if (tileType == ModContent.TileType<HostileWaterTurret>())
-                TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TEHostileWaterTurret>());
+            int index = ValidTileEntityTypes.IndexOf(tileType);
+
+            int FrameX, FrameY;
+            int style = 0, alt = 0;
+            TileObjectData.GetTileInfo(t, ref style, ref alt);
+            TileObjectData data = TileObjectData.GetTileData(t.TileType, style, alt);
+            //Using TileObjectData, we're able to check if the given tile is the top left of any style.
+            //This resolves issues in generating the Lab Hologram Projector when facing to the left, and should also apply to similar Tile Entities
+            if (data != null)
+            {
+                int sheetSquare = 16 + data.CoordinatePadding;
+                FrameX = t.TileFrameX / sheetSquare % data.Width;
+                FrameY = t.TileFrameY / sheetSquare % data.Height;
+            }
+            else
+            {
+                FrameX = t.TileFrameX;
+                FrameY = t.TileFrameY;
+            }
+            //Instead of just checking if t.TileFrameX == 0, we want to check if its the top left corner of any available style.
+            //For example, the old function would not work if the Lab Hologram Projector was facing to the left, due to the top left of that style not being at TileFrameX == 0. Now it will work!
+            if (t.HasTile && FrameX == 0 && FrameY == 0)
+            {
+                switch (index)
+                {
+                    case 0:
+                        TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TEChargingStation>());
+                        break;
+                    case 1:
+                        TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TEHostileLabTurret>());
+                        break;
+                    case 2:
+                        TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TELabHologramProjector>());
+                        break;
+                    case 3:
+                        TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TEHostileFireTurret>());
+                        break;
+                    case 4:
+                        TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TEHostileIceTurret>());
+                        break;
+                    case 5:
+                        TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TEHostileLaserTurret>());
+                        break;
+                    case 6:
+                        TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TEHostileOnyxTurret>());
+                        break;
+                    case 7:
+                        TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TEHostilePlagueTurret>());
+                        break;
+                    case 8:
+                        TileEntity.PlaceEntityNet(x, y, ModContent.TileEntityType<TEHostileWaterTurret>());
+                        break;
+                }
+            }
         }
         #endregion
     }

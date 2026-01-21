@@ -1,7 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Particles
@@ -73,7 +74,7 @@ namespace CalamityMod.Particles
             {
                 Vector2 dustPosition = Position + Main.rand.NextVector2Circular(8f, 8f);
 
-                Dust dust = Dust.NewDustPerfect(dustPosition, 6, Vector2.UnitY.RotatedByRandom(MathHelper.PiOver2) * Main.rand.NextFloat(-1f, -5f), 0, Color.White, 1.2f);
+                Dust dust = Dust.NewDustPerfect(dustPosition, DustID.Torch, Vector2.UnitY.RotatedByRandom(MathHelper.PiOver2) * Main.rand.NextFloat(-1f, -5f), 0, Color.White, 1.2f);
                 dust.noGravity = true;
             }
         }

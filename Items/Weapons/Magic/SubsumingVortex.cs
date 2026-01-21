@@ -9,13 +9,13 @@ using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.GameContent;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
     public class SubsumingVortex : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
+        public override string Texture => "CalamityMod/Items/Weapons/Magic/SubsumingVortexSmall";
         public const int RightClickVortexCount = 3;
 
         public const int VortexReleaseRate = 27;
@@ -40,16 +40,16 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override void SetStaticDefaults()
         {
-                       ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 86;
             Item.height = 104;
-            Item.damage = 466;
+            Item.damage = 460;
             Item.DamageType = DamageClass.Magic;
-            Item.useTime = Item.useAnimation = 20;
+            Item.useAnimation = Item.useTime = 20;
             Item.shootSpeed = 7f;
             Item.mana = 22;
             Item.knockBack = 5f;
@@ -57,8 +57,8 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shoot = ModContent.ProjectileType<EnormousConsumingVortex>();
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = SoundID.Item84;
-            Item.rare = ModContent.RarityType<Violet>();
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.noMelee = true;
             Item.channel = true;
             Item.autoReuse = true;
@@ -78,18 +78,16 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
-            CalamityUtils.DrawInventoryCustomScale(
-                spriteBatch,
-                texture: TextureAssets.Item[Type].Value,
-                position,
-                frame,
-                drawColor,
-                itemColor,
-                origin,
-                scale,
-                wantedScale: 0.4f,
-                drawOffset: default
-            );
+            Texture2D actualSprite = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Magic/SubsumingVortex").Value;
+
+            spriteBatch.DrawNewInventorySprite(actualSprite, new Vector2(48f, 52f), position, drawColor, origin, scale, new Vector2(-6f, -6f));
+            return false;
+        }
+
+        public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
+        {
+            Texture2D actualSprite = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Magic/SubsumingVortex").Value;
+            spriteBatch.Draw(actualSprite, Item.Center - Main.screenPosition, null, lightColor, rotation, actualSprite.Size() / 2f, scale, 0, 0);
             return false;
         }
 
@@ -120,7 +118,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<AuguroftheElements>().
+                AddIngredient<AuguroftheVoid>().
                 AddIngredient<EventHorizon>().
                 AddIngredient<TearsofHeaven>().
                 AddIngredient<MiracleMatter>().

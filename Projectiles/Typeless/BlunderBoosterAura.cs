@@ -1,4 +1,5 @@
-﻿using CalamityMod.NPCs;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.NPCs;
 using CalamityMod.NPCs.AcidRain;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -8,6 +9,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
+    [PierceResistException]
     public class BlunderBoosterAura : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
@@ -17,7 +19,7 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
         }
 
         public override void SetDefaults()
@@ -64,59 +66,20 @@ namespace CalamityMod.Projectiles.Typeless
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.AddBuff(BuffID.Electrified, 180);
-
-            if (target.knockBackResist <= 0f)
-                return;
-
-            // 12AUG2023: Ozzatron: TML was giving NaN knockback, probably due to 0 base knockback. Do not use hit.Knockback
-            if (CalamityGlobalNPC.ShouldAffectNPC(target))
-            {
-                float knockbackMultiplier = MathHelper.Clamp(1f - target.knockBackResist, 0f, 1f);
-                Vector2 trueKnockback = target.Center - Projectile.Center;
-                trueKnockback.Normalize();
-                target.velocity = trueKnockback * knockbackMultiplier;
-            }
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.Electrified, 180);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<VermillionFlux>(), 180);
+        // CIT 2MAY2025: Replaced old manual knockback code with setting HitDirectionOverride
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.HitDirectionOverride = (target.Center.X > Projectile.Center.X).ToDirectionInt();
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<VermillionFlux>(), 180);
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D sprite = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D sprite = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
 
             Color drawColour = Color.White;
             Rectangle sourceRect = new Rectangle(Projectile.width * (int)Projectile.localAI[1], Projectile.height * (int)Projectile.localAI[0], Projectile.width, Projectile.height);
             Vector2 origin = new Vector2(Projectile.width / 2, Projectile.height / 2);
 
-            float opacity = 1f;
-            int sparkCount = 0;
-            int fadeTime = 20;
-
-            if (Projectile.timeLeft < fadeTime)
-            {
-                opacity = Projectile.timeLeft * (1f / fadeTime);
-                sparkCount = fadeTime - Projectile.timeLeft;
-            }
-
-            for (int i = 0; i < sparkCount * 2; i++)
-            {
-                int dustType = 132;
-                if (Main.rand.NextBool())
-                {
-                    dustType = 264;
-                }
-                float rangeDiff = 2f;
-
-                Vector2 dustPos = new Vector2(Main.rand.NextFloat(-1, 1), Main.rand.NextFloat(-1, 1));
-                dustPos.Normalize();
-                dustPos *= radius + Main.rand.NextFloat(-rangeDiff, rangeDiff);
-
-                int dust = Dust.NewDust(Projectile.Center + dustPos, 1, 1, dustType, 0, 0, 0, default, 0.75f);
-                Main.dust[dust].noGravity = true;
-            }
+            float opacity = Main.player[Projectile.owner].Calamity().blunderBoosterVisibility ? 1f : 0.25f;
 
             Main.EntitySpriteDraw(sprite, Projectile.Center - Main.screenPosition, sourceRect, drawColour * opacity, Projectile.rotation, origin, 1f, SpriteEffects.None, 0);
             return false;

@@ -1,4 +1,4 @@
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Items.Potions;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -12,27 +12,22 @@ namespace CalamityMod.Items.Placeables.Furniture
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.width = 16;
-            Item.height = 20;
-            Item.maxStack = 9999;
-            Item.useTurn = true;
-            Item.autoReuse = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.consumable = true;
-            Item.value = 500;
-            Item.createTile = ModContent.TileType<Tiles.Furniture.TranquilityCandle>();
-            Item.flame = true;
-            Item.holdStyle = 1;
+            Item.DefaultToTorch(ModContent.TileType<Tiles.Furniture.TranquilityCandle>(), 0, false);
+            Item.value = Item.sellPrice(silver: 1);
+            Item.rare = ItemRarityID.Blue;
         }
 
         public override void HoldItem(Player player)
         {
             player.Calamity().tranquilityCandle = true;
-            if (Main.rand.Next(player.itemAnimation > 0 ? 10 : 20) == 0)
+
+            // Do not make light if wet
+            if (Collision.DrownCollision(player.position, player.width, player.height, player.gravDir) || Item.wet)
+                return;
+
+            if (Main.rand.NextBool(player.itemAnimation > 0 ? 10 : 20))
             {
-                Dust.NewDust(new Vector2(player.itemLocation.X + 10f * player.direction, player.itemLocation.Y - 12f * player.gravDir), 4, 4, 62);
+                Dust.NewDust(new Vector2(player.itemLocation.X + 10f * player.direction, player.itemLocation.Y - 12f * player.gravDir), 4, 4, DustID.PurpleTorch);
             }
             player.itemLocation.Y += 8;
             Vector2 position = player.RotatedRelativePoint(new Vector2(player.itemLocation.X + 12f * player.direction + player.velocity.X, player.itemLocation.Y - 14f + player.velocity.Y), true);
@@ -41,16 +36,16 @@ namespace CalamityMod.Items.Placeables.Furniture
 
         public override void PostUpdate()
         {
-            Lighting.AddLight((int)((Item.position.X + Item.width / 2) / 16f), (int)((Item.position.Y + Item.height / 2) / 16f), 1f, 0.55f, 1f);
+            if (!Item.wet)
+                Lighting.AddLight((int)((Item.position.X + Item.width / 2) / 16f), (int)((Item.position.Y + Item.height / 2) / 16f), 1f, 0.55f, 1f);
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.PeaceCandle, 3).
-                AddIngredient(ItemID.SoulofLight, 3).
-                AddIngredient<CoreofEleum>(2).
+                AddIngredient(ItemID.PeaceCandle).
                 AddIngredient<ZenPotion>().
+                AddIngredient<EssenceofEleum>(2).
                 AddTile(TileID.WorkBenches).
                 Register();
         }

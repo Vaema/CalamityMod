@@ -3,8 +3,6 @@ using CalamityMod.NPCs.Ravager;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using Terraria.DataStructures;
 
 namespace CalamityMod.Items.SummonItems
 {
@@ -14,7 +12,7 @@ namespace CalamityMod.Items.SummonItems
         public new string LocalizationCategory => "Items.SummonItems";
         public override void SetStaticDefaults()
         {
-           	ItemID.Sets.SortingPriorityBossSpawns[Type] = 17; // Solar Tablet (1 above Lihzahrd Power Cell)
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 17; // Solar Tablet (1 above Lihzahrd Power Cell)
         }
 
         public override void SetDefaults()
@@ -28,28 +26,22 @@ namespace CalamityMod.Items.SummonItems
             Item.consumable = false;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
+        }
 
         public override bool CanUseItem(Player player)
         {
-            return !NPC.AnyNPCs(ModContent.NPCType<RavagerBody>()) && player.ZoneOverworldHeight && !BossRushEvent.BossRushActive;
+            return !NPC.AnyNPCs(ModContent.NPCType<RavagerBody>()) && !BossRushEvent.BossRushActive;
         }
 
         public override bool? UseItem(Player player)
         {
-            SoundEngine.PlaySound(SoundID.ScaryScream, player.Center);
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-            {
-                int npc = NPC.NewNPC(new EntitySource_BossSpawn(player), (int)(player.position.X + Main.rand.Next(-250, 251)), (int)(player.position.Y - 500f), ModContent.NPCType<RavagerBody>(), 1);
-                Main.npc[npc].timeLeft *= 20;
-                CalamityUtils.BossAwakenMessage(npc);
-            }
-            else
-                NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, player.whoAmI, ModContent.NPCType<RavagerBody>());
-
+            int posX = (int)(player.position.X + Main.rand.Next(-250, 251));
+            int posY = (int)(player.position.Y - 500f);
+            int bossToSpawn = ModContent.NPCType<RavagerBody>();
+            CalamityUtils.SpawnBossOnPosUsingItem(player, bossToSpawn, posX, posY, SoundID.ScaryScream);
             return true;
         }
 
@@ -58,7 +50,7 @@ namespace CalamityMod.Items.SummonItems
             CreateRecipe().
                 AddIngredient(ItemID.LunarTabletFragment, 15).
                 AddIngredient(ItemID.LihzahrdBrick, 25).
-                AddTile(TileID.MythrilAnvil).
+                AddTile(TileID.DemonAltar).
                 Register();
         }
     }

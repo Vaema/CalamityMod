@@ -42,6 +42,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override void SetStaticDefaults()
         {
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
@@ -64,6 +65,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             // Checks if the minion can still exist given the player's circumstance.
             CheckMinionExistence();
 
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             // The properties of the minion's pupil, it looks around the target if there's one and to the mouse if there isn't any.
             EyeAngle = Projectile.SafeDirectionTo((Target is not null) ? Target.Center : Main.MouseWorld).ToRotation();
             EyeOutwardness = Utils.Remap(Projectile.Distance((Target is not null) ? Target.Center : Main.MouseWorld), 0f, 300f, 0f, 5f);
@@ -139,10 +141,9 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     // so it looks like the minion deflected his own projectile.
                     if (HasShot)
                     {
-                        for (int i = 0; i < Main.maxProjectiles; i++)
+                        foreach (Projectile proj in Main.ActiveProjectiles)
                         {
-                            Projectile proj = Main.projectile[i];
-                            if (proj is not null && proj.active && proj.type == ModContent.ProjectileType<SnakeEyesProjectile>() && proj.owner == Owner.whoAmI && proj.ModProjectile<SnakeEyesProjectile>().MinionID == Projectile.whoAmI && proj.ModProjectile<SnakeEyesProjectile>().HasRedirected)
+                            if (proj.type == ModContent.ProjectileType<SnakeEyesProjectile>() && proj.owner == Owner.whoAmI && proj.ModProjectile<SnakeEyesProjectile>().MinionID == Projectile.whoAmI && proj.ModProjectile<SnakeEyesProjectile>().HasRedirected)
                             {
                                 Projectile.Center = proj.Center;
                                 SwitchAIState(AIState.Redirecting);
@@ -237,11 +238,9 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override void OnSpawn(IEntitySource source) => DoVFXPulse();
 
-        public override bool? CanDamage() => false;
-
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;

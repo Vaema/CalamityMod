@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.Audio;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon.SmallAresArms
 {
@@ -14,9 +14,10 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 6;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
+            ProjectileID.Sets.MinionShot[Type] = true;
         }
 
         public override void SetDefaults()
@@ -41,7 +42,7 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
 
             // Handle frames and rotation.
             Projectile.frameCounter++;
-            Projectile.frame = Projectile.frameCounter / 5 % Main.projFrames[Projectile.type];
+            Projectile.frame = Projectile.frameCounter / 5 % Main.projFrames[Type];
             Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
 
             // Home towards targets.
@@ -71,7 +72,7 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
             lightColor.R = (byte)(255 * Projectile.Opacity);
             lightColor.G = (byte)(255 * Projectile.Opacity);
             lightColor.B = (byte)(255 * Projectile.Opacity);
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

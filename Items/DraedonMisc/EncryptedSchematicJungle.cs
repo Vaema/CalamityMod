@@ -1,18 +1,18 @@
-﻿using CalamityMod.CustomRecipes;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
-using CalamityMod.Items.DraedonMisc;
-using CalamityMod.Items.Placeables.PlaceableTurrets;
-using CalamityMod.Rarities;
-using CalamityMod.UI;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.CustomRecipes;
+using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.PlaceableTurrets;
+using CalamityMod.Items.SummonItems;
+using CalamityMod.Items.Weapons.DraedonsArsenal;
+using CalamityMod.Rarities;
+using CalamityMod.UI;
+using CalamityMod.UI.DraedonLogs;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.UI.DraedonLogs;
 
 namespace CalamityMod.Items.DraedonMisc
 {
@@ -48,17 +48,22 @@ namespace CalamityMod.Items.DraedonMisc
                 int insertIndex = list.FindIndex(x => x.Name == "Tooltip0" && x.Mod == "Terraria");
                 if (insertIndex != -1)
                 {
+                    int plaguebringerItem = ModContent.ItemType<Abombination>();
+                    TooltipLine aureusDisplay = new TooltipLine(this.Mod, "CalamityMod:MeleeDisplay", $"[i:{plaguebringerItem}] {CalamityUtils.GetItemName(plaguebringerItem)}");
+                    aureusDisplay.OverrideColor = new Color(149, 169, 182);
+                    list.Insert(insertIndex + 1, aureusDisplay);
+
                     int meleeItem = ModContent.ItemType<GalvanizingGlaive>();
                     TooltipLine meleeDisplay = new TooltipLine(this.Mod, "CalamityMod:MeleeDisplay", $"[i:{meleeItem}] {CalamityUtils.GetItemName(meleeItem)}");
                     meleeDisplay.OverrideColor = new Color(149, 243, 43);
                     list.Insert(insertIndex + 1, meleeDisplay);
 
-                    int rangedItem = ModContent.ItemType<GaussRifle>();
+                    int rangedItem = ModContent.ItemType<Nidhogg>();
                     TooltipLine rangedDisplay = new TooltipLine(this.Mod, "CalamityMod:RangedDisplay", $"[i:{rangedItem}] {CalamityUtils.GetItemName(rangedItem)}");
                     rangedDisplay.OverrideColor = new Color(236, 255, 31);
                     list.Insert(insertIndex + 2, rangedDisplay);
 
-                    int mageItem = ModContent.ItemType<GatlingLaser>();
+                    int mageItem = ModContent.ItemType<CountermeasureMitt>();
                     TooltipLine mageDisplay = new TooltipLine(this.Mod, "CalamityMod:MageDisplay", $"[i:{mageItem}] {CalamityUtils.GetItemName(mageItem)}");
                     mageDisplay.OverrideColor = new Color(255, 64, 31);
                     list.Insert(insertIndex + 3, mageDisplay);

@@ -3,8 +3,6 @@ using CalamityMod.NPCs.Crabulon;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using Terraria.DataStructures;
 
 namespace CalamityMod.Items.SummonItems
 {
@@ -13,7 +11,7 @@ namespace CalamityMod.Items.SummonItems
         public new string LocalizationCategory => "Items.SummonItems";
         public override void SetStaticDefaults()
         {
-           			ItemID.Sets.SortingPriorityBossSpawns[Type] = 3; // Worm Food / Bloody Spine
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 3; // Worm Food / Bloody Spine
         }
 
         public override void SetDefaults()
@@ -27,28 +25,21 @@ namespace CalamityMod.Items.SummonItems
             Item.consumable = false;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
+        }
 
         public override bool CanUseItem(Player player)
         {
-            return player.ZoneGlowshroom && !NPC.AnyNPCs(ModContent.NPCType<Crabulon>()) && !BossRushEvent.BossRushActive;
+            return player.ZoneGlowshroom && (player.position.Y / 16f) > Main.worldSurface && !NPC.AnyNPCs(ModContent.NPCType<Crabulon>()) && !BossRushEvent.BossRushActive;
         }
 
         public override bool? UseItem(Player player)
         {
-            SoundEngine.PlaySound(SoundID.Roar, player.Center);
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-            {
-                int npc = NPC.NewNPC(new EntitySource_BossSpawn(player), (int)(player.position.X + Main.rand.Next(-250, 251)), (int)(player.position.Y - 500f), ModContent.NPCType<Crabulon>(), 1);
-                Main.npc[npc].timeLeft *= 20;
-                CalamityUtils.BossAwakenMessage(npc);
-            }
-            else
-                NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, player.whoAmI, ModContent.NPCType<Crabulon>());
-
+            int posX = (int)(player.position.X + Main.rand.Next(-160, 161));
+            int posY = (int)(player.position.Y - 320f);
+            CalamityUtils.SpawnBossOnPosUsingItem<Crabulon>(player, posX, posY, SoundID.Roar);
             return true;
         }
 

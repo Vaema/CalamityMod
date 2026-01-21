@@ -1,6 +1,6 @@
-﻿using CalamityMod.Tiles.Abyss.AbyssAmbient;
+﻿using CalamityMod.Systems;
+using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -12,11 +12,8 @@ namespace CalamityMod.Tiles.Abyss
     {
         int animationFrameWidth = 234;
 
-        public byte[,] tileAdjacency;
-        public byte[,] secondTileAdjacency;
-
         public static readonly SoundStyle MineSound = new("CalamityMod/Sounds/Custom/AbyssGravelMine", 3);
-        
+
         public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
@@ -29,10 +26,10 @@ namespace CalamityMod.Tiles.Abyss
             MineResist = 5f;
             MinPick = 65;
             HitSound = MineSound;
-            DustType = 33;
+            DustType = DustID.Water;
 
-            TileFraming.SetUpUniversalMerge(Type, TileID.Dirt, out tileAdjacency);
-            TileFraming.SetUpUniversalMerge(Type, TileID.Stone, out secondTileAdjacency);
+            this.RegisterBlendMergeWith(TileID.Dirt);
+            this.RegisterBlendMergeWith(TileID.Stone);
         }
 
         public override bool CanExplode(int i, int j)
@@ -44,7 +41,7 @@ namespace CalamityMod.Tiles.Abyss
         {
             num = fail ? 1 : 3;
         }
-        
+
         public override void RandomUpdate(int i, int j)
         {
             Tile tile = Main.tile[i, j];
@@ -62,113 +59,14 @@ namespace CalamityMod.Tiles.Abyss
                 up.TileFrameX = (short)(WorldGen.genRand.Next(16) * 18);
                 WorldGen.SquareTileFrame(i, j - 1, true);
 
-                if (Main.netMode == NetmodeID.Server) 
+                if (Main.dedServ)
                     NetMessage.SendTileSquare(-1, i, j - 1, 3, TileChangeType.None);
             }
         }
 
         public override void AnimateIndividualTile(int type, int i, int j, ref int frameXOffset, ref int frameYOffset)
         {
-            int uniqueAnimationFrameX = 0;
-            int xPos = i % 4;
-            int yPos = j % 4;
-            switch (xPos)
-            {
-                case 0:
-                    switch (yPos)
-                    {
-                        case 0:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 1:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        case 2:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        case 3:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        default:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                    }
-                    break;
-                case 1:
-                    switch (yPos)
-                    {
-                        case 0:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        case 1:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 2:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        case 3:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        default:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                    }
-                    break;
-                case 2:
-                    switch (yPos)
-                    {
-                        case 0:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        case 1:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 2:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        case 3:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        default:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                    }
-                    break;
-                case 3:
-                    switch (yPos)
-                    {
-                        case 0:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        case 1:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        case 2:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 3:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        default:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                    }
-                    break;
-            }
-            frameXOffset = uniqueAnimationFrameX * animationFrameWidth;
-        }
-
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
-        {
-            TileFraming.DrawUniversalMergeFrames(i, j, secondTileAdjacency, "CalamityMod/Tiles/Merges/StoneMerge");
-            TileFraming.DrawUniversalMergeFrames(i, j, tileAdjacency, "CalamityMod/Tiles/Merges/DirtMerge");
-        }
-
-        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
-        {
-            TileFraming.GetAdjacencyData(i, j, TileID.Dirt, out tileAdjacency[i, j]);
-            TileFraming.GetAdjacencyData(i, j, TileID.Stone, out secondTileAdjacency[i, j]);
-            return true;
+            frameXOffset = animationFrameWidth * TileFramingSystem.GetVariation4x4_012_Low0(i, j);
         }
     }
 }

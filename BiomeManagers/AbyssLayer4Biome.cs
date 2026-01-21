@@ -1,6 +1,7 @@
 ﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.Placeables.FurnitureAbyss;
+using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Systems;
+using CalamityMod.Waters;
 using CalamityMod.World;
 using Terraria;
 using Terraria.ID;
@@ -20,8 +21,8 @@ namespace CalamityMod.BiomeManagers
             }
         }
 
-        public override ModWaterStyle WaterStyle => ModContent.Find<ModWaterStyle>("CalamityMod/VoidWater");
-        public override int BiomeTorchItemType => ModContent.ItemType<AbyssTorch>();
+        public override ModWaterStyle WaterStyle => VoidWater.Instance;
+        public override int BiomeTorchItemType => ModContent.ItemType<VoidTorch>();
         public override SceneEffectPriority Priority => SceneEffectPriority.Environment;
         public override string BestiaryIcon => "CalamityMod/BiomeManagers/AbyssLayer4Icon";
         public override string BackgroundPath => "CalamityMod/Backgrounds/MapBackgrounds/AbyssBGLayer4";
@@ -32,7 +33,7 @@ namespace CalamityMod.BiomeManagers
             if (Main.remixWorld)
             {
                 return AbyssLayer1Biome.MeetsBaseAbyssRequirement(player, out int playerYTileCoords) && BiomeTileCounterSystem.Layer4Tiles >= 200 &&
-                playerYTileCoords <= SulphurousSea.YStart - (int)((Main.maxTilesY - 200) * 0.6f);
+                playerYTileCoords <= SulphurousSea.YStart - (int)(Main.UnderworldLayer * 0.6f);
             }
 
             return AbyssLayer1Biome.MeetsBaseAbyssRequirement(player, out int playerYTileCoords2) && BiomeTileCounterSystem.Layer4Tiles >= 200 &&

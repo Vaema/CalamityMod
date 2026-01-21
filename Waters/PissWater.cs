@@ -1,28 +1,37 @@
 ﻿using Microsoft.Xna.Framework;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Waters
 {
+    public class PissWaterflow : ModWaterfallStyle { }
+
     public class PissWater : ModWaterStyle
     {
-        public override int ChooseWaterfallStyle()
+        public static ModWaterStyle Instance { get; private set; }
+        public static ModWaterfallStyle WaterfallStyle { get; private set; }
+        public static int SplashDust { get; private set; }
+        public static int DropletGore { get; private set; }
+
+        public override void SetStaticDefaults()
         {
-            return ModContent.Find<ModWaterfallStyle>("CalamityMod/PissWaterflow").Slot;
+            Instance = this;
+            WaterfallStyle = ModContent.Find<ModWaterfallStyle>("CalamityMod/PissWaterflow");
+            SplashDust = DustID.Water_Desert;
+            DropletGore = GoreID.WaterDripDesert;
         }
 
-        public override int GetSplashDust()
+        public override void Unload()
         {
-            return 102;
+            Instance = null;
+            WaterfallStyle = null;
+            SplashDust = 0;
+            DropletGore = 0;
         }
 
-        public override int GetDropletGore()
-        {
-            return 711;
-        }
-
-        public override Color BiomeHairColor()
-        {
-            return Color.Yellow;
-        }
+        public override int ChooseWaterfallStyle() => WaterfallStyle.Slot;
+        public override int GetSplashDust() => DustID.Water_Desert;
+        public override int GetDropletGore() => GoreID.WaterDripDesert;
+        public override Color BiomeHairColor() => Color.Yellow;
     }
 }

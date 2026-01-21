@@ -1,11 +1,11 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static CalamityMod.CalamityUtils;
-using Terraria.Audio;
 
 
 namespace CalamityMod.Projectiles.Melee
@@ -17,8 +17,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 5;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         const float MaxTime = 40;
@@ -58,7 +58,7 @@ namespace CalamityMod.Projectiles.Melee
 
             if (Main.rand.NextBool(3))
             {
-                int dustTrail = Dust.NewDust(Projectile.Center, 14, 14, 66, Projectile.velocity.X * 0.05f, Projectile.velocity.Y * 0.05f, 150, new Color(Main.DiscoR, 100, 255), 1.2f);
+                int dustTrail = Dust.NewDust(Projectile.Center, 14, 14, DustID.RainbowTorch, Projectile.velocity.X * 0.05f, Projectile.velocity.Y * 0.05f, 150, new Color(Main.DiscoR, 100, 255), 1.2f);
                 Main.dust[dustTrail].noGravity = true;
             }
 
@@ -79,7 +79,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Projectile.timeLeft > 35)
                 return false;
 
-            DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 

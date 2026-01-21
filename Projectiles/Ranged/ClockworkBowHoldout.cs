@@ -1,7 +1,7 @@
-﻿using CalamityMod.Items.Weapons.Ranged;
+﻿using System;
+using CalamityMod.Items.Weapons.Ranged;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Graphics.Shaders;
@@ -20,9 +20,7 @@ namespace CalamityMod.Projectiles.Ranged
         private ref float CurrentChargingFrames => ref Projectile.ai[0];
         private ref float LoadedBolts => ref Projectile.ai[1];
         private ref float FramesToLoadBolt => ref Projectile.localAI[0];
-        private ref float LastDirection => ref Projectile.localAI[1];
-        
-        private bool OwnerCanShoot => Owner.channel && !Owner.noItems && !Owner.CCed;
+
         private float storedVelocity = 1f;
 
         private float angularSpread = MathHelper.ToRadians(16);
@@ -46,7 +44,7 @@ namespace CalamityMod.Projectiles.Ranged
             Vector2 tipPosition = armPosition + Projectile.velocity * Projectile.width * 0.5f;
 
             // If the player releases left click, shoot out the arrows
-            if (!OwnerCanShoot)
+            if (Owner.CantUseHoldout())
             {
 
                 if (LoadedBolts <= 0f) //If theres no arrows to shoot
@@ -64,10 +62,10 @@ namespace CalamityMod.Projectiles.Ranged
                 // Frame 1 effects: Initialize the shoot speed
                 if (FramesToLoadBolt == 0f)
                 {
-                    FramesToLoadBolt = Owner.ActiveItem().useAnimation;
+                    FramesToLoadBolt = Owner.HeldItem.useAnimation;
                 }
 
-                if (Owner.HasAmmo(Owner.ActiveItem()))
+                if (Owner.HasAmmo(Owner.HeldItem))
                 {
                     ++CurrentChargingFrames;
 
@@ -77,7 +75,7 @@ namespace CalamityMod.Projectiles.Ranged
                     if (CurrentChargingFrames >= FramesToLoadBolt && LoadedBolts < ClockworkBow.MaxBolts)
                     {
                         // Save the stats here for later
-                        Item heldItem = Owner.ActiveItem();
+                        Item heldItem = Owner.HeldItem;
                         Owner.PickAmmo(heldItem, out _, out float shootSpeed, out int damage, out float knockback, out _);
                         Projectile.damage = damage;
                         Projectile.knockBack = knockback;
@@ -137,7 +135,7 @@ namespace CalamityMod.Projectiles.Ranged
                 SoundEngine.PlaySound(SoundID.Item38);//play the sound
             }
 
-            FramesToLoadBolt = Owner.ActiveItem().useAnimation; //reset the reload time
+            FramesToLoadBolt = Owner.HeldItem.useAnimation; //reset the reload time
             LoadedBolts = 0; //Unload the bow
         }
 
@@ -154,14 +152,13 @@ namespace CalamityMod.Projectiles.Ranged
         {
             if (Main.myPlayer == Projectile.owner)
             {
-                float interpolant = Utils.GetLerpValue(5f, 25f, Owner.Distance(Main.MouseWorld), true);
+                float interpolant = Utils.GetLerpValue(5f, 25f, Owner.Distance(Owner.ClampedMouseWorld()), true);
                 Vector2 oldVelocity = Projectile.velocity;
+
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Projectile.velocity = Vector2.Lerp(Projectile.velocity, Owner.SafeDirectionTo(Main.MouseWorld), interpolant);
                 if (Projectile.velocity != oldVelocity)
-                {
-                    Projectile.netSpam = 0;
-                    Projectile.netUpdate = true;
-                }
+                    Projectile.ForceNetUpdate();
             }
 
             Projectile.position = armPosition - Projectile.Size * 0.5f + Projectile.velocity.SafeNormalize(Vector2.Zero) * 35f;
@@ -219,7 +216,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Shift = 1 - (CurrentChargingFrames / FramesToLoadBolt);
 
                 // You need to have arrows left for the tint to not remain in stasis
-                if ((i == LoadedBolts - 1 || LoadedBolts == ClockworkBow.MaxBolts) && Owner.HasAmmo(Owner.ActiveItem())) //If the arrow we are looking at is the one that just got loaded, OR all arrows got loaded, we apply some flashiness
+                if ((i == LoadedBolts - 1 || LoadedBolts == ClockworkBow.MaxBolts) && Owner.HasAmmo(Owner.HeldItem)) //If the arrow we are looking at is the one that just got loaded, OR all arrows got loaded, we apply some flashiness
                 {
                     Main.spriteBatch.EnterShaderRegion();
                     GameShaders.Misc["CalamityMod:BasicTint"].UseOpacity(1f - MathHelper.Clamp((CurrentChargingFrames * 2 / FramesToLoadBolt), 0f, 1f));
@@ -236,7 +233,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                 Main.EntitySpriteDraw(BoltTexture, drawPosition, null, Transparency, Projectile.rotation + BoltAngle + MathHelper.PiOver2 + FlipFactor, BoltTexture.Size(), 1f, 0, 0);
 
-                if ((i == LoadedBolts - 1 || LoadedBolts == ClockworkBow.MaxBolts) && Owner.HasAmmo(Owner.ActiveItem())) //Don't forget to exit the shader region
+                if ((i == LoadedBolts - 1 || LoadedBolts == ClockworkBow.MaxBolts) && Owner.HasAmmo(Owner.HeldItem)) //Don't forget to exit the shader region
                     Main.spriteBatch.ExitShaderRegion();
             }
             return true;

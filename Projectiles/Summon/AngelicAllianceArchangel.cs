@@ -1,9 +1,9 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using System.IO;
+using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -16,9 +16,9 @@ namespace CalamityMod.Projectiles.Summon
         private int lifeSpan = 900;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -147,8 +147,8 @@ namespace CalamityMod.Projectiles.Summon
         public override bool PreDraw(ref Color lightColor)
         {
             SpriteEffects spriteEffects = Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-            int frameHeight = texture.Height / Main.projFrames[Projectile.type];
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int frameHeight = texture.Height / Main.projFrames[Type];
             int frameY = frameHeight * Projectile.frame;
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, frameY, texture.Width, frameHeight)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture.Width / 2f, (float)frameHeight / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;

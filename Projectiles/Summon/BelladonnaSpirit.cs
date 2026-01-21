@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
@@ -35,9 +36,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.MinionAntiClump();
             Projectile.spriteDirection = Target == null ? MathF.Sign(Projectile.velocity.X) : MathF.Sign(Target.Center.X - Projectile.Center.X);
 
-            Projectile.netUpdate = true;
-            if (Projectile.netSpam >= 10)
-                Projectile.netSpam = 9;
+            Projectile.ForceNetUpdate(false);
         }
 
         #region AI Methods
@@ -100,7 +99,7 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     float angle = MathHelper.TwoPi / 45f * dustIndex;
                     Vector2 velocity = angle.ToRotationVector2() * Main.rand.NextFloat(3f, 4.5f);
-                    Dust spawnDust = Dust.NewDustPerfect(Projectile.Center, 39, velocity);
+                    Dust spawnDust = Dust.NewDustPerfect(Projectile.Center, DustID.JungleGrass, velocity);
                     spawnDust.noGravity = true;
                     spawnDust.scale = velocity.Length() * 0.1f;
                     spawnDust.velocity *= 0.3f;
@@ -108,11 +107,9 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
-        public override bool? CanDamage() => false;
-
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 position = Projectile.Center - Main.screenPosition;
             Rectangle sourceRectangle = texture.Frame(verticalFrames: AnimationFrames, frameY: Projectile.frame);
             Vector2 origin = sourceRectangle.Size() * 0.5f;

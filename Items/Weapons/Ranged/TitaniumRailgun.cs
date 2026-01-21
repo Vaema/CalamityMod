@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Ranged;
+﻿using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -10,6 +10,11 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class TitaniumRailgun : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
+        }
         public override void SetDefaults()
         {
             Item.width = 62;
@@ -22,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.noMelee = true;
             Item.channel = true;
             Item.knockBack = 5f;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.UseSound = SoundID.Item77 with { Volume = SoundID.Item77.Volume * 0.7f };
             Item.autoReuse = true;
@@ -30,7 +35,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 16f;
         }
 
-        public override Vector2? HoldoutOffset() => new Vector2(-5, 4);
+        public override Vector2? HoldoutOffset() => new Vector2(-5, 0);
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

@@ -1,11 +1,11 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -16,9 +16,9 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.TrailCacheLength[Type] = 5;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -63,7 +63,7 @@ namespace CalamityMod.Projectiles.Ranged
             else
             {
                 Projectile.spriteDirection = 1;
-                Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X);
+                Projectile.rotation = Projectile.velocity.ToRotation();
             }
             Lighting.AddLight(Projectile.Center, 0.3f, 0.5f, 0.1f);
             Projectile.velocity *= 1.075f;
@@ -71,7 +71,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
@@ -94,14 +94,14 @@ namespace CalamityMod.Projectiles.Ranged
             SoundEngine.PlaySound(SoundID.Zombie103, Projectile.Center);
             for (int i = 0; i < 2; i++)
             {
-                Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 50, default, 1f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 50, default, 1f);
             }
             for (int j = 0; j < 20; j++)
             {
-                int orangeDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 0, default, 1.5f);
+                int orangeDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 0, default, 1.5f);
                 Main.dust[orangeDust].noGravity = true;
                 Main.dust[orangeDust].velocity *= 3f;
-                orangeDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, ModContent.DustType<AstralBlue>(), 0f, 0f, 50, default, 1f);
+                orangeDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralBlue>(), 0f, 0f, 50, default, 1f);
                 Main.dust[orangeDust].velocity *= 2f;
                 Main.dust[orangeDust].noGravity = true;
             }

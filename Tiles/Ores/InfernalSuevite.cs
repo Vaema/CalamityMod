@@ -1,10 +1,8 @@
 ﻿using CalamityMod.Tiles.Crags;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Localization;
-using Terraria.ModLoader;
 using Terraria.ID;
-using Microsoft.Xna.Framework.Graphics;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Ores
 {
@@ -13,9 +11,6 @@ namespace CalamityMod.Tiles.Ores
     {
         private int sheetWidth = 234;
         private int sheetHeight = 90;
-
-        public byte[,] tileAdjacency;
-        public byte[,] secondTileAdjacency;
 
         public override void SetStaticDefaults()
         {
@@ -33,11 +28,11 @@ namespace CalamityMod.Tiles.Ores
             MineResist = 2f;
             MinPick = 150;
             HitSound = SoundID.Tink;
-            DustType = 235;
+            DustType = DustID.LifeDrain;
             Main.tileSpelunker[Type] = true;
 
-            TileFraming.SetUpUniversalMerge(Type, ModContent.TileType<BrimstoneSlag>(), out tileAdjacency);
-            TileFraming.SetUpUniversalMerge(Type, TileID.Ash, out secondTileAdjacency);
+            this.RegisterBlendMergeWith(ModContent.TileType<BrimstoneSlag>());
+            this.RegisterBlendMergeWith(TileID.Ash);
         }
 
         public override bool CanExplode(int i, int j)
@@ -61,19 +56,6 @@ namespace CalamityMod.Tiles.Ores
             r = 0.5f;
             g = 0f;
             b = 0f;
-        }
-
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
-        {
-            TileFraming.DrawUniversalMergeFrames(i, j, secondTileAdjacency, "CalamityMod/Tiles/Merges/AshMerge");
-            TileFraming.DrawUniversalMergeFrames(i, j, tileAdjacency, "CalamityMod/Tiles/Merges/BrimstoneSlagMerge");
-        }
-
-        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
-        {
-            TileFraming.GetAdjacencyData(i, j, ModContent.TileType<BrimstoneSlag>(), out tileAdjacency[i, j]);
-            TileFraming.GetAdjacencyData(i, j, TileID.Ash, out secondTileAdjacency[i, j]);
-            return true;
         }
     }
 }

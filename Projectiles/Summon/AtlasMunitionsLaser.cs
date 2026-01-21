@@ -11,7 +11,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 4;
-            ProjectileID.Sets.SentryShot[Projectile.type] = true;
+            ProjectileID.Sets.SentryShot[Type] = true;
         }
 
         public override void SetDefaults()
@@ -29,12 +29,12 @@ namespace CalamityMod.Projectiles.Summon
         {
             Lighting.AddLight(Projectile.Center, Color.Cyan.ToVector3() * Projectile.Opacity * 0.67f);
 
-            Projectile.Opacity = Utils.GetLerpValue(240f, 235f, Projectile.timeLeft, true);            
+            Projectile.Opacity = Utils.GetLerpValue(240f, 235f, Projectile.timeLeft, true);
             Projectile.rotation = Projectile.velocity.ToRotation();
             Projectile.frameCounter++;
             if (Projectile.frameCounter >= 5)
             {
-                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Projectile.type];
+                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Type];
                 Projectile.frameCounter = 0;
             }
 

@@ -1,7 +1,7 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -24,6 +24,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
+            Projectile.extraUpdates = 1;
             Projectile.localNPCHitCooldown = 7;
             Projectile.timeLeft = 280;
         }
@@ -68,10 +69,9 @@ namespace CalamityMod.Projectiles.Ranged
         public List<Projectile> LocateOtherMines()
         {
             List<Projectile> mines = new List<Projectile>();
-            for (int i = 0; i < Main.maxProjectiles; i++)
+            foreach (Projectile proj in Main.ActiveProjectiles)
             {
-                Projectile proj = Main.projectile[i];
-                if (proj.type != Projectile.type || !proj.active || proj.timeLeft <= 12 || i == Projectile.whoAmI)
+                if (proj.type != Projectile.type || proj.timeLeft <= 12 || proj.whoAmI == Projectile.whoAmI)
                     continue;
                 if (!Projectile.WithinRange(proj.Center, MineConnectDistanceMax))
                     continue;
@@ -84,7 +84,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D baseTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D baseTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D glowTexture = ModContent.Request<Texture2D>($"{Texture}Glowmask").Value;
             Texture2D laserTexture = ModContent.Request<Texture2D>($"CalamityMod/Projectiles/Ranged/PrismMineArc").Value;
 

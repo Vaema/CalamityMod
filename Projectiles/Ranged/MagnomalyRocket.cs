@@ -1,10 +1,9 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Ranged
 {
     public class MagnomalyRocket : ModProjectile, ILocalizedModType
@@ -13,9 +12,10 @@ namespace CalamityMod.Projectiles.Ranged
         private bool spawnedAura = false;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 5;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -40,7 +40,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.frame = 0;
             }
@@ -116,7 +116,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Main.dust[exo].velocity *= 2f;
                 }
 
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Vector2 goreSource = Projectile.Center;
                     int goreAmt = 9;
@@ -164,7 +164,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
@@ -184,15 +184,11 @@ namespace CalamityMod.Projectiles.Ranged
         {
             if (Projectile.owner == Main.myPlayer)
             {
-                float random = Main.rand.Next(30, 90);
-                float spread = random * 0.0174f;
-                double startAngle = Math.Atan2(Projectile.velocity.X, Projectile.velocity.Y) - spread / 2;
-                double deltaAngle = spread / 8f;
-                for (int i = 0; i < 4; i++)
+                float angleOffset = Main.rand.NextFloat(-30f, 30f);
+                for (int i = 0; i < 8; i++)
                 {
-                    double offsetAngle = startAngle + deltaAngle * (i + i * i) / 2f + 32f * i;
-                    int proj1 = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, (float)(Math.Sin(offsetAngle) * 5f), (float)(Math.Cos(offsetAngle) * 5f), ModContent.ProjectileType<MagnomalyBeam>(), Projectile.damage / 4, Projectile.knockBack / 4, Projectile.owner, 0f, 1f);
-                    int proj2 = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, (float)(-Math.Sin(offsetAngle) * 5f), (float)(-Math.Cos(offsetAngle) * 5f), ModContent.ProjectileType<MagnomalyBeam>(), Projectile.damage / 4, Projectile.knockBack / 4, Projectile.owner, 0f, 1f);
+                    Vector2 velocity = ((MathHelper.TwoPi * i / 8f) - (MathHelper.ToRadians(67.5f + angleOffset) - Projectile.velocity.ToRotation())).ToRotationVector2() * 4f;
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<MagnomalyBeam>(), (int)(Projectile.damage * 0.25), Projectile.knockBack * 0.25f, Projectile.owner, ai1: 1f);
                 }
             }
         }

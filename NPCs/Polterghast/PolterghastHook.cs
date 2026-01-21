@@ -1,10 +1,11 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using System.IO;
+using CalamityMod.Events;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -16,18 +17,28 @@ namespace CalamityMod.NPCs.Polterghast
         private int despawnTimer = 300;
         private bool phase2 = false;
 
+        public static Asset<Texture2D> GlowTexture;
+        public static Asset<Texture2D> ChainTexture;
+
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            Main.npcFrameCount[NPC.type] = 2;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            Main.npcFrameCount[Type] = 2;
+            NPCID.Sets.TrailingMode[Type] = 1;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+                ChainTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Polterghast/PolterghastChain", AssetRequestMode.AsyncLoad);
+            }
         }
+
+        public static int ShotDamage = 55; // 220
 
         public override void SetDefaults()
         {
+            NPC.damage = 0; // No contact damage
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.damage = 0;
             NPC.width = 40;
             NPC.height = 40;
             NPC.lifeMax = 50000;
@@ -126,7 +137,7 @@ namespace CalamityMod.NPCs.Polterghast
                 Movement(phase2, expertMode, revenge, death, speedBoost, despawnBoost, lifeRatio, tileEnrageMult, player);
 
                 // Fire projectiles
-                Vector2 hookPosition = new Vector2(NPC.position.X + NPC.width * 0.5f, NPC.position.Y + NPC.height * 0.5f);
+                Vector2 hookPosition = NPC.Center;
                 float targetX = Main.player[NPC.target].position.X + (Main.player[NPC.target].width / 2) - hookPosition.X;
                 float targetY = Main.player[NPC.target].position.Y + (Main.player[NPC.target].height / 2) - hookPosition.Y;
                 float targetDistance = (float)Math.Sqrt(targetX * targetX + targetY * targetY);
@@ -141,7 +152,7 @@ namespace CalamityMod.NPCs.Polterghast
                 NPC.ai[2] += 1f;
                 if (NPC.ai[3] == 0f)
                 {
-                    if (NPC.ai[2] > ((CalamityWorld.LegendaryMode && revenge) ? 12f : 120f))
+                    if (NPC.ai[2] > (Main.getGoodWorld ? 40f : 120f))
                     {
                         NPC.ai[2] = 0f;
                         NPC.ai[3] = 1f;
@@ -153,15 +164,14 @@ namespace CalamityMod.NPCs.Polterghast
                     if (NPC.ai[2] > 40f)
                         NPC.ai[3] = 0f;
 
-                    if (Main.netMode != NetmodeID.MultiplayerClient && NPC.ai[2] == 20f)
+                    if (Main.netMode != NetmodeID.MultiplayerClient && NPC.ai[2] == 20f && Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > 192f)
                     {
                         float shotSpeed = 10f * tileEnrageMult;
                         int type = ModContent.ProjectileType<PhantomHookShot>();
-                        int damage = NPC.GetProjectileDamage(type);
                         targetDistance = shotSpeed / targetDistance;
                         targetX *= targetDistance;
                         targetY *= targetDistance;
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), hookPosition.X, hookPosition.Y, targetX, targetY, type, damage, 0f, Main.myPlayer, 0f, 0f);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), hookPosition.X, hookPosition.Y, targetX, targetY, type, ShotDamage, 0f, Main.myPlayer, 0f, 0f);
                     }
                 }
                 return;
@@ -220,9 +230,9 @@ namespace CalamityMod.NPCs.Polterghast
 
                 if (!despawnBoost && NPC.localAI[0] <= 0f && NPC.ai[0] != 0f)
                 {
-                    for (int i = 0; i < Main.maxNPCs; i++)
+                    foreach (var n in Main.ActiveNPCs)
                     {
-                        if (i != NPC.whoAmI && Main.npc[i].active && Main.npc[i].type == NPC.type && (Main.npc[i].velocity.X != 0f || Main.npc[i].velocity.Y != 0f))
+                        if (n.whoAmI != NPC.whoAmI && n.type == NPC.type && (n.velocity.X != 0f || n.velocity.Y != 0f))
                             NPC.localAI[0] = 180f;
                     }
                 }
@@ -253,7 +263,7 @@ namespace CalamityMod.NPCs.Polterghast
                         int randTileY = playerTileY + Main.rand.Next(-randPlayerRadius, randPlayerRadius + 1);
                         try
                         {
-                            if (WorldGen.SolidTile(randTileX, randTileY) || Main.tile[randTileX, randTileY].WallType > 0 || chargePhase)
+                            if (WorldGen.SolidTile(randTileX, randTileY) || Main.tile[randTileX, randTileY].WallType > WallID.None || chargePhase)
                             {
                                 canMoveToTile = true;
                                 NPC.ai[0] = randTileX;
@@ -261,7 +271,8 @@ namespace CalamityMod.NPCs.Polterghast
                                 NPC.localAI[1] = Vector2.Distance(NPC.Center, player.Center) * 0.01f;
                                 NPC.netUpdate = true;
                             }
-                        } catch
+                        }
+                        catch
                         {
                         }
                     }
@@ -351,9 +362,9 @@ namespace CalamityMod.NPCs.Polterghast
                     if (Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[0] > changeColorGateValue)
                         cyanLerpColor = Color.Lerp(cyanLerpColor, lightRed, MathHelper.Clamp((Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[0] - changeColorGateValue) / timeToReachFullColor, 0f, 1f));
 
-                    Main.spriteBatch.Draw(ModContent.Request<Texture2D>("CalamityMod/NPCs/Polterghast/PolterghastChain").Value, new Vector2(center.X - screenPos.X, center.Y - screenPos.Y),
-                        new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, 0, ModContent.Request<Texture2D>("CalamityMod/NPCs/Polterghast/PolterghastChain").Value.Width, chainWidth)), cyanLerpColor, chainRotation,
-                        new Vector2(ModContent.Request<Texture2D>("CalamityMod/NPCs/Polterghast/PolterghastChain").Value.Width * 0.5f, ModContent.Request<Texture2D>("CalamityMod/NPCs/Polterghast/PolterghastChain").Value.Height * 0.5f), 1f, SpriteEffects.None, 0f);
+                    Main.spriteBatch.Draw(ChainTexture.Value, new Vector2(center.X - screenPos.X, center.Y - screenPos.Y),
+                        new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, 0, ChainTexture.Value.Width, chainWidth)), cyanLerpColor, chainRotation,
+                        new Vector2(ChainTexture.Value.Width * 0.5f, ChainTexture.Value.Height * 0.5f), 1f, SpriteEffects.None, 0f);
                 }
             }
 
@@ -361,11 +372,11 @@ namespace CalamityMod.NPCs.Polterghast
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture2D15 = TextureAssets.Npc[NPC.type].Value;
-            Vector2 halfSizeTexture = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2);
+            Texture2D texture2D15 = TextureAssets.Npc[Type].Value;
+            Vector2 halfSizeTexture = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2);
             int afterimageAmt = 5;
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 1; i < afterimageAmt; i += 2)
                 {
@@ -374,24 +385,24 @@ namespace CalamityMod.NPCs.Polterghast
                     afterimageColor = NPC.GetAlpha(afterimageColor);
                     afterimageColor *= (afterimageAmt - i) / 15f;
                     Vector2 afterimagePos = NPC.oldPos[i] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                    afterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                    afterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                     afterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                     spriteBatch.Draw(texture2D15, afterimagePos, NPC.frame, afterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
                 }
             }
 
             Vector2 drawLocation = NPC.Center - screenPos;
-            drawLocation -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+            drawLocation -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
             drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-            texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/Polterghast/PolterghastHookGlow").Value;
+            texture2D15 = GlowTexture.Value;
             Color cyanLerp2 = Color.Lerp(Color.White, Color.Cyan, 0.5f);
 
             if (Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[0] > changeColorGateValue)
                 cyanLerp2 = Color.Lerp(cyanLerp2, lightRed, MathHelper.Clamp((Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[0] - changeColorGateValue) / timeToReachFullColor, 0f, 1f));
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int j = 1; j < afterimageAmt; j++)
                 {
@@ -400,7 +411,7 @@ namespace CalamityMod.NPCs.Polterghast
                     otherAfterimageColor = NPC.GetAlpha(otherAfterimageColor);
                     otherAfterimageColor *= (afterimageAmt - j) / 15f;
                     Vector2 otherAfterimagePos = NPC.oldPos[j] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                    otherAfterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                    otherAfterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                     otherAfterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                     spriteBatch.Draw(texture2D15, otherAfterimagePos, NPC.frame, otherAfterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
                 }
@@ -466,23 +477,17 @@ namespace CalamityMod.NPCs.Polterghast
             return false;
         }
 
-        public override bool CanHitPlayer(Player target, ref int cooldownSlot)
-        {
-            cooldownSlot = ImmunityCooldownID.Bosses;
-            return true;
-        }
-
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 180, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.DungeonSpirit, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 20; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 180, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.DungeonSpirit, hit.HitDirection, -1f, 0, default, 1f);
                 }
             }
         }

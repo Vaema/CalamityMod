@@ -1,4 +1,4 @@
-using Terraria;
+﻿using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.Mounts
@@ -14,7 +14,7 @@ namespace CalamityMod.Buffs.Mounts
         public override void Update(Player player, ref int buffIndex)
         {
             // Disables crouching with the Crouch, Crawl, and Roll Mod
-            Mod crouchMod = CalamityMod.Instance.crouchMod;
+            Mod crouchMod = ExternalMods.crouchMod;
             if (crouchMod != null)
             {
                 // Mod Call inputs

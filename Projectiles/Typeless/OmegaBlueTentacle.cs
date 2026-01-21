@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.NPCs;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
@@ -8,11 +9,13 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
+    [PierceResistException]
     public class OmegaBlueTentacle : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
         public bool initSegments = false;
         public Vector2[] segment = new Vector2[6];
+        private Player Owner => Main.player[Projectile.owner];
 
         public override void SetDefaults()
         {
@@ -42,18 +45,17 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void AI()
         {
-            Player player = Main.player[Projectile.owner];
-            bool hentai = player.Calamity().omegaBlueHentai;
-            if (player.active && player.Calamity().omegaBlueSet)
+            bool madness = Owner.Calamity().omegaBlueAbyssalMadness;
+            if (Owner.active && Owner.Calamity().omegaBlueSet)
                 Projectile.timeLeft = 8;
 
-            //tentacle head movement (homing)
-            Vector2 playerVel = player.position - player.oldPosition;
+            // Tentacle head movement (homing)
+            Vector2 playerVel = Owner.position - Owner.oldPosition;
             Projectile.position += playerVel;
             Projectile.ai[0]++;
             if (Projectile.ai[0] >= 0f)
             {
-                Vector2 home = player.Center + new Vector2(50, 0).RotatedBy(MathHelper.ToRadians(60) * Projectile.ai[1]);
+                Vector2 home = Owner.Center + new Vector2(50, 0).RotatedBy(MathHelper.ToRadians(60) * Projectile.ai[1]);
                 Vector2 distance = home - Projectile.Center;
                 float range = distance.Length();
                 distance.Normalize();
@@ -61,7 +63,7 @@ namespace CalamityMod.Projectiles.Typeless
                 {
                     if (range > 13f)
                     {
-                        Projectile.ai[0] = -1f; //if in fast mode, stay fast until back in range
+                        Projectile.ai[0] = -1f; // If in fast mode, stay fast until back in range
                         if (range > 1300f)
                         {
                             Projectile.Kill();
@@ -70,8 +72,8 @@ namespace CalamityMod.Projectiles.Typeless
                     }
                     else
                     {
-                        if (hentai)
-                            Projectile.ai[0] = 120f;//45f + Main.rand.Next(45);
+                        if (madness)
+                            Projectile.ai[0] = 120f;
                         Projectile.velocity.Normalize();
                         Projectile.velocity *= 3f + Main.rand.NextFloat(3f);
                         Projectile.netUpdate = true;
@@ -81,6 +83,7 @@ namespace CalamityMod.Projectiles.Typeless
                 {
                     distance /= 8f;
                 }
+
                 if (range > 120f) //switch to fast return mode
                 {
                     Projectile.ai[0] = -1f;
@@ -93,28 +96,23 @@ namespace CalamityMod.Projectiles.Typeless
                 if (Projectile.ai[0] > 120f) //attack nearby enemy
                 {
                     Projectile.ai[0] = 10 + Main.rand.Next(10);
-                    float maxDistance = hentai ? 900f : 600f;
+                    float maxDistance = madness ? 900f : 600f;
                     int target = -1;
-                    for (int i = 0; i < Main.maxNPCs; i++)
+                    foreach (NPC npc in Main.ActiveNPCs)
                     {
-                        NPC npc = Main.npc[i];
                         if (npc.CanBeChasedBy(Projectile))
                         {
                             float npcDistance = Projectile.Distance(npc.Center);
                             if (npcDistance < maxDistance)
                             {
                                 maxDistance = npcDistance;
-                                target = i;
+                                target = npc.whoAmI;
                             }
                         }
                     }
                     if (target != -1)
                     {
-                        Projectile.velocity = Main.npc[target].Center - Projectile.Center;
-                        Projectile.velocity.Normalize();
-                        Projectile.velocity *= 13f;
-                        Projectile.velocity += Main.npc[target].velocity / 2f;
-                        Projectile.velocity -= playerVel / 2f;
+                        Projectile.velocity = Vector2.Normalize(Main.npc[target].Center - Projectile.Center) * 13f + (Main.npc[target].velocity / 2f) - (playerVel / 2f);
                         Projectile.ai[0] *= -1f;
                     }
                     Projectile.netUpdate = true;
@@ -122,14 +120,14 @@ namespace CalamityMod.Projectiles.Typeless
             }
 
             //tentacle segment updates
-            segment[0] = player.Center;
+            segment[0] = Owner.Center;
             for (int i = 1; i < 5; i++)
             {
                 MoveSegment(segment[i - 1], ref segment[i], segment[i + 1]);
             }
             MoveSegment(segment[4], ref segment[5], Projectile.Center + Projectile.velocity);
 
-            if (hentai)
+            if (madness)
             {
                 if (Projectile.ai[0] != -1f)
                     Projectile.ai[0]++;
@@ -138,19 +136,15 @@ namespace CalamityMod.Projectiles.Typeless
                 Vector2 dustPos = Projectile.position + Projectile.velocity;
                 Vector2 tickVel = dustPos - Projectile.oldPosition; //playerVel + projectile.velocity * 2f;
                 dustPos += new Vector2(Projectile.width / 2, 0).RotatedBy(Projectile.rotation);
-                dustPos.X -= 4;
-                dustPos.X += Projectile.width / 2;
-                dustPos.Y -= 4;
-                dustPos.Y += Projectile.height / 2;
+                dustPos += new Vector2(Projectile.width / 2 - 4, Projectile.height / 2 - 4);
                 const float factor = 3f;
                 int limit = (int)(tickVel.Length() / factor);
                 if (limit == 0)
                 {
-                    int d = Dust.NewDust(dustPos, 0, 0, 20, 0, 0, 100, Color.Transparent, 0.9f);
-                    Main.dust[d].noGravity = true;
-                    Main.dust[d].noLight = true;
-                    Main.dust[d].fadeIn = 1f;
-                    Main.dust[d].velocity = Vector2.Zero;
+                    Dust d = Dust.NewDustPerfect(dustPos, DustID.PurificationPowder, Vector2.Zero, 100, Color.Transparent, 0.9f);
+                    d.noGravity = true;
+                    d.noLight = true;
+                    d.fadeIn = 1f;
                 }
                 else
                 {
@@ -158,12 +152,11 @@ namespace CalamityMod.Projectiles.Typeless
                     tickVel *= factor;
                     for (int i = 0; i <= limit; i++)
                     {
-                        int d = Dust.NewDust(dustPos, 0, 0, 20, 0, 0, 100, Color.Transparent, 0.9f);
-                        Main.dust[d].noGravity = true;
-                        Main.dust[d].noLight = true;
-                        Main.dust[d].fadeIn = 1f;
-                        Main.dust[d].position -= tickVel * i;
-                        Main.dust[d].velocity = Vector2.Zero;
+                        Dust d = Dust.NewDustPerfect(dustPos, DustID.PurificationPowder, Vector2.Zero, 100, Color.Transparent, 0.9f);
+                        d.noGravity = true;
+                        d.noLight = true;
+                        d.fadeIn = 1f;
+                        d.position -= tickVel * i;
                     }
                 }
             }
@@ -177,33 +170,19 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if (Main.player[Projectile.owner].Calamity().omegaBlueHentai)
+            if (Owner.Calamity().omegaBlueAbyssalMadness)
                 modifiers.SetCrit();
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            if (Projectile.owner == Main.myPlayer && Main.player[Projectile.owner].lifeSteal > 0f && !Main.player[Projectile.owner].moonLeech)
-            {
-                int healAmount = 10 * damageDone / Projectile.damage; //should always be around max, less if enemy has defense/DR
-                if (healAmount > 0)
-                {
-                    Main.player[Projectile.owner].lifeSteal -= healAmount;
-                    if (Main.player[Projectile.owner].Calamity().omegaBlueHentai) //hentai always crits, this makes it have same lifesteal delay
-                        Main.player[Projectile.owner].lifeSteal += healAmount / 2;
-
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ProjectileID.SpiritHeal, 0, 0f, Projectile.owner, Projectile.owner, healAmount);
-                }
-            }
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => Owner.DoLifestealDirect(target, 10 * hit.Damage / Projectile.damage, 0.5f);
 
         public override bool PreDraw(ref Color lightColor)
         {
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 
-            GameShaders.Armor.ApplySecondary(Main.player[Projectile.owner].cBody, Main.player[Projectile.owner], new DrawData?());
-            Texture2D texture2D13 = ModContent.Request<Texture2D>(Texture).Value;
+            GameShaders.Armor.ApplySecondary(Owner.cBody, Owner, new DrawData?());
+            Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D segmentSprite = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Typeless/OmegaBlueTentacleSegment1").Value;
             for (int i = 0; i < 5; i++)
             {

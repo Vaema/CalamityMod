@@ -1,10 +1,11 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Graphics.Metaballs;
-using CalamityMod.World;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.Graphics.Metaballs;
+using CalamityMod.Graphics.Primitives;
+using CalamityMod.NPCs;
+using CalamityMod.World;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
@@ -12,21 +13,21 @@ using Terraria.WorldBuilding;
 
 namespace CalamityMod.Projectiles.Magic
 {
+    [PierceResistException]
     public class RancorLaserbeam : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
-        public PrimitiveTrail RayDrawer = null;
         public Player Owner => Main.player[Projectile.owner];
         public Projectile MagicCircle
         {
             get
             {
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    if (Main.projectile[i].identity != Projectile.ai[0] || !Main.projectile[i].active || Main.projectile[i].owner != Projectile.owner)
+                    if (p.identity != Projectile.ai[0] || p.owner != Projectile.owner)
                         continue;
 
-                    return Main.projectile[i];
+                    return p;
                 }
                 return null;
             }
@@ -100,10 +101,7 @@ namespace CalamityMod.Projectiles.Magic
             // Sync if the direction is different from the old one.
             // Spam caps are ignored due to the frequency of this happening.
             if (newAimDirection != Projectile.velocity)
-            {
-                Projectile.netUpdate = true;
-                Projectile.netSpam = 0;
-            }
+                Projectile.ForceNetUpdate();
 
             Projectile.velocity = newAimDirection;
         }
@@ -129,7 +127,7 @@ namespace CalamityMod.Projectiles.Magic
         public void CreateTileHitEffects()
         {
             Vector2 endOfLaser = Projectile.Center + Projectile.velocity * (LaserLength - Main.rand.NextFloat(12f, 72f));
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), endOfLaser, Main.rand.NextVector2Circular(4f, 8f), ModContent.ProjectileType<RancorFog>(), 0, 0f, Projectile.owner);
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), endOfLaser, Main.rand.NextVector2Circular(4f, 8f), ModContent.ProjectileType<RancorFog>(), 0, 0f, Projectile.owner, 0f, 1f);
 
             if (Main.rand.NextBool())
             {
@@ -149,9 +147,9 @@ namespace CalamityMod.Projectiles.Magic
             RancorLavaMetaball.SpawnParticle(endOfLaser + Main.rand.NextVector2Circular(10f, 10f) + Projectile.velocity * 40f, 135f);
         }
 
-        private float PrimitiveWidthFunction(float completionRatio) => Projectile.scale * 20f;
+        private float PrimitiveWidthFunction(float completionRatio, Vector2 vertexPos) => Projectile.scale * 20f;
 
-        private Color PrimitiveColorFunction(float completionRatio)
+        private Color PrimitiveColorFunction(float completionRatio, Vector2 vertexPos)
         {
             Color vibrantColor = Color.Lerp(Color.Blue, Color.Red, (float)Math.Cos(Main.GlobalTimeWrappedHourly * 0.67f - completionRatio / LaserLength * 29f) * 0.5f + 0.5f);
             float opacity = Projectile.Opacity * Utils.GetLerpValue(0.97f, 0.9f, completionRatio, true) *
@@ -162,16 +160,13 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            RayDrawer ??= new PrimitiveTrail(PrimitiveWidthFunction, PrimitiveColorFunction, specialShader: GameShaders.Misc["CalamityMod:Flame"]);
-
             GameShaders.Misc["CalamityMod:Flame"].UseImage1("Images/Misc/Perlin");
 
             Vector2[] basePoints = new Vector2[24];
             for (int i = 0; i < basePoints.Length; i++)
                 basePoints[i] = Projectile.Center + Projectile.velocity * i / (basePoints.Length - 1f) * LaserLength;
 
-            Vector2 overallOffset = -Main.screenPosition;
-            RayDrawer.Draw(basePoints, overallOffset, 92);
+            PrimitiveRenderer.RenderTrail(basePoints, new(PrimitiveWidthFunction, PrimitiveColorFunction, shader: GameShaders.Misc["CalamityMod:Flame"]), 92);
             return false;
         }
 
@@ -185,10 +180,7 @@ namespace CalamityMod.Projectiles.Magic
             overWiresUI.Add(index);
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.AddBuff(ModContent.BuffType<RancorBurn>(), 150);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.Calamity().ashesOnDeath = 10;
 
         public override bool ShouldUpdatePosition() => false;
     }

@@ -1,9 +1,8 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.Buffs.Summon;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -17,6 +16,7 @@ namespace CalamityMod.Projectiles.Summon
         Dictionary<int, Projectile> segments = new Dictionary<int, Projectile>();
         public override void SetStaticDefaults()
         {
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
@@ -39,8 +39,8 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.minionSlots = 2;
             Projectile.minion = true;
 
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 100;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 100;
         }
 
         public override void AI()
@@ -117,7 +117,7 @@ namespace CalamityMod.Projectiles.Summon
                 if (i < segments.Count)
                 {
                     if (segments.ContainsKey(i))
-                    segments[i].ModProjectile<BlackDragonBody>().SegmentMove();
+                        segments[i].ModProjectile<BlackDragonBody>().SegmentMove();
                 }
                 else
                 {
@@ -185,7 +185,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D texBody = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/BlackDragonBody").Value;
             Texture2D texBody2 = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/BlackDragonBody2").Value;
             Texture2D texTail = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/BlackDragonTail").Value;
@@ -214,6 +214,8 @@ namespace CalamityMod.Projectiles.Summon
             return false;
 
         }
+
+        public override bool MinionContactDamage() => true;
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.ShadowFlame, 300);
     }

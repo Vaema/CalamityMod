@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 5.5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.shootSpeed = 5f;
         }
@@ -56,7 +56,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             if (Main.rand.NextBool(5))
             {
-                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 246);
+                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.GoldCoin);
             }
         }
     }

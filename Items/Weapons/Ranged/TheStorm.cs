@@ -1,8 +1,9 @@
-﻿using CalamityMod.Projectiles.Ranged;
+﻿using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -12,95 +13,61 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class TheStorm : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+        public int shots = 0;
 
-	public override void SetStaticDefaults()
-	{
+        public override void SetStaticDefaults()
+        {
             ItemID.Sets.AnimatesAsSoul[Type] = true;
-	    Main.RegisterItemAnimation(Type, new DrawAnimationVertical(5, 9));
-	}
+            Main.RegisterItemAnimation(Type, new DrawAnimationVertical(5, 9));
+        }
         public override void SetDefaults()
         {
             Item.width = 54;
             Item.height = 90;
-            Item.damage = 35;
+            Item.damage = 40;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = 7;
-            Item.useAnimation = 14;
+            Item.useTime = 2;
+            Item.useAnimation = 20;
+            Item.useLimitPerAnimation = 10;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 3.5f;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
-            Item.UseSound = SoundID.Item122;
             Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<Bolt>();
-            Item.shootSpeed = 28f;
+            Item.shoot = ModContent.ProjectileType<TheStormLightningShot>();
+            Item.shootSpeed = 12f;
             Item.useAmmo = AmmoID.Arrow;
+            Item.consumeAmmoOnLastShotOnly = true;
         }
 
-        public override Vector2? HoldoutOffset()
-        {
-            return new Vector2(-10, 0);
-        }
+        public override Vector2? HoldoutOffset() => new Vector2(-10, 0);
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            int i = Main.myPlayer;
-            float arrowSpeed = Main.rand.Next(25, 30);
-            player.itemTime = Item.useTime;
-            Vector2 realPlayerPos = player.RotatedRelativePoint(player.MountedCenter, true);
-            float mouseXDist = (float)Main.mouseX + Main.screenPosition.X - realPlayerPos.X;
-            float mouseYDist = (float)Main.mouseY + Main.screenPosition.Y - realPlayerPos.Y;
-            if (player.gravDir == -1f)
-            {
-                mouseYDist = Main.screenPosition.Y + (float)Main.screenHeight - (float)Main.mouseY - realPlayerPos.Y;
-            }
-            float mouseDistance = (float)Math.Sqrt((double)(mouseXDist * mouseXDist + mouseYDist * mouseYDist));
-            if ((float.IsNaN(mouseXDist) && float.IsNaN(mouseYDist)) || (mouseXDist == 0f && mouseYDist == 0f))
-            {
-                mouseXDist = (float)player.direction;
-                mouseYDist = 0f;
-                mouseDistance = arrowSpeed;
-            }
-            else
-            {
-                mouseDistance = arrowSpeed / mouseDistance;
-            }
+            if (shots % 2 == 0)
+                SoundEngine.PlaySound(SoundID.Item122 with { Volume = 0.6f, PitchVariance = 0.2f }, position);
 
-            for (int j = 0; j < 3; j++)
+            for (int i = 0; i < 2; i++)
             {
-                realPlayerPos = new Vector2(player.position.X + (float)player.width * 0.5f + (float)(Main.rand.Next(201) * -(float)player.direction) + ((float)Main.mouseX + Main.screenPosition.X - player.position.X), player.MountedCenter.Y - 600f);
-                realPlayerPos.X = (realPlayerPos.X + player.Center.X) / 2f + (float)Main.rand.Next(-200, 201);
-                realPlayerPos.Y -= (float)(100 * j);
-                mouseXDist = (float)Main.mouseX + Main.screenPosition.X - realPlayerPos.X;
-                mouseYDist = (float)Main.mouseY + Main.screenPosition.Y - realPlayerPos.Y;
-                if (mouseYDist < 0f)
-                {
-                    mouseYDist *= -1f;
-                }
-                if (mouseYDist < 20f)
-                {
-                    mouseYDist = 20f;
-                }
-                mouseDistance = (float)Math.Sqrt((double)(mouseXDist * mouseXDist + mouseYDist * mouseYDist));
-                mouseDistance = arrowSpeed / mouseDistance;
-                mouseXDist *= mouseDistance;
-                mouseYDist *= mouseDistance;
-                float speedX4 = mouseXDist + (float)Main.rand.Next(-120, 121) * 0.01f;
-                float speedY5 = mouseYDist + (float)Main.rand.Next(-120, 121) * 0.01f;
+                float arrowVelAdjust = Main.rand.NextFloat(-40, 40);
+                Vector2 arrowSpawnPos = new Vector2(MathHelper.Lerp(player.Calamity().mouseWorld.X, player.Center.X, 0.5f), player.Center.Y) + new Vector2(arrowVelAdjust, Main.rand.NextFloat(-560, -660));
+                Vector2 velAdjust = (player.Calamity().mouseWorld - arrowSpawnPos).SafeNormalize(velocity);
+                Vector2 arrowVel = (velAdjust).RotatedBy(arrowVelAdjust * -0.004f) * Item.shootSpeed;
+
                 if (CalamityUtils.CheckWoodenAmmo(type, player))
                 {
-                    Projectile.NewProjectile(source, realPlayerPos.X, realPlayerPos.Y, speedX4, speedY5 * 0.9f, ModContent.ProjectileType<Bolt>(), damage, knockback, i);
-                    Projectile.NewProjectile(source, realPlayerPos.X, realPlayerPos.Y, speedX4, speedY5 * 0.8f, ModContent.ProjectileType<Bolt>(), damage, knockback, i);
+                    Projectile.NewProjectileDirect(source, arrowSpawnPos, arrowVel, ModContent.ProjectileType<TheStormLightningShot>(), (int)(damage * (i == 0 ? 1.5f : 1f)), knockback, -1, i == 0 ? 5 : 0);
                 }
                 else
                 {
-                    int arrow1 = Projectile.NewProjectile(source, realPlayerPos.X, realPlayerPos.Y, speedX4, speedY5 * 0.9f, type, damage, knockback, i);
-                    Main.projectile[arrow1].noDropItem = true;
-                    int arrow2 = Projectile.NewProjectile(source, realPlayerPos.X, realPlayerPos.Y, speedX4, speedY5 * 0.8f, type, damage, knockback, i);
-                    Main.projectile[arrow2].noDropItem = true;
+                    Projectile arrow1 = Projectile.NewProjectileDirect(source, arrowSpawnPos, arrowVel, i == 0 ? ModContent.ProjectileType<TheStormLightningShot>() : type, damage, knockback);
+                    arrow1.noDropItem = true;
+                    arrow1.tileCollide = false;
                 }
             }
+            
+            shots++;
             return false;
         }
     }

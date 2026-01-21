@@ -1,11 +1,11 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -17,11 +17,11 @@ namespace CalamityMod.Projectiles.Summon
         public override string Texture => "CalamityMod/NPCs/SupremeCalamitas/SupremeCataclysm";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 6;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = false;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = false;
+            Main.projFrames[Type] = 6;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.MinionSacrificable[Type] = false;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = false;
         }
 
         public override void SetDefaults()
@@ -90,7 +90,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 for (int i = 0; i < 40; i++)
                 {
-                    Dust brimstone = Dust.NewDustPerfect(projectile.Center + Main.rand.NextVector2Square(-65f, 65f), 267);
+                    Dust brimstone = Dust.NewDustPerfect(projectile.Center + Main.rand.NextVector2Square(-65f, 65f), DustID.RainbowMk2);
                     brimstone.velocity = -Vector2.UnitY * Main.rand.NextFloat(1.8f, 3.6f);
                     brimstone.scale = Main.rand.NextFloat(1.65f, 1.85f);
                     brimstone.fadeIn = Main.rand.NextFloat(0.7f, 0.9f);
@@ -107,7 +107,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Rectangle frame = texture.Frame(3, 9, Projectile.frame / 9, Projectile.frame % 9);
             Vector2 origin = frame.Size() * 0.5f;
             for (int i = 0; i < Projectile.oldPos.Length; i++)

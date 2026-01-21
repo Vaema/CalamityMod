@@ -1,9 +1,10 @@
-﻿using CalamityMod.Projectiles.Melee;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
@@ -23,8 +24,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.useTurn = true;
-            Item.scale = 1.25f;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
         }
 
@@ -38,6 +38,7 @@ namespace CalamityMod.Items.Weapons.Melee
         // Carnage's on-hits only occur on valid enemies. Specifically won't trigger on statues.
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 120);
             if (target.life > 0 || !target.IsAnEnemy(false))
                 return;
             OnHitEffects(player, target, hit.Knockback);

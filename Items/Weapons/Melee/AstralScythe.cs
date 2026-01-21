@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 6f;
             Item.UseSound = SoundID.Item71;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.shoot = ModContent.ProjectileType<AstralScytheProjectile>();
             Item.shootSpeed = 5f;
@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, position, velocity, type, (int)(damage * 0.6), knockback, player.whoAmI, 0f, 0f);
+            Projectile.NewProjectile(source, position, velocity, type, (int)(damage * 0.6), knockback, player.whoAmI);
             return false;
         }
 

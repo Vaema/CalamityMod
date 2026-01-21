@@ -11,7 +11,7 @@ namespace CalamityMod.Items.Armor.Vanity
         public override void SetStaticDefaults()
         {
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
                 ArmorIDs.Head.Sets.DrawFullHair[Item.headSlot] = true;
         }
 

@@ -18,10 +18,9 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 154;
             Item.height = 40;
-            Item.damage = 1860;
+            Item.damage = 1818;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = 60;
-            Item.useAnimation = 60;
+            Item.useTime = Item.useAnimation = 60;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 9.5f;
@@ -31,11 +30,12 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ProjectileID.Bullet;
             Item.shootSpeed = 12f;
             Item.useAmmo = AmmoID.Bullet;
-            Item.rare = ModContent.RarityType<DarkBlue>();
-            Item.Calamity().canFirePointBlankShots = true;
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-30, 0);
+
+        public override void HoldItem(Player player) => player.scope = true;
 
         // Terraria seems to really dislike high crit values in SetDefaults
         public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 20;
@@ -44,7 +44,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddIngredient<Shroomer>().
-                AddIngredient<CosmiliteBar>(10).
+                AddIngredient<CosmiliteBar>(8).
+                AddIngredient<NightmareFuel>(20).
                 AddTile<CosmicAnvil>().
                 Register();
         }

@@ -1,7 +1,8 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Abyss;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.FathomSwarmer
@@ -10,10 +11,14 @@ namespace CalamityMod.Items.Armor.FathomSwarmer
     public class FathomSwarmerBreastplate : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
+
+        public static int MinionSlotBoost = 1;
+        public static float SummonDamageBoost = 0.1f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MinionSlotBoost, SummonDamageBoost.ToPercent());
+
         public override void SetStaticDefaults()
         {
-           
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             int equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
@@ -28,18 +33,13 @@ namespace CalamityMod.Items.Armor.FathomSwarmer
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
-            Item.defense = 22;
+            Item.defense = 20;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<SummonDamageClass>() += 0.06f;
-            player.endurance += 0.06f;
-            if (Collision.DrownCollision(player.position, player.width, player.height, player.gravDir))
-            {
-                player.statDefense += 10;
-                player.lifeRegen += 5;
-            }
+            player.maxMinions += MinionSlotBoost;
+            player.GetDamage<SummonDamageClass>() += SummonDamageBoost;
             player.Calamity().fathomSwarmerBreastplate = true;
         }
 
@@ -50,6 +50,7 @@ namespace CalamityMod.Items.Armor.FathomSwarmer
                 AddIngredient<PlantyMush>(10).
                 AddIngredient<DepthCells>(5).
                 AddTile(TileID.MythrilAnvil).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<FathomSwarmerBoots>()).
                 Register();
         }
     }

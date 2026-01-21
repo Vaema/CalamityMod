@@ -1,5 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,20 +13,21 @@ namespace CalamityMod.Projectiles.Ranged
         public ref float Time => ref Projectile.ai[0];
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 9;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
+            ProjectileID.Sets.TrailCacheLength[Type] = 9;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 14;
-            Projectile.height = 45;
+            Projectile.width = 26;
+            Projectile.height = 90;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.tileCollide = true;
+            Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.arrow = true;
-            Projectile.extraUpdates = 1;
+            Projectile.extraUpdates = 2;
             Projectile.timeLeft = 300;
         }
 
@@ -51,7 +52,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor);
             return false;
         }
 
@@ -63,7 +64,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             for (int i = 0; i < 10; i++)
             {
-                Dust fire = Dust.NewDustPerfect(Projectile.Center, 267);
+                Dust fire = Dust.NewDustPerfect(Projectile.Center, DustID.RainbowMk2);
                 fire.velocity = Main.rand.NextVector2Circular(2f, 2f);
                 fire.color = Color.Lerp(Color.Red, Color.Purple, Main.rand.NextFloat());
                 fire.scale = Main.rand.NextFloat(1f, 1.1f);
@@ -71,6 +72,6 @@ namespace CalamityMod.Projectiles.Ranged
             }
         }
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Projectile.RotatingHitboxCollision(targetHitbox.TopLeft(), targetHitbox.Size());
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Projectile.RotatingHitboxCollision(targetHitbox);
     }
 }

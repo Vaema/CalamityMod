@@ -1,12 +1,10 @@
-﻿using CalamityMod.Items.Tools;
+﻿using System;
+using CalamityMod.Items.Tools;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System;
 using Terraria;
 using Terraria.Audio;
-using Terraria.GameContent;
-using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -36,6 +34,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.hide = true;
             Projectile.ownerHitCheck = true;
             Projectile.DamageType = TrueMeleeNoSpeedDamageClass.Instance;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override bool ShouldUpdatePosition() => false;
@@ -63,19 +63,20 @@ namespace CalamityMod.Projectiles.Melee
                 Lighting.AddLight(Projectile.Center, Color.Blue.ToVector3() * 0.7f);
             }
 
-                if (MoveInIntervals > 0f)
-                    MoveInIntervals -= 1f;
+            if (MoveInIntervals > 0f)
+                MoveInIntervals -= 1f;
 
-            if (!Owner.channel || Owner.noItems || Owner.CCed)
+            if (Owner.CantUseHoldout())
                 Projectile.Kill();
 
             else if (MoveInIntervals <= 0f)
             {
                 if (Main.myPlayer == Projectile.owner)
                 {
+                    // 15NOV2024: Ozzatron: clamped mouse position unnecessary, result is clamped later
                     Vector2 newVelocity = Owner.Calamity().mouseWorld - Owner.MountedCenter;
 
-                    if (Main.tile[Player.tileTargetX, Player.tileTargetY].WallType != 0)
+                    if (Main.tile[Player.tileTargetX, Player.tileTargetY].WallType != WallID.None)
                     {
                         newVelocity = new Vector2(Player.tileTargetX, Player.tileTargetY) * 16f + Vector2.One * 8f - Owner.MountedCenter;
                         MoveInIntervals = 2f;
@@ -169,7 +170,7 @@ namespace CalamityMod.Projectiles.Melee
             Vector2 normalizedVelocity = Projectile.velocity.SafeNormalize(Vector2.Zero);
 
             //Draw the holdout.
-            Texture2D tex = TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 origin = new Vector2(9f, tex.Height / 2f);
             SpriteEffects effect = SpriteEffects.None;
             if (Owner.direction * Owner.gravDir < 0)
@@ -203,7 +204,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Main.EntitySpriteDraw(selectionTex, Projectile.Center + offset - Main.screenPosition, null, bloomColor.MultiplyRGB(colorMod), 0f, selectionTex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             });
-            
+
 
             //Draw laser beams going around the selection
             Texture2D beamTex = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/SimpleGradient").Value;

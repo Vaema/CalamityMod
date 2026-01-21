@@ -1,5 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Magic
@@ -9,7 +9,7 @@ namespace CalamityMod.Projectiles.Magic
         public new string LocalizationCategory => "Projectiles.Magic";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 3;
+            Main.projFrames[Type] = 3;
         }
 
         public override void SetDefaults()
@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.Magic
                     Projectile.active = false;
                     return;
                 }
-                if (!player.ActiveItem().CountsAsClass<MagicDamageClass>() || player.ActiveItem().shoot != ModContent.ProjectileType<MelterNote1>())
+                if (!player.HeldItem.CountsAsClass<MagicDamageClass>() || player.HeldItem.shoot != ModContent.ProjectileType<MelterNote1>())
                 {
                     Projectile.active = false;
                     return;
@@ -64,7 +64,7 @@ namespace CalamityMod.Projectiles.Magic
                 int Damage = Projectile.damage;
                 int type;
                 Projectile.netUpdate = true;
-                Vector2 projAimDirection = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
+                Vector2 projAimDirection = Projectile.Center;
                 float ampXDirection = (float)Main.mouseX + Main.screenPosition.X - projAimDirection.X;
                 float ampYDirection = (float)Main.mouseY + Main.screenPosition.Y - projAimDirection.Y;
                 if (player.gravDir == -1f)

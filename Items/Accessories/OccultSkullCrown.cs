@@ -1,6 +1,7 @@
 ﻿using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -8,17 +9,21 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Accessories
 {
     [AutoloadEquip(EquipType.Face)]
-    public class OccultSkullCrown : ModItem, ILocalizedModType
+    public class OccultSkullCrown : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public bool HasFlavorTooltip => true;
+        public Color? TooltipExtensionColor => new(195, 223, 255);
+
         public override void SetStaticDefaults()
         {
-           
-            if (Main.netMode != NetmodeID.Server)
+
+            if (!Main.dedServ)
             {
                 int equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Face);
-				ArmorIDs.Face.Sets.PreventHairDraw[equipSlot] = true;
-				ArmorIDs.Face.Sets.OverrideHelmet[equipSlot] = true;
+                ArmorIDs.Face.Sets.PreventHairDraw[equipSlot] = true;
+                ArmorIDs.Face.Sets.OverrideHelmet[equipSlot] = true;
             }
         }
 
@@ -27,9 +32,10 @@ namespace CalamityMod.Items.Accessories
             Item.width = 82;
             Item.height = 62;
             Item.defense = 5;
-            Item.rare = ModContent.RarityType<DarkBlue>();
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.rare = ModContent.RarityType<Turquoise>();
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.accessory = true;
+            Item.SetRevExclusive();
         }
 
         public override void UpdateEquip(Player player)
@@ -46,8 +52,8 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<HeartofDarkness>().
                 AddIngredient<Laudanum>().
                 AddIngredient<StressPills>().
-                AddIngredient<NightmareFuel>(20).
-                AddTile(TileID.LunarCraftingStation).
+                AddIngredient<TwistingNether>(3).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

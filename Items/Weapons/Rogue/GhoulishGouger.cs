@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -31,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shootSpeed = 16f;
             Item.DamageType = RogueDamageClass.Instance;
 
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 

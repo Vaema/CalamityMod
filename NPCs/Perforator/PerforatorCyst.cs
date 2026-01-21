@@ -1,11 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.NPCs.Perforator
 {
@@ -13,13 +14,19 @@ namespace CalamityMod.NPCs.Perforator
     {
         public static readonly SoundStyle HiveSpawn = new("CalamityMod/Sounds/Custom/Perforator/PerfHiveSpawn");
 
+        public static Asset<Texture2D> GlowTexture;
+
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
+            Main.npcFrameCount[Type] = 4;
             NPCID.Sets.CantTakeLunchMoney[Type] = true;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0);
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -44,18 +51,18 @@ namespace CalamityMod.NPCs.Perforator
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheCrimson,
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.UndergroundCrimson,
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.PerforatorCyst")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.PerforatorCyst")
             });
         }
 
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter += 0.15f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
@@ -66,15 +73,15 @@ namespace CalamityMod.NPCs.Perforator
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture2D15 = TextureAssets.Npc[NPC.type].Value;
-            Vector2 vector11 = new Vector2((float)(TextureAssets.Npc[NPC.type].Value.Width / 2), (float)(TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2));
+            Texture2D texture2D15 = TextureAssets.Npc[Type].Value;
+            Vector2 vector11 = new Vector2((float)(TextureAssets.Npc[Type].Value.Width / 2), (float)(TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2));
 
             Vector2 vector43 = NPC.Center - screenPos;
-            vector43 -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height / Main.npcFrameCount[NPC.type])) * NPC.scale / 2f;
+            vector43 -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height / Main.npcFrameCount[Type])) * NPC.scale / 2f;
             vector43 += vector11 * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture2D15, vector43, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, vector11, NPC.scale, spriteEffects, 0f);
 
-            texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/Perforator/PerforatorCystGlow").Value;
+            texture2D15 = GlowTexture.Value;
             Color color37 = Color.Lerp(Color.White, Color.Yellow, 0.5f);
 
             spriteBatch.Draw(texture2D15, vector43, NPC.frame, color37, NPC.rotation, vector11, NPC.scale, spriteEffects, 0f);

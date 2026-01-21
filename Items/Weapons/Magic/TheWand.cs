@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
@@ -35,10 +35,10 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.knockBack = 0.5f;
             Item.UseSound = SoundID.Item102;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.shoot = ModContent.ProjectileType<SparkInfernal>();
             Item.shootSpeed = 24f;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override bool CanUseItem(Player player)
@@ -52,7 +52,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void MeleeEffects(Player player, Rectangle hitbox)
         {
             if (Main.rand.NextBool(3))
-                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 6);
+                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.Torch);
         }
 
         public override void AddRecipes()

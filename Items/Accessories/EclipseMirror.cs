@@ -3,20 +3,21 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class EclipseMirror : ModItem, ILocalizedModType
+    public class EclipseMirror : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Accessories";
+        public bool HasFlavorTooltip => true;
+
         public override void SetDefaults()
         {
             Item.width = 30;
             Item.height = 46;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.accessory = true;
         }
 

@@ -1,10 +1,10 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -47,7 +47,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Vector2 weightVel = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.25f;
                 weightVel = weightVel.RotatedBy((double)((float)(i - (constant / 2 - 1)) * 6.28318548f / (float)constant), default) + Projectile.Center;
                 Vector2 dustVel = weightVel - Projectile.Center;
-                int dusty = Dust.NewDust(weightVel + dustVel, 0, 0, 33, dustVel.X, dustVel.Y, 100, default, 1f);
+                int dusty = Dust.NewDust(weightVel + dustVel, 0, 0, DustID.Water, dustVel.X, dustVel.Y, 100, default, 1f);
                 Main.dust[dusty].noGravity = true;
                 Main.dust[dusty].velocity = dustVel;
             }
@@ -57,12 +57,12 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<CrushDepth>(), 120);
+            target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 120);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            target.AddBuff(ModContent.BuffType<CrushDepth>(), 120);
+            target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 120);
         }
     }
 }

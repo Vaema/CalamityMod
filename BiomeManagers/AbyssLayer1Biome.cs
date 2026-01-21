@@ -1,7 +1,8 @@
 ﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.Placeables.FurnitureAbyss;
-using CalamityMod.World;
+using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Systems;
+using CalamityMod.Waters;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -42,12 +43,12 @@ namespace CalamityMod.BiomeManagers
             if (Main.remixWorld)
                 return !player.lavaWet && !player.honeyWet && abyssPosX && playerYTileCoords < abyssStartHeight;
 
-            return !player.lavaWet && !player.honeyWet && abyssPosX && playerYTileCoords >= abyssStartHeight && playerYTileCoords <= Main.maxTilesY - 200;
+            return !player.lavaWet && !player.honeyWet && abyssPosX && playerYTileCoords >= abyssStartHeight && playerYTileCoords <= Main.UnderworldLayer;
         }
 
         // Temporarily use sulphur for now
-        public override ModWaterStyle WaterStyle => ModContent.Find<ModWaterStyle>("CalamityMod/SulphuricDepthsWater");
-        public override int BiomeTorchItemType => ModContent.ItemType<AbyssTorch>();
+        public override ModWaterStyle WaterStyle => SulphuricDepthsWater.Instance;
+        public override int BiomeTorchItemType => ModContent.ItemType<CausticTorch>();
         public override SceneEffectPriority Priority => SceneEffectPriority.Environment;
         public override string BestiaryIcon => "CalamityMod/BiomeManagers/AbyssLayer1Icon";
         public override string BackgroundPath => "CalamityMod/Backgrounds/MapBackgrounds/AbyssBGLayer1";

@@ -1,7 +1,7 @@
-﻿using CalamityMod.Items.Weapons.Magic;
+﻿using System;
+using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -15,7 +15,7 @@ namespace CalamityMod.Projectiles.Magic
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<GhastlyVisage>();
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
+            Main.projFrames[Type] = 4;
         }
 
         public override void SetDefaults()
@@ -68,7 +68,7 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.ai[1] = (float)(soundDelayer - soundDelayMult * aiSoundDelay);
                 isActive = true;
             }
-            bool canUseItem = player.channel && !player.noItems && !player.CCed;
+            bool canUseItem = !player.CantUseHoldout();
             if (Projectile.localAI[0] > 0f)
             {
                 Projectile.localAI[0] -= 1f;
@@ -110,7 +110,7 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.soundDelay = soundDelayer - soundDelayMult * aiSoundDelay;
 
                 if (isActive)
-                    SoundEngine.PlaySound(SoundID.Item117, Projectile.position);
+                    SoundEngine.PlaySound(SoundID.Item117, Projectile.Center);
             }
             else if (Projectile.soundDelay <= 0 && canUseItem)
             {
@@ -147,19 +147,19 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.soundDelay = soundDelayer - soundDelayMult * aiSoundDelay;
                 if (Projectile.ai[0] != 1f && isActive)
                 {
-                    SoundEngine.PlaySound(SoundID.Item117, Projectile.position);
+                    SoundEngine.PlaySound(SoundID.Item117, Projectile.Center);
                 }
                 Projectile.localAI[0] = 12f;
             }
             if (isActive && Main.myPlayer == Projectile.owner)
             {
                 float coreVelocity = 11.5f;
-                int weaponDamage2 = player.GetWeaponDamage(player.ActiveItem());
-                float weaponKnockback2 = player.ActiveItem().knockBack;
+                int weaponDamage2 = player.GetWeaponDamage(player.HeldItem);
+                float weaponKnockback2 = player.HeldItem.knockBack;
                 if (canUseItem)
                 {
-                    weaponKnockback2 = player.GetWeaponKnockback(player.ActiveItem(), weaponKnockback2);
-                    float scaleFactor12 = player.ActiveItem().shootSpeed * Projectile.scale;
+                    weaponKnockback2 = player.GetWeaponKnockback(player.HeldItem, weaponKnockback2);
+                    float scaleFactor12 = player.HeldItem.shootSpeed * Projectile.scale;
                     Vector2 playerRotateCopy = playerRotate;
                     Vector2 projSpawnDirection = Main.screenPosition + new Vector2((float)Main.mouseX, (float)Main.mouseY) - playerRotateCopy;
                     if (player.gravDir == -1f)
@@ -203,8 +203,8 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void PostDraw(Color lightColor)
         {
-            Texture2D texture2D13 = ModContent.Request<Texture2D>(Texture).Value;
-            int framing = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
+            Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int framing = Terraria.GameContent.TextureAssets.Projectile[Type].Value.Height / Main.projFrames[Type];
             int y6 = framing * Projectile.frame;
             Vector2 origin = new Vector2(13f, 16f);
             SpriteEffects spriteEffects = SpriteEffects.None;

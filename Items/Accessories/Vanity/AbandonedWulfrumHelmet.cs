@@ -1,9 +1,8 @@
-﻿using CalamityMod.CalPlayer;
+﻿using CalamityMod.Items.BaseItems;
 using Terraria;
-using Terraria.DataStructures;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.Accessories.Vanity
 {
@@ -19,49 +18,32 @@ namespace CalamityMod.Items.Accessories.Vanity
     [LegacyName("WulfrumHeadMelee")]
     [LegacyName("WulfrumHood")]
     [LegacyName("WulfrumHeadMagic")]
-    public class AbandonedWulfrumHelmet : ModItem, ILocalizedModType
+    public class AbandonedWulfrumHelmet : TransformationAccessory, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
-        public override void Load()
-        {
-            if (Main.netMode != NetmodeID.Server)
-            {
-                EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/Vanity/AbandonedWulfrumHelmet_HeadSet", EquipType.Head, name: "WulfrumOldSetHead");
-                EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/Vanity/AbandonedWulfrumHelmet_Body", EquipType.Body, this);
-                EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/Vanity/AbandonedWulfrumHelmet_Legs", EquipType.Legs, this);
-            }
-        }
+        public override (EquipType, string, string)[] EquipSlots =>
+        [
+            (EquipType.Head, "AbandonedWulfrumHelmetTrans", "WulfrumOldSetHead"),
+            (EquipType.Body, "AbandonedWulfrumHelmet", null),
+            (EquipType.Legs, "AbandonedWulfrumHelmet", null),
+            (EquipType.Face, null, null), //results in setting this equip slot to -1
+        ];
+        public override bool ShouldHideAccessories => true;
 
-        public override void SetStaticDefaults()
-        {
-           
-            if (Main.netMode == NetmodeID.Server)
-                return;
-
-            int equipSlotHead = EquipLoader.GetEquipSlot(Mod, "WulfrumOldSetHead", EquipType.Head);
-            ArmorIDs.Head.Sets.DrawHead[equipSlotHead] = false;
-
-            int equipSlotBody = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
-            ArmorIDs.Body.Sets.HidesTopSkin[equipSlotBody] = true;
-            ArmorIDs.Body.Sets.HidesArms[equipSlotBody] = true;
-
-            int equipSlotLegs = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Legs);
-            ArmorIDs.Legs.Sets.HidesBottomSkin[equipSlotLegs] = true;
-        }
+        public override (SoundStyle sound, int delay)? HurtSound(Player p) => (SoundID.NPCHit4, 10);
 
         public override void SetDefaults()
         {
             Item.width = 26;
             Item.height = 30;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.vanity = true;
         }
 
         public override void UpdateVanity(Player player)
         {
-            player.GetModPlayer<WulfrumTransformationPlayer>().transformationActive = true;
             player.GetModPlayer<WulfrumTransformationPlayer>().vanityEquipped = true;
         }
 
@@ -69,7 +51,6 @@ namespace CalamityMod.Items.Accessories.Vanity
         {
             if (!hideVisual)
             {
-                player.GetModPlayer<WulfrumTransformationPlayer>().transformationActive = true;
                 player.GetModPlayer<WulfrumTransformationPlayer>().vanityEquipped = true;
             }
         }
@@ -78,31 +59,10 @@ namespace CalamityMod.Items.Accessories.Vanity
     public class WulfrumTransformationPlayer : ModPlayer
     {
         public bool vanityEquipped = false;
-        public bool transformationActive = false;
-        public bool forceHelmetOn = false;
 
         public override void ResetEffects()
         {
             vanityEquipped = false;
-            transformationActive = false;
-            forceHelmetOn = false;
-        }
-
-        public override void FrameEffects()
-        {
-            if (forceHelmetOn || transformationActive)
-            {
-                Player.head = EquipLoader.GetEquipSlot(Mod, "WulfrumOldSetHead", EquipType.Head);
-                Player.face = -1;
-            }
-
-            if (transformationActive)
-            {
-                Player.legs = EquipLoader.GetEquipSlot(Mod, "AbandonedWulfrumHelmet", EquipType.Legs);
-                Player.body = EquipLoader.GetEquipSlot(Mod, "AbandonedWulfrumHelmet", EquipType.Body);
-
-                Player.HideAccessories();
-            }
         }
     }
 }

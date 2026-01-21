@@ -1,10 +1,10 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -22,8 +22,8 @@ namespace CalamityMod.Items.Tools
 
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            Item.staff[Type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
         public override void SetDefaults()
@@ -44,7 +44,7 @@ namespace CalamityMod.Items.Tools
             Item.UseSound = SoundID.Item1;
             Item.shoot = ModContent.ProjectileType<CrystylCrusherRay>();
 
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
         }

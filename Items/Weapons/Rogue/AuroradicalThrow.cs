@@ -1,11 +1,12 @@
-﻿using Terraria.DataStructures;
+﻿using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.GameContent;
 
 namespace CalamityMod.Items.Weapons.Rogue
 {
@@ -23,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 6f;
             Item.UseSound = SoundID.Item117;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.shoot = ModContent.ProjectileType<AuroradicalSplitter>();
             Item.shootSpeed = 10f;
@@ -40,7 +41,7 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
         {
-            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, TextureAssets.Item[Item.type].Value);
+            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, TextureAssets.Item[Type].Value);
         }
     }
 }

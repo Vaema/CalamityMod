@@ -1,4 +1,6 @@
-using CalamityMod.CalPlayer;
+﻿using CalamityMod.CalPlayer;
+using CalamityMod.Graphics;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -11,9 +13,9 @@ namespace CalamityMod.Projectiles.Pets
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            Main.projPet[Projectile.type] = true;
-            ProjectileID.Sets.LightPet[Projectile.type] = true;
+            Main.projFrames[Type] = 4;
+            Main.projPet[Type] = true;
+            ProjectileID.Sets.LightPet[Type] = true;
         }
 
         public override void SetDefaults()
@@ -46,6 +48,8 @@ namespace CalamityMod.Projectiles.Pets
             underwater = Collision.DrownCollision(player.position, player.width, player.height, player.gravDir);
             if (underwater)
             {
+                if (Main.LocalPlayer.Calamity().ZoneAbyss)
+                    EnhancedDarknessSystem.lights.Add(new() { center = Projectile.Center, rotation = 0, scale = 3, texture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value });
                 Lighting.AddLight(Projectile.Center, 0.3f, 0.9f, 1.5f);
             }
             else

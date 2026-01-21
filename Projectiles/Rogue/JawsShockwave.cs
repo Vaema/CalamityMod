@@ -1,4 +1,4 @@
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
@@ -58,9 +58,9 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<CrushDepth>(), 240);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 240);
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<CrushDepth>(), 240);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 240);
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 160f, targetHitbox);
     }

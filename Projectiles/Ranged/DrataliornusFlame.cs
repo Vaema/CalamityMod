@@ -1,12 +1,12 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Ranged
 {
     public class DrataliornusFlame : ModProjectile, ILocalizedModType
@@ -73,11 +73,9 @@ namespace CalamityMod.Projectiles.Ranged
                     int possibleTarget = -1;
                     float closestDistance = 700f;
 
-                    for (int i = 0; i < Main.maxNPCs; i++)
+                    foreach (NPC npc in Main.ActiveNPCs)
                     {
-                        NPC npc = Main.npc[i];
-
-                        if (npc.active && npc.chaseable && npc.lifeMax > 5 && !npc.dontTakeDamage && !npc.friendly &&
+                        if (npc.chaseable && npc.lifeMax > 5 && !npc.dontTakeDamage && !npc.friendly &&
                             !npc.immortal && Collision.CanHit(Projectile.Center, 0, 0, npc.Center, 0, 0))
                         {
                             float distance = Vector2.Distance(Projectile.Center, npc.Center);
@@ -85,7 +83,7 @@ namespace CalamityMod.Projectiles.Ranged
                             if (closestDistance > distance)
                             {
                                 closestDistance = distance;
-                                possibleTarget = i;
+                                possibleTarget = npc.whoAmI;
                             }
                         }
                     }
@@ -132,7 +130,7 @@ namespace CalamityMod.Projectiles.Ranged
                 }
             }
 
-            int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 127, Projectile.velocity.X, Projectile.velocity.Y, 0, default, 1.5f + Main.rand.NextFloat());
+            int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare, Projectile.velocity.X, Projectile.velocity.Y, 0, default, 1.5f + Main.rand.NextFloat());
             Main.dust[d].noGravity = true;
 
             Lighting.AddLight(Projectile.Center, 255f / 255f, 154f / 255f, 58f / 255f);
@@ -145,7 +143,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture2D13 = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Main.spriteBatch.Draw(texture2D13, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, 0, texture2D13.Width, texture2D13.Height)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture2D13.Width / 2f, (float)texture2D13.Height / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
@@ -180,21 +178,21 @@ namespace CalamityMod.Projectiles.Ranged
                     Vector2 rotate = Vector2.Normalize(Projectile.velocity) * modifier;
                     rotate = rotate.RotatedBy((i - (constant / 2 - 1)) * 6.28318548f / constant, default) + Projectile.Center;
                     Vector2 faceDirection = rotate - Projectile.Center;
-                    int dust = Dust.NewDust(rotate + faceDirection, 0, 0, 174, 0f, 0f, 45, default, 2f);
+                    int dust = Dust.NewDust(rotate + faceDirection, 0, 0, DustID.InfernoFork, 0f, 0f, 45, default, 2f);
                     Main.dust[dust].noGravity = true;
                     Main.dust[dust].velocity = faceDirection;
                 }
                 for (int j = 0; j < 4; j++)
                 {
-                    Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 174, 0f, 0f, 50, default, 1.5f);
+                    Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.InfernoFork, 0f, 0f, 50, default, 1.5f);
 
-                    int fieryDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 174, 0f, 0f, 50, default, 1f);
+                    int fieryDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.InfernoFork, 0f, 0f, 50, default, 1f);
                     Main.dust[fieryDust].noGravity = true;
                     Main.dust[fieryDust].velocity *= 2f;
                 }
                 for (int k = 0; k < 12; k++)
                 {
-                    int fieryDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 127, 0f, 0f, 0, default, 3f);
+                    int fieryDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare, 0f, 0f, 0, default, 3f);
                     Main.dust[fieryDust].noGravity = true;
                     Main.dust[fieryDust].velocity *= 3f;
                 }
@@ -234,8 +232,6 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.immune[Projectile.owner] = 0;
-
             target.AddBuff(ModContent.BuffType<Dragonfire>(), 240);
 
             if (Projectile.ai[0] != 0f && Projectile.owner == Main.myPlayer) //if empowered

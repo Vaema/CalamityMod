@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.LunicCorps
@@ -9,11 +10,16 @@ namespace CalamityMod.Items.Armor.LunicCorps
     public class LunicCorpsBoots : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
+
+        public static int RangedCritBoost = 7;
+        public static float MoveSpeedAccelerationBoost = 0.15f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedCritBoost, MoveSpeedAccelerationBoost.ToPercent());
+
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity9BuyPrice;
+            Item.value = CalamityGlobalItem.RarityCyanBuyPrice;
             Item.defense = 18;
             Item.rare = ItemRarityID.Cyan;
             Item.Calamity().donorItem = true;
@@ -22,8 +28,8 @@ namespace CalamityMod.Items.Armor.LunicCorps
         public override void UpdateEquip(Player player)
         {
             player.Calamity().lunicCorpsLegs = true;
-            player.moveSpeed += 0.15f;
-            player.GetCritChance<RangedDamageClass>() += 4;
+            player.GetCritChance<RangedDamageClass>() += RangedCritBoost;
+            player.moveSpeed += MoveSpeedAccelerationBoost;
         }
 
         public override void AddRecipes()

@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Projectiles.Magic;
-using CalamityMod.Projectiles.Melee.Yoyos;
-using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -18,14 +16,33 @@ namespace CalamityMod
 {
     public static partial class CalamityUtils
     {
+        #region Projectile Identification/Counting Utilities
+        public static T ModProjectile<T>(this Projectile projectile) where T : ModProjectile
+        {
+            return projectile.ModProjectile as T;
+        }
+
         public static bool AnyProjectiles(int projectileID)
         {
             // Efficiently loop through all projectiles, using a specially designed continue continue that attempts to minimize the amount of OR
             // checks per iteration.
-            for (int i = 0; i < Main.maxProjectiles; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                Projectile p = Main.projectile[i];
-                if (p.type != projectileID || !p.active)
+                if (p.type != projectileID)
+                    continue;
+
+                return true;
+            }
+
+            return false;
+        }
+        public static bool AnyOwnedProjectiles(int projectileID, int ownerID)
+        {
+            // Efficiently loop through all projectiles, using a specially designed continue continue that attempts to minimize the amount of OR
+            // checks per iteration.
+            foreach (Projectile p in Main.ActiveProjectiles)
+            {
+                if (p.type != projectileID || p.owner != ownerID)
                     continue;
 
                 return true;
@@ -34,36 +51,9 @@ namespace CalamityMod
             return false;
         }
 
-        public static IEnumerable<Projectile> AllProjectilesByID(int projectileID)
-        {
-            // This uses the same efficient loop idea as AnyProjectiles.
-            for (int i = 0; i < Main.maxProjectiles; i++)
-            {
-                Projectile p = Main.projectile[i];
-                if (p.type != projectileID || !p.active)
-                    continue;
-
-                yield return p;
-            }
-        }
-
         public static int CountProjectiles(int projectileID) => Main.projectile.Count(proj => proj.type == projectileID && proj.active);
 
         public static int CountHookProj() => Main.projectile.Count(proj => Main.projHook[proj.type] && proj.ai[0] == 2f && proj.active && proj.owner == Main.myPlayer);
-
-        public static bool FinalExtraUpdate(this Projectile proj) => proj.numUpdates == -1;
-
-        public static bool IsTrueMelee(this Projectile proj)
-        {
-            if (proj is null || !proj.active)
-                return false;
-            return proj.CountsAsClass<TrueMeleeDamageClass>() || proj.CountsAsClass<TrueMeleeNoSpeedDamageClass>();
-        }
-
-        public static T ModProjectile<T>(this Projectile projectile) where T : ModProjectile
-        {
-            return projectile.ModProjectile as T;
-        }
 
         public static Projectile FindProjectileByIdentity(int identity, int ownerIndex)
         {
@@ -71,15 +61,50 @@ namespace CalamityMod
             if (Main.netMode == NetmodeID.SinglePlayer)
                 return Main.projectile[identity];
 
-            for (int i = 0; i < Main.maxProjectiles; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                if (Main.projectile[i].identity != identity || Main.projectile[i].owner != ownerIndex || !Main.projectile[i].active)
+                if (p.identity != identity || p.owner != ownerIndex)
                     continue;
 
-                return Main.projectile[i];
+                return p;
             }
             return null;
         }
+
+        public static int FindFirstProjectile(int Type)
+        {
+            int index = -1;
+            for (int x = 0; x < Main.maxProjectiles; x++)
+            {
+                Projectile proj = Main.projectile[x];
+                if (proj.active && proj.type == Type)
+                {
+                    index = x;
+                    break;
+                }
+            }
+            return index;
+        }
+
+        public static void OnlyOneSentry(Player player, int Type)
+        {
+            int existingTurrets = player.ownedProjectileCounts[Type];
+            if (existingTurrets > 0)
+            {
+                foreach (Projectile p in Main.ActiveProjectiles)
+                {
+                    if (p.type == Type &&
+                        p.owner == player.whoAmI)
+                    {
+                        p.Kill();
+                        existingTurrets--;
+                        if (existingTurrets <= 0)
+                            break;
+                    }
+                }
+            }
+        }
+        #endregion
 
         #region Projectile AI Utilities
         public static void ExpandHitboxBy(this Projectile projectile, int width, int height)
@@ -93,7 +118,51 @@ namespace CalamityMod
         public static void ExpandHitboxBy(this Projectile projectile, Vector2 newSize) => projectile.ExpandHitboxBy((int)newSize.X, (int)newSize.Y);
         public static void ExpandHitboxBy(this Projectile projectile, float expandRatio) => projectile.ExpandHitboxBy((int)(projectile.width * expandRatio), (int)(projectile.height * expandRatio));
 
-        public static void HomeInOnNPC(Projectile projectile, bool ignoreTiles, float distanceRequired, float homingVelocity, float N)
+        /// <summary>
+        /// Prevents a projectile from colliding with tiles until it's no longer inside tiles.<br />
+        /// Useful for large projectiles that would otherwise collide with tiles instantly after spawning.<br />
+        /// Make sure to set Projectile.tileCollide = false; in the projectile's SetDefaults before calling this function in the projectile's AI.
+        /// </summary>
+        public static void PreventTileCollisionUntilHitboxIsOutsideOfTiles(Projectile projectile)
+        {
+            if (!projectile.tileCollide)
+            {
+                bool canCollide = true;
+                Vector2 tilePosition;
+                Point tilePositionPoint;
+                Tile tileSafely;
+                float increment = 16f;
+                float offset = increment * 2f;
+                float startIndexX = projectile.position.X - increment;
+                float endIndexX = startIndexX + offset + projectile.width;
+                float startIndexY = projectile.position.Y - increment;
+                float endIndexY = projectile.position.Y + offset + projectile.height;
+                for (float i = startIndexX; i < endIndexX; i += increment)
+                {
+                    if (!canCollide)
+                        break;
+
+                    for (float j = startIndexY; j < endIndexY; j += increment)
+                    {
+                        tilePosition.X = i;
+                        tilePosition.Y = j;
+                        tilePositionPoint = tilePosition.ToTileCoordinates();
+                        tileSafely = Framing.GetTileSafely(tilePositionPoint);
+                        bool isInSolidTile = tileSafely.HasUnactuatedTile && Main.tileSolid[tileSafely.TileType] && !Main.tileSolidTop[tileSafely.TileType] && !TileID.Sets.Platforms[tileSafely.TileType];
+                        if (isInSolidTile)
+                        {
+                            canCollide = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (canCollide)
+                    projectile.tileCollide = true;
+            }
+        }
+
+        public static void HomeInOnNPC(Projectile projectile, bool ignoreTiles, float distanceRequired, float homingVelocity, float inertia, bool respectIFrames = false)
         {
             if (!projectile.friendly)
                 return;
@@ -109,17 +178,19 @@ namespace CalamityMod
             // Find the closest target.
             float npcDistCompare = 25000f; // Initializing the value to a large number so the first entry is basically guaranteed to replace it.
             int index = -1;
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC n in Main.ActiveNPCs)
             {
-                float extraDistance = (Main.npc[i].width / 2) + (Main.npc[i].height / 2);
-                if (!Main.npc[i].CanBeChasedBy(projectile, false) || !projectile.WithinRange(Main.npc[i].Center, maxDistance + extraDistance))
+                float extraDistance = (n.width / 2) + (n.height / 2);
+                if (!n.CanBeChasedBy(projectile, false) || !projectile.WithinRange(n.Center, maxDistance + extraDistance) || (respectIFrames && (projectile.localNPCImmunity[n.whoAmI] > 0 || projectile.localNPCImmunity[n.whoAmI] == -1 || n.immune[projectile.owner] > 0)))
                     continue;
 
-                float currentNPCDist = Vector2.Distance(Main.npc[i].Center, projectile.Center);
-                if ((currentNPCDist < npcDistCompare) && (ignoreTiles || Collision.CanHit(projectile.Center, 1, 1, Main.npc[i].Center, 1, 1)))
+                float currentNPCDist = Vector2.Distance(n.Center, projectile.Center);
+                if (respectIFrames && Projectile.perIDStaticNPCImmunity[projectile.type][n.whoAmI] > Main.GameUpdateCount)
+                    currentNPCDist += 1600; //Prioritize things that don't currently have iframes, but still home in on stuff that has static iframes if needed.
+                if ((currentNPCDist < npcDistCompare) && (ignoreTiles || Collision.CanHit(projectile.Center, 1, 1, n.Center, 1, 1)))
                 {
                     npcDistCompare = currentNPCDist;
-                    index = i;
+                    index = n.whoAmI;
                 }
             }
             // If the index was never changed, don't do anything. Otherwise, tell the projectile where to home.
@@ -136,13 +207,40 @@ namespace CalamityMod
 
                 // Home in on the target.
                 Vector2 homeDirection = (destination - projectile.Center).SafeNormalize(Vector2.UnitY);
-                projectile.velocity = (projectile.velocity * N + homeDirection * homingVelocity) / (N + 1f);
-            }
+                projectile.velocity = (projectile.velocity * inertia + homeDirection * homingVelocity) / (inertia + 1f);
+                projectile.Calamity().HomingTarget = index;
+    }
             else
             {
                 // Set amount of extra updates to default amount.
                 projectile.extraUpdates = projectile.Calamity().defExtraUpdates;
             }
+        }
+
+        /// <summary>
+        /// Xyk's version of homing code<br />
+        /// Gives a projectile homing on a selected npc. It is recommended to use <see cref="ClosestNPCAt"/> to get a target.
+        /// </summary>
+        /// <param name="homingVelocity">The multiplier applied to the movement towards the target.</param>
+        /// <param name="maxSpeed">The cap on velocity for the projectile.</param>
+        /// <param name="inertia">The inertia of the homing. Generally you want to keep this anywhere from 1 (high inertia), to 0.9f (low inertia).</param>
+        /// <param name="overspeedReduction">The speed reduction applied to the projectile if it goes above max speed.</param>
+        /// <param name="accelerate">If the projectile should accelerate to max speed when there is no target. Good for projectiles with small homing range.</param>
+        public static void HomeInOnSelectedNPC(Projectile projectile, NPC target, bool ignoreTiles = true, float homingVelocity = 0.5f, float maxSpeed = 10, float inertia = 0.985f, float overspeedReduction = 0.95f, bool accelerate = false)
+        {
+            NPC targetedNPC = target;
+            if (targetedNPC != null && (ignoreTiles || Collision.CanHit(projectile.Center, 1, 1, targetedNPC.Center, 1, 1)))
+            {
+                Vector2 position = targetedNPC.Center;
+                Vector2 moveToNPC = (position - projectile.Center).SafeNormalize(Vector2.UnitX);
+                if (projectile.velocity.Length() < maxSpeed)
+                    projectile.velocity = projectile.velocity * inertia + moveToNPC * homingVelocity;
+                else
+                    projectile.velocity *= overspeedReduction;
+                projectile.Calamity().HomingTarget = targetedNPC.whoAmI;
+            }
+            if (targetedNPC == null && projectile.velocity.Length() < maxSpeed && accelerate)
+                projectile.velocity *= 1.0055f;
         }
 
         // NOTE - Do not under any circumstance use these predictive methods for enemies or bosses. It is intended for minions and player-created projectiles.
@@ -183,6 +281,41 @@ namespace CalamityMod
         }
 
         /// <summary>
+        /// Calculates a velocity that approximately predicts where some target will be in the future based on Euler's Method. This takes into account the projectile's max updates.
+        /// </summary>
+        /// <param name="startingPosition">The starting position from where the movement is calculated.</param>
+        /// <param name="targetPosition">The position of the target to hit.</param>
+        /// <param name="targetVelocity">The velocity of the target to hit.</param>
+        /// <param name="shootSpeed">The speed of the predictive velocity.</param>
+        /// <param name="projMaxUpdates">How many extra updates the resulting projectile will have.</param>
+        /// <param name="iterations">The number of iterations to perform. The more iterations, the more precise the results are.</param>
+        public static Vector2 CalculatePredictiveAimToTargetMaxUpdates(Vector2 startingPosition, Vector2 targetPosition, Vector2 targetVelocity, float shootSpeed, int projMaxUpdates, int iterations = 4)
+        {
+            float previousTimeToReachDestination = 0f;
+            Vector2 currentTargetPosition = targetPosition;
+            for (int i = 0; i < iterations; i++)
+            {
+                float timeToReachDestination = Vector2.Distance(startingPosition, currentTargetPosition) / shootSpeed / projMaxUpdates;
+                currentTargetPosition += targetVelocity * (timeToReachDestination - previousTimeToReachDestination);
+                previousTimeToReachDestination = timeToReachDestination;
+            }
+            return (currentTargetPosition - startingPosition).SafeNormalize(Vector2.UnitY) * shootSpeed;
+        }
+
+        /// <summary>
+        /// Calculates a velocity that approximately predicts where some target will be in the future based on Euler's Method. This takes into account the projectile's max updates.
+        /// </summary>
+        /// <param name="startingPosition">The starting position from where the movement is calculated.</param>
+        /// <param name="target">The target to hit.</param>
+        /// <param name="shootSpeed">The speed of the predictive velocity.</param>
+        /// <param name="projMaxUpdates">How many extra updates the resulting projectile will have.</param>
+        /// <param name="iterations">The number of iterations to perform. The more iterations, the more precise the results are.</param>
+        public static Vector2 CalculatePredictiveAimToTargetMaxUpdates(Vector2 startingPosition, Entity target, float shootSpeed, int projMaxUpdates, int iterations = 4)
+        {
+            return CalculatePredictiveAimToTargetMaxUpdates(startingPosition, target.Center, target.velocity, shootSpeed, projMaxUpdates, iterations);
+        }
+
+        /// <summary>
         /// Makes a projectile home in such a way that it attempts to fractionally move towards a target's expected future position.
         /// This is based on the results of the <see cref="CalculatePredictiveAimToTarget"/> method.
         /// </summary>
@@ -208,9 +341,8 @@ namespace CalamityMod
             Vector2 spawnPosition = new Vector2(x, y);
             Vector2 velocity = targetPos - spawnPosition;
             velocity.X += Main.rand.NextFloat(-xVariance, xVariance);
-            float speed = projSpeed;
             float targetDist = velocity.Length();
-            targetDist = speed / targetDist;
+            targetDist = projSpeed / targetDist;
             velocity.X *= targetDist;
             velocity.Y *= targetDist;
             return Projectile.NewProjectileDirect(source, spawnPosition, velocity, projType, damage, knockback, owner);
@@ -241,9 +373,8 @@ namespace CalamityMod
             int[] array = new int[Main.maxNPCs];
             int targetArrayA = 0;
             int targetArrayB = 0;
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC npc in Main.ActiveNPCs)
             {
-                NPC npc = Main.npc[i];
                 if (npc.CanBeChasedBy(projectile, false))
                 {
                     float enemyDist = Vector2.Distance(projectile.Center, npc.Center);
@@ -251,12 +382,12 @@ namespace CalamityMod
                     {
                         if (Collision.CanHit(projectile.position, 1, 1, npc.position, npc.width, npc.height) && enemyDist > 50f)
                         {
-                            array[targetArrayB] = i;
+                            array[targetArrayB] = npc.whoAmI;
                             targetArrayB++;
                         }
                         else if (targetArrayB == 0)
                         {
-                            array[targetArrayA] = i;
+                            array[targetArrayA] = npc.whoAmI;
                             targetArrayA++;
                         }
                     }
@@ -272,8 +403,8 @@ namespace CalamityMod
             return orb;
         }
 
-        // TODO -- This overused method should NOT have hardcoded projectile type checks in it.
-        public static void MagnetSphereHitscan(Projectile projectile, float distanceRequired, float homingVelocity, float projectileTimer, int maxTargets, int spawnedProjectile, double damageMult = 1D, bool attackMultiple = false)
+        // TODO -- This method is very overused.
+        public static void MagnetSphereHitscan(Projectile projectile, float distanceRequired, float homingVelocity, float projectileTimer, int maxTargets, int spawnedProjectile, double damageMult = 1D, bool attackMultiple = false, DamageClass damageType = null)
         {
             // Only shoot once every N frames.
             projectile.localAI[1] += 1f;
@@ -287,21 +418,21 @@ namespace CalamityMod
                 int[] targetArray = new int[maxTargets];
                 int targetArrayIndex = 0;
 
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    if (Main.npc[i].CanBeChasedBy(projectile, false))
+                    if (n.CanBeChasedBy(projectile, false))
                     {
-                        float extraDistance = (Main.npc[i].width / 2) + (Main.npc[i].height / 2);
+                        float extraDistance = (n.width / 2) + (n.height / 2);
 
                         bool canHit = true;
                         if (extraDistance < maxDistance)
-                            canHit = Collision.CanHit(projectile.Center, 1, 1, Main.npc[i].Center, 1, 1);
+                            canHit = Collision.CanHit(projectile.Center, 1, 1, n.Center, 1, 1);
 
-                        if (projectile.WithinRange(Main.npc[i].Center, maxDistance + extraDistance) && canHit)
+                        if (projectile.WithinRange(n.Center, maxDistance + extraDistance) && canHit)
                         {
                             if (targetArrayIndex < maxTargets)
                             {
-                                targetArray[targetArrayIndex] = i;
+                                targetArray[targetArrayIndex] = n.whoAmI;
                                 targetArrayIndex++;
                                 homeIn = true;
                             }
@@ -331,28 +462,22 @@ namespace CalamityMod
                             {
                                 int projectile2 = Projectile.NewProjectile(projectile.GetSource_FromThis(), spawnPos, velocity, spawnedProjectile, (int)(projectile.damage * damageMult), projectile.knockBack, projectile.owner, 0f, 0f);
 
-                                if (projectile.type == ProjectileType<EradicatorProjectile>())
+                                if (damageType != null)
                                     if (projectile2.WithinBounds(Main.maxProjectiles))
-                                        Main.projectile[projectile2].DamageType = RogueDamageClass.Instance;
+                                        Main.projectile[projectile2].DamageType = damageType;
                             }
                         }
 
                         return;
                     }
 
-                    if (projectile.type == ProjectileType<GodsGambitYoyo>())
-                    {
-                        velocity.Y += Main.rand.Next(-30, 31) * 0.05f;
-                        velocity.X += Main.rand.Next(-30, 31) * 0.05f;
-                    }
-
                     if (projectile.owner == Main.myPlayer)
                     {
                         int projectile2 = Projectile.NewProjectile(projectile.GetSource_FromThis(), spawnPos, velocity, spawnedProjectile, (int)(projectile.damage * damageMult), projectile.knockBack, projectile.owner, 0f, 0f);
 
-                        if (projectile.type == ProjectileType<GodsGambitYoyo>() || projectile.type == ProjectileType<ShimmersparkYoyo>())
+                        if (damageType != null)
                             if (projectile2.WithinBounds(Main.maxProjectiles))
-                                Main.projectile[projectile2].DamageType = DamageClass.MeleeNoSpeed;
+                                Main.projectile[projectile2].DamageType = damageType;
                     }
                 }
             }
@@ -401,11 +526,12 @@ namespace CalamityMod
         public struct RocketBehaviorInfo
         {
             internal int rocketItemType;
-            
+
             // Explosion radii for various rocket ammos. Defaults to the sizes used in vanilla launchers.
             public int smallRadius = 3; // Rocket I and II
             public int mediumRadius = 6; // Rocket III and IV
-            public int largeRadius = 9; // Mini Nuke and Cluster Rockets
+            public int bigRadius = 7; // Cluster Rockets
+            public int largeRadius = 9; // Mini Nukes
 
             public bool respectStandardBlastImmunity = true;
             public List<int> tilesToCheck = null;
@@ -488,12 +614,12 @@ namespace CalamityMod
                     break;
 
                 case ItemID.ClusterRocketI:
-                    explosionRadius = info.largeRadius;
+                    explosionRadius = info.bigRadius;
                     SpawnClusterFragments(false);
                     break;
 
                 case ItemID.ClusterRocketII:
-                    explosionRadius = info.largeRadius;
+                    explosionRadius = info.bigRadius;
                     SpawnClusterFragments(true);
                     break;
 
@@ -519,98 +645,7 @@ namespace CalamityMod
         }
         #endregion
 
-        public static int FindFirstProjectile(int Type)
-        {
-            int index = -1;
-            for (int x = 0; x < Main.maxProjectiles; x++)
-            {
-                Projectile proj = Main.projectile[x];
-                if (proj.active && proj.type == Type)
-                {
-                    index = x;
-                    break;
-                }
-            }
-            return index;
-        }
-
-        public static void OnlyOneSentry(Player player, int Type)
-        {
-            int existingTurrets = player.ownedProjectileCounts[Type];
-            if (existingTurrets > 0)
-            {
-                for (int i = 0; i < Main.maxProjectiles; i++)
-                {
-                    if (Main.projectile[i].type == Type &&
-                        Main.projectile[i].owner == player.whoAmI &&
-                        Main.projectile[i].active)
-                    {
-                        Main.projectile[i].Kill();
-                        existingTurrets--;
-                        if (existingTurrets <= 0)
-                            break;
-                    }
-                }
-            }
-        }
-
-        public static int DamageSoftCap(double dmgInput, int cap)
-        {
-            // If the incoming damage is less than the cap, don't do anything.
-            if (dmgInput < cap)
-                return (int)dmgInput;
-
-            // Ratio of how far over the cap you are.
-            // This is a value from 1.0 upwards to theoretically infinity.
-            double overpoweredRatio = dmgInput / cap;
-
-            // Formula which reduces how "overpowered" you are to a reasonable level.
-            double cappedRatio = Math.Pow(overpoweredRatio, 0.5) / 1.25 + 0.2;
-
-            // Take the reduced ratio and multiply the cap by it to get the final capped damage.
-            return (int)(cap * cappedRatio);
-        }
-
-        public static Vector2 RandomVelocity(float directionMult, float speedLowerLimit, float speedCap, float speedMult = 0.1f)
-        {
-            Vector2 velocity = new Vector2(Main.rand.NextFloat(-directionMult, directionMult), Main.rand.NextFloat(-directionMult, directionMult));
-            //Rerolling to avoid dividing by zero
-            while (velocity.X == 0f && velocity.Y == 0f)
-            {
-                velocity = new Vector2(Main.rand.NextFloat(-directionMult, directionMult), Main.rand.NextFloat(-directionMult, directionMult));
-            }
-            velocity.Normalize();
-            velocity *= Main.rand.NextFloat(speedLowerLimit, speedCap) * speedMult;
-            return velocity;
-        }
-
-        public static void MinionAntiClump(this Projectile projectile, float pushForce = 0.05f)
-        {
-            for (int k = 0; k < Main.maxProjectiles; k++)
-            {
-                Projectile otherProj = Main.projectile[k];
-                // Short circuits to make the loop as fast as possible
-                if (!otherProj.active || otherProj.owner != projectile.owner || !otherProj.minion || k == projectile.whoAmI)
-                    continue;
-
-                // If the other projectile is indeed the same owned by the same player and they're too close, nudge them away.
-                bool sameProjType = otherProj.type == projectile.type;
-                float taxicabDist = Math.Abs(projectile.position.X - otherProj.position.X) + Math.Abs(projectile.position.Y - otherProj.position.Y);
-                if (sameProjType && taxicabDist < projectile.width)
-                {
-                    if (projectile.position.X < otherProj.position.X)
-                        projectile.velocity.X -= pushForce;
-                    else
-                        projectile.velocity.X += pushForce;
-
-                    if (projectile.position.Y < otherProj.position.Y)
-                        projectile.velocity.Y -= pushForce;
-                    else
-                        projectile.velocity.Y += pushForce;
-                }
-            }
-        }
-
+        #region Projectile Drawing Utilities
         public static bool DrawBeam(this Projectile projectile, float length, float spacer, Color lightColor, Texture2D texture = null, bool curve = false)
         {
             if (texture is null)
@@ -660,7 +695,29 @@ namespace CalamityMod
             return false;
         }
 
-        public static void DrawBackglow(this Projectile projectile, Color backglowColor, float backglowArea, Texture2D? texture = null, Rectangle? frame = null)
+        public static void DrawBackglow(this Projectile projectile, Color backglowColor, float backglowArea, Texture2D? texture = null, Rectangle? frame = null, SpriteEffects effects = SpriteEffects.None, float xPos = 0, float yPos = 0)
+        {
+            texture ??= TextureAssets.Projectile[projectile.type].Value;
+
+            // Use a fallback for the frame.
+            frame ??= texture.Frame(1, Main.projFrames[projectile.type], 0, projectile.frame);
+
+            Vector2 drawPosition = ((xPos == 0 && yPos == 0) ? projectile.Center : new Vector2(xPos, yPos)) - Main.screenPosition;
+            Vector2 origin = frame.Value.Size() * 0.5f;
+            Color backAfterimageColor = backglowColor * projectile.Opacity;
+
+            SpriteEffects spriteEffects = SpriteEffects.None;
+            if (projectile.spriteDirection == -1 && effects == SpriteEffects.None) spriteEffects = SpriteEffects.FlipHorizontally;
+            else spriteEffects = effects;
+
+            for (int i = 0; i < 10; i++)
+            {
+                Vector2 drawOffset = (MathHelper.TwoPi * i / 10f).ToRotationVector2() * backglowArea;
+                Main.spriteBatch.Draw(texture, drawPosition + drawOffset, frame, backAfterimageColor, projectile.rotation, origin, projectile.scale, spriteEffects, 0f);
+            }
+        }
+
+        public static void DrawBackglow(this Projectile projectile, Color backglowColor, float backglowArea, Vector2 scale, Texture2D? texture = null, Rectangle? frame = null, Vector2? offset = null)
         {
             texture ??= TextureAssets.Projectile[projectile.type].Value;
 
@@ -670,30 +727,40 @@ namespace CalamityMod
             Vector2 drawPosition = projectile.Center - Main.screenPosition;
             Vector2 origin = frame.Value.Size() * 0.5f;
             Color backAfterimageColor = backglowColor * projectile.Opacity;
+
+            SpriteEffects spriteEffects = SpriteEffects.None;
+            if (projectile.spriteDirection == -1) spriteEffects = SpriteEffects.FlipHorizontally;
+
             for (int i = 0; i < 10; i++)
             {
+                Vector2 off = Vector2.Zero;
+                if (offset != null) off += offset.Value;
                 Vector2 drawOffset = (MathHelper.TwoPi * i / 10f).ToRotationVector2() * backglowArea;
-                Main.spriteBatch.Draw(texture, drawPosition + drawOffset, frame, backAfterimageColor, projectile.rotation, origin, projectile.scale, 0, 0f);
+                Main.spriteBatch.Draw(texture, drawPosition + drawOffset + off, frame, backAfterimageColor, projectile.rotation, origin, scale, spriteEffects, 0f);
             }
         }
 
-        public static void DrawProjectileWithBackglow(this Projectile projectile, Color backglowColor, Color lightColor, float backglowArea, Texture2D? texture = null, Rectangle? frame = null)
+        public static void DrawProjectileWithBackglow(this Projectile projectile, Color backglowColor, Color lightColor, float backglowArea, Texture2D? texture = null, Rectangle? frame = null, SpriteEffects effects = SpriteEffects.None, float xPos = 0, float yPos = 0)
         {
             texture ??= TextureAssets.Projectile[projectile.type].Value;
 
             // Use a fallback for the frame.
             frame ??= texture.Frame(1, Main.projFrames[projectile.type], 0, projectile.frame);
 
-            Vector2 drawPosition = projectile.Center - Main.screenPosition;
+            Vector2 drawPosition = ((xPos == 0 && yPos == 0) ? projectile.Center : new Vector2(xPos, yPos)) - Main.screenPosition;
             Vector2 origin = frame.Value.Size() * 0.5f;
 
-            projectile.DrawBackglow(backglowColor, backglowArea, texture, frame);
-            Main.spriteBatch.Draw(texture, drawPosition, frame, projectile.GetAlpha(lightColor), projectile.rotation, origin, projectile.scale, 0, 0f);
+            SpriteEffects spriteEffects = SpriteEffects.None;
+            if (projectile.spriteDirection == -1 && effects == SpriteEffects.None) spriteEffects = SpriteEffects.FlipHorizontally;
+            else spriteEffects = effects;
+
+            projectile.DrawBackglow(backglowColor, backglowArea, texture, frame, spriteEffects, xPos, yPos);
+            Main.spriteBatch.Draw(texture, drawPosition, frame, projectile.GetAlpha(lightColor), projectile.rotation, origin, projectile.scale, spriteEffects, 0f);
         }
 
         public static void DrawStarTrail(this Projectile projectile, Color outer, Color inner, float auraHeight = 10f)
         {
-            Texture2D aura = ModContent.Request<Texture2D>("CalamityMod/Projectiles/StarTrail").Value;
+            Texture2D aura = Request<Texture2D>("CalamityMod/Projectiles/StarTrail").Value;
             Vector2 offsets = new Vector2(0f, projectile.gfxOffY) - Main.screenPosition;
             Rectangle auraRec = aura.Frame();
             float auraRotation = projectile.velocity.ToRotation() + MathHelper.PiOver2;
@@ -728,10 +795,56 @@ namespace CalamityMod
                 Main.EntitySpriteDraw(aura, drawStartInner, auraRec, innerColor * colorMult, auraRotation, auraOrigin, 0.3f + scaleMult * 0.5f, SpriteEffects.None, 0);
             }
         }
+        #endregion
+
+        public static bool FinalExtraUpdate(this Projectile proj) => proj.numUpdates == -1;
+
+        public static bool IsTrueMelee(this Projectile proj)
+        {
+            if (proj is null || !proj.active)
+                return false;
+            return proj.CountsAsClass<TrueMeleeDamageClass>() || proj.CountsAsClass<TrueMeleeNoSpeedDamageClass>();
+        }
+
+        public static int DamageSoftCap(double dmgInput, int cap)
+        {
+            // If the incoming damage is less than the cap, don't do anything.
+            if (dmgInput < cap)
+                return (int)dmgInput;
+
+            // Ratio of how far over the cap you are.
+            // This is a value from 1.0 upwards to theoretically infinity.
+            double overpoweredRatio = dmgInput / cap;
+
+            // Formula which reduces how "overpowered" you are to a reasonable level.
+            double cappedRatio = Math.Pow(overpoweredRatio, 0.5) / 1.25 + 0.2;
+
+            // Take the reduced ratio and multiply the cap by it to get the final capped damage.
+            return (int)(cap * cappedRatio);
+        }
+
+        public static Vector2 RandomVelocity(float directionMult, float speedLowerLimit, float speedCap, float speedMult = 0.1f)
+        {
+            Vector2 velocity = new Vector2(Main.rand.NextFloat(-directionMult, directionMult), Main.rand.NextFloat(-directionMult, directionMult));
+            //Rerolling to avoid dividing by zero
+            while (velocity.X == 0f && velocity.Y == 0f)
+            {
+                velocity = new Vector2(Main.rand.NextFloat(-directionMult, directionMult), Main.rand.NextFloat(-directionMult, directionMult));
+            }
+            velocity.Normalize();
+            velocity *= Main.rand.NextFloat(speedLowerLimit, speedCap) * speedMult;
+            return velocity;
+        }
+
+        public static void ForceNetUpdate(this Projectile proj, bool ignoreCurrentNetSpam = true)
+        {
+            proj.netUpdate = true;
+            if (proj.netSpam >= 10 || ignoreCurrentNetSpam)
+                proj.netSpam = 0;
+        }
 
         private static readonly List<int> vanillaBlastImmuneTiles = new List<int>()
         {
-            TileID.DemonAltar,
             TileID.Cobalt,
             TileID.Mythril,
             TileID.Adamantite,
@@ -740,8 +853,7 @@ namespace CalamityMod
             TileID.Titanium,
             TileID.Chlorophyte,
             TileID.LihzahrdBrick,
-            TileID.LihzahrdAltar,
-            TileID.DesertFossil
+            TileID.LihzahrdAltar
         };
 
         public static void ExplodeTiles(this Projectile p, int explosionRadius, bool respectStandardBlastImmunity = true, IEnumerable<int> customBlastImmuneTiles = null, IEnumerable<int> customBlastImmuneWalls = null)
@@ -804,6 +916,13 @@ namespace CalamityMod
                 // Conditionally toss in Hellstone if it's not Hardmode yet.
                 if (!Main.hardMode)
                     blastImmuneTiles.Add(TileID.Hellstone);
+
+                // Also spikes in FTW
+                if (Main.getGoodWorld)
+                {
+                    blastImmuneTiles.Add(TileID.Spikes);
+                    blastImmuneTiles.Add(TileID.WoodenSpikes);
+                }
             }
 
             // If specified, add custom blast immune tiles.
@@ -839,7 +958,7 @@ namespace CalamityMod
                     {
                         if (blastImmuneTiles.Contains(type) || // Respects standard blast immunities if enabled, so they're covered
                             Main.tileContainer[tile.TileType] || // Chests should never be exploded
-                            // Dungeon tiles and TileLoader CanExplode are considered part of respecting standard blast immunities
+                                                                 // Dungeon tiles and TileLoader CanExplode are considered part of respecting standard blast immunities
                             respectStandardBlastImmunity && (Main.tileDungeon[type] || !TileLoader.CanExplode(tx, ty)) ||
                             // TileLoader CanKillTile can block the destruction of a tile regardless of whether it is via an explosion
                             !TileLoader.CanKillTile(tx, ty, tile.TileType, ref refTrue) || !TileLoader.CanKillTile(tx, ty, tile.TileType, ref refFalse))
@@ -892,8 +1011,8 @@ namespace CalamityMod
                         }
                     }
 
-                    // Label to jump to if wall destruction is aborted.
-                    PostWallBlastLoop:;
+// Label to jump to if wall destruction is aborted.
+PostWallBlastLoop:;
                 }
             }
         }
@@ -908,7 +1027,7 @@ namespace CalamityMod
             Vector2 corner = projectile.position;
             for (int i = 0; i < 40; i++)
             {
-                int idx = Dust.NewDust(corner, projectile.width, projectile.height, 31, 0f, 0f, 100, default, 2f);
+                int idx = Dust.NewDust(corner, projectile.width, projectile.height, DustID.Smoke, 0f, 0f, 100, default, 2f);
                 Main.dust[idx].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -918,15 +1037,15 @@ namespace CalamityMod
             }
             for (int i = 0; i < 70; i++)
             {
-                int idx = Dust.NewDust(corner, projectile.width, projectile.height, 6, 0f, 0f, 100, default, 3f);
+                int idx = Dust.NewDust(corner, projectile.width, projectile.height, DustID.Torch, 0f, 0f, 100, default, 3f);
                 Main.dust[idx].noGravity = true;
                 Main.dust[idx].velocity *= 5f;
-                idx = Dust.NewDust(corner, projectile.width, projectile.height, 6, 0f, 0f, 100, default, 2f);
+                idx = Dust.NewDust(corner, projectile.width, projectile.height, DustID.Torch, 0f, 0f, 100, default, 2f);
                 Main.dust[idx].velocity *= 2f;
             }
 
             // Smoke, which counts as a Gore
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 Vector2 goreSource = projectile.Center;
                 int goreAmt = 3;

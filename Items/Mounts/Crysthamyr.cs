@@ -1,11 +1,11 @@
-﻿using CalamityMod.Buffs.Mounts;
+﻿using System;
+using CalamityMod.Buffs.Mounts;
 using Microsoft.Xna.Framework;
-using System;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework.Graphics;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.Mounts
 {
@@ -16,24 +16,26 @@ namespace CalamityMod.Items.Mounts
             MountData.spawnDust = 173;
             MountData.spawnDustNoGravity = true;
             MountData.buff = ModContent.BuffType<GazeOfCrysthamyrBuff>();
-            MountData.heightBoost = 36;
-            MountData.fallDamage = 0f;
+
+            // Horizontal movement
             MountData.runSpeed = 5f;
             MountData.dashSpeed = 10f;
-            MountData.flightTimeMax = 750;
-            MountData.fatigueMax = 0;
-            MountData.jumpHeight = 12;
-            MountData.acceleration = 0.6f;
-            MountData.jumpSpeed = 9f;
             MountData.swimSpeed = 6f;
+            MountData.acceleration = 1f;
+
+            // Vertical movement
+            MountData.fallDamage = 0f;
+            MountData.flightTimeMax = 750;
+            MountData.jumpSpeed = 12f;
             MountData.blockExtraJumps = true;
+
+            // Frames and offsets
             MountData.totalFrames = 16;
-            MountData.constantJump = false;
+            MountData.heightBoost = 32;
             int[] array = new int[MountData.totalFrames];
             for (int l = 0; l < array.Length; l++)
-            {
                 array[l] = 30;
-            }
+
             array[1] = 28;
             array[5] = 40;
             array[6] = 40;
@@ -44,10 +46,10 @@ namespace CalamityMod.Items.Mounts
             array[12] = 28;
             array[14] = 28;
             MountData.playerYOffsets = array;
-            MountData.xOffset = -56;
-            MountData.bodyFrame = 3;
-            MountData.yOffset = -20;
             MountData.playerHeadOffset = 38;
+            MountData.bodyFrame = 3;
+            MountData.xOffset = -56;
+            MountData.yOffset = -22;
             MountData.standingFrameCount = 5;
             MountData.standingFrameDelay = 12;
             MountData.standingFrameStart = 0;
@@ -67,7 +69,7 @@ namespace CalamityMod.Items.Mounts
             MountData.swimFrameCount = MountData.inAirFrameCount;
             MountData.swimFrameDelay = MountData.runningFrameDelay;
             MountData.swimFrameStart = MountData.inAirFrameStart;
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 MountData.frontTextureExtra = ModContent.Request<Texture2D>("CalamityMod/Items/Mounts/CrysthamyrExtra");
                 MountData.textureWidth = MountData.backTexture.Width();

@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.NPCs.ExoMechs;
+using CalamityMod.Packets;
 using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -38,7 +39,7 @@ namespace CalamityMod.Projectiles.Typeless
 
             float currentShakePower = MathHelper.Lerp(8f, 12f, Utils.GetLerpValue(BossRushEvent.StartEffectTotalTime * 0.6f, BossRushEvent.StartEffectTotalTime, Time, true));
             currentShakePower *= 1f - Utils.GetLerpValue(1500f, 3700f, Main.LocalPlayer.Distance(Projectile.Center), true);
-            Main.LocalPlayer.Calamity().GeneralScreenShakePower = currentShakePower;
+            Main.LocalPlayer.SetScreenshake(currentShakePower);
 
             Time++;
         }
@@ -68,12 +69,9 @@ namespace CalamityMod.Projectiles.Typeless
             BossRushDialogueSystem.StartDialogue(DownedBossSystem.startedBossRushAtLeastOnce ? BossRushDialoguePhase.StartRepeat : BossRushDialoguePhase.Start);
 
             CalamityNetcode.SyncWorld();
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
             {
-                var netMessage = Mod.GetPacket();
-                netMessage.Write((byte)CalamityModMessageType.BossRushStage);
-                netMessage.Write(BossRushEvent.BossRushStage);
-                netMessage.Send();
+                BossRushStagePacket.Send();
             }
         }
     }

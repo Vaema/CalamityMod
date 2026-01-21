@@ -2,9 +2,8 @@
 using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.World;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -17,7 +16,7 @@ namespace CalamityMod.NPCs.Abyss
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
+            Main.npcFrameCount[Type] = 4;
         }
 
         public override void SetDefaults()
@@ -31,7 +30,7 @@ namespace CalamityMod.NPCs.Abyss
             NPC.lifeMax = 7200;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 30, 0);
+            NPC.value = Item.buyPrice(silver: 30);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.knockBackResist = 0.9f;
@@ -46,9 +45,9 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Bloatfish")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Bloatfish")
             });
         }
 
@@ -175,7 +174,7 @@ namespace CalamityMod.NPCs.Abyss
                 return;
             }
             NPC.frameCounter += 0.15f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
@@ -191,23 +190,23 @@ namespace CalamityMod.NPCs.Abyss
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ModContent.ItemType<Voidstone>(), 1, 10, 20);
-            var postClone = npcLoot.DefineConditionalDropSet(DropHelper.PostCal());
-            postClone.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 5, 7, 7, 10));
+            var postLevi = npcLoot.DefineConditionalDropSet(DropHelper.PostLevi());
+            postLevi.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 5, 7, 7, 10));
         }
 
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 5, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 50; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 5, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Bloatfish").Type, NPC.scale);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Bloatfish2").Type, NPC.scale);

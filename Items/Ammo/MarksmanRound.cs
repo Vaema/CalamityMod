@@ -11,7 +11,7 @@ namespace CalamityMod.Items.Ammo
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 99;
-                   }
+        }
 
         public override void SetDefaults()
         {
@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Ammo
             Item.height = 26;
             Item.damage = 12;
             Item.DamageType = DamageClass.Ranged;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
             Item.knockBack = 2.25f;
             Item.value = Item.sellPrice(copper: 10);

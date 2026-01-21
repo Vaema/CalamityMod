@@ -10,12 +10,12 @@ namespace CalamityMod.Projectiles.Summon
     {
         public new string LocalizationCategory => "Projectiles.Summon";
         public Player Owner => Main.player[Projectile.owner];
-        
+
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            ProjectileID.Sets.MinionShot[Type] = true;
         }
 
         public override void SetDefaults()

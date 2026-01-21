@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Ranged
@@ -10,7 +10,7 @@ namespace CalamityMod.Projectiles.Ranged
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 6;
+            Main.projFrames[Type] = 6;
         }
 
         public override void SetDefaults()
@@ -100,7 +100,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
             if (Projectile.ai[0] <= 0f)
             {
-                float swaySize = 0.104719758f;
+                float swaySize = MathHelper.Pi / 30f;
                 float smolWidth = (float)Projectile.width / 5f;
                 float projXChange = (float)(Math.Cos((double)(swaySize * -(double)Projectile.ai[0])) - 0.5) * smolWidth;
                 Projectile.position.X = Projectile.position.X - projXChange * (float)-(float)Projectile.direction;
@@ -112,8 +112,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture2D13 = ModContent.Request<Texture2D>(Texture).Value;
-            int framing = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
+            Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int framing = Terraria.GameContent.TextureAssets.Projectile[Type].Value.Height / Main.projFrames[Type];
             int y6 = framing * Projectile.frame;
             Main.spriteBatch.Draw(texture2D13, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture2D13.Width, framing)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture2D13.Width / 2f, (float)framing / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;

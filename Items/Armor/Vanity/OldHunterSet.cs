@@ -1,9 +1,7 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Armor.DesertProwler;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Items.Armor.DesertProwler;
 
 namespace CalamityMod.Items.Armor.Vanity
 {
@@ -15,7 +13,7 @@ namespace CalamityMod.Items.Armor.Vanity
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.vanity = true;
         }
@@ -38,7 +36,7 @@ namespace CalamityMod.Items.Armor.Vanity
 
         public override void Load()
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Armor/Vanity/OldHunterShirt_Back", EquipType.Back, this);
@@ -47,7 +45,7 @@ namespace CalamityMod.Items.Armor.Vanity
         public override void SetStaticDefaults()
         {
 
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             int equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
@@ -60,7 +58,7 @@ namespace CalamityMod.Items.Armor.Vanity
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.vanity = true;
         }
@@ -89,7 +87,7 @@ namespace CalamityMod.Items.Armor.Vanity
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.vanity = true;
         }

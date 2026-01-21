@@ -1,9 +1,9 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+﻿using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -16,13 +16,13 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.width = 44;
             Item.height = 44;
-            Item.damage = 60;
+            Item.damage = 40;
             Item.mana = 10;
-            Item.useTime = Item.useAnimation = 25;
+            Item.useAnimation = Item.useTime = 30;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 4.5f;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.UseSound = SoundID.Item113;
             Item.autoReuse = true;
@@ -34,8 +34,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            //CalamityUtils.OnlyOneSentry(player, type);
-            int p = Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, type, damage, knockback, player.whoAmI);
+            int p = Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
             if (Main.projectile.IndexInRange(p))
                 Main.projectile[p].originalDamage = Item.damage;
             player.UpdateMaxTurrets();

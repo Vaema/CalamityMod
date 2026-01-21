@@ -14,7 +14,7 @@ namespace CalamityMod.Particles
         public override bool SetLifetime => true;
         public override bool UseCustomDraw => true;
 
-        public Player player = Main.player[Main.myPlayer];
+        public Player player = Main.LocalPlayer;
         private float OriginalScale;
         private float FinalScale;
         private float opacity;

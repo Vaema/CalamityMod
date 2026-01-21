@@ -12,7 +12,8 @@ namespace CalamityMod.NPCs.NormalNPCs
     {
         public override void SetStaticDefaults()
         {
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 //Preferably would have two animated lanterns, but this static one-headded wiki image will do for now
                 PortraitPositionYOverride = 0,
@@ -25,16 +26,15 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void SetDefaults()
         {
             NPC.aiStyle = -1;
-            NPC.damage = 50;
+            NPC.damage = 0;
             NPC.npcSlots = 3f;
             NPC.width = 72;
             NPC.height = 36;
             NPC.defense = 50;
-            NPC.DR_NERD(0.1f);
             NPC.lifeMax = 2500;
             NPC.knockBackResist = 0f;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 50, 0);
+            NPC.value = Item.buyPrice(silver: 50);
             NPC.lavaImmune = true;
             NPC.noGravity = true;
             NPC.HitSound = SoundID.NPCHit52;
@@ -49,19 +49,16 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheHallow,
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheUnderworld,
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.ProfanedEnergyBody")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.ProfanedEnergyBody")
             });
         }
 
         public override void AI()
         {
-            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
-            NPC.damage = 0;
-
             CalamityGlobalNPC.energyFlame = NPC.whoAmI;
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
@@ -78,7 +75,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (spawnInfo.PlayerSafe || !NPC.downedMoonlord || spawnInfo.Player.Calamity().ZoneCalamity || (!spawnInfo.Player.ZoneUnderworldHeight && !spawnInfo.Player.ZoneHallow))
+            if (spawnInfo.PlayerSafe || !NPC.downedMoonlord || spawnInfo.Player.Calamity().ZoneCalamity || (!spawnInfo.Player.ZoneUnderworldHeight && !spawnInfo.Player.ZoneHallow) || Main.pumpkinMoon || Main.snowMoon || Main.eclipse)
                 return 0f;
 
             // Keep this as a separate if check, because it's a loop and we don't want to be checking it constantly.
@@ -103,7 +100,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.ProfanedFire, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ProfanedEnergyBody").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ProfanedEnergyBody2").Type, 1f);

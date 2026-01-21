@@ -1,7 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Particles;
+using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Utilities;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Graphics.Shaders;
@@ -27,7 +28,7 @@ namespace CalamityMod.Projectiles.Magic
             }
         }
         public float ChargeupCompletion => MathHelper.Clamp(Time / ChargeupTime, 0f, 1f);
-        public const int ChargeupTime = 240;
+        public const int ChargeupTime = 180;
 
         public override void SetDefaults()
         {
@@ -100,20 +101,18 @@ namespace CalamityMod.Projectiles.Magic
 
         public void UpdateAim()
         {
-            // Only execute the aiming code for the owner since Main.MouseWorld is a client-side variable.
+            // Only execute the aiming code for the owner since mouse position is a client-side variable.
             if (Main.myPlayer != Projectile.owner)
                 return;
 
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 idealDirection = Owner.SafeDirectionTo(Main.MouseWorld, Vector2.UnitX * Owner.direction);
             Vector2 newAimDirection = Projectile.velocity.MoveTowards(idealDirection, 0.05f);
 
             // Sync if the direction is different from the old one.
             // Spam caps are ignored due to the frequency of this happening.
             if (newAimDirection != Projectile.velocity)
-            {
-                Projectile.netUpdate = true;
-                Projectile.netSpam = 0;
-            }
+                Projectile.ForceNetUpdate();
 
             Projectile.velocity = newAimDirection;
             Projectile.direction = (Projectile.velocity.X > 0f).ToDirectionInt();
@@ -121,7 +120,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public void DoPrettyDustEffects()
         {
-            int dustSpawnChance = (int)MathHelper.SmoothStep(16f, 4f, ChargeupCompletion);
+            int dustSpawnChance = (int)MathHelper.SmoothStep(20f, 2f, ChargeupCompletion);
             for (int i = 0; i < 2; i++)
             {
                 if (!Main.rand.NextBool(dustSpawnChance))
@@ -133,17 +132,33 @@ namespace CalamityMod.Projectiles.Magic
                 Vector2 dustVelocity = (-dustSpawnOffset.SafeNormalize(Vector2.UnitY)).RotatedBy(MathHelper.PiOver2 * Main.rand.NextFloatDirection());
                 dustVelocity *= Main.rand.NextFloat(2f, 6f);
 
-                Dust magic = Dust.NewDustPerfect(Projectile.Center + dustSpawnOffset, 264);
+                Dust magic = Dust.NewDustPerfect(Projectile.Center + dustSpawnOffset, DustID.PortalBoltTrail);
                 magic.color = Color.Lerp(Color.Red, Color.Blue, Main.rand.NextFloat());
                 magic.velocity = dustVelocity;
                 magic.scale *= Main.rand.NextFloat(1f, 1.4f);
                 magic.noLight = true;
                 magic.noGravity = true;
             }
+
+            // Light particle effects, which get bigger and turn from white to red as the beam charges.
+            // It then stays at max size and red color as long as the beam is firing.
+            if (Time > 30 && Time % 5 == 0)
+            {
+                Vector2 particleVel = Main.rand.NextVector2CircularEdge(1f, 1f);
+                particleVel.SafeNormalize(Vector2.Zero);
+                particleVel *= Main.rand.NextFloat(5f, 10f);
+
+                Particle chargeParticle = new GenericBloom(Projectile.Center, particleVel, Color.Lerp(Color.White, Color.Red, ChargeupCompletion), MathHelper.Lerp(0.075f, 0.35f, ChargeupCompletion), 30);
+                GeneralParticleHandler.SpawnParticle(chargeParticle);
+            }
         }
 
         public void HandleChargeEffects()
         {
+            // Play charge-up sound.
+            if (Time == 30)
+                SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/MoonLordLaserCharge"), Projectile.Center, _ => new ProjectileAudioTracker(Projectile).IsActiveAndInGame());
+
             // Create dust that fires parallel to the direction of the circle.
             if (Main.rand.NextBool(3))
             {
@@ -153,7 +168,7 @@ namespace CalamityMod.Projectiles.Magic
                 Vector2 dustSpawnOffsetDirection = Main.rand.NextVector2CircularEdge(0.5f, 1f).RotatedBy(Projectile.velocity.ToRotation());
                 Vector2 dustSpawnOffset = dustSpawnOffsetDirection * dustSpawnOffsetFactor;
 
-                Dust magic = Dust.NewDustPerfect(Projectile.Center + dustSpawnOffset, 264);
+                Dust magic = Dust.NewDustPerfect(Projectile.Center + dustSpawnOffset, DustID.PortalBoltTrail);
                 magic.color = Color.Lerp(Color.Red, Color.Blue, Main.rand.NextFloat());
                 magic.velocity = dustVelocity;
                 magic.scale *= Main.rand.NextFloat(1f, 1.05f + ChargeupCompletion * 0.55f);
@@ -174,7 +189,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D outerCircleTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D outerCircleTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D outerCircleGlowmask = ModContent.Request<Texture2D>(Texture + "Glowmask").Value;
             Texture2D innerCircleTexture = ModContent.Request<Texture2D>(Texture + "Inner").Value;
             Texture2D innerCircleGlowmask = ModContent.Request<Texture2D>(Texture + "InnerGlowmask").Value;

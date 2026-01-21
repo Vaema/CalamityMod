@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using Terraria.ID;
+﻿using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
@@ -15,12 +14,12 @@ namespace CalamityMod.Items.Fishing
         public virtual LocalizedText Location => LocalizedText.Empty;
 
         public new string LocalizationCategory => "Items.Fishing";
-        public override LocalizedText Tooltip => Location;
+        public override LocalizedText Tooltip => CalamityUtils.GetText($"Items.Fishing.LocationTooltip").WithFormatArgs(Location);
 
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 2;
-            ItemID.Sets.CanBePlacedOnWeaponRacks[Item.type] = true;
+            ItemID.Sets.CanBePlacedOnWeaponRacks[Type] = true;
         }
 
         public override void SetDefaults()
@@ -34,7 +33,7 @@ namespace CalamityMod.Items.Fishing
         public override void AnglerQuestChat(ref string description, ref string catchLocation)
         {
             description = this.GetLocalizedValue("QuestDescription");
-            catchLocation = Location.ToString().Replace("'", string.Empty);
+            catchLocation = Location.ToString();
         }
     }
 }

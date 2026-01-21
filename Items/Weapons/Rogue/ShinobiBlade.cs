@@ -1,7 +1,7 @@
-using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.maxStack = 1;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.shoot = ModContent.ProjectileType<ShinobiBladeProjectile>();
             Item.shootSpeed = 10f;

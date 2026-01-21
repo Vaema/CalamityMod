@@ -2,19 +2,24 @@
 using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Items.Placeables.Plates;
 using CalamityMod.Rarities;
-using Terraria;
-using Terraria.DataStructures;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Terraria.GameContent;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.DataStructures;
+using Terraria.GameContent;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class PhantomicArtifact : ModItem, ILocalizedModType
+    public class PhantomicArtifact : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static int RegenBoost = 2;
+        public static int DefenseBoost = 10;
+        public static float SummonDamageBoost = 0.1f;
+
         public override void SetStaticDefaults()
         {
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(5, 7));
@@ -36,10 +41,10 @@ namespace CalamityMod.Items.Accessories
         {
             CreateRecipe().
                 AddIngredient<HallowedRune>().
-                AddIngredient<ExodiumCluster>(20).
-                AddIngredient<Onyxplate>(25).
                 AddIngredient<RuinousSoul>(5).
-                AddTile(TileID.LunarCraftingStation).
+                AddIngredient<Onyxplate>(25).
+                AddIngredient<ExodiumCluster>(20).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
 

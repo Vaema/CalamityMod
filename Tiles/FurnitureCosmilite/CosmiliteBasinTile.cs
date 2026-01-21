@@ -1,11 +1,10 @@
 ﻿using CalamityMod.Dusts;
-using CalamityMod.Items.Placeables.FurnitureCosmilite;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -13,6 +12,8 @@ namespace CalamityMod.Tiles.FurnitureCosmilite
 {
     public class CosmiliteBasinTile : ModTile
     {
+        public Asset<Texture2D> FlameTexture;
+
         int animationFrame = 0;
 
         public override void SetStaticDefaults()
@@ -32,8 +33,8 @@ namespace CalamityMod.Tiles.FurnitureCosmilite
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 132, 0f, 0f, 1, new Color(255, 255, 255), 1f);
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 134, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Firework_Blue, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Firework_Pink, 0f, 0f, 1, new Color(255, 255, 255), 1f);
             return false;
         }
 
@@ -67,12 +68,13 @@ namespace CalamityMod.Tiles.FurnitureCosmilite
 
         public override void HitWire(int i, int j)
         {
-            CalamityUtils.LightHitWire(Type, i, j, 3, 3);
+            FurnitureCommon.LightHitWire(Type, i, j, 3, 3);
         }
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            CalamityUtils.DrawStaticFlameEffect(ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureCosmilite/CosmiliteBasinFlame").Value, i, j, offsetY: animationFrame * AnimationFrameHeight);
+            FlameTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureCosmilite/CosmiliteBasinFlame");
+            CalamityUtils.DrawStaticFlameEffect(FlameTexture.Value, i, j, offsetY: animationFrame * AnimationFrameHeight);
         }
 
         public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)

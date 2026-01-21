@@ -1,7 +1,8 @@
-﻿using Terraria.DataStructures;
+﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -17,14 +18,15 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.damage = 16;
             Item.knockBack = 2f;
             Item.mana = 10;
+            Item.buffType = ModContent.BuffType<CinderBlossomBuff>();
             Item.shoot = ModContent.ProjectileType<CinderBlossom>();
-            Item.useTime = Item.useAnimation = 30;
+            Item.useAnimation = Item.useTime = 36;
 
             Item.DamageType = DamageClass.Summon;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item34;
             Item.rare = ItemRarityID.Orange;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.noMelee = true;
         }
 
@@ -32,10 +34,10 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            player.AddBuff(Item.buffType, 2);
             CalamityUtils.KillShootProjectiles(true, type, player);
-            int p = Projectile.NewProjectile(source, player.Center, Vector2.Zero, type, damage, knockback, player.whoAmI, 0f, 0f);
-            if (Main.projectile.IndexInRange(p))
-                Main.projectile[p].originalDamage = Item.damage;
+            var minion = Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, type, damage, knockback, player.whoAmI);
+            minion.originalDamage = Item.damage;
             return false;
         }
 

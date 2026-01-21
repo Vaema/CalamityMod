@@ -1,7 +1,7 @@
 ﻿using CalamityMod.CalPlayer;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -13,9 +13,10 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 30;
             Item.height = 30;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.accessory = true;
+            Item.expert = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)

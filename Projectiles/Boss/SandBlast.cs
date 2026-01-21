@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -12,8 +12,8 @@ namespace CalamityMod.Projectiles.Boss
         public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.Opacity > 1f)
                 Projectile.Opacity = 1f;
 
-            int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 85, 0f, 0f, 100, default, 0.8f);
+            int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedBrown, 0f, 0f, 100, default, 0.8f);
             Main.dust[dust].noGravity = true;
             Main.dust[dust].velocity *= 0f;
         }
@@ -53,7 +53,7 @@ namespace CalamityMod.Projectiles.Boss
                 randoAdjuster = rando3 / randoAdjuster;
                 rando1 *= randoAdjuster;
                 rando2 *= randoAdjuster;
-                int sandyDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 85, 0f, 0f, 100, default, 1.2f);
+                int sandyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedBrown, 0f, 0f, 100, default, 1.2f);
                 Main.dust[sandyDust].noGravity = true;
                 Main.dust[sandyDust].position.X = Projectile.Center.X;
                 Main.dust[sandyDust].position.Y = Projectile.Center.Y;
@@ -71,7 +71,7 @@ namespace CalamityMod.Projectiles.Boss
             lightColor.R = (byte)(255 * Projectile.Opacity);
             lightColor.G = (byte)(255 * Projectile.Opacity);
             lightColor.B = (byte)(255 * Projectile.Opacity);
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

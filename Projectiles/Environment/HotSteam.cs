@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -36,8 +35,8 @@ namespace CalamityMod.Projectiles.Environment
         public override void AI()
         {
             Projectile.localAI[0] = 0f;
-            Projectile.scale = Utils.Remap((Projectile.timeLeft+Lifetime), 180, 0.4f, 0.02f, 1.4f);
-            Projectile.Opacity = Utils.Remap((Projectile.timeLeft+Lifetime), 160f, 50f, 1.15f, 0.01f);
+            Projectile.scale = Utils.Remap((Projectile.timeLeft + Lifetime), 180, 0.4f, 0.02f, 1.4f);
+            Projectile.Opacity = Utils.Remap((Projectile.timeLeft + Lifetime), 160f, 50f, 1.15f, 0.01f);
             Projectile.velocity.Y *= 0.97f;
         }
 
@@ -61,7 +60,7 @@ namespace CalamityMod.Projectiles.Environment
             if (Projectile.localAI[0] == 1f)
                 return;
 
-            Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 origin = texture.Size() * 0.5f;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             float opacity = Projectile.Opacity * 0.45f;

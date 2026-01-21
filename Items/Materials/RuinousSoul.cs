@@ -14,15 +14,15 @@ namespace CalamityMod.Items.Materials
             Item.ResearchUnlockCount = 25;
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(6, 6));
             ItemID.Sets.AnimatesAsSoul[Type] = true;
-			ItemID.Sets.SortingPriorityMaterials[Type] = 111;
+            ItemID.Sets.SortingPriorityMaterials[Type] = 111;
         }
 
         public override void SetDefaults()
         {
             Item.width = 26;
             Item.height = 42;
-            Item.maxStack = 9999;
-            Item.value = Item.buyPrice(0, 7, 0, 0);
+            Item.maxStack = Item.CommonMaxStack;
+            Item.value = Item.sellPrice(gold: 1, silver: 50);
             Item.rare = ModContent.RarityType<PureGreen>();
         }
     }

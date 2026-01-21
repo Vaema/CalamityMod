@@ -19,14 +19,14 @@ struct VertexShaderInput
 {
     float4 Position : POSITION0;
     float4 Color : COLOR0;
-    float2 TextureCoordinates : TEXCOORD0;
+    float3 TextureCoordinates : TEXCOORD0;
 };
 
 struct VertexShaderOutput
 {
     float4 Position : SV_POSITION;
     float4 Color : COLOR0;
-    float2 TextureCoordinates : TEXCOORD0;
+    float3 TextureCoordinates : TEXCOORD0;
 };
 
 VertexShaderOutput VertexShaderFunction(in VertexShaderInput input)
@@ -34,7 +34,6 @@ VertexShaderOutput VertexShaderFunction(in VertexShaderInput input)
     VertexShaderOutput output = (VertexShaderOutput) 0;
     float4 pos = mul(input.Position, uWorldViewProjection);
     output.Position = pos;
-    
     output.Color = input.Color;
     output.TextureCoordinates = input.TextureCoordinates;
 
@@ -47,6 +46,9 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
     float4 color = input.Color;
     float2 coords = input.TextureCoordinates;
     
+    // Account for texture distortion artifacts.
+    coords.y = (coords.y - 0.5) / input.TextureCoordinates.z + 0.5;
+    
     // Read the fade map as a streak.
     float fadeMapY = frac(coords.x - uTime * 1.4 * uSaturation);
     float4 fadeMapColor = tex2D(uImage1, float2(coords.y, fadeMapY));
@@ -56,6 +58,7 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
     opacity *= pow(sin(coords.y * 3.141), lerp(1, 4, pow(coords.x, 2)));
     opacity *= fadeMapColor.r * 1.5 + 1;
     opacity *= lerp(0.4, 0.9, fadeMapColor.r);
+    opacity *= uOpacity;
     
     float3 transformColor = lerp(float3(1, 205 / 255.0, 119 / 255.0), float3(1, 76 / 255.0, 79 / 255.0), fadeMapColor.r);
     color.rgb = lerp(color.rgb, transformColor, fadeMapColor.r);

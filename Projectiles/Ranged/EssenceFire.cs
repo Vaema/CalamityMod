@@ -1,9 +1,10 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
@@ -46,7 +47,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 if (Main.rand.NextBool(16))
                 {
-                    Dust dust = Dust.NewDustDirect(Projectile.Center + Main.rand.NextVector2Circular(60f, 60f) * Utils.Remap(Time, 0f, Fadetime, 0.5f, 1f), 4, 4, 295, Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f, 100);
+                    Dust dust = Dust.NewDustDirect(Projectile.Center + Main.rand.NextVector2Circular(60f, 60f) * Utils.Remap(Time, 0f, Fadetime, 0.5f, 1f), 4, 4, DustID.CorruptTorch, Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f, 100);
                     if (Main.rand.NextBool(5))
                     {
                         dust.noGravity = true;
@@ -57,12 +58,12 @@ namespace CalamityMod.Projectiles.Ranged
                     dust.velocity += Projectile.velocity * Utils.Remap(Time, 0f, Fadetime * 0.75f, 1f, 0.1f) * Utils.Remap(Time, 0f, Fadetime * 0.1f, 0.1f, 1f);
                 }
 
-                if (Main.rand.NextBool(17))
+                if (Main.rand.NextBool(19))
                 {
                     bool LowVel = Main.rand.NextBool() ? false : true;
-                    FlameParticle fire = new FlameParticle(Projectile.Center, 20, MathHelper.Clamp(Time * 0.05f, 0.15f, 1.75f), 0.05f, Color.BlueViolet * (LowVel ? 1.2f : 0.5f), Color.DarkBlue * (LowVel ? 1.2f : 0.5f));
-                    fire.Velocity = new Vector2(Projectile.velocity.X * 0.8f, -10).RotatedByRandom(0.005f) * (LowVel ? Main.rand.NextFloat(0.4f, 0.65f) : Main.rand.NextFloat(0.8f, 1f));
-                    GeneralParticleHandler.SpawnParticle(fire);
+                    float size = Utils.Remap(Utils.GetLerpValue(0f, Lifetime, Time), 0.2f, 0.5f, 0.25f, 1f);
+                    Particle trail = new CustomSpark(Projectile.Center, Projectile.velocity + Vector2.UnitY * Main.rand.NextFloat(-10, -24) * size, "CalamityMod/Particles/BloomCircle", false, 14, 0.9f * size, (Main.rand.NextBool() ? Color.DarkBlue : Color.BlueViolet) * 0.5f, new Vector2(Main.rand.NextFloat(2, 3), 1f), true, true, shrinkSpeed: 0.3f, glowOpacity: 0.5f);
+                    GeneralParticleHandler.SpawnParticle(trail);
                 }
             }
             else if (Time == 5f)
@@ -85,7 +86,9 @@ namespace CalamityMod.Projectiles.Ranged
             hitbox.Inflate(size, size);
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 360);
+        //Doze - Flamethrowers in vanilla are long debuff infliction tools (20 seconds of their debuff).
+        //I am applying this as the base for Cal flamethrowers, with shorter times being the exception instead of the rule
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 1200);
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (Projectile.numHits > 0)
@@ -95,7 +98,7 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D fire = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D fire = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D mist = ModContent.Request<Texture2D>("CalamityMod/Particles/MediumMist").Value;
 
             // The conga line of colors to sift through
@@ -137,11 +140,9 @@ namespace CalamityMod.Projectiles.Ranged
                 // Draw the masking smoke
                 if (MistType > 2 || MistType < 0)
                     return false;
-                Main.spriteBatch.SetBlendState(BlendState.Additive);
                 Rectangle frame = mist.Frame(1, 3, 0, MistType);
-                Main.EntitySpriteDraw(mist, firePos, frame, Color.Lerp(fireColor, Color.White, 0.3f), mainRot, frame.Size() * 0.5f, fireSize, SpriteEffects.None);
-                Main.EntitySpriteDraw(mist, firePos, frame, fireColor, mainRot, frame.Size() * 0.5f, fireSize * 3f, SpriteEffects.None);
-                Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+                Main.EntitySpriteDraw(mist, firePos, frame, Color.Lerp(fireColor, Color.White, 0.3f) with { A = 0 }, mainRot, frame.Size() * 0.5f, fireSize, SpriteEffects.None);
+                Main.EntitySpriteDraw(mist, firePos, frame, fireColor with { A = 0 }, mainRot, frame.Size() * 0.5f, fireSize * 3f, SpriteEffects.None);
             }
             return false;
         }

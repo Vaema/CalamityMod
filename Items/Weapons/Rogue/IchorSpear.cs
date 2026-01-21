@@ -1,10 +1,10 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.Weapons.Rogue
 {
@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void SetDefaults()
         {
             Item.width = Item.height = 52;
-            Item.damage = 132;
+            Item.damage = 120;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useAnimation = Item.useTime = 39;
@@ -22,13 +22,13 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 7f;
             Item.UseSound = ThrowSound;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.shoot = ModContent.ProjectileType<IchorSpearProj>();
             Item.shootSpeed = 17f;
             Item.DamageType = RogueDamageClass.Instance;
         }
-        public override float StealthDamageMultiplier => 0.38f;
+        public override float StealthDamageMultiplier => 0.5f;
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (player.Calamity().StealthStrikeAvailable()) //setting the stealth strike

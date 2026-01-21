@@ -1,5 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -15,14 +15,13 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
         {
-            Projectile.Calamity().DealsDefenseDamage = true;
             Projectile.width = 18;
             Projectile.height = 18;
             Projectile.hostile = true;
@@ -70,21 +69,12 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool CanHitPlayer(Player target) => Projectile.Opacity == 1f;
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (info.Damage <= 0 || Projectile.Opacity != 1f)
-                return;
-
-            target.AddBuff(BuffID.OnFire, 180);
-            target.AddBuff(BuffID.CursedInferno, 90);
-        }
-
         public override bool PreDraw(ref Color lightColor)
         {
             lightColor.R = (byte)(255 * Projectile.Opacity);
             lightColor.G = (byte)(255 * Projectile.Opacity);
             lightColor.B = (byte)(255 * Projectile.Opacity);
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

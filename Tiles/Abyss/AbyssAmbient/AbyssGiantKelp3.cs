@@ -1,18 +1,15 @@
-﻿using CalamityMod.Dusts;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
 using Terraria.DataStructures;
 using Terraria.Enums;
-using Terraria.ModLoader;
+using Terraria.ID;
 using Terraria.ObjectData;
 
 namespace CalamityMod.Tiles.Abyss.AbyssAmbient
 {
-    public class AbyssGiantKelp3 : ModTile
+    public class AbyssGiantKelp3 : GlowMaskTile
     {
-        public override void SetStaticDefaults()
+        public override void SetupStatic()
         {
             Main.tileLighted[Type] = true;
             Main.tileFrameImportant[Type] = true;
@@ -31,8 +28,6 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
             AddMapEntry(new Color(92, 93, 42));
             DustType = DustID.Grass;
             HitSound = SoundID.Grass;
-
-            base.SetStaticDefaults();
         }
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
@@ -50,10 +45,10 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
             if (closer && Main.rand.NextBool(100) && j > Main.worldSurface)
             {
                 Dust dust;
-                dust = Main.dust[Dust.NewDust(new Vector2(i * 16f, j * 16f), 274, 279, 304, 0.23255825f, 10f, 0, new Color(117, 55, 15), 1.5116279f)];
+                dust = Main.dust[Dust.NewDust(new Vector2(i * 16f, j * 16f), 280, 280, DustID.Firefly, 0.2f, 0f, 0, new Color(157, 175, 15), Main.rand.NextFloat(1f, 2f))];
                 dust.noGravity = true;
                 dust.noLight = true;
-                dust.fadeIn = 2.5813954f;
+                dust.fadeIn = 2.5f;
             }
         }
 
@@ -62,13 +57,9 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
             num = fail ? 1 : 2;
         }
 
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
+        public override Color GetGlowMaskColor(int i, int j, TileDrawInfo drawData)
         {
-            Tile tile = Framing.GetTileSafely(i, j);
-			Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Tiles/Abyss/AbyssAmbient/AbyssGiantKelp3Glow").Value;
-			Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
-
-			spriteBatch.Draw(tex, new Vector2(i * 16, j * 16 + 2) - Main.screenPosition + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, 16), Color.White);
+            return Color.White;
         }
     }
 }

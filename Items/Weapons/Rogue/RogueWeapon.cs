@@ -24,14 +24,14 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             bool stealthStrike = player.Calamity().StealthStrikeAvailable();
             if (stealthStrike || AdditionalStealthCheck())
-			{
+            {
                 damage = (int)(damage * StealthDamageMultiplier);
                 velocity = velocity * StealthVelocityMultiplier;
                 knockback = knockback * StealthKnockbackMultiplier;
-			}
+            }
 
-			ModifyStatsExtra(player, ref position, ref velocity, ref type, ref damage, ref knockback);
-		}
+            ModifyStatsExtra(player, ref position, ref velocity, ref type, ref damage, ref knockback);
+        }
 
         public virtual void ModifyStatsExtra(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {

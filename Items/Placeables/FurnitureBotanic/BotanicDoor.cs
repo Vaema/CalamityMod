@@ -1,7 +1,7 @@
-using CalamityMod.Tiles.Furniture.CraftingStations;
-using CalamityMod.Tiles.FurnitureBotanic;
-using Terraria.ModLoader;
+﻿using CalamityMod.Tiles.FurnitureBotanic;
+using Terraria;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.FurnitureBotanic
 {
@@ -10,24 +10,15 @@ namespace CalamityMod.Items.Placeables.FurnitureBotanic
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.width = 28;
-            Item.height = 20;
-            Item.maxStack = 9999;
-            Item.useTurn = true;
-            Item.autoReuse = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.value = 0;
-            Item.consumable = true;
-            Item.createTile = ModContent.TileType<BotanicDoorClosed>();
+            Item.DefaultToPlaceableTile(ModContent.TileType<BotanicDoorClosed>());
+            Item.value = Item.sellPrice(copper: 40);
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient<UelibloomBrick>(6).
-                AddTile<BotanicPlanter>().
+                AddTile(TileID.LivingLoom).
                 Register();
         }
     }

@@ -8,7 +8,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    [AutoloadEquip(new EquipType[] { EquipType.HandsOn, EquipType.HandsOff } )]
+    [AutoloadEquip(new EquipType[] { EquipType.HandsOn, EquipType.HandsOff })]
     public class ElementalGauntlet : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
@@ -16,9 +16,9 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 22;
             Item.height = 38;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.accessory = true;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -30,14 +30,13 @@ namespace CalamityMod.Items.Accessories
             player.meleeScaleGlove = true;
             modPlayer.gloveLevel = 5;
             player.GetDamage<TrueMeleeDamageClass>() += 0.10f;
+            modPlayer.eGauntletVisuals = !hideVisual; // hides the rainbow dust when hiding the accessory
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient(ItemID.FireGauntlet).
-                AddIngredient(ItemID.LunarBar, 8).
-                AddIngredient<GalacticaSingularity>(4).
                 AddIngredient<AscendantSpiritEssence>(4).
                 AddTile<CosmicAnvil>().
                 Register();

@@ -1,5 +1,4 @@
-using CalamityMod.NPCs.BrimstoneElemental;
-using Terraria;
+﻿using CalamityMod.NPCs.BrimstoneElemental;
 using Terraria.ID;
 using Terraria.ModLoader;
 

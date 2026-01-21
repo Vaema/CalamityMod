@@ -13,9 +13,13 @@ namespace CalamityMod.Items.Tools
         private const int HammerPower = 110;
         private const int AxePower = 180 / 5;
 
+        public static float DamageBoost = 0.15f;
+        public static int DefenseBoost = 30;
+        public static float DamageReductionBoost = 0.1f;
+
         public override void SetStaticDefaults()
         {
-                       ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
         public override void SetDefaults()
@@ -29,14 +33,12 @@ namespace CalamityMod.Items.Tools
             Item.hammer = HammerPower;
             Item.axe = AxePower;
             Item.tileBoost += 5;
-
-            Item.scale = 1.5f;
             Item.DamageType = DamageClass.Melee;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTurn = true;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
         }
 
@@ -64,7 +66,7 @@ namespace CalamityMod.Items.Tools
                 AddIngredient<InfernaCutter>().
                 AddRecipeGroup("LunarHamaxe").
                 AddIngredient<UelibloomBar>(5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
 

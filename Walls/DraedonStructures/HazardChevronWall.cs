@@ -1,5 +1,6 @@
-﻿using Terraria;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Walls.DraedonStructures
 {
@@ -8,7 +9,7 @@ namespace CalamityMod.Walls.DraedonStructures
 
         public override void SetStaticDefaults()
         {
-            DustType = 19;
+            DustType = DustID.Sunflower;
             Main.wallHouse[Type] = true;
 
             AddMapEntry(new Color(114, 105, 51));

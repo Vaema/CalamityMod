@@ -1,4 +1,4 @@
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Summon
@@ -11,7 +11,8 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            ProjectileID.Sets.MinionShot[Type] = true;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         }
 
         public override void SetDefaults()
@@ -22,6 +23,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.minion = true;
             Projectile.penetrate = 1;
             Projectile.timeLeft = LifeTime;
+            Projectile.extraUpdates = 1;
             Projectile.DamageType = DamageClass.Summon;
         }
 

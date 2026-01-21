@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Projectiles.Melee;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
-using CalamityMod.Projectiles.Melee;
-using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Rogue
 {

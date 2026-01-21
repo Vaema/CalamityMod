@@ -10,15 +10,6 @@ SetBonus: {
 		Melee: 15% increased melee speed and 20% increased movement speed
 	}
 
-	Chlorophyte:
-		'''
-		Summons a powerful leaf crystal to shoot pulses of life every {0} seconds
-		The pulses do a base damage of {1} to enemies within its range
-		The pulses also provide a {2} health boost to you and all players on your team
-		Players healed by pulses cannot be healed by another pulse until {3} seconds have passed
-		Both the health boost and the damage scale based on your strongest class
-		'''
-
 	Cobalt: {
 		$parentVal:
 			'''
@@ -28,12 +19,28 @@ SetBonus: {
 		Melee: 10% increased melee damage
 	}
 
-	Copper: Increases all damage by 2
+	Copper: Increases all damage by {0}
+	Crimson:
+		'''
+		Greatly increased natural life regen
+		Life regen is further increased the longer you avoid taking damage
+		Standing still also greatly amplifies life regen
+		'''
 	Eskimo:
 		'''
-		Multiplies all cold-based debuff damage by 1.25
-		Cold enemies will deal reduced contact damage to the player
-		Provides immunity to the Chilled, Frozen, Frostburn and Glacial State debuffs
+		25% increased Cold debuff damage
+		Provides immunity to the Chilled, Frozen, and Frostburn debuffs
+		'''
+	Rain:
+		'''
+		24% increased jump speed and allows auto-jump
+		Jumping creates a puddle splash that damages and knocks back enemies
+		This splash is stronger if it is raining
+		'''
+	Forbidden:
+		'''
+		{$LegacyTooltip.48} {0} to call an ancient storm to the cursor location
+		Minions no longer deal less damage while wielding magic weapons
 		'''
 	Frost:
 		'''
@@ -43,43 +50,38 @@ SetBonus: {
 		'''
 	Gladiator:
 		'''
-		+3 defense
 		+60 maximum stealth
 		5% increased rogue damage and 10% increased velocity
 		'''
 	Gold:
 		'''
-		All enemies have a 4% chance to drop 1 gold. All bosses killed drop 3 gold
-		You gain 1% critical strike chance for every 5 gold in your inventory, capped at 10%
+		All enemies have a {0}% chance to drop 1 extra gold
+		All bosses drop {1} extra gold
+		You gain {2}% critical strike chance for every gold in your inventory, capped at {3}%
 		'''
-	Iron:
-		'''
-		Increases damage reduction by 6%
-		+1 HP/s life regen
-		'''
+	Iron: Multiplies all player-inflicted knockback by {0}x
 	Jungle: 10% reduced mana costs
-	Lead:
-		'''
-		Increases damage reduction by 3%
-		+0.5 HP/s life regen
-		Grants immunity to knockback
-		'''
+	Lead: Grants immunity to knockback
 	Meteor: All magic guns cost 33% mana
 	Mining: Mining ore will sometimes have additional yield
 	Molten:
 		'''
-		20% extra true melee damage
+		7% extra melee damage, cannot be set on fire
+		10% extra true melee damage
 		Grants immunity to fire blocks and temporary immunity to lava
 		'''
-	MonkTier2:
-		'''
-		10% increased melee speed, crit, and damage
-		15% increased minion damage
-		'''
+	MonkTier2: "{$Common.RogueStealth}"
+	MonkTier3: "{$Common.RogueStealth}"
 	Mythril:
 		'''
 		Enemy hits release mythril flares, which home in on enemies after a short delay
 		Once a flare is created, there is a {0} frame delay before another one can appear
+		'''
+	Nebula:
+		'''
+		Pink damage boosters grant 7.5% damage per stack
+		Orange life boosters grant +2 HP/s life regen per stack
+		Blue mana boosters grant +5 MP/s mana regen per stack
 		'''
 	Necro:
 		'''
@@ -88,56 +90,38 @@ SetBonus: {
 		'''
 	Obsidian:
 		'''
-		Increases whip range by 50% and speed by 35%
-		Increases minion damage by 15%
+		{$ArmorSetBonus.ObsidianOutlaw}
 		Grants immunity to fire blocks and temporary immunity to lava
 		'''
-	Platinum:
+	Palladium:
 		'''
-		Every 10 defense gives you +0.5 HP/s life regen, 1% increased damage and 1% increased critical strike chance
-		These effects cap at 40 defense
+		Grants +2 HP/s life regeneration after striking an enemy
+		This life regeneration bypasses negative life regeneration
 		'''
+	Platinum: Increases damage reduction by {0}%
 	Silver:
 		'''
-		+0.5 HP/s life regen
-		Two seconds after getting hit for 20 or more damage, you heal for 10
+		{0} seconds after getting hit for {1} or more damage, you heal for {2}
 		Getting hit again resets the timer, delaying the heal
 		'''
-	Tin: Increases armor penetration by 5
-	Tungsten:
+	Tin: "{0}% increased critical strike chance"
+	Tungsten: Grappling hooks pull and retract {0}% faster
+	MagicHat: Increases maximum mana by 40
+	Vortex:
 		'''
-		Increases your critical strike chance by 100% of the knockback of your held weapon
-		This effect caps at Insane knockback, which gives 10% increased critical strike chance
-		Increases all knockback by 33%, this counts for the above boost
-		Current bonus: {0}% critical strike chance from {1} knockback
+		{$LegacyTooltip.48} {0} to toggle stealth,
+		increasing ranged ability and reducing chance for enemies to target you but slowing movement speed
 		'''
+	Wizard: 4% increased magic critical strike chance
 	CrystalAssassin:
 		'''
 		Allows the ability to dash
 		10% increased damage and critical strike chance
+		+90 maximum stealth
 		'''
-	SquireTier2:
-		'''
-		Increases your life regeneration
-		15% increased minion damage and 10% increased melee critical strike chance
-		'''
-	HuntressTier2: 10% increased minion and ranged damage
-	ApprenticeTier2: 5% increased minion damage and 15% increased magic critical strike chance
-	MonkTier3:
-		'''
-		10% increased melee damage, melee critical strike chance and melee speed
-		30% increased minion damage
-		'''
-	SquireTier3:
-		'''
-		Massively increased life regeneration
-		10% increased minion damage and melee critical strike chance
-		'''
-	HuntressTier3: 10% increased minion and ranged damage
-	ApprenticeTier3: 10% increased minion damage and 15% increased magic critical strike chance
 	SpectreHealing:
 		'''
-		Reduces Magic damage by 20% and converts it to healing force
+		Converts magic damage to healing force
 		Magic damage done to enemies heals the player with lowest health
 		'''
 }

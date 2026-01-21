@@ -1,4 +1,5 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
@@ -53,13 +54,13 @@ namespace CalamityMod.Projectiles.Summon
             }
             else
             {
-                if (Main.rand.NextBool(600))
+                if (Main.rand.NextBool(800))
                 {
                     SoundStyle glubNoise = Main.rand.NextBool() ? SoundID.Zombie35 : SoundID.Zombie34;
                     SoundStyle trollBirdChirpingSound = SoundID.Zombie16;
 
-                    // 1/200th chance to do a bird chirping sound.
-                    SoundEngine.PlaySound(Main.rand.NextBool(200) ? trollBirdChirpingSound : glubNoise, Projectile.Center);
+                    // 1/2000th chance to do a bird chirping sound.
+                    SoundEngine.PlaySound(Main.rand.NextBool(2000) ? trollBirdChirpingSound : glubNoise, Projectile.Center);
                 }
             }
 
@@ -129,7 +130,7 @@ namespace CalamityMod.Projectiles.Summon
                     // Flavor dust effect.
                     for (int i = 0; i < 15; i++)
                     {
-                        Dust shootDust = Dust.NewDustPerfect(Projectile.Center + (Projectile.rotation + MathHelper.PiOver2).ToRotationVector2() * Projectile.height / 2, 109, toTargetDirection.RotatedByRandom(MathHelper.PiOver4) * Main.rand.NextFloat(3f, 7f), Scale: Main.rand.NextFloat(0.5f, 1.5f), Alpha: 127);
+                        Dust shootDust = Dust.NewDustPerfect(Projectile.Center + (Projectile.rotation + MathHelper.PiOver2).ToRotationVector2() * Projectile.height / 2, DustID.Asphalt, toTargetDirection.RotatedByRandom(MathHelper.PiOver4) * Main.rand.NextFloat(3f, 7f), Scale: Main.rand.NextFloat(0.5f, 1.5f), Alpha: 127);
                         shootDust.noGravity = true;
                     }
 
@@ -185,12 +186,7 @@ namespace CalamityMod.Projectiles.Summon
             SyncVariables();
         }
 
-        private void SyncVariables()
-        {
-            Projectile.netUpdate = true;
-            Projectile.netSpam = 0;
-        }
-
+        private void SyncVariables() => Projectile.ForceNetUpdate();
         #endregion
 
         public override void OnSpawn(IEntitySource source)
@@ -202,21 +198,23 @@ namespace CalamityMod.Projectiles.Summon
             {
                 float angle = MathHelper.TwoPi / dustAmount * dustIndex;
                 Vector2 velocity = angle.ToRotationVector2() * 8f;
-                Dust spawnDust = Dust.NewDustPerfect(Projectile.Center, 109, velocity);
+                Dust spawnDust = Dust.NewDustPerfect(Projectile.Center, DustID.Asphalt, velocity);
                 spawnDust.noGravity = true;
                 spawnDust.noLight = true;
             }
         }
 
         // The minion will only have contact damage if it's on latching mode.
-        public override bool? CanDamage() => (State == AIState.Latching) ? null : false;
+        public override bool MinionContactDamage() => State == AIState.Latching;
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 240);
 
         // The minion will do 1.5x damage if it's latched on.
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.SourceDamage *= CalamarisLament.LatchingDamageMultiplier;
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;

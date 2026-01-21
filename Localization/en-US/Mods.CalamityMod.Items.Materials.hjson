@@ -53,11 +53,6 @@ BloodOrb: {
 	Tooltip: ""
 }
 
-BloodSample: {
-	DisplayName: Blood Sample
-	Tooltip: ""
-}
-
 Bloodstone: {
 	DisplayName: Bloodstone
 	Tooltip: ""
@@ -70,21 +65,6 @@ BloodstoneCore: {
 
 CoreofCalamity: {
 	DisplayName: Core of Calamity
-	Tooltip: ""
-}
-
-CoreofEleum: {
-	DisplayName: Core of Eleum
-	Tooltip: ""
-}
-
-CoreofHavoc: {
-	DisplayName: Core of Havoc
-	Tooltip: ""
-}
-
-CoreofSunlight: {
-	DisplayName: Core of Sunlight
 	Tooltip: ""
 }
 
@@ -111,11 +91,6 @@ DarkPlasma: {
 DarksunFragment: {
 	DisplayName: Darksun Fragment
 	Tooltip: An impacted crystal suffused with opposing celestial energies
-}
-
-DemonicBoneAsh: {
-	DisplayName: Demonic Bone Ash
-	Tooltip: ""
 }
 
 DepthCells: {
@@ -222,14 +197,14 @@ MolluskHusk: {
 	Tooltip: The remains of a mollusk
 }
 
-MurkyPaste: {
-	DisplayName: Murky Paste
-	Tooltip: ""
-}
-
 MysteriousCircuitry: {
 	DisplayName: Mysterious Circuitry
 	Tooltip: ""
+}
+
+Necroplasm: {
+	DisplayName: Necroplasm
+	Tooltip: It churns and seethes with ghastly malice
 }
 
 NightmareFuel: {
@@ -245,11 +220,6 @@ PearlShard: {
 PerennialBar: {
 	DisplayName: Perennial Bar
 	Tooltip: ""
-}
-
-Polterplasm: {
-	DisplayName: Polterplasm
-	Tooltip: It churns and seethes with ghastly malice
 }
 
 PlagueCellCanister: {
@@ -270,11 +240,6 @@ PurifiedGel: {
 ReaperTooth: {
 	DisplayName: Reaper Tooth
 	Tooltip: Sharp enough to cut diamonds
-}
-
-RottenMatter: {
-	DisplayName: Rotten Matter
-	Tooltip: ""
 }
 
 RuinousSoul: {
@@ -302,8 +267,8 @@ SolarVeil: {
 	Tooltip: Sunlight cannot penetrate the fabric of this cloth
 }
 
-Stardust: {
-	DisplayName: Stardust
+StarblightSoot: {
+	DisplayName: Starblight Soot
 	Tooltip: ""
 }
 
@@ -325,11 +290,6 @@ SuspiciousScrap: {
 TitanHeart: {
 	DisplayName: Titan Heart
 	Tooltip: Can be offered up at the Astral Beacon
-}
-
-TrapperBulb: {
-	DisplayName: Trapper Bulb
-	Tooltip: ""
 }
 
 TwistingNether: {
@@ -360,4 +320,14 @@ WulfrumMetalScrap: {
 YharonSoulFragment: {
 	DisplayName: Yharon Soul Fragment
 	Tooltip: A shard of a draconic Auric Soul
+}
+
+AnodizedWulfrumMetal: {
+	DisplayName: Anodized Wulfrum Metal
+	Tooltip: ""
+}
+
+WillOWisp: {
+	DisplayName: Will O Wisp
+	Tooltip: ""
 }

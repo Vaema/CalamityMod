@@ -1,12 +1,15 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Rogue
 {
     public class MoonSigil : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = 20;
@@ -42,7 +45,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             int cap = 5;
             float capDamageFactor = 0.05f;
-            int excessCount = Main.player[Projectile.owner].ownedProjectileCounts[Projectile.type] - cap;
+            int excessCount = Main.player[Projectile.owner].ownedProjectileCounts[Type] - cap;
             modifiers.SourceDamage *= MathHelper.Clamp(1f - (capDamageFactor * excessCount), 0f, 1f);
         }
 
@@ -55,7 +58,7 @@ namespace CalamityMod.Projectiles.Rogue
                 for (int j = 0; j < 5; j++)
                 {
                     Vector2 dustspeed = new Vector2(dustSp, dustSp).RotatedBy(MathHelper.ToRadians(dustD));
-                    int d = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, 31, dustspeed.X, dustspeed.Y, 200, new Color(213, 242, 232, 200), 1f);
+                    int d = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.Smoke, dustspeed.X, dustspeed.Y, 200, new Color(213, 242, 232, 200), 1f);
                     Main.dust[d].noGravity = true;
                     Main.dust[d].position = Projectile.Center;
                     Main.dust[d].velocity = dustspeed;

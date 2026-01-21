@@ -1,6 +1,6 @@
 ﻿using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Vanity
 {
@@ -11,7 +11,7 @@ namespace CalamityMod.Items.Armor.Vanity
         public override void SetStaticDefaults()
         {
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
                 ArmorIDs.Head.Sets.DrawHead[Item.headSlot] = false;
         }
 
@@ -20,6 +20,7 @@ namespace CalamityMod.Items.Armor.Vanity
             Item.width = 28;
             Item.height = 20;
             Item.rare = ItemRarityID.Blue;
+            Item.value = Item.sellPrice(silver: 75);
             Item.vanity = true;
         }
     }

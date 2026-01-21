@@ -1,35 +1,43 @@
 ﻿using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using Terraria.DataStructures;
 
 namespace CalamityMod.Items.Accessories.Wings
 {
     [AutoloadEquip(EquipType.Wings)]
     [LegacyName("AureateWings")]
-    public class AureateBooster : ModItem, ILocalizedModType
+    public class AureateBooster : BaseWings
     {
-        public new string LocalizationCategory => "Items.Accessories.Wings";
-        public override void SetStaticDefaults()
-        {
-            ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(120, 8f, 1.5f);
-        }
+        public override float BonusAscentWhileFalling => 0.75f;
+        public override float BonusAscentWhileRising => 0.15f;
+        public override float RisingSpeedThreshold => 1f;
+        public override float MaxAscentSpeed => 2.5f;
+        public override float BaseAscent => 0.125f;
+
+        // How powerful the acceleration increase is while pressing UP
+        // This also affects the flight time tick rate
+        public static float BoostPower = 1.5f;
+
+        public override void SetStaticDefaults() => ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(120, 8f, 1.5f);
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
             Item.width = 54;
             Item.height = 26;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
-            Item.accessory = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
+            player.DisableWingFlapSound();
+
             if (player.controlJump && player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
             {
                 player.rocketDelay2--;
@@ -79,16 +87,19 @@ namespace CalamityMod.Items.Accessories.Wings
                     }
                 }
             }
-            player.noFallDmg = true;
         }
 
-        public override void VerticalWingSpeeds(Player player, ref float ascentWhenFalling, ref float ascentWhenRising, ref float maxCanAscendMultiplier, ref float maxAscentMultiplier, ref float constantAscend)
+        public override void AdditionalFlightMovement(Player player, ref float ascentWhenFalling, ref float ascentWhenRising, ref float maxCanAscendMultiplier, ref float maxAscentMultiplier, ref float constantAscend)
         {
-            ascentWhenFalling = 0.75f;
-            ascentWhenRising = 0.15f;
-            maxCanAscendMultiplier = 1f;
-            maxAscentMultiplier = 2.5f;
-            constantAscend = 0.125f;
+            if (player.TryingToHoverUp)
+            {
+                ascentWhenFalling *= BoostPower;
+                ascentWhenRising *= BoostPower;
+                maxCanAscendMultiplier *= BoostPower;
+                maxAscentMultiplier *= BoostPower;
+                constantAscend *= BoostPower;
+                player.wingTime -= BoostPower - 1f;
+            }
         }
 
         public override void AddRecipes()

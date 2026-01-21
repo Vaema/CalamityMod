@@ -49,23 +49,18 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
             // Tools and Utility Items
             tin.Add(ItemID.TinHammer);
             tin.OnFailedConditions(new CommonDrop(ItemID.CopperHammer, 1));
-            itemLoot.Add(ItemID.Bomb, 1, 10, 10);
             itemLoot.Add(ItemID.Rope, 1, 50, 50);
 
             // Potions
-            itemLoot.Add(ItemID.MiningPotion);
-            itemLoot.Add(ItemID.SpelunkerPotion, 1, 2, 2);
-            itemLoot.Add(ItemID.SwiftnessPotion, 1, 3, 3);
-            itemLoot.Add(ItemID.GillsPotion, 1, 2, 2);
-            itemLoot.Add(ItemID.ShinePotion);
+            LeadingConditionRule multiplayer = itemLoot.DefineConditionalDropSet(() => Main.netMode == NetmodeID.MultiplayerClient);
             itemLoot.Add(ItemID.RecallPotion, 1, 3, 3);
+            multiplayer.Add(ItemID.WormholePotion, 1, 3, 3);
 
             // Tiles
             itemLoot.Add(ItemID.Torch, 1, 25, 25);
-            itemLoot.Add(ItemID.Chest, 1, 3, 3);
 
             // Calamity title theme music box (if music mod is enabled)
-            Mod musicMod = CalamityMod.Instance.musicMod;
+            Mod musicMod = ExternalMods.musicMod;
             if (musicMod is not null)
                 itemLoot.Add(musicMod.Find<ModItem>("CalamityMusicbox").Type);
 
@@ -81,6 +76,15 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
             };
             itemLoot.AddIf(getsLadPet, ModContent.ItemType<JoyfulHeart>());
 
+            // Mihaii dev item
+            // Name specific: "Mihaii"
+            static bool getsGoldenBomb(DropAttemptInfo info)
+            {
+                string playerName = info.player.name;
+                return playerName == "Mihaii";
+            };
+            itemLoot.AddIf(getsGoldenBomb, ModContent.ItemType<GoldenBomb>());
+
             // HPU dev item
             // Name specific: "Heart Plus Up"
             static bool getsHapuFruit(DropAttemptInfo info)
@@ -89,17 +93,36 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
                 return playerName == "Heart Plus Up";
             };
             itemLoot.AddIf(getsHapuFruit, ModContent.ItemType<HapuFruit>());
-            
-            // Apelusa dev item
-            // Name specific: "Pelusa"
-            static bool getsRedBow(DropAttemptInfo info)
+
+            // CIT vanity item
+            // Name specific: "CongratsIsTrash" or "CIT"
+            static bool getsSharkyPlush(DropAttemptInfo info)
             {
                 string playerName = info.player.name;
-                return playerName == "Pelusa";
+                return playerName == "CongratsIsTrash" || playerName == "CIT";
+            }
+            itemLoot.AddIf(getsSharkyPlush, ModContent.ItemType<SharkyPlush>());
+
+            // Dandy dev item
+            // Name specific: "Dandy"
+            static bool getsGhostBracelet(DropAttemptInfo info)
+            {
+                string playerName = info.player.name;
+                return playerName == "Dandy";
             }
 
-            itemLoot.AddIf(getsRedBow, ModContent.ItemType<RedBow>());
-            
+            itemLoot.AddIf(getsGhostBracelet, ModContent.ItemType<GhostBracelet>());
+
+            // Xyk dev item
+            // Name specific: "Xyk"
+            static bool getsXyksBlessing(DropAttemptInfo info)
+            {
+                string playerName = info.player.name;
+                return playerName.Contains("Xyk"); // Any name containing "Xyk" will work
+            }
+
+            itemLoot.AddIf(getsXyksBlessing, ModContent.ItemType<XyksBlessingBlue>());
+
             // Mishiro dev vanity
             // Name specific: "Amber" or "Mishiro"
             static bool getsOracleHeadphones(DropAttemptInfo info)
@@ -109,16 +132,6 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
             }
 
             itemLoot.AddIf(getsOracleHeadphones, ModContent.ItemType<OracleHeadphones>());
-
-            // Bird dev item
-            // Name specific: "bird"
-            static bool getsSakuraFeather(DropAttemptInfo info)
-            {
-                string playerName = info.player.name;
-                return playerName == "bird";
-            }
-
-            itemLoot.AddIf(getsSakuraFeather, ModContent.ItemType<CocosFeather>());
         }
     }
 }

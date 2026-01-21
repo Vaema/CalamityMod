@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 4f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
             Item.Calamity().donorItem = true;
             Item.shoot = ModContent.ProjectileType<TimeBoltKnife>();
@@ -32,11 +32,11 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.DamageType = RogueDamageClass.Instance;
         }
 
-		public override float StealthDamageMultiplier => 0.68f;
+        public override float StealthDamageMultiplier => 0.7f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            int proj = Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, type, damage, knockback, player.whoAmI);
+            int proj = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
             if (player.Calamity().StealthStrikeAvailable() && proj.WithinBounds(Main.maxProjectiles))
             {
                 Main.projectile[proj].Calamity().stealthStrike = true;
@@ -51,8 +51,8 @@ namespace CalamityMod.Items.Weapons.Rogue
                 AddIngredient<CosmicKunai>().
                 AddIngredient(ItemID.FastClock).
                 AddIngredient<RuinousSoul>(5).
-                AddIngredient<Polterplasm>(20).
-                AddTile(TileID.LunarCraftingStation).
+                AddIngredient<Necroplasm>(20).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

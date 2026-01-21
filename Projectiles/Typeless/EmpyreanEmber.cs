@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
@@ -48,7 +49,7 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.rotation += Projectile.velocity.X * 0.1f;
             if (Main.rand.NextBool(3))
             {
-                int ourpleDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 62, 0f, 0f, 100, default, 0.75f);
+                int ourpleDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.PurpleTorch, 0f, 0f, 100, default, 0.75f);
                 Dust dust2 = Main.dust[ourpleDust];
                 dust2.position.X -= 2f;
                 dust2.position.Y += 2f;
@@ -58,7 +59,7 @@ namespace CalamityMod.Projectiles.Typeless
             }
             else
             {
-                int ourpleDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 62, 0f, 0f, 100, default, 0.75f);
+                int ourpleDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.PurpleTorch, 0f, 0f, 100, default, 0.75f);
                 Dust dust = Main.dust[ourpleDust2];
                 dust.position.X -= 2f;
                 dust.position.Y += 2f;

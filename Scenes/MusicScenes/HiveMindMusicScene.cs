@@ -1,5 +1,4 @@
-using CalamityMod.NPCs.HiveMind;
-using Terraria;
+﻿using CalamityMod.NPCs.HiveMind;
 using Terraria.ID;
 using Terraria.ModLoader;
 

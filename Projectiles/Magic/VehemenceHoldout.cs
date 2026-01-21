@@ -1,6 +1,6 @@
-﻿using CalamityMod.Dusts;
+﻿using System;
+using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -22,7 +22,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.friendly = false;
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
-            Projectile.timeLeft = 91;
+            Projectile.timeLeft = 300;
         }
 
         public override void AI()
@@ -46,6 +46,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             Projectile.Center = Owner.RotatedRelativePoint(Owner.MountedCenter, true);
 
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Projectile.rotation = Projectile.AngleTo(Main.MouseWorld);
             Projectile.velocity = Projectile.rotation.ToRotationVector2();
 
@@ -71,10 +72,10 @@ namespace CalamityMod.Projectiles.Magic
             if (Main.myPlayer != Projectile.owner)
                 return;
 
-            Item heldItem = Owner.ActiveItem();
+            Item heldItem = Owner.HeldItem;
             Vector2 shootVelocity = Projectile.velocity * heldItem.shootSpeed;
             int damage = heldItem is null ? 0 : Owner.GetWeaponDamage(heldItem);
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, shootVelocity, ModContent.ProjectileType<Vehemence>(), damage, heldItem.knockBack, Projectile.owner);
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, shootVelocity, ModContent.ProjectileType<VehemenceBolt>(), damage, heldItem.knockBack, Projectile.owner);
         }
 
         private void CreateChargeDust()

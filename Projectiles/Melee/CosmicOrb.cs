@@ -1,8 +1,12 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Particles;
+using CalamityMod.Projectiles.Typeless;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -49,7 +53,41 @@ namespace CalamityMod.Projectiles.Melee
                 }
             }
 
-            CalamityUtils.MagnetSphereHitscan(Projectile, 300f, 6f, 8f, 5, ModContent.ProjectileType<CosmicBolt>());
+            //if (Main.rand.NextBool(2))
+            //CalamityUtils.MagnetSphereHitscan(Projectile, 500f, 6f, 8f, 5, ModContent.ProjectileType<CosmicBolt>());
+            int chance = 24 * Projectile.MaxUpdates;
+            if (Main.rand.NextBool(chance))
+            {
+                int MaxLaserCountPerShot = 5;
+                int targetCount = 0;
+                List<NPC> targets = Main.npc.Where(npc =>
+                {
+                    return npc.active && Projectile.Distance(npc.Center) < 500 && npc.CanBeChasedBy();
+                }).ToList();
+                foreach (var target in targets)
+                {
+                    if (targetCount >= MaxLaserCountPerShot)
+                        break;
+                    Projectile laser = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center,
+                    Vector2.Zero,
+                    ModContent.ProjectileType<DirectStrike>(),
+                    (int)(Projectile.damage * 0.8f),
+                    Projectile.knockBack,
+                    Projectile.owner,
+                    target.whoAmI);
+                    laser.ArmorPenetration = 100;
+
+                    Vector2 start = Projectile.Center;
+                    Vector2 end = target.Center;
+                    Color color = Main.rand.NextBool() ? Color.Magenta : Color.HotPink;
+
+                    Vector2 lerpVel = Vector2.Lerp(start, end, 0.5f);
+                    float scale = 0.015f;
+                    Particle spark = new CustomSpark(lerpVel, Projectile.SafeDirectionTo(target.Center), "CalamityMod/Particles/BloomLineThick", false, 14, scale, color * 0.75f, new Vector2(1, (Utils.Distance(start, end) * 0.034f)), true, false, shrinkSpeed: 0.25f, glowOpacity: 0.65f);
+                    GeneralParticleHandler.SpawnParticle(spark);
+                    targetCount++;
+                }
+            }
         }
 
         public override void OnKill(int timeLeft)
@@ -58,7 +96,7 @@ namespace CalamityMod.Projectiles.Melee
             for (int i = 0; i < 10; i++)
             {
                 int dustScale = (int)(10f * Projectile.scale);
-                int d = Dust.NewDust(Projectile.Center - Vector2.One * (float)dustScale, dustScale * 2, dustScale * 2, 242, 0f, 0f, 0, default, 1f);
+                int d = Dust.NewDust(Projectile.Center - Vector2.One * (float)dustScale, dustScale * 2, dustScale * 2, DustID.PinkTorch, 0f, 0f, 0, default, 1f);
                 Dust dust = Main.dust[d];
                 Vector2 offset = Vector2.Normalize(dust.position - Projectile.Center);
                 dust.position = Projectile.Center + offset * (float)dustScale * Projectile.scale;
@@ -76,10 +114,11 @@ namespace CalamityMod.Projectiles.Melee
                 dust.scale = 0.7f;
             }
         }
-
-        public override Color? GetAlpha(Color lightColor)
+        public override bool PreDraw(ref Color lightColor)
         {
-            return new Color(200 - Projectile.alpha, 200 - Projectile.alpha, 200 - Projectile.alpha, 200 - Projectile.alpha);
+            Color drawColor = Color.HotPink;
+            Projectile.DrawProjectileWithBackglow(drawColor with { A = 0 }, Color.White, 2.5f * Main.rand.NextFloat(0.8f, 1.3f));
+            return false;
         }
     }
 }

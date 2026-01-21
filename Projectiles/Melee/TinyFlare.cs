@@ -1,5 +1,4 @@
-using Microsoft.Xna.Framework;
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -8,6 +7,7 @@ namespace CalamityMod.Projectiles.Melee
     public class TinyFlare : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = 6;
@@ -25,9 +25,9 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 2; i++)
             {
-                int fiery = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 174, 0f, 0f, 100, default, 0.75f);
+                int fiery = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.InfernoFork, 0f, 0f, 100, default, Main.rand.NextFloat(1f, 1.5f));
                 Main.dust[fiery].noGravity = true;
                 Main.dust[fiery].velocity *= 0f;
             }
@@ -36,9 +36,6 @@ namespace CalamityMod.Projectiles.Melee
                 CalamityUtils.HomeInOnNPC(Projectile, true, 600f, 10f, 20f);
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.AddBuff(BuffID.OnFire3, 90);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.OnFire3, 90);
     }
 }

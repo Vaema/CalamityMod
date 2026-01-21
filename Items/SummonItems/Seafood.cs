@@ -1,11 +1,10 @@
 ﻿using CalamityMod.CalPlayer;
 using CalamityMod.Events;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.NPCs.AquaticScourge;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.SummonItems
 {
@@ -14,7 +13,7 @@ namespace CalamityMod.Items.SummonItems
         public new string LocalizationCategory => "Items.SummonItems";
         public override void SetStaticDefaults()
         {
-           			ItemID.Sets.SortingPriorityBossSpawns[Type] = 8; // Mechanical Worm
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 9; // Mechanical Worm
         }
 
         public override void SetDefaults()
@@ -28,10 +27,10 @@ namespace CalamityMod.Items.SummonItems
             Item.consumable = false;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
+        }
 
         public override bool CanUseItem(Player player)
         {
@@ -41,12 +40,7 @@ namespace CalamityMod.Items.SummonItems
 
         public override bool? UseItem(Player player)
         {
-            SoundEngine.PlaySound(SoundID.Roar, player.Center);
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-                NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<AquaticScourgeHead>());
-            else
-                NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, player.whoAmI, ModContent.NPCType<AquaticScourgeHead>());
-
+            CalamityUtils.SpawnBossUsingItem<AquaticScourgeHead>(player, SoundID.Roar);
             return true;
         }
 

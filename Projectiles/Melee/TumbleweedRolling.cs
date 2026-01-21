@@ -1,71 +1,87 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Melee
 {
     public class TumbleweedRolling : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
-        public override string Texture => "CalamityMod/Projectiles/Melee/TumbleweedFlail";
+        public override string Texture => "CalamityMod/Projectiles/Melee/MaceFlails/TumbleweedFlail";
+
+        public static int Lifetime = 120;
+        public static int Rolltime = 30; // How long it remains gravity-defiant if it doesn't hit tiles
+
+        public ref float RollState => ref Projectile.ai[0]; // 1f: falling
 
         public override void SetDefaults()
         {
-            Projectile.width = 44;
-            Projectile.height = 44;
+            Projectile.width = Projectile.height = 42;
             Projectile.friendly = true;
-            Projectile.ignoreWater = true;
-            Projectile.penetrate = 8;
-            Projectile.timeLeft = 300;
+            Projectile.penetrate = 6;
+            Projectile.timeLeft = Lifetime;
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 15;
         }
 
         public override void AI()
         {
-            if ((Projectile.velocity.X != Projectile.velocity.X && (Projectile.velocity.X < -3f || Projectile.velocity.X > 3f)) ||
-                (Projectile.velocity.Y != Projectile.velocity.Y && (Projectile.velocity.Y < -3f || Projectile.velocity.Y > 3f)))
-            {
-                Collision.HitTiles(Projectile.position, Projectile.velocity, Projectile.width, Projectile.height);
-                SoundEngine.PlaySound(SoundID.NPCHit11, Projectile.position);
-            }
-            if (Projectile.velocity.X != Projectile.velocity.X)
-            {
-                Projectile.velocity.X = Projectile.velocity.X * -0.5f;
-            }
-            if (Projectile.velocity.Y != Projectile.velocity.Y && Projectile.velocity.Y > 1f)
-            {
-                Projectile.velocity.Y = Projectile.velocity.Y * -0.5f;
-            }
             Projectile.rotation += Projectile.velocity.X * 0.05f;
+
+            if (Projectile.timeLeft < Lifetime - Rolltime)
+                RollState = 1f;
+
+            if (RollState == 1f && Projectile.velocity.Y < 10f)
+                Projectile.velocity.Y += 0.6f;
+
+            Dust sand = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.Sand, Alpha: 100, Scale: Main.rand.NextFloat(0.6f, 1.2f));
+            sand.noGravity = RollState != 1f;
+            sand.velocity = Projectile.velocity * 0.5f;
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        public override bool OnTileCollide(Vector2 oldVelocity)
         {
-            // TODO -- Make this use proper i-frame variables.
-            target.immune[Projectile.owner] = 5;
+            if (RollState != 1f)
+                RollState = 1f;
+
+            Projectile.penetrate--;
+            Projectile.numHits++;
+
+            if (oldVelocity.Y != Projectile.velocity.Y)
+                Projectile.velocity.Y = MathHelper.Clamp(oldVelocity.Y * -0.5f * Projectile.penetrate, -16f, -2f);
+
+            Point scanAreaStart = Projectile.TopLeft.ToTileCoordinates();
+            Point scanAreaEnd = Projectile.BottomRight.ToTileCoordinates();
+            Projectile.CreateImpactExplosion(2, Projectile.Center, ref scanAreaStart, ref scanAreaEnd, Projectile.width, out bool causedShockwaves);
+            Projectile.CreateImpactExplosion2_FlailTileCollision(Projectile.Center, causedShockwaves, Projectile.velocity);
+            TumbleImpactEffects();
+            return false;
         }
 
-        public override void OnKill(int timeLeft)
+        public override void OnKill(int timeLeft) => TumbleImpactEffects();
+
+        public void TumbleImpactEffects()
         {
-            SoundEngine.PlaySound(SoundID.NPCDeath15, Projectile.position);
-            for (int i = 0; i < 20; i++)
+            float impactIntensity = 1f - Projectile.numHits * 0.08f;
+            SoundEngine.PlaySound(SoundID.NPCDeath15 with { Volume = impactIntensity }, Projectile.Center);
+            for (int i = 0; i < (int)(8 * impactIntensity); i++)
             {
-                int tumbleDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 32, 0f, 0f, 100, default, 1.2f);
-                Main.dust[tumbleDust].velocity *= 3f;
+                Dust tumbleDust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.Sand, Alpha: 100, Scale: 1.2f);
+                tumbleDust.velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
-                    Main.dust[tumbleDust].scale = 0.5f;
-                    Main.dust[tumbleDust].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
+                    tumbleDust.scale = 0.5f;
+                    tumbleDust.fadeIn = Main.rand.NextFloat(1f, 1.1f);
                 }
-            }
-            for (int j = 0; j < 30; j++)
-            {
-                int tumbleDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 85, 0f, 0f, 100, default, 1.7f);
-                Main.dust[tumbleDust2].noGravity = true;
-                Main.dust[tumbleDust2].velocity *= 5f;
-                tumbleDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 85, 0f, 0f, 100, default, 1f);
-                Main.dust[tumbleDust2].velocity *= 2f;
+
+                tumbleDust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedBrown, Alpha: 100, Scale: 1.7f);
+                tumbleDust.noGravity = true;
+                tumbleDust.velocity *= 5f;
+
+                tumbleDust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedBrown, Alpha: 100, Scale: 1f);
+                tumbleDust.velocity *= 2f;
             }
         }
     }

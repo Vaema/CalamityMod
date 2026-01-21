@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Buffs.StatBuffs;
+using CalamityMod.Items.Weapons.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -22,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 3.75f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
         }
 
@@ -34,7 +35,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             if (Main.rand.NextBool(4))
             {
-                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 56);
+                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.BlueFairy);
             }
         }
     }

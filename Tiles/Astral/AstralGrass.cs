@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Dusts;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.Metadata;
@@ -14,7 +15,7 @@ namespace CalamityMod.Tiles.Astral
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
             Main.tileBrick[Type] = true;
-			TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Grass"]);
+            TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Grass"]);
 
             CalamityUtils.SetMerge(Type, ModContent.TileType<AstralDirt>());
             CalamityUtils.SetMerge(Type, TileID.Grass);
@@ -23,7 +24,7 @@ namespace CalamityMod.Tiles.Astral
             CalamityUtils.SetMerge(Type, TileID.CrimsonGrass);
 
             DustType = ModContent.DustType<AstralBasic>();
-            RegisterItemDrop(ModContent.ItemType<Items.Placeables.AstralDirt>());
+            RegisterItemDrop(ModContent.ItemType<Items.Placeables.Astral.AstralDirt>());
 
             AddMapEntry(new Color(133, 109, 140));
 
@@ -47,7 +48,7 @@ namespace CalamityMod.Tiles.Astral
             Tile up = Main.tile[i, j - 1];
             Tile up2 = Main.tile[i, j - 2];
             //place Astral Wild Grass
-            if (WorldGen.genRand.Next(10) == 0 && !up.HasTile && !up2.HasTile && !(up.LiquidAmount > 0 && up2.LiquidAmount > 0) && !tile.LeftSlope && !tile.RightSlope && !tile.IsHalfBlock)
+            if (WorldGen.genRand.NextBool(10)&& !up.HasTile && !up2.HasTile && !(up.LiquidAmount > 0 && up2.LiquidAmount > 0) && !tile.LeftSlope && !tile.RightSlope && !tile.IsHalfBlock)
             {
                 up.TileType = (ushort)ModContent.TileType<AstralTallPlants>();
                 up.HasTile = true;
@@ -57,13 +58,13 @@ namespace CalamityMod.Tiles.Astral
                 up.TileFrameX = (short)(WorldGen.genRand.Next(20) * 18);
                 WorldGen.SquareTileFrame(i, j - 1, true);
 
-                if (Main.netMode == NetmodeID.Server)
+                if (Main.dedServ)
                 {
                     NetMessage.SendTileSquare(-1, i, j - 1, 3, TileChangeType.None);
                 }
             }
             //place Astral Short Grass
-            if (WorldGen.genRand.Next(10) == 0 && !up.HasTile && !up2.HasTile && !(up.LiquidAmount > 0 && up2.LiquidAmount > 0) && !tile.LeftSlope && !tile.RightSlope && !tile.IsHalfBlock)
+            if (WorldGen.genRand.NextBool(10)&& !up.HasTile && !up2.HasTile && !(up.LiquidAmount > 0 && up2.LiquidAmount > 0) && !tile.LeftSlope && !tile.RightSlope && !tile.IsHalfBlock)
             {
                 up.TileType = (ushort)ModContent.TileType<AstralShortPlants>();
                 up.HasTile = true;
@@ -73,7 +74,7 @@ namespace CalamityMod.Tiles.Astral
                 up.TileFrameX = (short)(WorldGen.genRand.Next(23) * 18);
                 WorldGen.SquareTileFrame(i, j - 1, true);
 
-                if (Main.netMode == NetmodeID.Server)
+                if (Main.dedServ)
                 {
                     NetMessage.SendTileSquare(-1, i, j - 1, 3, TileChangeType.None);
                 }
@@ -81,93 +82,7 @@ namespace CalamityMod.Tiles.Astral
         }
         public override void AnimateIndividualTile(int type, int i, int j, ref int frameXOffset, ref int frameYOffset)
         {
-            int uniqueAnimationFrameX = 0;
-            int xPos = i % 4;
-            int yPos = j % 4;
-            switch (xPos)
-            {
-                case 0:
-                    switch (yPos)
-                    {
-                        case 0:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 1:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 2:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        case 3:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        default:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                    }
-                    break;
-                case 1:
-                    switch (yPos)
-                    {
-                        case 0:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        case 1:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 2:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        case 3:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        default:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                    }
-                    break;
-                case 2:
-                    switch (yPos)
-                    {
-                        case 0:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        case 1:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 2:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 3:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        default:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                    }
-                    break;
-                case 3:
-                    switch (yPos)
-                    {
-                        case 0:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 1:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        case 2:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 3:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        default:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                    }
-                    break;
-            }
-            frameXOffset = uniqueAnimationFrameX * animationFrameWidth;
+            frameXOffset = animationFrameWidth * TileFramingSystem.GetVariation4x4_01_Low0(i, j);
         }
 
         public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)

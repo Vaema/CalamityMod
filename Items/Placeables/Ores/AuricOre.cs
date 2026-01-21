@@ -1,4 +1,5 @@
-﻿using CalamityMod.Rarities;
+﻿using CalamityMod.Items.Materials;
+using CalamityMod.Rarities;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -11,23 +12,22 @@ namespace CalamityMod.Items.Placeables.Ores
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 100;
-			ItemID.Sets.SortingPriorityMaterials[Type] = 119;
+            ItemID.Sets.SortingPriorityMaterials[Type] = 119;
         }
 
         public override void SetDefaults()
         {
-            Item.width = 10;
-            Item.height = 10;
-            Item.createTile = ModContent.TileType<Tiles.Ores.AuricOre>();
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTurn = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.autoReuse = true;
-            Item.consumable = true;
-            Item.maxStack = 9999;
-            Item.value = Item.sellPrice(gold: 4);
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.Ores.AuricOre>());
+            Item.value = Item.sellPrice(silver: 60);
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
+        }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe(10).
+                AddIngredient<YharonSoulFragment>().
+                AddCondition(Condition.NearShimmer).
+                Register();
         }
     }
 }

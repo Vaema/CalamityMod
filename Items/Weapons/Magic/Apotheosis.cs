@@ -18,16 +18,16 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 30;
             Item.height = 34;
-            Item.damage = 230;
+            Item.damage = 222;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 42;
-            Item.useTime = Item.useAnimation = 177;
+            Item.useAnimation = Item.useTime = 167;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.useTurn = false;
             Item.noMelee = true;
             Item.knockBack = 6.9f;
 
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
 
@@ -47,11 +47,11 @@ namespace CalamityMod.Items.Weapons.Magic
             CreateRecipe().
                 AddIngredient(ItemID.SpellTome).
                 AddIngredient<CosmicDischarge>().
-                AddIngredient<StaffoftheMechworm>(2).
-                AddIngredient<Excelsus>(2).
-                AddIngredient<AscendantSpiritEssence>(11).
-                AddIngredient<CosmiliteBar>(33).
+                AddIngredient<VoidEaterMarionette>(2).
+                AddIngredient<MawOfInfinity>(2).
                 AddIngredient<ShadowspecBar>(5).
+                AddIngredient<CosmiliteBar>(33).
+                AddIngredient<AscendantSpiritEssence>(11).
                 AddTile<DraedonsForge>().
                 Register();
         }

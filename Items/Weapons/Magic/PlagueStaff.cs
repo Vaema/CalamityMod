@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Magic;
+﻿using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -12,7 +13,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
@@ -27,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 8f;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.UseSound = SoundID.Item43;
             Item.autoReuse = true;
@@ -35,7 +36,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shootSpeed = 16f;
         }
 
-        
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             for (int i = 0; i < 3; i++)

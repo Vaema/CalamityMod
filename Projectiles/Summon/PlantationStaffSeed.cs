@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -9,6 +10,7 @@ namespace CalamityMod.Projectiles.Summon
     public class PlantationStaffSeed : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Summon";
+        public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.SeedPlantera;
 
         public ref float RandomTexture => ref Projectile.ai[0];
 
@@ -18,6 +20,8 @@ namespace CalamityMod.Projectiles.Summon
             ProjectileID.Sets.MinionShot[Type] = true;
             ProjectileID.Sets.TrailingMode[Type] = 2;
             ProjectileID.Sets.TrailCacheLength[Type] = 3;
+            if (!Main.dedServ)
+                Main.instance.LoadProjectile(ProjectileID.PoisonSeedPlantera);
         }
 
         public override void SetDefaults()
@@ -54,12 +58,12 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = (RandomTexture == 0f) ? ModContent.Request<Texture2D>(Texture).Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/PlantationStaffSeed2").Value;
+            Texture2D texture = (RandomTexture == 0f) ? Terraria.GameContent.TextureAssets.Projectile[ProjectileID.PoisonSeedPlantera].Value : TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 0; i < Projectile.oldPos.Length; i++)
                 {

@@ -1,8 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Projectiles.Ranged;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Projectiles.Ranged;
+
 namespace CalamityMod.Projectiles.Rogue
 {
     public class Prismalline3 : ModProjectile, ILocalizedModType
@@ -10,6 +12,7 @@ namespace CalamityMod.Projectiles.Rogue
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/Prismalline";
 
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = 20;
@@ -33,7 +36,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
@@ -42,7 +45,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 154, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Rain, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
             }
             if (Projectile.ai[0] == 1f)
             {

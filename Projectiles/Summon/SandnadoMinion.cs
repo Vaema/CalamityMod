@@ -18,12 +18,13 @@ namespace CalamityMod.Projectiles.Summon
         public ref float TimerForShooting => ref Projectile.ai[0];
 
         public bool CheckForSpawning = false;
-        
+
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 6;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 6;
+            Main.projPet[Type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -81,12 +82,12 @@ namespace CalamityMod.Projectiles.Summon
         {
             if (CheckForSpawning == false)
             {
-                int dustAmount = 75;
-                for (int dustIndex = 0; dustIndex < dustAmount; dustIndex++)
+                int dustAmount = 25;
+                for (int d = 0; d < dustAmount; d++)
                 {
-                    float angle = MathHelper.TwoPi / dustAmount * dustIndex;
+                    float angle = MathHelper.TwoPi / dustAmount * d;
                     Vector2 velocity = angle.ToRotationVector2() * Main.rand.NextFloat(5f, 6.5f);
-                    Dust spawnDust = Dust.NewDustPerfect(Projectile.Center, 85, velocity);
+                    Dust.NewDustPerfect(Projectile.Center, DustID.UnusedBrown, velocity);
                 }
                 CheckForSpawning = true;
             }
@@ -95,7 +96,7 @@ namespace CalamityMod.Projectiles.Summon
         public void DoAnimation()
         {
             Projectile.frameCounter++;
-            Projectile.frame = Projectile.frameCounter / 8 % Main.projFrames[Projectile.type];
+            Projectile.frame = Projectile.frameCounter / 8 % Main.projFrames[Type];
         }
 
         public void Idle()
@@ -157,15 +158,13 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.damage,
                     Projectile.knockBack,
                     Projectile.owner);
-                
+
                 TimerForShooting = 0f;
             }
-            
+
             if (TimerForShooting < SandSharknadoStaff.FireSpeed)
                 TimerForShooting++;
         }
-
-        public override bool? CanDamage() => false;
 
         #endregion
     }

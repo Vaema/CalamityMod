@@ -1,7 +1,6 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
@@ -13,7 +12,7 @@ namespace CalamityMod.Items.Dyes
     {
         public override ArmorShaderData ShaderDataToBind
         {
-            get => new ArmorShaderData(new Ref<Effect>(Mod.Assets.Request<Effect>("Effects/Dyes/ExoDyeShader", AssetRequestMode.ImmediateLoad).Value), "DyePass").UseImage("Images/Misc/Perlin");
+            get => new ArmorShaderData(Mod.Assets.Request<Effect>("Effects/Dyes/ExoDyeShader"), "DyePass").UseImage("Images/Misc/Perlin");
         }
 
         public override void SafeSetStaticDefaults()
@@ -23,8 +22,8 @@ namespace CalamityMod.Items.Dyes
 
         public override void SafeSetDefaults()
         {
-            Item.rare = ModContent.RarityType<Violet>();
-            Item.value = Item.sellPrice(0, 10, 0, 0);
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
+            Item.value = Item.sellPrice(gold: 2, silver: 50);
         }
 
         public override void AddRecipes()

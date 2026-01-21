@@ -4,7 +4,7 @@ Abombination: {
 		'''
 		Summons the Plaguebringer Goliath when used in the Jungle
 		Enrages outside the Jungle
-		Not consumable
+		{$Common.NotConsumable}
 		'Radio capable of emitting a frequency recognized by the Plague nanovirus.'
 		'''
 }
@@ -14,14 +14,13 @@ AstralChunk: {
 	Tooltip:
 		'''
 		Summons Astrum Aureus when used in the Astral Infection
-		Enrages during the day while outside the Astral Infection
-		Not consumable
+		{$Common.NotConsumable}
 		'The Infection's fortress has found another target.'
 		'''
 }
 
 BloodwormItem: {
-	DisplayName: Bloodworm
+	DisplayName: "{$NPCs.BloodwormNormal.DisplayName}"
 	Tooltip:
 		'''
 		Summons The Old Duke if used as bait in the Sulphurous Sea
@@ -34,10 +33,15 @@ BloodyWormFood: {
 	Tooltip:
 		'''
 		Summons the Perforator Hive when used in the Crimson
-		Enrages outside the Underground Crimson
-		Not consumable
+		Despawns outside the Crimson
+		{$Common.NotConsumable}
 		'Do not play with your food, they won't play with theirs.'
 		'''
+}
+
+CausticTear: {
+	DisplayName: Caustic Tear
+	Tooltip: Causes an acidic downpour in the Sulphurous Sea
 }
 
 CeremonialUrn: {
@@ -45,7 +49,7 @@ CeremonialUrn: {
 	Tooltip:
 		'''
 		Use at the Altar of the Accursed to summon the Supreme Witch, Calamitas
-		Not consumable
+		{$Common.NotConsumable}
 		'The Witch will not allow it to happen once again.'
 		'''
 }
@@ -56,7 +60,7 @@ CharredIdol: {
 		'''
 		Summons the Brimstone Elemental when used in the Brimstone Crags
 		Enrages outside the Brimstone Crags
-		Not consumable
+		{$Common.NotConsumable}
 		'Anything under her gaze shall be scorched beyond recognition.'
 		'''
 }
@@ -66,7 +70,7 @@ CosmicWorm: {
 	Tooltip:
 		'''
 		Summons the Devourer of Gods
-		Not consumable
+		{$Common.NotConsumable}
 		'The Nameless Serpent has set out for you.'
 		'''
 }
@@ -77,8 +81,7 @@ CryoKey: {
 	Tooltip:
 		'''
 		[SPAWN]
-		Enrages outside the tundra
-		Not consumable
+		{$Common.NotConsumable}
 		'A key for a glacial prison.'
 		'''
 	SpawnNormal: Summons Cryogen when used in the tundra
@@ -90,7 +93,7 @@ DeathWhistle: {
 	Tooltip:
 		'''
 		Summons the Ravager
-		Not consumable
+		{$Common.NotConsumable}
 		'One of the few sounds the flesh golem still recognizes.'
 		'''
 }
@@ -99,9 +102,8 @@ DecapoditaSprout: {
 	DisplayName: Decapodita Sprout
 	Tooltip:
 		'''
-		Summons Crabulon when used in the Mushroom biome
-		Enrages outside the Underground Mushroom biome
-		Not consumable
+		Summons Crabulon when used in the Underground Mushroom biome
+		{$Common.NotConsumable}
 		'Bristling with the spores of a unique, parasitic strain.'
 		'''
 }
@@ -112,7 +114,7 @@ DesertMedallion: {
 		'''
 		Summons the Desert Scourge when used in the Desert
 		Enrages outside the Desert
-		Not consumable
+		{$Common.NotConsumable}
 		'The Scourge seeks for another meal.'
 		'''
 }
@@ -122,7 +124,7 @@ EidolonTablet: {
 	Tooltip:
 		'''
 		Summons the Lunatic Cultist
-		Not consumable
+		{$Common.NotConsumable}
 		'An aged artifact venerated by the Dragon Cult.'
 		'''
 }
@@ -131,42 +133,57 @@ ExoticPheromones: {
 	DisplayName: Exotic Pheromones
 	Tooltip:
 		'''
-		Summons The Dragonfolly when used in the Jungle
+		Summons Dragonfolly when used in the Jungle
 		Enrages outside the Jungle
-		Not consumable
+		{$Common.NotConsumable}
 		'Pheromones used for hunting Draconic Offshoots.'
 		'''
 }
 
 EyeofDesolation: {
 	DisplayName: Eye of Desolation
-	// The GFB tag generates a new line below when placed at the end of a line
 	Tooltip:
 		'''
-		Summons the Calamitas Clone when used during nighttime[GFB]
-		Enrages during the day
-		Not consumable
+		Summons the Calamitas Clone
+		Creates a square arena in Revengeance Mode, with you at its bottom
+		{$Common.NotConsumable}
 		'She is here.'
 		'''
-	GFBInfo: Creates a square arena of blocks, with you at its center
 }
 
-CausticTear: {
-	DisplayName: Caustic Tear
+NaiadsWarhorn: {
+	DisplayName: Naiad's Warhorn
 	Tooltip:
 		'''
-		Causes an acidic downpour in the Sulphurous Sea
-		Not consumable
+		Summons Anahita when used in the Ocean
+		Enrages outside the Ocean
+		{$Common.NotConsumable}
+		'An instrument used by mermen to call upon Anahita. Its melody is oddly alluring.'
 		'''
+}
+
+MarkofProvidence: {
+	DisplayName: Mark of Providence
+	Tooltip:
+		'''
+		An ornate sigil of the Profaned Flame
+		Hatred yet burns upon its brow
+		[SPAWN]
+		{$Common.NotConsumable}
+		'''
+	SpawnInfo: Such power attracts otherworldly beings
+	SpawnVoid:
+		'''
+		Summons the Ceaseless Void
+		Despawns on the surface
+		'''
+	SpawnSignus: Summons Signus, Envoy of the Devourer
+	SpawnWeaver: Summons the Storm Weaver
 }
 
 MartianDistressRemote: {
 	DisplayName: Martian Distress Remote
-	Tooltip:
-		'''
-		Summons the Martian Madness
-		Not consumable
-		'''
+	Tooltip: Summons the Martian Madness
 }
 
 NecroplasmicBeacon: {
@@ -174,7 +191,8 @@ NecroplasmicBeacon: {
 	Tooltip:
 		'''
 		Summons Polterghast when used in the Dungeon
-		Not consumable
+		Despawns on the surface
+		{$Common.NotConsumable}
 		'The wails of the spirits disturbed something far more terrifying.'
 		'''
 }
@@ -184,22 +202,12 @@ NO: {
 	Tooltip: U
 }
 
-OldPowerCell: {
-	DisplayName: Old Power Cell
-	Tooltip:
-		'''
-		Summons the Golem when used in the Jungle Temple
-		Enrages outside the Jungle Temple
-		Not consumable
-		'''
-}
-
 OverloadedSludge: {
 	DisplayName: Overloaded Sludge
 	Tooltip:
 		'''
 		Summons the Slime God
-		Not consumable
+		{$Common.NotConsumable}
 		'Writhing and bloated with the pus of Gods long dead.'
 		'''
 }
@@ -210,7 +218,7 @@ Portabulb: {
 		'''
 		Summons Plantera when used in the Jungle
 		Enrages outside the Underground Jungle
-		Not consumable
+		{$Common.NotConsumable}
 		'''
 }
 
@@ -219,9 +227,8 @@ ProfanedCore: {
 	Tooltip:
 		'''
 		Summons Providence when used in the Hallow or Underworld
-		Unique drop changes depending on the biome fought in
-		Enrages when fought during nighttime
-		Not consumable
+		Use again while Providence is at high health to unleash Her perfect fury
+		{$Common.NotConsumable}
 		'The heart of Her Guardians, Her wicked wrath shall burn upon whoever now wields it.'
 		'''
 }
@@ -230,32 +237,10 @@ ProfanedShard: {
 	DisplayName: Profaned Shard
 	Tooltip:
 		'''
-		[SPAWN]
-		Enrage when not in the Hallow or Underworld
-		Not consumable
+		Summons the Profaned Guardians when used in the Hallow or Underworld
+		{$Common.NotConsumable}
 		'Her Guardians seek the holder of such vast stolen power.'
 		'''
-	SpawnNormal: Summons the Profaned Guardians when used in the Hallow or Underworld during daytime
-	SpawnRemix: Summons the Profaned Guardians when used in the Hallow or Underworld
-}
-
-RuneofKos: {
-	DisplayName: Rune of Kos
-	Tooltip:
-		'''
-		An ornate sigil of the Profaned Flame
-		Hatred yet burns upon its brow
-		[SPAWN]
-		Not consumable
-		'''
-	SpawnInfo: Such power attracts otherworldly beings
-	SpawnVoid:
-		'''
-		Summons the Ceaseless Void
-		Enrages on the surface
-		'''
-	SpawnSignus: Summons Signus, Envoy of the Devourer
-	SpawnWeaver: Summons the Storm Weaver
 }
 
 SandstormsCore: {
@@ -263,7 +248,7 @@ SandstormsCore: {
 	Tooltip:
 		'''
 		Summons the Great Sand Shark when used in the [BIOME]
-		Not consumable
+		{$Common.NotConsumable}
 		'''
 }
 
@@ -273,7 +258,7 @@ Seafood: {
 		'''
 		Summons the Aquatic Scourge when used in the Sulphurous Sea
 		Enrages outside the Sulphurous Sea
-		Not consumable
+		{$Common.NotConsumable}
 		'Large bait for a large catch. Beware the monsters of the seas.'
 		'''
 }
@@ -283,7 +268,6 @@ Starcore: {
 	Tooltip:
 		'''
 		Summons Astrum Deus at the Astral Beacon, but is not consumed
-		Enrages during the day
 		'May the stars guide your way'
 		'''
 }
@@ -293,8 +277,8 @@ Teratoma: {
 	Tooltip:
 		'''
 		Summons the Hive Mind when used in the Corruption
-		Enrages outside the Underground Corruption
-		Not consumable
+		Despawns outside the Corruption
+		{$Common.NotConsumable}
 		'An exquisitely hideous tumor for those diseased in the head.'
 		'''
 }
@@ -302,11 +286,7 @@ Teratoma: {
 Terminus: {
 	DisplayName: Terminus
 	GFBName: Ogscule
-	Tooltip:
-		'''
-		Activates Boss Rush Mode, using it again will deactivate Boss Rush Mode
-		During the Boss Rush, all wires and wired devices will be disabled
-		'''
+	Tooltip: Activates Boss Rush Mode, using it again will deactivate Boss Rush Mode
 }
 
 YharonEgg: {
@@ -315,7 +295,7 @@ YharonEgg: {
 		'''
 		Summons Yharon, Dragon of Rebirth
 		Enrages outside the fire walls
-		Not consumable
+		{$Common.NotConsumable}
 		'A symbol of the Dragon watching over and waiting for you.'
 		'''
 }

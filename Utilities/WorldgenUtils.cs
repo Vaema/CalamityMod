@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Schematics;
 using Microsoft.Xna.Framework;
@@ -12,6 +13,8 @@ namespace CalamityMod
 {
     public static partial class CalamityUtils
     {
+        public const int DefaultGenerationLoopLimit = 5000;
+
         /// <summary>
         /// Generates clusters of ore across the world based on various requirements and with various strengths/frequencies.
         /// </summary>
@@ -38,6 +41,75 @@ namespace CalamityMod
             }
         }
 
+        /// <summary>
+        /// Generates clusters of ore across the world based on various requirements and with various strengths/frequencies.
+        /// This overload takes a list of tile IDs instead of an array.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="frequency"></param>
+        /// <param name="verticalStartFactor"></param>
+        /// <param name="verticalEndFactor"></param>
+        /// <param name="strengthMin"></param>
+        /// <param name="strengthMax"></param>
+        /// <param name="convertibleTiles"></param>
+        public static void SpawnOre(int type, double frequency, float verticalStartFactor, float verticalEndFactor, int strengthMin, int strengthMax, List<int> convertibleTiles)
+        {
+            int[] convertedArray = new int[convertibleTiles.Count];
+            convertibleTiles.CopyTo(convertedArray);
+            SpawnOre(type, frequency, verticalStartFactor, verticalEndFactor, strengthMin, strengthMax, convertedArray);
+        }
+
+        /// <summary>
+        /// Counts the amount of "cells" near a given range in a 2D boolean array. This is specifically used in conjunction with the <br></br>
+        /// <see cref="SimulateCelluarAutomata"/> utility.
+        /// </summary>
+        /// <param name="map">The cell states.</param>
+        /// <param name="x">The X position to count cells by.</param>
+        /// <param name="y">The Y position to count cells by.</param>
+        /// <param name="checkForActiveCells">Whether to check for active cells (<see langword="true"/> values) or not (<see langword="false"/> values).</param>
+        public static int CountCellsAtPosition(bool[,] map, int x, int y, bool checkForActiveCells)
+        {
+            int count = 0;
+            for (int dx = -1; dx <= 1; dx++)
+            {
+                for (int dy = -1; dy <= 1; dy++)
+                {
+                    // Ignore the center position.
+                    if (dx == 0 && dy == 0)
+                        continue;
+
+                    // Ignore cells outside of the range of the map.
+                    if (x + dx < 0 || x + dx >= map.GetLength(0) || y + dy < 0 || y + dy >= map.GetLength(1))
+                        continue;
+
+                    if ((map[x + dx, y + dy] && checkForActiveCells) || (!map[x + dx, y + dy] && !checkForActiveCells))
+                        count++;
+                }
+            }
+            return count;
+        }
+
+        /// <summary>
+        /// Generates a cell map based on a cellular automata algorithm. The primary use-case for this is for creating smooth cave patterns,<br></br>
+        /// with the cell's state representing whether a tile is active or not.
+        /// </summary>
+        /// <param name="originalMap">The original cell states.</param>
+        public static bool[,] SimulateCelluarAutomata(bool[,] originalMap)
+        {
+            bool[,] newMap = (bool[,])originalMap.Clone();
+            for (int x = 0; x < originalMap.GetLength(0); x++)
+            {
+                for (int y = 0; y < originalMap.GetLength(1); y++)
+                {
+                    if (originalMap[x, y] && CountCellsAtPosition(originalMap, x, y, true) <= 3)
+                        newMap[x, y] = false;
+                    else if (!originalMap[x, y] && CountCellsAtPosition(originalMap, x, y, true) >= 5)
+                        newMap[x, y] = true;
+                }
+            }
+            return newMap;
+        }
+
         public static void GrowVines(int VineX, int VineY, int numVines, ushort vineType, bool finished = false)
         {
             for (int Y = VineY; Y <= VineY + numVines && !finished; Y++)
@@ -52,7 +124,7 @@ namespace CalamityMod
                 {
                     finished = true;
                 }
-                
+
                 if (numVines <= 1)
                 {
                     finished = true;
@@ -63,10 +135,19 @@ namespace CalamityMod
         /// <summary>
         /// Settles all liquids in the world.
         /// </summary>
-        public static void SettleWater()
+        public static void SettleWater(bool convertToLava = true)
         {
             Liquid.worldGenTilesIgnoreWater(true);
-            Liquid.QuickWater(3);
+            if (convertToLava)
+                Liquid.QuickWater(3);
+            else
+            {
+                int storedWaterLine = GenVars.waterLine;
+                GenVars.waterLine = Main.maxTilesY;
+                Liquid.QuickWater(3);
+                GenVars.waterLine = storedWaterLine;
+            }
+            
             WorldGen.WaterCheck();
 
             Liquid.quickSettle = true;
@@ -85,7 +166,7 @@ namespace CalamityMod
                     double liquidDifferencePercentage = (maxLiquid - Liquid.numLiquid - LiquidBuffer.numLiquidBuffer) / (double)maxLiquid;
                     if (Liquid.numLiquid + LiquidBuffer.numLiquidBuffer > maxLiquid)
                         maxLiquid = Liquid.numLiquid + LiquidBuffer.numLiquidBuffer;
-                    
+
                     if (liquidDifferencePercentage > maxLiquidDifferencePercentage)
                         maxLiquidDifferencePercentage = liquidDifferencePercentage;
 
@@ -154,7 +235,11 @@ namespace CalamityMod
             paddedArea.Inflate(padding, padding);
 
             // If Fargo's Mutant Mod is loaded, add to their Indestructible Rectangle list, which prevents structures from being trashed by Fargo's terrain tools.
-            Mod fargos = CalamityMod.Instance.fargos;
+            Mod fargos = ExternalMods.fargos;
+            paddedArea.X *= 16;
+            paddedArea.Y *= 16;
+            paddedArea.Width *= 16;
+            paddedArea.Height *= 16;
             fargos?.Call("AddIndestructibleRectangle", paddedArea);
         }
     }
@@ -215,7 +300,7 @@ namespace CalamityMod
                         {
                             continue;
                         }
-                        
+
                         ChangeTile(Main.tile[i, j]);
                     }
                 }

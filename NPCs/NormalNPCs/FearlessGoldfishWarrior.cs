@@ -1,14 +1,14 @@
-﻿using CalamityMod.World;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.World;
+using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.GameContent.Bestiary;
 using Terraria.DataStructures;
+using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
-using CalamityMod.Items.Placeables.Banners;
 
 namespace CalamityMod.NPCs.NormalNPCs
 {
@@ -16,7 +16,7 @@ namespace CalamityMod.NPCs.NormalNPCs
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 10;
+            Main.npcFrameCount[Type] = 10;
         }
 
         public override void SetDefaults()
@@ -29,7 +29,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.defense = Main.hardMode ? 10 : 2;
             NPC.lifeMax = Main.hardMode ? 150 : 50;
             NPC.knockBackResist = Main.hardMode ? 0.2f : 0.5f;
-            NPC.value = Item.buyPrice(0, 0, 1, 0);
+            NPC.value = Item.buyPrice(silver: 1);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             Banner = NPC.type;
@@ -42,11 +42,11 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Surface,
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Events.Rain,
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.FearlessGoldfishWarrior")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.FearlessGoldfishWarrior")
             });
         }
 
@@ -214,7 +214,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 int doorCheckX = (int)((NPC.position.X + (float)(NPC.width / 2) + (float)(15 * NPC.direction)) / 16f);
                 int doorCheckY = (int)((NPC.position.Y + (float)NPC.height - 15f) / 16f);
-                if ((Main.tile[doorCheckX, doorCheckY - 1].HasUnactuatedTile && (Main.tile[doorCheckX, doorCheckY - 1].TileType == 10 || Main.tile[doorCheckX, doorCheckY - 1].TileType == 388)) & unusedFlag)
+                if ((Main.tile[doorCheckX, doorCheckY - 1].HasUnactuatedTile && (Main.tile[doorCheckX, doorCheckY - 1].TileType == TileID.ClosedDoor || Main.tile[doorCheckX, doorCheckY - 1].TileType == TileID.TallGateClosed)) & unusedFlag)
                 {
                     NPC.ai[2] += 1f;
                     NPC.ai[3] = 0f;
@@ -222,7 +222,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     {
                         NPC.velocity.X = 0.5f * (float)-(float)NPC.direction;
                         int doorOpenInc = 5;
-                        if (Main.tile[doorCheckX, doorCheckY - 1].TileType == 388)
+                        if (Main.tile[doorCheckX, doorCheckY - 1].TileType == TileID.TallGateClosed)
                         {
                             doorOpenInc = 2;
                         }
@@ -237,7 +237,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                         WorldGen.KillTile(doorCheckX, doorCheckY - 1, true, false, false);
                         if ((Main.netMode != NetmodeID.MultiplayerClient || !letMeIn) && letMeIn && Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            if (Main.tile[doorCheckX, doorCheckY - 1].TileType == 10)
+                            if (Main.tile[doorCheckX, doorCheckY - 1].TileType == TileID.ClosedDoor)
                             {
                                 bool canOpenDoor = WorldGen.OpenDoor(doorCheckX, doorCheckY - 1, NPC.direction);
                                 if (!canOpenDoor)
@@ -245,12 +245,12 @@ namespace CalamityMod.NPCs.NormalNPCs
                                     NPC.ai[3] = (float)backUpTimer;
                                     NPC.netUpdate = true;
                                 }
-                                if (Main.netMode == NetmodeID.Server & canOpenDoor)
+                                if (Main.dedServ & canOpenDoor)
                                 {
                                     NetMessage.SendData(MessageID.ToggleDoorState, -1, -1, null, 0, (float)doorCheckX, (float)(doorCheckY - 1), (float)NPC.direction, 0, 0, 0);
                                 }
                             }
-                            if (Main.tile[doorCheckX, doorCheckY - 1].TileType == 388)
+                            if (Main.tile[doorCheckX, doorCheckY - 1].TileType == TileID.TallGateClosed)
                             {
                                 bool canOpenTallGate = WorldGen.ShiftTallGate(doorCheckX, doorCheckY - 1, false);
                                 if (!canOpenTallGate)
@@ -258,7 +258,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                                     NPC.ai[3] = (float)backUpTimer;
                                     NPC.netUpdate = true;
                                 }
-                                if (Main.netMode == NetmodeID.Server & canOpenTallGate)
+                                if (Main.dedServ & canOpenTallGate)
                                 {
                                     NetMessage.SendData(MessageID.ToggleDoorState, -1, -1, null, 4, (float)doorCheckX, (float)(doorCheckY - 1), 0f, 0, 0, 0);
                                 }
@@ -397,15 +397,17 @@ namespace CalamityMod.NPCs.NormalNPCs
             bool instakill = false;
             List<string> metarexNames = new List<string> { "LordMetarex", "Metarex" };
             foreach (string s in metarexNames)
+            {
                 if (s.ToLower() == target.name.ToLower())
                 {
                     instakill = true;
                     break;
                 }
+            }
 
             if (instakill)
             {
-                target.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Goldfish").Format(target.name)), 1000.0, 0, false);
+                target.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Goldfish").ToNetworkText(target.name)), 1000.0, 0, false);
                 modifiers.FinalDamage *= target.statLifeMax2 * Main.rand.NextFloat(2.0f, 3.5f);
             }
         }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -17,10 +16,10 @@ namespace CalamityMod.Items.Accessories
         public new string LocalizationCategory => "Items.Accessories";
 
         private static float offset = 0f;
-        
-        public static readonly SoundStyle ParryActivateSound = new("CalamityMod/Sounds/Item/BlazingCoreParryActivate") { Volume = 0.7f};
-        public static readonly SoundStyle ParrySuccessSound = new("CalamityMod/Sounds/Item/BlazingCoreParry") { Volume = 0.6f};
-        
+
+        public static readonly SoundStyle ParryActivateSound = new("CalamityMod/Sounds/Item/BlazingCoreParryActivate") { Volume = 0.7f };
+        public static readonly SoundStyle ParrySuccessSound = new("CalamityMod/Sounds/Item/BlazingCoreParry") { Volume = 0.6f };
+
         public override void SetStaticDefaults()
         {
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(5, 6));
@@ -33,13 +32,15 @@ namespace CalamityMod.Items.Accessories
             Item.width = 42;
             Item.height = 46;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
+            Item.expert = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.Calamity().blazingCore = true;
+            player.noKnockback = true;
         }
 
         public static void HandleStars(Player player)
@@ -50,13 +51,13 @@ namespace CalamityMod.Items.Accessories
             int chains = 3;
             float interval = totalFlameProjectiles / chains * divisor;
             double patternInterval = Math.Floor(player.Calamity().blazingCoreSuccessfulParry / interval);
-            
+
 
             if (player.Calamity().blazingCoreSuccessfulParry % 4 == 0) //play sound every 4 frames
             {
                 SoundEngine.PlaySound(SoundID.DD2_BetsyFireballImpact, player.Center);
             }
-            
+
             if (patternInterval % 2 == 0)
             {
                 double radians = MathHelper.TwoPi / chains;
@@ -67,25 +68,24 @@ namespace CalamityMod.Items.Accessories
                 for (int i = 0; i < chains; i++)
                 {
                     int projectileType = ModContent.ProjectileType<BlazingStarThatDoesNotHeal>();
-                    int dmgAmt = 90;
+                    int dmgAmt = 250;
                     if (!empowered && Main.rand.NextBool(5))
                     {
                         projectileType = ModContent.ProjectileType<BlazingStarHeal>();
                     }
-                    
+
                     Vector2 vector2 = spinningPoint.RotatedBy(radians * i + MathHelper.ToRadians(offset));
                     //not sure if this is correct, will see in testing
                     if (!Main.dedServ)
                     {
                         spinningPoint *= 1.5f;
                         dmgAmt = (int)player.GetBestClassDamage().ApplyTo(dmgAmt);
-                        dmgAmt = player.ApplyArmorAccDamageBonusesTo(dmgAmt);
                         Projectile.NewProjectile(player.GetSource_FromThis(), player.Center, vector2, projectileType, dmgAmt, 0f, Main.myPlayer);
                     }
                 }
                 offset += 10f;
             }
-            
+
             player.Calamity().blazingCoreSuccessfulParry--;
             if (player.Calamity().blazingCoreSuccessfulParry <= 0)
             {
@@ -117,7 +117,7 @@ namespace CalamityMod.Items.Accessories
             {
                 for (int i = 0; i < 8; i++)
                 {
-                    int theDust = Dust.NewDust(player.position, player.width, player.height, 205, 0f, 0f, 100, new Color(255, 255, 255), 2f);
+                    int theDust = Dust.NewDust(player.position, player.width, player.height, DustID.VenomStaff, 0f, 0f, 100, new Color(255, 255, 255), 2f);
                     Main.dust[theDust].noGravity = true;
                 }
             }

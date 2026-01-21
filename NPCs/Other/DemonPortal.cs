@@ -2,10 +2,10 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.NPCs.Other
 {
@@ -25,7 +25,6 @@ namespace CalamityMod.NPCs.Other
             NPC.lifeMax = 25000;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.value = 0f;
             NPC.knockBackResist = 0f;
             NPC.netAlways = true;
             NPC.aiStyle = -1;
@@ -47,14 +46,14 @@ namespace CalamityMod.NPCs.Other
                 NPC.dontTakeDamage = true;
                 NPC.netUpdate = true;
                 int demonType = ModContent.ProjectileType<SuicideBomberDemon>();
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    if (Main.projectile[i].type != demonType || !Main.projectile[i].active || Main.projectile[i].hostile)
+                    if (p.type != demonType || p.hostile)
                         continue;
 
-                    Main.projectile[i].hostile = true;
-                    Main.projectile[i].friendly = false;
-                    Main.projectile[i].netUpdate = true;
+                    p.hostile = true;
+                    p.friendly = false;
+                    p.netUpdate = true;
                 }
             }
 
@@ -110,7 +109,7 @@ namespace CalamityMod.NPCs.Other
         {
             spriteBatch.SetBlendState(BlendState.AlphaBlend);
 
-            Texture2D portalTexture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D portalTexture = TextureAssets.Npc[Type].Value;
             Vector2 drawPosition = NPC.Center - screenPos;
             Vector2 origin = portalTexture.Size() * 0.5f;
             Color baseColor = Color.White;

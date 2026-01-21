@@ -1,8 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
 using Terraria;
-using Terraria.GameContent;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
@@ -29,7 +29,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D telegraphTexture = TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D telegraphTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Color telegraphColor = Color.White * Projectile.Opacity * 0.2f;
             telegraphColor.A = 0;
 
@@ -50,7 +50,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             for (int i = 0; i < 20; i++)
             {
-                Dust magic = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(30f, 30f), 267);
+                Dust magic = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(30f, 30f), DustID.RainbowMk2);
                 magic.color = Color.SkyBlue;
                 magic.scale = 1.1f;
                 magic.fadeIn = 0.6f;

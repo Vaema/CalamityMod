@@ -1,8 +1,8 @@
-﻿using Terraria;
+﻿using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Turret
 {
@@ -34,7 +34,7 @@ namespace CalamityMod.Projectiles.Turret
             }
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
-                var source = Main.player[Main.myPlayer].GetSource_FromThis();
+                var source = Main.LocalPlayer.GetSource_FromThis();
                 for (int i = -1; i < 2; i++)
                     Projectile.NewProjectile(source, Projectile.Center + new Vector2(3f, 0f), Projectile.velocity.RotatedBy(Main.rand.NextFloat(0.035f, 0.11f) * i), ModContent.ProjectileType<OnyxShot>(), Projectile.damage, Projectile.knockBack, Main.myPlayer);
                 Projectile.Kill();

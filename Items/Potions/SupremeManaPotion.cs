@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -11,29 +12,26 @@ namespace CalamityMod.Items.Potions
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 30;
+            ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
+                new Color(0, 255, 250),
+                new Color(26, 117, 177),
+                new Color(160, 82, 144)
+            };
         }
 
         public override void SetDefaults()
         {
-            Item.width = 28;
-            Item.height = 18;
-            Item.useTurn = true;
-            Item.maxStack = 9999;
+            Item.DefaultToFood(34, 38, 0, 0, true);
             Item.healMana = 400;
-            Item.useAnimation = 17;
-            Item.useTime = 17;
-            Item.useStyle = ItemUseStyleID.DrinkLiquid;
-            Item.UseSound = SoundID.Item3;
-            Item.consumable = true;
+            Item.value = Item.sellPrice(silver: 10);
             Item.rare = ItemRarityID.Purple;
-            Item.value = Item.buyPrice(0, 6, 50, 0);
         }
 
         public override void AddRecipes()
         {
             CreateRecipe(15).
                 AddIngredient(ItemID.SuperManaPotion, 15).
-                AddIngredient<Polterplasm>().
+                AddIngredient<Necroplasm>().
                 AddTile(TileID.Bottles).
                 Register()
                 .DisableDecraft();

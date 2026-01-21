@@ -3,9 +3,9 @@ using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.DataStructures;
 
 namespace CalamityMod.Items.Tools
 {
@@ -14,15 +14,15 @@ namespace CalamityMod.Items.Tools
         public new string LocalizationCategory => "Items.Tools";
         public override void SetStaticDefaults()
         {
-                       Item.ResearchUnlockCount = 10;
+            Item.ResearchUnlockCount = 10;
         }
 
         public override void SetDefaults()
         {
             Item.width = 30;
             Item.height = 38;
-            Item.useTime = Item.useAnimation = 8;
-            Item.maxStack = 9999;
+            Item.useAnimation = Item.useTime = 8;
+            Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
             Item.shootSpeed = 20f;
             Item.shoot = ModContent.ProjectileType<WulfrumDiggingTurtleProjectile>();
@@ -30,14 +30,14 @@ namespace CalamityMod.Items.Tools
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.UseSound = SoundID.Item1;
-            Item.value = Item.buyPrice(0, 0, 10, 0);
+            Item.value = Item.sellPrice(silver: 2);
             Item.rare = ItemRarityID.Blue;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ToolsOther;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ToolsOther;
+        }
 
         public override bool AltFunctionUse(Player player) => true;
 
@@ -53,16 +53,14 @@ namespace CalamityMod.Items.Tools
             {
                 bool explodedAny = false;
 
-                for (int i = 0; i < Main.maxProjectiles; ++i)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    Projectile p = Main.projectile[i];
-                    if (!p.active || p.owner != player.whoAmI || p.type != Item.shoot)
+                    if (p.owner != player.whoAmI || p.type != Item.shoot)
                         continue;
 
                     p.ai[1] = 1f;
                     p.timeLeft = 1;
-                    p.netUpdate = true;
-                    p.netSpam = 0;
+                    p.ForceNetUpdate();
 
                     explodedAny = true;
                 }
@@ -78,9 +76,9 @@ namespace CalamityMod.Items.Tools
 
         public override void AddRecipes()
         {
-            CreateRecipe(3).
-                AddIngredient(ItemID.Gel, 5). //Gel is a default combustible item to fuel the motors of the lil guys
+            CreateRecipe(15).
                 AddIngredient<WulfrumMetalScrap>(3).
+                AddIngredient<EnergyCore>().
                 Register();
         }
     }

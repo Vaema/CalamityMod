@@ -22,7 +22,7 @@ namespace CalamityMod.World
             bool invalidHeightData = top >= bottom;
             if (invalidWidthData || invalidHeightData)
             {
-                CalamityMod.Instance.Logger.Warn("The generated dungeon was found to have unusable area bounds. As a result, the astral chest could not be generated.");
+                CalamityMod.Log.Warn("The generated dungeon was found to have unusable area bounds. As a result, the astral chest could not be generated.");
                 return;
             }
 
@@ -67,7 +67,7 @@ namespace CalamityMod.World
             // If a chest was NOT placed, that means that the loop somehow failed.
             // Log this.
             else
-                CalamityMod.Instance.Logger.Warn("The astral chest loop could not find a valid generation location. As a result, it has not generated.");
+                CalamityMod.Log.Warn("The astral chest loop could not find a valid generation location. As a result, it has not generated.");
         }
     }
 }

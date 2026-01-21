@@ -1,18 +1,21 @@
 ﻿using CalamityMod.CalPlayer;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
     public class InkBomb : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static int InkDamage => CalamityUtils.ScaleWithDifficulty(16);
+
         public override void SetDefaults()
         {
             Item.width = 22;
             Item.height = 50;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.accessory = true;
         }
@@ -21,6 +24,8 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.inkBomb = true;
+            modPlayer.stealthGenStandstill += 0.07f;
+            modPlayer.stealthGenMoving += 0.07f;
         }
     }
 }

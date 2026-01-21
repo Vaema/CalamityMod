@@ -1,6 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
@@ -9,7 +10,7 @@ namespace CalamityMod.Skies
 {
     public class AstralScreenShaderData : ScreenShaderData
     {
-        public AstralScreenShaderData(Ref<Effect> shader, string passName) : base(shader, passName) { }
+        public AstralScreenShaderData(Asset<Effect> shader, string passName) : base(shader, passName) { }
 
         public override void Apply()
         {
@@ -21,7 +22,7 @@ namespace CalamityMod.Skies
 
         public override void Update(GameTime gameTime)
         {
-            if (!Main.LocalPlayer.Calamity().ZoneAstral || Main.gameMenu)
+            if ((!Main.LocalPlayer.Calamity().ZoneAstral && Main.LocalPlayer.Calamity().monolithAstralShader <= 0) || Main.gameMenu)
                 Filters.Scene["CalamityMod:Astral"].Deactivate(Array.Empty<object>());
         }
     }

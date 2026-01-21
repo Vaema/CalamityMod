@@ -1,11 +1,10 @@
-﻿using CalamityMod.Rarities;
+﻿using System;
+using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.Graphics.Shaders;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Materials
@@ -17,14 +16,14 @@ namespace CalamityMod.Items.Materials
         {
             Item.width = 30;
             Item.height = 30;
-            Item.maxStack = 9999;
-            Item.value = Item.buyPrice(0, 0, 0, 0);
+            Item.maxStack = Item.CommonMaxStack;
+            Item.value = 0;
             Item.rare = ModContent.RarityType<DarkOrange>();
         }
 
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
-            Texture2D tex = TextureAssets.Item[Item.type].Value;
+            Texture2D tex = TextureAssets.Item[Type].Value;
 
             //Give it an outline. Make it look really important and shiny. The player must not confuse this for a random material
             spriteBatch.End();
@@ -41,7 +40,7 @@ namespace CalamityMod.Items.Materials
 
             for (float i = 0; i < 1; i += 0.25f)
             {
-               spriteBatch.Draw(tex, position + (i * MathHelper.TwoPi).ToRotationVector2() * positionOffset, frame, outlineColor, 0f, origin, scale, 0f, 0f);
+                spriteBatch.Draw(tex, position + (i * MathHelper.TwoPi).ToRotationVector2() * positionOffset, frame, outlineColor, 0f, origin, scale, 0f, 0f);
             }
 
             spriteBatch.End();

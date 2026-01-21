@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public const int FlameSplitCount = 6;
         public override void SetStaticDefaults()
         {
-                       Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.DamageType = DamageClass.Magic;
             Item.noMelee = true;
             Item.mana = 12;
-            Item.useTime = Item.useAnimation = 21;
+            Item.useAnimation = Item.useTime = 21;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.autoReuse = true;
             Item.UseSound = SoundID.DD2_FlameburstTowerShot;
@@ -52,7 +52,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient<ArchAmaryllis>().
                 AddIngredient<DivineGeode>(15).
                 AddIngredient<UnholyEssence>(10).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

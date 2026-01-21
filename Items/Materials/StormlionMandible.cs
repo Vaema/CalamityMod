@@ -1,7 +1,7 @@
 ﻿using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Materials
 {
@@ -19,8 +19,8 @@ namespace CalamityMod.Items.Materials
         {
             Item.width = 36;
             Item.height = 38;
-            Item.maxStack = 9999;
-            Item.value = Item.sellPrice(silver: 1, copper: 40);
+            Item.maxStack = Item.CommonMaxStack;
+            Item.value = Item.sellPrice(copper: 40);
             Item.rare = ItemRarityID.Blue;
         }
     }

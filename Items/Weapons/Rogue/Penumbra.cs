@@ -24,42 +24,38 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.UseSound = SoundID.Item103;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
 
-            Item.damage = 830;
-            Item.useAnimation = 40;
-            Item.useTime = 40;
+            Item.damage = 725;
+            Item.crit = 16;
+            Item.useTime = Item.useAnimation = 35;
             Item.knockBack = 8f;
             Item.shoot = ModContent.ProjectileType<PenumbraBomb>();
             Item.shootSpeed = 9f;
 
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.DamageType = RogueDamageClass.Instance;
         }
 
-        // Terraria seems to really dislike high crit values in SetDefaults
-        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 16;
-
-        public override float StealthDamageMultiplier => 0.85f;
+        public override float StealthDamageMultiplier => 0.9f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (player.Calamity().StealthStrikeAvailable())
             {
                 Vector2 realPlayerPos = player.RotatedRelativePoint(player.MountedCenter, true);
-                float mouseXDist = Main.mouseX + Main.screenPosition.X - realPlayerPos.X;
-                float mouseYDist = Main.mouseY + Main.screenPosition.Y - realPlayerPos.Y;
-                if (player.gravDir == -1f)
-                {
-                    mouseYDist = Main.screenPosition.Y + Main.screenHeight - Main.mouseY - realPlayerPos.Y;
-                }
+                float mouseXDist = Main.screenPosition.X + Main.mouseX - realPlayerPos.X;
+                float mouseYDist = Main.screenPosition.Y + (player.gravDir == -1 ? Main.screenHeight - Main.mouseY : Main.mouseY) - realPlayerPos.Y;
                 if ((float.IsNaN(mouseXDist) && float.IsNaN(mouseYDist)) || (mouseXDist == 0f && mouseYDist == 0f))
                 {
                     mouseXDist = player.direction;
                     mouseYDist = 0f;
                 }
                 realPlayerPos += new Vector2(mouseXDist, mouseYDist);
-                int proj = Projectile.NewProjectile(source, realPlayerPos, new Vector2(0f,-0.5f), ModContent.ProjectileType<PenumbraBomb>(), damage, knockback, player.whoAmI, 0f, 1f);
+                int proj = Projectile.NewProjectile(source, realPlayerPos, -Vector2.UnitY * 0.25f, ModContent.ProjectileType<PenumbraBomb>(), damage, knockback, player.whoAmI);
                 if (proj.WithinBounds(Main.maxProjectiles))
+                {
                     Main.projectile[proj].Calamity().stealthStrike = true;
+                    Main.projectile[proj].timeLeft = 450;
+                } 
                 return false;
             }
             return true;
@@ -68,9 +64,9 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<RuinousSoul>(6).
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<NightmareFuel>(20).
+                AddIngredient<RuinousSoul>(6).
                 AddTile<CosmicAnvil>().
                 Register();
         }

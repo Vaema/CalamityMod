@@ -15,12 +15,11 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
-            Item.width = 96;
-            Item.height = 40;
+            Item.width = 134;
+            Item.height = 46;
             Item.damage = 1000;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = 52;
-            Item.useAnimation = 52;
+            Item.useTime = Item.useAnimation = 53;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 7.5f;
@@ -30,8 +29,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ModContent.ProjectileType<ThePackMissile>();
             Item.useAmmo = AmmoID.Rocket;
 
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.Calamity().donorItem = true;
         }
 
@@ -42,7 +41,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, ModContent.ProjectileType<ThePackMissile>(), damage, knockback, player.whoAmI);
+            Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<ThePackMissile>(), damage, knockback, player.whoAmI);
             return false;
         }
 
@@ -51,9 +50,9 @@ namespace CalamityMod.Items.Weapons.Ranged
             CreateRecipe().
                 AddIngredient<Scorpio>().
                 AddIngredient(ItemID.MarbleBlock, 50).
-                AddIngredient<ArmoredShell>(4).
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<EndothermicEnergy>(20).
+                AddIngredient<ArmoredShell>(4).
                 AddTile<CosmicAnvil>().
                 Register();
         }

@@ -3,31 +3,37 @@ AcidGunStream.DisplayName: Acid Stream
 AcidicReed.DisplayName: Acidic Reed
 AcidicSaxBubble.DisplayName: Acid Bubble
 AcidicSaxMist.DisplayName: Acid Mist
+AerSigil.DisplayName: Aer Sigil
+AerSigilBlast.DisplayName: Aer Blast
+AerSigilFeather.DisplayName: Aer Feather
+AerSigilMissile.DisplayName: Aer Missile
 AetherBeam.DisplayName: Aether Beam
+AlphaDraconisStar.DisplayName: Shooting Star
 AnahitasArpeggioNote.DisplayName: Anahita's Song
-Ancient.DisplayName: Ancient Dust
 Ancient2.DisplayName: Ancient Dust
+ApoctosisBlast.DisplayName: Apoctosis Blast
 ApotheosisEnergy.DisplayName: Apotheosis Energy
 ApotheosisWorm.DisplayName: The Devourer of Gods
 AquamarineBolt.DisplayName: Aqua Bolt
+AquaSigil.DisplayName: Aqua Sigil
+AquaSigilWaterball.DisplayName: Aqua Waterball
+AquaSigilWaterballExplosion.DisplayName: Aqua Waterball Explosion
+AquaSigilWaterdroplet.DisplayName: Aqua Waterdroplet
 ArcticBearPawProj.DisplayName: Arctic Bear Paw
 ArtAttackStar.DisplayName: Artsy Star
 ArtAttackStrike.DisplayName: Art Attack
-Asteroid.DisplayName: Asteroid
 AsteroidMolten.DisplayName: Molten Asteroid
 AstralachneaFang.DisplayName: Astral Fang
 AstralCrystal.DisplayName: Astral Crystal
 AstralCrystalInvisibleExplosion.DisplayName: Astral Crystal Invisible Explosion
 AstralStarMagic.DisplayName: Astral Star
 AtlantisSpear.DisplayName: Atlantis Spear
-AuraRain.DisplayName: Aura Rain
+AugurTentacle.DisplayName: Elemental Tentacle
 AuroraAustralis.DisplayName: Aurora Australis
 BeamingBolt.DisplayName: Beaming Bolt
 BeamingBolt2.DisplayName: Beaming Bolt
 BeamStar.DisplayName: Stardust Star
 BeastScythe.DisplayName: Beast Scythe
-BigBeamofDeath.DisplayName: Big Beam of Death
-BigBeamofDeath2.DisplayName: Big Beam of Death
 BlackAnurianBubble.DisplayName: Anurian Bubble
 BlackAnurianPlankton.DisplayName: Anurian Plankton
 BlindingLight.DisplayName: Blinding Light
@@ -37,26 +43,27 @@ BloodRay.DisplayName: Blood Ray
 BlueBubble.DisplayName: Bubble
 BlushieStaffProj.DisplayName: Staff of Blushie
 BrimroseBeam.DisplayName: Brimrose Beam
-BrimstoneFireball.DisplayName: Brimstone Fireball
 BrimstoneHellfireballFriendly.DisplayName: Hellfireball
-BrimstoneHomer.DisplayName: Brimstone Homer
-BrimstoneTentacle.DisplayName: Brimstone Tentacle
-ClamorNoctusStar.DisplayName: Clamor Star
-ClamorNoctusWyvern.DisplayName: Clamor Wyvern
+CauldronProj.DisplayName: Smauldron
+CauldronProjSmall.DisplayName: Smaullerdron
+ChronoIcicleLarge.DisplayName: Chrono Icicle
+ChronoIcicleSmall.DisplayName: Chrono Icicle
+ChronomancersScytheHoldout.DisplayName: Chronomancer's Scythe
 ClimaxBeam.DisplayName: Voltaic Bolt
 ClimaxProj.DisplayName: Voltaic Orb
 CoralSpike.DisplayName: Coral Spike
+CosmicRainbowFront.DisplayName: Rainbow
+CosmicRainbowTrail.DisplayName: Rainbow
 CosmicTentacle.DisplayName: Dark Tentacle
 CryoBlast.DisplayName: Cryo Blast
 DarkSparkBeam.DisplayName: Dark Spark Beam
 DarkSparkPrism.DisplayName: Dark Crystal
-DeathhailBeam.DisplayName: Deathhail
-DivineRetributionSpear.DisplayName: Divine Retribution
-DustProjectile.DisplayName: Death Valley Dust
+DeathValleyDusterProjectile.DisplayName: Death Valley Duster
+DeathhailBeam.DisplayName: Deathhail Beam
+DracoConstellation.DisplayName: Draco
 EelDrop.DisplayName: Acid Eel Drop
 EidolicWailSoundwave.DisplayName: Eidolic Wail
 EldritchTentacle.DisplayName: Eldritch Tentacle
-ElementTentacle.DisplayName: Elemental Tentacle
 EnormousConsumingVortex.DisplayName: Subsuming Vortex
 EternityCircle.DisplayName: Eternity
 EternityCrystal.DisplayName: Crystal
@@ -67,10 +74,8 @@ EventHorizonStar.DisplayName: Event Horizon Star
 EvergladeSprayProjectile.DisplayName: Everglade Spray
 ExoVortex.DisplayName: Subsuming Vortex
 ExoVortex2.DisplayName: Subsuming Vortex
-FabBolt.DisplayName: Fab Bolt
-FabRay.DisplayName: Fab Ray
 FatesRevealFlame.DisplayName: Fate's Reveal
-FlamingPumpkin.DisplayName: Pumpkin
+FireImplosion.DisplayName: Swirling Backdraft
 FlareBoltProjectile.DisplayName: Flare Bolt
 ForbiddenAxeBlade.DisplayName: Ruin Blade
 ForbiddenSunburst.DisplayName: Sunburst
@@ -78,14 +83,13 @@ ForbiddenSunProjectile.DisplayName: Forbidden Sun
 FrigidflashBoltProjectile.DisplayName: Frigidflash Bolt
 FrostBoltProjectile.DisplayName: Frost Ball
 GammaLaser.DisplayName: Gamma Laser
+GenesisBeam.DisplayName: Genesis Beam
 GhastlyBlast.DisplayName: Ghast Blast
 GhastlyExplosion.DisplayName: Ghastly Explosion
 GhastlyExplosionShard.DisplayName: Ghastly Fragment
 GhastlySubBlast.DisplayName: Ghast Blast
 GleamingBolt.DisplayName: Gleaming Bolt
 GleamingBolt2.DisplayName: Gleaming Bolt
-GraniteEnergy.DisplayName: Granite Energy
-GranitePulse.DisplayName: Granite Pulse
 HadalUrnIsopod.DisplayName: Abyssal Isopod
 HadalUrnJellyfish.DisplayName: Mirage Jelly
 HadalUrnLamprey.DisplayName: Sea Lamprey
@@ -93,15 +97,21 @@ HadalUrnStarfish.DisplayName: Marianan Starfish
 HadalUrnStarfishShard.DisplayName: Starfish Shard
 HeliumFlashBlast.DisplayName: Helium Flash
 HellfireExplosionFriendly.DisplayName: Explosion
-HellwingPillar.DisplayName: Pillar
+HellwingBat.DisplayName: Ashen Hellwing
 HolyFlame.DisplayName: Holy Flame
 HolyLaser.DisplayName: Holy Laser
+HyperdeathRiftScepterBeam.DisplayName: Hyperdeath Rift Ripper
 IceBarrageMain.DisplayName: Ice Barrage
-IceBlock.DisplayName: Ice Barrage
-IceBlockIcicle.DisplayName: Ice Barrage
+IceBlock.DisplayName: Ice Barrage Block
+IceBlockIcicle.DisplayName: Ice Barrage Icicle
 IceCluster.DisplayName: Ice Cluster
 Icicle.DisplayName: Icicle
 IcicleStaffProj.DisplayName: Furious Icicle
+IgnisSigil.DisplayName: Ignis Sigil
+IgnisSigilFireballExplosion.DisplayName: Ignis Fireball Explosion
+IgnisSigilFireball.DisplayName: Ignis Fireball
+IgnisSigilEmbers.DisplayName: Ignis Ember
+IncineratingFireball.DisplayName: Incinerating Fireball
 InfernadoFriendly.DisplayName: Infernado
 InfernadoMarkFriendly.DisplayName: Infernado Mark
 InfernalBlade.DisplayName: Infernal Blade
@@ -110,7 +120,6 @@ IonBlast.DisplayName: Ion Blast
 KeelhaulBubble.DisplayName: Keelhaul Bubble
 KeelhaulGeyserBottom.DisplayName: Keelhaul Geyser
 KeelhaulGeyserTop.DisplayName: Keelhaul Geyser
-LazharSolarBeam.DisplayName: Concentrated Solar Beam
 LightBall.DisplayName: Light Ball
 LightBallExplosion.DisplayName: Light Explosion
 LightBead.DisplayName: Light Bead
@@ -150,17 +159,28 @@ NightBolt.DisplayName: Night's Bolt
 NightOrb.DisplayName: Night's Orb
 NightsRayBeam.DisplayName: Night's Ray
 NuclearFuryProjectile.DisplayName: Nuclear Fury
-ParticleBeamofDoom.DisplayName: Doom
+OmicronBeam.DisplayName: Omicron Beam
+OrdoSigil.DisplayName: Ordo Sigil
+OrdoSigilBeam.DisplayName: Ordo Beam
 PartySparkle.DisplayName: Pretty Sparkle
+PerditoSigil.DisplayName: Perdito Sigil
+PerditoSigilShot.DisplayName: Perdito Shot
+PerditoSigilShotCreator.DisplayName: Perdito Shot Creator
 PhantasmalFuryProj.DisplayName: Phantasmal Fury
 Phantom.DisplayName: Phantom
 PhasedGodRay.DisplayName: Phased God Ray
+PhotosyntheticShard.DisplayName: Photosynthetic Shard
+PhotosyntheticSolarBeam.DisplayName: Solar Beam
 PlagueFang.DisplayName: Plague Fang
-PlasmaBolt.DisplayName: Plasma Bolt
 PlasmaRay.DisplayName: Plasma Ray
 PlasmaRay2.DisplayName: Plasma Ray
-PlasmaShot.DisplayName: Plasma Shot
+PlasmaRifleExplosion.DisplayName: Ionizing Particle Cloud
+PlasmaRifleShot.DisplayName: Concentrated Plasma Blast
 PoseidonTyphoon.DisplayName: Poseidon Typhoon
+PrimordialAncientExplosion.DisplayName: Primordial Ancient
+PrimordialAncientProjectile.DisplayName: Primordial Ancient
+PrimordialEarthExplosion.DisplayName: Primordial Earth
+PrimordialEarthProjectile.DisplayName: Primordial Earth
 PrinceFlameLarge.DisplayName: Holy Fireball
 PrinceFlameSmall.DisplayName: Holy Fire
 RainbowComet.DisplayName: Comet
@@ -187,7 +207,6 @@ SerpentineBody.DisplayName: Serpentine
 SerpentineHead.DisplayName: Serpentine
 SerpentineTail.DisplayName: Serpentine
 ShadecrystalProjectile.DisplayName: Shadecrystal
-ShadeNimbus.DisplayName: Shade Nimbus
 ShadeNimbusCloud.DisplayName: Shade Nimbus
 Shaderain.DisplayName: Shaderain
 Shadowbolt.DisplayName: Shadowbolt
@@ -195,6 +214,9 @@ ShiftingSandsProj.DisplayName: Shifting Sands
 SHPB.DisplayName: SHPB
 SHPExplosion.DisplayName: SHPB Explosion
 SHPL.DisplayName: SHPL
+SHPS.DisplayName: SHPS
+SHPV.DisplayName: SHPV
+SigilSet.DisplayName: Sigil Set
 SilvaBurst.DisplayName: Silva Burst
 SlitheringEelProjectile.DisplayName: Slithering Eel
 SmallSpirit.DisplayName: Small Angry Spirit
@@ -211,15 +233,16 @@ SpiritDust.DisplayName: Spirit Dust
 Starblast.DisplayName: Star
 StardustElementalBeam.DisplayName: Stardust Beam
 StickyFeather.DisplayName: Feather
-SupremeDustFlakProjectile.DisplayName: Earthy Dust
-SupremeDustProjectile.DisplayName: Earthy Dust
+SylvBolt.DisplayName: Sylv Bolt
+SylvRay.DisplayName: Sylv Ray
 TacticiansElectricBoom.DisplayName: Electric Explosion
 TacticiansTrumpCardProj.DisplayName: Trump Beam
 TearsofHeavenProjectile.DisplayName: Tears of Heaven
-TerraBeam.DisplayName: Terra Beam
-TerraShard.DisplayName: Terra Shard
-ThunderstormShot.DisplayName: Thunderous Shot
-ThunderstormShotSplit.DisplayName: Thunderous Shot
+TerraSigil.DisplayName: Terra Sigil
+TerraSigilLargeRock.DisplayName: Terra Large Rock
+TerraSigilMediumRock.DisplayName: Terra Medium Rock
+TerraSigilSmallRock.DisplayName: Terra Small Rock
+Teslabeam.DisplayName: Teslabeam
 TradewindsProjectile.DisplayName: Tradewinds Feather
 TridentIcicle.DisplayName: Trident Icicle
 UberBubble.DisplayName: Bubble
@@ -229,11 +252,14 @@ ValkyrieRayStaff.DisplayName: Valkyrie Ray
 VeeringWindAirWave.DisplayName: Veering Wind Air Wave
 VeeringWindFrostWave.DisplayName: Veering Wind Frost Wave
 Vehemence.DisplayName: Blast of Vehemence
+VehemenceBolt.DisplayName: Vehemence Bolt
 VehemenceSkull.DisplayName: Vehement Skull
 VenusianBolt.DisplayName: Venusian Bolt
 VenusianExplosion.DisplayName: Venusian Explosion
 VenusianFlame.DisplayName: Venusian Cinder
 VisceraBeam.DisplayName: Viscera
+VisceraBoom.DisplayName: Viscera Boom
+VisNeedle.DisplayName: Vis Needle
 VitriolicViperFang.DisplayName: Vitriolic Fang
 VitriolicViperSpit.DisplayName: Vitriolic Spit
 VividBeam.DisplayName: Vivid Beam
@@ -244,9 +270,16 @@ VividLaser2.DisplayName: Vivid Laser
 VividOrb.DisplayName: Vivid Orb
 VoidVortexProj.DisplayName: Void Vortex
 VolatileStarcore.DisplayName: Volatile Starcore
+VolterionOrb.DisplayName: Unstable Ball Lightning
+VolterionShot.DisplayName: Ultracharged Filament
 VortexElementalBeam.DisplayName: Vortex Lightning
 WaterLeechProj.DisplayName: Water Leech
-WaywasherProj.DisplayName: Waywasher Blast
+WarpSigil.DisplayName: Warp Sigil
+WarpSigilShot.DisplayName: Warped Shot
+WarpSigilShotCreator.DisplayName: Warped Shot Creator
+WaywasherProj.DisplayName: Waywasher Wave
+WingmanGrenade.DisplayName: Mana Grenade
+WingmanShot.DisplayName: Mana Shot
 WulfrumBolt.DisplayName: Wulfrum Bolt
 WulfrumManaDrain.DisplayName: Mana Drain
 WyvernFeatherGreen.DisplayName: Feather

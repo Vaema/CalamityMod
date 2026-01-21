@@ -1,93 +1,100 @@
-﻿using CalamityMod.Items.Weapons.Ranged;
+﻿using System;
+using CalamityMod.Dusts;
+using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using ReLogic.Utilities;
-using System;
 using Terraria;
 using Terraria.Audio;
-using Terraria.Localization;
+using Terraria.GameContent;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class OpalStrikerHoldout : ModProjectile
+    public class OpalStrikerHoldout : BaseGunHoldoutProjectile
     {
-        // Take the name and texture from the weapon
-        public override LocalizedText DisplayName => CalamityUtils.GetItemName<OpalStriker>();
-        public override string Texture => "CalamityMod/Items/Weapons/Ranged/OpalStriker";
-
-        public static float ChargedDamageMult = 5f;
-        public static float ChargedKBMult = 3f;
-        public static float BulletSpeed = 12f;
-
-        private Player Owner => Main.player[Projectile.owner];
-        public SlotId OpalChargeSlot;
+        public override int AssociatedItemID => ModContent.ItemType<OpalStriker>();
+        public override float MaxOffsetLengthFromArm => 25f;
+        public override float OffsetXUpwards => -5f;
+        public override float BaseOffsetY => -5f;
 
         private ref float CurrentChargingFrames => ref Projectile.ai[0];
         private bool FullyCharged => CurrentChargingFrames >= OpalStriker.FullChargeFrames;
-        public int Time = 0;
-        private bool OwnerCanShoot => Owner.channel && !Owner.noItems && !Owner.CCed;
+        public SlotId OpalChargeSlot;
+        public static float ChargedDamageMult = 5f;
+        public static float ChargedKBMult = 3f;
+        public static float BulletSpeed = 12f;
+        public int time = 0;
 
-        public override void SetDefaults()
+        public override void KillHoldoutLogic()
         {
-            Projectile.width = 46;
-            Projectile.height = 30;
-            Projectile.friendly = true;
-            Projectile.tileCollide = false;
-            Projectile.DamageType = DamageClass.Ranged;
-            Projectile.ignoreWater = true;
+            if (Owner.CantUseHoldout(false) || HeldItem.type != Owner.HeldItem.type)
+                Projectile.Kill();
         }
 
-        public override void AI()
+        public override void HoldoutAI()
         {
-            Time++;
-            if (Time == 1)
-                Projectile.alpha = 255;
-            else
-                Projectile.alpha = 0;
-
-            if (Owner.dead) // destroy the holdout if the player dies
-            {
-                Projectile.Kill();
-                return;
-            }
-
-            Vector2 armPosition = Owner.RotatedRelativePoint(Owner.MountedCenter, true);
-            Vector2 tipPosition = (armPosition + Projectile.velocity * Projectile.width * 0.85f) + (Projectile.velocity * 4).RotatedBy(-0.3f * Projectile.direction);
-
             if (SoundEngine.TryGetActiveSound(OpalChargeSlot, out var ChargeSound) && ChargeSound.IsPlaying)
                 ChargeSound.Position = Projectile.Center;
 
             // Fire if the owner stops channeling or otherwise cannot use the weapon.
-            if (!OwnerCanShoot)
+            if (Owner.CantUseHoldout())
             {
+                KeepRefreshingLifetime = false;
+
                 if (Projectile.ai[1] != 1f)
                 {
+                    Projectile.timeLeft = OpalStriker.AftershotCooldownFrames;
+
                     ChargeSound?.Stop();
                     SoundEngine.PlaySound(FullyCharged ? OpalStriker.ChargedFire : OpalStriker.Fire, Projectile.Center);
 
                     Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * BulletSpeed;
                     if (FullyCharged)
                     {
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), tipPosition, shootVelocity, ModContent.ProjectileType<OpalChargedStrike>(), (int)(Projectile.damage * ChargedDamageMult), Projectile.knockBack * ChargedKBMult, Projectile.owner);
-                        for (int i = 0; i <= 10; i++)
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<OpalChargedStrike>(), (int)(Projectile.damage * ChargedDamageMult), Projectile.knockBack * ChargedKBMult, Projectile.owner);
+                        for (int i = 0; i <= 35; i++)
                         {
-                            Dust dust = Dust.NewDustPerfect(tipPosition, 162, shootVelocity.RotatedByRandom(MathHelper.ToRadians(20f)) * Main.rand.NextFloat(0.8f, 1.4f), 0, default, Main.rand.NextFloat(1.5f, 2.3f));
+                            Dust dust = Dust.NewDustPerfect(GunTipPosition, ModContent.DustType<SquashDust>(), shootVelocity.RotatedByRandom(MathHelper.ToRadians(25f)) * Main.rand.NextFloat(1.6f, 2.9f), 0, default, Main.rand.NextFloat(1.6f, 2.5f));
                             dust.noGravity = true;
+                            dust.color = Main.rand.NextBool(3) ? Color.Orange : Color.OrangeRed;
+                            dust.fadeIn = 2.5f;
+                            if (Main.rand.NextBool(4))
+                            {
+                                dust.scale = Main.rand.NextFloat(0.8f, 0.95f);
+                                dust.fadeIn = -0.85f;
+                                dust.velocity /= 2;
+                            }
+                        }
+                        OffsetLengthFromArm -= 25f;
+                        Owner.SetScreenshake(5f);
+
+                        for (int i = 0; i < 2; i++)
+                        {
+                            Particle spark2 = new CustomSpark(GunTipPosition, Projectile.velocity * 18, "CalamityMod/Particles/BloomCircle", false, 18, 0.65f, Color.OrangeRed, new Vector2(1.2f, 0.8f), true, true, glowOpacity: 0.9f, shrinkSpeed: 0.6f);
+                            GeneralParticleHandler.SpawnParticle(spark2);
                         }
                     }
                     else
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), tipPosition, shootVelocity, ModContent.ProjectileType<OpalStrike>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-
+                    {
+                        for (int i = 0; i <= 5; i++)
+                        {
+                            Dust dust = Dust.NewDustPerfect(GunTipPosition, ModContent.DustType<SquashDust>(), shootVelocity.RotatedByRandom(MathHelper.ToRadians(25f)) * Main.rand.NextFloat(0.6f, 1.9f), 0, default, Main.rand.NextFloat(1.2f, 2f));
+                            dust.noGravity = true;
+                            dust.color = Main.rand.NextBool(3) ? Color.Orange : Color.OrangeRed;
+                            dust.fadeIn = 1.5f;
+                        }
+                        OffsetLengthFromArm -= 5f;
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<OpalStrike>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                    }
                     Projectile.ai[1] = 1f;
-                    Projectile.netSpam = 0;
-                    Projectile.netUpdate = true;
                 }
             }
             else
             {
-                // While channeled, keep refreshing the projectile lifespan to the amount when attacking
-                Projectile.timeLeft = OpalStriker.AftershotCooldownFrames;
                 CurrentChargingFrames++;
 
                 // Sounds
@@ -102,68 +109,69 @@ namespace CalamityMod.Projectiles.Ranged
                 // Charge-up visuals
                 if (CurrentChargingFrames >= 10)
                 {
-                    if (!FullyCharged)
-                    {
-                        Particle streak = new ManaDrainStreak(Owner, Main.rand.NextFloat(0.06f + (CurrentChargingFrames / 180), 0.08f + (CurrentChargingFrames / 180)), Main.rand.NextVector2CircularEdge(2f, 2f) * Main.rand.NextFloat(0.3f * CurrentChargingFrames, 0.3f * CurrentChargingFrames), 0f, Color.Gold, Color.Orange, 7, tipPosition);
-                        GeneralParticleHandler.SpawnParticle(streak);
-                    }
-
-                    float orbScale = MathHelper.Clamp(CurrentChargingFrames, 0f, OpalStriker.FullChargeFrames);
-                    Particle orb = new GenericBloom(tipPosition, Projectile.velocity, Color.OrangeRed, orbScale / 135f, 2);
-                    GeneralParticleHandler.SpawnParticle(orb);
-                    Particle orb2 = new GenericBloom(tipPosition, Projectile.velocity, Color.Coral, orbScale / 200f, 2);
-                    GeneralParticleHandler.SpawnParticle(orb2);
+                    float orbScale = MathHelper.Clamp(CurrentChargingFrames, 0f, OpalStriker.FullChargeFrames) / 200;
+                    Lighting.AddLight(GunTipPosition, Color.Orange.ToVector3() * orbScale);
                 }
 
                 // Full charge dusts
                 if (CurrentChargingFrames == OpalStriker.FullChargeFrames)
                 {
+                    SoundEngine.PlaySound(OpalStriker.Fire with { Pitch = 0.6f, Volume = 0.7f }, Projectile.Center);
                     for (int i = 0; i < 36; i++)
                     {
-                        Dust chargefull = Dust.NewDustPerfect(tipPosition, 162);
-                        chargefull.velocity = (MathHelper.TwoPi * i / 36f).ToRotationVector2() * 13f + Owner.velocity;
-                        chargefull.scale = Main.rand.NextFloat(2f, 2.5f);
+                        Dust chargefull = Dust.NewDustPerfect(GunTipPosition, ModContent.DustType<SquashDust>());
+                        chargefull.velocity = (MathHelper.TwoPi * i / 36f).ToRotationVector2() * Main.rand.NextFloat(7, 8.5f);
+                        chargefull.scale = Main.rand.NextFloat(1f, 1.5f);
                         chargefull.noGravity = true;
+                        chargefull.color = Main.rand.NextBool(3) ? Color.Orange : Color.OrangeRed;
+                        chargefull.fadeIn = 1;
                     }
+
                 }
             }
-
-            UpdateProjectileHeldVariables(armPosition);
-            ManipulatePlayerVariables();
+            time++;
         }
 
-        private void UpdateProjectileHeldVariables(Vector2 armPosition)
-        {
-            if (Main.myPlayer == Projectile.owner)
-            {
-                float interpolant = Utils.GetLerpValue(5f, 35f, Projectile.Distance(Main.MouseWorld), true);
-                Vector2 oldVelocity = Projectile.velocity;
-                Projectile.velocity = Vector2.Lerp(Projectile.velocity, Projectile.SafeDirectionTo(Main.MouseWorld), interpolant);
-            }
-            Projectile.Center = armPosition + Projectile.velocity * 15 + new Vector2(0, 3);
-            Projectile.rotation = Projectile.velocity.ToRotation() + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);
-            Projectile.spriteDirection = Projectile.direction;
-
-            // Rumble (only while channeling)
-            float rumble = MathHelper.Clamp(CurrentChargingFrames, 0f, OpalStriker.FullChargeFrames);
-            if (OwnerCanShoot)
-                Projectile.position += Main.rand.NextVector2Circular(rumble / 30f, rumble / 30f);
-        }
-
-        private void ManipulatePlayerVariables()
-        {
-            Owner.ChangeDir(Projectile.direction);
-            Owner.heldProj = Projectile.whoAmI;
-            Owner.itemTime = 2;
-            Owner.itemAnimation = 2;
-            Owner.itemRotation = (Projectile.velocity * Projectile.direction).ToRotation();
-        }
         public override void OnKill(int timeLeft)
         {
             if (SoundEngine.TryGetActiveSound(OpalChargeSlot, out var ChargeSound))
                 ChargeSound?.Stop();
         }
 
-        public override bool? CanDamage() => false;
+        public override bool PreDraw(ref Color lightColor)
+        {
+            if (time < 2)
+                return false;
+            Texture2D texture = TextureAssets.Projectile[Type].Value;
+            Vector2 drawPosition = Projectile.Center - Main.screenPosition;
+            float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);
+            Vector2 rotationPoint = texture.Size() * 0.5f;
+            SpriteEffects flipSprite = (Projectile.spriteDirection * Owner.gravDir == -1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            float chargeScale = KeepRefreshingLifetime ? Utils.GetLerpValue(0, OpalStriker.FullChargeFrames, CurrentChargingFrames, true) : 0;
+
+            if (!Owner.CantUseHoldout())
+            {
+                float rumble = MathHelper.Clamp(CurrentChargingFrames, 0f, OpalStriker.FullChargeFrames);
+                drawPosition += Main.rand.NextVector2Circular(rumble / 30f, rumble / 30f);
+            }
+
+            float sine = (float)Math.Sin(time * 0.25f / MathHelper.Pi);
+            for (int i = 0; i < 10; i++)
+            {
+                Vector2 drawOffset = (MathHelper.TwoPi * i / 10f).ToRotationVector2() * (3f + sine * 0.3f);
+                Main.EntitySpriteDraw(texture, drawPosition + drawOffset * chargeScale, null, Color.OrangeRed with { A = 0 } * Math.Min(chargeScale, 1) * 0.4f, drawRotation, rotationPoint, Projectile.scale, flipSprite, 0);
+            }
+
+            Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(lightColor), drawRotation, rotationPoint, Projectile.scale * Owner.gravDir, flipSprite);
+
+            Asset<Texture2D> tex2 = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
+
+            Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(lightColor), drawRotation, rotationPoint, Projectile.scale * Owner.gravDir, flipSprite);
+
+            for (int i = 0; i < 3; i++)
+                Main.EntitySpriteDraw(tex2.Value, GunTipPosition - Main.screenPosition, null, Color.Lerp(FullyCharged ? Color.OrangeRed : Color.Orange, Color.White, i * 0.25f) with { A = 0 } * 0.8f, Main.rand.NextFloat(-5, 5), tex2.Size() * 0.5f, new Vector2(1.35f, 1f) * Projectile.scale * chargeScale * (1 - 0.27f * i) * 0.3f * ((chargeScale >= 1 && CurrentChargingFrames <= OpalStriker.FullChargeFrames + 3) ? 1.75f : FullyCharged ? 1.4f : 1), SpriteEffects.None, 0);
+
+            return false;
+        }
     }
 }

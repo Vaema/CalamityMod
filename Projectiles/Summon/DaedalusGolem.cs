@@ -1,12 +1,12 @@
-﻿using CalamityMod.Buffs.Summon;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.IO;
+using CalamityMod.Buffs.Summon;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.WorldBuilding;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -25,9 +25,10 @@ namespace CalamityMod.Projectiles.Summon
         public ref float StuckJumpSpeed => ref Projectile.ai[1];
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 18;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 18;
+            Main.projPet[Type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -59,7 +60,7 @@ namespace CalamityMod.Projectiles.Summon
         #region AI
         public override void AI()
         {
-            Main.projFrames[Projectile.type] = 16;
+            Main.projFrames[Type] = 16;
             bool isCorrectProjectile = Projectile.type == ModContent.ProjectileType<DaedalusGolem>();
             Owner.AddBuff(ModContent.BuffType<DaedalusGolemBuff>(), 3600);
             if (isCorrectProjectile)
@@ -131,7 +132,7 @@ namespace CalamityMod.Projectiles.Summon
                     if (AttackTimer >= 45 && AttackTimer < ChargedLaserAttackTime / 2 && !Main.dedServ)
                     {
                         Vector2 drawOffset = Main.rand.NextVector2CircularEdge(12f, 12f);
-                        Dust light = Dust.NewDustPerfect(ArmPosition + drawOffset, 261);
+                        Dust light = Dust.NewDustPerfect(ArmPosition + drawOffset, DustID.AncientLight);
                         light.velocity = drawOffset.SafeNormalize(Vector2.Zero) * -2.5f;
                         light.color = Color.Lerp(Color.HotPink, Color.LightPink, Main.rand.NextFloat());
                         light.scale = Main.rand.NextFloat(1.2f, 1.45f);
@@ -221,21 +222,19 @@ namespace CalamityMod.Projectiles.Summon
                     !Collision.CanHitLine(Projectile.position, Projectile.width, Projectile.height, Owner.position, Owner.width, Owner.height))
                 {
                     Projectile.velocity.Y = -12f - StuckJumpSpeed;
-                    Projectile.netSpam -= 10;
                     StuckJumpSpeed += 3.5f;
                     StuckJumpSpeed = Utils.Clamp(StuckJumpSpeed, 0f, 14f);
 
                     StuckWalkThroughWallsTimer += 10f;
 
-                    Projectile.netUpdate = true;
+                    Projectile.ForceNetUpdate();
                 }
                 else if (tilesSearchedAhead > 0)
                 {
                     Projectile.velocity.X = 7f;
 
                     Projectile.velocity.Y = -(5f + tilesSearchedAhead * 2f);
-                    Projectile.netSpam -= 10;
-                    Projectile.netUpdate = true;
+                    Projectile.ForceNetUpdate();
                 }
                 else
                 {
@@ -299,7 +298,5 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.frame = 0;
             }
         }
-
-        public override bool? CanDamage() => false;
     }
 }

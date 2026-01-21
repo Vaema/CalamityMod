@@ -3,13 +3,13 @@ using CalamityMod.Projectiles.BaseProjectiles;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
-using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee.Spears
 {
     public class YateveoBloomSpear : BaseSpearProjectile
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<YateveoBloom>();
+
         public override void SetDefaults()
         {
             Projectile.width = Projectile.height = 40;
@@ -21,11 +21,13 @@ namespace CalamityMod.Projectiles.Melee.Spears
             Projectile.ignoreWater = true;
             Projectile.penetrate = -1;
             Projectile.ownerHitCheck = true;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override float InitialSpeed => 3f;
         public override float ReelbackSpeed => 2.4f;
-        public override float ForwardSpeed => 0.95f;
+        public override float ForwardSpeed => 0.8f;
         public override void ExtraBehavior()
         {
             if (Main.rand.NextBool(3))

@@ -1,9 +1,10 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -12,9 +13,10 @@ namespace CalamityMod.Projectiles.Summon
         public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
+            ProjectileID.Sets.MinionShot[Type] = true;
         }
 
         public override void SetDefaults()
@@ -38,8 +40,8 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.ai[1]++;
             if (Projectile.ai[0] >= 30f)
             {
-                Vector2 dspeed = Projectile.velocity * Main.rand.NextFloat(0.3f,0.6f);
-                int dust = Dust.NewDust(Projectile.Center, 1, 1, 67, dspeed.X, dspeed.Y, 50, default, 1.2f);
+                Vector2 dspeed = Projectile.velocity * Main.rand.NextFloat(0.3f, 0.6f);
+                int dust = Dust.NewDust(Projectile.Center, 1, 1, DustID.IceRod, dspeed.X, dspeed.Y, 50, default, 1.2f);
                 Main.dust[dust].noGravity = true;
                 Projectile.ai[0] = 0f;
             }
@@ -80,18 +82,14 @@ namespace CalamityMod.Projectiles.Summon
             }
             if (!hasHomingTarget)
             {
-                for (int i = 0; i < Main.npc.Length; ++i)
+                foreach (NPC npc in Main.ActiveNPCs)
                 {
-                    NPC npc = Main.npc[i];
-                    if (npc == null || !npc.active)
-                        continue;
-
                     if (npc.CanBeChasedBy(Projectile, false))
                     {
                         float dist = (Projectile.Center - npc.Center).Length();
                         if (dist < maxHomingRange)
                         {
-                            targetIdx = i;
+                            targetIdx = npc.whoAmI;
                             maxHomingRange = dist;
                             hasHomingTarget = true;
                         }
@@ -115,21 +113,21 @@ namespace CalamityMod.Projectiles.Summon
             for (int i = 0; i < 10; i++)
             {
                 Vector2 dspeed = new Vector2(Main.rand.NextFloat(-7f, 7f), Main.rand.NextFloat(-7f, 7f));
-                int dust = Dust.NewDust(Projectile.Center, 1, 1, 67, dspeed.X, dspeed.Y, 50, default, 1.2f);
+                int dust = Dust.NewDust(Projectile.Center, 1, 1, DustID.IceRod, dspeed.X, dspeed.Y, 50, default, 1.2f);
                 Main.dust[dust].noGravity = true;
             }
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<GlacialState>(), 60);
-            target.AddBuff(BuffID.Frostburn, 180);
+            target.AddBuff(ModContent.BuffType<Voidfrost>(), 180);
         }
     }
 }

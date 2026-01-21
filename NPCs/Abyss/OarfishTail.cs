@@ -7,6 +7,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Abyss
 {
+    [LongDistanceNetSync(SyncWith = typeof(OarfishHead))]
     public class OarfishTail : ModNPC
     {
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.OarfishHead.DisplayName");
@@ -49,14 +50,17 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void AI()
         {
+            // Avoid cheap bullshit
+            NPC.damage = 0;
+
             if (NPC.ai[2] > 0f)
                 NPC.realLife = (int)NPC.ai[2];
 
             // Check if other segments are still alive, if not, die
             bool shouldDespawn = true;
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC n in Main.ActiveNPCs)
             {
-                if (Main.npc[i].active && Main.npc[i].type == ModContent.NPCType<OarfishHead>())
+                if (n.type == ModContent.NPCType<OarfishHead>())
                 {
                     shouldDespawn = false;
                     break;
@@ -101,7 +105,8 @@ namespace CalamityMod.NPCs.Abyss
                     segmentPosition = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)NPC.height * 0.5f);
                     targetXDirection = Main.npc[(int)NPC.ai[1]].position.X + (float)(Main.npc[(int)NPC.ai[1]].width / 2) - segmentPosition.X;
                     targetYDirection = Main.npc[(int)NPC.ai[1]].position.Y + (float)(Main.npc[(int)NPC.ai[1]].height / 2) - segmentPosition.Y;
-                } catch
+                }
+                catch
                 {
                 }
                 NPC.rotation = (float)System.Math.Atan2((double)targetYDirection, (double)targetXDirection) + 1.57f;
@@ -138,7 +143,7 @@ namespace CalamityMod.NPCs.Abyss
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("OarfishTail").Type, 1f);
             }
         }

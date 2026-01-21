@@ -1,9 +1,10 @@
-﻿using CalamityMod.Items.Weapons.Ranged;
+﻿
+using CalamityMod.Items.Weapons.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -16,6 +17,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.height = 20;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Ranged;
+            Projectile.extraUpdates = 1;
             Projectile.timeLeft = 300;
         }
 

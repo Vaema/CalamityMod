@@ -1,20 +1,24 @@
 ﻿using CalamityMod.Items.Placeables.FurnitureExo;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.FurnitureExo
 {
     public class ExoCandelabraTile : ModTile
     {
+        public Asset<Texture2D> FlameTexture;
+
         public override void SetStaticDefaults() => this.SetUpCandelabra(ModContent.ItemType<ExoCandelabra>(), true);
 
         public override bool CanExplode(int i, int j) => false;
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 107, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.TerraBlade, 0f, 0f, 1, new Color(255, 255, 255), 1f);
             return false;
         }
 
@@ -41,12 +45,13 @@ namespace CalamityMod.Tiles.FurnitureExo
 
         public override void HitWire(int i, int j)
         {
-            CalamityUtils.LightHitWire(Type, i, j, 2, 2);
+            FurnitureCommon.LightHitWire(Type, i, j, 2, 2);
         }
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            CalamityUtils.DrawFlameEffect(ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureExo/ExoCandelabraTileFlame").Value, i, j);
+            FlameTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureExo/ExoCandelabraTileFlame");
+            CalamityUtils.DrawFlameEffect(FlameTexture.Value, i, j);
         }
     }
 }

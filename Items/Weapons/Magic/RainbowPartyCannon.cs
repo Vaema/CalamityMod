@@ -1,10 +1,10 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -28,11 +28,11 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 52;
             Item.height = 30;
-            Item.damage = 225;
+            Item.damage = 170;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 25;
             Item.crit += 4;
-            Item.useTime = Item.useAnimation = 24;
+            Item.useAnimation = Item.useTime = 24;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 3.5f;
@@ -57,13 +57,12 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.ConfettiCannon).
                 AddIngredient<CosmicRainbow>().
                 AddIngredient(ItemID.Celeb2).
-                AddIngredient(ItemID.FlaskofParty, 5).
+                AddIngredient(ItemID.ConfettiCannon).
+                AddIngredient<ShadowspecBar>(5).
                 AddIngredient(ItemID.SoulofLight, 25).
                 AddIngredient(ItemID.Confetti, 50).
-                AddIngredient<ShadowspecBar>(5).
                 AddTile<DraedonsForge>().
                 Register();
         }

@@ -1,10 +1,8 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.CalPlayer;
+﻿using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Typeless;
-using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -12,15 +10,16 @@ namespace CalamityMod.Items.Accessories
     public class VoidofExtinction : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
-        public const int FireProjectiles = 2;
-        public const float FireAngleSpread = 120;
-        public int FireCountdown = 0;
+
+        public static int CritBoost = 13;
+        public static int VoidExploDamage = 40;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(CritBoost, Abaddon.BrimstoneFlamesReduction.ToPercent());
 
         public override void SetDefaults()
         {
             Item.width = 26;
             Item.height = 26;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.accessory = true;
         }
@@ -29,8 +28,8 @@ namespace CalamityMod.Items.Accessories
         {
             CreateRecipe().
                 AddIngredient<Abaddon>().
-                AddIngredient<CoreofHavoc>().
                 AddIngredient<ScoriaBar>(3).
+                AddIngredient<CoreofCalamity>().
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }
@@ -40,7 +39,7 @@ namespace CalamityMod.Items.Accessories
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.voidOfExtinction = true;
             modPlayer.abaddon = true;
-            player.GetCritChance<GenericDamageClass>() += 13;
+            player.GetCritChance<GenericDamageClass>() += CritBoost;
 
         }
     }

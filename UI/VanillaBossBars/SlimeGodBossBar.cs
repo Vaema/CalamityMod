@@ -1,9 +1,8 @@
-﻿using CalamityMod.NPCs.SlimeGod;
+﻿using System.Collections.Generic;
+using CalamityMod.NPCs.SlimeGod;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.UI.BigProgressBar;
@@ -30,8 +29,8 @@ namespace CalamityMod.UI.VanillaBossBars
         public override bool? ModifyInfo(ref BigProgressBarInfo info, ref float life, ref float lifeMax, ref float shield, ref float shieldMax)
         {
             NPC target = Main.npc[info.npcIndexToAimAt];
-			if (!target.active)
-				return false;
+            if (!target.active)
+                return false;
 
             life = 0f;
             lifeMax = 0f;
@@ -44,14 +43,13 @@ namespace CalamityMod.UI.VanillaBossBars
             lifeMax += FalseNPCSegment.lifeMax;
 
             // Determine the current health of each slime
-            for (int i = 0; i < Main.maxNPCs; i++)
-			{
-				NPC part = Main.npc[i];
-				if (part.active && SlimeGodSlimes.Contains(part.type))
-				{
-					life += part.life;
-				}
-			}
+            foreach (NPC part in Main.ActiveNPCs)
+            {
+                if (SlimeGodSlimes.Contains(part.type))
+                {
+                    life += part.life;
+                }
+            }
             return true;
         }
     }

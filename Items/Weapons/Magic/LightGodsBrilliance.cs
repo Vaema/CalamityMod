@@ -19,12 +19,12 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.damage = 111;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 6;
-            Item.useTime = Item.useAnimation = 4;
+            Item.useAnimation = Item.useTime = 6;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 3f;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.Calamity().donorItem = true;
             Item.UseSound = SoundID.Item9;
             Item.autoReuse = true;
@@ -46,13 +46,13 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<ShadecrystalTome>().
+                AddIngredient<ShadecrystalBarrage>().
                 AddIngredient<AbyssalTome>().
                 AddIngredient(ItemID.HolyWater, 10).
-                AddIngredient(ItemID.SoulofLight, 30).
-                AddIngredient<EffulgentFeather>(5).
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<NightmareFuel>(20).
+                AddIngredient<EffulgentFeather>(5).
+                AddIngredient(ItemID.SoulofLight, 30).
                 AddTile(TileID.Bookcases).
                 Register();
         }

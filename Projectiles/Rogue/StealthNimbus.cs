@@ -11,7 +11,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 6;
+            Main.projFrames[Type] = 6;
         }
 
         public override void SetDefaults()
@@ -26,10 +26,10 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             if (Projectile.ai[0] == 1f)
                 texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/StealthNimbus2").Value;
-            int height = texture.Height / Main.projFrames[Projectile.type];
+            int height = texture.Height / Main.projFrames[Type];
             int frameHeight = height * Projectile.frame;
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (Projectile.spriteDirection == -1)
@@ -93,7 +93,7 @@ namespace CalamityMod.Projectiles.Rogue
                         }
                     }
                 }
-                if (projCount > 2)
+                if (projCount >= 5)
                 {
                     Main.projectile[oldestCloud].netUpdate = true;
                     Main.projectile[oldestCloud].ai[1] = 36000f;

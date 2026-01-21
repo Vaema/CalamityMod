@@ -1,9 +1,9 @@
-﻿using CalamityMod.Projectiles.Typeless;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -19,8 +19,6 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.friendly = true;
             Projectile.extraUpdates = 1;
             Projectile.DamageType = RogueDamageClass.Instance;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 40;
         }
 
         public override void AI()
@@ -53,39 +51,26 @@ namespace CalamityMod.Projectiles.Rogue
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.ShadowFlame, 180);
-            if (Projectile.Calamity().stealthStrike && Projectile.penetrate != 1)
-            {
-                SoundEngine.PlaySound(SoundID.Item103, Projectile.Center);
-                int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<ShadowflameExplosionBig>(), (int)(Projectile.damage * 0.33), Projectile.knockBack, Projectile.owner);
-                Main.projectile[proj].timeLeft += 20;
-                Main.projectile[proj].Center = Projectile.Center;
-                Main.projectile[proj].DamageType = RogueDamageClass.Instance;
-            }
+            OnHitEffect(target);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            target.AddBuff(BuffID.ShadowFlame, 180);
-            if (Projectile.Calamity().stealthStrike && Projectile.penetrate != 1)
-            {
-                SoundEngine.PlaySound(SoundID.Item103, Projectile.Center);
-                int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<ShadowflameExplosionBig>(), (int)(Projectile.damage * 0.33), Projectile.knockBack, Projectile.owner);
-                Main.projectile[proj].timeLeft += 20;
-                Main.projectile[proj].Center = Projectile.Center;
-                Main.projectile[proj].DamageType = RogueDamageClass.Instance;
-            }
+            target.AddBuff(ModContent.BuffType<Shadowflame>(), 180);
+            OnHitEffect(target);
         }
 
-        public override void OnKill(int timeLeft)
+        private void OnHitEffect(Entity target)
         {
-            int proj;
             SoundEngine.PlaySound(SoundID.Item103, Projectile.Center);
-            if(Projectile.Calamity().stealthStrike)
-                proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<ShadowflameExplosionBig>(), (int)(Projectile.damage * 0.33), Projectile.knockBack, Projectile.owner);
-            else
-                proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<ShadowflameExplosion>(), (int)(Projectile.damage * 0.33), Projectile.knockBack, Projectile.owner);
-            Main.projectile[proj].Center = Projectile.Center;
-            Main.projectile[proj].DamageType = RogueDamageClass.Instance;
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BurningStrifeExplosion>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner);
+            if (Projectile.Calamity().stealthStrike)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Main.rand.NextVector2CircularEdge(10f, 10f), ModContent.ProjectileType<BurningTentacle>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner, Main.rand.NextFloat(-0.1f, 0.1f), Main.rand.NextFloat(-0.1f, 0.1f));
+                }
+            }
         }
     }
 }

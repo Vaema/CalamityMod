@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
@@ -14,7 +13,7 @@ namespace CalamityMod.Projectiles.Rogue
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 9;
+            Main.projFrames[Type] = 9;
         }
         public override void SetDefaults()
         {
@@ -48,7 +47,7 @@ namespace CalamityMod.Projectiles.Rogue
                 if (Projectile.ai[1] == 3)
                 {
                     Projectile.friendly = true;
-                    SoundEngine.PlaySound(FinalDawn.UseSound, Projectile.position);
+                    SoundEngine.PlaySound(TheFinalDawn.UseSound, Projectile.position);
 
                     if (Projectile.owner == Main.myPlayer)
                     {
@@ -72,9 +71,9 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D scytheTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D scytheTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D scytheGlowTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/FinalDawnHorizontalSlash_Glow").Value;
-            int height = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
+            int height = Terraria.GameContent.TextureAssets.Projectile[Type].Value.Height / Main.projFrames[Type];
             int yStart = height * Projectile.frame;
             Main.spriteBatch.Draw(scytheTexture,
                                   Projectile.Center - Main.screenPosition + Projectile.gfxOffY * Vector2.UnitY,

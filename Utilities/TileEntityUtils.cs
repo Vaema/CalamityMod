@@ -1,14 +1,13 @@
-﻿using CalamityMod.Items.DraedonMisc;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Pets;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI.Chat;
-using Terraria.Audio;
-using Terraria.GameContent;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod
@@ -77,7 +76,7 @@ namespace CalamityMod
             // This check is done twice because the draw order matters. We want to draw the background icon before any text.
             if (item.stack > 0)
             {
-                if (item.type == ModContent.ItemType<BloodSample>())
+                if (item.type == ItemType<BloodyVein>())
                 {
                     slotBackgroundTex = Request<Texture2D>("CalamityMod/UI/DraedonsArsenal/PowerCellSlot_Blood").Value;
                 }

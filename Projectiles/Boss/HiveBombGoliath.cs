@@ -1,7 +1,8 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.World;
+using CalamityMod.NPCs.PlaguebringerGoliath;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -12,11 +13,12 @@ namespace CalamityMod.Projectiles.Boss
     public class HiveBombGoliath : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Boss";
+
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -45,51 +47,58 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.frameCounter = 0;
             }
             if (Projectile.frame > 3)
-            {
                 Projectile.frame = 0;
-            }
+
             if (Math.Abs(Projectile.velocity.X) >= 3f || Math.Abs(Projectile.velocity.Y) >= 3f)
             {
                 float randDustXVel = 0f;
                 float randDustYVel = 0f;
-                if (Main.rand.Next(2) == 1)
+                if (Main.rand.NextBool(2))
                 {
                     randDustXVel = Projectile.velocity.X * 0.5f;
                     randDustYVel = Projectile.velocity.Y * 0.5f;
                 }
-                int bombDust = Dust.NewDust(new Vector2(Projectile.position.X + 3f + randDustXVel, Projectile.position.Y + 3f + randDustYVel) - Projectile.velocity * 0.5f, Projectile.width - 8, Projectile.height - 8, 6, 0f, 0f, 100, default, 0.5f);
+                int bombDust = Dust.NewDust(new Vector2(Projectile.position.X + 3f + randDustXVel, Projectile.position.Y + 3f + randDustYVel) - Projectile.velocity * 0.5f, Projectile.width - 8, Projectile.height - 8, DustID.Torch, 0f, 0f, 100, default, 0.5f);
                 Main.dust[bombDust].scale *= 2f + (float)Main.rand.Next(10) * 0.1f;
                 Main.dust[bombDust].velocity *= 0.2f;
                 Main.dust[bombDust].noGravity = true;
-                bombDust = Dust.NewDust(new Vector2(Projectile.position.X + 3f + randDustXVel, Projectile.position.Y + 3f + randDustYVel) - Projectile.velocity * 0.5f, Projectile.width - 8, Projectile.height - 8, 31, 0f, 0f, 100, default, 0.25f);
+                bombDust = Dust.NewDust(new Vector2(Projectile.position.X + 3f + randDustXVel, Projectile.position.Y + 3f + randDustYVel) - Projectile.velocity * 0.5f, Projectile.width - 8, Projectile.height - 8, DustID.Smoke, 0f, 0f, 100, default, 0.25f);
                 Main.dust[bombDust].fadeIn = 1f + (float)Main.rand.Next(5) * 0.1f;
                 Main.dust[bombDust].velocity *= 0.05f;
             }
             else if (Main.rand.NextBool(4))
             {
-                int smoke = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 31, 0f, 0f, 100, default, 0.5f);
+                int smoke = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Smoke, 0f, 0f, 100, default, 0.5f);
                 Main.dust[smoke].scale = 0.1f + (float)Main.rand.Next(5) * 0.1f;
                 Main.dust[smoke].fadeIn = 1.5f + (float)Main.rand.Next(5) * 0.1f;
                 Main.dust[smoke].noGravity = true;
                 Main.dust[smoke].position = Projectile.Center + new Vector2(0f, (float)(-(float)Projectile.height / 2)).RotatedBy((double)Projectile.rotation, default) * 1.1f;
                 Main.rand.Next(2);
-                smoke = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 6, 0f, 0f, 100, default, 1f);
+                smoke = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 1f);
                 Main.dust[smoke].scale = 1f + (float)Main.rand.Next(5) * 0.1f;
                 Main.dust[smoke].noGravity = true;
                 Main.dust[smoke].position = Projectile.Center + new Vector2(0f, (float)(-(float)Projectile.height / 2 - 6)).RotatedBy((double)Projectile.rotation, default) * 1.1f;
             }
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
+
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
-            return false;
-        }
+            Projectile.DrawBackglow(PlaguebringerGoliath.BackglowColor, 4f);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
 
-        public override Color? GetAlpha(Color lightColor)
-        {
-            return new Color(50, 250, 50, Projectile.alpha);
+            Texture2D glow = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HiveBombGoliathGlow").Value;
+            Vector2 textureArea = new Vector2(glow.Width / 2, glow.Height / Main.projFrames[Type] / 2);
+            Vector2 drawArea = Projectile.Center - Main.screenPosition;
+            drawArea -= new Vector2(glow.Width, glow.Height / Main.projFrames[Type]) / 2f;
+            drawArea += textureArea + new Vector2(0f, Projectile.gfxOffY);
+            Color whiteColor = Color.White;
+            int height = glow.Height / Main.projFrames[Type];
+            int drawStart = height * Projectile.frame;
+            Main.spriteBatch.Draw(glow, drawArea, new Rectangle(0, drawStart, glow.Width, height), whiteColor, Projectile.rotation, textureArea, Projectile.scale, SpriteEffects.None, 0);
+
+            return false;
         }
 
         public override void OnKill(int timeLeft)
@@ -102,7 +111,7 @@ namespace CalamityMod.Projectiles.Boss
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
             for (int i = 0; i < 8; i++)
             {
-                int plagued = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 89, 0f, 0f, 100, default, 2f);
+                int plagued = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GemEmerald, 0f, 0f, 100, default, 2f);
                 Main.dust[plagued].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -112,14 +121,14 @@ namespace CalamityMod.Projectiles.Boss
             }
             for (int j = 0; j < 10; j++)
             {
-                int plagued2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 89, 0f, 0f, 100, default, 3f);
+                int plagued2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GemEmerald, 0f, 0f, 100, default, 3f);
                 Main.dust[plagued2].noGravity = true;
                 Main.dust[plagued2].velocity *= 5f;
-                plagued2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 89, 0f, 0f, 100, default, 2f);
+                plagued2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GemEmerald, 0f, 0f, 100, default, 2f);
                 Main.dust[plagued2].velocity *= 2f;
             }
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 Vector2 goreSource = Projectile.Center;
                 int goreAmt = 3;
@@ -165,7 +174,7 @@ namespace CalamityMod.Projectiles.Boss
 
             if (Main.netMode != NetmodeID.MultiplayerClient && Main.zenithWorld)
             {
-                Vector2 valueBoom = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
+                Vector2 valueBoom = Projectile.Center;
                 float spreadBoom = 15f * 0.0174f;
                 double startAngleBoom = Math.Atan2(Projectile.velocity.X, Projectile.velocity.Y) - spreadBoom / 2;
                 double deltaAngleBoom = spreadBoom / 8f;
@@ -190,7 +199,7 @@ namespace CalamityMod.Projectiles.Boss
         {
             if (info.Damage <= 0)
                 return;
-            
+
             if (Main.zenithWorld) // it is the plague, you get very sick.
             {
                 target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 240, true);

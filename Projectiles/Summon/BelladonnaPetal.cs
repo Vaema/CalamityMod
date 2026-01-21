@@ -10,6 +10,7 @@ namespace CalamityMod.Projectiles.Summon
     public class BelladonnaPetal : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Summon";
+        public override string Texture => "Terraria/Images/Projectile_276";
         public Player Owner => Main.player[Projectile.owner];
 
         // The timer for the AI to do it's actions.
@@ -23,9 +24,11 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.MinionShot[Type] = true;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 5;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
+            Main.projFrames[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -53,6 +56,14 @@ namespace CalamityMod.Projectiles.Summon
 
             // Gives it a jungl-y green color.
             Lighting.AddLight(Projectile.Center, 0.5f, 1f, 0.3f);
+
+            // Animation
+            Projectile.frameCounter++;
+            if (Projectile.frameCounter >= 8)
+            {
+                Projectile.frameCounter = 0;
+                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Type];
+            }
 
             Projectile.netUpdate = true;
         }
@@ -149,7 +160,7 @@ namespace CalamityMod.Projectiles.Summon
         public override bool PreDraw(ref Color lightColor)
         {
             if (CheckForFiring == 1f)
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return true;
         }
 

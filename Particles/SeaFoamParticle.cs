@@ -38,7 +38,7 @@ namespace CalamityMod.Particles
             Scale = BaseScale + Opacity / 255f;
             if (Opacity <= 0)
                 Kill();
-            Color = Color.Lerp(ColorStart, ColorFade, MathHelper.Clamp((float)((255 -Opacity) - 100) / 80, 0f, 1f)) * (Opacity / 255f);
+            Color = Color.Lerp(ColorStart, ColorFade, MathHelper.Clamp((float)((255 - Opacity) - 100) / 80, 0f, 1f)) * (Opacity / 255f);
         }
     }
 }

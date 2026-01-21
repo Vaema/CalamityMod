@@ -1,11 +1,11 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Items.Weapons.Typeless;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -13,7 +13,9 @@ namespace CalamityMod.Items.Weapons.Ranged
 {
     public class AcesHigh : ModItem, ILocalizedModType
     {
+        public int shots = 0;
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+
         public override void SetDefaults()
         {
             Item.width = 48;
@@ -28,8 +30,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.noMelee = true;
             Item.knockBack = 6f;
 
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.Calamity().donorItem = true;
 
             Item.UseSound = SoundID.Item36;
@@ -37,36 +39,41 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 24f;
             Item.shoot = ModContent.ProjectileType<CardHeart>();
             Item.useAmmo = AmmoID.Bullet;
+            Item.consumeAmmoOnLastShotOnly = true;
         }
 
-        public override Vector2? HoldoutOffset()
-        {
-            return new Vector2(-5, 0);
-        }
+        public override Vector2? HoldoutOffset() => new Vector2(-5, 0);
 
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient(ItemID.Revolver).
                 AddIngredient<ClaretCannon>().
-                AddIngredient<FantasyTalisman>(52).
+                AddIngredient<FantasyTalisman>().
                 AddIngredient<AuricBar>(5).
                 AddTile<CosmicAnvil>().
                 Register();
         }
 
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
-            int card = Utils.SelectRandom(Main.rand, new int[]
+            shots++;
+            switch (shots)
             {
-                ModContent.ProjectileType<CardHeart>(),
-                ModContent.ProjectileType<CardSpade>(),
-                ModContent.ProjectileType<CardDiamond>(),
-                ModContent.ProjectileType<CardClub>()
-            });
-
-            Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, card, damage, knockback, player.whoAmI, 0f, 0f);
-            return false;
+                case 4:
+                    type = ModContent.ProjectileType<CardSpade>();
+                    shots = 0;
+                    break;
+                case 3:
+                    type = ModContent.ProjectileType<CardDiamond>();
+                    break;
+                case 2:
+                    type = ModContent.ProjectileType<CardClub>();
+                    break;
+                default:
+                    type = ModContent.ProjectileType<CardHeart>();
+                    break;
+            }
         }
     }
 }

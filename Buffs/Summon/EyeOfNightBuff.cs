@@ -1,32 +1,12 @@
-using CalamityMod.CalPlayer;
 using CalamityMod.Projectiles.Summon;
-using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.Summon
 {
-    public class EyeOfNightBuff : ModBuff
+    public class EyeOfNightBuff : BaseSummonBuff
     {
-        public override void SetStaticDefaults()
-        {
-            Main.buffNoTimeDisplay[Type] = true;
-            Main.buffNoSave[Type] = true;
-            //Main.persistentBuff[Type] = true;
-        }
+        protected override int MinionProjectileType => ModContent.ProjectileType<EyeOfNightSummon>();
 
-        public override void Update(Player player, ref int buffIndex)
-        {
-            CalamityPlayer modPlayer = player.Calamity();
-            if (player.ownedProjectileCounts[ModContent.ProjectileType<EyeOfNightSummon>()] > 0)
-                modPlayer.eyeOfNight = true;
-
-            if (modPlayer.eyeOfNight)
-                player.buffTime[buffIndex] = 18000;
-            else
-            {
-                player.DelBuff(buffIndex);
-                buffIndex--;
-            }
-        }
+        protected override ref bool MinionBool => ref BuffModdedOwner.eyeOfNight;
     }
 }

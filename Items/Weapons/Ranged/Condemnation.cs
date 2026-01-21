@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Ranged;
+﻿using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -15,7 +16,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
         public override void SetDefaults()
@@ -24,18 +25,17 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.height = 42;
             Item.damage = 2130;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = Item.useAnimation = 22;
+            Item.useAnimation = Item.useTime = 22;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.channel = true;
             Item.noMelee = true;
             Item.knockBack = 5f;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<CondemnationArrow>();
             Item.shootSpeed = 16f;
             Item.useAmmo = AmmoID.Arrow;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-50f, 0f);
@@ -44,10 +44,15 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void HoldItem(Player player)
         {
-            if (Main.myPlayer == player.whoAmI)
-                player.Calamity().rightClickListener = true;
+            var calPlayer = player.Calamity();
 
-            if (player.Calamity().mouseRight && player.ownedProjectileCounts[ModContent.ProjectileType<CondemnationHoldout>()] <= 0)
+            if (Main.myPlayer == player.whoAmI)
+            {
+                calPlayer.rightClickListener = true;
+                calPlayer.mouseRotationListener = true;
+            }
+
+            if (calPlayer.mouseRight && player.ownedProjectileCounts[ModContent.ProjectileType<CondemnationHoldout>()] <= 0)
             {
                 Item.noUseGraphic = false;
             }

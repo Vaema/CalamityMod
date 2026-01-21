@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -13,38 +13,36 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 22;
             Item.height = 28;
-            Item.damage = 15;
+            Item.damage = 31;
+            Item.DamageType = RogueDamageClass.Instance;
+            Item.useAnimation = Item.useTime = 25;
+            Item.knockBack = 5.75f;
+            Item.shootSpeed = 4f;
+
             Item.noMelee = true;
             Item.useTurn = true;
             Item.noUseGraphic = true;
-            Item.useAnimation = 18;
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.useTime = 18;
-            Item.knockBack = 5.75f;
+
             Item.UseSound = SoundID.Item20;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.shoot = ModContent.ProjectileType<MeteorFistProj>();
-            Item.shootSpeed = 5f;
-            Item.DamageType = RogueDamageClass.Instance;
         }
 
-        public override float StealthDamageMultiplier => 3.15f;
+        public override void HoldItem(Player player) => player.Calamity().mouseWorldListener = true;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (player.Calamity().StealthStrikeAvailable())
             {
-                int proj = Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<MeteorFistStealth>(), damage, knockback, player.whoAmI, 0f, 4f);
+                int proj = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
                 if (proj.WithinBounds(Main.maxProjectiles))
                     Main.projectile[proj].Calamity().stealthStrike = true;
+                return false;
             }
-            else
-            {
-                Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<MeteorFistProj>(), damage, knockback, player.whoAmI, 0f, 4f);
-            }
-            return false;
+            return true;
         }
 
         public override void AddRecipes()

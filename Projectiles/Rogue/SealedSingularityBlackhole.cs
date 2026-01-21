@@ -1,4 +1,4 @@
-using CalamityMod.NPCs;
+﻿using CalamityMod.NPCs;
 using CalamityMod.NPCs.NormalNPCs;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -12,7 +12,7 @@ namespace CalamityMod.Projectiles.Rogue
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 7;
+            Main.projFrames[Type] = 7;
         }
 
         public override void SetDefaults()
@@ -29,7 +29,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor);
             return false;
         }
 
@@ -40,7 +40,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 Projectile.frame++;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.frame = 0;
             }

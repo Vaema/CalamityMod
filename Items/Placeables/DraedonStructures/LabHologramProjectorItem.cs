@@ -1,4 +1,4 @@
-using CalamityMod.Items.DraedonMisc;
+﻿using CalamityMod.Items.DraedonMisc;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.DraedonStructures;
@@ -13,18 +13,9 @@ namespace CalamityMod.Items.Placeables.DraedonStructures
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.width = 22;
-            Item.height = 32;
-            Item.maxStack = 9999;
-            Item.useTurn = true;
-            Item.autoReuse = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.consumable = true;
-            Item.value = Item.buyPrice(gold: 5);
+            Item.DefaultToPlaceableTile(ModContent.TileType<LabHologramProjector>());
+            Item.value = Item.sellPrice(silver: 5);
             Item.rare = ModContent.RarityType<DarkOrange>();
-            Item.createTile = ModContent.TileType<LabHologramProjector>();
         }
 
         public override void AddRecipes()

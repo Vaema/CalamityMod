@@ -1,4 +1,5 @@
-﻿using CalamityMod.Particles;
+﻿using CalamityMod.Graphics.Primitives;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -54,11 +55,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             // Multiplayer syncing every second.
             if (Projectile.timeLeft % 60 == 0)
-            {
-                Projectile.netUpdate = true;
-                if (Projectile.netSpam >= 10)
-                    Projectile.netSpam = 9;
-            }
+                Projectile.ForceNetUpdate(false);
         }
 
         public override void OnSpawn(IEntitySource source)
@@ -165,22 +162,20 @@ namespace CalamityMod.Projectiles.Ranged
             }
         }
 
-        public static float TrailWidthFunction(float completionRatio) => MathHelper.Lerp(20f, 0f, completionRatio);
+        public static float TrailWidthFunction(float completionRatio, Vector2 vertexPos) => MathHelper.Lerp(20f, 0f, completionRatio);
 
-        public Color ColorTrailFunction(float completionRatio) => Color.Lerp(BackTrailColor, FrontTrailColor, completionRatio);
+        public Color ColorTrailFunction(float completionRatio, Vector2 vertexPos) => Color.Lerp(BackTrailColor, FrontTrailColor, completionRatio);
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 position = Projectile.Center - Main.screenPosition;
             float rotation = Projectile.rotation + MathHelper.PiOver2;
             Vector2 origin = texture.Size() * 0.5f;
 
-            PrimitiveTrail trail = new PrimitiveTrail(TrailWidthFunction, ColorTrailFunction, specialShader: GameShaders.Misc["CalamityMod:TrailStreak"]);
             GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SwordSlashTexture"));
-            trail.Draw(Projectile.oldPos, Projectile.Size * 0.5f - Main.screenPosition, 50);
-
-            if (CalamityConfig.Instance.Afterimages)
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(TrailWidthFunction, ColorTrailFunction, (_,_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 50);
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 0; i < 3; i++)
                 {

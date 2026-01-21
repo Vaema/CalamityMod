@@ -1,35 +1,12 @@
-using CalamityMod.CalPlayer;
-using CalamityMod.Projectiles.Typeless;
-using Terraria;
+﻿using CalamityMod.Projectiles.Typeless;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.Summon
 {
-    public class FungalClumpBuff : ModBuff
+    public class FungalClumpBuff : BaseSummonBuff
     {
-        public override void SetStaticDefaults()
-        {
-            Main.buffNoTimeDisplay[Type] = true;
-            Main.buffNoSave[Type] = true;
-            //Main.persistentBuff[Type] = true;
-        }
+        protected override int MinionProjectileType => ModContent.ProjectileType<FungalClumpMinion>();
 
-        public override void Update(Player player, ref int buffIndex)
-        {
-            CalamityPlayer modPlayer = player.Calamity();
-            if (player.ownedProjectileCounts[ModContent.ProjectileType<FungalClumpMinion>()] > 0)
-            {
-                modPlayer.fClump = true;
-            }
-            if (!modPlayer.fClump)
-            {
-                player.DelBuff(buffIndex);
-                buffIndex--;
-            }
-            else
-            {
-                player.buffTime[buffIndex] = 18000;
-            }
-        }
+        protected override ref bool MinionBool => ref BuffModdedOwner.fClump;
     }
 }

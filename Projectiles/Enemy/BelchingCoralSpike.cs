@@ -1,4 +1,4 @@
-using CalamityMod.Dusts;
+﻿using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -10,8 +10,8 @@ namespace CalamityMod.Projectiles.Enemy
         public new string LocalizationCategory => "Projectiles.Enemy";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 2;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 2;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -39,17 +39,17 @@ namespace CalamityMod.Projectiles.Enemy
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
         public override void OnKill(int timeLeft)
         {
             for (int i = 0; i <= 2; i++)
             {
-                int idx = Dust.NewDust(Projectile.position, 8, 8, (int)CalamityDusts.SulfurousSeaAcid, 0, 0, 0, default, 0.75f);
+                int idx = Dust.NewDust(Projectile.position, 8, 8, (int)CalamityDusts.SulphurousSeaAcid, 0, 0, 0, default, 0.75f);
                 Main.dust[idx].noGravity = true;
                 Main.dust[idx].velocity *= 3f;
-                idx = Dust.NewDust(Projectile.position, 8, 8, (int)CalamityDusts.SulfurousSeaAcid, 0, 0, 0, default, 0.75f);
+                idx = Dust.NewDust(Projectile.position, 8, 8, (int)CalamityDusts.SulphurousSeaAcid, 0, 0, 0, default, 0.75f);
                 Main.dust[idx].noGravity = true;
                 Main.dust[idx].velocity *= 3f;
             }

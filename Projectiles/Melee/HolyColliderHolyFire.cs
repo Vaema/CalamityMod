@@ -1,10 +1,12 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
+using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Melee
 {
     public class HolyColliderHolyFire : ModProjectile, ILocalizedModType
@@ -12,29 +14,129 @@ namespace CalamityMod.Projectiles.Melee
         public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/Boss/HolyFire2";
 
+        public bool isLaunched = false;
+        public bool setStats = true;
+        public static int statMax = 8;
+        public int setStatTimer = statMax;
+        public ref float time => ref Projectile.ai[1];
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 26;
-            Projectile.height = 26;
+            Projectile.width = 1;
+            Projectile.height = 1;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.DamageType = DamageClass.Melee;
-            Projectile.penetrate = 1;
+            Projectile.penetrate = -1;
             Projectile.tileCollide = false;
-            Projectile.timeLeft = 90;
+            Projectile.timeLeft = 180;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 10 * Projectile.MaxUpdates;
         }
 
-        public override bool? CanHitNPC(NPC target) => Projectile.timeLeft < 75 && target.CanBeChasedBy(Projectile);
+        public override bool? CanDamage() => ((time > 10 && !isLaunched) || (isLaunched && !setStats)) ? null : false;
 
         public override void AI()
         {
+            Player Owner = Main.player[Projectile.owner];
+            int hitTime = 13; // Time to pass before it can be launched
+
+            if (Projectile.ai[2] == 5 && time >= hitTime && Projectile.ai[0] != 10)
+                isLaunched = true;
+            else
+                Projectile.ai[2] = 0;
+            
+
+            Projectile.scale = Utils.GetLerpValue(0, 40, Projectile.timeLeft, true);
+
+            if (isLaunched)
+            {
+                Projectile.rotation = Projectile.velocity.ToRotation();
+                if (setStats)
+                {
+                    if (setStatTimer == statMax)
+                    {
+                        Projectile.timeLeft = 300;
+                        for (int i = 0; i < 2; i++)
+                        {
+                            SoundStyle sound5 = new("CalamityMod/Sounds/Item/HeliumFlashCoreImpact");
+                            SoundEngine.PlaySound(sound5 with { Volume = 0.55f, Pitch = 0.6f, MaxInstances = 2 }, Projectile.Center);
+                        }
+                        float starAngle = Main.rand.NextFloat(-0.9f, 0.9f);
+                        for (int i = 0; i < 4; i++)
+                        {
+                            Dust chargefull = Dust.NewDustPerfect(Projectile.Center, DustID.FireworksRGB);
+                            Vector2 vel = (MathHelper.TwoPi * i / 4f).ToRotationVector2().RotatedBy(starAngle) * 8f;
+
+                            Particle pulse = new GlowSparkParticle(Projectile.Center, vel, false, 10, 0.08f, Color.Orange, new Vector2(3.2f, 0.9f), true, true, 0.9f);
+                            GeneralParticleHandler.SpawnParticle(pulse);
+                        }
+                    }
+                    if (setStatTimer == 0)
+                    {
+                        SoundStyle fire = new("CalamityMod/Sounds/Custom/Providence/ProvidenceHolyBlastShoot");
+                        SoundEngine.PlaySound(fire with { Volume = 1f, Pitch = 0.4f }, Projectile.Center);
+
+                        Projectile.extraUpdates = 5;
+                        // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
+                        Vector2 vel = (Projectile.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * -12;
+                        Projectile.velocity = vel;
+                        Projectile.penetrate = 1;
+                        // This has reduced damage on spawn so this isn't as high as it seems
+                        Projectile.damage *= 15;
+                        time = 0;
+                        setStats = false;
+                    }
+                    else
+                        setStatTimer -= 2;
+                }
+                else
+                {
+                    if (Main.rand.NextBool())
+                    {
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(80, 80), ModContent.DustType<LightDust>(), (Projectile.velocity * 2) * Main.rand.NextFloat(0.1f, 1f));
+                        dust.noGravity = true;
+                        dust.scale = Main.rand.NextFloat(1.85f, 2.45f);
+                        dust.color = Main.rand.NextBool() ? Color.OrangeRed : Color.Goldenrod;
+                        dust.noLightEmittence = true;
+                    }
+                    if (Main.rand.NextBool())
+                    {
+                        Particle spark = new SparkParticle(Projectile.Center + Main.rand.NextVector2Circular(80, 80), -Projectile.velocity * Main.rand.NextFloat(0.1f, 1f), false, 11, 0.9f, Main.rand.NextBool() ? Color.Goldenrod : Color.Orange);
+                        GeneralParticleHandler.SpawnParticle(spark);
+                    }
+                    else
+                    {
+                        Particle spark = new CustomSpark(Projectile.Center + Main.rand.NextVector2Circular(80, 80), -Projectile.velocity * Main.rand.NextFloat(0.1f, 1f), "CalamityMod/Particles/ProvidenceMarkParticle", false, 27, Main.rand.NextFloat(1.15f, 1.3f), Main.rand.NextBool(4) ? Color.Khaki : Color.Orange, new Vector2(1.3f, 0.5f), true, false, 0, false, false, Main.rand.NextFloat(0.1f, 0.2f));
+                        GeneralParticleHandler.SpawnParticle(spark);
+                    }
+                    
+                }
+            }
+            else
+            {
+                if (Main.rand.NextBool(5))
+                {
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), (new Vector2(0, -7)).RotatedByRandom(0.2) * Main.rand.NextFloat(0.2f, 1f));
+                    dust.noGravity = true;
+                    dust.scale = Main.rand.NextFloat(0.85f, 1.45f) * Projectile.scale;
+                    dust.color = Color.Goldenrod;
+                    dust.noLightEmittence = true;
+                }
+                
+                if (Projectile.velocity.Length() > 8)
+                    Projectile.velocity *= 0.88f;
+                else
+                    Projectile.velocity *= 0.965f;
+            }
+
             Projectile.frameCounter++;
-            if (Projectile.frameCounter > 6)
+            if (Projectile.frameCounter > 4)
             {
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
@@ -42,51 +144,69 @@ namespace CalamityMod.Projectiles.Melee
             if (Projectile.frame > 3)
                 Projectile.frame = 0;
 
-            if (Math.Abs(Projectile.velocity.X) < 7f)
-                Projectile.velocity.X *= 1.05f;
-
-            if (Projectile.timeLeft < 75)
-                CalamityUtils.HomeInOnNPC(Projectile, true, 450f, 12f, 20f);
+            time++;
         }
-
-        public override Color? GetAlpha(Color lightColor)
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, isLaunched ? 100 : 20, targetHitbox);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            return new Color(250, 150, 0, Projectile.alpha);
+            target.AddBuff(ModContent.BuffType<HolyFlames>(), 180);
         }
-
-        public override bool PreDraw(ref Color lightColor)
-        {
-            Texture2D texture2D13 = ModContent.Request<Texture2D>(Texture).Value;
-            int framing = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
-            int y6 = framing * Projectile.frame;
-            Main.spriteBatch.Draw(texture2D13, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture2D13.Width, framing)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture2D13.Width / 2f, (float)framing / 2f), Projectile.scale, SpriteEffects.None, 0);
-            return false;
-        }
-
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item20, Projectile.position);
-            Projectile.position.X = Projectile.position.X + (float)(Projectile.width / 2);
-            Projectile.position.Y = Projectile.position.Y + (float)(Projectile.height / 2);
-            Projectile.width = 150;
-            Projectile.height = 150;
-            Projectile.position.X = Projectile.position.X - (float)(Projectile.width / 2);
-            Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
-            for (int i = 0; i < 5; i++)
+            // boom
+            Player Owner = Main.player[Projectile.owner];
+            if (isLaunched && Projectile.scale > 0.2f)
             {
-                int holy = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 2f);
-                if (Main.rand.NextBool())
+                Owner.SetScreenshake(9f);
+
+                SoundStyle sound = new("CalamityMod/Sounds/Item/HolyColliderProjectileHit");
+                SoundEngine.PlaySound(sound with { Volume = 1f }, Projectile.Center);
+
+                for (int g = 0; g < 3; g++)
                 {
-                    Main.dust[holy].scale = 0.5f;
-                    Main.dust[holy].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
+                    Particle blastRing = new CustomPulse(Projectile.Center, Vector2.Zero, Color.OrangeRed, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 2.8f * (g + 1), 1.7f, 18, true);
+                    GeneralParticleHandler.SpawnParticle(blastRing);
+                    Particle blastRing2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 2.2f * (g + 1), 1.3f, 18, true);
+                    GeneralParticleHandler.SpawnParticle(blastRing2);
                 }
+                for (int i = 0; i < 5; i++)
+                {
+                    Particle orb1 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Lerp(Color.OrangeRed, Color.Orange, i * 0.2f), i == 4 ? "CalamityMod/Particles/ShatteredExplosion" : "CalamityMod/Particles/FlameExplosion", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0, 0.11f + i * 0.05f, 18);
+                    GeneralParticleHandler.SpawnParticle(orb1);
+                }
+                for (int i = 0; i < 25; i++)
+                {
+                    Particle spark = new SparkParticle(Projectile.Center, new Vector2(21, 21).RotatedByRandom(100) * Main.rand.NextFloat(0.4f, 1f), true, 55, 0.85f, Main.rand.NextBool() ? Color.Goldenrod : Color.OrangeRed);
+                    GeneralParticleHandler.SpawnParticle(spark);
+                }
+
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BurningHolyBlast>(), (int)(Projectile.damage * 0.47), Projectile.knockBack, Projectile.owner, 1.8f);
             }
-            for (int j = 0; j < 10; j++)
-            {
-                int holy2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 3f);
-                Main.dust[holy2].noGravity = true;
-                holy2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 2f);
-            }
+        }
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Texture2D bloomTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
+
+            Texture2D smallTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/HolyColliderHolyFire").Value;
+            Texture2D bigTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/HolyColliderHolyFire2").Value;
+
+            Vector2 drawPos = Projectile.Center - Main.screenPosition;
+
+            // The back glow
+            float power = !setStats ? 2.4f : 0.6f;
+            float randSize = Main.rand.NextFloat(0.8f, 1.1f);
+            Main.EntitySpriteDraw(bloomTexture, drawPos, null, Color.Goldenrod with { A = 0 }, Projectile.rotation, bloomTexture.Size() * 0.5f, 0.65f * randSize * power * Projectile.scale, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(bloomTexture, drawPos, null, Color.White with { A = 0 } * 0.65f, Projectile.rotation, bloomTexture.Size() * 0.5f, 0.45f * randSize * power * Projectile.scale, SpriteEffects.None, 0);
+
+            Texture2D usedTex = (!setStats ? bigTexture : smallTexture);
+            Rectangle frame = usedTex.Frame(1, 4, 0, Projectile.frame);
+            Vector2 rotationPoint = frame.Size() * 0.5f;
+            Vector2 drawPosition = Projectile.Center - Main.screenPosition;
+            float drawRotation = Projectile.rotation;
+
+            if (setStatTimer == statMax || !setStats)
+                Main.EntitySpriteDraw(usedTex, drawPosition, frame, Color.White, drawRotation, rotationPoint, Projectile.scale, SpriteEffects.None);
+            return false;
         }
     }
 }

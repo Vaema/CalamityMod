@@ -1,10 +1,14 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using CalamityMod.Dusts;
+using CalamityMod.Enums;
+using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -15,6 +19,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetDefaults()
         {
+            Projectile.localAI[1] = Main.rand.NextFloat(30f);
             Projectile.width = 20;
             Projectile.height = 20;
             Projectile.hostile = true;
@@ -23,6 +28,19 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.alpha = 255;
             Projectile.penetrate = 1;
             Projectile.timeLeft = 200;
+        }
+
+        public override void OnSpawn(IEntitySource source)
+        {
+            if (Projectile.ai[2] == 0)
+            {
+                SoundStyle soundStyle = SoundID.DD2_WitherBeastCrystalImpact;
+                soundStyle.MaxInstances = 10;
+                SoundEngine.PlaySound(soundStyle, Projectile.Center);
+
+                Color col = new Color(54, 209, 54);
+                GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, col, "CalamityMod/Particles/BlastCone", new Vector2(Main.rand.NextFloat(4f, 7f), 1.5f), Vector2.Zero.AngleTo(Projectile.velocity), 1f, 0f, 30));
+            }
         }
 
         public override void AI()
@@ -49,25 +67,28 @@ namespace CalamityMod.Projectiles.Boss
             if (!player.immune && playerDist < 50f && !player.dead && Projectile.position.X < player.position.X + player.width && Projectile.position.X + Projectile.width > player.position.X && Projectile.position.Y < player.position.Y + player.height && Projectile.position.Y + Projectile.height > player.position.Y)
             {
                 int healAmt = (int)Projectile.ai[1];
-                player.HealEffect(healAmt, false);
-                player.statLife += healAmt;
-                if (player.statLife > player.statLifeMax2)
-                {
-                    player.statLife = player.statLifeMax2;
-                }
+                player.HealPlayer(healAmt, HealTextType.Local);
                 NetMessage.SendData(MessageID.SpiritHeal, -1, -1, null, index, healAmt);
                 Projectile.Kill();
             }
+
+            Color col = new Color(54, 209, 54);
+            Particle spark = new GlowSparkParticle(Projectile.Center, -Projectile.velocity * 0.8f, false, 5, 0.06f, col * 0.85f, new Vector2(1, 0.3f), true, false, 1.5f);
+            GeneralParticleHandler.SpawnParticle(spark);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D drawTexture = ModContent.Request<Texture2D>(Texture).Value;
+            float vel = Projectile.velocity.Length() / 8;
+            Projectile.localAI[1] += vel;
+
+            Texture2D drawTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Color brightGreen = new Color(54, 209, 54, 0);
             Vector2 projDirection = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
             Vector2 halfTextureSize = drawTexture.Size() / 2f;
             Color halfBrightGreen = brightGreen * 0.5f;
-            float timeLeftColorScale = Utils.GetLerpValue(15f, 30f, Projectile.timeLeft, clamped: true) * Utils.GetLerpValue(240f, 200f, Projectile.timeLeft, clamped: true) * (1f + 0.2f * (float)Math.Cos(Main.GlobalTimeWrappedHourly % 30f / 0.5f * ((float)Math.PI * 2f) * 3f)) * 0.8f;
+            float timeLeftColorScale = MathHelper.Lerp(0.5f, 1.5f, Math.Abs(MathF.Sin(Projectile.localAI[1] / 10f)));
+            Projectile.rotation += MathHelper.ToRadians(timeLeftColorScale * 2f);
             Vector2 timeLeftDrawEffect = new Vector2(0.5f, 1f) * timeLeftColorScale;
             Vector2 timeLeftDrawEffect2 = new Vector2(0.5f, 1f) * timeLeftColorScale;
             brightGreen *= timeLeftColorScale;
@@ -79,47 +100,40 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.spriteDirection == -1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Main.EntitySpriteDraw(drawTexture, position3, null, brightGreen, (float)Math.PI / 2f, halfTextureSize, timeLeftDrawEffect, spriteEffects, 0);
-            Main.EntitySpriteDraw(drawTexture, position3, null, brightGreen, 0f, halfTextureSize, timeLeftDrawEffect2, spriteEffects, 0);
-            Main.EntitySpriteDraw(drawTexture, position3, null, halfBrightGreen, (float)Math.PI / 2f, halfTextureSize, timeLeftDrawEffect * 0.6f, spriteEffects, 0);
-            Main.EntitySpriteDraw(drawTexture, position3, null, halfBrightGreen, 0f, halfTextureSize, timeLeftDrawEffect2 * 0.6f, spriteEffects, 0);
+            Main.EntitySpriteDraw(drawTexture, position3, null, brightGreen, MathHelper.PiOver2 - Projectile.rotation, halfTextureSize, timeLeftDrawEffect, spriteEffects, 0);
+            Main.EntitySpriteDraw(drawTexture, position3, null, brightGreen, 0f - Projectile.rotation, halfTextureSize, timeLeftDrawEffect2, spriteEffects, 0);
+            Main.EntitySpriteDraw(drawTexture, position3, null, halfBrightGreen, MathHelper.PiOver2 - Projectile.rotation, halfTextureSize, timeLeftDrawEffect * 0.6f, spriteEffects, 0);
+            Main.EntitySpriteDraw(drawTexture, position3, null, halfBrightGreen, 0f - Projectile.rotation, halfTextureSize, timeLeftDrawEffect2 * 0.6f, spriteEffects, 0);
 
-            Main.EntitySpriteDraw(drawTexture, position3, null, brightGreen, MathHelper.PiOver4, halfTextureSize, timeLeftDrawEffect * 0.6f, spriteEffects, 0);
-            Main.EntitySpriteDraw(drawTexture, position3, null, brightGreen, MathHelper.PiOver4 * 3f, halfTextureSize, timeLeftDrawEffect2 * 0.6f, spriteEffects, 0);
-            Main.EntitySpriteDraw(drawTexture, position3, null, halfBrightGreen, MathHelper.PiOver4, halfTextureSize, timeLeftDrawEffect * 0.36f, spriteEffects, 0);
-            Main.EntitySpriteDraw(drawTexture, position3, null, halfBrightGreen, MathHelper.PiOver4 * 3f, halfTextureSize, timeLeftDrawEffect2 * 0.36f, spriteEffects, 0);
+            Main.EntitySpriteDraw(drawTexture, position3, null, brightGreen, MathHelper.PiOver4 + Projectile.rotation, halfTextureSize, timeLeftDrawEffect * 0.6f, spriteEffects, 0);
+            Main.EntitySpriteDraw(drawTexture, position3, null, brightGreen, MathHelper.PiOver4 * 3f + Projectile.rotation, halfTextureSize, timeLeftDrawEffect2 * 0.6f, spriteEffects, 0);
+            Main.EntitySpriteDraw(drawTexture, position3, null, halfBrightGreen, MathHelper.PiOver4 + Projectile.rotation, halfTextureSize, timeLeftDrawEffect * 0.36f, spriteEffects, 0);
+            Main.EntitySpriteDraw(drawTexture, position3, null, halfBrightGreen, MathHelper.PiOver4 * 3f + Projectile.rotation, halfTextureSize, timeLeftDrawEffect2 * 0.36f, spriteEffects, 0);
 
             return false;
         }
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
-            Projectile.position.X = Projectile.position.X + (Projectile.width / 2);
-            Projectile.position.Y = Projectile.position.Y + (Projectile.height / 2);
-            Projectile.width = 40;
-            Projectile.height = 40;
-            Projectile.position.X = Projectile.position.X - (Projectile.width / 2);
-            Projectile.position.Y = Projectile.position.Y - (Projectile.height / 2);
-            for (int i = 0; i < 5; i++)
+            SoundEngine.PlaySound(SoundID.Item14 with { Pitch = -0.3f, Volume = 0.7f }, Projectile.Center);
+            SoundStyle fireHeal = new("CalamityMod/Sounds/Custom/PlantyMushMine", 3);
+            SoundEngine.PlaySound(fireHeal with { Volume = 0.5f, Pitch = 0.3f }, Projectile.Center);
+            Color particleColor =  new Color(54, 209, 54);
+            Color smokeColor = Color.Lerp(particleColor, Color.DarkSlateGray, 0.5f);
+            Particle pulse = new CustomPulse(Projectile.Center, Vector2.Zero, smokeColor, "CalamityMod/Particles/SoftRoundExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0f, 0.06f, 18);
+            GeneralParticleHandler.SpawnParticle(pulse);
+            for (int i = 0; i < 7; i++)
             {
-                int holyYellow = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 246, 0f, 0f, 100, default, 2f);
-                Main.dust[holyYellow].velocity *= 3f;
-                Main.dust[holyYellow].noGravity = true;
-                if (Main.rand.NextBool())
-                {
-                    Main.dust[holyYellow].scale = 0.5f;
-                    Main.dust[holyYellow].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
-                }
+                Particle smoke = new HeavySmokeParticle(Projectile.Center, (Vector2.UnitX).RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(7f), smokeColor, 30, Main.rand.NextFloat(0.6f, 1f), 0.5f, Main.rand.NextFloat(-0.03f, 0.03f), true);
+                GeneralParticleHandler.SpawnParticle(smoke);
             }
-            for (int j = 0; j < 8; j++)
+            for (int i = 0; i < 8; i++)
             {
-                int holyYellow2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 247, 0f, 0f, 100, default, 3f);
-                Main.dust[holyYellow2].noGravity = true;
-                Main.dust[holyYellow2].velocity *= 5f;
-                holyYellow2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 246, 0f, 0f, 100, default, 2f);
-                Main.dust[holyYellow2].velocity *= 2f;
-                Main.dust[holyYellow2].noGravity = true;
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), (Vector2.UnitX).RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(1.8f, 10f));
+                dust.noGravity = true;
+                dust.scale = Main.rand.NextFloat(1f, 1.8f);
+                dust.color = particleColor;
+                dust.noLightEmittence = true;
             }
         }
     }

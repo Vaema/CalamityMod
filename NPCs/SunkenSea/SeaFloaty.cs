@@ -1,49 +1,68 @@
-﻿using CalamityMod.BiomeManagers;
-using CalamityMod.Items.Placeables.Banners;
+﻿using System.Collections.Generic;
 using System.IO;
+using CalamityMod.Enums;
+using CalamityMod.Items.Critters;
+using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
 namespace CalamityMod.NPCs.SunkenSea
 {
-    public class SeaFloaty : ModNPC
+    public class SeaFloaty : SunkenSeaNPC
     {
         private bool hasBeenHit = false;
 
+        protected override List<int> PreyIDs => new List<int>();
+
+        protected override List<int> PredatorIDs => new List<int>()
+        {
+            ModContent.NPCType<Polyperil>(),
+            ModContent.NPCType<PolyperilTentacle>(),
+            ModContent.NPCType<Sharkoon>(),
+        };
+
+        protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.RadiantReefs;
+
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 6;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            Main.npcFrameCount[Type] = 5;
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
-                SpriteDirection = 1
+                SpriteDirection = -1
             };
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            NPCID.Sets.CountsAsCritter[Type] = true;
+            base.SetStaticDefaults();
         }
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
             NPC.npcSlots = 0.5f;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.damage = 5;
-            NPC.width = 72;
+            NPC.damage = 0;
+            NPC.width = 44;
             NPC.height = 22;
             NPC.defense = 0;
-            NPC.lifeMax = 50;
+            NPC.lifeMax = 5;
             NPC.knockBackResist = 0.5f;
-            NPC.value = Item.buyPrice(0, 0, 0, 50);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
+            NPC.chaseable = false;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<SeaFloatyBanner>();
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
+            NPC.catchItem = ModContent.ItemType<SeaFloatyItem>();
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.SeaFloaty")
             });
@@ -63,17 +82,18 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void AI()
         {
+            NPC.TargetClosest(false);
             if (NPC.velocity.X > 0.25f)
-            {
-                NPC.spriteDirection = -1;
-            }
-            else if (NPC.velocity.X < 0.25f)
             {
                 NPC.spriteDirection = 1;
             }
+            else if (NPC.velocity.X < 0.25f)
+            {
+                NPC.spriteDirection = -1;
+            }
             if (NPC.ai[0] == 0f)
             {
-                NPC.direction = 1;
+                NPC.direction = -1;
                 NPC.ai[0] = 1f;
             }
             NPC.velocity.X = NPC.velocity.X + (float)NPC.direction * 0.1f;
@@ -87,12 +107,27 @@ namespace CalamityMod.NPCs.SunkenSea
                 NPC.direction *= -1;
                 NPC.netUpdate = true;
             }
-
-            if (NPC.justHit && !hasBeenHit)
+            // panic when it gets hit or the player is close enough to it
+            if ((NPC.justHit || CurrentPlayer != null || CurrentPredator != null) && !hasBeenHit)
             {
                 hasBeenHit = true;
                 NPC.noTileCollide = true;
                 NPC.noGravity = true;
+
+                SoundEngine.PlaySound(SoundID.NPCHit37 with { Pitch = 1 }, NPC.Center);
+
+                if (!Main.dedServ)
+                {
+                    var emoteDirection = -Vector2.UnitY * Main.rand.NextFloat(2f, 3f);
+                    Particle emote = new EmoteExpressionParticle(
+                        NPC.Center + emoteDirection * 2f,
+                        emoteDirection,
+                        2.2f,
+                        Color.Yellow,
+                        Main.rand.Next(30, 46),
+                        EmoteExpressionParticle.EmoteType.Exclamation);
+                    GeneralParticleHandler.SpawnParticle(emote);
+                }
             }
             NPC.chaseable = hasBeenHit;
             if (hasBeenHit)
@@ -129,18 +164,29 @@ namespace CalamityMod.NPCs.SunkenSea
                 }
             }
         }
+        protected override bool NPCSearchFilter(NPC n)
+        {
+            return NPC.HasSight(n.Center) && Vector2.DistanceSquared(NPC.Center, n.Center) < 360f * 360f && PredatorIDs.Contains(n.type);
+        }
+
+        protected override bool PlayerSearchFilter(Player p)
+        {
+            return NPC.HasSight(p.Center) && Vector2.DistanceSquared(NPC.Center, p.Center) < 360f * 360f;
+        }
+
+        public override bool CanBeHitByNPC(NPC attacker) => PredatorIDs.Contains(attacker.type);
 
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter += hasBeenHit ? 0.3f : 0.15f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (spawnInfo.Player.Calamity().ZoneSunkenSea && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
+            if (spawnInfo.Player.Calamity().ZoneRadiantReefs && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
             {
                 return SpawnCondition.CaveJellyfish.Chance * 0.45f;
             }
@@ -151,21 +197,16 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 68, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.BlueCrystalShard, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 25; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 68, hit.HitDirection, -1f, 0, default, 1f);
-                }
-                if (Main.netMode != NetmodeID.Server)
-                {
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SeaFloatyGore1").Type, 1f);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SeaFloatyGore2").Type, 1f);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SeaFloatyGore3").Type, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.BlueCrystalShard, hit.HitDirection, -1f, 0, default, 1f);
                 }
             }
+            CalamityUtils.SpawnGores(NPC, "SeaFloaty", 1);
         }
     }
 }

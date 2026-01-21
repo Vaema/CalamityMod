@@ -14,13 +14,18 @@ namespace CalamityMod.Buffs.StatBuffs
             Main.debuff[Type] = true;
             Main.pvpBuff[Type] = true;
             Main.buffNoSave[Type] = false;
+            Main.buffNoTimeDisplay[Type] = true; // Consistency with Rage (Look at the bar instead)
             BuffID.Sets.NurseCannotRemoveDebuff[Type] = true;
         }
 
         public override void Update(Player player, ref int buffIndex)
         {
             player.Calamity().adrenalineModeActive = true;
-            player.Calamity().AdrenalineTrail = true;
+        }
+
+        public override void ModifyBuffText(ref string buffName, ref string tip, ref int rare)
+        {
+            tip = base.Description.Format((1f + Main.LocalPlayer.Calamity().GetAdrenalineDamage()).Round());
         }
 
         internal static void DrawEffects(PlayerDrawSet drawInfo)
@@ -35,12 +40,11 @@ namespace CalamityMod.Buffs.StatBuffs
             {
                 int dustID = ModContent.DustType<AdrenDust>();
                 Vector2 dustVel = Player.velocity * 0.5f;
-                int idx = Dust.NewDust(Main.rand.NextBool(5) ? drawInfo.Position : drawInfo.Position - Player.velocity * 1.5f, Player.width, Player.height, dustID, dustVel.X, dustVel.Y);
-                Dust d = Main.dust[idx];
-                d.scale = Main.rand.NextFloat(0.4f, 1.2f);
-                d.noGravity = true;
-                d.noLight = false;
-                drawInfo.DustCache.Add(idx);
+                Dust dust = Dust.NewDustDirect(Main.rand.NextBool(5) ? drawInfo.Position : drawInfo.Position - Player.velocity * 1.5f, Player.width, Player.height, dustID, dustVel.X, dustVel.Y);
+                dust.scale = Main.rand.NextFloat(0.4f, 1.2f);
+                dust.noGravity = true;
+                dust.noLight = false;
+                drawInfo.DustCache.Add(dust.dustIndex);
             }
         }
     }

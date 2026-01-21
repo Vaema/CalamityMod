@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -9,27 +9,20 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class InfernalKris : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-                       Item.ResearchUnlockCount = 99;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 32;
             Item.height = 38;
-            Item.damage = 24;
+            Item.damage = 21;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.consumable = true;
             Item.useAnimation = 18;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTime = 18;
             Item.knockBack = 1f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.maxStack = 9999;
-            Item.value = Item.buyPrice(0, 0, 5, 0);
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.shoot = ModContent.ProjectileType<InfernalKrisProjectile>();
             Item.shootSpeed = 15f;
@@ -40,9 +33,12 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             if (player.Calamity().StealthStrikeAvailable())
             {
-                int p = Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, type, damage, knockback, player.whoAmI, 0f, 1f);
+                int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 1f);
                 if (p.WithinBounds(Main.maxProjectiles))
+                {
                     Main.projectile[p].Calamity().stealthStrike = true;
+                    Main.projectile[p].penetrate = 1;
+                }
                 return false;
             }
             return true;
@@ -50,9 +46,9 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void AddRecipes()
         {
-            CreateRecipe(100).
-                AddIngredient(ItemID.HellstoneBar).
-                AddIngredient(ItemID.Obsidian, 2).
+            CreateRecipe().
+                AddIngredient(ItemID.HellstoneBar, 10).
+                AddIngredient(ItemID.AshWood, 10).
                 AddTile(TileID.Anvils).
                 Register();
         }

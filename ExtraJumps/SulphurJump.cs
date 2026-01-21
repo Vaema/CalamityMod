@@ -1,5 +1,5 @@
 ﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Items.Armor.Sulphurous;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
@@ -46,8 +46,7 @@ namespace CalamityMod.ExtraJumps
             if (modPlayer.sulphurBubbleCooldown <= 0)
             {
                 var source = player.GetSource_Misc("0");
-                int damage = (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(20);
-                damage = player.ApplyArmorAccDamageBonusesTo(damage);
+                int damage = (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(SulphurousHelmet.BubbleDamage);
 
                 int bubble = Projectile.NewProjectile(source, new Vector2(player.position.X, player.position.Y + (player.gravDir == -1f ? 20 : -20)), Vector2.Zero, ModContent.ProjectileType<SulphuricAcidBubbleFriendly>(), damage, 0f, player.whoAmI, 1f, 0f);
                 if (bubble.WithinBounds(Main.maxProjectiles))

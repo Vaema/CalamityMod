@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -25,10 +25,11 @@ namespace CalamityMod.Projectiles.Ranged
         public ref float YDirection => ref Projectile.ai[0];
         public ref float Time => ref Projectile.ai[1];
         public Color sparkColor;
+        public Vector2 oldPos = Vector2.Zero;
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 36;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 36;
         }
 
         public override void SetDefaults()
@@ -56,25 +57,43 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
-            PhotoMetaball.SpawnParticle(Projectile.Center, 54);
-            PhotoMetaball2.SpawnParticle(Projectile.Center, 50);
-
-            sparkColor = Main.rand.Next(4) switch
+            List<Color> eColors = new List<Color>()
             {
-                0 => Color.Red,
-                1 => Color.MediumTurquoise,
-                2 => Color.Orange,
-                _ => Color.LawnGreen,
+                Color.OrangeRed,
+                Color.MediumTurquoise,
+                Color.Orange,
+                Color.LawnGreen
             };
-            
+            float rate = (Main.GlobalTimeWrappedHourly * 8);
+            int colorIndex = (int)(rate / 2 % eColors.Count);
+            Color currentColor = eColors[colorIndex];
+            Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
+            sparkColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+
+            if (oldPos != Vector2.Zero)
+            {
+                Particle beam3 = new CustomSpark(Projectile.Center, (oldPos - Projectile.Center).SafeNormalize(Vector2.UnitX), "CalamityMod/Particles/SmallBloom", false, 13, 0.2f, sparkColor, new Vector2(1f, 1), true, true, 0, false, false, 0.3f);
+                GeneralParticleHandler.SpawnParticle(beam3);
+            }
+            oldPos = Projectile.Center;
+
             Lighting.AddLight(Projectile.Center, Color.DarkSlateGray.ToVector3());
             Projectile.scale = MathHelper.Lerp(0.001f, 1f, Utils.GetLerpValue(0f, 25f, Time, true));
             if (Projectile.localAI[0] == 0f)
             {
-                for (int i = 0; i < Main.maxNPCs; i++)
+                float currentDist = 25000f;
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    if (Main.npc[i].CanBeChasedBy(Projectile.GetSource_FromThis(), false))
-                        NPCDestination = Main.npc[i].Center + Main.npc[i].velocity * 5f;
+                    if (n.CanBeChasedBy(Projectile.GetSource_FromThis(), false))
+                    {
+                        Vector2 potentialDest = n.Center + n.velocity * 5f;
+                        float newDist = potentialDest.Distance(Projectile.Center);
+                        if (newDist < currentDist)
+                        {
+                            currentDist = newDist;
+                            NPCDestination = potentialDest;
+                        }
+                    }
                 }
                 InitialCenter = Projectile.Center;
                 Projectile.localAI[0] = 1f;
@@ -115,7 +134,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override void OnKill(int timeLeft)
         {
             float scaleBonus = Time >= 120f ? Main.rand.NextFloat(3.4f, 4.2f) : Main.rand.NextFloat(0.8f, 1.6f);
-            SoundEngine.PlaySound(DeadSunsWind.Explosion with { Volume = 0.7f}, Projectile.Center);
+            SoundEngine.PlaySound(DeadSunsWind.Explosion with { Volume = 0.7f }, Projectile.Center);
             float numberOfDusts = Time >= 120f ? 30 : 20;
             float rotFactor = 360f / numberOfDusts;
             for (int i = 0; i < numberOfDusts; i++)

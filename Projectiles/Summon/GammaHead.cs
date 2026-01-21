@@ -1,11 +1,11 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.DataStructures;
 using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -31,9 +31,10 @@ namespace CalamityMod.Projectiles.Summon
         }
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 4;
+            Main.projPet[Type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -97,7 +98,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public void PerformInitializationEffects()
         {
-            int totalHeads = CalamityUtils.CountProjectiles(Projectile.type);
+            int totalHeads = Main.player[Projectile.owner].ownedProjectileCounts[Projectile.type];
             CurrentPositionOffset = IdealPositionOffset = new Vector2(Main.rand.NextFloat(-72f - 8f * totalHeads, 72f + 8f * totalHeads), -Main.rand.NextFloat(8f, 84f + 4f * totalHeads));
             Projectile.netUpdate = true;
 
@@ -107,7 +108,7 @@ namespace CalamityMod.Projectiles.Summon
             // Release a circle of sulphuric dust.
             for (int i = 0; i < 18; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, (int)CalamityDusts.SulfurousSeaAcid);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, (int)CalamityDusts.SulphurousSeaAcid);
                 dust.velocity = new Vector2(0f, -5f).RotatedBy(i / 18f * MathHelper.TwoPi);
                 dust.noGravity = true;
                 dust.scale = 1.35f;
@@ -136,8 +137,8 @@ namespace CalamityMod.Projectiles.Summon
 
             // Open the mouth prior to firing.
             if (Time % canisterShootRate > canisterShootRate - 20)
-                Projectile.frame = (int)(Main.projFrames[Projectile.type] * Utils.GetLerpValue(canisterShootRate - 20, canisterShootRate - 4, Time % canisterShootRate, true));
-            Projectile.frame %= Main.projFrames[Projectile.type];
+                Projectile.frame = (int)(Main.projFrames[Type] * Utils.GetLerpValue(canisterShootRate - 20, canisterShootRate - 4, Time % canisterShootRate, true));
+            Projectile.frame %= Main.projFrames[Type];
 
             Vector2 spawnPosition = Projectile.Center;
             float shootSpeed = MathHelper.Lerp(8f, 29f, Utils.GetLerpValue(90f, 850f, target.Distance(spawnPosition), true));
@@ -169,7 +170,7 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.velocity = (Projectile.velocity * 9f + Projectile.SafeDirectionTo(returnPosition) * flySpeed) / 10f;
             }
 
-            int totalHeads = CalamityUtils.CountProjectiles(Projectile.type);
+            int totalHeads = Main.player[Projectile.owner].ownedProjectileCounts[Projectile.type];
             int moveRate = 40 + totalHeads * 4;
 
             // Reset the ideal offset from time to time.
@@ -205,7 +206,7 @@ namespace CalamityMod.Projectiles.Summon
                 return;
 
             for (int i = 0; i < 10; i++)
-                Dust.NewDustPerfect(Projectile.Center, (int)CalamityDusts.SulfurousSeaAcid, Main.rand.NextVector2CircularEdge(4f, 4f)).noGravity = true;
+                Dust.NewDustPerfect(Projectile.Center, (int)CalamityDusts.SulphurousSeaAcid, Main.rand.NextVector2CircularEdge(4f, 4f)).noGravity = true;
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -251,10 +252,10 @@ namespace CalamityMod.Projectiles.Summon
                                  0);
             }
 
-            Texture2D headTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D headTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Main.EntitySpriteDraw(headTexture,
                              Projectile.Center - Main.screenPosition + Vector2.UnitY * Projectile.gfxOffY,
-                             headTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame),
+                             headTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame),
                              lightColor,
                              Projectile.rotation,
                              Projectile.Size * 0.5f,
@@ -264,7 +265,5 @@ namespace CalamityMod.Projectiles.Summon
 
             return false;
         }
-
-        public override bool? CanDamage() => false;
     }
 }

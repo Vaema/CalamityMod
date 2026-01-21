@@ -1,8 +1,8 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -10,26 +10,19 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class CrystalPiercer : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-                       Item.ResearchUnlockCount = 99;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 62;
             Item.height = 62;
             Item.damage = 92;
             Item.noMelee = true;
-            Item.consumable = true;
             Item.noUseGraphic = true;
             Item.useAnimation = Item.useTime = 22;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 6f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.maxStack = 9999;
-            Item.value = 2500;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.shoot = ModContent.ProjectileType<CrystalPiercerProjectile>();
             Item.shootSpeed = 20f;
@@ -46,7 +39,9 @@ namespace CalamityMod.Items.Weapons.Rogue
                     Main.projectile[stealth].Calamity().stealthStrike = true;
                     Main.projectile[stealth].aiStyle = -1;
                     Main.projectile[stealth].tileCollide = false;
+                    Main.projectile[stealth].usesIDStaticNPCImmunity = false;
                     Main.projectile[stealth].usesLocalNPCImmunity = true;
+                    Main.projectile[stealth].localNPCHitCooldown = 10;
                 }
                 return false;
             }
@@ -55,8 +50,8 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void AddRecipes()
         {
-            CreateRecipe(150).
-                AddIngredient<CryonicBar>().
+            CreateRecipe().
+                AddIngredient<CryonicBar>(8).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

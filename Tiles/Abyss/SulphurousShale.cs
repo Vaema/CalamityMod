@@ -1,10 +1,8 @@
-﻿//using CalamityMod.Tiles.Abyss.AbyssAmbient;
+﻿using CalamityMod.Systems;
 using CalamityMod.Tiles.Abyss.AbyssAmbient;
+using CalamityMod.Waters;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -15,9 +13,6 @@ namespace CalamityMod.Tiles.Abyss
     public class SulphurousShale : ModTile
     {
         int animationFrameWidth = 234;
-        public byte[,] tileAdjacency;
-        public byte[,] secondTileAdjacency;
-        public byte[,] thirdTileAdjacency;
 
         public static readonly SoundStyle MineSound = new("CalamityMod/Sounds/Custom/AbyssGravelMine", 3);
 
@@ -34,10 +29,21 @@ namespace CalamityMod.Tiles.Abyss
             MineResist = 3f;
             MinPick = 65;
             HitSound = MineSound;
-            DustType = 33;
-            TileFraming.SetUpUniversalMerge(Type, TileID.Dirt, out tileAdjacency);
-            TileFraming.SetUpUniversalMerge(Type, TileID.Stone, out secondTileAdjacency);
-            TileFraming.SetUpUniversalMerge(Type, ModContent.TileType<AbyssGravel>(), out thirdTileAdjacency);
+            DustType = DustID.Water;
+            this.RegisterBlendMergeWith(TileID.Dirt);
+            this.RegisterBlendMergeWith(TileID.Stone);
+            this.RegisterBlendMergeWith(ModContent.TileType<AbyssGravel>());
+        }
+
+        public override void NearbyEffects(int i, int j, bool closer)
+        {
+            if (Main.dedServ)
+                return;
+
+            if (Main.LocalPlayer.InModBiome(ModContent.GetInstance<BiomeManagers.AbyssLayer1Biome>()))
+            {
+                Main.SceneMetrics.ActiveFountainColor = SulphuricDepthsWater.Instance.Slot;
+            }
         }
 
         public override bool CanExplode(int i, int j)
@@ -52,7 +58,6 @@ namespace CalamityMod.Tiles.Abyss
 
         public override void RandomUpdate(int i, int j)
         {
-            
             int vineLength = WorldGen.genRand.Next((int)Main.rockLayer, (int)(Main.rockLayer + (double)Main.maxTilesY * 0.143));
             int nearbyVineCount = 0;
             for (int x = i - 15; x <= i + 15; x++)
@@ -98,7 +103,7 @@ namespace CalamityMod.Tiles.Abyss
                             Main.tile[vineX, vineY].TileType = (ushort)ModContent.TileType<SulphurousVines>();
                             Main.tile[vineX, vineY].Get<TileWallWireStateData>().HasTile = true;
                             WorldGen.SquareTileFrame(vineX, vineY, true);
-                            if (Main.netMode == NetmodeID.Server)
+                            if (Main.dedServ)
                                 NetMessage.SendTileSquare(-1, vineX, vineY, 3, TileChangeType.None);
                         }
                         Main.tile[i, j].Get<TileWallWireStateData>().Slope = SlopeType.Solid;
@@ -112,7 +117,7 @@ namespace CalamityMod.Tiles.Abyss
             Tile up2 = Main.tile[i, j - 2];
 
             // Place sulphur tentacle corals
-            if (WorldGen.genRand.Next(10) == 0 && !up.HasTile && !up2.HasTile && up.LiquidAmount > 0 && up2.LiquidAmount > 0 && !tile.LeftSlope && !tile.RightSlope && !tile.IsHalfBlock)
+            if (WorldGen.genRand.NextBool(10) && !up.HasTile && !up2.HasTile && up.LiquidAmount > 0 && up2.LiquidAmount > 0 && !tile.LeftSlope && !tile.RightSlope && !tile.IsHalfBlock)
             {
                 up.TileType = (ushort)ModContent.TileType<SulphurTentacleCorals>();
                 up.HasTile = true;
@@ -122,115 +127,14 @@ namespace CalamityMod.Tiles.Abyss
                 up.TileFrameX = (short)(WorldGen.genRand.Next(22) * 18);
                 WorldGen.SquareTileFrame(i, j - 1, true);
 
-                if (Main.netMode == NetmodeID.Server)
+                if (Main.dedServ)
                     NetMessage.SendTileSquare(-1, i, j - 1, 3, TileChangeType.None);
             }
         }
 
         public override void AnimateIndividualTile(int type, int i, int j, ref int frameXOffset, ref int frameYOffset)
         {
-            int uniqueAnimationFrameX = 0;
-            int xPos = i % 4;
-            int yPos = j % 4;
-            switch (xPos)
-            {
-                case 0:
-                    switch (yPos)
-                    {
-                        case 0:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 1:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        case 2:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        case 3:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        default:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                    }
-                    break;
-                case 1:
-                    switch (yPos)
-                    {
-                        case 0:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        case 1:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 2:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        case 3:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        default:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                    }
-                    break;
-                case 2:
-                    switch (yPos)
-                    {
-                        case 0:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        case 1:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 2:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        case 3:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        default:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                    }
-                    break;
-                case 3:
-                    switch (yPos)
-                    {
-                        case 0:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        case 1:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        case 2:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 3:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        default:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                    }
-                    break;
-            }
-            frameXOffset = uniqueAnimationFrameX * animationFrameWidth;
-        }
-
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
-        {
-            TileFraming.DrawUniversalMergeFrames(i, j, thirdTileAdjacency, "CalamityMod/Tiles/Merges/AbyssGravelMerge");
-            TileFraming.DrawUniversalMergeFrames(i, j, secondTileAdjacency, "CalamityMod/Tiles/Merges/StoneMerge");
-            TileFraming.DrawUniversalMergeFrames(i, j, tileAdjacency, "CalamityMod/Tiles/Merges/DirtMerge");
-        }
-
-        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
-        {
-            TileFraming.GetAdjacencyData(i, j, TileID.Dirt, out tileAdjacency[i, j]);
-            TileFraming.GetAdjacencyData(i, j, TileID.Stone, out secondTileAdjacency[i, j]);
-            TileFraming.GetAdjacencyData(i, j, ModContent.TileType<AbyssGravel>(), out thirdTileAdjacency[i, j]);
-            return true;
+            frameXOffset = animationFrameWidth * TileFramingSystem.GetVariation4x4_012_Low0(i, j);
         }
     }
 }

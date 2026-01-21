@@ -2,9 +2,9 @@
 using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Summon
 {
     public class BrimstoneFireballMinion : ModProjectile, ILocalizedModType
@@ -14,10 +14,10 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
-            Main.projFrames[Projectile.type] = 6;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 3;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.MinionShot[Type] = true;
+            Main.projFrames[Type] = 6;
+            ProjectileID.Sets.TrailCacheLength[Type] = 3;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -58,7 +58,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.spriteDirection = Projectile.direction = (Projectile.velocity.X > 0).ToDirectionInt();
             Projectile.rotation = Projectile.velocity.ToRotation() + (Projectile.spriteDirection == 1 ? 0f : MathHelper.Pi) - MathHelper.ToRadians(90) * Projectile.direction;
 
-            int brimDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)CalamityDusts.Brimstone, 0f, 0f, 170, default, 1.1f);
+            int brimDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.Brimstone, 0f, 0f, 170, default, 1.1f);
             Main.dust[brimDust].noGravity = true;
             Main.dust[brimDust].velocity *= 0.5f;
             Main.dust[brimDust].velocity += Projectile.velocity * 0.1f;
@@ -73,10 +73,10 @@ namespace CalamityMod.Projectiles.Summon
 
         //public override void OnKill(int timeLeft)
         //{
-            //if (Projectile.owner == Main.myPlayer)
-            //{
-                //Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BrimstoneExplosionMinion>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-            //}
+        //if (Projectile.owner == Main.myPlayer)
+        //{
+        //Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BrimstoneExplosionMinion>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+        //}
         //}
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
@@ -86,7 +86,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

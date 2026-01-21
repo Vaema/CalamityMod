@@ -1,9 +1,9 @@
 ﻿using CalamityMod.Buffs.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -15,9 +15,10 @@ namespace CalamityMod.Projectiles.Summon
         public ref float Time => ref Projectile.ai[1];
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 5;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
+            Main.projFrames[Type] = 5;
+            Main.projPet[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
         }
 
         public override void SetDefaults()
@@ -65,7 +66,7 @@ namespace CalamityMod.Projectiles.Summon
 
             for (int i = 0; i < 40; i++)
             {
-                Dust brimstoneFire = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(50f, 50f), 219);
+                Dust brimstoneFire = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(50f, 50f), DustID.Fireworks);
                 brimstoneFire.velocity = Vector2.UnitY * -Main.rand.NextFloat(2f, 5f);
                 brimstoneFire.scale = 1f + brimstoneFire.velocity.Length() * 0.1f;
                 brimstoneFire.color = Color.Lerp(Color.White, Color.OrangeRed, Main.rand.NextFloat());
@@ -93,7 +94,7 @@ namespace CalamityMod.Projectiles.Summon
             if (Projectile.FinalExtraUpdate())
                 Projectile.frameCounter++;
             if (Projectile.frameCounter % 6 == 5)
-                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Projectile.type];
+                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Type];
         }
 
         internal void FlyNearOwner()
@@ -101,9 +102,8 @@ namespace CalamityMod.Projectiles.Summon
             // Make an imp laugh sound every so often if you're the first seeker in the projectile array.
             if (Main.rand.NextBool(1600))
 			{
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile seeker in Main.ActiveProjectiles)
                 {
-                    Projectile seeker = Main.projectile[i];
                     if (seeker.type == Projectile.type)
                     {
                         if (seeker == Projectile)
@@ -111,7 +111,7 @@ namespace CalamityMod.Projectiles.Summon
                         break;
                     }
                 }
-			}
+            }
 
             Vector2 destination = Owner.Center + (MathHelper.TwoPi * CircleAngleRatio / Owner.ownedProjectileCounts[Type] - MathHelper.PiOver2).ToRotationVector2() * 310f;
             Projectile.Center = Vector2.Lerp(Projectile.Center, destination, 0.03f);
@@ -160,5 +160,7 @@ namespace CalamityMod.Projectiles.Summon
             else if (Projectile.velocity.Length() < 28f)
                 Projectile.velocity = Projectile.SafeDirectionTo(target.Center) * 29f;
         }
+
+        public override bool MinionContactDamage() => true;
     }
 }

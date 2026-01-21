@@ -1,7 +1,6 @@
 ﻿using CalamityMod.Events;
 using CalamityMod.Items.Materials;
 using CalamityMod.NPCs.DesertScourge;
-using CalamityMod.World;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -13,9 +12,11 @@ namespace CalamityMod.Items.SummonItems
     public class DesertMedallion : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.SummonItems";
+        public static readonly SoundStyle SummonSound = new("CalamityMod/Sounds/Custom/DesertScourge/DesertScourgeSummon");
+
         public override void SetStaticDefaults()
         {
-           			ItemID.Sets.SortingPriorityBossSpawns[Type] = 1; // Suspicious Looking Eye
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 1; // Suspicious Looking Eye
         }
 
         public override void SetDefaults()
@@ -29,10 +30,10 @@ namespace CalamityMod.Items.SummonItems
             Item.consumable = false;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
+        }
 
         public override bool CanUseItem(Player player)
         {
@@ -41,25 +42,7 @@ namespace CalamityMod.Items.SummonItems
 
         public override bool? UseItem(Player player)
         {
-            SoundEngine.PlaySound(SoundID.Roar, player.Center);
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-                NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<DesertScourgeHead>());
-            else
-                NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, player.whoAmI, ModContent.NPCType<DesertScourgeHead>());
-
-            if (CalamityWorld.revenge)
-            {
-                if (Main.netMode != NetmodeID.MultiplayerClient)
-                    NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<DesertNuisanceHead>());
-                else
-                    NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, player.whoAmI, ModContent.NPCType<DesertNuisanceHead>());
-
-                if (Main.netMode != NetmodeID.MultiplayerClient)
-                    NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<DesertNuisanceHead>());
-                else
-                    NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, player.whoAmI, ModContent.NPCType<DesertNuisanceHead>());
-            }
-
+            CalamityUtils.SpawnBossUsingItem<DesertScourgeHead>(player, SummonSound);
             return true;
         }
 

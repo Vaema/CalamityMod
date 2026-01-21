@@ -1,7 +1,9 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.World;
+﻿using System.Collections.Generic;
+using CalamityMod.CalPlayer;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.PermanentBoosters
@@ -14,49 +16,61 @@ namespace CalamityMod.Items.PermanentBoosters
         {
             Item.width = 28;
             Item.height = 28;
-            Item.rare = ItemRarityID.Red;
-            Item.maxStack = 9999;
-            Item.useAnimation = 30;
-            Item.useTime = 30;
-            Item.useStyle = ItemUseStyleID.HoldUp;
-            Item.UseSound = SoundID.Item4;
             Item.consumable = true;
+            Item.maxStack = Item.CommonMaxStack;
+            Item.useAnimation = Item.useTime = 30;
+            Item.UseSound = SoundID.Item4;
+            Item.useStyle = ItemUseStyleID.HoldUp;
+            Item.value = Item.sellPrice(gold: 2);
+            Item.rare = ItemRarityID.Red;
+        }
+
+        public static bool HasConsumedBefore(Player player)
+        {
+            return (Main.masterMode && player.extraAccessory) || player.Calamity().extraAccessoryML;
         }
 
         public override bool CanUseItem(Player player)
         {
-            CalamityPlayer modPlayer = player.Calamity();
-            return !Main.masterMode && !modPlayer.extraAccessoryML;
+            if (HasConsumedBefore(player))
+            {
+                if (player.whoAmI == Main.myPlayer)
+                {
+                    string key = "Mods.CalamityMod.Misc.CelestialOnionText";
+                    Color messageColor = Color.LightSlateGray;
+                    Main.NewText(Language.GetTextValue(key), messageColor);
+                }
+                return false;
+            }
+
+            return true;
         }
 
         public override bool? UseItem(Player player)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            if (player.itemAnimation > 0 && !modPlayer.extraAccessoryML && player.itemTime == 0)
+            // In Master Mode, will enable Demon Heart's accessory slot if for whatever reason you don't have that yet
+            if (Main.masterMode)
+            {
+                if (player.itemAnimation > 0 && !player.extraAccessory && player.itemTime == 0)
+                {
+                    player.itemTime = Item.useTime;
+                    player.extraAccessory = true;
+                }
+            }
+
+            else if (player.itemAnimation > 0 && !modPlayer.extraAccessoryML && player.itemTime == 0)
             {
                 player.itemTime = Item.useTime;
                 modPlayer.extraAccessoryML = true;
-
-                // TODO -- remove "onionMode", it does nothing. It is the old internal name for "Prepare to Cry".
-                if (!CalamityWorld.onionMode)
-                    CalamityWorld.onionMode = true;
             }
             return true;
         }
-    }
 
-    public class CelestialOnionAccessorySlot : ModAccessorySlot
-    {
-        // Celestial Onion does not work in Master Mode.
-        public override bool IsEnabled()
+        public override void ModifyTooltips(List<TooltipLine> list)
         {
-            // GetModPlayer will throw an index error in this step of the loading process for whatever reason
-            // We prematurely stop it from getting to that point
-            if (!Player.active || Main.masterMode)
-                return false;
-            
-            return Player.Calamity().extraAccessoryML;
+            if (HasConsumedBefore(Main.LocalPlayer))
+                list.AddConsumedTooltip();
         }
-        public override bool IsHidden() => IsEmpty && !IsEnabled();
     }
 }

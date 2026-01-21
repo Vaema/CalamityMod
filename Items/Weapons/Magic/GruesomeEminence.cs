@@ -8,7 +8,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class GruesomeEminence : ModItem, ILocalizedModType
+    public class GruesomeEminence : ExhumedItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetDefaults()
@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.DamageType = DamageClass.Magic;
             Item.noUseGraphic = true;
             Item.channel = true;
-            Item.mana = 8;
+            Item.mana = 400;
             Item.useTime = 27;
             Item.useAnimation = 27;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -28,10 +28,10 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shootSpeed = 9f;
             Item.shoot = ModContent.ProjectileType<GruesomeEminenceHoldout>();
 
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
-        
+
         public override void SetStaticDefaults()
         {
             ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<GhastlyVisage>();

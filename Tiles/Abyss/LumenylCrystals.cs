@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Abyss
@@ -18,7 +17,7 @@ namespace CalamityMod.Tiles.Abyss
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTorch);
             AddMapEntry(new Color(0, 150, 200), CalamityUtils.GetItemName<Lumenyl>());
             HitSound = SoundID.Item27;
-            DustType = 67;
+            DustType = DustID.IceRod;
             Main.tileSpelunker[Type] = true;
         }
 
@@ -65,7 +64,7 @@ namespace CalamityMod.Tiles.Abyss
                 Main.tile[i, j].TileFrameY = 36;
             else if (leftTile.Slope == SlopeType.Solid && !leftTile.IsHalfBlock && leftTile.HasTile && leftTile.IsTileSolid())
                 Main.tile[i, j].TileFrameY = 54;
-            
+
             Main.tile[i, j].TileFrameX = (short)(WorldGen.genRand.Next(18) * 18);
         }
     }

@@ -3,7 +3,6 @@ using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
 using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -18,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.height = 44;
             Item.damage = 504;
             Item.knockBack = 5.5f;
-            Item.useTime = Item.useAnimation = 24;
+            Item.useAnimation = Item.useTime = 24;
             Item.shootSpeed = 12f;
             Item.shoot = ModContent.ProjectileType<AetherBeam>();
             Item.mana = 30;
@@ -29,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = CommonCalamitySounds.LaserCannonSound;
 
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
         }
 
@@ -39,9 +38,8 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient<PlasmaRod>().
-                AddIngredient<Lazhar>().
                 AddIngredient<TwistingNether>(3).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

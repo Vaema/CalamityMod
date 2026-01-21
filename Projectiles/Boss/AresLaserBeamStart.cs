@@ -1,16 +1,15 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.IO;
+using CalamityMod.Dusts;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.ExoMechs.Ares;
-using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Enums;
 using Terraria.ID;
 using Terraria.ModLoader;
-using ReLogic.Content;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -22,7 +21,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
         }
 
         public override void SetDefaults()
@@ -125,7 +124,7 @@ namespace CalamityMod.Projectiles.Boss
             Vector2 dustPos = Projectile.Center + Projectile.velocity * (Projectile.localAI[1] - 14f);
             for (int i = 0; i < 2; i++)
             {
-                float dustRot = Projectile.velocity.ToRotation() + ((Main.rand.Next(2) == 1) ? -1f : 1f) * MathHelper.PiOver2;
+                float dustRot = Projectile.velocity.ToRotation() + ((Main.rand.NextBool(2)) ? -1f : 1f) * MathHelper.PiOver2;
                 float dustVelMult = (float)Main.rand.NextDouble() * 2f + 2f;
                 Vector2 dustVel = new Vector2((float)Math.Cos(dustRot) * dustVelMult, (float)Math.Sin(dustRot) * dustVelMult);
                 int dust = Dust.NewDust(dustPos, 0, 0, dustType, dustVel.X, dustVel.Y, 0, default, 1f);
@@ -150,7 +149,7 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.velocity == Vector2.Zero)
                 return false;
 
-            Texture2D beamStart = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D beamStart = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D beamMiddle = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/AresLaserBeamMiddle", AssetRequestMode.ImmediateLoad).Value;
             Texture2D beamEnd = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/AresLaserBeamEnd", AssetRequestMode.ImmediateLoad).Value;
 
@@ -226,14 +225,6 @@ namespace CalamityMod.Projectiles.Boss
                 return true;
             }
             return false;
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (info.Damage <= 0)
-                return;
-
-            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 150);
         }
 
         public override bool CanHitPlayer(Player target) => Projectile.scale >= 0.5f;

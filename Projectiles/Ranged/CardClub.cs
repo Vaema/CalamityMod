@@ -1,9 +1,8 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Ranged
 {
     public class CardClub : ModProjectile, ILocalizedModType
@@ -11,8 +10,8 @@ namespace CalamityMod.Projectiles.Ranged
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 5;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -24,7 +23,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.penetrate = 1;
             Projectile.timeLeft = 600;
             Projectile.DamageType = DamageClass.Ranged;
-            Projectile.extraUpdates = 1;
+            Projectile.extraUpdates = 3;
             Projectile.aiStyle = ProjAIStyleID.Arrow;
             AIType = ProjectileID.Bullet;
         }
@@ -36,7 +35,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.spriteDirection = Projectile.direction;
             if (Main.rand.NextBool())
             {
-                int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), 1, 1, 30, 0f, 0f, 0, default, 0.5f);
+                int dust = Dust.NewDust(Projectile.position, 1, 1, DustID.Web, 0f, 0f, 0, default, 0.5f);
                 Main.dust[dust].velocity *= 0f;
                 Main.dust[dust].noGravity = true;
             }
@@ -61,7 +60,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

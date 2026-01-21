@@ -1,6 +1,4 @@
-﻿using System;
-using CalamityMod.Buffs.Summon;
-using CalamityMod.CalPlayer;
+﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
@@ -29,7 +27,6 @@ namespace CalamityMod.Projectiles.Summon
         public int ReformingTimer = 25;
         public bool Reforming = false;
         public int Time = 0;
-        public float ProjKnock;
         public override void SetDefaults()
         {
             Projectile.width = 30;
@@ -52,10 +49,9 @@ namespace CalamityMod.Projectiles.Summon
         }
         public override void MinionAI()
         {
+            Projectile.knockBack = 0; // Has custom knockback
             Time++;
-            if (Time == 1)
-                ProjKnock = Projectile.knockBack;
-            Projectile.knockBack = ProjKnock * (MinionBuffMode ? 2.5f : 1f);
+
             if (ReformingTimer < 25)
             {
                 Projectile.alpha = 255;
@@ -115,7 +111,7 @@ namespace CalamityMod.Projectiles.Summon
 
             if (MinionBuffMode) // Minion when circling
             {
-                Projectile.localNPCHitCooldown = 25;
+                Projectile.localNPCHitCooldown = 20;
                 Reforming = false;
                 Projectile.alpha = 0;
                 HitCounter = 0;
@@ -124,7 +120,6 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.Center = Vector2.Lerp(Projectile.Center, idleDestination, 0.15f);
                 AITimer++;
 
-                Owner.statDefense += 5;
                 Projectile.rotation += MoveWidth * 0.2f;
             }
             if (!MinionBuffMode && !Reforming) // Minion when ramming
@@ -206,6 +201,14 @@ namespace CalamityMod.Projectiles.Summon
                 HitCounter = 0;
             }
         }
-        public override bool? CanDamage() => Reforming ? false : null;
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            float damageMult = MinionBuffMode ? 2f : 1;
+            modifiers.SourceDamage *= damageMult;
+
+            Vector2 launchVel = Utils.DirectionTo(Owner.Center, target.Center);
+            target.MoveNPC(launchVel, (MinionBuffMode ? 5f : 0.5f), false);
+        }
+        public override bool MinionContactDamage() => !Reforming;
     }
 }

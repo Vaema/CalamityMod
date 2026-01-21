@@ -1,7 +1,9 @@
 ﻿using CalamityMod.Buffs.Potions;
 using CalamityMod.Items.Materials;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions
@@ -9,40 +11,39 @@ namespace CalamityMod.Items.Potions
     public class BoundingPotion : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Potions";
+
+        public static float JumpSpeedBoost = 0.25f;
+        public static float JumpHeightPercentBoost = 0.2f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(JumpSpeedBoost.ToJumpSpeedPercent(), JumpHeightPercentBoost.ToPercent());
+
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;
+            ItemID.Sets.DrinkParticleColors[Type] = new Color[2] {
+                new Color(213, 255, 226),
+                new Color(141, 220, 166)
+            };
         }
 
         public override void SetDefaults()
         {
-            Item.width = 26;
-            Item.height = 38;
-            Item.useTurn = true;
-            Item.maxStack = 9999;
-            Item.value = Item.buyPrice(0, 2, 0, 0);
+            Item.DefaultToFood(26, 38, ModContent.BuffType<BoundingBuff>(), CalamityUtils.MinutesToFrames(8), true);
+            Item.value = Item.sellPrice(silver: 2);
             Item.rare = ItemRarityID.Blue;
-            Item.useAnimation = 17;
-            Item.useTime = 17;
-            Item.useStyle = ItemUseStyleID.DrinkLiquid;
-            Item.UseSound = SoundID.Item3;
-            Item.consumable = true;
-            Item.buffType = ModContent.BuffType<BoundingBuff>();
-            Item.buffTime = CalamityUtils.SecondsToFrames(300f);
         }
 
         public override void AddRecipes()
         {
-            CreateRecipe(3).
+            CreateRecipe().
                 AddIngredient(ItemID.BottledWater).
-                AddIngredient(ItemID.Frog).
-                AddIngredient(ItemID.Vine).
+                AddIngredient(ItemID.PinkGel).
+                AddIngredient(ItemID.Moonglow).
                 AddTile(TileID.Bottles).
                 Register();
 
             CreateRecipe().
                 AddIngredient(ItemID.BottledWater).
-                AddIngredient<BloodOrb>(20).
+                AddIngredient<BloodOrb>(10).
                 AddTile(TileID.AlchemyTable).
                 Register()
                 .DisableDecraft();

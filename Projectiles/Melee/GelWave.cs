@@ -1,76 +1,80 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
     public class GelWave : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
+
+
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 30;
-            Projectile.height = 30;
+            Projectile.width = 42;
+            Projectile.height = 84;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.DamageType = DamageClass.Melee;
-            Projectile.penetrate = 2;
-            Projectile.alpha = 120;
+            Projectile.penetrate = -1;
             Projectile.timeLeft = 200;
             Projectile.tileCollide = false;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override void AI()
         {
-            if (Projectile.localAI[0] == 0f)
+            Lighting.AddLight(Projectile.Center, Color.Blue.ToVector3());
+            Projectile.rotation = Projectile.velocity.ToRotation();
+            if (Main.rand.NextBool(10))
             {
-                SoundEngine.PlaySound(SoundID.Item92, Projectile.position);
-                Projectile.localAI[0] += 1f;
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.BlueFairy, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.PinkFairy, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
-            Lighting.AddLight(Projectile.Center, 0f, 0.2f, 0.4f);
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
-            Projectile.velocity.Y += Projectile.ai[0];
-            if (Main.rand.NextBool())
+            if (Projectile.timeLeft <= 60)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 20, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Projectile.alpha = (int)Utils.Remap(Projectile.timeLeft, 0, 60, 255, 0);
+                Projectile.velocity *= 0.94f;
+            }
+            else if (Projectile.scale < 2f)
+            {
+                Projectile.velocity *= 0.99f;
+                Projectile.scale += 0.02f;
+            }
+            if (Projectile.timeLeft > 60)
+            {
+                Dust disgustingtrail = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity, DustID.Ice_Pink, -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.4f));
+                disgustingtrail.noGravity = true;
+                disgustingtrail.scale = 1.2f;
             }
         }
+
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Projectile.RotatingHitboxCollision(targetHitbox);
+
+        public override bool? CanDamage() => (Projectile.alpha == 0 ? null : false);
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (Projectile.timeLeft > 195)
-                return false;
-
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 2);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 2);
             return false;
-        }
-
-        public override Color? GetAlpha(Color lightColor)
-        {
-            return new Color(200, 200, 200, Projectile.alpha);
-        }
-
-        public override void OnKill(int timeLeft)
-        {
-            for (int k = 0; k < 3; k++)
-            {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 20, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
-            }
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.Slimed, 300);
-            Projectile.velocity *= 0.5f;
+            Projectile.velocity *= 1.1f;
+
+            if (Projectile.numHits >= 3 && Projectile.timeLeft > 60)
+                Projectile.timeLeft = 60;
         }
+
     }
 }

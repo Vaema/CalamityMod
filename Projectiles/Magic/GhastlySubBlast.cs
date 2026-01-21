@@ -1,7 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Magic
 {
     public class GhastlySubBlast : ModProjectile, ILocalizedModType
@@ -70,7 +72,7 @@ namespace CalamityMod.Projectiles.Magic
                 }
                 if (Main.rand.NextBool())
                 {
-                    int ghostlyRed = Dust.NewDust(Projectile.Center, 8, 8, 60, 0f, 0f, 0, default, 1f);
+                    int ghostlyRed = Dust.NewDust(Projectile.Center, 8, 8, DustID.RedTorch, 0f, 0f, 0, default, 1f);
                     Main.dust[ghostlyRed].position = Projectile.Center;
                     Main.dust[ghostlyRed].velocity = Projectile.velocity;
                     Main.dust[ghostlyRed].noGravity = true;

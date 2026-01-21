@@ -1,18 +1,20 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using System.IO;
+using CalamityMod.Particles;
+using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.NPCs.SupremeCalamitas
 {
+    [LongDistanceNetSync]
     public class SepulcherHead : ModNPC
     {
         public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/SepulcherDeath");
@@ -21,11 +23,12 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         private const int maxLength = 52;
         private float passedVar = 0f;
         private bool TailSpawned = false;
+        private float AttackCooldown = 0;
 
         public override void SetStaticDefaults()
         {
             NPCID.Sets.BossBestiaryPriority.Add(Type);
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 PortraitPositionXOverride = 30,
                 PortraitPositionYOverride = 0,
@@ -48,8 +51,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             global.DR = 0.999999f;
             global.unbreakableDR = true;
             NPC.lifeMax = CalamityWorld.revenge ? 345000 : 300000;
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -69,9 +70,10 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             int associatedNPCType = ModContent.NPCType<SupremeCalamitas>();
             bestiaryEntry.UIInfoProvider = new CommonEnemyUICollectionInfoProvider(ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[associatedNPCType], quickUnlock: true);
 
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Sepulcher")
+                new MoonLordPortraitBackgroundProviderBestiaryInfoElement(), // Gives black background
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Sepulcher")
             });
         }
 
@@ -94,6 +96,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
         public override void AI()
         {
+            if (AttackCooldown > 0)
+                AttackCooldown--;
             CalamityGlobalNPC.SCalWorm = NPC.whoAmI;
 
             // Get a target
@@ -164,7 +168,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     }
                     TailSpawned = true;
                 }
-                if (!NPC.active && Main.netMode == NetmodeID.Server)
+                if (!NPC.active && Main.dedServ)
                 {
                     NetMessage.SendData(MessageID.DamageNPC, -1, -1, null, NPC.whoAmI, -1f, 0f, 0f, 0, 0, 0);
                 }
@@ -187,15 +191,16 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 NPC.HitEffect();
                 NPC.active = false;
                 NPC.netUpdate = true;
+                return;
             }
             else
                 NPC.Opacity = MathHelper.Clamp(NPC.Opacity + 0.165f, 0f, 1f);
 
-            Vector2 segmentLocation = new Vector2(NPC.position.X + NPC.width * 0.5f, NPC.position.Y + NPC.height * 0.5f);
-            float targetX = Main.player[NPC.target].position.X + (Main.player[NPC.target].width / 2);
-            float targetY = Main.player[NPC.target].position.Y + (Main.player[NPC.target].height / 2);
-            float sepMaxSpeed = BossRushEvent.BossRushActive ? 12.5f : 10f;
-            float sepAcceleration = BossRushEvent.BossRushActive ? 0.125f : 0.1f;
+            Vector2 segmentLocation = NPC.Center;
+            float targetX = CalamityGlobalNPC.SCal < 0 ? 0 : Main.npc[CalamityGlobalNPC.SCal].position.X + (Main.player[NPC.target].width / 2);
+            float targetY = CalamityGlobalNPC.SCal < 0 ? 0 : Main.npc[CalamityGlobalNPC.SCal].position.Y + (Main.player[NPC.target].height / 2);
+            float sepMaxSpeed = 20f;
+            float sepAcceleration = 0.175f + (0.37f - AttackCooldown * 0.0015f);
 
             float fasterMaxSpeed = sepMaxSpeed * 1.3f;
             float slowerMaxSpeed = sepMaxSpeed * 0.7f;
@@ -321,6 +326,37 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 }
             }
             NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) + MathHelper.PiOver2;
+            float targetDist = Vector2.Distance(NPC.Center, Main.npc[CalamityGlobalNPC.SCal].Center);
+            if (targetDist <= 110 && AttackCooldown <= 0)
+            {
+                AttackCooldown = 150;
+
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    int type = ModContent.ProjectileType<BrimstoneBarrage>();
+                    int totalProjectiles = 30;
+                    float radians = MathHelper.TwoPi / totalProjectiles;
+                    float velocity = 1f;
+                    float projectileVelocityToPass = 15f;
+                    Vector2 spinningPoint = Vector2.Normalize(new Vector2(-velocity, -velocity));
+                    for (int k = 0; k < totalProjectiles; k++)
+                    {
+                        Vector2 projectileVelocity = spinningPoint.RotatedBy(radians * k);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileVelocity, type, SupremeCalamitas.DartDamage, 0f, Main.myPlayer, 0f, 3f, projectileVelocityToPass);
+                    }
+                    NPC.netUpdate = true;
+                }
+
+                Particle bloom = new BloomParticle(NPC.Center, Vector2.Zero, Color.Red, 0.1f, 0.9f, 30, false);
+                GeneralParticleHandler.SpawnParticle(bloom);
+                Particle bloom2 = new BloomParticle(NPC.Center, Vector2.Zero, Color.White, 0.1f, 0.8f, 30, false);
+                GeneralParticleHandler.SpawnParticle(bloom2);
+
+                Particle pulse = new DirectionalPulseRing(NPC.Center, Vector2.Zero, Color.Red, new Vector2(2f, 2f), 0, 0f, 0.9f, 25);
+                GeneralParticleHandler.SpawnParticle(pulse);
+
+                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/DeadSunRicochet") with { Pitch = -0.65f, Volume = 1.8f }, NPC.Center);
+            }
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -328,17 +364,13 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             if (NPC.IsABestiaryIconDummy)
                 NPC.Opacity = 1f;
 
-            SpriteEffects spriteEffects = SpriteEffects.None;
-            if (NPC.spriteDirection == 1)
-                spriteEffects = SpriteEffects.FlipHorizontally;
-
-            Texture2D texture2D15 = TextureAssets.Npc[NPC.type].Value;
-            Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[NPC.type].Value.Width / 2), (float)(TextureAssets.Npc[NPC.type].Value.Height / 2));
+            Texture2D texture2D15 = TextureAssets.Npc[Type].Value;
+            Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[Type].Value.Width / 2), (float)(TextureAssets.Npc[Type].Value.Height / 2));
 
             Vector2 drawLocation = NPC.Center - screenPos;
             drawLocation -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height)) * NPC.scale / 2f;
             drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-            spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+            spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, SpriteEffects.None, 0f);
 
             return false;
         }
@@ -358,7 +390,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             }
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     for (int i = 1; i <= 3; i++)
                     {

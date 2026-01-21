@@ -1,8 +1,10 @@
 ﻿using CalamityMod.Items.Placeables.FurnitureSacrilegious;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent.ObjectInteractions;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
@@ -11,25 +13,27 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
 {
     public class SacrilegiousChestTile : ModTile
     {
+        public Asset<Texture2D> GlowTexture;
+
         public override void SetStaticDefaults()
         {
             this.SetUpChest(ModContent.ItemType<SacrilegiousChest>(), true);
-            AddMapEntry(new Color(43, 19, 42), CalamityUtils.GetItemName<SacrilegiousChest>(), CalamityUtils.GetMapChestName);
+            AddMapEntry(new Color(43, 19, 42), CalamityUtils.GetItemName<SacrilegiousChest>(), FurnitureCommon.GetMapChestName);
         }
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 8, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Iron, 0f, 0f, 1, new Color(255, 255, 255), 1f);
             return false;
         }
         public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings) => true;
         public override void NumDust(int i, int j, bool fail, ref int num) => num = fail ? 1 : 3;
 
         public override LocalizedText DefaultContainerName(int frameX, int frameY) => CalamityUtils.GetItemName<SacrilegiousChest>();
-        public override void MouseOver(int i, int j) => CalamityUtils.ChestMouseOver<SacrilegiousChest>(i, j);
-        public override void MouseOverFar(int i, int j) => CalamityUtils.ChestMouseFar<SacrilegiousChest>(i, j);
+        public override void MouseOver(int i, int j) => FurnitureCommon.ChestMouseOver<SacrilegiousChest>(i, j);
+        public override void MouseOverFar(int i, int j) => FurnitureCommon.ChestMouseFar<SacrilegiousChest>(i, j);
         public override void KillMultiTile(int i, int j, int frameX, int frameY) => Chest.DestroyChest(i, j);
-        public override bool RightClick(int i, int j) => CalamityUtils.ChestRightClick(i, j);
+        public override bool RightClick(int i, int j) => FurnitureCommon.ChestRightClick(i, j);
 
         // Make the chest brighter the more stuff it has
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
@@ -41,7 +45,11 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
                 itemAmt = CountItems(Main.chest[index]);
 
             Tile tile = Main.tile[i, j];
-            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureSacrilegious/SacrilegiousChestTileGlow").Value;
+            if (tile.IsTileActuallyInvisible())
+                return;
+
+            GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureSacrilegious/SacrilegiousChestTileGlow");
+            Texture2D texture = GlowTexture.Value;
 
             int x = i;
             int y = j;
@@ -116,7 +124,7 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
             }
             return amt;
         }
-        
+
         byte Average(byte a, byte b) => (byte)((a + b) / 2);
     }
 }

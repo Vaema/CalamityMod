@@ -1,8 +1,8 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -10,27 +10,20 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class ToothBall : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 30;
             Item.height = 30;
-            Item.damage = 26;
+            Item.damage = 20;
             Item.noMelee = true;
-            Item.consumable = true;
             Item.noUseGraphic = true;
-            Item.useAnimation = 13;
+            Item.useAnimation = 16;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 13;
+            Item.useTime = 16;
             Item.knockBack = 2.5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.maxStack = 9999;
-            Item.value = 1000;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.shoot = ModContent.ProjectileType<ToothBallProjectile>();
             Item.shootSpeed = 16f;
@@ -48,21 +41,10 @@ namespace CalamityMod.Items.Weapons.Rogue
                 if (stealth.WithinBounds(Main.maxProjectiles))
                 {
                     Main.projectile[stealth].Calamity().stealthStrike = true;
-                    Main.projectile[stealth].usesLocalNPCImmunity = true;
                 }
                 return false;
             }
             return true;
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe(100).
-                AddIngredient(ItemID.CrimtaneBar).
-                AddIngredient<BloodSample>().
-                AddIngredient(ItemID.Vertebrae).
-                AddTile(TileID.DemonAltar).
-                Register();
         }
     }
 }

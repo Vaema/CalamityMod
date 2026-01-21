@@ -1,4 +1,5 @@
-﻿using CalamityMod.World;
+﻿using CalamityMod.NPCs.Providence;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -22,21 +23,24 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.penetrate = -1;
             Projectile.timeLeft = 180;
             CooldownSlot = ImmunityCooldownID.Bosses;
+            Projectile.ai[0] = MathHelper.ToRadians(Main.rand.NextFloat(-3, 3));
         }
 
         public override void AI()
         {
-            Vector2 fireVelocity = (Time / 6f).ToRotationVector2() * Main.rand.NextFloat(1.7f, 2.2f);
-            Dust fire = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(3f, 3f), Main.zenithWorld || !Main.dayTime ? 267 : 6);
-            fire.velocity = fireVelocity.RotatedBy(MathHelper.PiOver2);
-            fire.scale = Main.rand.NextFloat(1.3f, 1.45f);
-            fire.noGravity = true;
-            if (Main.zenithWorld)
-                fire.color = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB);
-            else if (!Main.dayTime)
-                fire.color = Color.Lerp(Color.Cyan, Color.BlueViolet, Main.rand.NextFloat());
+            Color c = ProvUtils.GetProjectileColor(255);
 
-            Dust.CloneDust(fire).velocity = fireVelocity.RotatedBy(-MathHelper.PiOver2);
+            GeneralParticleHandler.SpawnParticle(new GlowOrbParticle(Projectile.Center, Projectile.velocity / 2f, false, 10, 0.5f * Projectile.ai[2], c));
+            GeneralParticleHandler.SpawnParticle(new MediumMistParticle(Projectile.Center, Vector2.Zero, Color.LightSlateGray, Color.DarkSlateGray, 0.5f * Projectile.ai[2], 150, Main.rand.NextFloat(-0.01f, 0.01f)));
+
+            Projectile.ai[2] *= 0.98f;
+
+            Projectile.velocity *= 0.97f;
+
+            if (Projectile.ai[2] < 0.2f)
+            {
+                Projectile.Kill();
+            }
 
             Projectile.velocity = Projectile.velocity.RotatedBy(AngularTurnSpeed);
             Time++;

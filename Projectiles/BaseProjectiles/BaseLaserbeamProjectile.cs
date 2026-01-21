@@ -1,7 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Linq;
 using Terraria;
 using Terraria.Enums;
 using Terraria.ID;
@@ -110,19 +109,16 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         /// <summary>
         /// Calculates the laser length while taking tiles into account.
         /// </summary>
-        /// <param name="samplePointCount">The amount of samples the ray uses. The higher this is, the more precision, but also more calculations done.</param>
-        public float DetermineLaserLength_CollideWithTiles(int samplePointCount)
+        public float DetermineLaserLength_CollideWithTiles()
         {
-            float[] laserLengthSamplePoints = new float[samplePointCount];
-            Collision.LaserScan(Projectile.Center, Projectile.velocity, Projectile.scale, MaxLaserLength, laserLengthSamplePoints);
-            return laserLengthSamplePoints.Average();
+            return CalamityUtils.PreciseDistanceToTileCollisionHit(Projectile.Center, Projectile.velocity.ToRotation(), MaxLaserLength);
         }
 
         protected internal void DrawBeamWithColor(Color beamColor, float scale, int startFrame = 0, int middleFrame = 0, int endFrame = 0)
         {
-            Rectangle startFrameArea = LaserBeginTexture.Frame(1, Main.projFrames[Projectile.type], 0, startFrame);
-            Rectangle middleFrameArea = LaserMiddleTexture.Frame(1, Main.projFrames[Projectile.type], 0, middleFrame);
-            Rectangle endFrameArea = LaserEndTexture.Frame(1, Main.projFrames[Projectile.type], 0, endFrame);
+            Rectangle startFrameArea = LaserBeginTexture.Frame(1, Main.projFrames[Type], 0, startFrame);
+            Rectangle middleFrameArea = LaserMiddleTexture.Frame(1, Main.projFrames[Type], 0, middleFrame);
+            Rectangle endFrameArea = LaserEndTexture.Frame(1, Main.projFrames[Type], 0, endFrame);
 
             // Start texture drawing.
             Main.EntitySpriteDraw(LaserBeginTexture,
@@ -182,7 +178,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         #region Hook Overrides
         public override void AI()
         {
-            ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
 
             Behavior();
             ExtraBehavior();

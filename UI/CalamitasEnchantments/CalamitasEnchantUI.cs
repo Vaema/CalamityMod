@@ -1,15 +1,14 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.UI;
 using Terraria.UI.Chat;
-using Terraria.Audio;
-using Terraria.GameContent;
 
 namespace CalamityMod.UI.CalamitasEnchants
 {
@@ -172,11 +171,19 @@ namespace CalamityMod.UI.CalamitasEnchants
             if (CurrentlyHeldItem.IsAir)
                 return 0;
 
-            int cost = CurrentlyHeldItem.value * 4;
+            int cost = CurrentlyHeldItem.value * 2;
 
             // Increase the cost of enchanting significantly if doing so would upgrade the item directly.
             if (SelectedEnchantment.HasValue && SelectedEnchantment.Value.Name == CalamityUtils.GetText(EnchantmentManager.ExhumedNamePath))
-                cost = (int)MathHelper.Min(cost, Item.buyPrice(5)) * 5;
+            {
+                cost = (int)MathHelper.Min(cost, Item.buyPrice(5)) * 2;
+
+                // 29SEP2024: Ozzatron: exhuming stackable items scales the cost with the stack size
+                cost *= CurrentlyHeldItem.stack;
+            }
+
+            // Calamitas' happiness also affects the cost
+            cost = (int)(cost * Main.LocalPlayer.currentShoppingSettings.PriceAdjustment);
 
             // Make it 20% cheaper if the player has the Discount Card or Greedy Ring
             if (Main.LocalPlayer.discountAvailable)
@@ -374,7 +381,9 @@ namespace CalamityMod.UI.CalamitasEnchants
 
             bool IsExhuming = SelectedEnchantment.Value.Name == CalamityUtils.GetText(EnchantmentManager.ExhumedNamePath);
 
+            // 29SEP2024: Ozzatron: exhuming stackable items produces a stack of the same size
             int oldPrefix = CurrentlyHeldItem.prefix;
+            int oldStack = CurrentlyHeldItem.stack;
             CurrentlyHeldItem.SetDefaults(CurrentlyHeldItem.type);
             CurrentlyHeldItem.Prefix(oldPrefix);
             CurrentlyHeldItem = CurrentlyHeldItem.Clone();
@@ -383,6 +392,7 @@ namespace CalamityMod.UI.CalamitasEnchants
             {
                 CurrentlyHeldItem.SetDefaults(EnchantmentManager.ItemUpgradeRelationship[CurrentlyHeldItem.type]);
                 CurrentlyHeldItem.Prefix(oldPrefix);
+                CurrentlyHeldItem.stack = oldStack;
             }
             else
             {

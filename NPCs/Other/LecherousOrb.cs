@@ -33,7 +33,6 @@ namespace CalamityMod.NPCs.Other
             NPC.lifeMax = 180000;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.value = 0f;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath7;
             NPC.knockBackResist = 0f;
@@ -69,7 +68,7 @@ namespace CalamityMod.NPCs.Other
                 // Notify the owner that the orb has indeed spawned.
                 Owner.Calamity().awaitingLecherousOrbSpawn = false;
 
-                Vector2 destination = Vector2.Lerp(Owner.Center, Main.MouseWorld, 0.625f);
+                Vector2 destination = Vector2.Lerp(Owner.Center, Owner.ClampedMouseWorld(), 0.625f);
                 NPC.Center = Vector2.Lerp(NPC.Center, destination, 0.035f).MoveTowards(destination, 8f);
                 if (NPC.WithinRange(destination, 5f))
                     NPC.Center = destination;
@@ -98,7 +97,7 @@ namespace CalamityMod.NPCs.Other
         {
             for (int i = 0; i < 3; i++)
             {
-                Dust magic = Dust.NewDustPerfect(NPC.Center + Main.rand.NextVector2Circular(12f, 12f), 264);
+                Dust magic = Dust.NewDustPerfect(NPC.Center + Main.rand.NextVector2Circular(12f, 12f), DustID.PortalBoltTrail);
                 magic.color = Color.Red;
                 magic.velocity = Main.rand.NextVector2Circular(3f, 3f);
                 magic.fadeIn = 0.9f;
@@ -110,7 +109,7 @@ namespace CalamityMod.NPCs.Other
             {
                 for (int i = 0; i < 15; i++)
                 {
-                    Dust magic = Dust.NewDustPerfect(NPC.Center + Main.rand.NextVector2Circular(12f, 12f), 264);
+                    Dust magic = Dust.NewDustPerfect(NPC.Center + Main.rand.NextVector2Circular(12f, 12f), DustID.PortalBoltTrail);
                     magic.color = Color.Red;
                     magic.velocity = Main.rand.NextVector2Circular(6f, 6f);
                     magic.fadeIn = 1.25f;
@@ -118,7 +117,7 @@ namespace CalamityMod.NPCs.Other
                     magic.noGravity = true;
                 }
 
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     for (int i = 1; i <= 4; i++)
                         Gore.NewGoreDirect(NPC.GetSource_Death(), NPC.Center, Main.rand.NextVector2Circular(3f, 3f), Mod.Find<ModGore>($"LecherousGore{i}").Type);
@@ -159,7 +158,7 @@ namespace CalamityMod.NPCs.Other
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture = TextureAssets.Npc[Type].Value;
             Vector2 drawPosition = NPC.Center - screenPos;
             SpriteEffects direction = NPC.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 

@@ -1,13 +1,9 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Humanizer.In;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -34,12 +30,12 @@ namespace CalamityMod.Projectiles.Ranged
         public override void SetStaticDefaults()
         {
             // Unsure if it will look good with these
-            //ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
-            //ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            //ProjectileID.Sets.TrailCacheLength[Type] = 8;
+            //ProjectileID.Sets.TrailingMode[Type] = 0;
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            //CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1, ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/DragonsBreathMag").Value);
+            //CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1, ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/DragonsBreathMag").Value);
             return true;
         }
         public override void AI()

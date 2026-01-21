@@ -2,7 +2,7 @@
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.PermanentBoosters;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
@@ -25,27 +25,27 @@ namespace CalamityMod.Items.TreasureBags
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 3;
-			ItemID.Sets.BossBag[Item.type] = true;
+            ItemID.Sets.BossBag[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 32;
             Item.height = 34;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
             Item.rare = ItemRarityID.Cyan;
             Item.expert = true;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossBags;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossBags;
+        }
 
         public override bool CanRightClick() => true;
 
-		public override Color? GetAlpha(Color lightColor) => Color.Lerp(lightColor, Color.White, 0.4f);
+        public override Color? GetAlpha(Color lightColor) => Color.Lerp(lightColor, Color.White, 0.4f);
 
         public override void PostUpdate() => Item.TreasureBagLightAndDust();
 
@@ -61,12 +61,12 @@ namespace CalamityMod.Items.TreasureBags
 
         public override void ModifyItemLoot(ItemLoot itemLoot)
         {
-			// Money
-			itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<Polterghast>()));
+            // Money
+            itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<Polterghast>()));
 
             // Materials
-            itemLoot.Add(ModContent.ItemType<RuinousSoul>(), 1, 10, 20);
-            itemLoot.Add(ModContent.ItemType<Polterplasm>(), 1, 40, 50);
+            itemLoot.Add(ModContent.ItemType<RuinousSoul>(), 1, 25, 30);
+            itemLoot.Add(ModContent.ItemType<Necroplasm>(), 1, 40, 50);
 
             // Weapons
             itemLoot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, new int[]

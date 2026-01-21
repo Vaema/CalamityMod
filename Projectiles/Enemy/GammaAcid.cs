@@ -13,8 +13,8 @@ namespace CalamityMod.Projectiles.Enemy
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 2;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 2;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -48,14 +48,14 @@ namespace CalamityMod.Projectiles.Enemy
             Projectile.Damage();
             for (int i = 0; i <= 40; i++)
             {
-                int idx = Dust.NewDust(Projectile.position, 100, 100, (int)CalamityDusts.SulfurousSeaAcid, 0, 0, 0, default, 0.75f);
+                int idx = Dust.NewDust(Projectile.position, 100, 100, (int)CalamityDusts.SulphurousSeaAcid, 0, 0, 0, default, 0.75f);
                 Main.dust[idx].noGravity = true;
                 Main.dust[idx].velocity = Vector2.One.RotatedByRandom(MathHelper.TwoPi) * (Main.dust[idx].position - Projectile.Center).Length() / 30f;
                 Main.dust[idx].scale = 2.5f;
             }
             for (int i = 0; i <= 90; i++)
             {
-                int idx = Dust.NewDust(Projectile.Center, 0, 0, (int)CalamityDusts.SulfurousSeaAcid);
+                int idx = Dust.NewDust(Projectile.Center, 0, 0, (int)CalamityDusts.SulphurousSeaAcid);
                 Main.dust[idx].velocity = Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 8f;
                 Main.dust[idx].scale = 3f;
                 Main.dust[idx].noGravity = true;
@@ -66,7 +66,7 @@ namespace CalamityMod.Projectiles.Enemy
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

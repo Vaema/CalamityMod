@@ -1,6 +1,6 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -15,9 +15,10 @@ namespace CalamityMod.Projectiles.Summon
         public ref float Time => ref Projectile.ai[0];
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
+            ProjectileID.Sets.MinionShot[Type] = true;
         }
 
         public override void SetDefaults()
@@ -40,7 +41,7 @@ namespace CalamityMod.Projectiles.Summon
                     float offset = (float)Math.Sin(Time / 45f * MathHelper.TwoPi) * 10f * i;
                     Vector2 rotatedOffset = new Vector2(offset, 2f).RotatedBy(Projectile.velocity.ToRotation() + MathHelper.PiOver2);
 
-                    Dust rainbowDust = Dust.NewDustPerfect(Projectile.Center + rotatedOffset, 261);
+                    Dust rainbowDust = Dust.NewDustPerfect(Projectile.Center + rotatedOffset, DustID.AncientLight);
                     rainbowDust.color = Main.hslToRgb(Main.rand.NextFloat(), 0.9f, 0.5f);
                     rainbowDust.velocity = Vector2.Zero;
                     rainbowDust.scale = 1.5f;

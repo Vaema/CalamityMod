@@ -11,9 +11,11 @@ namespace CalamityMod.Particles
         public override bool UseAdditiveBlend => true;
         public override bool UseCustomDraw => true;
         public override bool SetLifetime => true;
+        public Player player = Main.LocalPlayer;
+        public bool PlayerCentered;
         public Vector2 Squish;
 
-        public SemiCircularSmearVFX(Vector2 position, Color color, float rotation, float scale, Vector2 squish)
+        public SemiCircularSmearVFX(Vector2 position, Color color, float rotation, float scale, Vector2 squish, bool playerCentered = false)
         {
             Position = position;
             Velocity = Vector2.Zero;
@@ -22,6 +24,12 @@ namespace CalamityMod.Particles
             Squish = squish;
             Rotation = rotation;
             Lifetime = 2;
+            PlayerCentered = playerCentered;
+        }
+        public override void Update()
+        {
+            if (PlayerCentered)
+                Position = player.MountedCenter;
         }
 
         //Use custom draw for the squish

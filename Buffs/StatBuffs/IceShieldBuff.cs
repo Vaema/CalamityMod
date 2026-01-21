@@ -1,10 +1,14 @@
-﻿using Terraria;
+﻿using CalamityMod.Items.Accessories;
+using Terraria;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.StatBuffs
 {
     public class IceShieldBuff : ModBuff
     {
+        public override LocalizedText Description => base.Description.WithFormatArgs(AquaticHeart.IceShieldDamageReductionBoost.ToPercent());
+
         public override void SetStaticDefaults()
         {
             Main.buffNoTimeDisplay[Type] = true;

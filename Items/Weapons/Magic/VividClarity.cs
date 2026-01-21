@@ -3,6 +3,7 @@ using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -19,13 +20,13 @@ namespace CalamityMod.Items.Weapons.Magic
         public static readonly SoundStyle BeamSound = new("CalamityMod/Sounds/Item/VividClarityBeamAppear");
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
         {
-            Item.width = 90;
-            Item.height = 112;
+            Item.width = 140;
+            Item.height = 140;
             Item.damage = 133;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 42;
@@ -36,12 +37,12 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 7.5f;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.UseSound = UseSound;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<VividBeam>();
             Item.shootSpeed = 6f;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo projSource, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -63,6 +64,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 }
                 f = Main.rand.NextFloat() * MathHelper.TwoPi;
             }
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 velocityReal = Main.MouseWorld - source;
             Vector2 velocityVariation = new Vector2(xPos, yPos).SafeNormalize(Vector2.UnitY) * speed;
             velocityReal = velocityReal.SafeNormalize(velocityVariation) * speed;
@@ -71,10 +73,15 @@ namespace CalamityMod.Items.Weapons.Magic
             return false;
         }
 
+        public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
+        {
+            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Magic/VividClarityGlow").Value);
+        }
+
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<ElementalRay>().
+                AddIngredient<Nucleosynthesis>().
                 AddIngredient<PhantasmalFury>().
                 AddIngredient<ShadowboltStaff>().
                 AddIngredient<UltraLiquidator>().

@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -14,10 +14,11 @@ namespace CalamityMod.Projectiles.Summon
         public ref float Time => ref Projectile.ai[0];
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.SentryShot[Projectile.type] = true;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.SentryShot[Type] = true;
         }
 
         public override void SetDefaults()
@@ -72,8 +73,8 @@ namespace CalamityMod.Projectiles.Summon
         public override bool PreDraw(ref Color lightColor)
         {
             SpriteEffects direction = Projectile.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-            Rectangle frame = texture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             for (int i = 0; i < 4; i++)
             {
                 for (int j = 0; j < Projectile.oldPos.Length / 2; j++)
@@ -100,7 +101,7 @@ namespace CalamityMod.Projectiles.Summon
 
             for (int i = 0; i < 45; i++)
             {
-                Dust ectoplasm = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(60f, 60f), 264);
+                Dust ectoplasm = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(60f, 60f), DustID.PortalBoltTrail);
                 ectoplasm.velocity = Main.rand.NextVector2Circular(2f, 2f);
                 ectoplasm.color = Projectile.GetAlpha(Color.White);
                 ectoplasm.scale = 1.45f;

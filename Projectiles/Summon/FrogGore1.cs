@@ -10,7 +10,7 @@ namespace CalamityMod.Projectiles.Summon
         public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.SentryShot[Projectile.type] = true;
+            ProjectileID.Sets.SentryShot[Type] = true;
         }
 
         public override void SetDefaults()
@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.Summon
             for (int i = 0; i < Main.rand.Next(4, 8 + 1); i++)
             {
                 Dust.NewDustPerfect(Projectile.Center + Utils.NextVector2Unit(Main.rand) * Main.rand.NextFloat(10f),
-                    (int)CalamityDusts.SulfurousSeaAcid,
+                    (int)CalamityDusts.SulphurousSeaAcid,
                     Main.rand.NextVector2Unit() * Main.rand.NextFloat(1f, 4f));
             }
         }

@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Melee;
+﻿using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 66;
             Item.height = 66;
-            Item.damage = 210;
+            Item.damage = 150;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.autoReuse = true;
@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.value = CalamityGlobalItem.RarityLightPurpleBuyPrice;
             Item.rare = ItemRarityID.LightPurple;
             Item.shoot = ModContent.ProjectileType<PwnagehammerProj>();
-            Item.shootSpeed = 29.4f;
+            Item.shootSpeed = 22f;
         }
 
 

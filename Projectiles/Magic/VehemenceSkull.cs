@@ -1,6 +1,5 @@
-using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -12,7 +11,7 @@ namespace CalamityMod.Projectiles.Magic
         public ref float Time => ref Projectile.ai[0];
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 10;
+            Main.projFrames[Type] = 10;
         }
 
         public override void SetDefaults()
@@ -43,7 +42,7 @@ namespace CalamityMod.Projectiles.Magic
                 if (Projectile.frame >= 4)
                     Projectile.frame = 0;
             }
-            else if (Projectile.owner == Main.myPlayer && Projectile.frame >= Main.projFrames[Projectile.type])
+            else if (Projectile.owner == Main.myPlayer && Projectile.frame >= Main.projFrames[Type])
                 Projectile.Kill();
 
             // Produce some light.

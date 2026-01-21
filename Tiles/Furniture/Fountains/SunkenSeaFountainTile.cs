@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Placeables.Furniture.Fountains;
+using CalamityMod.Waters;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -14,16 +15,16 @@ namespace CalamityMod.Tiles.Furniture.Fountains
 
         public override void NearbyEffects(int i, int j, bool closer)
         {
-            if (Main.tile[i, j].TileFrameX >= 36)
-                Main.SceneMetrics.ActiveFountainColor = ModContent.Find<ModWaterStyle>("CalamityMod/SunkenSeaWater").Slot;
+            if (!Main.dedServ && Main.tile[i, j].TileFrameX >= 36)
+                Main.SceneMetrics.ActiveFountainColor = BasaltGullyWater.Type;
         }
 
         public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings) => true;
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 1, 0f, 0f, 1, new Color(119, 102, 255), 1f);
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 33, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Stone, 0f, 0f, 1, new Color(119, 102, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Water, 0f, 0f, 1, new Color(255, 255, 255), 1f);
             return false;
         }
 
@@ -44,12 +45,12 @@ namespace CalamityMod.Tiles.Furniture.Fountains
 
         public override void HitWire(int i, int j)
         {
-            CalamityUtils.LightHitWire(Type, i, j, 2, 4);
+            FurnitureCommon.LightHitWire(Type, i, j, 2, 4);
         }
 
         public override bool RightClick(int i, int j)
         {
-            CalamityUtils.LightHitWire(Type, i, j, 2, 4);
+            FurnitureCommon.LightHitWire(Type, i, j, 2, 4);
             SoundEngine.PlaySound(SoundID.Mech, new Vector2(i * 16, j * 16));
             return true;
         }

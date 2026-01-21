@@ -1,9 +1,8 @@
-﻿using CalamityMod.Dusts;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -28,7 +27,7 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
             TileObjectData.newTile.DrawYOffset = 2;
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(84, 102, 39));
-            DustType = 33;
+            DustType = DustID.Water;
 
             base.SetStaticDefaults();
         }
@@ -42,7 +41,7 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
     public class PlantyMushPile2 : PlantyMushPile1
     {
     }
-    
+
     public class PlantyMushPile3 : PlantyMushPile1
     {
     }

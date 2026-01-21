@@ -3,11 +3,10 @@ using System.IO;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -23,6 +22,8 @@ namespace CalamityMod.NPCs.Abyss
 {
     public class ReaperShark : ModNPC
     {
+        public static Asset<Texture2D> ManTexture;
+
         public static readonly SoundStyle SearchRoarSound = new("CalamityMod/Sounds/Custom/ReaperSearchRoar");
         public static readonly SoundStyle EnragedRoarSound = new("CalamityMod/Sounds/Custom/ReaperEnragedRoar");
 
@@ -32,7 +33,11 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
+            Main.npcFrameCount[Type] = 4;
+            if (!Main.dedServ)
+            {
+                ManTexture = ModContent.Request<Texture2D>(Texture + "Man", AssetRequestMode.ImmediateLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -49,7 +54,7 @@ namespace CalamityMod.NPCs.Abyss
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.timeLeft = NPC.activeTime * 30;
-            NPC.value = Item.buyPrice(0, 25, 0, 0);
+            NPC.value = Item.buyPrice(gold: 25);
             NPC.HitSound = SoundID.NPCHit56;
             NPC.DeathSound = SoundID.NPCDeath60;
             NPC.knockBackResist = 0f;
@@ -61,17 +66,16 @@ namespace CalamityMod.NPCs.Abyss
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<AbyssLayer4Biome>().Type };
+
             if (Main.zenithWorld) // legg
-            {
                 NPC.height = (int)(NPC.height * 1.5f);
-            }
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.ReaperShark")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.ReaperShark")
             });
         }
 
@@ -106,7 +110,9 @@ namespace CalamityMod.NPCs.Abyss
                 NPC.soundDelay = 360;
                 if (hasBeenHit)
                 {
-                    SoundEngine.PlaySound(EnragedRoarSound, NPC.Center);
+                    // Roar becomes lower pitch when crippled
+                    float pitch = phase3 ? -0.4f : 0;
+                    SoundEngine.PlaySound(EnragedRoarSound with { Pitch = pitch }, NPC.Center);
                 }
                 else
                 {
@@ -117,7 +123,7 @@ namespace CalamityMod.NPCs.Abyss
             {
                 if (!reset2 && phase3)
                 {
-                    NPC.damage /= 2;
+                    NPC.damage = 0;
                     NPC.noTileCollide = true;
                     NPC.netAlways = true;
                     NPC.localAI[0] = 0f;
@@ -132,6 +138,9 @@ namespace CalamityMod.NPCs.Abyss
                 NPC.spriteDirection = (NPC.direction > 0) ? -1 : 1;
                 if (NPC.ai[2] == 0f)
                 {
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
+
                     NPC.TargetClosest(true);
                     if (!Main.player[NPC.target].dead && (Main.player[NPC.target].Center - NPC.Center).Length() < 170f && Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height))
                     {
@@ -146,6 +155,9 @@ namespace CalamityMod.NPCs.Abyss
 
                 if (NPC.ai[2] < 0f)
                 {
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
+
                     NPC.ai[2] += 1f;
                     if (NPC.ai[2] == 0f)
                     {
@@ -177,6 +189,9 @@ namespace CalamityMod.NPCs.Abyss
 
                         if (!canAttack)
                         {
+                            // Avoid cheap bullshit
+                            NPC.damage = 0;
+
                             if (!Collision.SolidCollision(NPC.position, NPC.width, NPC.height))
                             {
                                 NPC.noTileCollide = false;
@@ -206,6 +221,9 @@ namespace CalamityMod.NPCs.Abyss
                         }
                         if (canAttack)
                         {
+                            // Set damage
+                            NPC.damage = phase3 ? (int)Math.Round(NPC.defDamage * 0.5) : NPC.defDamage;
+
                             if (NPC.ai[3] > 0f && !Collision.SolidCollision(NPC.position, NPC.width, NPC.height))
                             {
                                 if (Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height))
@@ -303,6 +321,9 @@ namespace CalamityMod.NPCs.Abyss
                     }
                     else
                     {
+                        // Set damage
+                        NPC.damage = NPC.defDamage;
+
                         if (NPC.velocity.Y == 0f)
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -460,6 +481,9 @@ namespace CalamityMod.NPCs.Abyss
                 }
                 if (NPC.ai[0] == -1f)
                 {
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
+
                     NPC.dontTakeDamage = true;
                     NPC.chaseable = false;
                     NPC.velocity *= 0.98f;
@@ -493,7 +517,7 @@ namespace CalamityMod.NPCs.Abyss
                         {
                             Vector2 expr_80F = (Vector2.Normalize(NPC.velocity) * new Vector2((float)NPC.width / 2f, (float)NPC.height) * 0.75f * 0.5f).RotatedBy((double)((float)(i - (dustAmt / 2 - 1)) * 6.28318548f / (float)dustAmt), default) + NPC.Center;
                             Vector2 dustDirection = expr_80F - NPC.Center;
-                            int chargeDust = Dust.NewDust(expr_80F + dustDirection, 0, 0, 172, dustDirection.X * 2f, dustDirection.Y * 2f, 100, default, 1.4f);
+                            int chargeDust = Dust.NewDust(expr_80F + dustDirection, 0, 0, DustID.DungeonWater, dustDirection.X * 2f, dustDirection.Y * 2f, 100, default, 1.4f);
                             Main.dust[chargeDust].noGravity = true;
                             Main.dust[chargeDust].noLight = true;
                             Main.dust[chargeDust].velocity = Vector2.Normalize(dustDirection) * 3f;
@@ -512,6 +536,9 @@ namespace CalamityMod.NPCs.Abyss
                 }
                 else if (NPC.ai[0] == 0f && !player.dead)
                 {
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
+
                     NPC.dontTakeDamage = false;
                     NPC.chaseable = true;
                     if (NPC.ai[1] == 0f)
@@ -568,6 +595,9 @@ namespace CalamityMod.NPCs.Abyss
                     NPC.ai[2] += 1f;
                     if (NPC.ai[2] >= 30f)
                     {
+                        // Set damage
+                        NPC.damage = NPC.defDamage;
+
                         NPC.ai[0] = 1f;
                         NPC.ai[1] = 0f;
                         NPC.ai[2] = 0f;
@@ -588,12 +618,15 @@ namespace CalamityMod.NPCs.Abyss
                 }
                 else if (NPC.ai[0] == 1f)
                 {
+                    // Set damage
+                    NPC.damage = NPC.defDamage;
+
                     int phase2DustAmt = 7;
                     for (int j = 0; j < phase2DustAmt; j++)
                     {
                         Vector2 arg_E1C_0 = (Vector2.Normalize(NPC.velocity) * new Vector2((float)(NPC.width + 50) / 2f, (float)NPC.height) * 0.75f).RotatedBy((double)(j - (phase2DustAmt / 2 - 1)) * 3.1415926535897931 / (double)(float)phase2DustAmt, default) + shorkCenter;
                         Vector2 phase2DustRotation = ((float)(Main.rand.NextDouble() * 3.1415927410125732) - 1.57079637f).ToRotationVector2() * (float)Main.rand.Next(3, 8);
-                        int phase2Dust = Dust.NewDust(arg_E1C_0 + phase2DustRotation, 0, 0, 172, phase2DustRotation.X * 2f, phase2DustRotation.Y * 2f, 100, default, 1.4f);
+                        int phase2Dust = Dust.NewDust(arg_E1C_0 + phase2DustRotation, 0, 0, DustID.DungeonWater, phase2DustRotation.X * 2f, phase2DustRotation.Y * 2f, 100, default, 1.4f);
                         Main.dust[phase2Dust].noGravity = true;
                         Main.dust[phase2Dust].noLight = true;
                         Main.dust[phase2Dust].velocity /= 4f;
@@ -612,7 +645,7 @@ namespace CalamityMod.NPCs.Abyss
                     {
                         Vector2 direction = shorkCenter - player.Center;
                         direction.Normalize();
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, direction * 10f, ProjectileID.DemonSickle, NPC.damage / 2, 0f, Main.myPlayer);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, direction * 10f, ProjectileID.DemonSickle, 80, 0f, Main.myPlayer);
                     }
                 }
             }
@@ -634,7 +667,7 @@ namespace CalamityMod.NPCs.Abyss
         public override void FindFrame(int frameHeight)
         {
             int newFrameHeight = (int)(frameHeight * (Main.zenithWorld ? 1.5f : 1f));
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Scale = 0.3f,
                 PortraitPositionXOverride = 54f,
@@ -645,7 +678,7 @@ namespace CalamityMod.NPCs.Abyss
             value.Position.Y -= 50f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
             NPC.frameCounter += hasBeenHit || NPC.IsABestiaryIconDummy ? 0.15f : 0.075f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * newFrameHeight;
         }
@@ -658,11 +691,11 @@ namespace CalamityMod.NPCs.Abyss
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
-            Asset<Texture2D> npcTexture = Main.zenithWorld ? ModContent.Request<Texture2D>("CalamityMod/NPCs/Abyss/ReaperSharkMan") : TextureAssets.Npc[NPC.type];
+            Asset<Texture2D> npcTexture = Main.zenithWorld ? ManTexture : TextureAssets.Npc[Type];
             Rectangle nframe = npcTexture.Frame(1, 4, 0, (int)NPC.frameCounter);
-            Vector2 origin = new Vector2((float)(npcTexture.Value.Width / 2), (float)(npcTexture.Value.Height / Main.npcFrameCount[NPC.type] / 2));
+            Vector2 origin = new Vector2((float)(npcTexture.Value.Width / 2), (float)(npcTexture.Value.Height / Main.npcFrameCount[Type] / 2));
             Vector2 npcOffset = NPC.Center - screenPos;
-            npcOffset -= new Vector2((float)npcTexture.Value.Width, (float)(npcTexture.Value.Height / Main.npcFrameCount[NPC.type])) * NPC.scale / 2f;
+            npcOffset -= new Vector2((float)npcTexture.Value.Width, (float)(npcTexture.Value.Height / Main.npcFrameCount[Type])) * NPC.scale / 2f;
             npcOffset += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
 
             spriteBatch.Draw(npcTexture.Value, npcOffset, nframe, NPC.GetAlpha(drawColor), NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
@@ -673,7 +706,7 @@ namespace CalamityMod.NPCs.Abyss
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<CrushDepth>(), 300, true);
+                target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 300, true);
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
@@ -690,12 +723,12 @@ namespace CalamityMod.NPCs.Abyss
             npcLoot.Add(ModContent.ItemType<AnechoicCoating>(), 1, 2, 3);
 
             var postPolter = npcLoot.DefineConditionalDropSet(DropHelper.PostPolter());
-            postPolter.Add(ModContent.ItemType<ReaperTooth>(), 1, 3, 4);
+            postPolter.Add(ModContent.ItemType<ReaperTooth>(), 1, 6, 8);
             postPolter.Add(ModContent.ItemType<DeepSeaDumbbell>(), 3);
             postPolter.Add(ModContent.ItemType<Valediction>(), 3);
 
-            var postClone = npcLoot.DefineConditionalDropSet(DropHelper.PostCal());
-            postClone.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 10, 17, 14, 22));
+            var postLevi = npcLoot.DefineConditionalDropSet(DropHelper.PostLevi());
+            postLevi.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 10, 17, 14, 22));
         }
 
         public override void HitEffect(NPC.HitInfo hit)

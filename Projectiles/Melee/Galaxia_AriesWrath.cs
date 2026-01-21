@@ -1,15 +1,15 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using System.Linq;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Linq;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
 using static CalamityMod.CalamityUtils;
-using Terraria.Audio;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -21,7 +21,6 @@ namespace CalamityMod.Projectiles.Melee
         public Player Owner => Main.player[Projectile.owner];
         public ref float ChainSwapTimer => ref Projectile.ai[0];
         public ref float BlastCooldown => ref Projectile.ai[1];
-        private bool OwnerCanShoot => Owner.channel && !Owner.noItems && !Owner.CCed && Owner.HeldItem.type == ItemType<FourSeasonsGalaxia>();
 
         const float MaxProjReach = 500f; //How far away do you check for enemies for the extra projs from crits be
 
@@ -31,8 +30,8 @@ namespace CalamityMod.Projectiles.Melee
         public override void SetStaticDefaults()
         {
 
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 2;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 2;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
 
         }
         public override void SetDefaults()
@@ -88,9 +87,8 @@ namespace CalamityMod.Projectiles.Melee
         {
             float longestReach = MaxProjReach;
             NPC target = null;
-            for (int i = 0; i < Main.maxNPCs; ++i)
+            foreach (NPC npc in Main.ActiveNPCs)
             {
-                NPC npc = Main.npc[i];
                 if (!excludedTargets.Contains(npc) && npc.CanBeChasedBy() && !npc.friendly && !npc.townNPC)
                 {
                     float distance = Vector2.Distance(hitFrom, npc.Center);
@@ -120,9 +118,9 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
-            if (!OwnerCanShoot)
+            if (Owner.CantUseHoldout() || Owner.HeldItem.type != ItemType<FourSeasonsGalaxia>())
             {
-                //Kill the projectile if too far away from the player or close enough to get "re-absorbed)
+                // Kill the projectile if too far away from the player or close enough to get "re-absorbed")
                 if ((Owner.Center - Projectile.Center).Length() < 30f || (Owner.Center - Projectile.Center).Length() > 2000f || Projectile.velocity.Length() > 100f)
                     Projectile.Kill();
 
@@ -148,16 +146,15 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Projectile.Center = Owner.Center;
                 SoundEngine.PlaySound(SoundID.Item120 with { Volume = SoundID.Item120.Volume * 0.5f }, Projectile.Center);
-
-                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 3)
-                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = 3;
+                Main.LocalPlayer.SetScreenshake(3f);
             }
 
             Projectile.scale = 1f + ScaleEquation();
             Projectile.timeLeft = 2;
 
-            Projectile.Center = Vector2.Lerp(Projectile.Center, Owner.Calamity().mouseWorld, 0.05f * ThrowDisplace());
-            Projectile.Center = Projectile.Center.MoveTowards(Owner.Calamity().mouseWorld, 40f * ThrowDisplace());
+            Vector2 mouse = Owner.ClampedMouseWorld();
+            Projectile.Center = Vector2.Lerp(Projectile.Center, mouse, 0.05f * ThrowDisplace());
+            Projectile.Center = Projectile.Center.MoveTowards(mouse, 40f * ThrowDisplace());
 
             if ((Projectile.Center - Owner.Center).Length() > FourSeasonsGalaxia.AriesAttunement_Reach)
                 Projectile.Center = Owner.Center + Owner.SafeDirectionTo(Projectile.Center, Vector2.Zero) * FourSeasonsGalaxia.AriesAttunement_Reach;
@@ -170,7 +167,7 @@ namespace CalamityMod.Projectiles.Melee
             Owner.itemRotation = Projectile.velocity.ToRotation();
             if (Owner.direction != 1)
             {
-                Owner.itemRotation -= 3.14f;
+                Owner.itemRotation -= MathHelper.Pi;
             }
             Owner.itemRotation = MathHelper.WrapAngle(Owner.itemRotation);
             Owner.itemTime = 2;
@@ -195,7 +192,7 @@ namespace CalamityMod.Projectiles.Melee
                 float maxDistance = Projectile.scale * 82f;
                 Vector2 distance = Main.rand.NextVector2Circular(maxDistance, maxDistance);
                 Vector2 angularVelocity = Utils.SafeNormalize(distance.RotatedBy(MathHelper.PiOver2), Vector2.Zero) * 2f * (1f + distance.Length() / 15f);
-                Particle glitter = new CritSpark(Projectile.Center + distance, angularVelocity, Main.rand.Next(3) == 0 ? Color.HotPink : Color.Plum, Color.DarkOrchid, 1f + 1 * (distance.Length() / maxDistance), 10, 0.05f, 3f);
+                Particle glitter = new CritSpark(Projectile.Center + distance, angularVelocity, Main.rand.NextBool(3)? Color.HotPink : Color.Plum, Color.DarkOrchid, 1f + 1 * (distance.Length() / maxDistance), 10, 0.05f, 3f);
                 GeneralParticleHandler.SpawnParticle(glitter);
             }
 
@@ -205,7 +202,7 @@ namespace CalamityMod.Projectiles.Melee
             Particle smoke = new HeavySmokeParticle(Projectile.Center + smokePos, smokeSpeed, Color.Lerp(Color.Navy, Color.Indigo, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 6f)), 30, Main.rand.NextFloat(0.4f, 1f) * Projectile.scale, 0.8f, 0, false, 0, true);
             GeneralParticleHandler.SpawnParticle(smoke);
 
-            if (Main.rand.Next(3) == 0)
+            if (Main.rand.NextBool(3))
             {
                 Particle smokeGlow = new HeavySmokeParticle(Projectile.Center + smokePos, smokeSpeed, Main.hslToRgb(0.85f, 1, 0.5f), 20, Main.rand.NextFloat(0.4f, 1f) * Projectile.scale, 0.8f, 0, true, 0.01f, true);
                 GeneralParticleHandler.SpawnParticle(smokeGlow);

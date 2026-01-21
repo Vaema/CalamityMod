@@ -1,9 +1,9 @@
+﻿using System;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -14,8 +14,8 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -27,6 +27,8 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.timeLeft = 280;
             Projectile.penetrate = -1;
             Projectile.DamageType = RogueDamageClass.Instance;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -47,13 +49,13 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 Projectile.velocity = Main.rand.NextFloat(-1.15f, -0.85f) * oldVelocity * Bounciness;
             }
-            SoundEngine.PlaySound(SoundID.NPCHit19 with { Volume = SoundID.NPCHit19.Volume * 0.7f}, Projectile.Center);
+            SoundEngine.PlaySound(SoundID.NPCHit19 with { Volume = SoundID.NPCHit19.Volume * 0.7f }, Projectile.Center);
             return false;
         }
         public override void OnKill(int timeLeft)
         {
             // Explode into a large display of blood.
-            SoundEngine.PlaySound(SoundID.NPCHit19 with { Volume = SoundID.NPCHit19.Volume * 0.7f}, Projectile.Center);
+            SoundEngine.PlaySound(SoundID.NPCHit19 with { Volume = SoundID.NPCHit19.Volume * 0.7f }, Projectile.Center);
             int dustCount = Main.rand.Next(15, 26);
             for (int index = 0; index < dustCount; index++)
             {
@@ -63,7 +65,7 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 2);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 2);
             return false;
         }
     }

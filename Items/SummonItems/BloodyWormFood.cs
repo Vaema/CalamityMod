@@ -4,7 +4,6 @@ using CalamityMod.NPCs.Perforator;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.SummonItems
 {
@@ -13,7 +12,7 @@ namespace CalamityMod.Items.SummonItems
         public new string LocalizationCategory => "Items.SummonItems";
         public override void SetStaticDefaults()
         {
-           			ItemID.Sets.SortingPriorityBossSpawns[Type] = 5; // Abeemination / Deer Thing
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 5; // Abeemination / Deer Thing
         }
 
         public override void SetDefaults()
@@ -27,10 +26,10 @@ namespace CalamityMod.Items.SummonItems
             Item.consumable = false;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
+        }
 
         public override bool CanUseItem(Player player)
         {
@@ -39,23 +38,19 @@ namespace CalamityMod.Items.SummonItems
 
         public override bool? UseItem(Player player)
         {
-            SoundEngine.PlaySound(SoundID.Roar, player.Center);
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-                NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<PerforatorHive>());
-            else
-                NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, player.whoAmI, ModContent.NPCType<PerforatorHive>());
-
+            CalamityUtils.SpawnBossUsingItem<PerforatorHive>(player, SoundID.Roar);
             return true;
         }
 
         public override void AddRecipes()
         {
-            CreateRecipe().
-                AddIngredient(ItemID.CrimtaneBar, 3).
-                AddIngredient<BloodSample>(7).
-                AddIngredient(ItemID.Vertebrae, 13).
-                AddTile(TileID.DemonAltar).
-                Register();
+            CreateRecipe()
+                .AddIngredient(ItemID.CrimtaneBar, 3)
+                .AddIngredient<AerialiteBar>(7)
+                .AddIngredient(ItemID.Vertebrae, 13)
+                .AddTile(TileID.DemonAltar)
+                .AddDecraftCondition(CalamityConditions.DownedPerforator)
+                .Register();
         }
     }
 }

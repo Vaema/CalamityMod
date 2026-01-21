@@ -1,13 +1,13 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.Collections.Generic;
+using CalamityMod.CalPlayer;
 using CalamityMod.TileEntities;
-using Terraria.ID;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.GameContent;
+using Terraria.ID;
 
 namespace CalamityMod.UI.DraedonsArsenal
 {

@@ -12,9 +12,10 @@ namespace CalamityMod.Projectiles.Summon
         public const float DistanceToCheck = 1100f;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 4;
+            Main.projPet[Type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -112,13 +113,13 @@ namespace CalamityMod.Projectiles.Summon
                 if (Projectile.Distance(player.Center) > 3250f)
                 {
                     Projectile.Center = player.Center;
-                    for (int i = 0; i < Main.projectile.Length; i++)
+                    foreach (Projectile p in Main.ActiveProjectiles)
                     {
-                        if (Main.projectile[i].active && Main.projectile[i].owner == Projectile.owner &&
-                            Main.projectile[i].type == ModContent.ProjectileType<SkeletalDragonChild>())
+                        if (p.owner == Projectile.owner &&
+                            p.type == ModContent.ProjectileType<SkeletalDragonChild>())
                         {
-                            Main.projectile[i].Center = player.Center;
-                            Main.projectile[i].netUpdate = true;
+                            p.Center = player.Center;
+                            p.netUpdate = true;
                         }
                     }
                     Projectile.netUpdate = true;
@@ -132,10 +133,12 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.frame = 0;
             }
         }
+
+        public override bool MinionContactDamage() => true;
     }
 }

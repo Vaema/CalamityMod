@@ -1,7 +1,7 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using Terraria.ModLoader;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Microsoft.Xna.Framework;
+using Terraria.ModLoader;
 
 namespace CalamityMod.UI.DraedonSummoning
 {

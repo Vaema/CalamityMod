@@ -1,10 +1,14 @@
-﻿using Terraria;
+﻿using CalamityMod.Items.Accessories;
+using Terraria;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.StatBuffs
 {
     public class PinkJellyRegen : ModBuff
     {
+        public override LocalizedText Description => base.Description.WithFormatArgs(LifeJelly.AuraRegenBoost.ToRegenPerSecond());
+
         public override void SetStaticDefaults()
         {
             Main.debuff[Type] = false;

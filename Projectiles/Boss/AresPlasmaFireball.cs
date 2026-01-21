@@ -1,14 +1,13 @@
-﻿using CalamityMod.Events;
-using CalamityMod.NPCs;
-using CalamityMod.World;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.IO;
+using CalamityMod.NPCs;
+using CalamityMod.NPCs.ExoMechs.Ares;
+using CalamityMod.Sounds;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -19,14 +18,13 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 6;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            Main.projFrames[Type] = 6;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
         {
-            Projectile.Calamity().DealsDefenseDamage = true;
             Projectile.width = 36;
             Projectile.height = 36;
             Projectile.hostile = true;
@@ -35,7 +33,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.penetrate = -1;
             Projectile.Opacity = 0f;
             CooldownSlot = ImmunityCooldownID.Bosses;
-            Projectile.timeLeft = BossRushEvent.BossRushActive ? 96 : timeLeft;
+            Projectile.timeLeft = timeLeft;
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -58,7 +56,7 @@ namespace CalamityMod.Projectiles.Boss
             }
 
             int fadeInTime = 3;
-            Projectile.Opacity = MathHelper.Clamp(1f - ((Projectile.timeLeft - ((BossRushEvent.BossRushActive ? 96 : timeLeft) - fadeInTime)) / (float)fadeInTime), 0f, 1f);
+            Projectile.Opacity = MathHelper.Clamp(1f - ((Projectile.timeLeft - (timeLeft - fadeInTime)) / (float)fadeInTime), 0f, 1f);
 
             Lighting.AddLight(Projectile.Center, 0f, 0.6f * Projectile.Opacity, 0f);
 
@@ -89,14 +87,14 @@ namespace CalamityMod.Projectiles.Boss
                     dustVel = dustVel.RotatedByRandom(2.0f * angleRandom);
                     int randomDustType = Main.rand.NextBool() ? 107 : 110;
 
-                    int plasmaDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 200, default, 1.7f);
+                    int plasmaDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 200, default, 1.7f);
                     Main.dust[plasmaDust].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (float)Main.rand.NextDouble() * Projectile.width / 2f;
                     Main.dust[plasmaDust].noGravity = true;
 
                     Dust dust = Main.dust[plasmaDust];
                     dust.velocity *= 3f;
 
-                    plasmaDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 100, default, 0.8f);
+                    plasmaDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 100, default, 0.8f);
                     Main.dust[plasmaDust].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (float)Main.rand.NextDouble() * Projectile.width / 2f;
 
                     dust = Main.dust[plasmaDust];
@@ -114,7 +112,7 @@ namespace CalamityMod.Projectiles.Boss
                     dustVel = dustVel.RotatedByRandom(2.0f * angleRandom);
                     int randomDustType = Main.rand.NextBool() ? 107 : 110;
 
-                    int plasmaDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 0, default, 2f);
+                    int plasmaDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 0, default, 2f);
                     Main.dust[plasmaDust2].position = Projectile.Center + Vector2.UnitX.RotatedByRandom(MathHelper.Pi).RotatedBy(Projectile.velocity.ToRotation()) * Projectile.width / 3f;
                     Main.dust[plasmaDust2].noGravity = true;
 
@@ -126,21 +124,12 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool CanHitPlayer(Player target) => Projectile.Opacity == 1f;
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (info.Damage <= 0 || Projectile.Opacity != 1f)
-                return;
-
-            target.AddBuff(BuffID.OnFire, 360);
-            target.AddBuff(BuffID.CursedInferno, 180);
-        }
-
         public override bool PreDraw(ref Color lightColor)
         {
             lightColor.R = (byte)(255 * Projectile.Opacity);
             lightColor.G = (byte)(255 * Projectile.Opacity);
             lightColor.B = (byte)(255 * Projectile.Opacity);
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
@@ -164,7 +153,7 @@ namespace CalamityMod.Projectiles.Boss
                 }
 
                 // Plasma bolts
-                int totalProjectiles = BossRushEvent.BossRushActive ? 12 : 8;
+                int totalProjectiles = 8;
 
                 // Reduce the total amount of projectiles by half if Ares Plasma Arm is shooting them and in deathray phase and not the last mech
                 if (Projectile.ai[0] == -1f)
@@ -180,7 +169,7 @@ namespace CalamityMod.Projectiles.Boss
                 for (int k = 0; k < totalProjectiles; k++)
                 {
                     Vector2 velocity2 = spinningPoint.RotatedBy(radians * k);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity2, type, (int)Math.Round(Projectile.damage * 0.8), 0f, Main.myPlayer);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity2, type, AresPlasmaFlamethrower.BoltDamage, 0f, Main.myPlayer);
                 }
             }
 

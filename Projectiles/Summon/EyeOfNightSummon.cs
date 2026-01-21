@@ -1,7 +1,7 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using System;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -18,8 +18,9 @@ namespace CalamityMod.Projectiles.Summon
         public const int ShootRate = 60;
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projPet[Type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -117,7 +118,5 @@ namespace CalamityMod.Projectiles.Summon
 
             Projectile.velocity = (destination - Projectile.Center).SafeNormalize(Vector2.Zero) * flySpeed;
         }
-
-        public override bool? CanDamage() => false;
     }
 }

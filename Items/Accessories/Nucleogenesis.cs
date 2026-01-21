@@ -24,9 +24,9 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 50;
             Item.height = 52;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.accessory = true;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -35,7 +35,7 @@ namespace CalamityMod.Items.Accessories
             modPlayer.nucleogenesis = true;
             modPlayer.shadowMinions = true; //shadowflame
             modPlayer.holyMinions = true; //holy flames
-            modPlayer.voltaicJelly = true; //electrified
+            modPlayer.voltaicJelly = true; //static discharge
             modPlayer.starTaintedGenerator = true; //astral infection and irradiated
             player.GetKnockback<SummonDamageClass>() += 3f;
             player.GetDamage<SummonDamageClass>() += 0.15f;
@@ -48,8 +48,6 @@ namespace CalamityMod.Items.Accessories
             CreateRecipe().
                 AddIngredient<StarTaintedGenerator>().
                 AddIngredient<StatisCurse>().
-                AddIngredient(ItemID.LunarBar, 8).
-                AddIngredient<GalacticaSingularity>(4).
                 AddIngredient<AscendantSpiritEssence>(4).
                 AddTile<CosmicAnvil>().
                 Register();

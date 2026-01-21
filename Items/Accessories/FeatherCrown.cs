@@ -12,11 +12,11 @@ namespace CalamityMod.Items.Accessories
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetStaticDefaults()
         {
-           
-            if (Main.netMode != NetmodeID.Server)
+
+            if (!Main.dedServ)
             {
                 int equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Face);
-				ArmorIDs.Face.Sets.OverrideHelmet[equipSlot] = true;
+                ArmorIDs.Face.Sets.OverrideHelmet[equipSlot] = true;
             }
         }
 
@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 44;
             Item.height = 38;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.accessory = true;
         }
@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Accessories
                 AddRecipeGroup("AnyGoldCrown").
                 AddIngredient<AerialiteBar>(6).
                 AddIngredient(ItemID.Feather, 8).
-                AddTile(TileID.SkyMill).
+                AddTile(TileID.Anvils).
                 Register();
         }
     }

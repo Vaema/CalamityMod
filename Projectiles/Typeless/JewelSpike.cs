@@ -6,12 +6,12 @@ namespace CalamityMod.Projectiles.Typeless
     public class JewelSpike : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
-		public ref float RealPenetrate => ref Projectile.ai[0];
-		public const int MaxPenetrate = 2;
+        public ref float RealPenetrate => ref Projectile.ai[0];
+        public const int MaxPenetrate = 2;
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 5;
+            Main.projFrames[Type] = 5;
         }
 
         public override void SetDefaults()
@@ -33,7 +33,7 @@ namespace CalamityMod.Projectiles.Typeless
 
             if (Main.rand.NextBool(5) && Projectile.frame < 3)
             {
-                int crystalDust = Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 87, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                int crystalDust = Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.GemTopaz, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
                 Main.dust[crystalDust].noGravity = true;
             }
 
@@ -55,7 +55,7 @@ namespace CalamityMod.Projectiles.Typeless
         {
             if (Projectile.owner == Main.myPlayer)
             {
-                for (int index = 0; index < 3; ++index)
+                for (int index = 0; index < 2; ++index)
                 {
                     float SpeedX = -Projectile.velocity.X * Main.rand.NextFloat(0.4f, 0.7f) + Main.rand.NextFloat(-8f, 8f);
                     float SpeedY = -Projectile.velocity.Y * Main.rand.NextFloat(0.4f, 0.7f) + Main.rand.NextFloat(-8f, 8f);

@@ -3,13 +3,14 @@ using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.NPCs.Ravager
 {
+    [HasPierceResist]
     public class RavagerHead : ModNPC
     {
         public static readonly SoundStyle MissileSound = new("CalamityMod/Sounds/Custom/Ravager/RavagerMissileLaunch");
@@ -17,12 +18,16 @@ namespace CalamityMod.NPCs.Ravager
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
         }
+
+        public static int NukeDamage = 35; // 140
+        public static int PostProviNukeBuff = 25; // +100 = 240
 
         public override void SetDefaults()
         {
             NPC.aiStyle = -1;
-            NPC.damage = 50;
+            NPC.damage = 0; // No contact damage
             NPC.width = 80;
             NPC.height = 80;
             NPC.defense = 40;
@@ -32,7 +37,6 @@ namespace CalamityMod.NPCs.Ravager
             AIType = -1;
             NPC.netAlways = true;
             NPC.noGravity = true;
-            NPC.canGhostHeal = false;
             NPC.noTileCollide = true;
             NPC.alpha = 255;
             NPC.HitSound = RavagerBody.HitSound;
@@ -46,8 +50,6 @@ namespace CalamityMod.NPCs.Ravager
             {
                 NPC.lifeMax = 45000;
             }
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
         }
@@ -64,9 +66,6 @@ namespace CalamityMod.NPCs.Ravager
 
             bool provy = DownedBossSystem.downedProvidence && !BossRushEvent.BossRushActive;
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
-
-            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
-            NPC.damage = 0;
 
             if (NPC.timeLeft < 1800)
                 NPC.timeLeft = 1800;
@@ -94,13 +93,12 @@ namespace CalamityMod.NPCs.Ravager
                     NPC.TargetClosest();
 
                 NPC.ai[1] = 0f;
-                int type = ModContent.ProjectileType<ScavengerNuke>();
-                int damage = NPC.GetProjectileDamage(type);
+                int type = ModContent.ProjectileType<RavagerNuke>();
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     Vector2 shootFromVector = new Vector2(NPC.Center.X, NPC.Center.Y - 20f);
                     Vector2 velocity = new Vector2(0f, -15f);
-                    int nuke = Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFromVector, velocity, type, damage + (provy ? 30 : 0), 0f, Main.myPlayer, NPC.target, 0f);
+                    int nuke = Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFromVector, velocity, type, NukeDamage + (provy ? PostProviNukeBuff : 0), 0f, Main.myPlayer, NPC.target, 0f);
                     Main.projectile[nuke].velocity.Y = -15f;
                 }
             }

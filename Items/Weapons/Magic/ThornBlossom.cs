@@ -14,14 +14,14 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 66;
             Item.height = 68;
-            Item.damage = 90;
+            Item.damage = 120;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 10;
             Item.useTime = 23;
@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2f;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.UseSound = SoundID.Item109;
             Item.autoReuse = true;
@@ -42,11 +42,11 @@ namespace CalamityMod.Items.Weapons.Magic
             player.statLife -= 3;
             if (player.statLife <= 0)
             {
-                player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ThornBlossom").Format(player.name)), 1000.0, 0, false);
+                player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ThornBlossom").ToNetworkText(player.name)), 1000.0, 0, false);
             }
             for (int index = 0; index < 3; ++index)
             {
-                Projectile.NewProjectile(source, position, velocity.RotatedByRandom(MathHelper.ToRadians(30f)) * 1.5f, ModContent.ProjectileType<NettleRight>(), (int)(damage * 1.10), knockback, player.whoAmI);
+                Projectile.NewProjectile(source, position, velocity.RotatedByRandom(MathHelper.ToRadians(30f)) * 1.5f, ModContent.ProjectileType<NettleRight>(), (int)(damage * 1.35), knockback, player.whoAmI);
             }
             Projectile.NewProjectile(source, position, velocity * 0.66f, type, damage, knockback, player.whoAmI, 1f);
             return false;
@@ -58,7 +58,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient<ArchAmaryllis>().
                 AddIngredient<UelibloomBar>(10).
                 AddIngredient<UnholyEssence>(10).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

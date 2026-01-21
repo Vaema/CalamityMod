@@ -1,13 +1,17 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.NPCs;
+using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
+    [PierceResistException]
     public class PhotonRipperProjectile : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
@@ -41,7 +45,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D glowmaskTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/PhotonRipperGlowmask").Value;
             Rectangle glowmaskRectangle = glowmaskTexture.Frame(1, 6, 0, Projectile.frame);
             Vector2 origin = texture.Size() * 0.5f;
@@ -57,7 +61,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             // Recalculate damage every frame for balance reasons, as this is a long-lasting holdout.
             // This is important because you could start using it while benefitting from Auric Tesla standstill bonus, for example.
-            Projectile.damage = Owner.ActiveItem() is null ? 0 : Owner.GetWeaponDamage(Owner.ActiveItem());
+            Projectile.damage = Owner.HeldItem is null ? 0 : Owner.GetWeaponDamage(Owner.HeldItem);
             DetermineDamage();
 
             PlayChainsawSounds();
@@ -68,7 +72,7 @@ namespace CalamityMod.Projectiles.Melee
             Vector2 playerRotatedPosition = Owner.RotatedRelativePoint(Owner.MountedCenter);
             if (Main.myPlayer == Projectile.owner)
             {
-                if (Owner.channel && !Owner.noItems && !Owner.CCed)
+                if ((!Owner.CantUseHoldout() && Projectile.ai[2] == 1) || (Projectile.ai[2] == 0 && Owner.Calamity().mouseRight && Owner.active && !Owner.dead))
                     HandleChannelMovement(playerRotatedPosition);
                 else
                     Projectile.Kill();
@@ -153,6 +157,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public void HandleChannelMovement(Vector2 playerRotatedPosition)
         {
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 idealAimDirection = (Main.MouseWorld - playerRotatedPosition).SafeNormalize(Vector2.UnitX * Owner.direction);
 
             float angularAimVelocity = 0.15f;
@@ -191,10 +196,10 @@ namespace CalamityMod.Projectiles.Melee
                 // spawn too far from the blade.
                 spawnPosition += Main.rand.NextVector2CircularEdge(9f, 35f).RotatedBy(Projectile.velocity.ToRotation() + MathHelper.PiOver2);
 
-                Dust rainbowSpark = Dust.NewDustPerfect(spawnPosition, 261);
+                Dust rainbowSpark = Dust.NewDustPerfect(spawnPosition, DustID.AncientLight);
                 rainbowSpark.velocity = Projectile.velocity * 3f + Main.rand.NextVector2CircularEdge(1.5f, 1.5f);
                 rainbowSpark.noGravity = true;
-                rainbowSpark.color = Main.hslToRgb((Time / 40f + Main.rand.NextFloat(-0.1f, 0.1f)) % 1f, 0.95f, 0.6f);
+                rainbowSpark.color = Main.hslToRgb((Time / 40f + Main.rand.NextFloat(-0.1f, 0.1f)) % 1f, 0.95f, 0.8f);
                 rainbowSpark.scale = Main.rand.NextFloat(0.9f, 1.25f);
             }
         }
@@ -212,8 +217,9 @@ namespace CalamityMod.Projectiles.Melee
 
             // Incorporate item shoot speed into the range of the crystals.
             // This means that projectile speed boosts will improve the range of the chainsaw.
-            shootReach *= Owner.ActiveItem().shootSpeed;
+            shootReach *= Owner.HeldItem.shootSpeed;
 
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, the result is separately capped
             float distanceFromMouse = Owner.Distance(Main.MouseWorld);
 
             // If the distance to the mouse is less than the base reach, reach only to mouse.
@@ -226,9 +232,9 @@ namespace CalamityMod.Projectiles.Melee
                     shootReach = distanceFromMouse + 32f;
                 else
                     shootReach = 72f;
-			}
+            }
 
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, Projectile.velocity, ModContent.ProjectileType<PrismTooth>(), (int)ToothDamage, 0f, Projectile.owner, shootReach, Projectile.whoAmI);
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, Projectile.velocity, ModContent.ProjectileType<PrismTooth>(), (int)ToothDamage, 0f, Projectile.owner, shootReach, Projectile.whoAmI, Projectile.ai[2]);
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
@@ -240,6 +246,22 @@ namespace CalamityMod.Projectiles.Melee
             Vector2 start = Projectile.Center;
             Vector2 end = Projectile.Center + Projectile.velocity * 70f;
             return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), start, end, width, ref _);
+        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(ModContent.BuffType<MiracleBlight>(), 500);
+            SoundStyle fire = new("CalamityMod/Sounds/Item/WulfrumKnifeTileHit", 2);
+            SoundEngine.PlaySound(fire with { Volume = 0.7f, Pitch = -0.1f }, Projectile.Center);
+            for (int i = 0; i < 20; i++)
+            {
+                Particle spark2 = new SparkParticle(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -40).RotatedByRandom(0.55) * Main.rand.NextFloat(0.3f, 1f), false, 20, Main.rand.NextFloat(0.3f, 1.2f), Main.hslToRgb((Time / 40f + Main.rand.NextFloat(-0.1f, 0.1f)) % 1f, 0.95f, 0.8f));
+                GeneralParticleHandler.SpawnParticle(spark2);
+            }
+            for (int i = 0; i < 3; i++)
+            {
+                Particle blastRing = new CustomPulse(target.Center, Vector2.Zero, Main.hslToRgb((Time / 40f + Main.rand.NextFloat(-0.1f, 0.1f)) % 1f, 0.95f, 0.8f), "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 0.4f, 0.9f * Main.rand.NextFloat(0.9f, 1.1f), 12, true);
+                GeneralParticleHandler.SpawnParticle(blastRing);
+            }
         }
     }
 }

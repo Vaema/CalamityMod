@@ -1,6 +1,6 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -12,9 +12,9 @@ namespace CalamityMod.Projectiles.Boss
         public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 3;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            Main.projFrames[Type] = 3;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -63,7 +63,7 @@ namespace CalamityMod.Projectiles.Boss
             else
             {
                 Projectile.spriteDirection = 1;
-                Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X);
+                Projectile.rotation = Projectile.velocity.ToRotation();
             }
 
             Lighting.AddLight(Projectile.Center, 0.3f, 0.3f, 0f);
@@ -78,7 +78,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
@@ -101,7 +101,7 @@ namespace CalamityMod.Projectiles.Boss
                 return;
 
             if (Projectile.timeLeft >= 85)
-                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 45);
+                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 60);
         }
     }
 }

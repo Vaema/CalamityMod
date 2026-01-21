@@ -1,12 +1,12 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -21,34 +21,24 @@ namespace CalamityMod.Projectiles.Melee
         public Player Owner => Main.player[Projectile.owner];
 
         public float Timer => MaxTime - Projectile.timeLeft;
+        public const int MaxTime = 120;
 
-        public const float MaxTime = 120;
+        public Particle PolarStar; // Using a particle on top of it since the smoke particles would otherwise go over it
 
-        public Particle PolarStar; //Using a particle ontop of it since the smoke particles would otherwise go over it
-
-
-        public override void SetStaticDefaults()
-        {
-        }
         public override void SetDefaults()
         {
             Projectile.DamageType = DamageClass.Melee;
             Projectile.width = Projectile.height = 45;
-            Projectile.tileCollide = true;
+            Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.friendly = true;
             Projectile.penetrate = -1;
-            Projectile.extraUpdates = 3;
-
+            Projectile.MaxUpdates = 4;
+            Projectile.timeLeft = MaxTime;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 60;
+            Projectile.localNPCHitCooldown = 15 * Projectile.MaxUpdates;
         }
 
-        public override bool OnTileCollide(Vector2 oldVelocity)
-        {
-            Projectile.velocity *= 0.95f;
-            return false;
-        }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             float collisionPoint = 0f;
@@ -65,26 +55,21 @@ namespace CalamityMod.Projectiles.Melee
                 SoundEngine.PlaySound(SoundID.Item90, Projectile.Center);
                 initialized = true;
 
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 direction = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
                 direction.Normalize();
                 Projectile.rotation = direction.ToRotation();
-
-                Projectile.timeLeft = (int)MaxTime;
-                Projectile.velocity = direction * 16f;
-
                 Projectile.scale = 1f + ShredRatio; //SWAGGER
                 Projectile.netUpdate = true;
-
             }
-
-            Projectile.velocity *= 0.96f;
-            Projectile.position += Projectile.velocity;
-
 
             if (PolarStar == null)
             {
                 PolarStar = new GenericSparkle(Projectile.Center, Vector2.Zero, Color.White, Color.CornflowerBlue, Projectile.scale * 2f, 2, 0.1f, 5f, true);
                 GeneralParticleHandler.SpawnParticle(PolarStar);
+
+                CustomPulse poof = new(Projectile.Center, Vector2.Zero, Color.Indigo, "CalamityMod/Particles/SoftRoundExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.1f, 0.2f, 10);
+                GeneralParticleHandler.SpawnParticle(poof);
             }
             else
             {
@@ -93,17 +78,23 @@ namespace CalamityMod.Projectiles.Melee
                 PolarStar.Scale = Projectile.scale * 2f;
             }
 
-
             Vector2 smokeSpeed = Main.rand.NextVector2Circular(10f, 10f);
             Particle smoke = new HeavySmokeParticle(Projectile.Center, smokeSpeed + Projectile.velocity / 2, Color.Lerp(Color.Purple, Color.Indigo, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 6f)), 30, Main.rand.NextFloat(0.6f, 1.2f), 0.8f, 0, false, 0, true);
             GeneralParticleHandler.SpawnParticle(smoke);
 
-            if (Main.rand.Next(3) == 0)
+            if (Main.rand.NextBool(3))
             {
                 Particle smokeGlow = new HeavySmokeParticle(Projectile.Center, smokeSpeed + Projectile.velocity / 2, Main.hslToRgb(0.55f, 1, 0.5f), 20, Main.rand.NextFloat(0.4f, 0.7f), 0.8f, 0, true, 0.01f, true);
                 GeneralParticleHandler.SpawnParticle(smokeGlow);
             }
 
+            if (Timer % (MaxTime / 6) == 0 && Main.myPlayer == Projectile.owner)
+            {
+                Vector2 starVel = Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * 25f;
+                Projectile star = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, starVel, ProjectileType<GalaxiaBolt>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 1f, MathHelper.Pi / 20f);
+                if (star.ModProjectile is GalaxiaBolt bolt)
+                    bolt.StrongerHoming = true;
+            }
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -137,13 +128,12 @@ namespace CalamityMod.Projectiles.Melee
                 Particle smoke = new HeavySmokeParticle(Projectile.Center, smokeSpeed + Projectile.velocity / 2, Color.Lerp(Color.DarkRed, Color.Indigo, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 6f)), 30, Main.rand.NextFloat(1.5f, 2.2f), 0.8f, 0, false, 0, true);
                 GeneralParticleHandler.SpawnParticle(smoke);
 
-                if (Main.rand.Next(3) == 0)
+                if (Main.rand.NextBool(3))
                 {
                     Particle smokeGlow = new HeavySmokeParticle(Projectile.Center, smokeSpeed + Projectile.velocity / 2, Main.hslToRgb(0.55f, 1, 0.5f), 20, Main.rand.NextFloat(1.4f, 1.5f), 0.8f, 0, true, 0.01f, true);
                     GeneralParticleHandler.SpawnParticle(smokeGlow);
                 }
             }
         }
-
     }
 }

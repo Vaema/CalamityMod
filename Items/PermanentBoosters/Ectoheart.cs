@@ -1,9 +1,12 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.Collections.Generic;
+using CalamityMod.Balancing;
+using CalamityMod.CalPlayer;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.PermanentBoosters
@@ -11,21 +14,35 @@ namespace CalamityMod.Items.PermanentBoosters
     public class Ectoheart : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Misc";
+        public override LocalizedText Tooltip => CalamityUtils.GetText($"{LocalizationCategory}.AdrenalineBoosterTooltip").WithFormatArgs(BalancingConstants.AdrenalineDamagePerBooster.ToPercent(), BalancingConstants.AdrenalineDRPerBooster.ToPercent());
+
         public int frameCounter = 0;
         public int frame = 0;
         public override void SetDefaults()
         {
             Item.width = 42;
             Item.height = 44;
-            Item.useAnimation = 30;
-            Item.useTime = 30;
-            Item.useStyle = ItemUseStyleID.HoldUp;
-            Item.UseSound = SoundID.Item122;
             Item.consumable = true;
-            Item.rare = ModContent.RarityType<PureGreen>();  // Not researchable, only drops one time.
+            Item.useAnimation = Item.useTime = 30;
+            Item.UseSound = SoundID.Item122;
+            Item.useStyle = ItemUseStyleID.HoldUp;
+            Item.value = Item.sellPrice(gold: 2);
+            Item.rare = ModContent.RarityType<PureGreen>();
+            Item.SetRevExclusive();
         }
 
-        public override bool CanUseItem(Player player) => !player.Calamity().adrenalineBoostThree;
+        public static bool HasConsumedBefore(Player player) => player.Calamity().adrenalineBoostThree;
+
+        public override bool CanUseItem(Player player)
+        {
+            if (HasConsumedBefore(player))
+            {
+                // Refuse Text can be added on here
+                return false;
+            }
+
+            return true;
+        }
 
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frameI, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
@@ -56,6 +73,12 @@ namespace CalamityMod.Items.PermanentBoosters
                 modPlayer.adrenalineBoostThree = true;
             }
             return true;
+        }
+
+        public override void ModifyTooltips(List<TooltipLine> list)
+        {
+            if (HasConsumedBefore(Main.LocalPlayer))
+                list.AddConsumedTooltip("Tooltip0");
         }
     }
 }

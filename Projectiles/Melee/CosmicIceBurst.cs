@@ -2,9 +2,9 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -13,7 +13,7 @@ namespace CalamityMod.Projectiles.Melee
         public new string LocalizationCategory => "Projectiles.Melee";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 6;
+            Main.projFrames[Type] = 6;
         }
 
         public override void SetDefaults()
@@ -37,7 +37,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.ai[1] += 0.01f;
             Projectile.scale = Projectile.ai[1];
             Projectile.ai[0] += 1f;
-            if (Projectile.ai[0] >= (float)(3 * Main.projFrames[Projectile.type]))
+            if (Projectile.ai[0] >= (3 * Main.projFrames[Type]))
             {
                 Projectile.Kill();
                 return;
@@ -45,7 +45,7 @@ namespace CalamityMod.Projectiles.Melee
             if (++Projectile.frameCounter >= 3)
             {
                 Projectile.frameCounter = 0;
-                if (++Projectile.frame >= Main.projFrames[Projectile.type])
+                if (++Projectile.frame >= Main.projFrames[Type])
                 {
                     Projectile.hide = true;
                 }
@@ -65,16 +65,16 @@ namespace CalamityMod.Projectiles.Melee
                 SoundEngine.PlaySound(SoundID.Item62, Projectile.position);
                 for (int i = 0; i < 2; i++)
                 {
-                    int cosmicDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 187, 0f, 0f, 100, new Color(150, 255, 255), 1f);
+                    int cosmicDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare_Blue, 0f, 0f, 100, new Color(150, 255, 255), 1f);
                     Main.dust[cosmicDust].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(3.1415927410125732) * (float)Main.rand.NextDouble() * (float)Projectile.width / 2f;
                 }
                 for (int j = 0; j < 3; j++)
                 {
-                    int iceDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 67, 0f, 0f, 200, new Color(150, 255, 255), 1f);
+                    int iceDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.IceRod, 0f, 0f, 200, new Color(150, 255, 255), 1f);
                     Main.dust[iceDust].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(3.1415927410125732) * (float)Main.rand.NextDouble() * (float)Projectile.width / 2f;
                     Main.dust[iceDust].noGravity = true;
                     Main.dust[iceDust].velocity *= 3f;
-                    iceDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 67, 0f, 0f, 100, new Color(150, 255, 255), 0.6f);
+                    iceDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.IceRod, 0f, 0f, 100, new Color(150, 255, 255), 0.6f);
                     Main.dust[iceDust].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(3.1415927410125732) * (float)Main.rand.NextDouble() * (float)Projectile.width / 2f;
                     Main.dust[iceDust].velocity *= 2f;
                     Main.dust[iceDust].noGravity = true;
@@ -82,14 +82,14 @@ namespace CalamityMod.Projectiles.Melee
                 }
                 for (int k = 0; k < 2; k++)
                 {
-                    int icyDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 67, 0f, 0f, 0, new Color(150, 255, 255), 1f);
+                    int icyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.IceRod, 0f, 0f, 0, new Color(150, 255, 255), 1f);
                     Main.dust[icyDust].position = Projectile.Center + Vector2.UnitX.RotatedByRandom(3.1415927410125732).RotatedBy((double)Projectile.velocity.ToRotation(), default) * (float)Projectile.width / 2f;
                     Main.dust[icyDust].noGravity = true;
                     Main.dust[icyDust].velocity *= 3f;
                 }
                 for (int l = 0; l < 3; l++)
                 {
-                    int freezeDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 187, 0f, 0f, 0, new Color(150, 255, 255), 0.6f);
+                    int freezeDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare_Blue, 0f, 0f, 0, new Color(150, 255, 255), 0.6f);
                     Main.dust[freezeDust].position = Projectile.Center + Vector2.UnitX.RotatedByRandom(3.1415927410125732).RotatedBy((double)Projectile.velocity.ToRotation(), default) * (float)Projectile.width / 2f;
                     Main.dust[freezeDust].noGravity = true;
                     Main.dust[freezeDust].velocity *= 3f;
@@ -100,13 +100,13 @@ namespace CalamityMod.Projectiles.Melee
         public override bool PreDraw(ref Color lightColor)
         {
             Vector2 mountedCenter = Main.player[Projectile.owner].MountedCenter;
-            Color colorArea = Lighting.GetColor((int)((double)Projectile.position.X + (double)Projectile.width * 0.5) / 16, (int)(((double)Projectile.position.Y + (double)Projectile.height * 0.5) / 16.0));
-            if (Projectile.hide && !ProjectileID.Sets.DontAttachHideToAlpha[Projectile.type])
+            Color colorArea = Lighting.GetColor((int)(Projectile.position.X + Projectile.width * 0.5f) / 16, (int)((Projectile.position.Y + Projectile.height * 0.5f) / 16));
+            if (Projectile.hide && !ProjectileID.Sets.DontAttachHideToAlpha[Type])
             {
                 colorArea = Lighting.GetColor((int)mountedCenter.X / 16, (int)(mountedCenter.Y / 16f));
             }
-            Texture2D texture2D33 = ModContent.Request<Texture2D>(Texture).Value;
-            Rectangle rectangl = texture2D33.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
+            Texture2D texture2D33 = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            Rectangle rectangl = texture2D33.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             return true;
         }
 
@@ -115,17 +115,18 @@ namespace CalamityMod.Projectiles.Melee
             return new Color(150, Main.DiscoG, 255, 127);
         }*/
 
+        // Only inflict Nightwither if not spawned from Icebreaker
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(BuffID.Frostburn, 180);
-            target.AddBuff(ModContent.BuffType<Nightwither>(), 420);
+            if (Projectile.ai[2] != 1f)
+                target.AddBuff(ModContent.BuffType<Nightwither>(), 420);
             Projectile.direction = Main.player[Projectile.owner].direction;
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            target.AddBuff(BuffID.Frostburn, 180);
-            target.AddBuff(ModContent.BuffType<Nightwither>(), 420);
+            if (Projectile.ai[2] != 1f)
+                target.AddBuff(ModContent.BuffType<Nightwither>(), 420);
             Projectile.direction = Main.player[Projectile.owner].direction;
         }
     }

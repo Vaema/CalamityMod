@@ -1,10 +1,13 @@
-﻿using CalamityMod.Events;
+﻿using CalamityMod.CustomRecipes;
+using System;
+using CalamityMod.Events;
 using CalamityMod.Items.Materials;
 using CalamityMod.NPCs.PlaguebringerGoliath;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
+using System.Collections.Generic;
 
 namespace CalamityMod.Items.SummonItems
 {
@@ -15,7 +18,7 @@ namespace CalamityMod.Items.SummonItems
         public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/PBGSummon");
         public override void SetStaticDefaults()
         {
-			ItemID.Sets.SortingPriorityBossSpawns[Type] = 17; // Solar Tablet (1 above Lihzahrd Power Cell)
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 17; // Solar Tablet (1 above Lihzahrd Power Cell)
         }
 
         public override void SetDefaults()
@@ -29,24 +32,21 @@ namespace CalamityMod.Items.SummonItems
             Item.consumable = false;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
+        }
 
         public override bool CanUseItem(Player player)
         {
             return player.ZoneJungle && !NPC.AnyNPCs(ModContent.NPCType<PlaguebringerGoliath>()) && !BossRushEvent.BossRushActive;
         }
 
+        public override void ModifyTooltips(List<TooltipLine> tooltips) => CalamityGlobalItem.InsertKnowledgeTooltip(tooltips, 3);
+
         public override bool? UseItem(Player player)
         {
-            SoundEngine.PlaySound(UseSound, player.Center);
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-                NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<PlaguebringerGoliath>());
-            else
-                NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, player.whoAmI, ModContent.NPCType<PlaguebringerGoliath>());
-
+            CalamityUtils.SpawnBossUsingItem<PlaguebringerGoliath>(player, UseSound);
             return true;
         }
 
@@ -54,8 +54,8 @@ namespace CalamityMod.Items.SummonItems
         {
             CreateRecipe().
                 AddIngredient<PlagueCellCanister>(20).
-                AddRecipeGroup("IronBar", 8).
-                AddIngredient(ItemID.Obsidian, 3).
+                AddIngredient<MysteriousCircuitry>(12).
+                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(3, out Func<bool> condition), condition).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

@@ -1,8 +1,7 @@
-﻿using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
+﻿using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -21,13 +20,15 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.tileCollide = false;
             Projectile.timeLeft = 300;
             Projectile.DamageType = DamageClass.Magic;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
         {
             Projectile.velocity.X *= 0.985f;
             Projectile.velocity.Y *= 0.985f;
-            Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 173, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+            Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
         }
 
         public override void OnKill(int timeLeft)
@@ -44,7 +45,7 @@ namespace CalamityMod.Projectiles.Magic
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
             for (int i = 0; i < 30; i++)
             {
-                int abyssal = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 1.2f);
+                int abyssal = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 1.2f);
                 Main.dust[abyssal].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -54,10 +55,10 @@ namespace CalamityMod.Projectiles.Magic
             }
             for (int j = 0; j < 60; j++)
             {
-                int abyssal2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 1.7f);
+                int abyssal2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 1.7f);
                 Main.dust[abyssal2].noGravity = true;
                 Main.dust[abyssal2].velocity *= 5f;
-                abyssal2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 1f);
+                abyssal2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 1f);
                 Main.dust[abyssal2].velocity *= 2f;
             }
         }

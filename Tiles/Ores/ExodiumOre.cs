@@ -1,18 +1,13 @@
-﻿
-using CalamityMod.Items.Placeables.Ores;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Localization;
-using Terraria.ModLoader;
 using Terraria.ID;
-using Microsoft.Xna.Framework.Graphics;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Ores
 {
     public class ExodiumOre : ModTile
     {
-        public byte[,] tileAdjacency;
-        public byte[,] secondTileAdjacency;
+
         public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
@@ -35,20 +30,8 @@ namespace CalamityMod.Tiles.Ores
             TileID.Sets.ChecksForMerge[Type] = true;
 
 
-            TileFraming.SetUpUniversalMerge(Type, TileID.Dirt, out tileAdjacency);
-            TileFraming.SetUpUniversalMerge(Type, TileID.LunarOre, out secondTileAdjacency);
-        }
-
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
-        {
-            TileFraming.DrawUniversalMergeFrames(i, j, secondTileAdjacency, "CalamityMod/Tiles/Merges/LuminiteMerge");
-            TileFraming.DrawUniversalMergeFrames(i, j, tileAdjacency, "CalamityMod/Tiles/Merges/DirtMerge");
-        }
-        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
-        {
-            TileFraming.GetAdjacencyData(i, j, TileID.Dirt, out tileAdjacency[i, j]);
-            TileFraming.GetAdjacencyData(i, j, TileID.LunarOre, out secondTileAdjacency[i, j]);
-            return true;
+            this.RegisterBlendMergeWith(TileID.Dirt);
+            this.RegisterBlendMergeWith(TileID.LunarOre);
         }
 
         public override bool CanExplode(int i, int j) => false;

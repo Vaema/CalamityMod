@@ -3,7 +3,6 @@ using CalamityMod.DataStructures;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -16,7 +15,7 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
 
         public ref float Time => ref Projectile.ai[1];
 
-        public override void SetStaticDefaults() => ProjectileID.Sets.MinionShot[Projectile.type] = true;
+        public override void SetStaticDefaults() => ProjectileID.Sets.MinionShot[Type] = true;
 
         public override void SetDefaults()
         {
@@ -49,7 +48,7 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
             Time++;
 
             // 08DEC2023: Ozzatron: All below code does not run on dedicated servers as it requires clientside lighting information.
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             // Calculate light power. This checks below the position of the fog to check if this fog is underground.
@@ -60,7 +59,7 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
 
         public void AdditiveDraw(SpriteBatch spriteBatch)
         {
-            Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 origin = texture.Size() * 0.5f;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             float opacity = Utils.GetLerpValue(0f, 0.08f, LightPower, true) * Projectile.Opacity * 0.3f;

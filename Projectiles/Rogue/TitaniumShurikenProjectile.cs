@@ -1,7 +1,6 @@
-﻿using CalamityMod.Items.Weapons.Rogue;
+﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -17,8 +16,8 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 6;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -52,6 +51,7 @@ namespace CalamityMod.Projectiles.Rogue
                         Projectile.ai[0] = 1f;
                         Projectile.ai[1] = 0f;
                         Projectile.netUpdate = true;
+                        Projectile.ResetLocalNPCHitImmunity(); // Stealth uses -1 local and resets it when returning to guarantee it can hit again on the way back
                     }
                 }
                 else
@@ -103,8 +103,7 @@ namespace CalamityMod.Projectiles.Rogue
                     if (Main.myPlayer == Projectile.owner)
                         if (Projectile.Hitbox.Intersects(owner.Hitbox))
                         {
-                            Projectile.Kill(); //boomerangs return to you so you get a refund
-                            Item.NewItem(Projectile.GetSource_DropAsItem(), (int)Projectile.position.X, (int)Projectile.position.Y, Projectile.width, Projectile.height, ModContent.ItemType<TitaniumShuriken>());
+                            Projectile.Kill();
                         }
                 }
 
@@ -133,10 +132,10 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             if (Projectile.Calamity().stealthStrike)
             {
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             }
             else
             {
@@ -145,32 +144,16 @@ namespace CalamityMod.Projectiles.Rogue
             return false;
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => SpawnStealthClones();
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => SpawnStealthClones();
+        private void SpawnStealthClones()
         {
-            if (Projectile.owner == Main.myPlayer && Projectile.Calamity().stealthStrike && Projectile.numHits < 3)
+            if (Projectile.Calamity().stealthStrike && Projectile.numHits < 3)
             {
-                for (int index2 = 0; index2 < 4; index2++)
+                for (int i = 0; i < 4; i++)
                 {
-                    float xVector = (float)Main.rand.Next(-35, 36) * 0.02f;
-                    float yVector = (float)Main.rand.Next(-35, 36) * 0.02f;
-                    xVector *= 10f;
-                    yVector *= 10f;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, xVector, yVector, ModContent.ProjectileType<TitaniumClone>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0f);
-                }
-            }
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (Projectile.owner == Main.myPlayer && Projectile.Calamity().stealthStrike && Projectile.numHits < 3)
-            {
-                for (int index2 = 0; index2 < 4; index2++)
-                {
-                    float xVector = (float)Main.rand.Next(-35, 36) * 0.02f;
-                    float yVector = (float)Main.rand.Next(-35, 36) * 0.02f;
-                    xVector *= 10f;
-                    yVector *= 10f;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, xVector, yVector, ModContent.ProjectileType<TitaniumClone>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0f);
+                    Vector2 randSpeed = Main.rand.NextVector2CircularEdge(6.5f, 6.5f) * Main.rand.NextFloat(0.4f, 1f);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, randSpeed, ModContent.ProjectileType<TitaniumClone>(), (int)(Projectile.damage * 0.8f), Projectile.knockBack, Projectile.owner, 0f, 0f);
                 }
             }
         }

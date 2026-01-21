@@ -10,6 +10,16 @@ AbandonedSlimeStaff: {
 		'''
 }
 
+AmphibiansGuitar: {
+	DisplayName: Amphibian's Guitar
+	Tooltip:
+		'''
+		Summons up to 8 guitars that spin around you and shoot notes at the target, occasionally firing spread shots
+		If all 8 guitars are present, some notes become empowered, dealing extra damage
+		'I'll show you suffering!'
+		'''
+}
+
 AncientIceChunk: {
 	DisplayName: Ancient Ice Chunk
 	Tooltip:
@@ -24,7 +34,8 @@ AquasScepter: {
 	DisplayName: Aqua's Scepter
 	Tooltip:
 		'''
-		Summons a giant storm cloud sentry to rain down on your foes, and strike nearby enemies with overloading tesla energy
+		{$CommonItemTooltip.Sentry}
+		Summons a giant storm cloud to rain down on your foes, and strike nearby enemies with overloading tesla energy
 		'Captain! I think- we've got a risk of rain!'
 		'''
 }
@@ -44,12 +55,13 @@ AtlasMunitionsBeacon: {
 	DisplayName: Atlas Munitions Beacon
 	Tooltip:
 		'''
+		[c/F2B629:{$CommonItemTooltip.Sentry}]
 		[c/F2B629:Brings forth an exo-powered, stationary cannon]
 		[c/F2B629:The cannon will fire at enemies within its range]
 		[c/F27049:If an enemy is in close proximity, it will enter Overdrive]
 		[c/F27049:When in Overdrive the cannon uses its full power to bring down any foe]
 		[c/F27049:While in Overdrive, the cannon will build up heat, eventually overheating]
-		[c/69F0DC:Press right click while holding this item to pick up the cannon and use it yourself]
+		[c/69F0DC:Press <right> while holding this item to pick up the cannon and use it yourself]
 		[c/69F0DC:When held, the cannon will always be in Overdrive]
 		[c/69F0DC:If the cannon overheats while you hold it, you will be forced to drop it]
 		[c/9AA4AE:Pressing <right> allows you to drop it manually]
@@ -73,11 +85,6 @@ BlackHawkRemote: {
 		'''
 }
 
-BloodClotStaff: {
-	DisplayName: Blood Clot Staff
-	Tooltip: Summons a blood clot to fight for you
-}
-
 BorealisBomber: {
 	DisplayName: Borealis Bomber
 	Tooltip:
@@ -94,14 +101,18 @@ BrittleStarStaff: {
 		'''
 		Summons a small brittle starfish that will dash through enemies until it shatters
 		Starfish will quickly regenerate after shattering
-		Holding right click will swap starfish between dashing and circling you
-		When the starfish are circling, each one provides you with 3 defense
+		Holding <right> will swap starfish between dashing and circling you
+		When the starfish are circling, each one provides you with 4 defense
 		'''
 }
 
 CadaverousCarrion: {
 	DisplayName: Cadaverous Carrion
-	Tooltip: Summons a gross, shark-puking Old Duke head on the ground
+	Tooltip:
+		'''
+		{$CommonItemTooltip.Sentry}
+		Summons a gross, shark-puking Old Duke head on the ground
+		'''
 }
 
 CalamarisLament: {
@@ -120,7 +131,11 @@ CalamarisLament: {
 
 CausticCroakerStaff: {
 	DisplayName: Caustic Croaker Staff
-	Tooltip: Summons a toad that explodes if enemies are nearby
+	Tooltip:
+		'''
+		{$CommonItemTooltip.Sentry}
+		Summons a toad that explodes if enemies are nearby
+		'''
 }
 
 CausticStaff: {
@@ -149,8 +164,13 @@ CindersOfLament: {
 		Summons either Cataclysm or Catastrophe at the mouse position
 		They will look at you for a moment before charging at you
 		They can do damage to both you and enemies
-		[c/C61B40:'The Witch, a sinner of her own making,]
-		[c/C61B40:Within her mind her demon lies, ever patient, until the end of time.']
+		'''
+	Calamitas:
+		'''
+		'My brothers perished in Azafure. I found their bodies near the center of the city, after they left for an expedition.
+		Before my power was what it is now, they were always alongside me and didn't allow anyone to harm me.
+		It may have been a problem sometimes, but they were surprisingly obedient.
+		And even after all that's happened, and even in death, they still look out for me. Isn't that sweet of them?'
 		'''
 }
 
@@ -159,7 +179,7 @@ Cnidarian: {
 	Tooltip:
 		'''
 		Fishes up an electric jellyfish
-		Periodically sends out sparks to electrocute nearby enemies.
+		Periodically sends out sparks to electrocute nearby enemies
 		[c/5C95A1:'From looking at their less sapient brethren, the Old Kingdom's inhabitants adapted tools and weapons designed for underwater efficiency.]
 		[c/5C95A1:The electric properties of ghost bells remain useful even after death, having been commonly used as conduits.']
 		'''
@@ -186,7 +206,6 @@ CosmicImmaterializer: {
 		Summons a cosmic energy spiral to fight for you
 		The orb will fire swarms of homing energy bolts when enemies are detected by it
 		Requires 10 minion slots to use and there can only be one energy spiral
-		Without a summoner armor set bonus this minion will deal less damage
 		'''
 }
 
@@ -220,7 +239,8 @@ CryogenicStaff: {
 	DisplayName: Cryogenic Staff
 	Tooltip:
 		'''
-		Summons an animated ice construct to protect you
+		{$CommonItemTooltip.Sentry}
+		Summons an ice construct to unleash the cold upon your enemies
 		Fire rate and range increase the longer it targets an enemy
 		'''
 }
@@ -241,7 +261,14 @@ DankStaff: {
 
 DazzlingStabberStaff: {
 	DisplayName: Dazzling Stabber Staff
-	Tooltip: Summons a holy blade to fight for you
+	Tooltip:
+		'''
+		Summons three holy daggers made of profaned materials to fight for you
+		Holy flame daggers gallantly turn all that oppose them to ashes
+		Crystalline daggers gracefully carve foes to ribbons
+		Profane daggers brutishtly splinter and reform eternally
+		'Ever onward, towards Her future'
+		'''
 }
 
 DeathstareRod: {
@@ -275,7 +302,8 @@ DragonbloodDisgorger: {
 	Tooltip:
 		'''
 		Summons a skeletal dragon and her two children
-		Baby spits passively heal the player
+		Baby spits burst into blood orbs upon hitting an enemy
+		Picking up these blood orbs reduces the duration of [cbuff:PotionSickness]
 		Requires 6 minion slots to be summoned
 		There can only be one family at a time
 		'''
@@ -283,17 +311,21 @@ DragonbloodDisgorger: {
 
 DreadmineStaff: {
 	DisplayName: Dreadmine Staff
-	Tooltip: Summons a dreadmine turret to fight for you
-}
-
-ElementalAxe: {
-	DisplayName: Elemental Axe
-	Tooltip: Summons an elemental axe to fight for you
+	Tooltip:
+		'''
+		{$CommonItemTooltip.Sentry}
+		Summons a turret that swarms your enemies with sea mines
+		'''
 }
 
 EnchantedConch: {
 	DisplayName: Enchanted Conch
 	Tooltip: Summons a hermit crab to fight for you
+}
+
+EnchantedKnifeStaff: {
+	DisplayName: Enchanted Knife Staff
+	Tooltip: Summons an Enchanted Knife to fight for you
 }
 
 Endogenesis: {
@@ -347,7 +379,7 @@ FlamsteedRing: {
 	Tooltip:
 		'''
 		Summons a colossal controllable mech
-		Right click to display the mech's control panel
+		<right> to display the mech's control panel
 		The panel has 3 configurations, selected using the brackets on the edges of the UI
 		Each bracket powers 2 out of 3 possible functions, represented by the circular icons
 		The bottom left icon miniaturizes the mech to the size of a player, but weakens its weapons
@@ -418,7 +450,7 @@ GlacialEmbrace: {
 		For each minion slot used, you will gain an additional orbiting shield spike
 		These spikes accelerate rapidly towards a nearby enemy to inflict heavy damage
 		They take some time to regenerate after launching themselves at the target, however
-		On right click, summons a duplicate ring around the targeted enemy, which slowly converges before exploding
+		On <right>, summons a duplicate ring around the targeted enemy, which slowly converges before exploding
 		'''
 }
 
@@ -426,8 +458,21 @@ GuidelightofOblivion: {
 	DisplayName: Guidelight of Oblivion
 	Tooltip:
 		'''
-		Summons a lantern turret to fight for you
+		{$CommonItemTooltip.Sentry}
+		Summons a lantern that swarms your enemies with flames
 		'Shadows dream of endless fire, flames devour and embers swoop'
+		'''
+}
+
+HarvestStaff: {
+	DisplayName: Harvest Staff
+	Tooltip:
+		'''
+		{$CommonItemTooltip.Sentry}
+		Grows a pumpkin patch that sprouts pumpkins nearby
+		Pumpkins will hop out when approached by nearby creatures or players
+		Once out, they will aggressively tackle enemies, exploding on hit
+		'No thoughts behind those eyes'
 		'''
 }
 
@@ -443,7 +488,11 @@ HerringStaff: {
 
 HivePod: {
 	DisplayName: Hive Pod
-	Tooltip: Summons an astral hive to protect you
+	Tooltip:
+		'''
+		{$CommonItemTooltip.Sentry}
+		Summons an astraglomerate to spawn glomerings at your enemies
+		'''
 }
 
 IgneousExaltation: {
@@ -451,7 +500,9 @@ IgneousExaltation: {
 	Tooltip:
 		'''
 		Summons an Igneous blade that orbits around you
-		Right click to launch all blades towards the cursor
+		When your minion slots are full, <left> again to launch all blades towards the cursor
+		This ability has a two-second cooldown that requires holding this item
+		Shift-<right> this item in your inventory to change the rotation direction
 		'''
 }
 
@@ -478,17 +529,36 @@ KingofConstellationsTenryu: {
 		'''
 }
 
+LegionofCelestia: {
+	DisplayName: Legion of Celestia
+	Tooltip: Summons a possessed, celestial axe to fight for you
+}
+
+LiliesOfFinality: {
+	DisplayName: Lilies of Finality
+	Tooltip:
+		'''
+		Requires 2 minion slots to use
+		Can only be summoned once
+		'Wake up'
+		'''
+}
+
 Metastasis: {
 	DisplayName: Metastasis
 	Tooltip:
 		'''
 		Summons a Sepulcher to fight for you
-		While the Sepulcher is active brimstone hearts will begin to appear and orbit you
-		It will attempt to attack you more and more frequently depending on how many hearts are present
-		It takes up 4 minion slots and it can only be summoned once
-		[c/C61B40:A contemplated possible future of the cosmic serpent,]
-		[c/C61B40:A gruesome warning for those blinded by the hunger for power.]
-
+		While the Sepulcher is active, brimstone hearts will begin to appear and orbit you
+		When too many hearts are present, it will interrupt attacking to attack the hearts instead
+		This happens more frequently depending on how many hearts are present
+		Requires 4 minion slots to use and can only be summoned once
+		'''
+	Calamitas:
+		'''
+		'When I joined Yharim's ranks, the Devourer was one of the first to greet me. He seemed kind at first, but that mask did not last long.
+		He was arrogant, disrespectful and shady. If you hadn't killed him, I would've.
+		I made my Sepulcher as a mockery of his arrogance, but it seems the insult fell flat. You can add "slime-brained" to his list of fabricated titles.'
 		'''
 }
 
@@ -512,18 +582,34 @@ MirrorofKalandra: {
 		'''
 }
 
+MutatedTruffle: {
+	DisplayName: Mutated Truffle
+	Tooltip:
+		'''
+		Summons a younger fishron to irradiate your foes
+		The fishron will cycle between charging, projectiles, and a typhoon
+		Requires 3 minion slots to be used
+		There can only be one minion
+		'''
+}
+
 OrthoceraShell: {
 	DisplayName: Orthocera Shell
-	Tooltip: Summons a flying orthocera sentry at the mouse position
+	Tooltip:
+		'''
+		{$CommonItemTooltip.Sentry}
+		Summons a flying orthocera to spit acid streams at your enemies
+		'''
 }
 
 Perdition: {
 	DisplayName: Perdition
 	Tooltip:
 		'''
+		{$CommonItemTooltip.Sentry}
 		Summons a beacon at the position of the mouse
-		When a target is manually selected via right click it releases torrents of souls from below onto the target
-		Requires 5 minion slots to summon and only one beacon may exist at a time
+		When a target is manually selected via <right> it releases torrents of souls from below onto the target
+		Requires one sentry slot to summon, and only one beacon may exist at a time
 		'''
 }
 
@@ -538,7 +624,11 @@ PlantationStaff: {
 
 PolypLauncher: {
 	DisplayName: Polyp Launcher
-	Tooltip: Summons a polyp bunch that launches coral chunks at nearby enemies
+	Tooltip:
+		'''
+		{$CommonItemTooltip.Sentry}
+		Summons a polyp bunch that launches coral chunks at nearby enemies
+		'''
 }
 
 PuffShroom: {
@@ -560,14 +650,21 @@ RustyBeaconPrototype: {
 	DisplayName: Rusty Beacon Prototype
 	Tooltip:
 		'''
-		Summons a long-abandoned drone to support you
-		The drone hovers in place and releases toxic waves that irradiate hit enemies
+		{$CommonItemTooltip.Sentry}
+		Summons a long-abandoned drone that passively emits irradiated waves
 		'''
 }
 
 SanctifiedSpark: {
 	DisplayName: Sanctified Spark
-	Tooltip: Summons a profaned energy turret to fight for you
+	Tooltip:
+		'''
+		{$CommonItemTooltip.Sentry}
+		Summons a friendly immolator that will float towards you
+		Immolators rapidly fire homing flares at nearby enemies, before continuing to float near you again
+		After firing, Immolators will fire one healing bolt at you for every 4 summon slots you have
+		'They might be a bit clingy, but at least they're warm'
+		'''
 }
 
 SandSharknadoStaff: {
@@ -579,16 +676,27 @@ SarosPossession: {
 	DisplayName: Saros Possession
 	Tooltip:
 		'''
-		Summons a radiant aura that gives absolute control of light itself
-		The aura will annihilate enemies with orbs of radiance
-		There can only be one aura at a time
-		Requires 8 minion slots
+		Summons a radiant aura harnessing the power of primordial light
+		Repeated summons increase the power of the aura
+		<left> with full summon slots to channel an eclipse beam that decays over time
+		This beam recharges when not in use
 		'''
 }
 
 ScabRipper: {
 	DisplayName: Scab Ripper
 	Tooltip: Summons a baby blood crawler to protect you
+}
+
+SeashineHilt: {
+	DisplayName: Seashine Hilt
+	Tooltip:
+		'''
+		Summons a brilliant sea prism blade to slice your enemies
+		Blades will charge up while you hold this item
+		Pressing <right> will order all fully charged blades to swipe at your cursor
+		Each sword only consumes half a minion slot
+		'''
 }
 
 ShellfishStaff: {
@@ -604,9 +712,12 @@ Sirius: {
 	DisplayName: Sirius
 	Tooltip:
 		'''
-		Summons the brightest star in the night sky to shine upon your foes
-		There can only be one star at a time
-		Requires 6 minion slots
+		Summons the brightest star in the sky, Sirius, to protect you
+		Continue summoning to complete Canis Major
+		Repeated summons increase its power greatly, even after the constellation is complete
+		Sirius passively generates Starbursts when targeting enemies
+		When Starbursts are full, Sirius consumes them to launch a powerful piercing quasar that inflicts [cbuff:CalamityMod/Voidfrost]
+		'A guide to a dream never realized'
 		'''
 }
 
@@ -623,17 +734,26 @@ SlimePuppetStaff: {
 SpikecragStaff: {
 	DisplayName: Spikecrag Staff
 	Tooltip: "[GFB]"
-	TooltipNormal: Summons a spikecrag to protect you
+	TooltipNormal:
+		'''
+		{$CommonItemTooltip.Sentry}
+		Summons a bed of stalagmites to spray spikes at your enemies
+		'''
 	TooltipGFB:
 		'''
-		Summons a spikecrag to protect you"
+		{$CommonItemTooltip.Sentry}
+		Summons a bed of stalagmites to spray spikes at your enemies
 		Defeating the Profaned Goddess unlocks its true power
 		'''
 }
 
 SquirrelSquireStaff: {
 	DisplayName: Squirrel Squire Staff
-	Tooltip: Summons a squirrel squire to fight for you
+	Tooltip:
+		'''
+		{$CommonItemTooltip.Sentry}
+		Summons a squirrel to throw acorns at your enemies
+		'''
 }
 
 StaffOfNecrosteocytes: {
@@ -643,11 +763,6 @@ StaffOfNecrosteocytes: {
 		Summons small skeletons to fight for you
 		The skeletons leave behind bone cells as they move
 		'''
-}
-
-StaffoftheMechworm: {
-	DisplayName: Staff of the Mechworm
-	Tooltip: Summons an aerial mechworm to fight for you
 }
 
 StarspawnHelixStaff: {
@@ -670,7 +785,7 @@ SunSpiritStaff: {
 	Tooltip:
 		'''
 		Summons a solar spirit to protect you
-		There can only be one spirit at a time
+		Repeated summons increase its power
 		'''
 }
 
@@ -718,7 +833,7 @@ UniverseSplitter: {
 		Summons an energy field at the mouse cursor
 		After the field has been deployed, it begins to summon multiple small beams
 		After several seconds have passed, an enormous laser beam appears at the field's position
-		This effect has a cooldown
+		This effect has a 30 second cooldown
 		Attempting to use this item during the cooldown will cause it to short circuit and do damage to you
 		[c/BB57FF:'An ancient artifact from a previous age, it waits for your command.]
 		[c/BB57FF:This is a terrible idea, but it isn't yours anyways... right?']
@@ -729,8 +844,8 @@ VengefulSunStaff: {
 	DisplayName: Vengeful Sun Staff
 	Tooltip:
 		'''
-		Summons a vengeful solar spirit to protect you
-		There can only be one spirit at a time
+		Summons an eclipse spirit to protect you
+		Repeated summons increase its power
 		'''
 }
 
@@ -755,7 +870,16 @@ ViralSprout: {
 
 ViridVanguard: {
 	DisplayName: Virid Vanguard
-	Tooltip: Summons a circular formation of blades that slice nearby enemies to pieces
+	Tooltip:
+		'''
+		Alternates between summoning axes and swords, both laced with a powerful poison
+		Axes orbit the player, dealing high damage at a close range
+		Swords chase down enemies with extreme precision, tearing them to shreds
+		All weapons inflict Sage Poison, which becomes more powerful the more weapons are summoned
+		When all minion slots are full, <left> again to spin up a flurry of slashes aimed at your cursor
+		This ability has a five-second cooldown that requires holding this item
+		Shift-<right> this item in your inventory to change the rotation direction
+		'''
 }
 
 VoidConcentrationStaff: {
@@ -766,7 +890,19 @@ VoidConcentrationStaff: {
 		Minion damage is increased by 5% while the aura is active
 		Requires three minion slots to use
 		There can only be one aura at a time
-		Right click to launch a black hole that grows in size
+		<right> to launch a black hole that grows in size
+		'''
+}
+
+VoidEaterMarionette: {
+	DisplayName: Void Eater Marionette
+	Tooltip:
+		'''
+		Contains the power to control a miniature Devourer
+		Repeated summons increase the length and power of the Devourer
+		The Devourer attacks with [c/ff00ff:Divinity Devourer], [c/ff00ff:Faith Incinerator] and [c/ff00ff:Ultracosmic Maelstrom]
+		Can play fetch with dropped items 
+		Shift-<right> this item in your inventory when the Devourer has been spawned to prioritize fetching
 		'''
 }
 
@@ -793,9 +929,9 @@ WulfrumController: {
 	Tooltip:
 		'''
 		Summons a wulfrum droid to fight for you
-		Hold right click while holding the remote to switch all of your drones into supercharge mode
+		Hold <right> while holding the remote to switch all of your drones between regular and supercharge mode
 		Supercharged droids will stop attacking and focus wulfrum energy onto you
-		The beam provides extra regeneration and defense
+		Supercharged droids provide +0.5 HP/s life regen and 3 defense per droid
 		Can also be used to heal other players by keeping your mouse cursor close enough to them
 		'''
 }
@@ -806,16 +942,5 @@ YharonsKindleStaff: {
 		'''
 		Summons a fiery draconid to fight for you
 		Requires 5 minion slots to use
-		'''
-}
-
-MutatedTruffle: {
-	DisplayName: Mutated Truffle
-	Tooltip:
-		'''
-		Summons a younger fishron to irradiate your foes
-		The fishron will cycle between charging, projectiles, and a typhoon
-		Requires 3 minion slots to be used
-		There can only be one minion
 		'''
 }

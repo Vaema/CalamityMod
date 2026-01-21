@@ -1,20 +1,23 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.NPCs;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using System;
-using CalamityMod.Items.Weapons.Magic;
 
 namespace CalamityMod.Projectiles.Magic
 {
+    [PierceResistException]
     public class Snowflake : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -37,7 +40,7 @@ namespace CalamityMod.Projectiles.Magic
             Player player = Main.player[Projectile.owner];
             if (player == null)
                 return;
-            if (!(player.channel && !player.noItems && !player.CCed))
+            if (player.CantUseHoldout())
                 Projectile.Kill();
             if (Projectile.type != ModContent.ProjectileType<Snowflake>() ||
                 Main.player[Projectile.owner].HeldItem.type != ModContent.ItemType<SnowstormStaff>() || !Main.player[Projectile.owner].channel)
@@ -135,7 +138,7 @@ namespace CalamityMod.Projectiles.Magic
             }
             if (Main.rand.NextBool(5))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 67, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.IceRod, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
             float pushForce = 0.15f;
             for (int k = 0; k < Main.maxProjectiles; k++)
@@ -166,16 +169,16 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item27, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item27, Projectile.Center);
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 67, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.IceRod, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
             }
             if (Projectile.owner == Main.myPlayer)
             {

@@ -1,7 +1,6 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -14,8 +13,8 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
         }
 
         public override void SetDefaults()
@@ -23,7 +22,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.width = Projectile.height = 48;
             Projectile.friendly = true;
             Projectile.tileCollide = false;
-            Projectile.penetrate = -1;
+            Projectile.penetrate = 2;
             Projectile.extraUpdates = 1;
             Projectile.timeLeft = 45;
             Projectile.DamageType = DamageClass.Magic;
@@ -37,9 +36,17 @@ namespace CalamityMod.Projectiles.Magic
             Lighting.AddLight(Projectile.Center, Color.White.ToVector3() * 0.3f);
         }
 
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            if (Projectile.numHits > 0)
+                Projectile.damage = (int)(Projectile.damage * 0.5);
+            if (Projectile.damage < 1)
+                Projectile.damage = 1;
+        }
+
         public override bool PreDraw(ref Color lightColor) // Photoviscerator ball drawcode, slightly edited.
         {
-            Texture2D lightTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D lightTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             for (int i = 0; i < Projectile.oldPos.Length; i++)
             {
                 float colorInterpolation = (float)Math.Cos(Projectile.timeLeft / 2.4f + Main.GlobalTimeWrappedHourly / 20f + i / (float)Projectile.oldPos.Length * MathHelper.Pi) * 0.5f + 0.5f;

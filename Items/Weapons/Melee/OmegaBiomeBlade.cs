@@ -1,15 +1,16 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
-using CalamityMod.DataStructures;
-using CalamityMod.Particles;
-using CalamityMod.Projectiles.Melee;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CalamityMod.DataStructures;
+using CalamityMod.Items.Materials;
+using CalamityMod.Particles;
+using CalamityMod.Projectiles.Melee;
+using CalamityMod.Systems;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -33,43 +34,41 @@ namespace CalamityMod.Items.Weapons.Melee
         #region stats
         public static int BaseDamage = 200;
 
-        public static int WhirlwindAttunement_BaseDamage = 140;
+        public static int WhirlwindAttunement_BaseDamage = 120;
         public static int WhirlwindAttunement_LocalIFrames = 20; //Remember its got one extra update
-        public static int WhirlwindAttunement_SigilTime = 1000;
-        public static float WhirlwindAttunement_BeamDamageReduction = 0.5f;
-        public static float WhirlwindAttunement_BaseDamageReduction = 0.3f;
-        public static float WhirlwindAttunement_FullChargeDamageBoost = 0.9f;
+        public static float WhirlwindAttunement_EnergyDamageMult = 0.5f;
+        public static float WhirlwindAttunement_BaseSwingDamageMult = 0.4f;
+        public static float WhirlwindAttunement_FullSwingDamageMult = 1f;
         public static float WhirlwindAttunement_ThrowDamageBoost = 3.3f;
+        public static float WhirlwindAttunement_MonolithDamageMult = 0.5f;
 
-        public static int WhirlwindAttunement_PassiveBaseDamage = 200;
+        public static int WhirlwindAttunement_PassiveBaseDamage = 80;
 
 
-        public static int SuperPogoAttunement_BaseDamage = 200;
-        public static int SuperPogoAttunement_FullChargeDamage = 380;
-        public static int SuperPogoAttunement_ShredIFrames = 10;
-        public static int SuperPogoAttunement_LocalIFrames = 30; //Be warned its got one extra update so all the iframes should be divided in 2
-        public static int SuperPogoAttunement_LocalIFramesCharged = 16;
-        public static float SuperPogoAttunement_SlashDamageBoost = 2.5f; //Keep in mind the slice always crits
-        public static int SuperPogoAttunementSlashLifesteal = 4;
-        public static int SuperPogoAttunement_SlashIFrames = 20;
-        public static float SuperPogoAttunement_ShotDamageBoost = 2.5f;
+        public static int SuperPogoAttunement_BaseDamage = 190;
+        public static int SuperPogoAttunement_PlayerShredIFrames = 8;
+        public static int SuperPogoAttunement_LocalIFrames = 24; //Be warned its got one extra update so all the iframes should be divided in 2
+        public static float SuperPogoAttunement_ShotDamageMult = 2.5f;
+        public static float SuperPogoAttunement_SliceDamageMult = 2.5f; //Keep in mind the slice always crits
+        public static int SuperPogoAttunementSliceLifesteal = 4;
+        public static int SuperPogoAttunement_PlayerSliceIFrames = 20;
         public static float SuperPogoAttunement_ShredDecayRate = 0.65f;//How much charge is lost per frame.
 
         public static int SuperPogoAttunement_PassiveLifeSteal = 7;
 
 
         public static int ShockwaveAttunement_BaseDamage = 550;
+        public static float ShockwaveAttunement_BeamDamageMult = 0.25f;
         public static int ShockwaveAttunement_DashHitIFrames = 20;
-        public static float ShockwaveAttunement_FullChargeBoost = 2.5f; //The EXTRA damage boost. So putting 1 here will make it deal double damage. Putting 0.5 here will make it deal 1.5x the damage.
-        public static float ShockwaveAttunement_MonolithDamageBoost = 1.1f;
-        public static float ShockwaveAttunement_MonolithDamageFalloff = 0.15f; //Damage multiplier for all subsequent hits after the first one.
-        public static float ShockwaveAttunement_BlastDamageReduction = 0.8f;
+        public static float ShockwaveAttunement_FullChargeMult = 3.6f;
+        public static int ShockwaveAttunement_SigilTime = 1000;
+        public static float ShockwaveAttunement_MonolithDamageBoost = 0.75f;
 
         public static int ShockwaveAttunement_PassiveBaseDamage = 200;
 
 
-        public static int FlailBladeAttunement_BaseDamage = 400;
-        public static int FlailBladeAttunement_LocalIFrames = 30;
+        public static int FlailBladeAttunement_BaseDamage = 200;
+        public static int FlailBladeAttunement_LocalIFrames = 15;
         public static int FlailBladeAttunement_FlailTime = 10;
         public static int FlailBladeAttunement_Reach = 400;
         public static float FlailBladeAttunement_ChainDamageReduction = 0.5f;
@@ -80,15 +79,16 @@ namespace CalamityMod.Items.Weapons.Melee
         //Proc coefficients. aka the likelihood of any given attack to trigger a on-hit passive.
         public static float WhirlwindAttunement_WhirlwindProc = 0.24f;
         public static float WhirlwindAttunement_SwordThrowProc = 1f;
-        public static float WhirlwindAttunement_SwordBeamProc = 0.05f;
+        public static float WhirlwindAttunement_MonolithProc = 0.25f;
 
         public static float SuperPogoAttunement_ShredderProc = 0.1f;
         public static float SuperPogoAttunement_WheelProc = 0.4f;
         public static float SuperPogoAttunement_DashProc = 1f;
 
         public static float ShockwaveAttunement_SwordProc = 1f;
-        public static float ShockwaveAttunement_MonolithProc = 1f;
-        public static float ShockwaveAttunement_BlastProc = 0.5f;
+        public static float ShockwaveAttunement_SwordBeamProc = 0.05f;
+        public static float ShockwaveAttunement_BlastProc = 0.33f;
+        public static float ShockwaveAttunement_ShockwaveProc = 0.33f;
 
         public static float FlailBladeAttunement_BladeProc = 0.1f;
         public static float FlailBladeAttunement_ChainProc = 0.05f;
@@ -103,7 +103,7 @@ namespace CalamityMod.Items.Weapons.Melee
 
             SafeCheckAttunements();
 
-            Player player = Main.player[Main.myPlayer];
+            Player player = Main.LocalPlayer;
             if (player is null)
                 return;
 
@@ -169,7 +169,7 @@ namespace CalamityMod.Items.Weapons.Melee
             }
         }
 
-    #endregion
+        #endregion
 
         public override void SetDefaults()
         {
@@ -183,7 +183,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 8;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity9BuyPrice;
+            Item.value = CalamityGlobalItem.RarityCyanBuyPrice;
             Item.rare = ItemRarityID.Cyan;
             Item.shoot = ProjectileID.PurificationPowder;
             Item.shootSpeed = 15f;
@@ -194,7 +194,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             var clone = base.Clone(item);
             if (Main.mouseItem.type == ItemType<OmegaBiomeBlade>())
-                item.ModItem?.HoldItem(Main.player[Main.myPlayer]);
+                item.ModItem?.HoldItem(Main.LocalPlayer);
             if (clone is OmegaBiomeBlade a && item.ModItem is OmegaBiomeBlade a2)
             {
                 a.mainAttunement = a2.mainAttunement;
@@ -217,8 +217,8 @@ namespace CalamityMod.Items.Weapons.Melee
             int attunement1 = tag.GetInt("mainAttunement");
             int attunement2 = tag.GetInt("secondaryAttunement");
 
-            mainAttunement = Attunement.attunementArray[attunement1 != -1 ? attunement1 : Attunement.attunementArray.Length - 1];
-            secondaryAttunement = Attunement.attunementArray[attunement2 != -1 ? attunement2 : Attunement.attunementArray.Length - 1];
+            mainAttunement = AttunementSystem.FindOrNull(attunement1);
+            secondaryAttunement = AttunementSystem.FindOrNull(attunement2);
 
             if (mainAttunement == secondaryAttunement)
                 secondaryAttunement = null;
@@ -228,14 +228,14 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override void NetSend(BinaryWriter writer)
         {
-            writer.Write(mainAttunement != null ? (byte)mainAttunement.id : Attunement.attunementArray.Length - 1);
-            writer.Write(secondaryAttunement != null ? (byte)secondaryAttunement.id : Attunement.attunementArray.Length - 1);
+            writer.Write(mainAttunement != null ? (byte)mainAttunement.id : AttunementSystem.EmptyID);
+            writer.Write(secondaryAttunement != null ? (byte)secondaryAttunement.id : AttunementSystem.EmptyID);
         }
 
         public override void NetReceive(BinaryReader reader)
         {
-            mainAttunement = Attunement.attunementArray[reader.ReadInt32()];
-            secondaryAttunement = Attunement.attunementArray[reader.ReadInt32()];
+            mainAttunement = AttunementSystem.FindOrNull(reader.ReadInt32());
+            secondaryAttunement = AttunementSystem.FindOrNull(reader.ReadInt32());
         }
 
         #endregion
@@ -251,10 +251,24 @@ namespace CalamityMod.Items.Weapons.Melee
         public void SafeCheckAttunements()
         {
             if (mainAttunement != null)
-                mainAttunement = Attunement.attunementArray[(int)MathHelper.Clamp((float)mainAttunement.id, (float)AttunementID.Whirlwind, (float)AttunementID.Shockwave)];
+                mainAttunement = AttunementSystem.FindOrNull(ClampAttunementRange((int)mainAttunement.id));
 
             if (secondaryAttunement != null)
-                secondaryAttunement = Attunement.attunementArray[(int)MathHelper.Clamp((float)secondaryAttunement.id, (float)AttunementID.Whirlwind, (float)AttunementID.Shockwave)];
+                secondaryAttunement = AttunementSystem.FindOrNull(ClampAttunementRange((int)secondaryAttunement.id));
+
+            if (mainAttunement == secondaryAttunement)
+                secondaryAttunement = null;
+        }
+
+        private static int ClampAttunementRange(int input)
+        {
+            if (input < (int)AttunementID.Whirlwind)
+                return (int)AttunementID.Whirlwind;
+
+            if (input > (int)AttunementID.Shockwave)
+                return (int)AttunementID.Shockwave;
+
+            return input;
         }
 
         public override void HoldItem(Player player)
@@ -262,7 +276,7 @@ namespace CalamityMod.Items.Weapons.Melee
             player.Calamity().rightClickListener = true;
             player.Calamity().mouseWorldListener = true;
 
-            //Reset the strong lunge thing just in case it didnt get caught beofre.
+            //Reset the strong lunge thing just in case it didnt get caught before.
 
             if (CanUseItem(player))
             {
@@ -292,7 +306,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 return;
 
 
-            //PAssive effetcsts only happen on the side of the owner
+            //Passive effects only happen on the side of the owner
             var source = player.GetSource_ItemUse(Item);
             if (secondaryAttunement != null)
             {
@@ -326,15 +340,24 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override bool CanUseItem(Player player)
         {
-            return !Main.projectile.Any(n => n.active && n.owner == player.whoAmI &&
+            bool isRightClicking = player.altFunctionUse != ItemAlternativeFunctionID.None;
+            return !isRightClicking && !Main.projectile.Any(n => n.active && n.owner == player.whoAmI &&
             (n.type == ProjectileType<SwordsmithsPride>() ||
-             n.type == ProjectileType<MercurialTides>() ||
+             n.type == ProjectileType<EarthenTides>() ||
              n.type == ProjectileType<SanguineFury>() ||
              n.type == ProjectileType<LamentationsOfTheChained>()));
         }
 
-        //No need for any wacky zany hijinx in the shoot method for once??? damn
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) => mainAttunement == null ? false : true;
+        // 03FEB2024: Ozzatron: added so the Iban Blades don't break Overhaul compatibility. Weapons are functionally unchanged.
+        public override bool AltFunctionUse(Player player) => true;
+
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        {
+            if (mainAttunement == null || player.altFunctionUse != ItemAlternativeFunctionID.None)
+                return false;
+
+            return true;
+        }
 
         internal static ChargingEnergyParticleSet BiomeEnergyParticles = new ChargingEnergyParticleSet(-1, 2, Color.White, Color.White, 0.04f, 20f);
         internal static void UpdateAllParticleSets()
@@ -350,7 +373,7 @@ namespace CalamityMod.Items.Weapons.Melee
             position.Y -= 6f * scale;
 
             Texture2D itemTexture = Request<Texture2D>("CalamityMod/Items/Weapons/Melee/OmegaBiomeBladeExtra").Value;
-            Rectangle itemFrame = (Main.itemAnimations[Item.type] == null) ? itemTexture.Frame() : Main.itemAnimations[Item.type].GetFrame(itemTexture);
+            Rectangle itemFrame = (Main.itemAnimations[Type] == null) ? itemTexture.Frame() : Main.itemAnimations[Type].GetFrame(itemTexture);
 
             // Draw all particles.
 
@@ -389,9 +412,9 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CreateRecipe().
                 AddIngredient<TrueBiomeBlade>().
-                AddIngredient<CoreofCalamity>().
                 AddIngredient<AstralBar>(3).
                 AddIngredient<LifeAlloy>(3).
+                AddIngredient<CoreofCalamity>().
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

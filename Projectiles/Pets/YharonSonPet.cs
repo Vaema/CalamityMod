@@ -29,11 +29,11 @@ namespace CalamityMod.Projectiles.Pets
 
         public override void SetStaticDefaults()
         {
-            Main.projPet[Projectile.type] = true;
+            Main.projPet[Type] = true;
 
             //i cannot be bothered to figure out why it keeps flickering everytime it repeats the animation
             //as a "solution" i have set the frame counter to an obnoxiously high number so it probably wont be noticed by players
-            ProjectileID.Sets.CharacterPreviewAnimations[Projectile.type] = ProjectileID.Sets.SimpleLoop(1, 1, int.MaxValue)
+            ProjectileID.Sets.CharacterPreviewAnimations[Type] = ProjectileID.Sets.SimpleLoop(1, 1, int.MaxValue)
             .WithOffset(-55f, 2f).WithSpriteDirection(-1).WhenNotSelected(0, 0);
         }
 
@@ -50,7 +50,7 @@ namespace CalamityMod.Projectiles.Pets
         {
             if (Projectile.frameCounter <= 1)
                 return false;
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 origin = texture.Size() / new Vector2((float)xFrameAmt, (float)yFrameAmt) * 0.5f;
             Rectangle frame = texture.Frame(xFrameAmt, yFrameAmt, frameX, frameY);
             SpriteEffects spriteEffects = Projectile.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;

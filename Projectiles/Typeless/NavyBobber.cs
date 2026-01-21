@@ -1,4 +1,4 @@
-using CalamityMod.Items.Fishing.FishingRods;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -14,13 +14,29 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.height = 14;
             Projectile.aiStyle = ProjAIStyleID.Bobber;
             Projectile.bobber = true;
-            Projectile.penetrate = -1;
         }
 
+        public override void PostAI()
+        {
+            foreach (var item in Main.ActiveNPCs)
+            {
+                if (!item.friendly && item.Distance(Projectile.Center) < 160)
+                {
+                    item.AddBuff(ModContent.BuffType<StaticDischarge>(), 180);
+                    if (Main.rand.NextBool(10))
+                    {
+                        Vector2 velocity = CalamityUtils.RandomVelocity(50f, 30f, 60f);
+                        Projectile spark = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), item.Center, velocity, ModContent.ProjectileType<GenericElectricSpark>(), 0, 0f, Projectile.owner);
+                        spark.localNPCHitCooldown = -2;
+                        spark.timeLeft = 30;
+                    }
+                }
+            }
+        }
         public override bool PreDrawExtras()
         {
-            Lighting.AddLight(Projectile.Center, (255 - Projectile.alpha) * 0f / 255f, (255 - Projectile.alpha) * 0.25f / 255f, (255 - Projectile.alpha) * 0.25f / 255f);
-            return Projectile.DrawFishingLine(ModContent.ItemType<NavyFishingRod>(), new Color(36, 61, 111, 100), 55, 33f);
+            Lighting.AddLight(Projectile.Center, 0f, 0.25f, 0.25f);
+            return true;
         }
     }
 }

@@ -1,10 +1,10 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.Melee.Yoyos;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.Audio;
-using CalamityMod.Items.Weapons.Melee;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -26,7 +26,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.ignoreWater = true;
             Projectile.timeLeft = 300;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;            
+            Projectile.localNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -66,10 +66,9 @@ namespace CalamityMod.Projectiles.Melee
         private Projectile FindParent()
         {
             Projectile parent = null;
-            for (int i = 0; i < Main.maxProjectiles; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                Projectile p = Main.projectile[i];
-                if (p.identity == Projectile.ai[0] && p.active && p.type == ModContent.ProjectileType<MicrowaveYoyo>() && p.owner == Projectile.owner)
+                if (p.identity == Projectile.ai[0] && p.type == ModContent.ProjectileType<MicrowaveYoyo>() && p.owner == Projectile.owner)
                 {
                     parent = p;
                     break;

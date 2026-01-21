@@ -10,8 +10,8 @@ namespace CalamityMod.Projectiles.Melee
         public new string LocalizationCategory => "Projectiles.Melee";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
         }
 
         public override void SetDefaults()
@@ -21,11 +21,12 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.aiStyle = ProjAIStyleID.Beam;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Melee;
-            Projectile.penetrate = 3;
+            Projectile.penetrate = 2;
+            Projectile.MaxUpdates = 2;
             Projectile.timeLeft = 600;
             AIType = ProjectileID.SporeCloud;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 8;
+            Projectile.localNPCHitCooldown = 8 * Projectile.MaxUpdates;
         }
 
         public override void AI()
@@ -33,7 +34,7 @@ namespace CalamityMod.Projectiles.Melee
             Lighting.AddLight(Projectile.Center, 0f, 0.25f, 0f);
             if (Main.rand.NextBool(3))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 44, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.JungleSpore, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
         }
 
@@ -41,7 +42,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 44, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.JungleSpore, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
             }
         }
 
@@ -50,7 +51,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Projectile.timeLeft > 595)
                 return false;
 
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 2);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 2);
             return false;
         }
 
@@ -73,7 +74,7 @@ namespace CalamityMod.Projectiles.Melee
                 var source = Projectile.GetSource_FromThis();
                 if (Projectile.owner == Main.myPlayer)
                 {
-                    Projectile petal = CalamityUtils.ProjectileBarrage(source, Projectile.Center, targetPos, Main.rand.NextBool(), 800f, 800f, 0f, 800f, 10f, ProjectileID.FlowerPetal, (int)(Projectile.damage * 0.5), Projectile.knockBack * 0.5f, Projectile.owner, true);
+                    Projectile petal = CalamityUtils.ProjectileBarrage(source, Projectile.Center, targetPos, Main.rand.NextBool(), 800f, 800f, 0f, 800f, 24f, ProjectileID.FlowerPetal, (int)(Projectile.damage * 0.5), Projectile.knockBack * 0.5f, Projectile.owner, false, 0f);
                     if (petal.whoAmI.WithinBounds(Main.maxProjectiles))
                     {
                         petal.DamageType = DamageClass.Melee;

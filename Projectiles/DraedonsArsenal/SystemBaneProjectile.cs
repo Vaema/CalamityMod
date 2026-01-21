@@ -1,7 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
@@ -21,8 +22,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public const float FieldRadius = 360f;
         public override void SetDefaults()
         {
-            Projectile.width = 36;
-            Projectile.height = 36;
+            Projectile.width = Projectile.height = 34;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.penetrate = -1;
@@ -35,8 +35,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override void AI()
         {
-            Projectile.StickToTiles(false, true);
-
             Time++;
             Projectile.rotation = Projectile.velocity.ToRotation();
             if (Projectile.velocity.Y < 15f)
@@ -46,7 +44,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             // Generate idle sparks.
             if (Time % 15f == 0f)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 229);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.Vortex);
                 dust.velocity = Main.rand.NextVector2Circular(10f, 10f);
                 dust.fadeIn = 1.05f;
                 dust.noGravity = true;
@@ -55,7 +53,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             if (Time % LightningFireRate == 0f && Main.myPlayer == Projectile.owner)
             {
                 int lightningDamage = Projectile.damage;
-                int totalSystemBanes = Main.player[Projectile.owner].ownedProjectileCounts[Projectile.type];
+                int totalSystemBanes = Main.player[Projectile.owner].ownedProjectileCounts[Type];
 
                 // Make the damage of the lightning have diminishing returns depending on how many systems are present.
                 lightningDamage = (int)Math.Ceiling(lightningDamage / Math.Pow(totalSystemBanes, 1D / 3D));
@@ -106,6 +104,12 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         {
             Projectile.velocity.X *= 0.8f;
             return false;
+        }
+
+        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
+        {
+            fallThrough = false;
+            return true;
         }
     }
 }

@@ -1,4 +1,4 @@
-using CalamityMod.Tiles.Furniture.CraftingStations;
+﻿using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.Tiles.FurnitureSacrilegious;
 using Terraria;
 using Terraria.ID;
@@ -10,21 +10,13 @@ namespace CalamityMod.Items.Placeables.FurnitureSacrilegious
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
         public override void SetDefaults()
         {
-            Item.width = 24;
-            Item.height = 50;
-            Item.maxStack = 9999;
-            Item.useTurn = true;
-            Item.autoReuse = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.consumable = true;
-            Item.createTile = ModContent.TileType<LargeRitualCandleTile>();
+            Item.DefaultToPlaceableTile(ModContent.TileType<LargeRitualCandleTile>());
+            Item.value = Item.sellPrice(copper: 60);
         }
 
         public override bool AltFunctionUse(Player player) => true;
@@ -33,11 +25,11 @@ namespace CalamityMod.Items.Placeables.FurnitureSacrilegious
         {
             if (player.altFunctionUse == ItemAlternativeFunctionID.ActivatedAndUsed)
             {
-				Item.placeStyle = 1;
+                Item.placeStyle = 1;
             }
             else
             {
-				Item.placeStyle = 0;
+                Item.placeStyle = 0;
             }
             return base.CanUseItem(player);
         }
@@ -45,10 +37,10 @@ namespace CalamityMod.Items.Placeables.FurnitureSacrilegious
         public override void AddRecipes()
         {
             CreateRecipe().
-				AddIngredient<OccultBrickItem>(6).
-				AddIngredient(ItemID.Torch).
-				AddTile<SCalAltar>().
-				Register();
+                AddIngredient<OccultBrickItem>(6).
+                AddIngredient(ItemID.Torch).
+                AddTile<SCalAltar>().
+                Register();
         }
     }
 }

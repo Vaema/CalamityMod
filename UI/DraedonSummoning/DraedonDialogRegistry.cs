@@ -9,26 +9,64 @@ namespace CalamityMod.UI.DraedonSummoning
 
         public static readonly DraedonDialogEntry WhoAreYou = CreateFromKey("WhoAreYou");
 
-        public static readonly DraedonDialogEntry CalamitasBeforeHerDefeat = CreateFromKey("CalamitasBeforeDefeat", () => !DownedBossSystem.downedCalamitas);
+        public static readonly DraedonDialogEntry WhoAreYouPart2 = CreateFromKey("WhoAreYouPart2");
 
-        public static readonly DraedonDialogEntry CalamitasAfterHerDefeat = CreateFromKey("CalamitasAfterDefeat", () => DownedBossSystem.downedCalamitas);
+        public static readonly DraedonDialogEntry Origins = CreateFromKey("Origins");
 
-        public static readonly DraedonDialogEntry Plague = CreateFromKey("Plague", () => DownedBossSystem.downedPlaguebringer);
+        public static readonly DraedonDialogEntry Crusade = CreateFromKey("Crusade");
 
-        public static readonly DraedonDialogEntry SulphurousSea = CreateFromKey("SulphuricSea");
+        public static readonly DraedonDialogEntry Goals = CreateFromKey("Goals");
 
-        public static readonly DraedonDialogEntry TheTyrant = CreateFromKey("TheTyrant", () => DownedBossSystem.downedCalamitas);
+        public static readonly DraedonDialogEntry ExoMechs = CreateFromKey("ExoMechs");
+
+        public static readonly DraedonDialogEntry Exotech = CreateFromKey("Exotech");
+
+        public static readonly DraedonDialogEntry MiracleMatter = CreateFromKey("MiracleMatter");
+
+        public static readonly DraedonDialogEntry Forge = CreateFromKey("Forge");
+
+        public static readonly DraedonDialogEntry Yharim = CreateFromKey("Yharim");
+
+        public static readonly DraedonDialogEntry Aerie = CreateFromKey("Aerie");
+
+        public static readonly DraedonDialogEntry Calamitas = CreateFromKey("Calamitas");
+
+        public static readonly DraedonDialogEntry Dog = CreateFromKey("Dog");
+
+        public static readonly DraedonDialogEntry Distortion = CreateFromKey("Distortion");
+
+        public static readonly DraedonDialogEntry Mechs = CreateFromKey("Mechs");
+
+        public static readonly DraedonDialogEntry Plague = CreateFromKey("Plague");
+
+        public static readonly DraedonDialogEntry Astral = CreateFromKey("Astral");
+
+        public static readonly DraedonDialogEntry Sulphur = CreateFromKey("Sulphur");
 
         internal static List<DraedonDialogEntry> DialogOptions = new()
         {
             // The first index is assumed to be the "who are you?" dialog by the UI. All other indices can be freely swapped around, however.
             WhoAreYou,
+            WhoAreYouPart2,
 
-            CalamitasBeforeHerDefeat,
-            CalamitasAfterHerDefeat,
+            Origins,
+            Crusade,
+            Goals,
+
+            ExoMechs,
+            Exotech,
+            MiracleMatter,
+            Forge,
+            Yharim,
+            Aerie,
+            Calamitas,
+            Dog,
+            Distortion,
+
+            Mechs,
             Plague,
-            SulphurousSea,
-            TheTyrant
+            Astral,
+            Sulphur
         };
 
         internal static DraedonDialogEntry CreateFromKey(string key, Func<bool> condition = null) =>

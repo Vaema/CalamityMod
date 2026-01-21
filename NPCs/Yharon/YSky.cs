@@ -16,10 +16,10 @@ namespace CalamityMod.NPCs.Yharon
 
         public override void Update(GameTime gameTime)
         {
-            if (YIndex == -1 || BossRushEvent.BossRushActive)
+            if ((YIndex == -1 && Main.LocalPlayer.Calamity().monolithYharonShader <= 0) || BossRushEvent.BossRushActive)
             {
                 UpdateYIndex();
-                if (YIndex == -1 || BossRushEvent.BossRushActive)
+                if ((YIndex == -1 && Main.LocalPlayer.Calamity().monolithYharonShader <= 0) || BossRushEvent.BossRushActive)
                     isActive = false;
             }
 
@@ -40,7 +40,7 @@ namespace CalamityMod.NPCs.Yharon
                 float x = 0f;
                 if (this.YIndex != -1)
                 {
-                    x = Vector2.Distance(Main.player[Main.myPlayer].Center, Main.npc[this.YIndex].Center);
+                    x = Vector2.Distance(Main.LocalPlayer.Center, Main.npc[this.YIndex].Center);
                 }
                 return (1f - Utils.SmoothStep(3000f, 6000f, x)) * intensity * 0.66f;
             }
@@ -56,19 +56,11 @@ namespace CalamityMod.NPCs.Yharon
         private bool UpdateYIndex()
         {
             int YType = ModContent.NPCType<Yharon>();
-            if (YIndex >= 0 && Main.npc[YIndex].active && Main.npc[YIndex].type == YType)
+            if ((YIndex >= 0 && Main.npc[YIndex].active && Main.npc[YIndex].type == YType) || Main.LocalPlayer.Calamity().monolithYharonShader > 0)
             {
                 return true;
             }
-            YIndex = -1;
-            for (int i = 0; i < Main.npc.Length; i++)
-            {
-                if (Main.npc[i].active && Main.npc[i].type == YType)
-                {
-                    YIndex = i;
-                    break;
-                }
-            }
+            YIndex = NPC.FindFirstNPC(YType);
             //this.DoGIndex = DoGIndex;
             return YIndex != -1;
         }

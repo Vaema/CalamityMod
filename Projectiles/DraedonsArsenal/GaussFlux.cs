@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
@@ -29,7 +30,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Projectile.penetrate = -1;
             Projectile.timeLeft = 180;
             Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 10;
+            Projectile.idStaticNPCHitCooldown = 15;
         }
 
         public override void AI()
@@ -47,7 +48,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 {
                     for (int i = 0; i < 60; i++)
                     {
-                        Dust dust = Dust.NewDustPerfect(Target.Center, 261);
+                        Dust dust = Dust.NewDustPerfect(Target.Center, DustID.AncientLight);
                         dust.color = Utils.SelectRandom(Main.rand, Color.Yellow, Color.YellowGreen);
                         dust.velocity = Main.rand.NextVector2Circular(20f, 20f);
                         dust.scale = 2f;
@@ -65,7 +66,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                         Vector2 offset = Target.Size.RotatedBy(offsetAngle) * 0.5f;
                         offset += (arcIndex * MathHelper.TwoPi / 6f + Time / 20f).ToRotationVector2() * 6f * arcIndex;
 
-                        Dust dust = Dust.NewDustPerfect(Target.Center + offset, 261);
+                        Dust dust = Dust.NewDustPerfect(Target.Center + offset, DustID.AncientLight);
                         dust.color = Utils.SelectRandom(Main.rand, Color.Yellow, Color.YellowGreen);
                         dust.velocity = Vector2.Zero;
                         dust.scale = scale;

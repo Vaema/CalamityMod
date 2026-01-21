@@ -62,7 +62,7 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void Load()
         {
             // Add the body equip texture.
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
                 EquipLoader.AddEquipTexture(Mod, $"{Texture}_{EquipType.Body}", EquipType.Body, this);
         }
 
@@ -73,18 +73,20 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.damage = 625;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noUseGraphic = true;
-            Item.useTime = Item.useAnimation = 9;
+            Item.useAnimation = Item.useTime = 24;
             Item.noMelee = true;
             Item.knockBack = 1f;
 
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
 
             Item.UseSound = SoundID.Item117;
             Item.shoot = ModContent.ProjectileType<ExoskeletonPlasmaCannon>();
             Item.shootSpeed = 10f;
             Item.DamageType = DamageClass.Summon;
         }
+
+        public override bool? CanAutoReuseItem(Player player) => false;
 
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frameI, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
@@ -113,13 +115,13 @@ namespace CalamityMod.Items.Weapons.Summon
             // If the player owns a panel, make it fade away.
             if (player.ownedProjectileCounts[panelID] >= 1)
             {
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    if (Main.projectile[i].type != panelID || Main.projectile[i].owner != player.whoAmI || !Main.projectile[i].active)
+                    if (p.type != panelID || p.owner != player.whoAmI)
                         continue;
 
-                    Main.projectile[i].ai[0] = 1f;
-                    Main.projectile[i].netUpdate = true;
+                    p.ai[0] = 1f;
+                    p.netUpdate = true;
                 }
             }
 

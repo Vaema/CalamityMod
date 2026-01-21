@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shoot = ModContent.ProjectileType<TacticiansTrumpCardProj>();
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item1;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.Calamity().donorItem = true;
         }
@@ -49,23 +49,23 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient(ItemID.CopperShortsword).
-                AddIngredient<TomeofFates>().
+                AddIngredient<Apathanull>().
                 AddIngredient<FlareBolt>().
                 AddIngredient<Tradewinds>().
                 AddIngredient<NuclearFury>().
                 AddIngredient<UelibloomBar>(5).
-                AddIngredient<DarkPlasma>().
-                AddTile(TileID.LunarCraftingStation).
+                AddIngredient<DarkPlasma>(3).
+                AddTile(TileID.MythrilAnvil).
                 Register();
             CreateRecipe().
                 AddIngredient(ItemID.TinShortsword).
-                AddIngredient<TomeofFates>().
+                AddIngredient<Apathanull>().
                 AddIngredient<FlareBolt>().
                 AddIngredient<Tradewinds>().
                 AddIngredient<NuclearFury>().
                 AddIngredient<UelibloomBar>(5).
-                AddIngredient<DarkPlasma>().
-                AddTile(TileID.LunarCraftingStation).
+                AddIngredient<DarkPlasma>(3).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

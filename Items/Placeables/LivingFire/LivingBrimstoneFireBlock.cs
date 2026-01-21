@@ -1,3 +1,4 @@
+﻿using CalamityMod.Items.Placeables.Crags;
 using CalamityMod.Tiles.LivingFire;
 using Terraria;
 using Terraria.ID;
@@ -13,19 +14,7 @@ namespace CalamityMod.Items.Placeables.LivingFire
             Item.ResearchUnlockCount = 100;
         }
 
-        public override void SetDefaults()
-        {
-            Item.width = 10;
-            Item.height = 12;
-            Item.maxStack = 9999;
-            Item.useTurn = true;
-            Item.autoReuse = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.consumable = true;
-            Item.createTile = ModContent.TileType<LivingBrimstoneFireBlockTile>();
-        }
+        public override void SetDefaults() => Item.DefaultToPlaceableTile(ModContent.TileType<LivingBrimstoneFireBlockTile>());
 
         public override void PostUpdate()
         {
@@ -37,6 +26,7 @@ namespace CalamityMod.Items.Placeables.LivingFire
             CreateRecipe(20).
                 AddIngredient(ItemID.LivingFireBlock, 20).
                 AddIngredient<BrimstoneSlag>().
+                AddTile(TileID.CrystalBall).
                 Register();
         }
     }

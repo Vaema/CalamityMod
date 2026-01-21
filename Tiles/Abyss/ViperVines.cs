@@ -1,8 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent.Metadata;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Abyss
@@ -15,9 +16,16 @@ namespace CalamityMod.Tiles.Abyss
             Main.tileBlockLight[Type] = true;
             Main.tileLavaDeath[Type] = true;
             Main.tileNoFail[Type] = true;
+            TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Plant"]);
             AddMapEntry(new Color(0, 50, 0));
             HitSound = SoundID.Grass;
-            DustType = 2;
+            DustType = DustID.Grass;
+        }
+
+        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
+        {
+            Main.instance.TilesRenderer.CrawlToTopOfVineAndAddSpecialPoint(j, i);
+            return false;
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
@@ -26,7 +34,7 @@ namespace CalamityMod.Tiles.Abyss
         }
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
-		{
+        {
             if (WorldGen.loadSuccess)
             {
                 Tile tileAbove = Framing.GetTileSafely(i, j - 1);
@@ -36,8 +44,8 @@ namespace CalamityMod.Tiles.Abyss
                     return true;
                 }
             }
-			return true;
-		}
+            return true;
+        }
 
         public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
         {
@@ -61,44 +69,35 @@ namespace CalamityMod.Tiles.Abyss
 
         public override void RandomUpdate(int i, int j)
         {
-            if (Main.tile[i, j + 1] != null)
+            Tile tileBelow = Framing.GetTileSafely(i, j + 1);
+            if (WorldGen.genRand.NextBool(5) && !tileBelow.HasTile && tileBelow.LiquidType != LiquidID.Lava)
             {
-                if (!Main.tile[i, j + 1].HasTile && Main.tile[i, j + 1].TileType != (ushort)ModContent.TileType<ViperVines>())
+                bool PlaceVine = false;
+                int Test = j;
+                while (Test > j - 10)
                 {
-                    if (Main.tile[i, j + 1].LiquidAmount >= 128 && Main.tile[i, j + 1].LiquidType != LiquidID.Lava)
+                    Tile testTile = Framing.GetTileSafely(i, Test);
+                    if (testTile.BottomSlope)
                     {
-                        bool canGrowVine = false;
-                        for (int k = j; k > j - 10; j--)
-                        {
-                            if (Main.tile[i, k].BottomSlope)
-                            {
-                                canGrowVine = false;
-                                break;
-                            }
-                            if (Main.tile[i, k].HasTile && !Main.tile[i, k].BottomSlope)
-                            {
-                                canGrowVine = true;
-                                break;
-                            }
-                        }
-                        if (canGrowVine)
-                        {
-                            int vineX = i;
-                            int vineY = j + 1;
-                            Main.tile[vineX, vineY].TileType = (ushort)ModContent.TileType<ViperVines>();
-                            Main.tile[vineX, vineY].TileFrameX = (short)(WorldGen.genRand.Next(8) * 18);
-                            Main.tile[vineX, vineY].TileFrameY = (short)(4 * 18);
-                            Main.tile[vineX, vineY - 1].TileFrameX = (short)(WorldGen.genRand.Next(12) * 18);
-                            Main.tile[vineX, vineY - 1].TileFrameY = (short)(WorldGen.genRand.Next(4) * 18);
-                            Main.tile[vineX, vineY].Get<TileWallWireStateData>().HasTile = true;
-                            WorldGen.SquareTileFrame(vineX, vineY, true);
-                            WorldGen.SquareTileFrame(vineX, vineY - 1, true);
-                            if (Main.netMode == NetmodeID.Server)
-                            {
-                                NetMessage.SendTileSquare(-1, vineX, vineY, 3, TileChangeType.None);
-                                NetMessage.SendTileSquare(-1, vineX, vineY - 1, 3, TileChangeType.None);
-                            }
-                        }
+                        break;
+                    }
+                    else if (!testTile.HasTile || testTile.TileType != ModContent.TileType<PlantyMush>())
+                    {
+                        Test--;
+                        continue;
+                    }
+                    PlaceVine = true;
+                    break;
+                }
+
+                if (PlaceVine)
+                {
+                    tileBelow.TileType = Type;
+                    tileBelow.HasTile = true;
+                    WorldGen.SquareTileFrame(i, j + 1, true);
+                    if (Main.dedServ)
+                    {
+                        NetMessage.SendTileSquare(-1, i, j + 1, 3, TileChangeType.None);
                     }
                 }
             }

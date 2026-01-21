@@ -1,4 +1,6 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using System.IO;
+using CalamityMod.Events;
 using CalamityMod.NPCs.ExoMechs.Thanatos;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
@@ -6,9 +8,8 @@ using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using ReLogic.Utilities;
-using System;
-using System.IO;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -18,6 +19,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.ExoMechs.Ares
 {
+    [HasPierceResist]
     public class AresGaussNuke : ModNPC
     {
         public enum Phase
@@ -35,7 +37,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
 
         public ThanatosSmokeParticleSet SmokeDrawer = new ThanatosSmokeParticleSet(-1, 3, 0f, 16f, 1.5f);
         public AresCannonChargeParticleSet EnergyDrawer = new AresCannonChargeParticleSet(-1, 15, 40f, Color.Yellow);
-        
+
         public Vector2 CoreSpritePosition => NPC.Center + NPC.spriteDirection * NPC.rotation.ToRotationVector2() * 35f + (NPC.rotation + MathHelper.PiOver2).ToRotationVector2() * 5f;
 
         // This stores the sound slot of the telegraph sound it makes, so it may be properly updated in terms of position.
@@ -70,29 +72,36 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
 
         public static readonly SoundStyle NukeExplosionSound = new("CalamityMod/Sounds/Custom/ExoMechs/AresGaussNukeExplosion") { Volume = 1.45f };
 
+        public static Asset<Texture2D> GlowTexture;
+
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            NPCID.Sets.TrailingMode[NPC.type] = 3;
-            NPCID.Sets.TrailCacheLength[NPC.type] = NPC.oldPos.Length;
+            NPCID.Sets.TrailingMode[Type] = 3;
+            NPCID.Sets.TrailCacheLength[Type] = NPC.oldPos.Length;
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
+
+        public static int NukeDamage = 135; // 540
+        public static int SparkDamage = 70; // 280
 
         public override void SetDefaults()
         {
+            NPC.damage = 0; // No contact damage
             NPC.npcSlots = 5f;
-            NPC.damage = 100;
             NPC.width = 170;
             NPC.height = 120;
             NPC.defense = 100;
             NPC.DR_NERD(0.35f);
-            NPC.LifeMaxNERB(1250000, 1495000, 650000);
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
+            NPC.LifeMaxNERB(1000000, 1495000, 650000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.Opacity = 0f;
             NPC.knockBackResist = 0f;
-            NPC.canGhostHeal = false;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.DeathSound = CommonCalamitySounds.ExoDeathSound;
@@ -138,10 +147,9 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             }
 
             // Difficulty modes
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             // Percent life remaining
             float lifeRatio = Main.npc[CalamityGlobalNPC.draedonExoMechPrime].life / (float)Main.npc[CalamityGlobalNPC.draedonExoMechPrime].lifeMax;
@@ -190,8 +198,8 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             // Whether Ares should be buffed while in berserk phase
             bool shouldGetBuffedByBerserkPhase = berserk && !otherMechIsBerserk;
 
-            // Target variable
-            Player player = Main.player[Main.npc[CalamityGlobalNPC.draedonExoMechPrime].target];
+            // Target variables
+            int targetIndex = Main.npc[CalamityGlobalNPC.draedonExoMechPrime].target;
 
             if (NPC.ai[2] > 0f)
                 NPC.realLife = (int)NPC.ai[2];
@@ -224,15 +232,20 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                     NPC.Opacity = 0f;
             }
 
+            // Global timer used for passive movement
+            NPC.Calamity().newAI[3]++;
+            if (NPC.Calamity().newAI[3] >= 240f)
+                NPC.Calamity().newAI[3] = 0f;
+
             // Predictiveness
-            float predictionAmt = bossRush ? 20f : death ? 15f : revenge ? 13.75f : expertMode ? 12.5f : 10f;
+            float predictionAmt = death ? 15f : revenge ? 13.75f : expertMode ? 12.5f : 10f;
             if (nerfedAttacks)
                 predictionAmt *= 0.5f;
             if (passivePhase)
                 predictionAmt *= 0.5f;
 
-            Vector2 predictionVector = player.velocity * predictionAmt;
-            Vector2 rotationVector = player.Center + predictionVector - NPC.Center;
+            Vector2 predictionVector = Main.player[targetIndex].velocity * predictionAmt;
+            Vector2 rotationVector = Main.player[targetIndex].Center + predictionVector - NPC.Center;
 
             float projectileVelocity = passivePhase ? 9.6f : 12f;
             if (lastMechAlive)
@@ -254,7 +267,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             NPC.rotation = NPC.rotation.AngleTowards(rotation, rateOfRotation);
 
             // Direction
-            int direction = Math.Sign(player.Center.X - NPC.Center.X);
+            int direction = Math.Sign(Main.player[targetIndex].Center.X - NPC.Center.X);
             if (direction != 0)
             {
                 NPC.direction = direction;
@@ -266,42 +279,36 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             }
 
             // Despawn if target is dead
-            if (player.dead)
+            if (Main.player[targetIndex].dead)
             {
-                player = Main.player[Main.npc[CalamityGlobalNPC.draedonExoMechPrime].target];
-                if (player.dead)
-                {
-                    AIState = (float)Phase.Nothing;
-                    calamityGlobalNPC.newAI[1] = 0f;
-                    calamityGlobalNPC.newAI[2] = 0f;
-                    NPC.dontTakeDamage = true;
+                AIState = (float)Phase.Nothing;
+                calamityGlobalNPC.newAI[1] = 0f;
+                calamityGlobalNPC.newAI[2] = 0f;
+                NPC.dontTakeDamage = true;
 
+                NPC.velocity.Y -= 1f;
+                if ((double)NPC.position.Y < Main.topWorld + 16f)
                     NPC.velocity.Y -= 1f;
-                    if ((double)NPC.position.Y < Main.topWorld + 16f)
-                        NPC.velocity.Y -= 1f;
 
-                    if ((double)NPC.position.Y < Main.topWorld + 16f)
+                if ((double)NPC.position.Y < Main.topWorld + 16f)
+                {
+                    for (int a = 0; a < Main.maxNPCs; a++)
                     {
-                        for (int a = 0; a < Main.maxNPCs; a++)
-                        {
-                            if (Main.npc[a].type == NPC.type || Main.npc[a].type == ModContent.NPCType<Artemis.Artemis>() || Main.npc[a].type == ModContent.NPCType<AresBody>() ||
-                                Main.npc[a].type == ModContent.NPCType<AresLaserCannon>() || Main.npc[a].type == ModContent.NPCType<AresPlasmaFlamethrower>() ||
-                                Main.npc[a].type == ModContent.NPCType<AresTeslaCannon>() || Main.npc[a].type == ModContent.NPCType<Apollo.Apollo>() ||
-                                Main.npc[a].type == ModContent.NPCType<ThanatosHead>() || Main.npc[a].type == ModContent.NPCType<ThanatosBody1>() ||
-                                Main.npc[a].type == ModContent.NPCType<ThanatosBody2>() || Main.npc[a].type == ModContent.NPCType<ThanatosTail>())
-                                Main.npc[a].active = false;
-                        }
+                        if (Main.npc[a].type == NPC.type || Main.npc[a].type == ModContent.NPCType<Artemis.Artemis>() || Main.npc[a].type == ModContent.NPCType<AresBody>() ||
+                            Main.npc[a].type == ModContent.NPCType<AresLaserCannon>() || Main.npc[a].type == ModContent.NPCType<AresPlasmaFlamethrower>() ||
+                            Main.npc[a].type == ModContent.NPCType<AresTeslaCannon>() || Main.npc[a].type == ModContent.NPCType<Apollo.Apollo>() ||
+                            Main.npc[a].type == ModContent.NPCType<ThanatosHead>() || Main.npc[a].type == ModContent.NPCType<ThanatosBody1>() ||
+                            Main.npc[a].type == ModContent.NPCType<ThanatosBody2>() || Main.npc[a].type == ModContent.NPCType<ThanatosTail>())
+                            Main.npc[a].active = false;
                     }
-
-                    return;
                 }
+
+                return;
             }
 
             // Default vector to fly to
-            float offsetX = 560f;
-            float offsetY = 0f;
-            float offsetX2 = 540f;
-            float offsetY2 = 540f;
+            Vector2 offset = new Vector2(560f, 20f * (float)Math.Sin(NPC.Calamity().newAI[3] * MathHelper.Pi / 120f));
+            Vector2 offset2 = new Vector2(540f, 540f);
             switch ((int)Main.npc[CalamityGlobalNPC.draedonExoMechPrime].ai[3])
             {
                 case 0:
@@ -312,15 +319,14 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                 case 1:
                 case 2:
                 case 5:
-                    offsetX *= -1f;
-                    offsetX2 *= -1f;
-                    offsetY2 *= -1f;
+                    offset.X *= -1f;
+                    offset2 *= -1f;
                     break;
             }
-            Vector2 destination = calamityGlobalNPC_Body.newAI[0] == (float)AresBody.Phase.Deathrays ? new Vector2(Main.npc[CalamityGlobalNPC.draedonExoMechPrime].Center.X + offsetX2, Main.npc[CalamityGlobalNPC.draedonExoMechPrime].Center.Y + offsetY2) : new Vector2(Main.npc[CalamityGlobalNPC.draedonExoMechPrime].Center.X + offsetX, Main.npc[CalamityGlobalNPC.draedonExoMechPrime].Center.Y + offsetY);
+            Vector2 destination = Main.npc[CalamityGlobalNPC.draedonExoMechPrime].Center + (calamityGlobalNPC_Body.newAI[0] == (float)AresBody.Phase.Deathrays ? offset2 : offset);
 
             // Velocity and acceleration values
-            float baseVelocityMult = (shouldGetBuffedByBerserkPhase ? 0.25f : 0f) + (bossRush ? 1.15f : death ? 1.1f : revenge ? 1.075f : expertMode ? 1.05f : 1f);
+            float baseVelocityMult = (shouldGetBuffedByBerserkPhase ? 0.25f : 0f) + (death ? 1.1f : revenge ? 1.075f : expertMode ? 1.05f : 1f);
             float baseVelocity = (enraged ? 38f : 30f) * baseVelocityMult;
             baseVelocity *= 1f + Main.npc[(int)NPC.ai[2]].localAI[2];
 
@@ -416,9 +422,8 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 int type = ModContent.ProjectileType<AresGaussNukeProjectile>();
-                                int damage = NPC.GetProjectileDamage(type);
-                                float offset = 40f;
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.Normalize(gaussNukeVelocity) * offset, gaussNukeVelocity, type, damage, 0f, Main.myPlayer, 0f, player.Center.Y);
+                                float nukeOffset = 40f;
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.Normalize(gaussNukeVelocity) * nukeOffset, gaussNukeVelocity, type, NukeDamage, 0f, Main.myPlayer, 0f, Main.player[targetIndex].Center.Y);
                             }
 
                             // Recoil
@@ -481,8 +486,6 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             }
         }
 
-        public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
-
         public override void FindFrame(int frameHeight)
         {
             // Use telegraph frames when using gauss nuke
@@ -543,13 +546,13 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture = TextureAssets.Npc[Type].Value;
             Rectangle frame = new Rectangle(NPC.width * frameX, NPC.height * frameY, NPC.width, NPC.height);
             Vector2 vector = new Vector2(NPC.width / 2, NPC.height / 2);
             Color afterimageBaseColor = Main.npc[(int)NPC.ai[2]].localAI[1] == (float)AresBody.Enraged.Yes ? Color.Red : Color.White;
             int numAfterimages = 5;
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 1; i < numAfterimages; i += 2)
                 {
@@ -588,9 +591,9 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
 
             spriteBatch.Draw(texture, center, frame, NPC.GetAlpha(drawColor), NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
 
-            Texture2D glowTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/ExoMechs/Ares/AresGaussNukeGlow").Value;
+            Texture2D glowTexture = GlowTexture.Value;
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 1; i < numAfterimages; i += 2)
                 {
@@ -655,9 +658,9 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 3; k++)
-                Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 107, 0f, 0f, 100, new Color(0, 255, 255), 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TerraBlade, 0f, 0f, 100, new Color(0, 255, 255), 1f);
 
-            if (NPC.soundDelay == 1)
+            if (NPC.soundDelay == 0)
             {
                 NPC.soundDelay = 3;
                 SoundEngine.PlaySound(CommonCalamitySounds.ExoHitSound, NPC.Center);
@@ -667,19 +670,19 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 107, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TerraBlade, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
                 }
                 for (int j = 0; j < 20; j++)
                 {
-                    int plasmaDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 107, 0f, 0f, 0, new Color(0, 255, 255), 2.5f);
+                    int plasmaDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TerraBlade, 0f, 0f, 0, new Color(0, 255, 255), 2.5f);
                     Main.dust[plasmaDust].noGravity = true;
                     Main.dust[plasmaDust].velocity *= 3f;
-                    plasmaDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 107, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
+                    plasmaDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TerraBlade, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
                     Main.dust[plasmaDust].velocity *= 2f;
                     Main.dust[plasmaDust].noGravity = true;
                 }
 
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("AresGaussNuke1").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("AresGaussNuke2").Type, 1f);
@@ -695,8 +698,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
 
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
-            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance);
-            NPC.damage = (int)(NPC.damage * 0.8f);
+            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
         }
     }
 }

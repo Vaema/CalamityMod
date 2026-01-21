@@ -1,11 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
-using System.IO;
+﻿using System.IO;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.World;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -14,20 +12,20 @@ namespace CalamityMod.Projectiles.Boss
         public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
         {
             Projectile.width = 10;
             Projectile.height = 10;
-            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+            if (Main.getGoodWorld)
                 Projectile.scale = 2f;
             Projectile.hostile = true;
             Projectile.tileCollide = false;
             Projectile.penetrate = 1;
-            Projectile.timeLeft = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 900 : 600;
+            Projectile.timeLeft = Main.getGoodWorld ? 900 : 600;
             Projectile.aiStyle = ProjAIStyleID.Arrow;
             Projectile.alpha = 255;
         }
@@ -45,7 +43,7 @@ namespace CalamityMod.Projectiles.Boss
         public override void AI()
         {
             Projectile.tileCollide = Projectile.timeLeft < 540;
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             Projectile.localAI[0] += 1f;
             if (Projectile.localAI[0] > 4f)
             {
@@ -54,7 +52,7 @@ namespace CalamityMod.Projectiles.Boss
                 {
                     Projectile.alpha = 0;
                 }
-                int sandyDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 85, 0f, 0f, 100, default, 1f);
+                int sandyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedBrown, 0f, 0f, 100, default, 1f);
                 Main.dust[sandyDust].noGravity = true;
                 Main.dust[sandyDust].velocity *= 0f;
             }
@@ -73,7 +71,7 @@ namespace CalamityMod.Projectiles.Boss
                 Vector2 dustRotate = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
                 dustRotate = dustRotate.RotatedBy((double)((float)(i - (dustAmt / 2 - 1)) * 6.28318548f / (float)dustAmt), default) + Projectile.Center;
                 Vector2 dustDirection = dustRotate - Projectile.Center;
-                int killSand = Dust.NewDust(dustRotate + dustDirection, 0, 0, 85, dustDirection.X * 1.5f, dustDirection.Y * 1.5f, 100, default, 1.2f);
+                int killSand = Dust.NewDust(dustRotate + dustDirection, 0, 0, DustID.UnusedBrown, dustDirection.X * 1.5f, dustDirection.Y * 1.5f, 100, default, 1.2f);
                 Main.dust[killSand].noGravity = true;
                 Main.dust[killSand].noLight = true;
                 Main.dust[killSand].velocity = dustDirection;
@@ -94,7 +92,7 @@ namespace CalamityMod.Projectiles.Boss
             lightColor.R = (byte)(255 * Projectile.Opacity);
             lightColor.G = (byte)(255 * Projectile.Opacity);
             lightColor.B = (byte)(255 * Projectile.Opacity);
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

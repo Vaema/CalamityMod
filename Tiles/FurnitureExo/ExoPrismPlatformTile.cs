@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.FurnitureExo
@@ -17,7 +18,6 @@ namespace CalamityMod.Tiles.FurnitureExo
             {
                 GlowTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureExo/ExoPrismPlatformTileGlow", AssetRequestMode.ImmediateLoad).Value;
             }
-
             this.SetUpPlatform(ModContent.ItemType<ExoPrismPlatform>(), true);
             AnimationFrameHeight = 18;
         }
@@ -26,7 +26,7 @@ namespace CalamityMod.Tiles.FurnitureExo
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 107, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.TerraBlade, 0f, 0f, 1, new Color(255, 255, 255), 1f);
             return false;
         }
 
@@ -53,6 +53,9 @@ namespace CalamityMod.Tiles.FurnitureExo
                 return;
 
             Tile tile = CalamityUtils.ParanoidTileRetrieval(i, j);
+            if (tile.IsTileActuallyInvisible())
+                return;
+
             int xPos = tile.TileFrameX;
             int frameOffset = (i + j) % 6 * AnimationFrameHeight;
             int yPos = tile.TileFrameY + frameOffset;

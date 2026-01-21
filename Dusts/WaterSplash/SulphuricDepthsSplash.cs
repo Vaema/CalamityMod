@@ -1,0 +1,6 @@
+﻿namespace CalamityMod.Dusts.WaterSplash
+{
+    public class SulphuricDepthsSplash : SplashDust
+    {
+    }
+}

@@ -1,11 +1,11 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Summon
 {
     public class BabyPlaguebringer : ModProjectile, ILocalizedModType
@@ -15,8 +15,8 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 6;
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            Main.projFrames[Type] = 6;
+            ProjectileID.Sets.MinionShot[Type] = true;
         }
 
         public override void SetDefaults()
@@ -100,9 +100,8 @@ namespace CalamityMod.Projectiles.Summon
             }
             if (!canAttack)
             {
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC nPC2 in Main.ActiveNPCs)
                 {
-                    NPC nPC2 = Main.npc[i];
                     if (nPC2.CanBeChasedBy(Projectile, false))
                     {
                         float targetDist = Vector2.Distance(nPC2.Center, Projectile.Center);
@@ -228,8 +227,8 @@ namespace CalamityMod.Projectiles.Summon
         public override bool PreDraw(ref Color lightColor)
         {
             SpriteEffects spriteEffects = Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-            int framing = texture.Height / Main.projFrames[Projectile.type];
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int framing = texture.Height / Main.projFrames[Type];
             int y6 = framing * Projectile.frame;
             Vector2 origin = new Vector2(texture.Width / 2f, framing / 2f);
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Rectangle(0, y6, texture.Width, framing), Projectile.GetAlpha(lightColor), Projectile.rotation, origin, Projectile.scale, spriteEffects, 0);

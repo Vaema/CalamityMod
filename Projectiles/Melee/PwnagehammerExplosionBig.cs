@@ -1,9 +1,5 @@
-﻿using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
@@ -31,5 +27,20 @@ namespace CalamityMod.Projectiles.Melee
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, ExplosionRadius, targetHitbox);
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            float minMult = 0.15f;
+            int hitsToMinMult = 12;
+            float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+            modifiers.SourceDamage *= damageMult;
+        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            // If you are hitting an armored target or kill a target, don't reduce damage based on enemy hits
+            if ((damageDone <= 2 || (target.life <= 0 && target.realLife == -1)) && Projectile.numHits > 0)
+            {
+                Projectile.numHits -= 1;
+            }
+        }
     }
 }

@@ -1,32 +1,32 @@
-﻿using Microsoft.Xna.Framework;
-using Terraria;
+﻿using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Healing
 {
     public class ManaPolarizerHealOrb : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Healing";
+
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public override void SetDefaults()
         {
-            Projectile.width = 4;
-            Projectile.height = 4;
+            Projectile.width = Projectile.height = 4;
             Projectile.friendly = true;
-            Projectile.penetrate = 1;
             Projectile.tileCollide = false;
-            Projectile.timeLeft = 180;
-            Projectile.extraUpdates = 3;
+            Projectile.MaxUpdates = 4;
+            Projectile.timeLeft = 120 * Projectile.MaxUpdates;
         }
 
         public override void AI()
         {
-            Projectile.HealingProjectile((int)Projectile.ai[1], (int)Projectile.ai[0], 3f, 15f);
-            int dusty = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 175, 0f, 0f, 100, default, 1.3f);
-            Dust dust = Main.dust[dusty];
-            dust.noGravity = true;
-            dust.position.X -= Projectile.velocity.X * 0.2f;
-            dust.position.Y += Projectile.velocity.Y * 0.2f;
+            Projectile.HealingProjectile((int)Projectile.ai[1], (int)Projectile.ai[0], 6f, 15f);
+            int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.SpectreStaff, 0f, 0f, 100);
+            Main.dust[dust].noGravity = true;
+            Main.dust[dust].velocity *= 0f;
+            Main.dust[dust].position.X -= Projectile.velocity.X * 0.2f;
+            Main.dust[dust].position.Y += Projectile.velocity.Y * 0.2f;
         }
     }
 }

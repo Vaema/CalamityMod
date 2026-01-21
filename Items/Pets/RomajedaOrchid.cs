@@ -12,18 +12,9 @@ namespace CalamityMod.Items.Pets
         public new string LocalizationCategory => "Items.Pets";
         public override void SetDefaults()
         {
-            Item.width = 30;
-            Item.height = 30;
-            Item.damage = 0;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.useAnimation = 20;
-            Item.useTime = 20;
-            Item.noMelee = true;
-            Item.shoot = ModContent.ProjectileType<KendraPet>();
-            Item.buffType = ModContent.BuffType<Kendra>();
+            Item.DefaultToVanitypet(ModContent.ProjectileType<KendraPet>(), ModContent.BuffType<Kendra>());
             Item.UseSound = SoundID.Item44;
-
-            Item.value = Item.buyPrice(gold: 40);
+            Item.value = Item.buyPrice(gold: 40); // Sold by Dryad
             Item.rare = ItemRarityID.Pink;
             Item.Calamity().devItem = true;
         }

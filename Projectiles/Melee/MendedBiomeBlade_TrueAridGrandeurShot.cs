@@ -1,12 +1,12 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -55,6 +55,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.timeLeft = (int)(30f + ShredRatio * 30f);
                 initialized = true;
 
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 direction = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
                 direction.Normalize();
                 Projectile.rotation = direction.ToRotation();

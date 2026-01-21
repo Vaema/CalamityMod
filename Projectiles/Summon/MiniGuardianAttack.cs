@@ -29,7 +29,7 @@ namespace CalamityMod.Projectiles.Summon
         }
 
         private int attackDelay = 0;
-        
+
         public enum MiniOffenseAIState
         {
             Vanity,
@@ -39,8 +39,8 @@ namespace CalamityMod.Projectiles.Summon
             Fireballs
         }
 
-        public MiniOffenseAIState getAiState => SpawnedFromPSC ? 
-            (MiniOffenseAIState)Math.Clamp(Projectile.ai[2], (int)MiniOffenseAIState.Spears, (int)MiniOffenseAIState.Fireballs) : 
+        public MiniOffenseAIState getAiState => SpawnedFromPSC ?
+            (MiniOffenseAIState)Math.Clamp(Projectile.ai[2], (int)MiniOffenseAIState.Spears, (int)MiniOffenseAIState.Fireballs) :
             MiniOffenseAIState.Psa;
 
         public MiniOffenseAIState updateAiState(Player player, MiniOffenseAIState currentAIState)
@@ -58,7 +58,7 @@ namespace CalamityMod.Projectiles.Summon
             }
 
             int currentPhase = (int)currentAIState;
-            
+
             if (phaseTimer <= 0)
             {
                 currentPhase++;
@@ -76,20 +76,20 @@ namespace CalamityMod.Projectiles.Summon
                 result = (MiniOffenseAIState)currentPhase;
                 phaseTimer--;
             }
-            
+
             Projectile.ai[2] = (int)result;
             return (MiniOffenseAIState)result;
         }
-        
+
         public bool ForcedVanity => SpawnedFromPSC && !Owner.Calamity().profanedCrystalBuffs;
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -146,7 +146,7 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     if (playerDist < 100f)
                         acceleration = 0.1f;
-                    
+
                     if (playerDist > 300f)
                         acceleration = 1f;
 
@@ -155,7 +155,6 @@ namespace CalamityMod.Projectiles.Summon
                 }
 
                 // Turning (wtf is this)
-                // idk ask phup lmao
                 if (Projectile.velocity.X < playerDestination.X)
                 {
                     Projectile.velocity.X += acceleration;
@@ -180,14 +179,14 @@ namespace CalamityMod.Projectiles.Summon
                     if (acceleration > 0.05f && Projectile.velocity.Y > 0f)
                         Projectile.velocity.Y -= acceleration * 2f;
                 }
-                
+
             }
         }
 
         public void AdvancedAI(NPC potentialTarget, Player owner, MiniOffenseAIState aiState)
         {
             bool buffedAi = owner.HasBuff<ProfanedCrystalWhipBuff>();
-                
+
             Vector2 targetDestination = potentialTarget.Center - Projectile.Center;
             if (attackDelay > 0)
                 attackDelay--;
@@ -210,7 +209,7 @@ namespace CalamityMod.Projectiles.Summon
 
                 Projectile.rotation = (float)(Math.Atan(0));
                 float targetDist = targetDestination.Length();
-            
+
                 float baseSpeed = (targetDist < 100f ? 28f : 24f) * 2f;
                 float inertia = 20f;
 
@@ -257,7 +256,7 @@ namespace CalamityMod.Projectiles.Summon
                     {
                         //fire spear
                         SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
-                        
+
                         bool shouldShotGun = attackDelay == 0;
                         if (shouldShotGun)
                         {
@@ -316,16 +315,15 @@ namespace CalamityMod.Projectiles.Summon
                         Projectile.velocity = Projectile.SuperhomeTowardsTarget(potentialTarget, 35f, 1f);
                         Projectile.velocity *= 1.369f;
                     }
-                        
+
                 }
                 if (attackDelay <= 0)
                     attackDelay = buffedAi ? 20 : 25;
 
                 if (shouldDrawDust)
                 {
-                    int pscState = (int)(Main.dayTime ? Providence.BossMode.Day : Providence.BossMode.Night);
                     var shouldAdjust = !Main.dayTime && buffedAi;
-                    int dustId = ProvUtils.GetDustID(pscState);
+                    int dustId = ProvUtils.GetDustID(!Main.dayTime);
                     for (int i = 0; i < 6; i++)
                     {
                         Dust dust = Dust.NewDustPerfect(Projectile.Center + (Projectile.Size / 2f).RotatedBy(Projectile.rotation), dustId);
@@ -350,23 +348,22 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.active = false;
                 return;
             }
-            
+
             var psc = owner.Calamity().profanedCrystal;
             if (psc && !SpawnedFromPSC || !psc && SpawnedFromPSC)
             {
                 Projectile.active = false;
             }
-            
+
             // Dynamically update stats here, originalDamage can be found in MiscEffects
             Projectile.damage = (int)Owner.GetTotalDamage<SummonDamageClass>().ApplyTo(Projectile.originalDamage);
-            Projectile.damage = Owner.ApplyArmorAccDamageBonusesTo(Projectile.damage);
             Projectile.localNPCHitCooldown = SpawnedFromPSC ? 6 : 9;
 
             var currentAIState = getAiState;
 
             if (owner.Calamity().profanedCrystalAnim != -1)
                 currentAIState = MiniOffenseAIState.Vanity;
-            
+
             var newAIState = updateAiState(owner, currentAIState);
 
             if (newAIState != currentAIState)
@@ -396,7 +393,7 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.direction = Projectile.spriteDirection = Math.Sign(Projectile.velocity.X);
 
             Projectile.frameCounter++;
-            Projectile.frame = Projectile.frameCounter / 6 % Main.projFrames[Projectile.type];
+            Projectile.frame = Projectile.frameCounter / 6 % Main.projFrames[Type];
         }
 
         // Vanity stuff can't damage
@@ -453,7 +450,8 @@ namespace CalamityMod.Projectiles.Summon
             // Has afterimages if maximum empowerment
             if (!ForcedVanity && SpawnedFromPSC)
             {
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+                var dye = Owner?.cMinion ?? 0;
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1, armorShaderToUse: dye);
                 return false;
             }
             return true;

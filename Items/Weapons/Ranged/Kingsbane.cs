@@ -4,9 +4,9 @@ using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
@@ -15,11 +15,15 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class Kingsbane : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+
+        public static int AmmoSavedPercent = 95;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
+
         public override void SetDefaults()
         {
             Item.width = 92;
             Item.height = 44;
-            Item.damage = 245;
+            Item.damage = 249;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 3;
             Item.useAnimation = 3;
@@ -27,20 +31,23 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2.5f;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.UseSound = null;
             Item.autoReuse = true;
             Item.noUseGraphic = true;
             Item.shoot = ModContent.ProjectileType<KingsbaneHoldout>();
             Item.shootSpeed = 2f;
             Item.useAmmo = AmmoID.Bullet;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
-        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.NextFloat() > 0.95f && player.ownedProjectileCounts[Item.shoot] > 0;
+        public override bool CanConsumeAmmo(Item ammo, Player player) => player.ownedProjectileCounts[Item.shoot] > 0 && Main.rand.Next(100) >= AmmoSavedPercent;
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<KingsbaneHoldout>(), damage, knockback, player.whoAmI, 0f, 0f);
+            Projectile holdout = Projectile.NewProjectileDirect(source, position, velocity, Item.shoot, damage, knockback, player.whoAmI);
+
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
+            holdout.velocity = (player.Calamity().mouseWorld - player.MountedCenter).SafeNormalize(Vector2.Zero);
             return false;
         }
         public override void AddRecipes()
@@ -49,6 +56,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient(ItemID.ChainGun).
                 AddIngredient<P90>().
                 AddIngredient<AuricBar>(5).
+                AddIngredient<LifeAlloy>(3).
                 AddTile<CosmicAnvil>().
                 Register();
         }

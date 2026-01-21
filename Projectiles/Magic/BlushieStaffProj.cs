@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.NPCs;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
@@ -6,6 +7,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
+    [PierceResistException]
     public class BlushieStaffProj : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
@@ -29,7 +31,7 @@ namespace CalamityMod.Projectiles.Magic
             Player player = Main.player[Projectile.owner];
             if (Main.myPlayer == Projectile.owner)
             {
-                if (!player.channel || player.noItems || player.CCed || Projectile.ai[0] > 3600f)
+                if (player.CantUseHoldout() || Projectile.ai[0] > 3600f)
                 {
                     Projectile.Kill();
                 }

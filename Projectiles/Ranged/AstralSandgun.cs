@@ -1,6 +1,5 @@
-﻿using CalamityMod.Tiles.AstralDesert;
-using System;
-
+﻿using System;
+using CalamityMod.Tiles.AstralDesert;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -18,7 +17,8 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.penetrate = -1;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void OnKill(int timeLeft)
@@ -44,7 +44,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             if (Main.rand.NextBool())
             {
-                int i = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 108, 0f, Projectile.velocity.Y * 0.5f);
+                int i = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RainCloud, 0f, Projectile.velocity.Y * 0.5f);
                 Main.dust[i].velocity.X *= 0.2f;
             }
             Projectile.velocity.Y += 0.2f;

@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -18,8 +18,8 @@ namespace CalamityMod.Projectiles.Ranged
         public const int MaxBounces = 1;
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 3;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 3;
         }
 
         public override void SetDefaults()
@@ -31,7 +31,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.arrow = true;
             Projectile.penetrate = 1;
             Projectile.timeLeft = 300;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override void AI()
@@ -48,7 +47,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 for (int i = 0; i < dustCount; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, 267);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.RainbowMk2);
                     dust.color = Main.hslToRgb(Main.rand.NextFloat(), 1f, 0.8f);
                     dust.scale = Main.rand.NextFloat(1f, 1.25f);
                     dust.velocity = Main.rand.NextVector2Circular(7f, 7f);
@@ -81,7 +80,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             for (int i = 0; i < Projectile.oldPos.Length; i++)
             {
                 if (i > 0)

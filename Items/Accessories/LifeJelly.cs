@@ -1,19 +1,24 @@
-﻿using System;
+﻿using CalamityMod.CalPlayer;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
-using CalamityMod.CalPlayer;
+using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
     public class LifeJelly : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static int AuraLifetime = 1800;
+        public static int AuraRegenBoost = 4;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AuraLifetime.FramesToSeconds(), AuraRegenBoost.ToRegenPerSecond());
+
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 40;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.accessory = true;
         }

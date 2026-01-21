@@ -39,11 +39,11 @@ namespace CalamityMod.Projectiles.Magic
                 int attackType = ModContent.ProjectileType<ArtAttackStar>();
                 if (Owner.ownedProjectileCounts[attackType] == 0)
                 {
-                    if (Projectile.ai[0] >= 0f && Owner.CheckMana(Owner.ActiveItem(), -1, true, false))
+                    if (Projectile.ai[0] >= 0f && Owner.CheckMana(Owner.HeldItem, -1, true, false))
                     {
                         SoundEngine.PlaySound(ArtAttack.UseSound, Owner.Center);
                         Vector2 initialStarVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 15f;
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Main.MouseWorld, initialStarVelocity, attackType, Projectile.damage, Projectile.knockBack, Projectile.owner);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.ClampedMouseWorld(), initialStarVelocity, attackType, Projectile.damage, Projectile.knockBack, Projectile.owner);
                         Projectile.ai[0] = -24f;
                     }
                     else
@@ -76,10 +76,7 @@ namespace CalamityMod.Projectiles.Magic
             aimOffset = Vector2.Lerp(aimOffset, Vector2.Normalize(Projectile.velocity), AimResponsiveness).SafeNormalize(Vector2.UnitY) * 30f;
 
             if (aimOffset != Projectile.velocity)
-            {
-                Projectile.netSpam = 0;
-                Projectile.netUpdate = true;
-            }
+                Projectile.ForceNetUpdate();
             Projectile.velocity = aimOffset;
         }
 

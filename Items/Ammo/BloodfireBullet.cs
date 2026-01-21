@@ -19,15 +19,15 @@ namespace CalamityMod.Items.Ammo
         {
             Item.width = 14;
             Item.height = 30;
-            Item.damage = 26;
+            Item.damage = 17;
             Item.DamageType = DamageClass.Ranged;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
             Item.knockBack = 4.5f;
             Item.value = Item.sellPrice(copper: 24);
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.shoot = ModContent.ProjectileType<BloodfireBulletProj>();
-            Item.shootSpeed = 4.8f;
+            Item.shootSpeed = 0.1f;
             Item.ammo = ItemID.MusketBall;
         }
 
@@ -35,7 +35,7 @@ namespace CalamityMod.Items.Ammo
         {
             CreateRecipe(333).
                 AddIngredient<BloodstoneCore>().
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

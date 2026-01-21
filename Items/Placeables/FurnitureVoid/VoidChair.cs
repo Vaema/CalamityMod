@@ -1,5 +1,5 @@
-using CalamityMod.Tiles.Furniture.CraftingStations;
-using Terraria.ID;
+﻿using CalamityMod.Tiles.Furniture.CraftingStations;
+using Terraria;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurnitureVoid
 {
@@ -8,16 +8,8 @@ namespace CalamityMod.Items.Placeables.FurnitureVoid
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.width = 12;
-            Item.height = 30;
-            Item.maxStack = 9999;
-            Item.useTurn = true;
-            Item.autoReuse = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.consumable = true;
-            Item.createTile = ModContent.TileType<Tiles.FurnitureVoid.VoidChair>();
+            Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.FurnitureVoid.VoidChair>());
+            Item.value = Item.sellPrice(copper: 30);
         }
 
         public override void AddRecipes()

@@ -1,10 +1,9 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
-using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -44,13 +43,13 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 for (int i = 0; i < 5; i++)
                 {
-                    int dusty = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, ModContent.DustType<AstralBlue>(), 0f, 0f, 100, default, 1.5f);
+                    int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralBlue>(), 0f, 0f, 100, default, 1.5f);
                     Main.dust[dusty].noGravity = true;
                     Main.dust[dusty].velocity *= 0f;
                 }
                 for (int i = 0; i < 5; i++)
                 {
-                    int dusty = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1.5f);
+                    int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1.5f);
                     Main.dust[dusty].noGravity = true;
                     Main.dust[dusty].velocity *= 0f;
                 }
@@ -60,30 +59,30 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 float projX = Projectile.Center.X;
                 float projY = Projectile.Center.Y;
-                for (int j = 0; j < Main.maxNPCs; j++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    if (Main.npc[j].CanBeChasedBy(Projectile, false) && Collision.CanHit(Projectile.Center, 1, 1, Main.npc[j].Center, 1, 1) && !CalamityPlayer.areThereAnyDamnBosses)
+                    if (n.CanBeChasedBy(Projectile, false) && Collision.CanHit(Projectile.Center, 1, 1, n.Center, 1, 1) && !CalamityPlayer.areThereAnyDamnBosses)
                     {
-                        float npcCenterX = Main.npc[j].position.X + (float)(Main.npc[j].width / 2);
-                        float npcCenterY = Main.npc[j].position.Y + (float)(Main.npc[j].height / 2);
+                        float npcCenterX = n.position.X + (float)(n.width / 2);
+                        float npcCenterY = n.position.Y + (float)(n.height / 2);
                         float targetDist = Math.Abs(Projectile.position.X + (float)(Projectile.width / 2) - npcCenterX) + Math.Abs(Projectile.position.Y + (float)(Projectile.height / 2) - npcCenterY);
                         if (targetDist < 600f)
                         {
-                            if (Main.npc[j].position.X < projX)
+                            if (n.position.X < projX)
                             {
-                                Main.npc[j].velocity.X += 0.25f;
+                                n.velocity.X += 0.25f;
                             }
                             else
                             {
-                                Main.npc[j].velocity.X -= 0.25f;
+                                n.velocity.X -= 0.25f;
                             }
-                            if (Main.npc[j].position.Y < projY)
+                            if (n.position.Y < projY)
                             {
-                                Main.npc[j].velocity.Y += 0.25f;
+                                n.velocity.Y += 0.25f;
                             }
                             else
                             {
-                                Main.npc[j].velocity.Y -= 0.25f;
+                                n.velocity.Y -= 0.25f;
                             }
                         }
                     }

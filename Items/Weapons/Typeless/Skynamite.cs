@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Typeless;
+﻿using CalamityMod.Projectiles.Typeless;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -15,17 +14,17 @@ namespace CalamityMod.Items.Weapons.Typeless
 
         public override void SetStaticDefaults()
         {
-                       Item.ResearchUnlockCount = 99;
-            ItemID.Sets.ItemsThatCountAsBombsForDemolitionistToSpawn[Item.type] = true;
-            ItemID.Sets.CanBePlacedOnWeaponRacks[Item.type] = true;
+            Item.ResearchUnlockCount = 99;
+            ItemID.Sets.ItemsThatCountAsBombsForDemolitionistToSpawn[Type] = true;
+            ItemID.Sets.CanBePlacedOnWeaponRacks[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 8;
             Item.height = 28;
-            Item.useTime = Item.useAnimation = 40;
-            Item.maxStack = 9999;
+            Item.useAnimation = Item.useTime = 40;
+            Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
             Item.shootSpeed = 5f;
             Item.shoot = ModContent.ProjectileType<AeroExplosive>();
@@ -34,8 +33,8 @@ namespace CalamityMod.Items.Weapons.Typeless
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.UseSound = SoundID.Item1;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice / 10; // Crafted 10 at a time
-            Item.rare = ItemRarityID.Orange;
+            Item.value = Item.sellPrice(silver: 4); // Identical to Dynamite
+            Item.rare = ItemRarityID.Blue;
         }
 
         public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)

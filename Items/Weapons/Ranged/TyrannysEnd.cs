@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 150;
             Item.height = 48;
-            Item.damage = 2000;
+            Item.damage = 2150;
             Item.knockBack = 9.5f;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 60;
@@ -30,10 +30,9 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.UseSound = CommonCalamitySounds.LargeWeaponFireSound;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.Calamity().donorItem = true;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         // Terraria seems to really dislike high crit values in SetDefaults
@@ -41,12 +40,15 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override Vector2? HoldoutOffset() => new Vector2(-28, 0);
 
+        public override void HoldItem(Player player) => player.scope = true;
+
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<GoldenEagle>().
+                AddIngredient<RubicoPrime>().
                 AddIngredient<AntiMaterielRifle>().
                 AddIngredient<AuricBar>(5).
+                AddIngredient<LifeAlloy>(3).
                 AddTile<CosmicAnvil>().
                 Register();
         }

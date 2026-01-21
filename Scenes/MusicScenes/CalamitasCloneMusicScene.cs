@@ -1,5 +1,4 @@
 ﻿using CalamityMod.NPCs.CalClone;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -14,9 +13,9 @@ namespace CalamityMod.Systems
         public override int VanillaMusic => MusicID.Boss2;
         public override int OtherworldMusic => MusicID.OtherworldlyBoss2;
         public override int[] AdditionalNPCs => new int[]
-		{
-			ModContent.NPCType<Cataclysm>(),
-			ModContent.NPCType<Catastrophe>()
-		};
+        {
+            ModContent.NPCType<Cataclysm>(),
+            ModContent.NPCType<Catastrophe>()
+        };
     }
 }

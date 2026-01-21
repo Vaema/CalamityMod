@@ -12,10 +12,10 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.MinionShot[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -34,7 +34,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 Projectile.frame++;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.frame = 0;
             }
@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Summon
             if (Projectile.timeLeft == 300)
                 return false;
 
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 2);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 2);
             return false;
         }
     }

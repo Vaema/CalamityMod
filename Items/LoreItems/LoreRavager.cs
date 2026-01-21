@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Items.Placeables.Furniture.Trophies;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 

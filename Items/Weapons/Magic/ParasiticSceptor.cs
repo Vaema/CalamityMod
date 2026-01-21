@@ -1,5 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.FurnitureAcidwood;
 using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.damage = 12;
             Item.knockBack = 3f;
             Item.mana = 10;
-            Item.useTime = Item.useAnimation = 35;
+            Item.useAnimation = Item.useTime = 35;
             Item.autoReuse = true;
             Item.DamageType = DamageClass.Magic;
             Item.shootSpeed = 10f;
@@ -33,10 +33,10 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.noMelee = true;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.rare = ItemRarityID.Green;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
         }
 
-        
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             float speed = Item.shootSpeed;
@@ -72,7 +72,7 @@ namespace CalamityMod.Items.Weapons.Magic
             }
             if (Main.rand.NextBool(5))
             {
-                leechAmt ++;
+                leechAmt++;
             }
             for (int i = 0; i < leechAmt; i++)
             {
@@ -87,7 +87,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 xVec *= speedMult;
                 yVec *= speedMult;
                 directionToShoot = new Vector2(xVec, yVec);
-                Projectile.NewProjectile(source, playerPos, directionToShoot, type, damage, knockback, player.whoAmI, 0f, 0f);
+                Projectile.NewProjectile(source, playerPos, directionToShoot, type, damage, knockback, player.whoAmI);
             }
             return false;
         }
@@ -96,7 +96,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient<Acidwood>(15).
-                AddIngredient<SulphuricScale>(18).
+                AddIngredient<SulphuricScale>(12).
                 AddTile(TileID.Anvils).
                 Register();
         }

@@ -1,11 +1,13 @@
-﻿using Microsoft.Xna.Framework;
-using System.IO;
+﻿using System.IO;
+using CalamityMod.NPCs;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
+    [PierceResistException]
     public class SacrificeProjectile : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
@@ -16,8 +18,8 @@ namespace CalamityMod.Projectiles.Rogue
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/Sacrifice";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
+            ProjectileID.Sets.TrailCacheLength[Type] = 8;
         }
 
         public override void SetDefaults()
@@ -53,16 +55,8 @@ namespace CalamityMod.Projectiles.Rogue
                 // Heal the player and disappear when touching them.
                 if (Projectile.Hitbox.Intersects(Owner.Hitbox))
                 {
-                    if (!Owner.moonLeech && AbleToHealOwner)
-                    {
-                        int healAmount = Projectile.Calamity().stealthStrike ? 40 : 3;
-
-                        Owner.HealEffect(healAmount);
-                        Owner.statLife += healAmount;
-                        if (Owner.statLife > Owner.statLifeMax2)
-                            Owner.statLife = Owner.statLifeMax2;
-                    }
-
+                    if (AbleToHealOwner)
+                        Owner.DoLifestealDirect(null, Projectile.Calamity().stealthStrike ? 40 : 3, 0.4f);
                     Projectile.Kill();
                 }
             }
@@ -72,7 +66,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 for (int i = 0; i < 60; i++)
                 {
-                    Dust blood = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(50f, 50f), 267);
+                    Dust blood = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(50f, 50f), DustID.RainbowMk2);
                     blood.velocity = Main.rand.NextVector2Circular(3f, 3f);
                     blood.noGravity = true;
                     blood.color = Color.Lerp(Color.Red, Color.DarkRed, Main.rand.NextFloat(0.25f, 1f));
@@ -87,7 +81,7 @@ namespace CalamityMod.Projectiles.Rogue
                 else if (Projectile.timeLeft > 180 && Projectile.Calamity().stealthStrike)
                     Projectile.timeLeft = 180;
             }
-                Projectile.StickyProjAI(50);
+            Projectile.StickyProjAI(50);
         }
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
@@ -98,7 +92,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor);
             return false;
         }
 
@@ -106,7 +100,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             for (int i = 0; i < 5; i++)
             {
-                Dust blood = Dust.NewDustDirect(Projectile.Center, 1, 1, 5, 0, 0, 0, default, 1.5f);
+                Dust blood = Dust.NewDustDirect(Projectile.Center, 1, 1, DustID.Blood, 0, 0, 0, default, 1.5f);
                 blood.position += Projectile.velocity.SafeNormalize(Vector2.Zero) * Projectile.scale * 42f;
                 blood.noGravity = true;
             }

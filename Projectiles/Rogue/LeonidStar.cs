@@ -3,9 +3,9 @@ using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -83,7 +83,7 @@ namespace CalamityMod.Projectiles.Rogue
                 int dust = Dust.NewDust(Projectile.Center, 1, 1, dustType, Projectile.velocity.X, Projectile.velocity.Y, 0, CalamityUtils.ColorSwap(LeonidProgenitor.blueColor, LeonidProgenitor.purpleColor, 1f), 1.5f);
                 Main.dust[dust].noGravity = true;
             }
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 for (int num480 = 0; num480 < 3; num480++)
                 {

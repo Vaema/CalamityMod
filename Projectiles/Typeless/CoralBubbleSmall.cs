@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace CalamityMod.Projectiles.Typeless
 {
@@ -21,6 +21,11 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.alpha = 255;
             Projectile.timeLeft = 360;
             Projectile.penetrate = 1;
+        }
+
+        public override bool? CanCutTiles()
+        {
+            return false;
         }
 
         public override void AI()
@@ -61,7 +66,16 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            Vector3 lightCol = new(85f / 255f, 151f / 255f, 196f / 255f);
+            float brightness = 0.7f;
+            float declareThisHereToPreventRunningTheSameCalculationMultipleTimes = Main.GameUpdateCount * 0.01f;
+            brightness *= (float)MathF.Sin(8f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
+            brightness += 0.4f;
+            brightness = MathHelper.Clamp(brightness, 0.1f, 0.5f);
+            lightCol *= brightness;
+
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
+            Lighting.AddLight(Projectile.position, lightCol);
             return false;
         }
 
@@ -70,7 +84,7 @@ namespace CalamityMod.Projectiles.Typeless
             for (int i = 0; i < 10; i++)
             {
                 int size = 6;
-                int dustIndex = Dust.NewDust(Projectile.Center - Vector2.One * size, size * 2, size * 2, 212);
+                int dustIndex = Dust.NewDust(Projectile.Center - Vector2.One * size, size * 2, size * 2, DustID.BubbleBurst_White);
                 Dust dust = Main.dust[dustIndex];
                 Vector2 value14 = Vector2.Normalize(dust.position - Projectile.Center);
                 dust.position = Projectile.Center + value14 * size;

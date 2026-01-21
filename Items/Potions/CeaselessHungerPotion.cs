@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Buffs.Potions;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,23 +14,18 @@ namespace CalamityMod.Items.Potions
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;
+            ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
+                new Color(12, 18, 28),
+                new Color(110, 197, 212),
+                new Color(158, 81, 153)
+            };
         }
 
         public override void SetDefaults()
         {
-            Item.width = 28;
-            Item.height = 18;
-            Item.useTurn = true;
-            Item.maxStack = 9999;
+            Item.DefaultToFood(22, 32, ModContent.BuffType<CeaselessHunger>(), CalamityUtils.SecondsToFrames(20), true);
+            Item.value = Item.sellPrice(silver: 10);
             Item.rare = ModContent.RarityType<PureGreen>();
-            Item.useAnimation = 17;
-            Item.useTime = 17;
-            Item.useStyle = ItemUseStyleID.DrinkLiquid;
-            Item.UseSound = SoundID.Item3;
-            Item.consumable = true;
-            Item.buffType = ModContent.BuffType<CeaselessHunger>();
-            Item.buffTime = CalamityUtils.SecondsToFrames(10f);
-            Item.value = Item.buyPrice(0, 2, 0, 0);
         }
 
         public override void AddRecipes()
@@ -37,14 +33,13 @@ namespace CalamityMod.Items.Potions
             CreateRecipe(4).
                 AddIngredient(ItemID.BottledWater, 4).
                 AddIngredient<DarkPlasma>().
-                AddIngredient<GalacticaSingularity>().
                 AddTile(TileID.AlchemyTable).
-				AddConsumeItemCallback(Recipe.ConsumptionRules.Alchemy).
+                AddConsumeIngredientCallback(Recipe.IngredientQuantityRules.Alchemy).
                 Register();
 
-            CreateRecipe(4).
-                AddIngredient(ItemID.BottledWater, 4).
-                AddIngredient<BloodOrb>(20).
+            CreateRecipe(8).
+                AddIngredient(ItemID.BottledWater, 8).
+                AddIngredient<BloodOrb>(10).
                 AddIngredient<DarkPlasma>().
                 AddTile(TileID.AlchemyTable).
                 Register()

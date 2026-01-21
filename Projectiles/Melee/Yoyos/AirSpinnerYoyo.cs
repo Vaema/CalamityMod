@@ -14,12 +14,12 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.YoyosLifeTimeMultiplier[Projectile.type] = 30f * MaxUpdates;
-            ProjectileID.Sets.YoyosMaximumRange[Projectile.type] = 320f;
-            ProjectileID.Sets.YoyosTopSpeed[Projectile.type] = 32f / MaxUpdates;
+            ProjectileID.Sets.YoyosLifeTimeMultiplier[Type] = AirSpinner.Duration * MaxUpdates;
+            ProjectileID.Sets.YoyosMaximumRange[Type] = AirSpinner.Reach;
+            ProjectileID.Sets.YoyosTopSpeed[Type] = AirSpinner.Speed / MaxUpdates;
 
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

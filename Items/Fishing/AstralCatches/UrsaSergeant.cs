@@ -1,5 +1,4 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.CalPlayer;
+﻿using CalamityMod.CalPlayer;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -9,13 +8,17 @@ namespace CalamityMod.Items.Fishing.AstralCatches
     public class UrsaSergeant : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Fishing";
+
+        public static int CooldownReducedPerKill = 180;
+        public static int MaxCooldown = 300;
+        public static int BaseSwipeDamage = 200;
+
         public override void SetDefaults()
         {
             Item.width = 36;
             Item.height = 26;
-            Item.defense = 20;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
-            Item.rare = ItemRarityID.LightRed;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.rare = ItemRarityID.Pink;
             Item.accessory = true;
         }
 
@@ -23,8 +26,10 @@ namespace CalamityMod.Items.Fishing.AstralCatches
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.ursaSergeant = true;
-            player.buffImmune[ModContent.BuffType<AstralInfectionDebuff>()] = true;
-            player.buffImmune[BuffID.Rabies] = true; //Feral Bite
+            if (!hideVisual)
+                modPlayer.ursaSergeantVisual = true;
+            else
+                modPlayer.ursaSergeantVisual = false;
         }
     }
 }

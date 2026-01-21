@@ -1,13 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using CalamityMod.Events;
 using CalamityMod.Items.Materials;
 using CalamityMod.NPCs.Cryogen;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -18,7 +15,7 @@ namespace CalamityMod.Items.SummonItems
         public new string LocalizationCategory => "Items.SummonItems";
         public override void SetStaticDefaults()
         {
-           	ItemID.Sets.SortingPriorityBossSpawns[Type] = 7; // Mechanical Eye
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 7; // Ocram's Razor (1 below Mechanical Eye)
         }
 
         public override void SetDefaults()
@@ -31,10 +28,10 @@ namespace CalamityMod.Items.SummonItems
             Item.useStyle = ItemUseStyleID.HoldUp;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
+        }
 
         public override bool CanUseItem(Player player)
         {
@@ -43,12 +40,7 @@ namespace CalamityMod.Items.SummonItems
 
         public override bool? UseItem(Player player)
         {
-            SoundEngine.PlaySound(SoundID.Roar, player.Center);
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-                NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<Cryogen>());
-            else
-                NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, player.whoAmI, ModContent.NPCType<Cryogen>());
-
+            CalamityUtils.SpawnBossUsingItem<Cryogen>(player, SoundID.Roar);
             return true;
         }
 

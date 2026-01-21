@@ -1,20 +1,23 @@
-﻿using CalamityMod.Events;
+﻿using CalamityMod.CustomRecipes;
+using System;
+using CalamityMod.Events;
 using CalamityMod.Items.Materials;
 using CalamityMod.NPCs.AstrumAureus;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using Terraria.DataStructures;
+using System.Collections.Generic;
 
 namespace CalamityMod.Items.SummonItems
 {
     public class AstralChunk : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.SummonItems";
+        public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Custom/AstrumAureus/AstrumAureusSpawn");
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.SortingPriorityBossSpawns[Type] = 14; // Frost Moon
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 12; // Truffle Worm
         }
 
         public override void SetDefaults()
@@ -33,6 +36,8 @@ namespace CalamityMod.Items.SummonItems
             itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
         }
 
+        public override void ModifyTooltips(List<TooltipLine> tooltips) => CalamityGlobalItem.InsertKnowledgeTooltip(tooltips, 2);
+
         public override bool CanUseItem(Player player)
         {
             return player.Calamity().ZoneAstral && !NPC.AnyNPCs(ModContent.NPCType<AstrumAureus>()) && !BossRushEvent.BossRushActive;
@@ -40,25 +45,21 @@ namespace CalamityMod.Items.SummonItems
 
         public override bool? UseItem(Player player)
         {
-            SoundEngine.PlaySound(SoundID.Roar, player.Center);
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-            {
-                int npc = NPC.NewNPC(new EntitySource_BossSpawn(player), (int)(player.position.X + Main.rand.Next(-250, 251)), (int)(player.position.Y - 500f), ModContent.NPCType<AstrumAureus>(), 1);
-                Main.npc[npc].timeLeft *= 20;
-                CalamityUtils.BossAwakenMessage(npc);
-            }
-            else
-                NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, player.whoAmI, ModContent.NPCType<AstrumAureus>());
-
+            int posX = (int)(player.position.X + Main.rand.Next(-250, 251));
+            int posY = (int)(player.position.Y - 500f);
+            int bossToSpawn = ModContent.NPCType<AstrumAureus>();
+            CalamityUtils.SpawnBossOnPosUsingItem(player, bossToSpawn, posX, posY, UseSound);
             return true;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<Stardust>(30).
+                AddIngredient<StarblightSoot>(30).
                 AddIngredient(ItemID.FallenStar, 20).
-                AddTile(TileID.Anvils).
+                AddIngredient<DubiousPlating>(8).
+                AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(2, out Func<bool> condition), condition).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

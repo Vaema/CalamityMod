@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,7 +13,8 @@ namespace CalamityMod.Projectiles.Summon
         public ref float OwnerUUID => ref Projectile.ai[0];
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            ProjectileID.Sets.MinionShot[Type] = true;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         }
 
         public override void SetDefaults()
@@ -25,6 +26,8 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.ignoreWater = true;
             Projectile.timeLeft = 10;
             Projectile.DamageType = DamageClass.Summon;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
         public override void AI()
         {
@@ -40,7 +43,7 @@ namespace CalamityMod.Projectiles.Summon
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D beamTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D beamTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition;
             Vector2 drawScale = new Vector2(0.55f, Projectile.velocity.Length() / beamTexture.Height * 20f);
             Color color = Color.White * 2.1f * Projectile.Opacity;

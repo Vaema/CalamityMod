@@ -1,11 +1,11 @@
-﻿using CalamityMod.Dusts;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -17,9 +17,9 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -30,9 +30,11 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.DamageType = DamageClass.Magic;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
-            Projectile.penetrate = 4;
+            Projectile.penetrate = 3;
             Projectile.timeLeft = 255;
             Projectile.alpha = 0;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 20;
         }
 
         public override void AI()
@@ -41,7 +43,6 @@ namespace CalamityMod.Projectiles.Magic
             {
                 if (Projectile.npcProj)
                 {
-                    Projectile.usesLocalNPCImmunity = true;
                     Projectile.localNPCHitCooldown = 5;
                     Projectile.penetrate = 10;
                 }
@@ -62,10 +63,10 @@ namespace CalamityMod.Projectiles.Magic
             if (Projectile.ai[1] == 0f)
             {
                 Projectile.ai[1] = 1f;
-                SoundEngine.PlaySound(SoundID.Item20, Projectile.position);
+                SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
             }
-            Projectile.velocity.X *= 1.03f;
-            Projectile.velocity.Y *= 1.03f;
+            Projectile.velocity.X *= 1.045f;
+            Projectile.velocity.Y *= 1.045f;
             if (Projectile.velocity.X < 0f)
             {
                 Projectile.spriteDirection = -1;
@@ -74,7 +75,7 @@ namespace CalamityMod.Projectiles.Magic
             else
             {
                 Projectile.spriteDirection = 1;
-                Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X);
+                Projectile.rotation = Projectile.velocity.ToRotation();
             }
         }
 
@@ -89,13 +90,13 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item20, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
             for (int dust = 0; dust <= 5; dust++)
             {
                 Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, (int)CalamityDusts.Brimstone, 0f, 0f);

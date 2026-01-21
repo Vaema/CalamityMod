@@ -1,8 +1,8 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
 using CalamityMod.Rarities;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.OmegaBlue
@@ -12,9 +12,15 @@ namespace CalamityMod.Items.Armor.OmegaBlue
     public class OmegaBlueTentacles : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PostMoonLord";
+
+        public static float DamageBoost = 0.16f;
+        public static int CritBoost = 12;
+        public static float MoveSpeedBoost = 0.12f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(), CritBoost, MoveSpeedBoost.ToPercent());
+
         public override void SetStaticDefaults()
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             int equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Legs);
@@ -26,25 +32,25 @@ namespace CalamityMod.Items.Armor.OmegaBlue
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.defense = 22;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<GenericDamageClass>() += 0.12f;
-            player.GetCritChance<GenericDamageClass>() += 12;
-            player.moveSpeed += 0.12f;
+            player.GetDamage<GenericDamageClass>() += DamageBoost;
+            player.GetCritChance<GenericDamageClass>() += CritBoost;
+            player.moveSpeed += MoveSpeedBoost;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<ReaperTooth>(10).
+                AddIngredient<ReaperTooth>(4).
                 AddIngredient<DepthCells>(15).
                 AddIngredient<RuinousSoul>(2).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

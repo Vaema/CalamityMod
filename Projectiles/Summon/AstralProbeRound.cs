@@ -1,11 +1,11 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
-using Microsoft.Xna.Framework;
 using CalamityMod.Dusts;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -16,10 +16,10 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 3;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 3;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            Main.projFrames[Type] = 3;
+            ProjectileID.Sets.TrailCacheLength[Type] = 3;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
+            ProjectileID.Sets.MinionShot[Type] = true;
         }
 
         public override void SetDefaults()
@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.rotation = Projectile.velocity.ToRotation(); // The projectile looks at where it's going.
 
             Projectile.frameCounter++;
-            Projectile.frame = Projectile.frameCounter / 3 % Main.projFrames[Projectile.type];
+            Projectile.frame = Projectile.frameCounter / 3 % Main.projFrames[Type];
             // The projectile does it's animation.
 
             Lighting.AddLight(Projectile.Center, Vector3.One * 0.1f); // The projectile emtis light.
@@ -50,9 +50,9 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 120);
 
-        public override bool PreDraw(ref Color lightColor) 
+        public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;
             SpriteEffects direction = Projectile.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;

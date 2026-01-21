@@ -8,6 +8,7 @@ using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using static CalamityMod.CalamityUtils;
@@ -21,7 +22,10 @@ namespace CalamityMod.Items.Weapons.Ranged
         public static readonly SoundStyle ShootSound = new("CalamityMod/Sounds/Item/WulfrumBlunderbussFire") { PitchVariance = 0.1f };
         public static readonly SoundStyle ShootAndReloadSound = new("CalamityMod/Sounds/Item/WulfrumBlunderbussFireAndReload") { PitchVariance = 0.1f };
 
-        public static float MinSpreadDistance = 460f; 
+        public static int ArmorPenetration = 3;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(ArmorPenetration);
+
+        public static float MinSpreadDistance = 460f;
         public static float MaxSpreadDistance = 60f;
         public static float MinSpread = 0.2f;
         public static float MaxSpread = 0.6f;
@@ -36,20 +40,19 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.width = 23;
             Item.height = 8;
             Item.damage = 11;
-            Item.ArmorPenetration = 3;
+            Item.ArmorPenetration = ArmorPenetration;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 55;
             Item.useAnimation = 55;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2.25f;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.UseSound = ShootSound;
             Item.autoReuse = false;
             Item.shoot = ModContent.ProjectileType<Projectiles.Ranged.WulfrumScrapBullet>();
             Item.shootSpeed = 15f;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override void HoldItem(Player player)
@@ -57,7 +60,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             player.Calamity().mouseWorldListener = true;
         }
 
-        public override bool CanUseItem(Player player) =>  storedScrap > 0 || (player.HasItem(ModContent.ItemType<WulfrumMetalScrap>()) || player.HasItem(ItemID.SilverCoin));
+        public override bool CanUseItem(Player player) => storedScrap > 0 || (player.HasItem(ModContent.ItemType<WulfrumMetalScrap>()) || player.HasItem(ItemID.SilverCoin));
 
         public override void UseAnimation(Player player)
         {
@@ -95,6 +98,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary due to the result being clamped
             float aimLength = (Main.MouseWorld - player.MountedCenter).Length();
             float damageMult = MathHelper.Lerp(1f, MaxDamageFalloff, Math.Clamp(aimLength - MaxSpreadDistance, 0, MinSpreadDistance - MaxSpreadDistance) / (MinSpreadDistance - MaxSpreadDistance));
             damage = (int)(damage * damageMult);
@@ -102,9 +106,9 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.Calamity().GeneralScreenShakePower < 3f)
-                player.Calamity().GeneralScreenShakePower = 3f;
+            player.SetScreenshake(3f);
 
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary due to the result being clamped
             float aimLength = (Main.MouseWorld - player.MountedCenter).Length();
             float spreadDistance = Math.Clamp(aimLength - MaxSpreadDistance, 0, MinSpreadDistance - MaxSpreadDistance) / (MinSpreadDistance - MaxSpreadDistance);
             float spread = MathHelper.Lerp(MaxSpread, MinSpread, spreadDistance);
@@ -117,7 +121,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 Vector2 direction = nuzzleDir.RotatedByRandom(spread);
                 Vector2 nuzzlePos = player.MountedCenter + direction * 15f;
 
-                Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(Item, Item.useAmmo), nuzzlePos, direction * Item.shootSpeed * Main.rand.NextFloat(1.5f, 2f), type, damage, (int)Item.knockBack, player.whoAmI, 0, 0);
+                Projectile.NewProjectile(player.GetSource_ItemUse_WithPotentialAmmo(Item, Item.useAmmo), nuzzlePos, direction * Item.shootSpeed * Main.rand.NextFloat(1.5f, 2f), type, damage, (int)Item.knockBack, player.whoAmI);
             }
 
             return false;
@@ -179,12 +183,12 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<WulfrumMetalScrap>(9).
+                AddIngredient<WulfrumMetalScrap>(10).
                 AddTile(TileID.Anvils).
                 Register();
         }
 
-        public override void OnCreated (ItemCreationContext context)
+        public override void OnCreated(ItemCreationContext context)
         {
             if (context is RecipeItemCreationContext)
                 storedScrap = ShotsPerScrap;

@@ -1,316 +1,399 @@
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
-using Terraria.Enums;
+using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.BaseProjectiles
 {
+    /// <summary>
+    /// Base class for a whip that handles drawing, AI, and onHit. To make a simple whip, you only need to specify stats in setWhipStats
+    /// This was originally based off the ExampleMod implementation, but with several changes for ease of subclassing
+    /// </summary>
     public abstract class BaseWhipProjectile : ModProjectile
     {
-        // This class by default uses the values in the Mourningstar projectile
-        // Note: the original solar eruption code uses hide and player.heldProj.
-        // These two combined will prevent the second version of the whip from being drawn.
 
-        public virtual void Behavior()
+        #region Overridable Properties
+
+        
+        //Visual and SFX related variables
+        
+        /// <summary>
+        /// Color of the line connecting whip segments
+        /// </summary>
+        public virtual Color FishingLineColor => Color.White;
+        
+        /// <summary>
+        /// Overrides the color the whips is drawn as. If null, use surrounding tile lighting
+        /// </summary>
+        public virtual Color? DrawColor => null;
+        
+        /// <summary>
+        /// Color of light the whip emits
+        /// </summary>
+        public virtual Color LightingColor => Color.Transparent;
+        
+        /// <summary>
+        /// Type of dust (ID) the whip emits, emits no dust if it is null
+        /// </summary>
+        public virtual int? SwingDust => null;
+        
+        /// <summary>
+        /// How many times the dust spawning loop iterates
+        /// </summary>
+        public virtual int DustAmount => 1;
+        /// <summary>
+        /// If true, the tip of the whip kind of fades away when completing it's arc
+        /// </summary>
+        public virtual bool ShrinkTip => true;
+        public virtual bool UseTimeDetermineLifetime => true;
+        public virtual SoundStyle? WhipCrackSound => SoundID.Item153;
+
+
+        
+        //Textures are set to InvisibleProj by default, but this should be changed if you want it to be visible.
+        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+        public abstract string WhipTipTexture { get;}
+        /// <summary>
+        /// The order of textures in this list is the order which they will appear when drawn in game.
+        /// </summary>
+        public abstract List<string> WhipSegmentTexture { get;}
+
+        /// <summary>
+        /// UNIMPLEMENTED
+        /// The Y offset of each whip segment texture, in order of appearance. 
+        /// Length should match WhipSegmentTexture, or be left null.
+        /// When null, all offsets are set to 0.
+        /// Defaults to null.
+        /// </summary>
+        public virtual List<string> WhipSegmentYOffset => null;
+        public abstract string WhipHandleTexture { get; }
+        public virtual string WhipTipGlowTexture => null;
+        public virtual List<string> WhipSegmentGlowTexture => null; 
+        public virtual string WhipHandleGlowTexture => null;
+
+
+        //Tag related variables
+        public virtual int? TagBuffID => null;
+        public virtual int TagDuration => 240;
+        
+        
+        //Gameplay variables
+        /// <summary>
+        /// Multiply the whip damage by this amount on hitting an enemy
+        /// </summary>
+        public virtual float? MultihitModifier => .8f;
+
+        #endregion
+
+        internal List<Vector2> whipPoints = new List<Vector2>();
+        internal float Timer
         {
-            Player player = Main.player[Projectile.owner];
-            if (Projectile.localAI[1] > 0f)
-            {
-                Projectile.localAI[1] -= 1f;
-            }
-            // Rapidly appear
-            Projectile.alpha -= 42;
-            if (Projectile.alpha < 0)
-            {
-                Projectile.alpha = 0;
-            }
-            // Determine the starting velocity direction
-            if (Projectile.localAI[0] == 0f)
-            {
-                Projectile.localAI[0] = Projectile.velocity.ToRotation();
-            }
-            float direction = (Projectile.localAI[0].ToRotationVector2().X >= 0f).ToDirectionInt();
-            if (Projectile.ai[1] <= 0f)
-            {
-                direction *= -1f;
-            }
-            // As ai[0], the timer, goes up,
-            Vector2 velocityAdditive = (direction * (Projectile.ai[0] / 30f * MathHelper.TwoPi - MathHelper.PiOver2)).ToRotationVector2();
-
-            // ai[1] = A starting rotation value. With a min of 0 and a max of pi/4
-            // The larger it is, the larger the outward distance we travel.
-            // It will always be compressed a bit relative to the X travel movement, however,
-            // because sin(pi/4) = 1/sqrt(2), which is less than the default multiplier the X distance
-            // receives: 1.
-            velocityAdditive.Y *= (float)Math.Sin(Projectile.ai[1]);
-            if (Projectile.ai[1] <= 0f)
-            {
-                velocityAdditive.Y *= -1f;
-            }
-            // Rotate by the starting velocity angle, to maintain the original rotation instead of
-            // Constantly rotating upward or sideways
-            velocityAdditive = velocityAdditive.RotatedBy(Projectile.localAI[0]);
-            Projectile.ai[0] += 1f;
-            if (Projectile.ai[0] < 30f)
-            {
-                Projectile.velocity += 48f * velocityAdditive;
-            }
-            else
-            {
-                Projectile.Kill();
-            }
-            // Adjust position so that we're always sticking to the player.
-            Projectile.position = player.RotatedRelativePoint(player.MountedCenter, true) - Projectile.Size / 2f;
-            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
-            Projectile.spriteDirection = Projectile.direction;
-            Projectile.timeLeft = 2;
-            player.ChangeDir(Projectile.direction);
-            player.itemTime = 2;
-            player.itemAnimation = 2;
-            player.itemRotation = (Projectile.velocity * Projectile.direction).ToRotation();
-
-            // Adjust the center based on player attributes.
-            Vector2 centerDelta = Main.OffsetsPlayerOnhand[player.bodyFrame.Y / 56] * 2f;
-            if (player.direction != 1)
-            {
-                centerDelta.X = player.bodyFrame.Width - centerDelta.X;
-            }
-            if (player.gravDir != 1f)
-            {
-                centerDelta.Y = player.bodyFrame.Height - centerDelta.Y;
-            }
-            if (player.heldProj == -1)
-                player.heldProj = Projectile.whoAmI;
-            centerDelta -= new Vector2(player.bodyFrame.Width - player.width, player.bodyFrame.Height - 42) / 2f;
-            Projectile.Center = player.RotatedRelativePoint(player.position + centerDelta, true) - Projectile.velocity;
-
-            // Cool dust
-            if (Projectile.alpha == 0)
-            {
-                GenerateDust();
-            }
+            get => Projectile.ai[0];
+            set => Projectile.ai[0] = value;
         }
-        public virtual void ExtraBehavior()
+        public int PointDrawTimer = 0;
+        public float lineScale = 1;
+        public int lineCount = 1;
+        
+        internal Vector2? GetTipPosition()
         {
-
+            
+            if (whipPoints != null && whipPoints.Count > 2)
+                return whipPoints[whipPoints.Count - 1];
+            return null;
         }
+
+
+
+        #region ModProjectile Functions
+
+        public override void SetStaticDefaults()
+        {
+            // This makes the projectile use whip collision detection and allows flasks to be applied to it.>
+            ProjectileID.Sets.IsAWhip[Type] = true;
+        }
+        
+
+        public override void SetDefaults()
+        {
+            Projectile.friendly = true;
+            Projectile.penetrate = -1;
+            Projectile.tileCollide = false;
+            Projectile.ownerHitCheck = true; // This prevents the projectile from hitting through solid tiles.
+            Projectile.extraUpdates = 1;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
+            Projectile.DamageType = DamageClass.SummonMeleeSpeed;
+            
+
+            SetWhipStats();
+        }
+
+        
+        public override bool PreAI()
+        {
+            if (PointDrawTimer % 2 < .001)
+            {
+                whipPoints.Clear();
+                Projectile.FillWhipControlPoints(Projectile, whipPoints);
+            }
+            return true;
+        }
+        
         public override void AI()
         {
-            Behavior();
-            ExtraBehavior();
+            WhipAIMotion();
+            WhipSFX(LightingColor, SwingDust, DustAmount, WhipCrackSound);
         }
-        public Texture2D FlailTexture => ModContent.Request<Texture2D>(Texture).Value;
 
-        #region Virtual Values
-        public virtual Color SpecialDrawColor => new Color(255, 200, 0);
-        public virtual int ExudeDustType => 244;
-        public virtual int WhipDustType => 246;
-        public virtual int HandleHeight => 54;
-        public virtual int BodyType1SectionHeight => 18;
-        public virtual int BodyType2SectionHeight => 18;
-        public virtual int BodyType1StartY => 36;
-        public virtual int BodyType2StartY => 58;
-        public virtual int TailStartY => 90;
-        public virtual int TailHeight => 52;
         #endregion
 
-        #region Dust Effects
-        /// <summary>
-        /// Spawns dust that is emitted outward as well as dust that goes along where the whip is.
+
+        #region Virtual Functions
+
+                /// <summary>
+        /// Function is use to control custom whip stats, called in the parent class's set defaults
         /// </summary>
-        public virtual void GenerateDust()
+        public virtual void SetWhipStats()
         {
-            // Dust moving along the whip
-            for (int i = 0; i < 2; i++)
-            {
-                Dust dust = Dust.NewDustDirect(Projectile.position + Projectile.velocity * 2f, Projectile.width, Projectile.height, ExudeDustType, 0f, 0f, 100, SpecialDrawColor, 2f);
-                dust.noGravity = true;
-                dust.velocity *= 2f;
-                dust.velocity += Projectile.localAI[0].ToRotationVector2();
-                dust.fadeIn = 1.5f;
-            }
-            float counterMax = 18f;
-            int counter = 0;
-            while (counter < counterMax)
-            {
-                if (Main.rand.NextBool(4))
-                {
-                    Vector2 spawnPosition = Projectile.position + Projectile.velocity + Projectile.velocity * (counter / counterMax);
-                    Dust dust = Dust.NewDustDirect(spawnPosition, Projectile.width, Projectile.height, WhipDustType, 0f, 0f, 100, SpecialDrawColor, 1f);
-                    dust.noGravity = true;
-                    dust.fadeIn = 0.5f;
-                    dust.velocity += Projectile.localAI[0].ToRotationVector2();
-                    dust.noLight = true;
-                }
-                counter++;
-            }
+            Projectile.width = 20;
+            Projectile.height = 20;
+            Projectile.WhipSettings.Segments = 30;
+            Projectile.WhipSettings.RangeMultiplier = 1f;
         }
-        #endregion
+        
 
-        #region Draw Helpers
+        // This method draws a line between all points of the whip, in case there's empty space between the sprites.
+
         public override bool PreDraw(ref Color lightColor)
         {
-            // If the velocity is zero, don't draw anything.
-            // Doing so would lead to various divison by 0 errors during the normalization process.
-            if (Projectile.velocity == Vector2.Zero)
+            return DrawWhip(FishingLineColor);
+        }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            WhipOnHit(target);
+        }
+
+        /// <summary>
+        /// Applies tag buff if there is one, applies multihit penalty, and focuses minions on target. 
+        /// Called in OnHitNPC
+        /// </summary>
+        /// <param name="target"></param>
+        public virtual void WhipOnHit(NPC target)
+        {
+            if (TagBuffID != null)
             {
+                target.AddBuff((int)TagBuffID, TagDuration);
+            }
+            Projectile.damage = (int)(Projectile.damage * MultihitModifier);
+            if (Projectile.damage < 1)
+            {
+                Projectile.damage = 1;
+            }
+            Main.player[Projectile.owner].MinionAttackTargetNPC = target.whoAmI;
+        }
+
+        /// <summary>
+        /// Draws whip based on example mod, override if you want custom. 
+        /// Called in PreDraw
+        /// </summary>
+        /// <param name="lineColor"> What color the fishing line is</param>
+        /// <returns></returns>
+        public virtual bool DrawWhip(Color lineColor)
+        {
+            //Gets every segment of the whip
+            if (whipPoints == null || whipPoints.Count < 1)
                 return false;
+
+            for (int i = 0; i < lineCount; i++)
+                CalamityUtils.DrawLineBetweenPoints(whipPoints, lineColor, scaleMod: lineScale - (lineScale / lineCount) * i);
+
+            SpriteEffects flip = Projectile.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically;
+
+            Main.instance.LoadProjectile(Type);
+
+            //Load projectiles using file paths
+            Texture2D texture = ModContent.Request<Texture2D>(WhipHandleTexture).Value; ;
+            Texture2D glowtexture = texture;
+            bool drawGlow = false;
+            if (WhipHandleGlowTexture != null)
+            {
+                glowtexture = ModContent.Request<Texture2D>(WhipHandleGlowTexture).Value;
+                drawGlow = true;
             }
 
-            DrawHandleSprite(in lightColor);
+            //Sets the frame which will be displayed
+            Rectangle sourceRectangle = new Rectangle(0, 0, texture.Width, texture.Height);
+            Vector2 origin = sourceRectangle.Size() / 2f;
 
-            Vector2 normalizedVelocity = Vector2.Normalize(Projectile.velocity);
+            
 
-            float speed = Projectile.velocity.Length() + 16f - 40f * Projectile.scale;
 
-            Vector2 bodyDrawPosition = Projectile.Center.Floor() + normalizedVelocity * Projectile.scale * 20f;
-            DrawType2BodySprite(in speed, in normalizedVelocity, in lightColor, ref bodyDrawPosition);
+            Vector2 pos = whipPoints[0];
 
-            bodyDrawPosition = Projectile.Center.Floor() + normalizedVelocity * Projectile.scale * 20f;
-            DrawType1BodySprite(in speed, in normalizedVelocity, in lightColor, ref bodyDrawPosition);
+            //Repeats for each whip point
+            for (int i = 0; i < whipPoints.Count; i++)
+            {
+                float scale = 1;
 
-            Vector2 whipEndPosition = bodyDrawPosition;
-            DrawWhipTail(in whipEndPosition, in lightColor);
+                //Tip of the whip
+                if (i == whipPoints.Count - 1)
+                {
+                    //Sets image to tip texture
+                    texture = ModContent.Request<Texture2D>(WhipTipTexture).Value;
+
+                    //Moves the frame with the animation
+                    sourceRectangle = new Rectangle(0, 0, texture.Width, texture.Height);
+                    origin = sourceRectangle.Size() / 2f;
+                    origin.Y += DrawOriginOffsetY * Projectile.spriteDirection;
+                    origin.X += DrawOriginOffsetX;
+
+                    drawGlow = false;
+                    if (WhipTipGlowTexture != null)
+                    {
+                        glowtexture = ModContent.Request<Texture2D>(WhipTipGlowTexture).Value;
+                        drawGlow = true;
+                    }
+
+                    // For a more impactful look, this scales the tip of the whip up when fully extended, and down when curled up.
+
+                    if (ShrinkTip)
+                    {
+                        Projectile.GetWhipSettings(Projectile, out float timeToFlyOut, out int _, out float _);
+                        float t = Timer / timeToFlyOut;
+                        scale = MathHelper.Lerp(0.5f, 1.5f,
+                            Utils.GetLerpValue(0.1f, 0.7f, t, true) * Utils.GetLerpValue(0.9f, 0.7f, t, true)) * Projectile.scale;
+                    }
+                }
+                else if (i > 0)
+                {
+                    
+                    //Sets image to segment texture
+                    texture = ModContent.Request<Texture2D>(WhipSegmentTexture[i%WhipSegmentTexture.Count]).Value;
+                    //sets the frame accordingly
+                    sourceRectangle = new Rectangle(0, 0, texture.Width, texture.Height);
+                    origin = sourceRectangle.Size() / 2f;
+                    drawGlow = false;
+                    if (WhipSegmentGlowTexture != null)
+                    {
+                        glowtexture = ModContent.Request<Texture2D>(WhipSegmentGlowTexture[i % WhipSegmentTexture.Count]).Value;
+                        drawGlow = true;
+                    }
+
+                }
+                Vector2 element = whipPoints[i];
+                Vector2 diff = (i == whipPoints.Count - 1 ? element- whipPoints[i-1] : whipPoints[i + 1] - element);
+
+                float rotation = diff.ToRotation();
+                //Rotate the handle
+                if (i == 0)
+                {
+                    //diff.toRotation makes it follow the rotation of the whip anim
+                    //MathHelper.Pi can be subtracted / added to adjust where the handle is
+                    //Use multiplication as needed to tweak that
+                    rotation = diff.ToRotation();
+                }
+                
+                Color color = Lighting.GetColor(element.ToTileCoordinates());
+                if (DrawColor != null) {
+                
+                    color = (Color)DrawColor;
+                }
+
+                Main.EntitySpriteDraw(texture, pos - Main.screenPosition, sourceRectangle, color, rotation, origin, scale, flip, 0);
+                if (drawGlow)
+                {
+                    Main.EntitySpriteDraw(glowtexture, pos - Main.screenPosition, sourceRectangle, Color.White, rotation, origin, scale, flip, 0);
+                }
+                pos += diff;
+            }
             return false;
         }
 
+        bool runOnce = true;
+
         /// <summary>
-        /// Draws the handle of the whip.
+        /// Runs whip AI similar to example mod, but the center is now on the whip tip. Called in AI
         /// </summary>
-        /// <param name="lightColor">The color to use when drawing.</param>
-        public void DrawHandleSprite(in Color lightColor)
+        public virtual void WhipAIMotion()
         {
-            Rectangle handleFrame = new Rectangle(0, 0, FlailTexture.Width, HandleHeight);
-            Main.EntitySpriteDraw(FlailTexture,
-                                  Projectile.Center.Floor() - Main.screenPosition + Vector2.UnitY * Main.player[Projectile.owner].gfxOffY,
-                                  new Rectangle?(handleFrame),
-                                  lightColor,
-                                  Projectile.rotation + MathHelper.Pi,
-                                  handleFrame.Size() / 2f - Vector2.UnitY * 4f,
-                                  Projectile.scale,
-                                  SpriteEffects.None,
-                                  0);
+            Player owner = Main.player[Projectile.owner];
+            float swingTime = owner.itemAnimationMax * Projectile.MaxUpdates;
+            if (runOnce)
+            {
+                Projectile.WhipSettings.Segments = (int)((owner.whipRangeMultiplier + 1) * Projectile.WhipSettings.Segments);
+                runOnce = false;
+            }
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2; // Without PiOver2, the rotation would be off by 90 degrees counterclockwise.
+
+            Projectile.Center = Vector2.Lerp(Projectile.Center, whipPoints[whipPoints.Count - 1], 1);
+
+            // Vanilla uses Vector2.Dot(Projectile.velocity, Vector2.UnitX) here. Dot Product returns the difference between two vectors, 0 meaning they are perpendicular.
+            // However, the use of UnitX basically turns it into a more complicated way of checking if the projectile's velocity is above or equal to zero on the X axis.
+            Projectile.spriteDirection = Projectile.velocity.X >= 0f ? 1 : -1;
+            Timer++;
+            PointDrawTimer++;
+
+            if (Timer >= swingTime || (UseTimeDetermineLifetime && owner.itemAnimation <= 0))
+            {
+
+                Projectile.Kill();
+                return;
+            }
         }
 
         /// <summary>
-        /// Draws the first body frame of the whip.
+        /// Plays sound and runs dust, all the parameters should be set in whip stats, though you can override them. 
+        /// Called in AI
         /// </summary>
-        /// <param name="speed">The partially modified speed of the projectile. The exact value is determined as
-        /// <code>projectile.velocity.Length() + 16f - 40f * projectile.scale;</code>
-        /// </param>
-        /// <param name="normalizedVelocity">The normalized velocity vector of the whip.</param>
-        /// <param name="lightColor">The color to use when drawing.</param>
-        /// <param name="bodyDrawPosition">The drawing position of the body segments. Modified in this method.</param>
-        public void DrawType1BodySprite(in float speed, in Vector2 normalizedVelocity, in Color lightColor, ref Vector2 bodyDrawPosition)
+        /// <param name="lightingCol"></param>
+        /// <param name="dustID"></param>
+        /// <param name="dustNum"></param>
+        /// <param name="sound"></param>
+        public virtual void WhipSFX(Color lightingCol, int? dustID, int dustNum, SoundStyle? sound)
         {
-            Rectangle type1BodyFrame = new Rectangle(0, BodyType1StartY, FlailTexture.Width, BodyType1SectionHeight);
-            bool reducedType1BodyCount = speed < 100f;
-            int type1BodyDrawCount = reducedType1BodyCount ? 22 : 9;
-            if (speed > 0f)
+            Player owner = Main.player[Projectile.owner];
+            float swingTime = owner.itemAnimationMax * Projectile.MaxUpdates;
+            //Main.NewText(lightingCol);
+
+
+
+            owner.heldProj = Projectile.whoAmI;
+            Vector2? tip = GetTipPosition();
+            
+            if(tip is null)
+                return;
+            if (Timer == swingTime / 2 && sound != null)
             {
-                float speedRatio = speed / type1BodyDrawCount;
-                bodyDrawPosition += normalizedVelocity * speedRatio * 0.25f;
-                for (int i = 0; i < type1BodyDrawCount; i++)
+                // Plays a whipcrack sound at the tip of the whip.
+                SoundEngine.PlaySound(sound, tip);
+
+            }
+            if ((Timer >= swingTime * .45f) && Timer <= swingTime * 0.85f)
+            {
+                if (dustID != null)
                 {
-                    float drawPositionDeltaMult = speedRatio;
-                    if (i == 0)
+                    for (int i = 0; i < dustNum; i++)
                     {
-                        drawPositionDeltaMult *= 0.75f;
+                        Dust.NewDust((Vector2)tip, 2, 2, (int)dustID, 0, 0, Scale: .5f);
                     }
-                    Main.EntitySpriteDraw(FlailTexture,
-                                          bodyDrawPosition - Main.screenPosition + Vector2.UnitY * Main.player[Projectile.owner].gfxOffY,
-                                          new Rectangle?(type1BodyFrame),
-                                          lightColor,
-                                          Projectile.rotation + MathHelper.Pi,
-                                          new Vector2(type1BodyFrame.Width / 2, 0f),
-                                          Projectile.scale,
-                                          SpriteEffects.None,
-                                          0);
-                    bodyDrawPosition += normalizedVelocity * drawPositionDeltaMult;
                 }
-            }
-        }
-
-        /// <summary>
-        /// Draws the second body frame of the whip.
-        /// </summary>
-        /// <param name="speed">The partially modified speed of the projectile. The exact value is determined as
-        /// <code>projectile.velocity.Length() + 16f - 40f * projectile.scale;</code>
-        /// </param>
-        /// <param name="normalizedVelocity">The normalized velocity vector of the whip.</param>
-        /// <param name="lightColor">The color to use when drawing.</param>
-        /// <param name="bodyDrawPosition">The drawing position of the body segments. Modified in this method.</param>
-        public void DrawType2BodySprite(in float speed, in Vector2 normalizedVelocity, in Color lightColor, ref Vector2 bodyDrawPosition)
-        {
-            // Draw body segment without the molten rock part sticking to it.
-            // From a drawing standpoint, this is the second chain type of the flail
-            Rectangle type2BodyFrame = new Rectangle(0, BodyType2StartY, FlailTexture.Width, BodyType2SectionHeight);
-            if (speed > 0f)
-            {
-                float counter = 0f;
-                while (counter + 1f < speed)
+                if (lightingCol != Color.Transparent)
                 {
-                    if (speed - counter < type2BodyFrame.Height)
-                    {
-                        type2BodyFrame.Height = (int)(speed - counter);
-                    }
-                    Main.EntitySpriteDraw(FlailTexture,
-                                          bodyDrawPosition - Main.screenPosition + Vector2.UnitY * Main.player[Projectile.owner].gfxOffY,
-                                          new Rectangle?(type2BodyFrame),
-                                          lightColor,
-                                          Projectile.rotation + MathHelper.Pi,
-                                          new Vector2(type2BodyFrame.Width / 2, 0f),
-                                          Projectile.scale,
-                                          SpriteEffects.None,
-                                          0);
-                    counter += type2BodyFrame.Height * Projectile.scale;
-                    bodyDrawPosition += normalizedVelocity * type2BodyFrame.Height * Projectile.scale;
+                    Lighting.AddLight((Vector2)tip, lightingCol.R / 255f, lightingCol.G / 255f, lightingCol.B / 255f);
                 }
+
             }
         }
 
-        /// <summary>
-        /// Draws the tail of the whip.
-        /// </summary>
-        /// <param name="whipEndPosition">The position to draw the tail.</param>
-        /// <param name="lightColor">The color to use when drawing.</param>
-        public void DrawWhipTail(in Vector2 whipEndPosition, in Color lightColor)
-        {
-            Rectangle tailFrame = new Rectangle(0, TailStartY, FlailTexture.Width, TailHeight);
-            Main.EntitySpriteDraw(FlailTexture,
-                whipEndPosition - Main.screenPosition + Vector2.UnitY * Main.player[Projectile.owner].gfxOffY,
-                new Rectangle?(tailFrame),
-                lightColor,
-                Projectile.rotation + MathHelper.Pi,
-                FlailTexture.Frame(1, 1, 0, 0).Top(),
-                Projectile.scale,
-                SpriteEffects.None,
-                0);
-        }
         #endregion
+        
+        
 
-        #region Collision and Grass Cut Logic
-        public override void CutTiles()
-        {
-            DelegateMethods.tilecut_0 = TileCuttingContext.AttackProjectile;
-            Vector2 unit = Projectile.velocity;
-            Utils.PlotTileLine(Projectile.Center, Projectile.Center + unit, Projectile.width * Projectile.scale, DelegateMethods.CutTiles);
-        }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
-            if (projHitbox.Intersects(targetHitbox))
-            {
-                return true;
-            }
-            float _ = 0f;
-            if (Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, Projectile.Center + Projectile.velocity, 16f * Projectile.scale, ref _))
-            {
-                return true;
-            }
-            return false;
-        }
-        #endregion
+        
     }
 }

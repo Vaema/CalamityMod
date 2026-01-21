@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Magic;
+﻿using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -23,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.noMelee = true;
             Item.knockBack = 7.5f;
             Item.UseSound = SoundID.Item91;
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<RougeSlashLarge>();

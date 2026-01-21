@@ -3,7 +3,6 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Projectiles.Ranged;
 using Terraria;
-using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
@@ -15,7 +14,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
         public override void SetDefaults()
         {
             Projectile.width = Projectile.height = 40;
-            Projectile.DamageType = DamageClass.Melee;  //Dictates whether projectile is a melee-class weapon.
+            Projectile.DamageType = DamageClass.Melee;
             Projectile.timeLeft = 90;
             Projectile.friendly = true;
             Projectile.hostile = false;
@@ -29,23 +28,18 @@ namespace CalamityMod.Projectiles.Melee.Spears
 
         public override float InitialSpeed => 3f;
         public override float ReelbackSpeed => 2.4f;
-        public override float ForwardSpeed => 0.95f;
+        public override float ForwardSpeed => 0.4f;
         public override void ExtraBehavior()
         {
-            if (Main.rand.NextBool(4))
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 32, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
-
             Projectile.localAI[0] += 1f;
             if (Projectile.localAI[0] >= 6f)
             {
                 Projectile.localAI[0] = 0f;
                 if (Main.myPlayer == Projectile.owner)
                 {
-                    float velocityY = Projectile.velocity.Y * 1.25f;
-                    if (velocityY < 0.1f)
-                        velocityY = 0.1f;
-                    int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X + Projectile.velocity.X, Projectile.Center.Y + Projectile.velocity.Y,
-                        Projectile.velocity.X * 1.25f, velocityY, ModContent.ProjectileType<FossilShard>(), (int)(Projectile.damage * 0.5), 0f, Projectile.owner, 0f, 0f);
+                    float randomVelocity = Main.rand.NextFloat(1.085f, 1.115f);
+                    int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity * randomVelocity,
+                        ModContent.ProjectileType<FossilShard>(), (int)(Projectile.damage * 0.5), Projectile.knockBack * 0.2f, Projectile.owner, 0f, 1f);
                     if (proj.WithinBounds(Main.maxProjectiles))
                         Main.projectile[proj].DamageType = DamageClass.Melee;
                 }

@@ -1,4 +1,6 @@
-﻿using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -12,22 +14,27 @@ namespace CalamityMod.Items.Weapons.Summon
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
 
-        public override void SetStaticDefaults() => Item.staff[Type] = true;
+        public override void SetStaticDefaults()
+        {
+            Item.staff[Type] = true;
+            ItemID.Sets.StaffMinionSlotsRequired[Type] = 2f;
+        }
 
         public override void SetDefaults()
         {
             Item.width = 52;
             Item.height = 52;
-            Item.damage = 47;
+            Item.damage = 42;
             Item.DamageType = DamageClass.Summon;
+            Item.buffType = ModContent.BuffType<EntropysVigilBuff>();
             Item.shoot = ModContent.ProjectileType<Calamitamini>();
             Item.knockBack = 2f;
 
-            Item.useTime = Item.useAnimation = 25;
+            Item.useAnimation = Item.useTime = 36;
             Item.mana = 10;
             Item.noMelee = true;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = SoundID.Item82;
@@ -38,6 +45,9 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            player.AddBuff(Item.buffType, 2);
+
+            Vector2 mouse = player.ClampedMouseWorld();
             float randomAngleOffset = Main.rand.NextFloat(MathHelper.TwoPi);
             for (int i = 0; i < 3; i++)
             {
@@ -47,15 +57,18 @@ namespace CalamityMod.Items.Weapons.Summon
                 switch (i)
                 {
                     case 0:
-                        Projectile.NewProjectileDirect(source, Main.MouseWorld, spawnVelocity, ModContent.ProjectileType<Calamitamini>(), damage, knockback, player.whoAmI);
+                        type = ModContent.ProjectileType<Calamitamini>();
                         break;
                     case 1:
-                        Projectile.NewProjectileDirect(source, Main.MouseWorld, spawnVelocity, ModContent.ProjectileType<Catastromini>(), damage, knockback, player.whoAmI);
+                        type = ModContent.ProjectileType<Catastromini>();
                         break;
                     case 2:
-                        Projectile.NewProjectileDirect(source, Main.MouseWorld, spawnVelocity, ModContent.ProjectileType<Cataclymini>(), damage, knockback, player.whoAmI);
+                        type = ModContent.ProjectileType<Cataclymini>();
                         break;
                 }
+
+                var minion = Projectile.NewProjectileDirect(source, mouse, spawnVelocity, type, damage, knockback, player.whoAmI);
+                minion.originalDamage = Item.damage;
             }
 
             return false;

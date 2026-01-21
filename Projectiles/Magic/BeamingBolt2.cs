@@ -1,13 +1,15 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Magic
 {
     public class BeamingBolt2 : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = 14;
@@ -22,7 +24,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             if (Projectile.ai[0] == 1f)
                 tex = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/BeamingThorn").Value;
 

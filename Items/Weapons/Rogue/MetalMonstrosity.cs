@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -19,12 +19,11 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.noMelee = true;
             Item.UseSound = SoundID.Item1;
             Item.rare = ItemRarityID.Orange;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
 
-            Item.damage = 30;
-            Item.useAnimation = 40;
-            Item.useTime = 40;
-            Item.knockBack = 7f;
+            Item.damage = 28;
+            Item.useAnimation = Item.useTime = 45;
+            Item.knockBack = 12f;
             Item.shoot = ModContent.ProjectileType<MetalChunk>();
             Item.shootSpeed = 7f;
 
@@ -35,7 +34,10 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             int proj = Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<MetalChunk>(), damage, knockback, player.whoAmI);
             if (player.Calamity().StealthStrikeAvailable() && proj.WithinBounds(Main.maxProjectiles))
+            {
                 Main.projectile[proj].Calamity().stealthStrike = true;
+                Main.projectile[proj].penetrate = 3;
+            }
             return false;
         }
 

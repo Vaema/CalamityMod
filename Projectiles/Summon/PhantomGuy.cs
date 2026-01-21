@@ -2,9 +2,9 @@
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -15,8 +15,9 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projPet[Type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -51,7 +52,7 @@ namespace CalamityMod.Projectiles.Summon
                     Vector2 rotate = Vector2.Normalize(Projectile.velocity) * new Vector2(Projectile.width / 2f, Projectile.height) * 0.75f;
                     rotate = rotate.RotatedBy((i - (dustAmt / 2 - 1)) * MathHelper.TwoPi / dustAmt) + Projectile.Center;
                     Vector2 faceDirection = rotate - Projectile.Center;
-                    int dust = Dust.NewDust(rotate + faceDirection, 0, 0, 180, faceDirection.X * 1.75f, faceDirection.Y * 1.75f, 100, default, 1.1f);
+                    int dust = Dust.NewDust(rotate + faceDirection, 0, 0, DustID.DungeonSpirit, faceDirection.X * 1.75f, faceDirection.Y * 1.75f, 100, default, 1.1f);
                     Main.dust[dust].noGravity = true;
                     Main.dust[dust].velocity = faceDirection;
                 }
@@ -90,9 +91,8 @@ namespace CalamityMod.Projectiles.Summon
             }
             if (!canAttack)
             {
-                for (int j = 0; j < Main.maxNPCs; j++)
+                foreach (NPC nPC2 in Main.ActiveNPCs)
                 {
-                    NPC nPC2 = Main.npc[j];
                     if (nPC2.CanBeChasedBy(Projectile, false))
                     {
                         float targetDist = Vector2.Distance(nPC2.Center, Projectile.Center);
@@ -206,23 +206,23 @@ namespace CalamityMod.Projectiles.Summon
             if (canShoot)
             {
                 shootTimeCounter++;
-                
+
                 if (shootTimeCounter % 20 == 0 && shootTimeCounter <= 60)
                 {
                     SoundEngine.PlaySound(SoundID.Item20, Projectile.position);
                     float randomRadius = Main.rand.Next(10, 14);
                     Vector2 randomVelocity = Main.rand.NextVector2CircularEdge(randomRadius, randomRadius);
-                    Projectile.velocity -= randomVelocity*0.22f; //funny recoil
+                    Projectile.velocity -= randomVelocity * 0.22f; //funny recoil
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, randomVelocity.X, randomVelocity.Y, ModContent.ProjectileType<GhostFire>(), Projectile.damage, 0f, Main.myPlayer, 0f, 0f);
                     Projectile.netUpdate = true;
-                } 
+                }
                 if (shootTimeCounter > 200)
                 {
                     canShoot = false;
                     shootTimeCounter = 0;
                     Projectile.netUpdate = true;
                 }
-                
+
             }
         }
 
@@ -230,7 +230,5 @@ namespace CalamityMod.Projectiles.Summon
         {
             return new Color(100, 250, 250, Projectile.alpha);
         }
-
-        public override bool? CanDamage() => false;
     }
 }

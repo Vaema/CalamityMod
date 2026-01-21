@@ -1,8 +1,8 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -17,9 +17,10 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 2;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 2;
+            Main.projPet[Type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -54,7 +55,7 @@ namespace CalamityMod.Projectiles.Summon
                 int dustAmt = 20;
                 for (int d = 0; d < dustAmt; d++)
                 {
-                    int water = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, 33, 0f, 0f, 0, default, 1f);
+                    int water = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, DustID.Water, 0f, 0f, 0, default, 1f);
                     Main.dust[water].velocity *= 2f;
                     Main.dust[water].scale *= 1.15f;
                 }
@@ -423,7 +424,7 @@ namespace CalamityMod.Projectiles.Summon
             return null;
         }
 
-        public override bool? CanDamage() => Projectile.ai[0] == 0f;
+        public override bool MinionContactDamage() => Projectile.ai[0] == 0f;
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {

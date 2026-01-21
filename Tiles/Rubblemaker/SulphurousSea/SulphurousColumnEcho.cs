@@ -1,9 +1,8 @@
 ﻿using CalamityMod.Dusts;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Abyss;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.ID;
 using Terraria.Enums;
 using Terraria.GameContent;
 using Terraria.ModLoader;
@@ -37,7 +36,7 @@ namespace CalamityMod.Tiles.Rubblemaker.SulphurousSea
             TileObjectData.newTile.LavaDeath = true;
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(150, 100, 50), CalamityUtils.GetText("Tiles.Column"));
-            DustType = (int)CalamityDusts.SulfurousSeaAcid;
+            DustType = (int)CalamityDusts.SulphurousSeaAcid;
 
             RegisterItemDrop(ModContent.ItemType<SulphurousSandstone>());
             FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<SulphurousSandstone>(), Type, 0);
@@ -47,7 +46,7 @@ namespace CalamityMod.Tiles.Rubblemaker.SulphurousSea
 
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             // Explode into a bunch of rocks when broken.

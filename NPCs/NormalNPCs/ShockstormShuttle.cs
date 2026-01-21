@@ -1,10 +1,9 @@
-﻿using CalamityMod.Items.Accessories;
+﻿using System;
+using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Placeables.Ores;
 using Microsoft.Xna.Framework;
-using System;
-using CalamityMod.Items.Accessories.Vanity;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -17,22 +16,22 @@ namespace CalamityMod.NPCs.NormalNPCs
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
+            Main.npcFrameCount[Type] = 4;
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
         }
 
         public override void SetDefaults()
         {
             NPC.npcSlots = 3f;
-            NPC.damage = 30;
+            NPC.damage = 0; // 0 contact damage, projectile damage is handled separately
             NPC.width = 64;
             NPC.height = 38;
             NPC.defense = 15;
-            NPC.DR_NERD(0.15f);
-            NPC.lifeMax = 150;
+            NPC.lifeMax = 250;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.knockBackResist = 0.5f;
+            NPC.value = Item.buyPrice(silver: 5);
             NPC.HitSound = SoundID.NPCHit4;
             NPC.DeathSound = SoundID.NPCDeath14;
             NPC.noGravity = true;
@@ -45,10 +44,10 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Sky,
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.ShockstormShuttle")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.ShockstormShuttle")
             });
         }
 
@@ -75,20 +74,17 @@ namespace CalamityMod.NPCs.NormalNPCs
                         targetDist = projSpeed / targetDist;
                         velocity.X *= targetDist;
                         velocity.Y *= targetDist;
-                        int projDmg = 30;
-                        if (Main.expertMode)
-                        {
-                            projDmg = 22;
-                        }
+
+                        // These are already nerfed in Master Mode via global scaling code
+                        int projDmg = Main.expertMode ? 22 : 30;
                         int projType = ProjectileID.MartianTurretBolt;
                         if (Main.rand.NextBool(8))
-                        {
                             projType = ProjectileID.SaucerLaser;
-                        }
+
                         npcPos.X += velocity.X;
                         npcPos.Y += velocity.Y;
-                        int spread = Main.getGoodWorld ? 100 : 20;
-                        for (int i = 0; i < (Main.getGoodWorld ? 10 : 2); i++)
+                        int spread = 20;
+                        for (int i = 0; i < 2; i++)
                         {
                             velocity = Main.player[NPC.target].Center - npcPos;
                             targetDist = velocity.Length();
@@ -374,7 +370,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter += 0.15f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
@@ -383,15 +379,15 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 234, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.BoneTorch, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 20; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 234, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.BoneTorch, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ShockstormShuttle").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ShockstormShuttle2").Type, 1f);
@@ -406,14 +402,13 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 return 0f;
             }
-            return SpawnCondition.Sky.Chance * (Main.getGoodWorld ? 0.5f : 0.1f);
+            return SpawnCondition.Sky.Chance * 0.1f;
         }
-        
+
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.AddIf(() => NPC.downedGolemBoss, ItemID.MartianConduitPlating, 1, 10, 30);
             npcLoot.Add(ModContent.ItemType<EssenceofSunlight>(), 2);
-            npcLoot.Add(ModContent.ItemType<TheTransformer>(), 10);
             npcLoot.Add(ModContent.ItemType<OracleHeadphones>(), (DateTime.Now.Day == 21 && DateTime.Now.Month == 8) ? 9 : 20);
             var postML = npcLoot.DefineConditionalDropSet(() => NPC.downedMoonlord);
             postML.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<ExodiumCluster>(), 1, 8, 12, 11, 16));

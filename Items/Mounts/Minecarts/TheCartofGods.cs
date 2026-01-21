@@ -15,17 +15,15 @@ namespace CalamityMod.Items.Mounts.Minecarts
         {
             Item.width = 34;
             Item.height = 36;
-            Item.useTime = 20;
-            Item.useAnimation = 20;
+            Item.useAnimation = Item.useTime = 20;
             Item.useStyle = ItemUseStyleID.Swing;
-
-            Item.value = Item.sellPrice(gold: 30);
-            Item.rare = ModContent.RarityType<DarkBlue>();
-            Item.Calamity().donorItem = true;
-
             Item.UseSound = SoundID.Item68;
             Item.noMelee = true;
             Item.mountType = ModContent.MountType<DoGCartMount>();
+
+            Item.value = Item.sellPrice(gold: 30);
+            Item.rare = ModContent.RarityType<CosmicPurple>();
+            Item.Calamity().donorItem = true;
         }
 
         public override void AddRecipes()

@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Rogue;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Items.Weapons.Rogue;
-using Terraria.Utilities;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -15,9 +15,9 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             if (Main.rand.NextBool(10))
             {
-                int d = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, 226, 0f, 0f, 100, new Color(Main.rand.Next(20, 100), 204, 250), 1f);
+                int d = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.Electric, 0f, 0f, 100, new Color(Main.rand.Next(20, 100), 204, 250), 1f);
                 Main.dust[d].scale += (float)Main.rand.Next(50) * 0.01f;
                 Main.dust[d].noGravity = true;
                 Main.dust[d].position = Projectile.Center;
@@ -57,15 +57,15 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.spriteDirection = Projectile.direction = (Projectile.velocity.X > 0).ToDirectionInt();
             Projectile.rotation = Projectile.velocity.ToRotation() + (Projectile.spriteDirection == 1 ? 0f : MathHelper.Pi);
             Projectile.rotation += Projectile.spriteDirection * MathHelper.ToRadians(45f);
-           
+
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(BuffID.Electrified, 45);
+            target.AddBuff(ModContent.BuffType<StaticDischarge>(), 45);
             if (Main.rand.NextBool(10))
             {
-                int d = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, 226, 0f, 0f, 100, new Color(Main.rand.Next(20, 100), 204, 250), 1f);
+                int d = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.Electric, 0f, 0f, 100, new Color(Main.rand.Next(20, 100), 204, 250), 1f);
                 Main.dust[d].scale += (float)Main.rand.Next(50) * 0.01f;
                 Main.dust[d].noGravity = true;
                 Main.dust[d].position = Projectile.Center;
@@ -94,10 +94,10 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            target.AddBuff(BuffID.Electrified, 45);
+            target.AddBuff(ModContent.BuffType<StaticDischarge>(), 45);
             if (Main.rand.NextBool(10))
             {
-                int d = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, 226, 0f, 0f, 100, new Color(Main.rand.Next(20, 100), 204, 250), 1f);
+                int d = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.Electric, 0f, 0f, 100, new Color(Main.rand.Next(20, 100), 204, 250), 1f);
                 Main.dust[d].scale += (float)Main.rand.Next(50) * 0.01f;
                 Main.dust[d].noGravity = true;
                 Main.dust[d].position = Projectile.Center;
@@ -128,7 +128,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             if (Main.rand.NextBool(10))
             {
-                int d = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, 226, 0f, 0f, 100, new Color(Main.rand.Next(20,100), 204, 250), 1f);
+                int d = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.Electric, 0f, 0f, 100, new Color(Main.rand.Next(20, 100), 204, 250), 1f);
                 Main.dust[d].scale += (float)Main.rand.Next(50) * 0.01f;
                 Main.dust[d].noGravity = true;
                 Main.dust[d].position = Projectile.Center;
@@ -159,7 +159,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

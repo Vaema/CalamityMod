@@ -1,5 +1,6 @@
 ﻿using CalamityMod.NPCs.AcidRain;
 using CalamityMod.Rarities;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -10,15 +11,15 @@ namespace CalamityMod.Items.SummonItems
         public new string LocalizationCategory => "Items.SummonItems";
         public override void SetStaticDefaults()
         {
-           	ItemID.Sets.SortingPriorityBossSpawns[Type] = 19; // Celestial Sigil
+            Item.ResearchUnlockCount = 3;
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 19; // Celestial Sigil
         }
 
         public override void SetDefaults()
         {
             Item.width = 28;
             Item.height = 28;
-            Item.maxStack = 9999;
-            Item.rare = ModContent.RarityType<PureGreen>();
+            Item.maxStack = Item.CommonMaxStack;
             Item.bait = 4444;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.autoReuse = true;
@@ -28,12 +29,14 @@ namespace CalamityMod.Items.SummonItems
             Item.consumable = true;
             Item.noUseGraphic = true;
             Item.makeNPC = (short)ModContent.NPCType<BloodwormNormal>();
-            Item.ResearchUnlockCount = 3;
+
+            Item.value = Item.sellPrice(gold: 20); // 2x the sell price of Truffle Worms; also sold by Sea King for a custom (2x) price
+            Item.rare = ModContent.RarityType<PureGreen>();
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
+        }
     }
 }

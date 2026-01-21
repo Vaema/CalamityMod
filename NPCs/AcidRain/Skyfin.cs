@@ -1,16 +1,14 @@
 ﻿using CalamityMod.BiomeManagers;
-using CalamityMod.Dusts;
-using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Dusts;
+using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.Banners;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
-using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.NPCs.AcidRain
 {
@@ -22,8 +20,8 @@ namespace CalamityMod.NPCs.AcidRain
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 5;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            Main.npcFrameCount[Type] = 5;
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Rotation = MathHelper.Pi
             };
@@ -47,16 +45,14 @@ namespace CalamityMod.NPCs.AcidRain
                 NPC.damage = 88;
                 NPC.lifeMax = 3025;
                 NPC.defense = 18;
-                NPC.DR_NERD(0.05f);
             }
             else if (DownedBossSystem.downedAquaticScourge)
             {
                 NPC.damage = 38;
                 NPC.lifeMax = 220;
-                NPC.DR_NERD(0.05f);
             }
 
-            NPC.value = Item.buyPrice(0, 0, 3, 65);
+            NPC.value = Item.buyPrice(silver: 2);
             NPC.lavaImmune = false;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
@@ -73,9 +69,9 @@ namespace CalamityMod.NPCs.AcidRain
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Skyfin")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Skyfin")
             });
         }
 
@@ -123,7 +119,7 @@ namespace CalamityMod.NPCs.AcidRain
                         SoundEngine.PlaySound(SoundID.DD2_WyvernDiveDown, NPC.Center);
                         for (int i = 0; i < 36; i++)
                         {
-                            Dust acid = Dust.NewDustPerfect(NPC.Center, (int)CalamityDusts.SulfurousSeaAcid);
+                            Dust acid = Dust.NewDustPerfect(NPC.Center, (int)CalamityDusts.SulphurousSeaAcid);
                             acid.velocity = (MathHelper.TwoPi * i / 36f).ToRotationVector2() * 6f;
                             acid.scale = 1.1f;
                             acid.noGravity = true;
@@ -169,7 +165,7 @@ namespace CalamityMod.NPCs.AcidRain
             {
                 NPC.frameCounter = 0;
                 NPC.frame.Y += frameHeight;
-                if (NPC.frame.Y >= Main.npcFrameCount[NPC.type] * frameHeight)
+                if (NPC.frame.Y >= Main.npcFrameCount[Type] * frameHeight)
                     NPC.frame.Y = 0;
             }
         }
@@ -177,24 +173,22 @@ namespace CalamityMod.NPCs.AcidRain
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ModContent.ItemType<SulphuricScale>(), 2, 1, 3);
-            LeadingConditionRule postAS = npcLoot.DefineConditionalDropSet(DropHelper.PostAS());
-            postAS.Add(ModContent.ItemType<SkyfinBombers>(), 20);
         }
 
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 8; k++)
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SkyfinGore").Type, NPC.scale);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SkyfinGore2").Type, NPC.scale);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SkyfinGore3").Type, NPC.scale);
                 }
                 for (int k = 0; k < 20; k++)
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
             }
         }
 

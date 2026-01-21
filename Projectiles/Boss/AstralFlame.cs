@@ -1,13 +1,13 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
-using Microsoft.Xna.Framework;
-using System;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Terraria.Audio;
 using CalamityMod.Events;
 using CalamityMod.World;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -16,14 +16,13 @@ namespace CalamityMod.Projectiles.Boss
         public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
         {
-            Projectile.Calamity().DealsDefenseDamage = true;
             Projectile.width = 50;
             Projectile.height = 50;
             Projectile.hostile = true;
@@ -33,17 +32,16 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.penetrate = 1;
             Projectile.timeLeft = 600;
 
-            if (Main.getGoodWorld)
+            if (Main.zenithWorld)
                 Projectile.extraUpdates = 1;
         }
 
         public override void AI()
         {
             // Difficulty modes
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             Projectile.frameCounter++;
             if (Projectile.frameCounter > 4)
@@ -62,7 +60,7 @@ namespace CalamityMod.Projectiles.Boss
             else
             {
                 Projectile.spriteDirection = 1;
-                Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X);
+                Projectile.rotation = Projectile.velocity.ToRotation();
             }
 
             Lighting.AddLight(Projectile.Center, 0.3f, 0.5f, 0.1f);
@@ -78,7 +76,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.ai[0] += 1f;
             if (Projectile.ai[0] > 15f)
             {
-                int astralDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 0.8f);
+                int astralDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 0.8f);
                 Main.dust[astralDust].noGravity = true;
                 Main.dust[astralDust].velocity *= 0f;
             }
@@ -104,8 +102,8 @@ namespace CalamityMod.Projectiles.Boss
                 // Move away from other flames
                 if (Projectile.ai[0] >= 60f)
                 {
-                    float pushForce = bossRush ? 0.07f : death ? 0.06f : revenge ? 0.055f : expertMode ? 0.05f : 0.04f;
-                    float pushDistance = bossRush ? 180f : death ? 150f : revenge ? 135f : expertMode ? 120f : 90f;
+                    float pushForce = death ? 0.06f : revenge ? 0.055f : expertMode ? 0.05f : 0.04f;
+                    float pushDistance = death ? 150f : revenge ? 135f : expertMode ? 120f : 90f;
                     for (int k = 0; k < Main.maxProjectiles; k++)
                     {
                         Projectile otherProj = Main.projectile[k];
@@ -136,7 +134,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
@@ -150,7 +148,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 75);
+            target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 120);
         }
 
         public override void OnKill(int timeLeft)
@@ -162,14 +160,14 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
             for (int i = 0; i < 2; i++)
             {
-                Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 50, default, 1f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 50, default, 1f);
             }
             for (int j = 0; j < 20; j++)
             {
-                int deathAstralDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 0, default, 1.5f);
+                int deathAstralDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f, 0, default, 1.5f);
                 Main.dust[deathAstralDust].noGravity = true;
                 Main.dust[deathAstralDust].velocity *= 3f;
-                deathAstralDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 173, 0f, 0f, 50, default, 1f);
+                deathAstralDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 50, default, 1f);
                 Main.dust[deathAstralDust].velocity *= 2f;
                 Main.dust[deathAstralDust].noGravity = true;
             }

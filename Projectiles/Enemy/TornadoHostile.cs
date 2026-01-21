@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Enemy
 {
     public class TornadoHostile : ModProjectile, ILocalizedModType
@@ -13,11 +13,12 @@ namespace CalamityMod.Projectiles.Enemy
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
         }
 
         public override void SetDefaults()
         {
+            Projectile.Calamity().DealsDefenseDamage = true;
             Projectile.width = 10;
             Projectile.height = 10;
             Projectile.hostile = true;
@@ -32,7 +33,7 @@ namespace CalamityMod.Projectiles.Enemy
             if (Projectile.soundDelay == 0)
             {
                 Projectile.soundDelay = -1;
-                SoundEngine.PlaySound(SoundID.Item122, Projectile.position);
+                SoundEngine.PlaySound(SoundID.Item122, Projectile.Center);
             }
             Projectile.ai[0] += 1f;
             if (Projectile.ai[0] >= projTimer)
@@ -86,7 +87,7 @@ namespace CalamityMod.Projectiles.Enemy
                     dustVelocity.X *= -1f;
                     Vector2 dustCustomData = new Vector2(6f, 10f);
                     Vector2 dustPosition = centering + sizeModPos * dustVelocity * 0.5f + dustCustomData;
-                    Dust cloudDust = Main.dust[Dust.NewDust(dustPosition, 0, 0, 16, 0f, 0f, 0, default, 1.5f)];
+                    Dust cloudDust = Main.dust[Dust.NewDust(dustPosition, 0, 0, DustID.Cloud, 0f, 0f, 0, default, 1.5f)];
                     cloudDust.position = dustPosition;
                     cloudDust.customData = centering + dustCustomData;
                     cloudDust.fadeIn = 1f;
@@ -126,7 +127,7 @@ namespace CalamityMod.Projectiles.Enemy
             Vector2 sizeModdingPos = new Vector2(0f, sizeModdingVector2.Y - sizeModdingVector.Y);
             sizeModdingPos.X = sizeModdingPos.Y * vectorMult;
             new Vector2(sizeModdingVector.X - sizeModdingPos.X / 2f, sizeModdingVector.Y);
-            Texture2D texture2D23 = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture2D23 = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Rectangle drawRectangle = texture2D23.Frame(1, 1, 0, 0);
             Vector2 smallRect = drawRectangle.Size() / 2f;
             float aiTrackMult = -0.06283186f * aiTracker;

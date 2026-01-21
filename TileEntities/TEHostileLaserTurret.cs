@@ -1,7 +1,7 @@
-﻿using CalamityMod.Projectiles.Turret;
+﻿using System.IO;
+using CalamityMod.Projectiles.Turret;
 using CalamityMod.Tiles.DraedonStructures;
 using Microsoft.Xna.Framework;
-using System.IO;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -85,10 +85,9 @@ namespace CalamityMod.TileEntities
             Vector2 ret = InvalidTarget;
             float distSQToBeat = MaxRange * MaxRange;
 
-            for (int i = 0; i < Main.maxPlayers; ++i)
+            foreach (Player p in Main.ActivePlayers)
             {
-                Player p = Main.player[i];
-                if (!p.active || p.dead)
+                if (p.dead)
                     continue;
 
                 float distSQ = p.DistanceSQ(targetingCenter);
@@ -96,7 +95,7 @@ namespace CalamityMod.TileEntities
                 {
                     distSQToBeat = distSQ;
                     ret = p.Center;
-                    indexToSet = i;
+                    indexToSet = p.whoAmI;
                 }
             }
 
@@ -122,13 +121,13 @@ namespace CalamityMod.TileEntities
         // This type of turret syncs extra data: its player target index.
         // This only takes 2 bytes so a junk array is written for the remainder of the space.
         private const int BytesUsed = 2;
-        private static readonly byte[] JunkData = new byte[] { 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA };
-        protected override void WriteExtraData(BinaryWriter writer)
+        private static readonly byte[] JunkData = new byte[NumExtraBytes - BytesUsed];
+        public override void WriteExtraTurretData(BinaryWriter writer)
         {
             writer.Write((short)_playerTargetIndex);
             writer.Write(JunkData);
         }
-        protected override void ReadExtraData(Mod mod, BinaryReader reader)
+        public override void ReadExtraTurretData(BinaryReader reader)
         {
             _playerTargetIndex = reader.ReadInt16();
             _ = reader.ReadBytes(NumExtraBytes - BytesUsed);

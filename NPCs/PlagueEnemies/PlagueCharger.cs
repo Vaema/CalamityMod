@@ -2,26 +2,33 @@
 using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
-using Terraria.Audio;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.NPCs.PlagueEnemies
 {
     public class PlagueCharger : ModNPC
     {
+        public static Asset<Texture2D> GlowTexture;
+
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            Main.npcFrameCount[Type] = 4;
+            NPCID.Sets.TrailingMode[Type] = 1;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -29,14 +36,14 @@ namespace CalamityMod.NPCs.PlagueEnemies
             NPC.damage = 37;
             NPC.width = 36;
             NPC.height = 30;
-            NPC.defense = 20;
+            NPC.defense = 32;
             NPC.scale *= 0.5f;
-            NPC.lifeMax = 200;
+            NPC.lifeMax = 720;
             NPC.aiStyle = NPCAIStyleID.Flying;
             AIType = NPCID.Bee;
-            NPC.knockBackResist = 0f;
+            NPC.knockBackResist = 0.4f;
             AnimationType = NPCID.Bee;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(silver: 5);
             NPC.HitSound = SoundID.NPCHit4;
             NPC.noGravity = true;
             NPC.noTileCollide = false;
@@ -48,7 +55,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Jungle,
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.UndergroundJungle,
@@ -62,11 +69,11 @@ namespace CalamityMod.NPCs.PlagueEnemies
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture2D15 = TextureAssets.Npc[NPC.type].Value;
-            Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[NPC.type].Value.Width / 2), (float)(TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2));
+            Texture2D texture2D15 = TextureAssets.Npc[Type].Value;
+            Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[Type].Value.Width / 2), (float)(TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2));
             int afterimageAmt = 5;
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 1; i < afterimageAmt; i += 2)
                 {
@@ -75,21 +82,21 @@ namespace CalamityMod.NPCs.PlagueEnemies
                     afterimageColor = NPC.GetAlpha(afterimageColor);
                     afterimageColor *= (float)(afterimageAmt - i) / 15f;
                     Vector2 afterimagePos = NPC.oldPos[i] + new Vector2((float)NPC.width, (float)NPC.height) / 2f - screenPos;
-                    afterimagePos -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height / Main.npcFrameCount[NPC.type])) * NPC.scale / 2f;
+                    afterimagePos -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height / Main.npcFrameCount[Type])) * NPC.scale / 2f;
                     afterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                     spriteBatch.Draw(texture2D15, afterimagePos, NPC.frame, afterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
                 }
             }
 
             Vector2 drawLocation = NPC.Center - screenPos;
-            drawLocation -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height / Main.npcFrameCount[NPC.type])) * NPC.scale / 2f;
+            drawLocation -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height / Main.npcFrameCount[Type])) * NPC.scale / 2f;
             drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-            texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/PlagueEnemies/PlagueChargerGlow").Value;
+            texture2D15 = GlowTexture.Value;
             Color redEyeColor = Color.Lerp(Color.White, Color.Red, 0.5f);
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int j = 1; j < afterimageAmt; j++)
                 {
@@ -97,7 +104,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
                     redEyeAfterimageColor = Color.Lerp(redEyeAfterimageColor, Color.White, 0.5f);
                     redEyeAfterimageColor *= (float)(afterimageAmt - j) / 15f;
                     Vector2 redEyeAfterimagePos = NPC.oldPos[j] + new Vector2((float)NPC.width, (float)NPC.height) / 2f - screenPos;
-                    redEyeAfterimagePos -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height / Main.npcFrameCount[NPC.type])) * NPC.scale / 2f;
+                    redEyeAfterimagePos -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height / Main.npcFrameCount[Type])) * NPC.scale / 2f;
                     redEyeAfterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                     spriteBatch.Draw(texture2D15, redEyeAfterimagePos, NPC.frame, redEyeAfterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
                 }
@@ -126,7 +133,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<Plague>(), 60, true);
+                target.AddBuff(ModContent.BuffType<Plague>(), 120);
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -142,7 +149,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Plague, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("PlagueCharger").Type, 0.5f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("PlagueCharger2").Type, 0.5f);

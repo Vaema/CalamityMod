@@ -3,7 +3,7 @@
 
 The Calamity Mod is a vast content mod that creates a new and refreshing experience for Terraria!
 
-With this mod comes a slew of new bosses, unique and challenging difficulty modes, over a thousand new items, new NPCs, and entire new biomes to explore! Calamity also massively expands the endgame of Terraria, creating an entirely original, intense experience for players to enjoy.
+With this mod comes a slew of new bosses, unique and challenging difficulty modes, over two thousand new items, new NPCs, and entire new biomes to explore! Calamity also massively expands the endgame of Terraria, creating an entirely original, intense experience for players to enjoy.
 
 The mod additionally tweaks tons of vanilla features whilst adding new ones to aid the player's experience and heavily expand on the base game, including but not limited to:
 [olist]
@@ -13,8 +13,11 @@ The mod additionally tweaks tons of vanilla features whilst adding new ones to a
 [*] Dozens more quality of life and balance changes!
 [/olist]
 
-[i]Please note that this mod does [b]NOT[/b] include Calamity's soundtrack! You will need to download the music mod for the full intended experience![/i]
+[i]Please note that this mod [b]REQUIRES[/b] Calamity's soundtrack! You will need to download the music mod to be able to play![/i]
 https://steamcommunity.com/sharedfiles/filedetails/?id=2824688266
+
+[i]For even more Calamity music, subscribe to Vanilla Calamity Mod Music![/i]
+https://steamcommunity.com/sharedfiles/filedetails/?id=2816188633
 
 [b]Be sure to join our Discord server linked above to keep up with the latest news about upcoming updates and features.[/b]
 
@@ -22,20 +25,21 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=2824688266
 
 A more detailed breakdown of the content available in Calamity:
 [olist]
-[*] 27 bosses and 12 minibosses
-[*] 100+ enemies
-[*] 5 town NPCs
+[*] 27 bosses and 5 minibosses
+[*] 200+ enemies
+[*] 4 town NPCs
 [*] 5 biomes and many new structures
 [*] 1 event
 [*] 1 new playable class (based on Throwing from Terraria 1.3)
-[*] 1800+ items
+[*] 2400+ items
 [*] 700+ weapons
-[*] 100+ blocks
-[*] 200+ pieces of furniture
+[*] Almost 100 blocks
+[*] 600+ pieces of furniture
 [*] 11 ores
-[*] 2 full difficulty settings above Expert, separate from Master
+[*] 2 full difficulty settings above Expert which can be combined with Master
+[*] Significant improvements and changes to Master difficulty
 [*] 50+ changes to vanilla mechanics
 [*] 30+ new recipes for vanilla items
-[*] 450+ tweaks and improvements to vanilla items
-[*] Cross-mod support for the Thorium Mod
+[*] 500+ tweaks and improvements to vanilla items
+[*] Minor cross-mod support for the Thorium Mod
 [/olist]

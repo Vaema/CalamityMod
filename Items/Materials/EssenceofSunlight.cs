@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.GameContent;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Materials
 {
@@ -14,22 +14,22 @@ namespace CalamityMod.Items.Materials
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 25;
-            ItemID.Sets.ItemNoGravity[Item.type] = true;
+            ItemID.Sets.ItemNoGravity[Type] = true;
 
-			ItemID.Sets.SortingPriorityMaterials[Type] = 71; // Soul of Light
+            ItemID.Sets.SortingPriorityMaterials[Type] = 71; // Soul of Light
         }
 
         public override void SetDefaults()
         {
             Item.width = 32;
             Item.height = 26;
-            Item.maxStack = 9999;
-            Item.value = Item.sellPrice(silver: 40);
+            Item.maxStack = Item.CommonMaxStack;
+            Item.value = Item.sellPrice(silver: 4);
             Item.rare = ItemRarityID.LightRed;
         }
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
         {
-            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, TextureAssets.Item[Item.type].Value);
+            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, TextureAssets.Item[Type].Value);
         }
 
         public override void Update(ref float gravity, ref float maxFallSpeed)

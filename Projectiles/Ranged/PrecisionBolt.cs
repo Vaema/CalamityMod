@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -11,6 +11,7 @@ namespace CalamityMod.Projectiles.Ranged
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
         NPC potentialTarget = null;
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = 72;
@@ -71,7 +72,7 @@ namespace CalamityMod.Projectiles.Ranged
                 }
             }
 
-            Dust trail = Dust.NewDustPerfect(Projectile.Center, 267); //Dust trail kinda poopy but idk how to make a cool trail :(
+            Dust trail = Dust.NewDustPerfect(Projectile.Center, DustID.RainbowMk2); //Dust trail kinda poopy but idk how to make a cool trail :(
             trail.velocity = Vector2.Zero;
             trail.color = Color.Yellow;
             trail.scale = Main.rand.NextFloat(1f, 1.1f);
@@ -87,7 +88,7 @@ namespace CalamityMod.Projectiles.Ranged
             SoundEngine.PlaySound(SoundID.Item94, Projectile.Center);
             for (int i = 0; i < 10; i++)
             {
-                Dust zap = Dust.NewDustPerfect(Projectile.Center, 267);
+                Dust zap = Dust.NewDustPerfect(Projectile.Center, DustID.RainbowMk2);
                 zap.velocity = Projectile.velocity;
                 zap.color = Color.Yellow;
                 zap.scale = Main.rand.NextFloat(1f, 1.1f);

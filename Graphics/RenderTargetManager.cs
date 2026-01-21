@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -9,10 +9,9 @@ namespace CalamityMod.Graphics
     /// <summary>
     /// Manager class that handles all created instances of <see cref="ManagedRenderTarget"/>
     /// </summary>
+    [Obsolete("ManagedRenderTarget is obsolete; developers should use RenderTarget2Ds and RenderTargetLeases")]
     public class RenderTargetManager : ModSystem
     {
-        internal static List<ManagedRenderTarget> ManagedTargets = new();
-
         public delegate void RenderTargetUpdateDelegate();
 
         /// <summary>
@@ -25,70 +24,19 @@ namespace CalamityMod.Graphics
         /// </summary>
         public const int TimeBeforeAutoDispose = 600;
 
-        internal static void ResetTargetSizes(Vector2 screenSize)
-        {
-            foreach (ManagedRenderTarget target in ManagedTargets)
-            {
-                // Don't attempt to recreate targets that are already initialized or shouldn't be recreated.
-                if (target is null || target.IsDisposed || target.WaitingForFirstInitialization)
-                    continue;
-
-                Main.QueueMainThreadAction(() =>
-                {
-                    target.Recreate((int)screenSize.X, (int)screenSize.Y);
-                });
-            }
-        }
-
-        internal static void DisposeOfTargets()
-        {
-            if (ManagedTargets is null)
-                return;
-
-            Main.QueueMainThreadAction(() =>
-            {
-                foreach (ManagedRenderTarget target in ManagedTargets)
-                    target?.Dispose();
-                ManagedTargets.Clear();
-            });
-        }
-
         public override void OnModLoad()
         {
-            ManagedTargets = new();
             Main.OnPreDraw += HandleTargetUpdateLoop;
-            Main.OnResolutionChanged += ResetTargetSizes;
         }
 
         public override void OnModUnload()
         {
-            DisposeOfTargets();
             Main.OnPreDraw -= HandleTargetUpdateLoop;
-            Main.OnResolutionChanged -= ResetTargetSizes;
-
-            if (RenderTargetUpdateLoopEvent != null)
-            {
-                foreach (var subscription in RenderTargetUpdateLoopEvent.GetInvocationList())
-                    RenderTargetUpdateLoopEvent -= (RenderTargetUpdateDelegate)subscription;
-            }
+            RenderTargetUpdateLoopEvent = null;
         }
 
         private void HandleTargetUpdateLoop(GameTime obj)
         {
-            // Auto-disposal of targets that havent been used in a while, to stop them hogging GPU memory.
-            if (ManagedTargets != null)
-            {
-                foreach (ManagedRenderTarget target in ManagedTargets)
-                {
-                    if (target == null || target.IsDisposed || !target.ShouldAutoDispose)
-                        continue;
-
-                    if (target.TimeSinceLastAccessed >= TimeBeforeAutoDispose)
-                        target.Dispose();
-                    else
-                        target.TimeSinceLastAccessed++;
-                }
-            }
             RenderTargetUpdateLoopEvent?.Invoke();
         }
     }

@@ -7,18 +7,18 @@ namespace CalamityMod.Projectiles.Summon
     public class Hive : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Summon";
-        public override string Texture => "CalamityMod/NPCs/Astral/HiveEnemy";
+        public override string Texture => "CalamityMod/NPCs/Astral/Astraglomerate";
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 6;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 6;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Projectile.width = 38;
-            Projectile.height = 62;
+            Projectile.height = 60;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = true;
             Projectile.sentry = true;
@@ -47,8 +47,6 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.velocity.Y = 10f;
             }
 
-            Projectile.StickToTiles(false, false);
-
             int target = 0;
             float attackDist = 800f;
             Vector2 projPos = Projectile.position;
@@ -69,9 +67,8 @@ namespace CalamityMod.Projectiles.Summon
             }
             if (!canAttack)
             {
-                for (int j = 0; j < Main.maxNPCs; j++)
+                foreach (NPC nPC2 in Main.ActiveNPCs)
                 {
-                    NPC nPC2 = Main.npc[j];
                     if (nPC2.CanBeChasedBy(Projectile, false))
                     {
                         float targetDist = Vector2.Distance(nPC2.Center, Projectile.Center);
@@ -80,7 +77,7 @@ namespace CalamityMod.Projectiles.Summon
                             attackDist = targetDist;
                             projPos = nPC2.Center;
                             canAttack = true;
-                            target = j;
+                            target = nPC2.whoAmI;
                         }
                     }
                 }
@@ -105,6 +102,12 @@ namespace CalamityMod.Projectiles.Summon
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
+
+        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
+        {
+            fallThrough = false;
+            return true;
+        }
 
         public override bool? CanDamage() => false;
     }

@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -12,8 +12,9 @@ namespace CalamityMod.Projectiles.Magic
         public new string LocalizationCategory => "Projectiles.Magic";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -45,7 +46,7 @@ namespace CalamityMod.Projectiles.Magic
 
             if (Main.rand.NextBool(6))
             {
-                int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 67, 0f, 0f, 100, default, 0.4f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.IceRod, 0f, 0f, 100, default, 0.4f);
                 Main.dust[dust].velocity *= 0.3f;
                 Main.dust[dust].noGravity = true;
             }
@@ -60,13 +61,13 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item27, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item27, Projectile.Center);
             Projectile.ExpandHitboxBy(24);
             int dustAmt = 36;
             for (int j = 0; j < dustAmt; j++)
@@ -74,7 +75,7 @@ namespace CalamityMod.Projectiles.Magic
                 Vector2 rotate = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
                 rotate = rotate.RotatedBy((double)((float)(j - (dustAmt / 2 - 1)) * 6.28318548f / (float)dustAmt), default) + Projectile.Center;
                 Vector2 faceDirection = rotate - Projectile.Center;
-                int icyDust = Dust.NewDust(rotate + faceDirection, 0, 0, 67, faceDirection.X * 0.5f, faceDirection.Y * 0.5f, 100, default, 0.75f);
+                int icyDust = Dust.NewDust(rotate + faceDirection, 0, 0, DustID.IceRod, faceDirection.X * 0.5f, faceDirection.Y * 0.5f, 100, default, 0.75f);
                 Main.dust[icyDust].noGravity = true;
             }
         }

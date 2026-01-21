@@ -1,11 +1,12 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using System.IO;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
@@ -15,6 +16,7 @@ using Terraria.ModLoader.Utilities;
 
 namespace CalamityMod.NPCs.Abyss
 {
+    [LongDistanceNetSync]
     public class GulperEelHead : ModNPC
     {
         private Vector2 patrolSpot = Vector2.Zero;
@@ -24,24 +26,27 @@ namespace CalamityMod.NPCs.Abyss
         public float speed = 5f; //10
         public float turnSpeed = 0.075f; //0.15
         bool TailSpawned = false;
+        public static Asset<Texture2D> GlowTexture;
 
         public override void SetStaticDefaults()
         {
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Scale = 0.75f,
-                CustomTexturePath = "CalamityMod/ExtraTextures/Bestiary/GulperEel_Bestiary",
                 PortraitPositionXOverride = 40,
                 PortraitPositionYOverride = 20
             };
             value.Position.X += 50;
             value.Position.Y += 20;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
         {
-            NPC.Calamity().canBreakPlayerDefense = true;
             NPC.damage = 135;
             NPC.width = 40; //36
             NPC.height = 84; //20
@@ -50,7 +55,7 @@ namespace CalamityMod.NPCs.Abyss
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 0, 50, 0);
+            NPC.value = Item.buyPrice(gold: 1);
             NPC.behindTiles = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
@@ -68,9 +73,9 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.GulperEel")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.GulperEel")
             });
         }
 
@@ -97,7 +102,7 @@ namespace CalamityMod.NPCs.Abyss
             {
                 if (Main.rand.NextBool())
                 {
-                    Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, 204, 0f, 0f, 150, default(Color), 0.3f);
+                    Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.TreasureSparkle, 0f, 0f, 150, default(Color), 0.3f);
                     dust.fadeIn = 0.75f;
                     dust.velocity *= 0.1f;
                     dust.noLight = true;
@@ -105,19 +110,16 @@ namespace CalamityMod.NPCs.Abyss
             }
 
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead)
-            {
-                NPC.TargetClosest(true);
-            }
-            if ((Main.player[NPC.target].Center - NPC.Center).Length() < Main.player[NPC.target].Calamity().GetAbyssAggro(160f) ||
-                NPC.justHit)
-            {
+                NPC.TargetClosest();
+
+            if ((Main.player[NPC.target].Center - NPC.Center).Length() < Main.player[NPC.target].Calamity().GetAbyssAggro(160f) || NPC.justHit)
                 detectsPlayer = true;
-            }
+
             NPC.chaseable = detectsPlayer;
+
             if (NPC.ai[2] > 0f)
-            {
                 NPC.realLife = (int)NPC.ai[2];
-            }
+
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
                 if (!TailSpawned && NPC.ai[0] == 0f)
@@ -129,18 +131,13 @@ namespace CalamityMod.NPCs.Abyss
                         if (segments >= 0 && segments < minLength)
                         {
                             if (segments == 0)
-                            {
                                 lol = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.position.X + (NPC.width / 2), (int)NPC.position.Y + (NPC.height / 2), ModContent.NPCType<GulperEelBody>(), NPC.whoAmI);
-                            }
                             else
-                            {
                                 lol = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.position.X + (NPC.width / 2), (int)NPC.position.Y + (NPC.height / 2), ModContent.NPCType<GulperEelBodyAlt>(), NPC.whoAmI);
-                            }
                         }
                         else
-                        {
                             lol = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.position.X + (NPC.width / 2), (int)NPC.position.Y + (NPC.height / 2), ModContent.NPCType<GulperEelTail>(), NPC.whoAmI);
-                        }
+
                         Main.npc[lol].realLife = NPC.whoAmI;
                         Main.npc[lol].ai[2] = (float)NPC.whoAmI;
                         Main.npc[lol].ai[1] = (float)Previous;
@@ -148,29 +145,28 @@ namespace CalamityMod.NPCs.Abyss
                         NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, lol, 0f, 0f, 0f, 0);
                         Previous = lol;
                     }
+
                     TailSpawned = true;
                 }
             }
+
             if (NPC.velocity.X < 0f)
-            {
-                NPC.spriteDirection = 1;
-            }
-            else if (NPC.velocity.X > 0f)
-            {
                 NPC.spriteDirection = -1;
-            }
+            else if (NPC.velocity.X > 0f)
+                NPC.spriteDirection = 1;
+
             if (Main.player[NPC.target].dead)
-            {
                 NPC.TargetClosest(false);
-            }
+
             NPC.alpha -= 42;
             if (NPC.alpha < 0)
-            {
                 NPC.alpha = 0;
-            }
+
             if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > 5600f)
             {
-                NPC.active = false;
+                NPC.TargetClosest(false);
+                if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > 5600f)
+                    NPC.active = false;
             }
 
             float currentSpeed = speed;
@@ -337,20 +333,32 @@ namespace CalamityMod.NPCs.Abyss
             return null;
         }
 
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            if (NPC.IsABestiaryIconDummy)
+            {
+                Texture2D mainBody = TextureAssets.Npc[ModContent.NPCType<GulperEelBodyAlt>()].Value;
+                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, NPC, drawColor, TextureAssets.Npc[Type].Value, [TextureAssets.Npc[ModContent.NPCType<GulperEelBody>()].Value, mainBody, mainBody], 3, 26, 0.3f, new Vector2(0, 20), 3, 10, 0, 0.1f);
+            }
+            return true;
+        }
+
         public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            if (NPC.IsABestiaryIconDummy)
+                return;
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
             {
                 spriteEffects = SpriteEffects.FlipHorizontally;
             }
             Vector2 center = new Vector2(NPC.Center.X, NPC.Center.Y);
-            Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[NPC.type].Value.Width / 2), (float)(TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2));
+            Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[Type].Value.Width / 2), (float)(TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2));
             Vector2 vector = center - screenPos;
-            vector -= new Vector2((float)ModContent.Request<Texture2D>("CalamityMod/NPCs/Abyss/GulperEelHeadGlow").Value.Width, (float)(ModContent.Request<Texture2D>("CalamityMod/NPCs/Abyss/GulperEelHeadGlow").Value.Height / Main.npcFrameCount[NPC.type])) * 1f / 2f;
+            vector -= new Vector2((float)GlowTexture.Value.Width, (float)(GlowTexture.Value.Height / Main.npcFrameCount[Type])) * 1f / 2f;
             vector += halfSizeTexture * 1f + new Vector2(0f, 4f + NPC.gfxOffY);
             Color color = new Color(127 - NPC.alpha, 127 - NPC.alpha, 127 - NPC.alpha, 0).MultiplyRGBA(Microsoft.Xna.Framework.Color.LightYellow);
-            Main.spriteBatch.Draw(ModContent.Request<Texture2D>("CalamityMod/NPCs/Abyss/GulperEelHeadGlow").Value, vector,
+            Main.spriteBatch.Draw(GlowTexture.Value, vector,
                 new Microsoft.Xna.Framework.Rectangle?(NPC.frame), color, NPC.rotation, halfSizeTexture, 1f, spriteEffects, 0f);
         }
 
@@ -367,9 +375,8 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            var postClone = npcLoot.DefineConditionalDropSet(DropHelper.PostCal());
-            postClone.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<Lumenyl>(), 2, 2, 3, 3, 4));
-            postClone.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 6, 8, 8, 11));
+            var postLevi = npcLoot.DefineConditionalDropSet(DropHelper.PostLevi());
+            postLevi.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 6, 8, 8, 11));
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -384,7 +391,7 @@ namespace CalamityMod.NPCs.Abyss
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("GulperEel").Type, 1f);
                 }

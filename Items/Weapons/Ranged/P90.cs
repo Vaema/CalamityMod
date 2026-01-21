@@ -1,11 +1,10 @@
-﻿using Terraria.DataStructures;
+﻿using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
-using CalamityMod.Projectiles.Ranged;
-using Terraria.Audio;
-using CalamityMod.Projectiles.Turret;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
@@ -13,40 +12,39 @@ namespace CalamityMod.Items.Weapons.Ranged
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
 
+        public static int AmmoSavedPercent = 50;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
+
         public bool fireShot = true;
         public override void SetDefaults()
         {
             Item.width = 60;
             Item.height = 28;
-            Item.damage = 5;
+            Item.damage = 6;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = Item.useAnimation = 2;
+            Item.useAnimation = Item.useTime = 2;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 1.5f;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = Item.buyPrice(gold: 35); // Sold by Arms Dealer
             Item.rare = ItemRarityID.LightRed;
-            Item.UseSound = SoundID.Item11 with { Volume = 0.6f};
+            Item.UseSound = SoundID.Item11 with { Volume = 0.6f };
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<P90Round>();
             Item.shootSpeed = 9f;
             Item.useAmmo = AmmoID.Bullet;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
-        public override Vector2? HoldoutOffset()
-        {
-            return new Vector2(-14, -1);
-        }
+        public override Vector2? HoldoutOffset() => new Vector2(-14, -1);
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (fireShot)
-                Projectile.NewProjectile(source, position, velocity.RotatedByRandom(0.03f), ModContent.ProjectileType<P90Round>(), damage, knockback, player.whoAmI, 0f, 0f);
+                Projectile.NewProjectile(source, position, velocity.RotatedByRandom(0.03f), ModContent.ProjectileType<P90Round>(), damage, knockback, player.whoAmI);
             fireShot = !fireShot;
             return false;
         }
 
-        public override bool CanConsumeAmmo(Item ammo, Player player) => fireShot && Main.rand.NextFloat() < 0.25f;
+        public override bool CanConsumeAmmo(Item ammo, Player player) => fireShot && Main.rand.Next(100) >= AmmoSavedPercent;
     }
 }

@@ -23,20 +23,20 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.damage = 960;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 15;
-            Item.useTime = Item.useAnimation = 120;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.noMelee = true;
-            Item.UseSound = SoundID.DD2_EtherianPortalDryadTouch;
-            Item.knockBack = 0f;
-
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
-
-            Item.autoReuse = true;
-            Item.noUseGraphic = true;
+            Item.useAnimation = Item.useTime = 120;
+            Item.knockBack = 0.25f;
             Item.shoot = ModContent.ProjectileType<HeresyProj>();
-            Item.channel = true;
             Item.shootSpeed = 0f;
+
+            Item.UseSound = SoundID.DD2_EtherianPortalDryadTouch;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.autoReuse = true;
+            Item.channel = true;
+            Item.noMelee = true;
+            Item.noUseGraphic = true;
+
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;

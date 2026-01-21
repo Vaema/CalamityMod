@@ -1,10 +1,8 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Projectiles.Typeless;
-using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -26,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Typeless
             Item.UseSound = SoundID.Item109;
             Item.autoReuse = true;
 
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.Calamity().donorItem = true;
 
@@ -34,15 +32,9 @@ namespace CalamityMod.Items.Weapons.Typeless
             Item.shootSpeed = 5f;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ClasslessWeapon;
-		}
-
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
         {
-            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 0f);
-            return false;
+            itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ClasslessWeapon;
         }
 
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)

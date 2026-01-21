@@ -1,4 +1,5 @@
-﻿using CalamityMod.Particles;
+﻿using CalamityMod.DataStructures;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -9,46 +10,49 @@ namespace CalamityMod.Buffs.DamageOverTime
 {
     public class HolyFlames : ModBuff
     {
+        public static DebuffData debuffData = new DebuffData()
+        {
+            EnemyLostRegen = 300,
+            HeatDebuffScaling = 1
+        };
         public override void SetStaticDefaults()
         {
             Main.debuff[Type] = true;
             Main.pvpBuff[Type] = true;
             Main.buffNoSave[Type] = true;
             BuffID.Sets.LongerExpertDebuff[Type] = true;
+            BuffDatasets.DebuffDataset[Type] = debuffData;
         }
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.Calamity().hFlames = true;
+            player.Calamity().holyFlames = true;
         }
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            if (npc.Calamity().hFlames < npc.buffTime[buffIndex])
-                npc.Calamity().hFlames = npc.buffTime[buffIndex];
-            npc.DelBuff(buffIndex);
-            buffIndex--;
+            npc.Calamity().holyFlames = true;
         }
 
-        internal static void DrawEffects(PlayerDrawSet drawInfo, bool hasDebuffResistance = false)
+        internal static void DrawEffects(PlayerDrawSet drawInfo)
         {
             Player Player = drawInfo.drawPlayer;
 
-            if (Main.rand.NextBool(hasDebuffResistance ? 4 : 2))
+            if (Main.rand.NextBool(2))
             {
                 Vector2 Vect = new Vector2(0f, Main.rand.NextBool(4) ? -5f : -9f).RotatedByRandom(MathHelper.ToRadians(25f)) * Main.rand.NextFloat(0.1f, 1.9f);
-                CritSpark spark = new CritSpark(Player.Calamity().RandomDebuffVisualSpot, Vect, Main.rand.NextBool() ? Color.Coral : Color.OrangeRed, Color.Orange, (hasDebuffResistance ? 0.4f : 0.8f), 15, 2f, 1.9f);
+                CritSpark spark = new CritSpark(Player.Calamity().RandomDebuffVisualSpot, Vect, Main.rand.NextBool() ? Color.Coral : Color.OrangeRed, Color.Orange, 0.8f, 15, 2f, 1.9f);
                 GeneralParticleHandler.SpawnParticle(spark);
             }
 
-            if (Main.rand.NextBool(hasDebuffResistance ? 4 : 2))
+            if (Main.rand.NextBool(2))
             {
                 Vector2 dustCorner = Player.position - 2f * Vector2.One;
                 Vector2 dustVel = Player.velocity + new Vector2(0f, Main.rand.NextFloat(-5f, -1f));
-                int d = Dust.NewDust(dustCorner, Player.width + 4, Player.height + 4, 87, dustVel.X, dustVel.Y);
-                Main.dust[d].noGravity = true;
-                Main.dust[d].scale = hasDebuffResistance ? Main.rand.NextFloat(0.3f, 0.5f) : Main.rand.NextFloat(0.7f, 1.2f);
-                Main.dust[d].alpha = 235;
+                Dust fire = Dust.NewDustDirect(dustCorner, Player.width + 4, Player.height + 4, DustID.GemTopaz, dustVel.X, dustVel.Y);
+                fire.noGravity = true;
+                fire.scale = Main.rand.NextFloat(0.7f, 1.2f);
+                fire.alpha = 235;
             }
         }
 
@@ -66,10 +70,10 @@ namespace CalamityMod.Buffs.DamageOverTime
             {
                 Vector2 dustCorner = npc.position - 2f * Vector2.One;
                 Vector2 dustVel = npc.velocity + new Vector2(0f, Main.rand.NextFloat(-5f, -1f));
-                int d = Dust.NewDust(dustCorner, npc.width + 4, npc.height + 4, 87, dustVel.X, dustVel.Y);
-                Main.dust[d].noGravity = true;
-                Main.dust[d].scale = Main.rand.NextFloat(0.7f, 1.2f);
-                Main.dust[d].alpha = 235;
+                Dust fire = Dust.NewDustDirect(dustCorner, npc.width + 4, npc.height + 4, DustID.GemTopaz, dustVel.X, dustVel.Y);
+                fire.noGravity = true;
+                fire.scale = Main.rand.NextFloat(0.7f, 1.2f);
+                fire.alpha = 235;
             }
             Lighting.AddLight(npc.position, 0.25f, 0.25f, 0.1f);
         }

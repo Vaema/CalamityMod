@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 20;
             Item.height = 22;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.accessory = true;
         }
@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<AerialiteBar>(2).
                 AddIngredient(ItemID.SunplateBlock, 2).
                 AddIngredient(ItemID.Feather, 5).
-                AddTile(TileID.SkyMill).
+                AddTile(TileID.Anvils).
                 Register();
         }
     }

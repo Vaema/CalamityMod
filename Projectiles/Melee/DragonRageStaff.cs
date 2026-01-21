@@ -2,6 +2,7 @@
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.NPCs;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -13,6 +14,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
+    [PierceResistException]
     public class DragonRageStaff : ModProjectile
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<DragonRage>();
@@ -59,6 +61,7 @@ namespace CalamityMod.Projectiles.Melee
 
             Projectile.ai[0] += 1f;
             Projectile.rotation += MathHelper.TwoPi * 2f / spinCycleTime * (float)direction;
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             int expectedDirection = (player.SafeDirectionTo(Main.MouseWorld).X > 0f).ToDirectionInt();
             if (Projectile.ai[0] % spinCycleTime > spinCycleTime * 0.5f && expectedDirection != Projectile.velocity.X)
             {
@@ -81,7 +84,7 @@ namespace CalamityMod.Projectiles.Melee
 
             if (Main.rand.NextBool())
             {
-                Dust dust = Dust.NewDustDirect(dustSpawn - new Vector2(5f), 10, 10, 244, player.velocity.X, player.velocity.Y, 150, default, 1f);
+                Dust dust = Dust.NewDustDirect(dustSpawn - new Vector2(5f), 10, 10, DustID.CopperCoin, player.velocity.X, player.velocity.Y, 150, default, 1f);
                 dust.velocity = Projectile.SafeDirectionTo(dust.position) * 0.1f + dust.velocity * 0.1f;
             }
             for (int j = 0; j < 4; j++)
@@ -102,9 +105,9 @@ namespace CalamityMod.Projectiles.Melee
                         dustVelMult = 0.5f;
                         break;
                 }
-                if (Main.rand.Next(6) != 0)
+                if (!Main.rand.NextBool(6))
                 {
-                    Dust dust = Dust.NewDustDirect(Projectile.position, 0, 0, 244, 0f, 0f, 100, default, 1f);
+                    Dust dust = Dust.NewDustDirect(Projectile.position, 0, 0, DustID.CopperCoin, 0f, 0f, 100, default, 1f);
                     dust.position = Projectile.Center + staffTipDirection * (60f + Main.rand.NextFloat() * 20f) * dustVelMult2;
                     dust.velocity = tipDustDirection * (4f + 4f * Main.rand.NextFloat()) * dustVelMult2 * dustVelMult;
                     dust.noGravity = true;
@@ -158,7 +161,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 CalamityPlayer modPlayer = Main.player[Projectile.owner].Calamity();
                 modPlayer.dragonRageHits++;
-                if (modPlayer.dragonRageHits > 10 && modPlayer.dragonRageCooldown <= 0)
+                if (modPlayer.dragonRageHits >= 10 && modPlayer.dragonRageCooldown <= 0)
                 {
                     SpawnFireballs();
                     modPlayer.dragonRageHits = 0;
@@ -191,13 +194,12 @@ namespace CalamityMod.Projectiles.Melee
             Rectangle myRect = Projectile.Hitbox;
             if (Projectile.owner == Main.myPlayer)
             {
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC npc in Main.ActiveNPCs)
                 {
-                    NPC npc = Main.npc[i];
                     bool voodooDolls = Projectile.owner < Main.maxPlayers && (npc.type == NPCID.Guide && player.killGuide || npc.type == NPCID.Clothier && player.killClothier);
                     bool friendlyProjs = Projectile.friendly && (!npc.friendly || voodooDolls);
                     bool hostileProjs = Projectile.hostile && npc.friendly && !npc.dontTakeDamageFromHostiles;
-                    if (npc.active && !npc.dontTakeDamage && (friendlyProjs || hostileProjs) && (Projectile.owner < 0 || npc.immune[Projectile.owner] == 0 || Projectile.maxPenetrate == 1))
+                    if (!npc.dontTakeDamage && (friendlyProjs || hostileProjs) && (Projectile.owner < 0 || npc.immune[Projectile.owner] == 0 || Projectile.maxPenetrate == 1))
                     {
                         if (npc.noTileCollide || !Projectile.ownerHitCheck || (ProjectileLoader.CanHitNPC(Projectile, npc) ?? false))
                         {
@@ -252,7 +254,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 drawPos = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
             Rectangle rectangle = new Rectangle(0, 0, tex.Width, tex.Height);
             Vector2 origin = tex.Size() / 2f;

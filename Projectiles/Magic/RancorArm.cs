@@ -5,10 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.WorldBuilding;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -21,14 +21,13 @@ namespace CalamityMod.Projectiles.Magic
         public ref float Time => ref Projectile.ai[1];
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 6;
+            Main.projFrames[Type] = 6;
         }
 
         public override void SetDefaults()
         {
             Projectile.width = Projectile.height = 4;
             Projectile.friendly = true;
-            Projectile.hostile = true;
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Magic;
@@ -58,11 +57,11 @@ namespace CalamityMod.Projectiles.Magic
             // Decide a frame to use and adjust the hitbox based on it.
             if (Projectile.localAI[0] == 0f)
             {
-                // Play a wraith death sound by default, play a generic flame sound when spawned by gfb Orthoceras
+                // Play a wraith death sound by default, play a generic flame sound when spawned by GFB Orthoceras
                 SoundStyle sound = Time == 0 ? SoundID.NPCDeath52 : SoundID.Item20;
                 SoundEngine.PlaySound(sound, Projectile.Center);
 
-                Projectile.frame = Main.rand.Next(Main.projFrames[Projectile.type]);
+                Projectile.frame = Main.rand.Next(Main.projFrames[Type]);
 
                 Vector2 newSize;
                 switch (Projectile.frame)
@@ -135,21 +134,10 @@ namespace CalamityMod.Projectiles.Magic
             behindNPCsAndTiles.Add(index);
         }
 
-        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
-        {
-            if (Projectile.friendly)
-            {
-                modifiers.SourceDamage *= 0f;
-                if (Main.masterMode) modifiers.SourceDamage.Flat += 450f;
-                else if (Main.expertMode) modifiers.SourceDamage.Flat += 375f;
-                else modifiers.SourceDamage.Flat += 300f;
-            }
-        }
-
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-            Rectangle frame = texture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Color light = Lighting.GetColor((int)Projectile.Center.X / 16, (int)Projectile.Center.Y / 16);

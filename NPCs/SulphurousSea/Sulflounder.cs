@@ -2,6 +2,7 @@
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Potions;
+using CalamityMod.NPCs.NormalNPCs;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -14,8 +15,9 @@ namespace CalamityMod.NPCs.SulphurousSea
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0);
+            Main.npcFrameCount[Type] = 4;
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
             value.Position.Y -= 10f;
             value.PortraitPositionYOverride = -36f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
@@ -24,14 +26,14 @@ namespace CalamityMod.NPCs.SulphurousSea
         public override void SetDefaults()
         {
             NPC.chaseable = false;
-            NPC.damage = 10;
+            NPC.damage = 0; // 0 contact damage, projectile damage is handled in the general swimming AI
             NPC.width = 42;
             NPC.height = 32;
             NPC.defense = 15;
-            NPC.lifeMax = 40;
+            NPC.lifeMax = 60;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 0, 80);
+            NPC.value = Item.buyPrice(copper: 80);
             NPC.HitSound = SoundID.NPCHit50;
             NPC.DeathSound = SoundID.NPCDeath53;
             NPC.knockBackResist = 0.35f;
@@ -47,9 +49,9 @@ namespace CalamityMod.NPCs.SulphurousSea
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Sulflounder")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Sulflounder")
             });
         }
 
@@ -94,7 +96,7 @@ namespace CalamityMod.NPCs.SulphurousSea
             if (NPC.ai[2] == 1f)
             {
                 NPC.chaseable = true;
-                CalamityAI.PassiveSwimmingAI(NPC, Mod, 0, 0f, 0.1f, 0.1f, 2f, 1f, 0.1f);
+                CalamityRegularEnemyAI.PassiveSwimmingAI(NPC, Mod, 0, 0f, 0.1f, 0.1f, 2f, 1f, 0.1f);
             }
         }
 
@@ -127,7 +129,7 @@ namespace CalamityMod.NPCs.SulphurousSea
             else
             {
                 NPC.frameCounter += 0.15f;
-                NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+                NPC.frameCounter %= Main.npcFrameCount[Type];
                 int frame = (int)NPC.frameCounter;
                 NPC.frame.Y = frame * frameHeight;
             }
@@ -160,7 +162,7 @@ namespace CalamityMod.NPCs.SulphurousSea
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Sulflounder").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Sulflounder2").Type, 1f);

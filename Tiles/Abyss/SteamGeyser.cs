@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
 using CalamityMod.Projectiles.Environment;
 using Microsoft.Xna.Framework;
@@ -22,7 +23,7 @@ namespace CalamityMod.Tiles.Abyss
             TileObjectData.newTile.DrawYOffset = 2;
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(103, 65, 64), CalamityUtils.GetText($"{LocalizationCategory}.SteamGeyser.MapEntry"));
-            DustType = (int)CalamityDusts.SulfurousSeaAcid;
+            DustType = (int)CalamityDusts.SulphurousSeaAcid;
 
             base.SetStaticDefaults();
         }
@@ -51,16 +52,21 @@ namespace CalamityMod.Tiles.Abyss
         {
             Tile t = CalamityUtils.ParanoidTileRetrieval(i, j);
             Vector2 spawnPosition = new(i * 16f + 24f, j * 16f - 4f);
-            
-            if (!Main.gamePaused && t.TileFrameX % 36 == 0 && t.TileFrameY % 36 == 0 && Collision.CanHitLine(spawnPosition, 1, 1, spawnPosition - Vector2.UnitY * 100f, 1, 1))
+
+            if (!Main.gamePaused && !CalamityPlayer.areThereAnyDamnBosses && t.TileFrameX % 36 == 0 && t.TileFrameY % 36 == 0 && Collision.CanHitLine(spawnPosition, 1, 1, spawnPosition - Vector2.UnitY * 100f, 1, 1))
             {
+                if (steamTimer <= 180)
+                    return;
+
+                if (!Main.rand.NextBool(3))
+                    return;
+
                 float positionInterpolant = (i + j) * 0.041f % 1f;
                 Vector2 smokeVelocity = -Vector2.UnitY.RotatedByRandom(0.11f) * MathHelper.Lerp(4.8f, 8.1f, positionInterpolant);
                 smokeVelocity.X += (float)Math.Cos(MathHelper.TwoPi * positionInterpolant) * 1.1f;
                 smokeVelocity.Y -= Main.rand.Next(3, 6);
 
-                if (steamTimer >= 180 && Main.rand.NextBool(3))
-                    Projectile.NewProjectile(new EntitySource_WorldEvent(), spawnPosition, smokeVelocity, ModContent.ProjectileType<HotSteam>(), Main.expertMode ? 15 : 23, 0f);
+                Projectile.NewProjectile(new EntitySource_WorldEvent(), spawnPosition, smokeVelocity, ModContent.ProjectileType<HotSteam>(), Main.expertMode ? 15 : 23, 0f);
             }
         }
     }

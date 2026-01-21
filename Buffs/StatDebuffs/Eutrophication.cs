@@ -1,4 +1,5 @@
 ﻿using CalamityMod.NPCs;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -24,12 +25,9 @@ namespace CalamityMod.Buffs.StatDebuffs
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            if (npc.Calamity().eutrophication < npc.buffTime[buffIndex])
-                npc.Calamity().eutrophication = npc.buffTime[buffIndex];
-            if ((CalamityLists.enemyImmunityList.Contains(npc.type) || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
-                npc.Calamity().debuffResistanceTimer = CalamityGlobalNPC.slowingDebuffResistanceMin + npc.Calamity().eutrophication;
-            npc.DelBuff(buffIndex);
-            buffIndex--;
+            npc.Calamity().eutrophication = true;
+            if ((CalamityNPCSets.ResistSlowingDebuffsAndOtherSpecialEffects[npc.type] || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
+                npc.Calamity().debuffResistanceTimer = CalamityGlobalNPC.slowingDebuffResistanceMin + npc.buffTime[buffIndex];
         }
 
         internal static void DrawEffects(PlayerDrawSet drawInfo)

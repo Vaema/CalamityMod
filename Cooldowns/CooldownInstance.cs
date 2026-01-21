@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
+using CalamityMod.UI;
 using Terraria;
 using Terraria.ModLoader.IO;
-using CalamityMod.UI;
 
 namespace CalamityMod.Cooldowns
 {
@@ -40,7 +40,7 @@ namespace CalamityMod.Cooldowns
             // It is possible this cooldown does not exist. If this occurs, log it, even though it will be (mostly) harmless.
             if (cd is null)
             {
-                CalamityMod.Instance.Logger.Warn($"Cooldown \"{id}\" loaded from NBT, but was not found. This cooldown will not be applied to the player.");
+                CalamityMod.Log.Warn($"Cooldown \"{id}\" loaded from NBT, but was not found. This cooldown will not be applied to the player.");
                 return;
             }
 
@@ -51,13 +51,24 @@ namespace CalamityMod.Cooldowns
             if (netID != registeredNetID)
             {
                 // Log when this occurs, even though it should be harmless.
-                CalamityMod.Instance.Logger.Warn($"Cooldown \"{id}\" loaded from NBT with discrepant netID {netID}. This cooldown was registered with netID {registeredNetID}");
+                CalamityMod.Log.Warn($"Cooldown \"{id}\" loaded from NBT with discrepant netID {netID}. This cooldown was registered with netID {registeredNetID}");
                 netID = registeredNetID;
             }
             player = p;
             duration = tag.GetAsInt(DurationSaveKey);
             timeLeft = tag.GetAsInt(TimeLeftSaveKey);
             AssignHandler(cd);
+        }
+
+        internal CooldownInstance(Player player, ushort netID, int duration, int timeLeft)
+        {
+            this.netID = netID;
+            this.player = player;
+            this.duration = duration;
+            this.timeLeft = timeLeft;
+
+            string id = CooldownRegistry.registry[netID].ID;
+            AssignHandler(CooldownRegistry.Get(id));
         }
 
         /// <summary>

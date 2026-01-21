@@ -1,16 +1,13 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Terraria.Audio;
+﻿using System;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Sounds;
-using System.CodeDom;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -48,8 +45,8 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -211,7 +208,7 @@ namespace CalamityMod.Projectiles.Rogue
                 {
                     if (Main.myPlayer == Projectile.owner)
                         //TODO: Change explosion color somehow
-                       Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<PlasmaGrenadeSmallExplosion>(), Projectile.damage * 3/4, Projectile.knockBack * 2f, Projectile.owner);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<PlasmaGrenadeSmallExplosion>(), Projectile.damage * 3 / 4, Projectile.knockBack * 2f, Projectile.owner);
 
                     {
                         for (int i = 0; i < 220; i++)
@@ -241,25 +238,25 @@ namespace CalamityMod.Projectiles.Rogue
                 float targettingDistance = MaxTargetSearchDistance * 2f;
 
 
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (var n in Main.ActiveNPCs)
                 {
-                    if (i == target.whoAmI)
+                    if (n.whoAmI == target.whoAmI)
                         continue;
 
-                    if (Main.npc[i].CanBeChasedBy(Projectile))
+                    if (n.CanBeChasedBy(Projectile))
                     {
-                        float potentialNewDistance = (Projectile.Center - Main.npc[i].Center).Length();
+                        float potentialNewDistance = (Projectile.Center - n.Center).Length();
                         if (potentialNewDistance < targettingDistance && potentialNewDistance < closestNPCDistance)
                         {
                             closestNPCDistance = potentialNewDistance;
-                            newTarget = Main.npc[i];
+                            newTarget = n;
                             nextTarget = newTarget;
                             if (Projectile.timeLeft < 300)
                                 Projectile.timeLeft = 300;
                         }
                     }
                 }
-                                
+
                 if (newTarget == null)
                 {
                     float potentialNewDistance = (Projectile.Center - Main.npc[target.whoAmI].Center).Length();
@@ -289,14 +286,14 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, ProjectileID.Sets.TrailCacheLength[Projectile.type]);
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, ProjectileID.Sets.TrailCacheLength[Type]);
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D glowmaskTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/DynamicPursuerProjectileGlowmask").Value;
             Rectangle glowmaskRectangle = glowmaskTexture.Frame(1, 9, 0, glowmaskFrame);
-            Vector2 origin = glowmaskRectangle.Size()/2f;
+            Vector2 origin = glowmaskRectangle.Size() / 2f;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             SpriteEffects direction = SpriteEffects.None;
-            
+
             Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, origin, Projectile.scale, direction, 0);
             Main.EntitySpriteDraw(glowmaskTexture, drawPosition, glowmaskRectangle, Color.White, Projectile.rotation, origin, Projectile.scale, direction, 0);
 

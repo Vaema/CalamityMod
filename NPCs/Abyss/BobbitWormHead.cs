@@ -1,11 +1,11 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Tools;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -13,12 +13,13 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Abyss
 {
+    [LongDistanceNetSync]
     public class BobbitWormHead : ModNPC
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            Main.npcFrameCount[Type] = 4;
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 //Preferably would have its head animated, but this will do for now
                 CustomTexturePath = "CalamityMod/ExtraTextures/Bestiary/BobbitWorm_Bestiary"
@@ -30,18 +31,16 @@ namespace CalamityMod.NPCs.Abyss
         public override void SetDefaults()
         {
             NPC.lavaImmune = true;
-            NPC.Calamity().canBreakPlayerDefense = true;
             NPC.aiStyle = -1;
             NPC.damage = 150;
             NPC.width = 80;
             NPC.height = 40;
             NPC.defense = 50;
-            NPC.DR_NERD(0.25f);
             NPC.lifeMax = 6000;
             NPC.knockBackResist = 0f;
             AIType = -1;
             NPC.noGravity = true;
-            NPC.value = Item.buyPrice(0, 0, 50, 0);
+            NPC.value = Item.buyPrice(silver: 50);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             Banner = NPC.type;
@@ -55,9 +54,9 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.BobbitWorm")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.BobbitWorm")
             });
         }
 
@@ -210,7 +209,7 @@ namespace CalamityMod.NPCs.Abyss
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter += 0.1f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
@@ -251,13 +250,13 @@ namespace CalamityMod.NPCs.Abyss
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<CrushDepth>(), 300, true);
+                target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 300, true);
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            var postClone = npcLoot.DefineConditionalDropSet(DropHelper.PostCal());
-            postClone.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 5, 7, 7, 10));
+            var postLevi = npcLoot.DefineConditionalDropSet(DropHelper.PostLevi());
+            postLevi.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 5, 7, 7, 10));
             npcLoot.AddIf(DropHelper.PostPolter(), ModContent.ItemType<BobbitHook>(), 3);
         }
 
@@ -273,7 +272,7 @@ namespace CalamityMod.NPCs.Abyss
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("BobbitWorm").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("BobbitWorm2").Type, 1f);

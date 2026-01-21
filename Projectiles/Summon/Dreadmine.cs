@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Summon
 {
     public class Dreadmine : ModProjectile, ILocalizedModType
@@ -11,7 +11,8 @@ namespace CalamityMod.Projectiles.Summon
         public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.SentryShot[Projectile.type] = true;
+            ProjectileID.Sets.SentryShot[Type] = true;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         }
 
         public override void SetDefaults()
@@ -140,17 +141,17 @@ namespace CalamityMod.Projectiles.Summon
             }
             if (!canAttack)
             {
-                for (int i = 0; i < Main.npc.Length; i++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    if (Main.npc[i].CanBeChasedBy(Projectile, false))
+                    if (n.CanBeChasedBy(Projectile, false))
                     {
-                        float npcX = Main.npc[i].position.X + (float)(Main.npc[i].width / 2);
-                        float npcY = Main.npc[i].position.Y + (float)(Main.npc[i].height / 2);
+                        float npcX = n.position.X + (float)(n.width / 2);
+                        float npcY = n.position.Y + (float)(n.height / 2);
                         float npcDist = Math.Abs(Projectile.position.X + (float)(Projectile.width / 2) - npcX) + Math.Abs(Projectile.position.Y + (float)(Projectile.height / 2) - npcY);
                         if (npcDist < attackDistance)
                         {
                             attackDistance = npcDist;
-                            center12 = Main.npc[i].Center;
+                            center12 = n.Center;
                             canAttack = true;
                         }
                     }
@@ -184,7 +185,7 @@ namespace CalamityMod.Projectiles.Summon
             SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
             for (int j = 0; j < 20; j++)
             {
-                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 31, 0f, 0f, 100, default, 2f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Smoke, 0f, 0f, 100, default, 2f);
                 Main.dust[dust].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -194,14 +195,14 @@ namespace CalamityMod.Projectiles.Summon
             }
             for (int k = 0; k < 30; k++)
             {
-                int dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 6, 0f, 0f, 100, default, 3f);
+                int dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 3f);
                 Main.dust[dust2].noGravity = true;
                 Main.dust[dust2].velocity *= 5f;
-                dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 6, 0f, 0f, 100, default, 2f);
+                dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 2f);
                 Main.dust[dust2].velocity *= 2f;
             }
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 Vector2 goreSource = Projectile.Center;
                 int goreAmt = 3;

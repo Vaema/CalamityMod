@@ -1,36 +1,29 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.Weapons.Rogue
 {
     public class SludgeSplotch : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 32;
             Item.height = 30;
-            Item.damage = 48;
+            Item.damage = 30;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.consumable = true;
             Item.useAnimation = 18;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTime = 18;
             Item.knockBack = 1f;
             Item.autoReuse = true;
-            Item.maxStack = 9999;
-            Item.value = Item.sellPrice(0, 0, 0, 40);
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.shoot = ModContent.ProjectileType<SludgeSplotchProj1>();
             Item.shootSpeed = 10f;
@@ -56,9 +49,9 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void AddRecipes()
         {
-            CreateRecipe(100).
-                AddIngredient<BlightedGel>(15).
-                AddRecipeGroup("Boss2Material").
+            CreateRecipe().
+                AddIngredient<BlightedGel>(50).
+                AddRecipeGroup("Boss2Material", 8).
                 Register();
         }
     }

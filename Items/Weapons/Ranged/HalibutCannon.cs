@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using CalamityMod.Rarities;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -26,13 +24,12 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.rare = ModContent.RarityType<HotPink>();
             Item.noMelee = true;
             Item.knockBack = 1f;
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.UseSound = null;
             Item.autoReuse = true;
             Item.shoot = ProjectileID.Bullet;
             Item.shootSpeed = 12f;
             Item.useAmmo = AmmoID.Bullet;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-15, 0);
@@ -42,7 +39,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             SoundEngine.PlaySound(SoundID.Item38, player.Center);
-            
+
             // Really jammed in GFB
             if (Main.zenithWorld)
                 return Main.rand.NextBool(5);

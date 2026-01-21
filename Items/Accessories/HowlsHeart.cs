@@ -5,12 +5,10 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.GameContent;
-
 using static Terraria.ModLoader.ModContent;
-using CalamityMod.Items.Potions.Alcohol;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -31,12 +29,10 @@ namespace CalamityMod.Items.Accessories
             Item.height = 26;
             Item.accessory = true;
 
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
-            Item.rare = ItemRarityID.Red;
+            Item.value = Item.buyPrice(gold: 20); // Sold by Wizard
+            Item.rare = ItemRarityID.LightRed;
             Item.Calamity().donorItem = true;
         }
-
-        public override bool CanEquipAccessory(Player player, int slot, bool modded) => !player.Calamity().howlsHeart;
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
@@ -51,12 +47,10 @@ namespace CalamityMod.Items.Accessories
                 }
                 if (player.ownedProjectileCounts[ProjectileType<HowlsHeartHowl>()] < 1)
                 {
-                    // 08DEC2023: Ozzatron: Howls spawned with Old Fashioned active will retain their bonus damage indefinitely. Oops. Don't care.
-                    int baseDamage = player.ApplyArmorAccDamageBonusesTo(HowlDamage);
-                    int damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(baseDamage);
+                    int damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(HowlDamage);
 
                     Projectile howl = Projectile.NewProjectileDirect(source, player.Center, -Vector2.UnitY, ProjectileType<HowlsHeartHowl>(), damage, 1f, player.whoAmI, 0f, 1f);
-                    howl.originalDamage = damage;
+                    howl.originalDamage = HowlDamage;
                 }
                 if (player.ownedProjectileCounts[ProjectileType<HowlsHeartCalcifer>()] < 1)
                 {
@@ -81,8 +75,7 @@ namespace CalamityMod.Items.Accessories
                 if (player.ownedProjectileCounts[ProjectileType<HowlsHeartHowl>()] < 1)
                 {
                     // 08DEC2023: Ozzatron: Howls spawned with... Hold on a second. Why the fuck are we doing damage calculations when the accessory is in vanity?!
-                    int baseDamage = player.ApplyArmorAccDamageBonusesTo(HowlDamage);
-                    int damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(baseDamage);
+                    int damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(HowlDamage);
 
                     int p = Projectile.NewProjectile(source, player.Center, -Vector2.UnitY, ProjectileType<HowlsHeartHowl>(), damage, 1f, player.whoAmI, 0f, 1f);
                     if (Main.projectile.IndexInRange(p))

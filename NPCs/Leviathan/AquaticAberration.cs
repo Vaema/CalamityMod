@@ -1,21 +1,31 @@
-﻿using CalamityMod.Events;
-using CalamityMod.Items.Placeables.Banners;
+﻿using System;
+using CalamityMod.Events;
+using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.Utilities;
 
 namespace CalamityMod.NPCs.Leviathan
 {
     public class AquaticAberration : ModNPC
     {
+        public bool WaitingForLeviathan
+        {
+            get
+            {
+                if (Main.npc.IndexInRange(CalamityGlobalNPC.leviathan) && Main.npc[CalamityGlobalNPC.leviathan].life / (float)Main.npc[CalamityGlobalNPC.leviathan].lifeMax >= ((CalamityWorld.death || BossRushEvent.BossRushActive) ? 0.7f : 0.4f))
+                    return true;
+
+                return CalamityUtils.FindFirstProjectile(ModContent.ProjectileType<LeviathanSpawner>()) != -1;
+            }
+        }
+
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 7;
+            Main.npcFrameCount[Type] = 7;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
             value.Position.X += 25;
@@ -24,23 +34,15 @@ namespace CalamityMod.NPCs.Leviathan
 
         public override void SetDefaults()
         {
-            NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 50; // 100
             NPC.aiStyle = -1;
-            NPC.GetNPCDamage();
             NPC.width = 50;
             NPC.height = 50;
             NPC.defense = 14;
-            NPC.lifeMax = 600;
-            if (BossRushEvent.BossRushActive)
-            {
-                NPC.lifeMax = 10000;
-            }
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
-            NPC.knockBackResist = 0f;
+            NPC.lifeMax = BossRushEvent.BossRushActive ? 10000 : 600;
+            NPC.knockBackResist = 0.2f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.canGhostHeal = false;
             AIType = -1;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
@@ -58,7 +60,7 @@ namespace CalamityMod.NPCs.Leviathan
             int associatedNPCType = ModContent.NPCType<Leviathan>();
             bestiaryEntry.UIInfoProvider = new CommonEnemyUICollectionInfoProvider(ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[associatedNPCType], quickUnlock: true);
 
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Ocean,
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.AquaticAberration")
@@ -68,7 +70,7 @@ namespace CalamityMod.NPCs.Leviathan
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter += 0.15f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
@@ -84,10 +86,12 @@ namespace CalamityMod.NPCs.Leviathan
                 return;
             }
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            // Avoid cheap bullshit
+            NPC.damage = 0;
+
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             NPC.TargetClosest(false);
 
@@ -110,22 +114,19 @@ namespace CalamityMod.NPCs.Leviathan
             if (CalamityGlobalNPC.siren != -1)
                 sirenAlive = Main.npc[CalamityGlobalNPC.siren].active;
 
-            if (CalamityGlobalNPC.siren != -1)
+            if (sirenAlive)
             {
-                if (Main.npc[CalamityGlobalNPC.siren].active)
-                {
-                    if (Main.npc[CalamityGlobalNPC.siren].damage == 0)
-                        sirenAlive = false;
-                }
+                if (WaitingForLeviathan)
+                    sirenAlive = false;
             }
 
-            float inertia = bossRush ? 24f : death ? 26f : revenge ? 27f : expertMode ? 28f : 30f;
+            float inertia = death ? 26f : revenge ? 27f : expertMode ? 28f : 30f;
             if (!sirenAlive || leviathanInPhase4)
                 inertia *= 0.75f;
 
             if (NPC.ai[0] == 0f)
             {
-                float lungeSpeed = bossRush ? 14f : death ? 12f : revenge ? 11f : expertMode ? 10f : 8f;
+                float lungeSpeed = death ? 12f : revenge ? 11f : expertMode ? 10f : 8f;
                 if (!sirenAlive || leviathanInPhase4)
                     lungeSpeed *= 1.25f;
 
@@ -197,6 +198,9 @@ namespace CalamityMod.NPCs.Leviathan
                 }
                 else
                 {
+                    // Set damage
+                    NPC.damage = NPC.defDamage;
+
                     Vector2 npcCenterAgain = NPC.Center;
                     Vector2 targetCenterAgain = Main.player[NPC.target].Center;
                     Vector2 vec2 = targetCenterAgain - npcCenterAgain;
@@ -223,24 +227,21 @@ namespace CalamityMod.NPCs.Leviathan
             if (death)
             {
                 float pushVelocity = 0.5f;
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    if (Main.npc[i].active)
+                    if (n.whoAmI != NPC.whoAmI && n.type == NPC.type)
                     {
-                        if (i != NPC.whoAmI && Main.npc[i].type == NPC.type)
+                        if (Vector2.Distance(NPC.Center, n.Center) < 80f * NPC.scale)
                         {
-                            if (Vector2.Distance(NPC.Center, Main.npc[i].Center) < 80f * NPC.scale)
-                            {
-                                if (NPC.position.X < Main.npc[i].position.X)
-                                    NPC.velocity.X -= pushVelocity;
-                                else
-                                    NPC.velocity.X += pushVelocity;
+                            if (NPC.position.X < n.position.X)
+                                NPC.velocity.X -= pushVelocity;
+                            else
+                                NPC.velocity.X += pushVelocity;
 
-                                if (NPC.position.Y < Main.npc[i].position.Y)
-                                    NPC.velocity.Y -= pushVelocity;
-                                else
-                                    NPC.velocity.Y += pushVelocity;
-                            }
+                            if (NPC.position.Y < n.position.Y)
+                                NPC.velocity.Y -= pushVelocity;
+                            else
+                                NPC.velocity.Y += pushVelocity;
                         }
                     }
                 }
@@ -268,12 +269,6 @@ namespace CalamityMod.NPCs.Leviathan
                     }
                 }
             }
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Bleeding, 240, true);
         }
 
         public override void HitEffect(NPC.HitInfo hit)

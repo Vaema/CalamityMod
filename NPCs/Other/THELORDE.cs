@@ -1,18 +1,19 @@
 ﻿using System;
+using System.IO;
+using CalamityMod.Balancing;
+using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Items.Pets;
+using CalamityMod.Items.Potions.Food;
+using CalamityMod.Projectiles.Boss;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System.IO;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Items.Potions;
-using CalamityMod.Items.Pets;
-using CalamityMod.Projectiles.Boss;
-using CalamityMod.World;
-using CalamityMod.Balancing;
 
 namespace CalamityMod.NPCs.Other
 {
@@ -37,13 +38,19 @@ namespace CalamityMod.NPCs.Other
 
         public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/Lordeath");
 
+        public static Asset<Texture2D> DeathAnimationTexture;
+
         public override void SetStaticDefaults()
         {
             NPCID.Sets.MPAllowedEnemies[Type] = true;
             NPCID.Sets.ImmuneToRegularBuffs[Type] = true;
             NPCID.Sets.ShouldBeCountedAsBoss[Type] = true;
             this.HideFromBestiary();
-            Main.npcFrameCount[NPC.type] = 7;
+            Main.npcFrameCount[Type] = 7;
+            if (!Main.dedServ)
+            {
+                DeathAnimationTexture = ModContent.Request<Texture2D>(Texture + "DEATH", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -55,7 +62,7 @@ namespace CalamityMod.NPCs.Other
             NPC.defense = 100;
             NPC.lifeMax = 2500000;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(100, 0, 0, 0);
+            NPC.value = Item.buyPrice(platinum: 100);
             NPC.HitSound = SoundID.NPCHit13;
             NPC.DeathSound = null;
             NPC.boss = true;
@@ -122,6 +129,8 @@ namespace CalamityMod.NPCs.Other
             aiSwitchCounter++;
             if (ajitPaiDidNothingWrong && invincibleCounter < 6000)
             {
+                // On a technical level, the defense/DR stat is not being increased, but for player purposes he may as well be
+                NPC.Calamity().CurrentlyIncreasingDefenseOrDR = true;
                 invincibleCounter++;
             }
             NPC.alpha -= 100;
@@ -147,6 +156,7 @@ namespace CalamityMod.NPCs.Other
             // Trigger the death animation
             else if (NPC.life <= 1 && invincibleCounter >= 6000)
             {
+                NPC.Calamity().CurrentlyIncreasingDefenseOrDR = false;
                 NPC.life = 1;
                 if (!Dying)
                 {
@@ -161,14 +171,14 @@ namespace CalamityMod.NPCs.Other
             {
                 // old was zombie 1 - zombie 62
                 // ideally would be collaborative inferal screeches of various devs
-                SoundEngine.PlaySound(Polterghast.Polterghast.creepySounds[Main.rand.Next(1, Polterghast.Polterghast.creepySounds.Count)] with { PitchVariance = 2}, NPC.position);
+                SoundEngine.PlaySound(Polterghast.Polterghast.creepySounds[Main.rand.Next(1, Polterghast.Polterghast.creepySounds.Count)] with { PitchVariance = 2 }, NPC.Center);
             }
             Player playerLOL = Main.player[NPC.target];
             playerLOL.velocity.X *= 0.99f;
             playerLOL.velocity.Y *= 0.99f;
             if (!DownedBossSystem.downedCalamitas && !DownedBossSystem.downedExoMechs)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     if (!playerLOL.dead && playerLOL.active)
                     {
@@ -312,9 +322,8 @@ namespace CalamityMod.NPCs.Other
                 NPC.ai[3] = 0f;
                 NPC.aiStyle = (urAMemeNow ? -1 : aiChoice);
                 NPC.netUpdate = true;
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile proj in Main.ActiveProjectiles)
                 {
-                    Projectile proj = Main.projectile[i];
                     if (proj.type == ModContent.ProjectileType<AresDeathBeamStart>() || proj.type == ModContent.ProjectileType<AresDeathBeamTelegraph>())
                     {
                         proj.Kill();
@@ -412,7 +421,7 @@ namespace CalamityMod.NPCs.Other
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = TextureAssets.Npc[Type].Value;
             Rectangle frameUsed = texture.Frame(2, 7, 0, 1); // the idle frame by default
             Rectangle squintFrame = texture.Frame(2, 7, 0, 0);
 
@@ -425,7 +434,7 @@ namespace CalamityMod.NPCs.Other
             if (Dying)
             {
                 // death animation
-                texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Other/THELORDEDEATH").Value;
+                texture = DeathAnimationTexture.Value;
                 int xFrame = 0;
                 int yFrame = frameToUse;
                 if (frameToUse > 13)
@@ -491,7 +500,7 @@ namespace CalamityMod.NPCs.Other
             {
                 string key = "Mods.CalamityMod.Status.Boss.EdgyBossText8";
                 Color messageColor = Color.Cyan;
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
 
                 // The hit which triggers antibutcher has its damage capped at 1, then THE LORDE heals for 1 so that it doesn't take any net damage.
                 modifiers.SetMaxDamage(1);
@@ -511,7 +520,7 @@ namespace CalamityMod.NPCs.Other
             {
                 string key = "Mods.CalamityMod.Status.Boss.EdgyBossText8";
                 Color messageColor = Color.Cyan;
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
 
                 // The hit which triggers antibutcher has its damage capped at 1, then THE LORDE heals for 1 so that it doesn't take any net damage.
                 modifiers.SetMaxDamage(1);
@@ -574,8 +583,7 @@ namespace CalamityMod.NPCs.Other
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             double pisquaredover6 = Math.Pow(MathHelper.Pi, 2) / 6;
-            npcLoot.AddIf(()=> CalamityWorld.LegendaryMode && CalamityWorld.revenge, ModContent.ItemType<SuspiciousLookingNOU>()); // guaranteed in legendarev mode
-            npcLoot.AddIf(() => !(CalamityWorld.LegendaryMode && CalamityWorld.revenge), ModContent.ItemType<SuspiciousLookingNOU>(), 27); // otherwise 1 in 27
+            npcLoot.Add(ModContent.ItemType<SuspiciousLookingNOU>());
             npcLoot.Add(ModContent.ItemType<DeliciousMeat>(), 1, 22, (int)(pisquaredover6 * 100));
         }
     }

@@ -1,18 +1,16 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
 
 namespace CalamityMod.Projectiles.Turret
 {
     public class PlagueShot : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Misc";
-        public override string Texture => "CalamityMod/Projectiles/Ranged/GoliathRocket";
         public override void SetDefaults()
         {
             Projectile.width = 14;
@@ -47,7 +45,7 @@ namespace CalamityMod.Projectiles.Turret
             Projectile.localAI[0]++;
             if (Projectile.friendly)
                 CalamityUtils.HomeInOnNPC(Projectile, false, 180f, 12f, 0f);
-            Projectile.velocity = ((Projectile.oldVelocity*7f) + Projectile.velocity) / 8; //inertia
+            Projectile.velocity = ((Projectile.oldVelocity * 7f) + Projectile.velocity) / 8; //inertia
             DrawParticles();
         }
 
@@ -87,7 +85,8 @@ namespace CalamityMod.Projectiles.Turret
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(TeslaCannon.FireSound with { Volume = 0.18f }, Projectile.Center);
+            SoundStyle fire = new("CalamityMod/Sounds/Custom/PlagueSounds/PlagueBoom", 4);
+            SoundEngine.PlaySound(fire with { Volume = 0.5f, Pitch = -0.3f }, Projectile.Center);
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity * 0.4f, ModContent.ProjectileType<PlagueExplosionGas>(), (int)(Projectile.damage * 0.25f), Projectile.knockBack * 0.16f, Main.myPlayer);

@@ -1,13 +1,13 @@
-﻿using CalamityMod.NPCs.AstrumDeus;
+﻿using System;
+using CalamityMod.NPCs.AstrumDeus;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -42,18 +42,11 @@ namespace CalamityMod.Projectiles.Boss
             Time++;
             if (Time == TotalRitualTime - PulseTime)
             {
-                int idx = NPC.NewNPC(Projectile.GetSource_FromThis(), (int)Projectile.Center.X, (int)Projectile.Center.Y - (int)MaxUpwardRise, ModContent.NPCType<AstrumDeusHead>(), 1);
-                if (idx != -1)
+                if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    SoundEngine.PlaySound(AstrumDeusHead.SpawnSound, Projectile.Center);
-                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                    {
+                    int idx = NPC.NewNPC(Projectile.GetSource_FromThis(), (int)Projectile.Center.X, (int)Projectile.Center.Y - (int)MaxUpwardRise, ModContent.NPCType<AstrumDeusHead>(), 1);
+                    if (idx != -1)
                         CalamityUtils.BossAwakenMessage(idx);
-                    }
-                    else
-                    {
-                        NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, idx);
-                    }
                 }
             }
         }
@@ -95,14 +88,14 @@ namespace CalamityMod.Projectiles.Boss
             {
                 for (int i = 0; i < 20; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Vector2.UnitY * offset.Y, 261);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Vector2.UnitY * offset.Y, DustID.AncientLight);
                     dust.color = Utils.SelectRandom(Main.rand, Color.Cyan, Color.OrangeRed);
                     dust.scale = 1.15f;
                     dust.velocity = Main.rand.NextVector2CircularEdge(3f, 3f) * Main.rand.NextFloat(0.7f, 1.4f);
                     dust.noGravity = true;
 
                     float angle = MathHelper.TwoPi * i / 20f;
-                    dust = Dust.NewDustPerfect(Projectile.Center + Vector2.UnitY * offset.Y, 261);
+                    dust = Dust.NewDustPerfect(Projectile.Center + Vector2.UnitY * offset.Y, DustID.AncientLight);
                     dust.color = Utils.SelectRandom(Main.rand, Color.Cyan, Color.OrangeRed);
                     dust.scale = 1.15f;
                     dust.velocity = angle.ToRotationVector2() * 7f;
@@ -118,7 +111,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public void DrawStars(SpriteBatch spriteBatch, Vector2 offset)
         {
-            Texture2D starTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D starTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             for (int i = 0; i < 6; i++)
             {
                 float angle = MathHelper.TwoPi * i / 6f + Time / 15f;
@@ -164,13 +157,13 @@ namespace CalamityMod.Projectiles.Boss
             // Generate dust at the star position. This gives them a trail effect.
             if (!Main.dedServ)
             {
-                Dust dust2 = Dust.NewDustPerfect(Projectile.Center + offset, 261);
+                Dust dust2 = Dust.NewDustPerfect(Projectile.Center + offset, DustID.AncientLight);
                 dust2.color = Color.Cyan;
                 dust2.scale = 1.15f;
                 dust2.velocity = Vector2.Zero;
                 dust2.noGravity = true;
 
-                dust2 = Dust.NewDustPerfect(Projectile.Center + offset * new Vector2(-1f, 1f), 261);
+                dust2 = Dust.NewDustPerfect(Projectile.Center + offset * new Vector2(-1f, 1f), DustID.AncientLight);
                 dust2.color = Color.OrangeRed;
                 dust2.scale = 1.15f;
                 dust2.velocity = Vector2.Zero;

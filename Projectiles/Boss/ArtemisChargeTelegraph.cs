@@ -1,5 +1,6 @@
-﻿using Microsoft.Xna.Framework;
-using System.IO;
+﻿using System.IO;
+using CalamityMod.Graphics.Primitives;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
@@ -15,12 +16,11 @@ namespace CalamityMod.Projectiles.Boss
         public NPC ThingToAttachTo => Main.npc.IndexInRange((int)Projectile.ai[1]) ? Main.npc[(int)Projectile.ai[1]] : null;
 
         public Vector2 OldVelocity;
-        public PrimitiveTrail TelegraphDrawer = null;
         public const float TelegraphWidth = 2000f;
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
         }
 
         public override void SetDefaults()
@@ -73,14 +73,14 @@ namespace CalamityMod.Projectiles.Boss
             return new Color(255, 255, 255, Projectile.alpha);
         }
 
-        public Color TelegraphPrimitiveColor(float completionRatio)
+        public Color TelegraphPrimitiveColor(float completionRatio, Vector2 vertexPos)
         {
             float colorInterpolant = (completionRatio * 1.2f + Main.GlobalTimeWrappedHourly * 0.26f) % 1f;
             float opacity = MathHelper.Lerp(0.2f, 0.425f, Projectile.Opacity) * Utils.GetLerpValue(30f, 24f, Projectile.timeLeft, true);
             return CalamityUtils.MulticolorLerp(colorInterpolant, Color.Orange, Color.Red, Color.Crimson, Color.Red) * opacity;
         }
 
-        public float TelegraphPrimitiveWidth(float completionRatio)
+        public float TelegraphPrimitiveWidth(float completionRatio, Vector2 vertexPos)
         {
             // Used to determine the degree to which the ends of the telegraph should smoothen away.
             float endSmoothenFactor = Utils.GetLerpValue(1f, 0.995f, completionRatio, true);
@@ -89,18 +89,14 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (TelegraphDrawer is null)
-                TelegraphDrawer = new PrimitiveTrail(TelegraphPrimitiveWidth, TelegraphPrimitiveColor, specialShader: GameShaders.Misc["CalamityMod:Flame"]);
-
             GameShaders.Misc["CalamityMod:Flame"].UseImage1("Images/Misc/Perlin");
             GameShaders.Misc["CalamityMod:Flame"].UseSaturation(0.28f);
-            Vector2[] drawPositions = new Vector2[]
-            {
-                Projectile.Center,
-                Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.UnitY) * TelegraphWidth
-            };
+            // This is effectively a 2-point trail that is extended as Toasty's new Primitive system appears to no longer support them.
+            Vector2[] drawPositions = new Vector2[5];
+            for (int i = 0; i < drawPositions.Length; i++)
+                drawPositions[i] = Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.UnitY) * TelegraphWidth * i / (drawPositions.Length - 1f);
 
-            TelegraphDrawer.Draw(drawPositions, Projectile.Size * 0.5f - Main.screenPosition, 87);
+            PrimitiveRenderer.RenderTrail(drawPositions, new(TelegraphPrimitiveWidth, TelegraphPrimitiveColor, (_,_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:Flame"]), 87);
             return false;
         }
     }

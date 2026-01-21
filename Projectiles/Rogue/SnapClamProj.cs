@@ -1,18 +1,21 @@
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
+
 namespace CalamityMod.Projectiles.Rogue
 {
+    [PierceResistException]
     public class SnapClamProj : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 2;
+            Main.projFrames[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -82,7 +85,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
             for (int i = 0; i < 20; i++)
             {
-                int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 14, 0f, 0f, 0, new Color(115, 124, 124), 1f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Demonite, 0f, 0f, 0, new Color(115, 124, 124), 1f);
                 Main.dust[dust].noGravity = true;
                 Main.dust[dust].velocity *= 2f;
             }

@@ -1,6 +1,6 @@
-﻿using CalamityMod.Items.Placeables.Banners;
+﻿using System;
 using CalamityMod.Items.Critters;
-using System;
+using CalamityMod.Items.Placeables.Banners;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -12,10 +12,10 @@ namespace CalamityMod.NPCs.NormalNPCs
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 5;
-            Main.npcCatchable[NPC.type] = true;
-            NPCID.Sets.CountsAsCritter[NPC.type] = true;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            Main.npcFrameCount[Type] = 5;
+            Main.npcCatchable[Type] = true;
+            NPCID.Sets.CountsAsCritter[Type] = true;
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 SpriteDirection = 1
             };
@@ -34,7 +34,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.aiStyle = NPCAIStyleID.Passive;
             AIType = NPCID.Squirrel;
             NPC.knockBackResist = 0.99f;
-            NPC.value = Item.buyPrice(0, 2, 0, 0);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             Banner = NPC.type;
@@ -65,7 +64,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Times.DayTime,
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Surface,
@@ -111,7 +110,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     NPC.frame.Y = NPC.frame.Y + frameHeight;
                     NPC.frameCounter = 0.0;
                 }
-                if (NPC.frame.Y / frameHeight >= Main.npcFrameCount[NPC.type] - 1)
+                if (NPC.frame.Y / frameHeight >= Main.npcFrameCount[Type] - 1)
                 {
                     NPC.frame.Y = frameHeight;
                 }

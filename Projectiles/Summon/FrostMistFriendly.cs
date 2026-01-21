@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Summon
 {
     public class FrostMistFriendly : ModProjectile, ILocalizedModType
@@ -11,8 +11,8 @@ namespace CalamityMod.Projectiles.Summon
         public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 8;
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            Main.projFrames[Type] = 8;
+            ProjectileID.Sets.MinionShot[Type] = true;
         }
 
         public override void SetDefaults()
@@ -34,7 +34,7 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.frame = 0;
             }
@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 for (int i = 0; i < 5; i++)
                 {
-                    int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 187, 0f, 0f, 100, default, 2f);
+                    int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare_Blue, 0f, 0f, 100, default, 2f);
                     Main.dust[dust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -51,7 +51,7 @@ namespace CalamityMod.Projectiles.Summon
                     }
                 }
                 Projectile.ai[1] = 1f;
-                SoundEngine.PlaySound(SoundID.Item30, Projectile.position);
+                SoundEngine.PlaySound(SoundID.Item30 with { Volume = 0.5f }, Projectile.position);
             }
             if (Projectile.localAI[0] == 0f)
             {
@@ -98,8 +98,8 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture2D13 = ModContent.Request<Texture2D>(Texture).Value;
-            int framing = texture2D13.Height / Main.projFrames[Projectile.type];
+            Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int framing = texture2D13.Height / Main.projFrames[Type];
             int y6 = framing * Projectile.frame;
             Main.EntitySpriteDraw(texture2D13, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture2D13.Width, framing)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture2D13.Width / 2f, (float)framing / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;

@@ -1,4 +1,4 @@
-using CalamityMod.CalPlayer;
+﻿using CalamityMod.CalPlayer;
 using Terraria;
 using Terraria.ModLoader;
 namespace CalamityMod.Buffs.Summon
@@ -16,7 +16,7 @@ namespace CalamityMod.Buffs.Summon
         {
             CalamityPlayer modPlayer = player.Calamity();
 
-            if (!modPlayer.allWaifus)
+            if (!modPlayer.allElementals)
             {
                 player.DelBuff(buffIndex);
                 buffIndex--;

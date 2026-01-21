@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
@@ -29,7 +28,7 @@ namespace CalamityMod.Projectiles.Magic
             // Decide scale and initial rotation on the first frame this projectile exists.
             if (Projectile.localAI[0] == 0f)
             {
-                Projectile.scale = Main.rand.NextFloat(1f, 1.7f);
+                Projectile.scale = Main.rand.NextFloat(1f, 1.7f) * Projectile.ai[1];
                 Projectile.rotation = Main.rand.NextFloat(MathHelper.TwoPi);
                 Projectile.localAI[0] = 1f;
             }
@@ -38,7 +37,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.velocity *= 0.985f;
 
             // 08DEC2023: Ozzatron: All below code does not run on dedicated servers as it requires clientside lighting information.
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             // Calculate light power. This checks below the position of the fog to check if this fog is underground.
@@ -57,7 +56,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             Main.spriteBatch.SetBlendState(BlendState.Additive);
 
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 origin = texture.Size() * 0.5f;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             float opacity = Utils.GetLerpValue(0f, 0.08f, LightPower, true) * Projectile.Opacity * 0.5f;

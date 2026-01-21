@@ -1,8 +1,11 @@
+﻿using System;
+using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -11,93 +14,74 @@ namespace CalamityMod.Projectiles.Ranged
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 14;
-            Projectile.height = 14;
+            Projectile.width = 38;
+            Projectile.height = 38;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.penetrate = 1;
-            Projectile.alpha = 255;
-            Projectile.timeLeft = 180;
+            Projectile.timeLeft = 300;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
+            Projectile.extraUpdates = 5;
         }
-
-        public override Color? GetAlpha(Color lightColor)
-        {
-            if (Projectile.timeLeft < 85)
-            {
-                byte b2 = (byte)(Projectile.timeLeft * 3);
-                byte a2 = (byte)(100f * ((float)b2 / 255f));
-                return new Color((int)b2, (int)b2, (int)b2, (int)a2);
-            }
-            return new Color(255, 255, 255, 100);
-        }
-
         public override void AI()
         {
-            if (Projectile.localAI[0] == 0f)
-            {
-                Projectile.scale -= 0.01f;
-                Projectile.alpha += 15;
-                if (Projectile.alpha >= 250)
-                {
-                    Projectile.alpha = 255;
-                    Projectile.localAI[0] = 1f;
-                }
-            }
-            else if (Projectile.localAI[0] == 1f)
-            {
-                Projectile.scale += 0.01f;
-                Projectile.alpha -= 15;
-                if (Projectile.alpha <= 0)
-                {
-                    Projectile.alpha = 0;
-                    Projectile.localAI[0] = 0f;
-                }
-            }
+            Lighting.AddLight(Projectile.Center, Color.Cyan.ToVector3() * 0.35f);
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
-            Projectile.localAI[1] += 1f;
-            if (Projectile.localAI[1] == 3f)
+            if (Projectile.timeLeft == 300)
+                Projectile.velocity *= 0.5f;
+            if (Projectile.timeLeft > 30)
             {
-                for (int l = 0; l < 12; l++)
+                for (int i = 0; i < 2; i++)
                 {
-                    Vector2 offset = Vector2.UnitX * (float)-(float)Projectile.width / 2f;
-                    offset += -Vector2.UnitY.RotatedBy((double)(l * MathHelper.Pi / 6f), default) * new Vector2(8f, 16f);
-                    offset = offset.RotatedBy((double)(Projectile.rotation - MathHelper.PiOver2), default);
-                    int electric = Dust.NewDust(Projectile.Center, 0, 0, 135, 0f, 0f, 160, default, 1f);
-                    Main.dust[electric].scale = 1.1f;
-                    Main.dust[electric].noGravity = true;
-                    Main.dust[electric].position = Projectile.Center + offset;
-                    Main.dust[electric].velocity = Projectile.velocity * 0.1f;
-                    Main.dust[electric].velocity = Vector2.Normalize(Projectile.Center - Projectile.velocity * 3f - Main.dust[electric].position) * 1.25f;
+                    Vector2 dustPos = Projectile.Center + Projectile.velocity.RotatedBy(MathHelper.PiOver2) * (i == 0 ? -3 : 3);
+                    Vector2 dustVel = (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2().RotatedByRandom(0.2f) * Main.rand.NextFloat(2.5f, 8.5f);
+                    Dust dust = Dust.NewDustPerfect(dustPos + Main.rand.NextVector2Circular(2, 2), Main.rand.NextBool() ? 278 : ModContent.DustType<LightDust>(), dustVel * Main.rand.NextFloat(0.5f, 1.2f));
+                    dust.noGravity = true;
+                    dust.scale = Main.rand.NextFloat(0.3f, 0.4f);
+                    dust.color = Color.Cyan;
+                    dust.noLightEmittence = true;
                 }
             }
         }
-
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            float minMult = 0.5f;
+            int hitsToMinMult = 3;
+            float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+            modifiers.SourceDamage *= damageMult;
+        }
         public override void OnKill(int timeLeft)
         {
-            Projectile.ExpandHitboxBy(16);
-            Projectile.maxPenetrate = Projectile.penetrate = -1;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
-            Projectile.Damage();
-            SoundEngine.PlaySound(SoundID.Item92, Projectile.position);
-            int dustAmt = Main.rand.Next(10, 20);
-            for (int d = 0; d < dustAmt; d++)
+            for (int i = 0; i < 12; i++)
             {
-                int electric = Dust.NewDust(Projectile.Center - Projectile.velocity / 2f, 0, 0, 135, 0f, 0f, 100, default, 2f);
-                Main.dust[electric].velocity *= 2f;
-                Main.dust[electric].noGravity = true;
+                Vector2 dustVel = (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2().RotatedByRandom(0.2f) * Main.rand.NextFloat(2.5f, 8.5f);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(11, 11), Main.rand.NextBool() ? 278 : ModContent.DustType<LightDust>(), dustVel * Main.rand.NextFloat(0.3f, 1.7f));
+                dust.noGravity = true;
+                dust.scale = Main.rand.NextFloat(0.8f, 1.1f);
+                dust.color = Color.Cyan;
+                dust.noLightEmittence = true;
             }
         }
-
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 20, targetHitbox);
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 2);
+            Asset<Texture2D> tex = ModContent.Request<Texture2D>(Texture);
+            Color drawColor = Color.Cyan;
+            float fade = Utils.GetLerpValue(0, 90, Projectile.timeLeft, true);
+
+            for (int i = 0; i < 8; i++)
+            {
+                Vector2 drawOffset = (MathHelper.TwoPi * i / 8f).ToRotationVector2() * 2f;
+                Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition + drawOffset, null, drawColor with { A = 0 } * 0.4f * (float)Math.Pow(fade, 3), Projectile.rotation, tex.Size() * 0.5f, Projectile.scale, SpriteEffects.None);
+            }
+            Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition, null, Color.White * fade, Projectile.rotation, tex.Size() * 0.5f, Projectile.scale, SpriteEffects.None);
             return false;
         }
     }

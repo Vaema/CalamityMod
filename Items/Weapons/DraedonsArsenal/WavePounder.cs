@@ -1,11 +1,11 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -18,31 +18,23 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
         public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
         public override void SetDefaults()
         {
-            CalamityGlobalItem modItem = Item.Calamity();
-
-            Item.damage = 75;
-            Item.DamageType = RogueDamageClass.Instance;
-            Item.noMelee = true;
-            Item.noUseGraphic = true;
             Item.width = 26;
             Item.height = 44;
-            Item.useTime = 56;
-            Item.useAnimation = 56;
-            Item.autoReuse = true;
+            Item.damage = 75;
+            Item.DamageType = RogueDamageClass.Instance;
+            Item.useAnimation = Item.useTime = 56;
+            Item.knockBack = 0.25f;
+            Item.shoot = ModContent.ProjectileType<WavePounderProjectile>();
+            Item.shootSpeed = 16f;
+
+            Item.UseSound = SoundID.Item1;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.knockBack = 0f;
+            Item.autoReuse = true;
+            Item.noMelee = true;
+            Item.noUseGraphic = true;
 
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
-
             Item.rare = ModContent.RarityType<Turquoise>();
-            Item.UseSound = SoundID.Item1;
-
-            Item.shootSpeed = 16f;
-            Item.shoot = ModContent.ProjectileType<WavePounderProjectile>();
-
-            modItem.UsesCharge = true;
-            modItem.MaxCharge = 190f;
-            modItem.ChargePerUse = 0.5f;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -63,7 +55,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
                 AddIngredient<UelibloomBar>(8).
                 AddIngredient(ItemID.LunarBar, 4).
                 AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(4, out Func<bool> condition), condition).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

@@ -1,11 +1,10 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
-using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Summon
 {
     public class BrimstoneExplosionMinion : ModProjectile, ILocalizedModType
@@ -15,7 +14,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            ProjectileID.Sets.MinionShot[Type] = true;
         }
 
         public override void SetDefaults()
@@ -62,7 +61,7 @@ namespace CalamityMod.Projectiles.Summon
                 randAdjust = rand3 / randAdjust;
                 rand1 *= randAdjust;
                 rand2 *= randAdjust;
-                int brimDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 1.5f);
+                int brimDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 1.5f);
                 Dust dust = Main.dust[brimDust];
                 dust.noGravity = true;
                 dust.position.X = Projectile.Center.X;

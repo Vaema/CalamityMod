@@ -1,6 +1,6 @@
 ﻿using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Fishing.SunkenSeaCatches
 {
@@ -10,21 +10,21 @@ namespace CalamityMod.Items.Fishing.SunkenSeaCatches
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 3;
-            ItemID.Sets.CanBePlacedOnWeaponRacks[Item.type] = true;
+            ItemID.Sets.CanBePlacedOnWeaponRacks[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 40;
             Item.height = 38;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.value = Item.sellPrice(gold: 10);
             Item.rare = ItemRarityID.Orange;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.Fish;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.Fish;
+        }
     }
 }

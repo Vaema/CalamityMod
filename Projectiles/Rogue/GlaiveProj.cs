@@ -1,10 +1,8 @@
-﻿using CalamityMod.Items.Weapons.Rogue;
-using Microsoft.Xna.Framework;
-using System;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -14,12 +12,13 @@ namespace CalamityMod.Projectiles.Rogue
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/Glaive";
 
         private static int Lifetime = 180;
-        private static int ReboundTime = 45;
+        private int timeAlive => Lifetime - Projectile.timeLeft;
+        private bool hasHit = false;
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 3;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 3;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -28,107 +27,73 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.height = 16;
             Projectile.friendly = true;
             Projectile.tileCollide = true;
-            Projectile.penetrate = 3;
+            Projectile.penetrate = 4;
+            Projectile.MaxUpdates = 2;
             Projectile.timeLeft = Lifetime;
             DrawOffsetX = -10;
             Projectile.DamageType = RogueDamageClass.Instance;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override void AI()
         {
-            // ai[1] = 1 means that the projectile is a stealth strike, in which case it pierces infinitely.
-            if (Projectile.ai[1] == 1f)
-                Projectile.penetrate = Projectile.maxPenetrate = -1;
+            Projectile.rotation += 0.175f * Projectile.direction;
 
-            // Boomerang rotation
-            Projectile.rotation += 0.4f * (float)Projectile.direction;
-
-            // Boomerang sound
-            if (Projectile.soundDelay == 0)
+            if (timeAlive == 0)
             {
-                Projectile.soundDelay = 8;
-                SoundEngine.PlaySound(SoundID.Item7, Projectile.position);
-            }
-
-            // Returns after some number of frames in the air
-            if (Projectile.timeLeft < Lifetime - ReboundTime)
-                Projectile.ai[0] = 1f;
-
-            if (Projectile.ai[0] != 0f)
-            {
-                Projectile.tileCollide = false;
-
-                float returnSpeed = Glaive.Speed * 1.6f;
-                float acceleration = 1.4f;
-
-                if (Projectile.ai[1] == 1f)
+                Projectile.localNPCHitCooldown = -1;
+                if (Projectile.Calamity().stealthStrike)
                 {
-                    returnSpeed *= Glaive.StealthSpeedMult;
-                    acceleration *= Glaive.StealthSpeedMult;
+                    Projectile.penetrate = -1;
+                    Projectile.MaxUpdates++;
                 }
-
-                Player owner = Main.player[Projectile.owner];
-
-                // Delete the projectile if it's excessively far away.
-                Vector2 playerCenter = owner.Center;
-                float xDist = playerCenter.X - Projectile.Center.X;
-                float yDist = playerCenter.Y - Projectile.Center.Y;
-                float dist = (float)Math.Sqrt((double)(xDist * xDist + yDist * yDist));
-                if (dist > 3000f)
-                    Projectile.Kill();
-
-                dist = returnSpeed / dist;
-                xDist *= dist;
-                yDist *= dist;
-
-                // Home back in on the player.
-                if (Projectile.velocity.X < xDist)
-                {
-                    Projectile.velocity.X += acceleration;
-                    if (Projectile.velocity.X < 0f && xDist > 0f)
-                        Projectile.velocity.X += acceleration;
-                }
-                else if (Projectile.velocity.X > xDist)
-                {
-                    Projectile.velocity.X -= acceleration;
-                    if (Projectile.velocity.X > 0f && xDist < 0f)
-                        Projectile.velocity.X -= acceleration;
-                }
-                if (Projectile.velocity.Y < yDist)
-                {
-                    Projectile.velocity.Y += acceleration;
-                    if (Projectile.velocity.Y < 0f && yDist > 0f)
-                        Projectile.velocity.Y += acceleration;
-                }
-                else if (Projectile.velocity.Y > yDist)
-                {
-                    Projectile.velocity.Y -= acceleration;
-                    if (Projectile.velocity.Y > 0f && yDist < 0f)
-                        Projectile.velocity.Y -= acceleration;
-                }
-
-                // Delete the projectile if it touches its owner.
-                if (Main.myPlayer == Projectile.owner)
-                    if (Projectile.Hitbox.Intersects(owner.Hitbox))
-                        Projectile.Kill();
             }
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        void Ricochet()
         {
-            // After its last hit, starts returning instead of vanishing. Can pierce infinitely on the way back.
-            if (Projectile.penetrate == 1)
+            float maxDistance = 1000f;
+            float npcDistCompare = 1000f;
+            int index = -1;
+            foreach (NPC n in Main.ActiveNPCs) // Find an NPC to ricochet to
             {
-                Projectile.penetrate = -1;
-                Projectile.ai[0] = 1f;
+                if (!n.CanBeChasedBy(Projectile) || !Projectile.WithinRange(n.Center, maxDistance) || Projectile.localNPCImmunity[n.whoAmI] != 0)
+                    continue;
+
+                float currentNPCDist = Vector2.Distance(n.Center, Projectile.Center);
+                if ((currentNPCDist < npcDistCompare) && (Collision.CanHit(Projectile.Center, 1, 1, n.Center, 1, 1)))
+                {
+                    npcDistCompare = currentNPCDist;
+                    index = n.whoAmI;
+                }
+            }
+
+            // If you find an NPC, ricochet in their direction and reset iframes for them
+            if (index != -1)
+            {
+                Projectile.ai[1] = index;
+                Projectile.velocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(Projectile.Center, Main.npc[index], Projectile.velocity.Length(), Projectile.MaxUpdates);
+                Projectile.netUpdate = true;
             }
         }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            if (Projectile.Calamity().stealthStrike)
+            {
+                if (!hasHit)
+                    target.Calamity().glaiveShredTimer += 300;
+                hasHit = true;
+            }
+            Ricochet();
+        }
+
 
         // Make it bounce on tiles.
         public override bool OnTileCollide(Vector2 oldVelocity)
@@ -145,7 +110,9 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 Projectile.velocity.Y = -oldVelocity.Y;
             }
-            Projectile.ai[0] = 1f;
+            Ricochet();
+            if (Projectile.penetrate > 0)
+                Projectile.penetrate--;
             return false;
         }
     }

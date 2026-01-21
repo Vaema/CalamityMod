@@ -15,9 +15,9 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 12;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 12;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -37,11 +37,11 @@ namespace CalamityMod.Projectiles.Summon
         {
             // Determine frames.
             Projectile.frameCounter++;
-            Projectile.frame = Projectile.frameCounter / 5 % Main.projFrames[Projectile.type];
+            Projectile.frame = Projectile.frameCounter / 5 % Main.projFrames[Type];
 
             // Hover in place.
             Projectile.velocity = -Vector2.UnitY * (float)Math.Sin(MathHelper.TwoPi * Projectile.timeLeft / 96f) * 3f;
-            
+
             // Look at nearby enemies.
             NPC potentialTarget = Projectile.Center.MinionHoming(1000f, Owner);
             if (potentialTarget is not null)

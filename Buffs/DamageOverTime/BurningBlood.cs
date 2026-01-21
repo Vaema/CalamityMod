@@ -1,4 +1,5 @@
-﻿using CalamityMod.Particles;
+﻿using CalamityMod.DataStructures;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -9,25 +10,28 @@ namespace CalamityMod.Buffs.DamageOverTime
 {
     public class BurningBlood : ModBuff
     {
+        public static DebuffData debuffData = new DebuffData()
+        {
+            EnemyLostRegen = 40,
+            SicknessDebuffScaling = 1
+        };
         public override void SetStaticDefaults()
         {
             Main.debuff[Type] = true;
             Main.pvpBuff[Type] = true;
             Main.buffNoSave[Type] = true;
             BuffID.Sets.LongerExpertDebuff[Type] = true;
+            BuffDatasets.DebuffDataset[Type] = debuffData;
         }
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.Calamity().bBlood = true;
+            player.Calamity().burningBlood = true;
         }
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            if (npc.Calamity().bBlood < npc.buffTime[buffIndex])
-                npc.Calamity().bBlood = npc.buffTime[buffIndex];
-            npc.DelBuff(buffIndex);
-            buffIndex--;
+            npc.Calamity().burningBlood = true;
         }
 
         internal static void DrawEffects(PlayerDrawSet drawInfo)
@@ -54,7 +58,7 @@ namespace CalamityMod.Buffs.DamageOverTime
             {
                 float rot = MathHelper.ToRadians(i * 280);
                 Vector2 offset = new Vector2(0.1f, 0).RotatedBy(rot * Main.rand.NextFloat(0.08f, 0.05f));
-                Dust dust2 = Dust.NewDustPerfect(Player.Calamity().RandomDebuffVisualSpot + offset, 5);
+                Dust dust2 = Dust.NewDustPerfect(Player.Calamity().RandomDebuffVisualSpot + offset, DustID.Blood);
                 dust2.scale = Main.rand.NextFloat(0.6f, 0.7f);
             }
         }
@@ -63,10 +67,10 @@ namespace CalamityMod.Buffs.DamageOverTime
         {
             if (Main.rand.NextBool(3))
             {
-                int dust = Dust.NewDust(npc.position - new Vector2(2f), npc.width + 4, npc.height + 4, Main.rand.NextBool(8) ? 296 : 5, npc.velocity.X * 0.4f, npc.velocity.Y * 0.4f, 100, default, 1.25f);
-                Main.dust[dust].noGravity = true;
-                Main.dust[dust].velocity *= 1.3f;
-                Main.dust[dust].velocity.Y -= 0.5f;
+                Dust blood = Dust.NewDustDirect(npc.position - new Vector2(2f), npc.width + 4, npc.height + 4, Main.rand.NextBool(8) ? 296 : 5, npc.velocity.X * 0.4f, npc.velocity.Y * 0.4f, 100, default, 1.25f);
+                blood.noGravity = true;
+                blood.velocity *= 1.3f;
+                blood.velocity.Y -= 0.5f;
             }
             Lighting.AddLight(npc.Center, 0.08f, 0f, 0f);
         }

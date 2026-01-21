@@ -1,8 +1,9 @@
 ﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Magic
 {
     public class ManaBolt : ModProjectile, ILocalizedModType
@@ -34,23 +35,19 @@ namespace CalamityMod.Projectiles.Magic
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 15, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 107, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.MagicMirror, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.TerraBlade, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
             }
-            float spread = 90f * 0.0174f;
-            double startAngle = Math.Atan2(Projectile.velocity.X, Projectile.velocity.Y) - spread / 2;
-            double deltaAngle = spread / 8f;
-            double offsetAngle;
             if (Projectile.owner == Main.myPlayer)
             {
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < 6; i++)
                 {
-                    offsetAngle = startAngle + deltaAngle * (i + i * i) / 2f + 32f * i;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, (float)(Math.Sin(offsetAngle) * 5f), (float)(Math.Cos(offsetAngle) * 5f), ModContent.ProjectileType<ManaBoltSmall>(), (int)(Projectile.damage * 0.5), Projectile.knockBack, Projectile.owner);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, (float)(-Math.Sin(offsetAngle) * 5f), (float)(-Math.Cos(offsetAngle) * 5f), ModContent.ProjectileType<ManaBoltSmall2>(), (int)(Projectile.damage * 0.5), Projectile.knockBack, Projectile.owner);
+                    Vector2 velocity = ((MathHelper.TwoPi * i / 6f) - (MathHelper.Pi / 3f - Projectile.velocity.ToRotation())).ToRotationVector2() * 3.5f;
+                    int type = (i < 3 ? ModContent.ProjectileType<ManaBoltSmall>() : ModContent.ProjectileType<ManaBoltSmall2>());
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, type, (int)(Projectile.damage * 0.5), Projectile.knockBack, Projectile.owner);
                 }
             }
-            SoundEngine.PlaySound(SoundID.Item10, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item10, Projectile.Center);
         }
     }
 }

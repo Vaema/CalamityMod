@@ -2,9 +2,9 @@
 using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -24,7 +24,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.penetrate = 3;
             Projectile.extraUpdates = 2;
             Projectile.timeLeft = 300;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
         }

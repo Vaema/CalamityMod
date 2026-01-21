@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Melee;
-using Terraria;
+using CalamityMod.Projectiles.Melee.MaceFlails;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -9,11 +8,12 @@ namespace CalamityMod.Items.Weapons.Melee
     public class Tumbleweed : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+        public override void SetStaticDefaults() => ItemID.Sets.ToolTipDamageMultiplier[Type] = 2f;
         public override void SetDefaults()
         {
             Item.width = 44;
             Item.height = 36;
-            Item.damage = 125;
+            Item.damage = 63;
             Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.useTime = 20;
             Item.useAnimation = 20;
@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.knockBack = 8f;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
@@ -34,8 +34,8 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CreateRecipe().
                 AddIngredient(ItemID.Sunfury).
+                AddIngredient(ItemID.AncientCloth, 5).
                 AddIngredient<GrandScale>().
-                AddIngredient(ItemID.SoulofMight, 5).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

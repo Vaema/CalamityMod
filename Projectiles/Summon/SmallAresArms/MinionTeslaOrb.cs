@@ -1,9 +1,10 @@
-﻿using CalamityMod.Items.Weapons.Summon;
-using CalamityMod.Projectiles.Boss;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using CalamityMod.Graphics.Primitives;
+using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.Projectiles.Boss;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -17,19 +18,15 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
 
         public ref float Time => ref Projectile.ai[1];
 
-        public PrimitiveTrail LightningDrawer;
-        
-        public PrimitiveTrail LightningBackgroundDrawer;
-
         public override string Texture => "CalamityMod/Projectiles/Boss/AresTeslaOrb";
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
+            ProjectileID.Sets.MinionShot[Type] = true;
         }
 
         public override void SetDefaults()
@@ -70,42 +67,42 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
 
             // Handle frames.
             Projectile.frameCounter++;
-            Projectile.frame = Projectile.frameCounter / 5 % Main.projFrames[Projectile.type];
+            Projectile.frame = Projectile.frameCounter / 5 % Main.projFrames[Type];
 
             Time++;
         }
 
         public Projectile GetOrbToAttachTo()
         {
-            for (int i = 0; i < Main.maxProjectiles; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                if (Main.projectile[i].type != Projectile.type || Main.projectile[i].ai[0] != Identity + 1f || !Main.projectile[i].active)
+                if (p.type != Projectile.type || p.ai[0] != Identity + 1f)
                     continue;
 
-                if (!Main.projectile[i].WithinRange(Projectile.Center, AresExoskeleton.TeslaOrbDetatchDistance))
+                if (!p.WithinRange(Projectile.Center, AresExoskeleton.TeslaOrbDetatchDistance))
                     continue;
 
-                return Main.projectile[i];
+                return p;
             }
 
             return null;
         }
 
-        internal float WidthFunction(float completionRatio)
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos)
         {
             return MathHelper.Lerp(0.75f, 1.85f, (float)Math.Sin(MathHelper.Pi * completionRatio)) * Projectile.scale;
         }
 
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float fadeToWhite = MathHelper.Lerp(0f, 0.65f, (float)Math.Sin(MathHelper.TwoPi * completionRatio + Main.GlobalTimeWrappedHourly * 4f) * 0.5f + 0.5f);
             Color baseColor = Color.Lerp(Color.Cyan, Color.White, fadeToWhite);
             return Color.Lerp(baseColor, Color.LightBlue, ((float)Math.Sin(MathHelper.Pi * completionRatio + Main.GlobalTimeWrappedHourly * 4f) * 0.5f + 0.5f) * 0.8f) * Projectile.Opacity;
         }
 
-        internal float BackgroundWidthFunction(float completionRatio) => WidthFunction(completionRatio) * 4f;
+        internal float BackgroundWidthFunction(float completionRatio, Vector2 vertexPos) => WidthFunction(completionRatio, vertexPos) * 4f;
 
-        internal Color BackgroundColorFunction(float completionRatio)
+        internal Color BackgroundColorFunction(float completionRatio, Vector2 vertexPos)
         {
             Color color = Color.CornflowerBlue * Projectile.Opacity * 0.4f;
             return color;
@@ -113,23 +110,18 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (LightningDrawer is null)
-                LightningDrawer = new PrimitiveTrail(WidthFunction, ColorFunction, PrimitiveTrail.RigidPointRetreivalFunction);
-            if (LightningBackgroundDrawer is null)
-                LightningBackgroundDrawer = new PrimitiveTrail(BackgroundWidthFunction, BackgroundColorFunction, PrimitiveTrail.RigidPointRetreivalFunction);
-
             Projectile orbToAttachTo = GetOrbToAttachTo();
             if (orbToAttachTo != null)
             {
                 List<Vector2> arcPoints = AresTeslaOrb.DetermineElectricArcPoints(Projectile.Center, orbToAttachTo.Center, 117);
-                LightningBackgroundDrawer.Draw(arcPoints, -Main.screenPosition, 90);
-                LightningDrawer.Draw(arcPoints, -Main.screenPosition, 90);
+                PrimitiveRenderer.RenderTrail(arcPoints, new(BackgroundWidthFunction, BackgroundColorFunction, smoothen: false), 90);
+                PrimitiveRenderer.RenderTrail(arcPoints, new(WidthFunction, ColorFunction, smoothen: false), 90);
             }
 
             lightColor.R = (byte)(255 * Projectile.Opacity);
             lightColor.G = (byte)(255 * Projectile.Opacity);
             lightColor.B = (byte)(255 * Projectile.Opacity);
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 

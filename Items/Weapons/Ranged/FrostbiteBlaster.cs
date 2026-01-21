@@ -1,9 +1,9 @@
-﻿using Terraria.DataStructures;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
@@ -24,15 +24,16 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useTurn = false;
             Item.noMelee = true;
             Item.knockBack = 5f;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.useAmmo = AmmoID.Bullet;
             Item.UseSound = SoundID.Item36;
             Item.autoReuse = true;
             Item.shoot = ProjectileID.Blizzard;
             Item.shootSpeed = 9f;
-            Item.Calamity().canFirePointBlankShots = true;
         }
+
+        public override Vector2? HoldoutOffset() => new Vector2(-14, 0);
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

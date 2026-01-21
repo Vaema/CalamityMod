@@ -1,8 +1,9 @@
-﻿using CalamityMod.Items.Weapons.Melee;
+﻿using System;
+using CalamityMod.Graphics.Primitives;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Graphics.Effects;
@@ -30,14 +31,10 @@ namespace CalamityMod.Projectiles.Melee
         public ref float DashTime => ref Projectile.ai[1];
         public Vector2 DashDestination = Vector2.Zero;
 
-        internal PrimitiveTrail TrailDrawer;
-        // Rawest placeholder sound
-        public static readonly SoundStyle DashSound = new("CalamityMod/Sounds/Custom/ExoMechs/ApolloMissileLaunch") { Volume = 0.6f };
-
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -54,12 +51,13 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override void AI()
         {
-            if (Owner is null || Owner.dead || Owner.ActiveItem().type != ModContent.ItemType<StygianShield>())
+            if (Owner is null || Owner.dead || Owner.HeldItem.type != ModContent.ItemType<StygianShield>())
                 Projectile.Kill();
             
             Owner.heldProj = Projectile.whoAmI;
 
-            // TODO -- Windup sound (definitely requires a custom looping sound)
+            if (Charge == 0f)
+                SoundEngine.PlaySound(StygianShield.DashChargeSound, Owner.Center);
             
             // Dashing behavior
             Projectile.Opacity = Utils.GetLerpValue(0f, DashDuration * 0.7f, DashTime, true);
@@ -68,10 +66,9 @@ namespace CalamityMod.Projectiles.Melee
                 // Detach the owner from any mounts/hooks
                 if (Owner.mount != null)
                     Owner.mount.Dismount(Owner);
-                for (int i = 0; i < Main.projectile.Length; i++)
+                foreach (Projectile proj in Main.ActiveProjectiles)
                 {
-                    Projectile proj = Main.projectile[i];
-                    if (!proj.active || proj.owner != Owner.whoAmI || proj.aiStyle != ProjAIStyleID.Hook)
+                    if (proj.owner != Owner.whoAmI || proj.aiStyle != ProjAIStyleID.Hook)
                         continue;
                     if (proj.aiStyle == ProjAIStyleID.Hook)
                         proj.Kill();
@@ -104,7 +101,7 @@ namespace CalamityMod.Projectiles.Melee
             }
 
             // Attack upon releasing the button
-            if (!Owner.channel || Owner.noItems || Owner.CCed)
+            if (Owner.CantUseHoldout())
                 Attack();
         }
 
@@ -113,13 +110,14 @@ namespace CalamityMod.Projectiles.Melee
             // Perform the dash if able to
             if (Charge >= MinChargeTime && !Owner.noItems && !Owner.CCed)
             {
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 // Set the destination in which the dash is supposed to be
                 Vector2 intendedDestination = Projectile.Center + Projectile.SafeDirectionTo(Owner.Calamity().mouseWorld) * MaxChargeDistance * Charge / MaxChargeTime;
 
                 // Has to be within world bounds
                 if (intendedDestination.X >= 660f && intendedDestination.Y >= 660f && intendedDestination.X <= Main.maxTilesX * 16f - 680f && intendedDestination.Y <= Main.maxTilesY * 16f - 680f)
                 {
-                    SoundEngine.PlaySound(DashSound, Owner.Center);
+                    SoundEngine.PlaySound(StygianShield.DashSound, Owner.Center);
 
                     // Give immunity frames
                     Owner.immune = true;
@@ -173,6 +171,7 @@ namespace CalamityMod.Projectiles.Melee
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Projectile.damage = (int)(Projectile.damage * PiercingDamageMult);
+            SoundEngine.PlaySound(StygianShield.DashHitSound, Owner.Center);
 
             // Spawn a violent slash through the target that is hit
             float rotation = Projectile.velocity.ToRotation() - MathHelper.Pi;
@@ -180,18 +179,18 @@ namespace CalamityMod.Projectiles.Melee
             GeneralParticleHandler.SpawnParticle(redSlash);
         }
 
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float fadeOpacity = Utils.GetLerpValue(1f, 0.2f, completionRatio, true) * Projectile.Opacity;
             return Color.Lerp(Color.DarkOrange, Color.Red, completionRatio) * fadeOpacity;
         }
 
-        internal float WidthFunction(float completionRatio) => 12f;
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos) => 12f;
 
         public override bool PreDraw(ref Color lightColor)
         {
             // Textures and general use stuff
-            Texture2D mainTex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D mainTex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D bloomTex = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
             Texture2D flatTex = ModContent.Request<Texture2D>("CalamityMod/Particles/FlatShape").Value;
             Texture2D shieldTex = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/StygianShieldBloom").Value;
@@ -220,11 +219,9 @@ namespace CalamityMod.Projectiles.Melee
                 Color shieldColor = Color.LightSalmon;
 
                 // Main trail
-                if (TrailDrawer is null)
-                TrailDrawer = new PrimitiveTrail(WidthFunction, ColorFunction, specialShader: GameShaders.Misc["CalamityMod:TrailStreak"]);
-
                 GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
-                TrailDrawer.Draw(Projectile.oldPos, Projectile.Size * 0.5f + extraOffset - (direction * 80f), 10);
+                PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_,_) => Projectile.Size * 0.5f + extraOffset + Main.screenPosition - direction * 80f,
+                    shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 10);
 
                 ArrowEffect.Parameters["halfSpreadAngle"].SetValue(MathHelper.ToRadians(7.5f));
                 ArrowEffect.Parameters["edgeColor"].SetValue(headColor.ToVector3());
@@ -273,6 +270,7 @@ namespace CalamityMod.Projectiles.Melee
                 // Charge sight line
                 if (Charge >= MinChargeTime)
                 {
+                    // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     // Where the dash is supposed to take you, taken from above
                     Vector2 dashLength = Projectile.SafeDirectionTo(Owner.Calamity().mouseWorld) * MaxChargeDistance * Charge / MaxChargeTime;
                     Vector2 intendedDestination = Projectile.Center + dashLength;

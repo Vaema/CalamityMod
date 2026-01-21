@@ -12,9 +12,21 @@ namespace CalamityMod.Items.Weapons.Melee
     public class DeathsAscension : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+
+        public const int RiftLifeTime = 600;
+
+        public const float OrbitalScytheDamageMult = 0.4f;
+
+        public const float RiftScytheDamageMult = 0.125f;
+
+        public const int RiftOrbitalAmount = 4;
+
+        public const int ScytheShotAmount = 4;
+
+
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
         public override void SetDefaults()
@@ -23,14 +35,14 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.height = 70;
             Item.damage = 1200;
             Item.knockBack = 9f;
-            Item.useTime = Item.useAnimation = 24;
+            Item.useAnimation = Item.useTime = 24;
             Item.DamageType = DamageClass.Melee;
             Item.noMelee = true;
             Item.channel = true;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.shootSpeed = 12f;
             Item.shoot = ModContent.ProjectileType<DeathsAscensionSwing>();
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
             Item.Calamity().donorItem = true;
         }
@@ -80,18 +92,30 @@ namespace CalamityMod.Items.Weapons.Melee
             int spreadfactor = 9;
             if (player.altFunctionUse == 2f)
             {
-                for (int index = 0; index < 4; ++index)
+                for (int index = 0; index < ScytheShotAmount; ++index)
                 {
                     float SpeedX = velocity.X + Main.rand.NextFloat(-spreadfactor, spreadfactor + 1);
                     float SpeedY = velocity.Y + Main.rand.NextFloat(-spreadfactor, spreadfactor + 1);
-                    Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, (int)(damage * 0.125f), knockback, player.whoAmI, 0f, 0f);
+                    Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, (int)(damage * 0.125f), knockback, player.whoAmI);
+                }
+
+                // Tell the rift(s) to shoot
+                foreach (Projectile p in Main.ActiveProjectiles)
+                {
+                    if (p.type == ModContent.ProjectileType<DeathsAscensionRift>() && p.owner == player.whoAmI && p.ai[0] <= 0)
+                        p.ai[0] = 10f; // Cooldown before scythes can be shot again because right click code is cool and shoots twice without this
                 }
             }
             else
             {
-                Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<DeathsAscensionSwing>(), damage, knockback, player.whoAmI, 0f, 0f);
+                Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<DeathsAscensionSwing>(), damage, knockback, player.whoAmI);
             }
             return false;
+        }
+        
+        public override void UseItemFrame(Player player)
+        {
+            player.itemLocation = (Vector2)player.HandPosition;
         }
 
         public override void AddRecipes()
@@ -99,9 +123,9 @@ namespace CalamityMod.Items.Weapons.Melee
             CreateRecipe().
                 AddIngredient(ItemID.DeathSickle).
                 AddIngredient<RuinousSoul>(4).
-                AddIngredient<TwistingNether>().
                 AddIngredient(ItemID.SoulofNight, 15).
-                AddTile(TileID.LunarCraftingStation).
+                AddIngredient<TwistingNether>(3).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

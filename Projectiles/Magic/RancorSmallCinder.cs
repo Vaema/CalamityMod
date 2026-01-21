@@ -11,7 +11,7 @@ namespace CalamityMod.Projectiles.Magic
         public ref float Lifetime => ref Projectile.ai[1];
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 3;
+            Main.projFrames[Type] = 3;
         }
 
         public override void SetDefaults()
@@ -29,7 +29,7 @@ namespace CalamityMod.Projectiles.Magic
             // Decide a frame to use on the first frame this projectile exists.
             if (Projectile.localAI[0] == 0f)
             {
-                Projectile.frame = Main.rand.Next(Main.projFrames[Projectile.type]);
+                Projectile.frame = Main.rand.Next(Main.projFrames[Type]);
                 Projectile.localAI[0] = 1f;
             }
 

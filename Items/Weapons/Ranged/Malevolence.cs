@@ -1,7 +1,8 @@
-﻿using Terraria.DataStructures;
+﻿using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -21,14 +22,13 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 3f;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.UseSound = SoundID.Item97;
             Item.autoReuse = true;
             Item.shootSpeed = 12f;
             Item.shoot = ModContent.ProjectileType<PlagueArrow>();
             Item.useAmmo = AmmoID.Arrow;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

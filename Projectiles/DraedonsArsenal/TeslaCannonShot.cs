@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
@@ -16,6 +16,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         private int arcs = 0;
 
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = 8;
@@ -47,7 +48,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     Main.dust[teslaDust].scale = Main.rand.Next(70, 110) * 0.026f;
                 }
 
-                if (Main.rand.Next(6) == 0)
+                if (Main.rand.NextBool(6))
                     Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, dustArray[6], 0f, 0f);
 
                 if (notArcingProjectile)
@@ -96,14 +97,14 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     {
                         if (arcs < 10)
                         {
-                            for (int i = 0; i < Main.maxNPCs; i++)
+                            foreach (NPC n in Main.ActiveNPCs)
                             {
-                                if (!Main.npc[i].CanBeChasedBy(Projectile, false) || !Collision.CanHit(Projectile.Center, 1, 1, Main.npc[i].Center, 1, 1))
+                                if (!n.CanBeChasedBy(Projectile, false) || !Collision.CanHit(Projectile.Center, 1, 1, n.Center, 1, 1))
                                     continue;
 
-                                if (Projectile.Center.ManhattanDistance(Main.npc[i].Center) < 600f)
+                                if (Projectile.Center.ManhattanDistance(n.Center) < 600f)
                                 {
-                                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.SafeDirectionTo(Main.npc[i].Center) * 2f, Projectile.type, (int)(Projectile.damage * 0.6), Projectile.knockBack * 0.6f, Projectile.owner, 0f, -1f);
+                                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.SafeDirectionTo(n.Center) * 2f, Projectile.type, (int)(Projectile.damage * 0.6), Projectile.knockBack * 0.6f, Projectile.owner, 0f, -1f);
 
                                     Projectile.ai[1] = 60f;
 
@@ -233,10 +234,10 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 Vector2 dustVel = new Vector2(dustSpeed, 0.0f).RotatedBy(Projectile.velocity.ToRotation());
                 dustVel = dustVel.RotatedBy(-angleRandom);
                 dustVel = dustVel.RotatedByRandom(2f * angleRandom);
-                int randomDustType = Main.rand.Next(2) == 0 ? dustArray[4] : dustArray[5];
+                int randomDustType = Main.rand.NextBool(2)? dustArray[4] : dustArray[5];
                 float scale = randomDustType == dustArray[4] ? 1.5f : 1f;
 
-                int electricDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 200, default, 2.5f * scale);
+                int electricDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 200, default, 2.5f * scale);
                 Main.dust[electricDust].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (float)Main.rand.NextDouble() * Projectile.width / 2f;
                 Main.dust[electricDust].noGravity = true;
 
@@ -244,7 +245,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 dust.velocity *= 3f;
                 dust = Main.dust[electricDust];
 
-                electricDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 100, default, 1.5f * scale);
+                electricDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 100, default, 1.5f * scale);
                 Main.dust[electricDust].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (float)Main.rand.NextDouble() * Projectile.width / 2f;
 
                 dust = Main.dust[electricDust];
@@ -262,10 +263,10 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 Vector2 dustVel = new Vector2(dustSpeed, 0f).RotatedBy(Projectile.velocity.ToRotation());
                 dustVel = dustVel.RotatedBy(-angleRandom);
                 dustVel = dustVel.RotatedByRandom(2f * angleRandom);
-                int randomDustType = Main.rand.Next(2) == 0 ? dustArray[4] : dustArray[5];
+                int randomDustType = Main.rand.NextBool(2)? dustArray[4] : dustArray[5];
                 float scale = randomDustType == dustArray[4] ? 1.5f : 1f;
 
-                int electricDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 0, default, 3f * scale);
+                int electricDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 0, default, 3f * scale);
                 Main.dust[electricDust2].position = Projectile.Center + Vector2.UnitX.RotatedByRandom(MathHelper.Pi).RotatedBy(Projectile.velocity.ToRotation()) * Projectile.width / 3f;
                 Main.dust[electricDust2].noGravity = true;
 

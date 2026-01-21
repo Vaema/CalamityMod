@@ -1,7 +1,7 @@
-﻿using static CalamityMod.Items.Accessories.ProfanedSoulCrystal;
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static CalamityMod.Items.Accessories.ProfanedSoulCrystal;
 
 namespace CalamityMod.Buffs.Summon.Whips
 {
@@ -16,7 +16,7 @@ namespace CalamityMod.Buffs.Summon.Whips
 
         public override void ModifyBuffText(ref string buffName, ref string tip, ref int rare)
         {
-            Player player = Main.player[Main.myPlayer];
+            Player player = Main.LocalPlayer;
             bool empowered = player.Calamity().pscState == (int)ProfanedSoulCrystalState.Empowered;
             if (empowered)
             {
@@ -31,7 +31,7 @@ namespace CalamityMod.Buffs.Summon.Whips
                 player.ClearBuff(Type);
                 return;
             }
-                
+
             var whipBuffs = new int[]
             {
                 BuffID.CoolWhipPlayerBuff, BuffID.ScytheWhipPlayerBuff, BuffID.SwordWhipPlayerBuff,

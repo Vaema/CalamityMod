@@ -1,11 +1,13 @@
-﻿using CalamityMod.Items.Weapons.Rogue;
+﻿using System;
+using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
+    [PierceResistException]
     public class NastyChollaBol : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
@@ -28,7 +30,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             if (Main.rand.NextBool(12))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 157, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.ChlorophyteWeapon, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
             //Sticky Behaviour
             Projectile.StickyProjAI(15);
@@ -85,8 +87,8 @@ namespace CalamityMod.Projectiles.Rogue
                 for (int n = 0; n < needleAmt; n++)
                 {
                     Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
-                    // Since damage is reset on stick, this needs new damage calculations or stored damage in some way.
-                    int damage = Projectile.Calamity().stealthStrike ? Projectile.originalDamage / 2 : (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(0.5f * NastyCholla.BaseDamage);
+                    //The damage is set to 1 since anything more is an AP monster - Angel
+                    int damage = 1;
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<NastyChollaNeedle>(), damage, 0f, Projectile.owner, 0f, 0f);
                 }
             }

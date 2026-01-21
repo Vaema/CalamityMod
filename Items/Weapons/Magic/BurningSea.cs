@@ -9,25 +9,36 @@ namespace CalamityMod.Items.Weapons.Magic
     public class BurningSea : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
+
+        public const float ChargeTime = 240f;
+        public const float BurnOutTime = 560f;
+        public const int BurnOutReuseDelay = 150;
+        public const float FizzleOutTime = 40f;
+
         public override void SetDefaults()
         {
             Item.width = 28;
             Item.height = 30;
-            Item.damage = 75;
+            Item.damage = 69;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 15;
+            Item.mana = 8;
             Item.useTime = 20;
             Item.useAnimation = 20;
-            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noMelee = true;
-            Item.knockBack = 6.5f;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.channel = true;
+            Item.knockBack = 3f;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.UseSound = SoundID.Item20;
             Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<BrimstoneFireball>();
-            Item.shootSpeed = 15f;
+            Item.shoot = ModContent.ProjectileType<IncineratingFireball>();
+            Item.shootSpeed = 5f;
         }
+
+        public override void HoldItem(Player player) => player.Calamity().mouseWorldListener = true;
+
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0 && player.Calamity().burningSeaBurnOut <= 0;
 
         public override void AddRecipes()
         {

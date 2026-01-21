@@ -1,7 +1,7 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,9 +13,9 @@ namespace CalamityMod.Projectiles.Pets
         public new string LocalizationCategory => "Projectiles.Pets";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 5;
-            Main.projPet[Projectile.type] = true;
-            ProjectileID.Sets.LightPet[Projectile.type] = true;
+            Main.projFrames[Type] = 5;
+            Main.projPet[Type] = true;
+            ProjectileID.Sets.LightPet[Type] = true;
         }
 
         public override void SetDefaults()
@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Pets
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.frame = 0;
             }
@@ -223,8 +223,8 @@ namespace CalamityMod.Projectiles.Pets
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-            int height = texture.Height / Main.projFrames[Projectile.type];
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int height = texture.Height / Main.projFrames[Type];
             int frameHeight = height * Projectile.frame;
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (Projectile.spriteDirection == -1)
@@ -236,7 +236,7 @@ namespace CalamityMod.Projectiles.Pets
         public override void PostDraw(Color lightColor)
         {
             Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Pets/BendyPetGlow").Value;
-            int height = texture.Height / Main.projFrames[Projectile.type];
+            int height = texture.Height / Main.projFrames[Type];
             int frameHeight = height * Projectile.frame;
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (Projectile.spriteDirection == -1)

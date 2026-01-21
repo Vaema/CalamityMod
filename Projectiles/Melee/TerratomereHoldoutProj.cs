@@ -1,23 +1,23 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Weapons.Melee;
-using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using Terraria.Graphics.Shaders;
+using Terraria;
 using Terraria.Audio;
+using Terraria.Graphics.Shaders;
+using Terraria.ID;
+using Terraria.ModLoader;
 using static CalamityMod.CalamityUtils;
-using System.Linq;
 
 namespace CalamityMod.Projectiles.Melee
 {
     public class TerratomereHoldoutProj : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
-        public PrimitiveTrail SlashDrawer = null;
 
         public Player Owner => Main.player[Projectile.owner];
 
@@ -153,27 +153,36 @@ namespace CalamityMod.Projectiles.Melee
             // Create the slash.
             if (Time == (int)(Terratomere.SwingTime * (SwingCompletionRatio + 0.15f)))
                 SoundEngine.PlaySound(Terratomere.SwingSound, Projectile.Center);
-            
+
+            // Create 4 beams.
+            bool createBeams = Time == (int)(Terratomere.SwingTime * RecoveryCompletionRatio) + 5f;
             if (Main.myPlayer == Projectile.owner && Time == (int)(Terratomere.SwingTime * (SwingCompletionRatio + 0.34f)))
             {
-                Vector2 bigSlashVelocity = Projectile.SafeDirectionTo(Main.MouseWorld) * Owner.ActiveItem().shootSpeed;
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
+                Vector2 bigSlashVelocity = Projectile.SafeDirectionTo(Main.MouseWorld) * Owner.HeldItem.shootSpeed / 2f;
                 if (bigSlashVelocity.AngleBetween(InitialRotation.ToRotationVector2()) > 1.456f)
                     bigSlashVelocity = InitialRotation.ToRotationVector2() * bigSlashVelocity.Length();
 
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center - bigSlashVelocity * 0.4f, bigSlashVelocity, ModContent.ProjectileType<TerratomereBigSlash>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                int totalBeams = 4;
+                float randomVelocityLimit = bigSlashVelocity.Length() * 0.2f;
+                for (int i = 0; i < totalBeams; i++)
+                {
+                    Vector2 randomVelocity = Main.rand.NextVector2CircularEdge(randomVelocityLimit, randomVelocityLimit);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center - bigSlashVelocity * 0.4f, bigSlashVelocity + randomVelocity, ModContent.ProjectileType<TerratomereSwordBeam>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                }
             }
 
-            // Create a terra blade-like beam when the slash terminates.
+            // Close range slash effect
             if (Main.myPlayer == Projectile.owner && Time == (int)(Terratomere.SwingTime * RecoveryCompletionRatio) + 5f)
             {
-                Vector2 bigSlashVelocity = InitialRotation.ToRotationVector2() * Owner.ActiveItem().shootSpeed / 6f;
+                Vector2 bigSlashVelocity = InitialRotation.ToRotationVector2() * Owner.HeldItem.shootSpeed / 6f;
                 Vector2 bigSlashSpawnPosition = Projectile.Center + bigSlashVelocity.SafeNormalize(Vector2.UnitY) * 64f;
 
-                int slash = Projectile.NewProjectile(Projectile.GetSource_FromThis(), bigSlashSpawnPosition, bigSlashVelocity, ModContent.ProjectileType<TerratomereBeam>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                int slash = Projectile.NewProjectile(Projectile.GetSource_FromThis(), bigSlashSpawnPosition, bigSlashVelocity, ModContent.ProjectileType<TerratomereMeleeSlash>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                 if (Main.projectile.IndexInRange(slash))
                 {
                     Main.projectile[slash].ai[0] = (Direction == 1f).ToInt();
-                    Main.projectile[slash].ModProjectile<TerratomereBeam>().ControlPoints = GenerateSlashPoints().ToArray();
+                    Main.projectile[slash].ModProjectile<TerratomereMeleeSlash>().ControlPoints = GenerateSlashPoints().ToArray();
                 }
             }
         }
@@ -210,9 +219,9 @@ namespace CalamityMod.Projectiles.Melee
             return false;
         }
 
-        public float SlashWidthFunction(float completionRatio) => Projectile.scale * 22f;
+        public float SlashWidthFunction(float completionRatio, Vector2 vertexPos) => Projectile.scale * 22f;
 
-        public Color SlashColorFunction(float completionRatio) => Color.Lime * Utils.GetLerpValue(0.9f, 0.4f, completionRatio, true) * Projectile.Opacity;
+        public Color SlashColorFunction(float completionRatio, Vector2 vertexPos) => Color.Lime * Utils.GetLerpValue(0.9f, 0.4f, completionRatio, true) * Projectile.Opacity;
 
         public IEnumerable<Vector2> GenerateSlashPoints()
         {
@@ -230,9 +239,6 @@ namespace CalamityMod.Projectiles.Melee
 
         public void DrawSlash()
         {
-            // Initialize the primitive drawer.
-            SlashDrawer ??= new(SlashWidthFunction, SlashColorFunction, null, GameShaders.Misc["CalamityMod:ExobladeSlash"]);
-
             // Draw the slash effect.
             Main.spriteBatch.EnterShaderRegion();
 
@@ -240,14 +246,14 @@ namespace CalamityMod.Projectiles.Melee
             PrepareSlashShader(Direction == 1);
 
             if (SwingCompletionAtStartOfTrail > SwingCompletionRatio)
-                SlashDrawer.Draw(GenerateSlashPoints(), Projectile.Center - Main.screenPosition, 95);
+                PrimitiveRenderer.RenderTrail(GenerateSlashPoints().ToArray(), new(SlashWidthFunction, SlashColorFunction, (_,_) => Projectile.Center, shader: GameShaders.Misc["CalamityMod:ExobladeSlash"]), 95);
 
             Main.spriteBatch.ExitShaderRegion();
         }
 
         public void DrawBlade(Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Vector2 origin = texture.Size() * Vector2.UnitY;
             if (Projectile.spriteDirection == -1)
@@ -269,28 +275,17 @@ namespace CalamityMod.Projectiles.Melee
         #endregion Drawing
 
         #region Hit Effects and Collision
-
-        public void OnHitHealEffect()
-        {
-            if (Owner.moonLeech)
-                return;
-            
-            Owner.statLife += Terratomere.TrueMeleeHitHeal;
-            Owner.HealEffect(Terratomere.TrueMeleeHitHeal);
-        }
-
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
-            float _ = 0f;
+            float point = 0f;
             Vector2 direction = (InitialRotation + GetSwingOffsetAngle(SwingCompletion)).ToRotationVector2() * new Vector2(Projectile.spriteDirection, 1f);
-            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, Projectile.Center + direction * Projectile.height * Projectile.scale, Projectile.width * 0.25f, ref _);
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, Projectile.Center + direction * Projectile.height * Projectile.scale, Projectile.width * 0.25f, ref point);
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<GlacialState>(), Terratomere.TrueMeleeGlacialStateTime);
-            if (target.canGhostHeal)
-                OnHitHealEffect();
+            Owner.DoLifestealDirect(target, (int)Math.Round(hit.Damage * 0.025), 0.75f);
 
             // Create a slash creator on top of the hit target.
             int slashCreatorID = ModContent.ProjectileType<TerratomereSlashCreator>();
@@ -299,12 +294,6 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, slashCreatorID, Projectile.damage, Projectile.knockBack, Projectile.owner, target.whoAmI, Main.rand.NextFloat(MathHelper.TwoPi));
                 Owner.ownedProjectileCounts[slashCreatorID]++;
             }
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            target.AddBuff(ModContent.BuffType<GlacialState>(), Terratomere.TrueMeleeGlacialStateTime);
-            OnHitHealEffect();
         }
         #endregion Hit Effects and Collision
     }

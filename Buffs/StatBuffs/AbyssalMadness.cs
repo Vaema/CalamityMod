@@ -1,4 +1,4 @@
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -16,7 +16,7 @@ namespace CalamityMod.Buffs.StatBuffs
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.Calamity().omegaBlueHentai = true;
+            player.Calamity().omegaBlueAbyssalMadness = true;
         }
     }
 }

@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 28;
             Item.height = 32;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.accessory = true;
         }
@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Accessories
             player.manaMagnet = true;
             player.statManaMax2 += 100;
             player.GetDamage<MagicDamageClass>() += 0.15f;
-            player.manaCost *= 0.9f;
+            player.manaCost -= 0.1f;
         }
 
         public override void AddRecipes()

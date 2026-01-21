@@ -1,8 +1,9 @@
 ﻿using CalamityMod.Projectiles.Melee;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Tools
 {
@@ -11,36 +12,36 @@ namespace CalamityMod.Items.Tools
         public new string LocalizationCategory => "Items.Tools";
         public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/MarniteObliteratorUse") { PitchVariance = 0.3f };
 
+        public static int ArmorPenetration = 5;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(ArmorPenetration);
+
         public override void SetDefaults()
         {
             Item.width = 36;
             Item.height = 18;
             Item.damage = 7;
-            Item.ArmorPenetration = 5;
-            Item.knockBack = 0f;
-            Item.useTime = 6;
-            Item.useAnimation = 25;
-            Item.pick = 50;
-
             Item.DamageType = TrueMeleeNoSpeedDamageClass.Instance;
-            Item.channel = true;
-            Item.noUseGraphic = true;
-            Item.noMelee = true;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
-            Item.rare = ItemRarityID.Blue;
-            Item.UseSound = SoundID.Item23;
-            Item.autoReuse = true;
+            Item.ArmorPenetration = ArmorPenetration;
+            Item.pick = 59;
+            Item.tileBoost = 7;
+            Item.useAnimation = 25;
+            Item.useTime = 3;
+            Item.knockBack = 0.5f;
             Item.shoot = ModContent.ProjectileType<MarniteObliteratorProj>();
             Item.shootSpeed = 40f;
-            Item.tileBoost = 7;
+
+            Item.UseSound = SoundID.Item23;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.autoReuse = true;
+            Item.channel = true;
+            Item.noMelee = true;
+            Item.noUseGraphic = true;
+
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
+            Item.rare = ItemRarityID.Blue;
         }
 
-        public override void HoldItem(Player player)
-        {
-            player.Calamity().mouseWorldListener = true;
-        }
-
+        public override void HoldItem(Player player) => player.Calamity().mouseWorldListener = true;
 
         public override void AddRecipes()
         {

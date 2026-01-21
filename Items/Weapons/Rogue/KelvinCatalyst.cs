@@ -1,11 +1,11 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 20;
             Item.height = 20;
-            Item.damage = 60;
+            Item.damage = 50;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.autoReuse = true;
@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 4f;
             Item.UseSound = SoundID.Item1;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.Calamity().donorItem = true;
             Item.shoot = ModContent.ProjectileType<KelvinCatalystBoomerang>();
@@ -44,13 +44,13 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<IceStar>(100).
+                AddIngredient<IceStar>().
                 AddIngredient<Avalanche>().
                 AddIngredient<HoarfrostBow>().
                 AddIngredient<Icebreaker>().
                 AddIngredient<SnowstormStaff>().
                 AddIngredient<EssenceofEleum>(10).
-                AddTile(TileID.IceMachine).
+                AddTile(TileID.Anvils).
                 Register();
         }
     }

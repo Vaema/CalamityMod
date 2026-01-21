@@ -1,7 +1,7 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.IO;
-using System.Linq;
+using CalamityMod.Graphics.Primitives;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -11,7 +11,6 @@ namespace CalamityMod.Projectiles.Summon
     public class DaedalusLightning : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Summon";
-        internal PrimitiveTrail LightningDrawer;
 
         public const int MaximumBranchingIterations = 3;
         public const float LightningTurnRandomnessFactor = 1.7f;
@@ -24,9 +23,9 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 100;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
+            ProjectileID.Sets.MinionShot[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 100;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
         }
 
         public override void SetDefaults()
@@ -40,6 +39,8 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.extraUpdates = 20;
             Projectile.timeLeft = 45 * Projectile.extraUpdates;
             Projectile.DamageType = DamageClass.Summon;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
 
             // Readjust the velocity magnitude the moment this projectile is created
             // to make velocity setting outside the scope of this projectile less irritating
@@ -125,22 +126,19 @@ namespace CalamityMod.Projectiles.Summon
         }
 
         #region Drawing
-        internal float WidthFunction(float completionRatio)
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos)
         {
             float baseWidth = MathHelper.Lerp(2f, 6f, (float)Math.Sin(MathHelper.Pi * 4f * completionRatio) * 0.5f + 0.5f) * Projectile.scale;
             return baseWidth * (float)Math.Sin(MathHelper.Pi * completionRatio);
         }
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             Color baseColor = Color.Lerp(Color.Pink, Color.HotPink, (float)Math.Sin(MathHelper.TwoPi * completionRatio + Main.GlobalTimeWrappedHourly * 4f) * 0.5f + 0.5f);
             return Color.Lerp(baseColor, Color.Red, ((float)Math.Sin(MathHelper.Pi * completionRatio + Main.GlobalTimeWrappedHourly * 4f) * 0.5f + 0.5f) * 0.8f);
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            if (LightningDrawer is null)
-                LightningDrawer = new PrimitiveTrail(WidthFunction, ColorFunction, PrimitiveTrail.RigidPointRetreivalFunction);
-
-            LightningDrawer.Draw(Projectile.oldPos.Where(oldPos => oldPos != Vector2.Zero), Projectile.Size * 0.5f - Main.screenPosition, 300);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_,_) => Projectile.Size * 0.5f, false), 90);
             return false;
         }
         #endregion

@@ -2,9 +2,9 @@
 using CalamityMod.Projectiles.Enemy;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent.Metadata;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -16,36 +16,32 @@ namespace CalamityMod.Tiles.Abyss
     [LegacyName("SulphurousSandNoWater")]
     public class SulphurousSand : ModTile
     {
-        public byte[,] tileAdjacency;
-        public byte[,] secondTileAdjacency;
-        public byte[,] thirdTileAdjacency;
-        public byte[,] fourthTileAdjacency;
-
         public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
+            TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Sand"]);
 
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeWithAbyss(Type);
 
             TileID.Sets.CanBeDugByShovel[Type] = true;
 
-            DustType = 32;
+            DustType = DustID.Sand;
             AddMapEntry(new Color(150, 100, 50));
             HitSound = SoundID.Dig;
 
-            TileFraming.SetUpUniversalMerge(Type, TileID.Dirt, out tileAdjacency);
-            TileFraming.SetUpUniversalMerge(Type, TileID.Stone, out secondTileAdjacency);
-            TileFraming.SetUpUniversalMerge(Type, ModContent.TileType<SulphurousSandstone>(), out thirdTileAdjacency);
-            TileFraming.SetUpUniversalMerge(Type, TileID.Sand, out fourthTileAdjacency);
+            this.RegisterBlendMergeWith(TileID.Dirt);
+            this.RegisterBlendMergeWith(TileID.Stone);
+            this.RegisterBlendMergeWith(ModContent.TileType<SulphurousSandstone>());
+            this.RegisterBlendMergeWith(TileID.Sand);
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 3;
         }
-        
+
         public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
         {
             if (CalamityUtils.ParanoidTileRetrieval(i, j + 1).HasTile &&
@@ -81,7 +77,7 @@ namespace CalamityMod.Tiles.Abyss
                                 {
                                     for (int m = tileLocationY - ambientObjectDetectRadius; m <= tileLocationY + ambientObjectDetectRadius; m++)
                                     {
-                                        if (Main.tile[l, m].HasTile && Main.tile[l, m].TileType == 81)
+                                        if (Main.tile[l, m].HasTile && Main.tile[l, m].TileType == TileID.Coral)
                                             ambientObjectAmt++;
                                     }
                                 }
@@ -90,7 +86,7 @@ namespace CalamityMod.Tiles.Abyss
                                     Main.tile[i, tileLocationY - 4].LiquidAmount == 255)
                                 {
                                     WorldGen.PlaceTile(i, tileLocationY, 81, true, false, -1, 0);
-                                    if (Main.netMode == NetmodeID.Server && Main.tile[i, tileLocationY].HasTile)
+                                    if (Main.dedServ && Main.tile[i, tileLocationY].HasTile)
                                         NetMessage.SendTileSquare(-1, i, tileLocationY, 1, TileChangeType.None);
                                 }
                             }
@@ -103,14 +99,14 @@ namespace CalamityMod.Tiles.Abyss
                                 {
                                     for (int m = tileLocationY - ambientObjectDetectRadius; m <= tileLocationY + ambientObjectDetectRadius; m++)
                                     {
-                                        if (Main.tile[l, m].HasTile && Main.tile[l, m].TileType == 324)
+                                        if (Main.tile[l, m].HasTile && Main.tile[l, m].TileType == TileID.BeachPiles)
                                             ambientObjectAmt++;
                                     }
                                 }
                                 if (ambientObjectAmt < ambientObjectMax)
                                 {
                                     WorldGen.PlaceTile(i, tileLocationY, 324, true, false, -1, Main.rand.Next(2));
-                                    if (Main.netMode == NetmodeID.Server && Main.tile[i, tileLocationY].HasTile)
+                                    if (Main.dedServ && Main.tile[i, tileLocationY].HasTile)
                                         NetMessage.SendTileSquare(-1, i, tileLocationY, 1, TileChangeType.None);
                                 }
                             }
@@ -164,7 +160,7 @@ namespace CalamityMod.Tiles.Abyss
                             Main.tile[vineX, vineY].TileType = (ushort)ModContent.TileType<SulphurousVines>();
                             Main.tile[vineX, vineY].Get<TileWallWireStateData>().HasTile = true;
                             WorldGen.SquareTileFrame(vineX, vineY, true);
-                            if (Main.netMode == NetmodeID.Server)
+                            if (Main.dedServ)
                                 NetMessage.SendTileSquare(-1, vineX, vineY, 3, TileChangeType.None);
                         }
                         Main.tile[i, j].Get<TileWallWireStateData>().Slope = SlopeType.Solid;
@@ -172,24 +168,6 @@ namespace CalamityMod.Tiles.Abyss
                     }
                 }
             }
-        }
-
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
-        {
-
-            TileFraming.DrawUniversalMergeFrames(i, j, fourthTileAdjacency, "CalamityMod/Tiles/Merges/SandMerge");
-            TileFraming.DrawUniversalMergeFrames(i, j, thirdTileAdjacency, "CalamityMod/Tiles/Merges/SulphurousSandstoneMerge");
-            TileFraming.DrawUniversalMergeFrames(i, j, secondTileAdjacency, "CalamityMod/Tiles/Merges/StoneMerge");
-            TileFraming.DrawUniversalMergeFrames(i, j, tileAdjacency, "CalamityMod/Tiles/Merges/DirtMerge");
-        }
-
-        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
-        {
-            TileFraming.GetAdjacencyData(i, j, TileID.Dirt, out tileAdjacency[i, j]);
-            TileFraming.GetAdjacencyData(i, j, TileID.Stone, out secondTileAdjacency[i, j]);
-            TileFraming.GetAdjacencyData(i, j, ModContent.TileType<SulphurousSandstone>(), out thirdTileAdjacency[i, j]);
-            TileFraming.GetAdjacencyData(i, j, TileID.Sand, out fourthTileAdjacency[i, j]);
-            return true;
         }
     }
 }

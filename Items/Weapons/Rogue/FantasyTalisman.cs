@@ -1,8 +1,8 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -10,53 +10,44 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class FantasyTalisman : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 30;
             Item.height = 30;
-            Item.damage = 82;
+            Item.damage = 45;
             Item.noMelee = true;
-            Item.consumable = true;
             Item.noUseGraphic = true;
-            Item.useAnimation = 16;
-            Item.useTime = 16;
+            Item.useTime = Item.useAnimation = 25;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 6f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.maxStack = 9999;
-            Item.value = Item.buyPrice(0, 0, 60, 0);
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.shoot = ModContent.ProjectileType<FantasyTalismanProj>();
-            Item.shootSpeed = 16.5f;
+            Item.shootSpeed = 18f;
             Item.DamageType = RogueDamageClass.Instance;
         }
-
-		public override float StealthDamageMultiplier => 0.8f;
-
+        public override float StealthDamageMultiplier => 0.75f;
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.Calamity().StealthStrikeAvailable()) //setting the stealth strike
+            for (int i = -1; i <= 1; i++)
             {
-                int stealth = Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<FantasyTalismanStealth>(), damage, knockback, player.whoAmI);
-                if (stealth.WithinBounds(Main.maxProjectiles))
-                    Main.projectile[stealth].Calamity().stealthStrike = true;
-                return false;
+                Vector2 perturbedSpeed = velocity.RotatedBy(MathHelper.ToRadians(i * (player.Calamity().StealthStrikeAvailable() ? 5f : 6f)));
+                int shootCard = player.Calamity().StealthStrikeAvailable() ? ModContent.ProjectileType<FantasyTalismanStealth>() : type;
+                int card = Projectile.NewProjectile(source, position, perturbedSpeed, shootCard, damage, knockback, player.whoAmI);
+                if (card.WithinBounds(Main.maxProjectiles) && player.Calamity().StealthStrikeAvailable())
+                    Main.projectile[card].Calamity().stealthStrike = true;
             }
-            return true;
+            return false;
         }
 
         public override void AddRecipes()
         {
-            CreateRecipe(150).
-                AddIngredient<SolarVeil>(3).
-                AddIngredient(ItemID.Silk).
-                AddIngredient(ItemID.Ectoplasm).
+            CreateRecipe().
+                AddIngredient<SolarVeil>(10).
+                AddIngredient(ItemID.Silk, 10).
+                AddIngredient(ItemID.Ectoplasm, 5).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

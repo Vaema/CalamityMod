@@ -1,7 +1,8 @@
-﻿using Terraria.DataStructures;
+﻿using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -11,7 +12,6 @@ namespace CalamityMod.Items.Weapons.Ranged
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         private int counter = 0;
-
         public override void SetDefaults()
         {
             Item.width = 80;
@@ -32,26 +32,17 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ModContent.ProjectileType<SputterComet>();
             Item.shootSpeed = 15f;
             Item.useAmmo = AmmoID.FallenStar;
+            Item.consumeAmmoOnFirstShotOnly = true;
         }
 
-        public override Vector2? HoldoutOffset()
-        {
-            return new Vector2(-5, 0);
-        }
-
-        public override bool CanConsumeAmmo(Item ammo, Player player) //consume ammo only once per round
-        {
-            if (counter == 1 || counter == 2 || counter == 4 || counter == 5 || counter == 7 || counter == 8 || counter == 10 || counter == 11)
-                return false;
-            return true;
-        }
+        public override Vector2? HoldoutOffset() => new Vector2(-5, 0);
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             counter++;
             if (counter == 10)
             {
-                Projectile.NewProjectile(source, position.X, position.Y, velocity.X * 0.8f, velocity.Y * 0.8f, ModContent.ProjectileType<SputterCometBig>(), (int)(damage * 1.5f), knockback, player.whoAmI, 0f, 0f);
+                Projectile.NewProjectile(source, position, velocity * 0.8f, ModContent.ProjectileType<SputterCometBig>(), (int)(damage * 1.5f), knockback, player.whoAmI);
             }
             if (counter >= 12)
                 counter = 0;

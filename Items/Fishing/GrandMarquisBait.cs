@@ -1,6 +1,4 @@
-﻿using CalamityMod.NPCs.AcidRain;
-using CalamityMod.Rarities;
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -22,13 +20,13 @@ namespace CalamityMod.Items.Fishing
             Item.maxStack = Item.CommonMaxStack;
             Item.rare = ItemRarityID.LightRed;
             Item.value = Item.sellPrice(silver: 30);
-            Item.bait = 65;
+            Item.bait = 75;
             Item.consumable = true;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.FishingBait;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.FishingBait;
+        }
     }
 }

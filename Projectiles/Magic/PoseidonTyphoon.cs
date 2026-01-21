@@ -1,17 +1,17 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.StatDebuffs;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using Microsoft.Xna.Framework.Graphics;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.StatDebuffs;
 
 namespace CalamityMod.Projectiles.Magic
 {
     public class PoseidonTyphoon : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = 30;
@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item10, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item10, Projectile.Center);
         }
 
         public override Color? GetAlpha(Color lightColor)
@@ -73,7 +73,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, texture.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }

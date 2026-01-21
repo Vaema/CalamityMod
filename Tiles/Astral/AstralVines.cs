@@ -1,11 +1,11 @@
 ﻿using System;
 using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent.Metadata;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Astral
@@ -19,17 +19,23 @@ namespace CalamityMod.Tiles.Astral
             Main.tileBlockLight[Type] = true;
             Main.tileLavaDeath[Type] = true;
             Main.tileNoFail[Type] = true;
-			TileID.Sets.IsVine[Type] = true;
-			TileID.Sets.ReplaceTileBreakDown[Type] = true;
+            TileID.Sets.IsVine[Type] = true;
+            TileID.Sets.ReplaceTileBreakDown[Type] = true;
             TileID.Sets.VineThreads[Type] = true;
-			TileID.Sets.DrawFlipMode[Type] = 1;
-			TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Plant"]);
+            TileID.Sets.DrawFlipMode[Type] = 1;
+            TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Plant"]);
 
             DustType = ModContent.DustType<AstralBasic>();
 
             HitSound = SoundID.Grass;
 
             AddMapEntry(new Color(65, 56, 83));
+        }
+
+        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
+        {
+            Main.instance.TilesRenderer.CrawlToTopOfVineAndAddSpecialPoint(j, i);
+            return false;
         }
 
         public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)

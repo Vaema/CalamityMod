@@ -1,8 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System;
 
 namespace CalamityMod.Projectiles.Enemy
 {
@@ -11,7 +11,7 @@ namespace CalamityMod.Projectiles.Enemy
         public new string LocalizationCategory => "Projectiles.Enemy";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 10;
+            Main.projFrames[Type] = 10;
         }
 
         public override void SetDefaults()
@@ -25,6 +25,8 @@ namespace CalamityMod.Projectiles.Enemy
             Projectile.ignoreWater = true;
             Projectile.timeLeft = 600;
             Projectile.alpha = 120;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -58,7 +60,7 @@ namespace CalamityMod.Projectiles.Enemy
             {
                 Projectile.damage = 0;
             }
-            else if (Projectile.frame >= Main.projFrames[Projectile.type])
+            else if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.Kill();
             }
@@ -76,7 +78,7 @@ namespace CalamityMod.Projectiles.Enemy
             lightColor.R = (byte)(255 * Projectile.Opacity);
             lightColor.G = (byte)(255 * Projectile.Opacity);
             lightColor.B = (byte)(255 * Projectile.Opacity);
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor);
             return false;
         }
 
@@ -88,7 +90,7 @@ namespace CalamityMod.Projectiles.Enemy
         {
             if (info.Damage <= 0)
                 return;
-            
+
             target.AddBuff(BuffID.Poisoned, 240);
         }
 

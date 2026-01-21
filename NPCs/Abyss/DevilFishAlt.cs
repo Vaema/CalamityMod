@@ -1,44 +1,47 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using System.IO;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
-using Terraria.GameContent;
-using Terraria.GameContent.Bestiary;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
-using Terraria.Audio;
 namespace CalamityMod.NPCs.Abyss
 {
     public class DevilFishAlt : ModNPC
     {
         public bool brokenMask = false;
         public int hitCounter = 0;
+        public static Asset<Texture2D> GlowTexture;
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 16;
+            Main.npcFrameCount[Type] = 16;
             this.HideFromBestiary();
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Abyss/DevilFishGlowAlt", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
         {
             NPC.noGravity = true;
             NPC.lavaImmune = true;
-            NPC.Calamity().canBreakPlayerDefense = true;
             NPC.damage = 90;
             NPC.width = 136;
             NPC.height = 62;
             NPC.defense = 999999;
-            NPC.lifeMax = 400;
+            NPC.lifeMax = 800;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 10, 0);
+            NPC.value = Item.buyPrice(silver: 5);
             NPC.HitSound = SoundID.NPCHit4;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.knockBackResist = 0.85f;
@@ -81,8 +84,8 @@ namespace CalamityMod.NPCs.Abyss
             {
                 brokenMask = true;
                 NPC.HitSound = SoundID.NPCHit1;
-                NPC.defense = 15;
-                if (Main.netMode != NetmodeID.Server)
+                NPC.defense = 25;
+                if (!Main.dedServ)
                 {
                     for (int i = 1; i < 4; i++)
                     {
@@ -264,11 +267,9 @@ namespace CalamityMod.NPCs.Abyss
         {
             if (!NPC.IsABestiaryIconDummy)
             {
-                Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/NPCs/Abyss/DevilFishGlowAlt").Value;
-
                 var effects = NPC.direction == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
-                Main.EntitySpriteDraw(tex, NPC.Center - Main.screenPosition + new Vector2(0, NPC.gfxOffY + 4), 
+                Main.EntitySpriteDraw(GlowTexture.Value, NPC.Center - Main.screenPosition + new Vector2(0, NPC.gfxOffY + 4),
                 NPC.frame, Color.White * 0.5f, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, effects, 0);
             }
         }
@@ -302,7 +303,7 @@ namespace CalamityMod.NPCs.Abyss
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("DevilfishAlt").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("DevilfishAlt2").Type, 1f);

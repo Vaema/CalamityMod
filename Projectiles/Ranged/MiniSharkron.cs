@@ -9,7 +9,7 @@ namespace CalamityMod.Projectiles.Ranged
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 2;
+            Main.projFrames[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -20,20 +20,20 @@ namespace CalamityMod.Projectiles.Ranged
             AIType = ProjectileID.MiniSharkron;
             Projectile.friendly = true;
             Projectile.alpha = 255;
+            Projectile.arrow = true;
             Projectile.ignoreWater = true;
             Projectile.DamageType = DamageClass.Ranged;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override void OnKill(int timeLeft)
         {
             for (int d = 0; d < 15; ++d)
             {
-              int idx = Dust.NewDust(Projectile.Center - Vector2.One * 10f, 50, 50, DustID.Blood, 0f, -2f, 0, default, 1f);
-              Dust dust = Main.dust[idx];
-              dust.velocity /= 2f;
+                int idx = Dust.NewDust(Projectile.Center - Vector2.One * 10f, 50, 50, DustID.Blood, 0f, -2f, 0, default, 1f);
+                Dust dust = Main.dust[idx];
+                dust.velocity /= 2f;
             }
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 int tail = Gore.NewGore(Projectile.GetSource_Death(), Projectile.Center, Projectile.velocity * 0.8f, 584, 1f);
                 Main.gore[tail].timeLeft /= 10;

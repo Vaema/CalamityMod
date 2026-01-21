@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -11,7 +12,6 @@ namespace CalamityMod.Projectiles.Rogue
     public class FishboneBoomerangProjectile : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
-        internal PrimitiveTrail TrailRenderer;
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/FishboneBoomerang";
 
         public static int ChargeupTime = 10;
@@ -26,8 +26,8 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -116,7 +116,7 @@ namespace CalamityMod.Projectiles.Rogue
             for (int i = 0; i < 2; i++)
             {
                 Vector2 dustPos = Projectile.Center + (i * MathHelper.Pi + Projectile.rotation + MathHelper.PiOver2).ToRotationVector2() * 14f;
-                Dust dust = Dust.NewDustPerfect(dustPos, 176, (i * MathHelper.Pi + Projectile.rotation * Math.Sign(Projectile.velocity.X)).ToRotationVector2() * 3f);
+                Dust dust = Dust.NewDustPerfect(dustPos, DustID.BubbleBurst_Blue, (i * MathHelper.Pi + Projectile.rotation * Math.Sign(Projectile.velocity.X)).ToRotationVector2() * 3f);
                 dust.noGravity = true;
             }
 
@@ -151,12 +151,12 @@ namespace CalamityMod.Projectiles.Rogue
 
                 for (int j = 0; j < 4; j++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + streakRotation.ToRotationVector2() * (2f + 0.4f * j), 176, streakRotation.ToRotationVector2() * (0.6f * j + 3f), Scale: 1.4f);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + streakRotation.ToRotationVector2() * (2f + 0.4f * j), DustID.BubbleBurst_Blue, streakRotation.ToRotationVector2() * (0.6f * j + 3f), Scale: 1.4f);
                     dust.noGravity = true;
                 }
             }
 
-            if (((Projectile.Calamity().stealthStrike && Projectile.numHits > 2) || !Projectile.Calamity().stealthStrike) && Returning != 1f)
+            if (Projectile.numHits > 2)
             {
                 Projectile.velocity *= 0.3f;
                 Returning = 1f;
@@ -169,18 +169,18 @@ namespace CalamityMod.Projectiles.Rogue
                 float closestNPCDistance = 10000f;
                 float targettingDistance = 400f;
 
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    if (i == target.whoAmI)
+                    if (n.whoAmI == target.whoAmI)
                         continue;
 
-                    if (Main.npc[i].CanBeChasedBy(Projectile))
+                    if (n.CanBeChasedBy(Projectile))
                     {
-                        float potentialNewDistance = (Projectile.Center - Main.npc[i].Center).Length();
+                        float potentialNewDistance = (Projectile.Center - n.Center).Length();
                         if (potentialNewDistance < targettingDistance && potentialNewDistance < closestNPCDistance)
                         {
                             closestNPCDistance = potentialNewDistance;
-                            newTarget = Main.npc[i];
+                            newTarget = n;
                         }
                     }
                 }
@@ -190,6 +190,26 @@ namespace CalamityMod.Projectiles.Rogue
                     Projectile.velocity *= 0.3f;
                     Returning = 1f;
                     return;
+                }
+
+                if (Projectile.Calamity().stealthStrike && Returning != 1f)
+                {
+                    if (Projectile.owner == Main.myPlayer)
+                    {
+                        for (int s = 0; s < 3; s++)
+                        {
+                            Vector2 velocity = new Vector2((float)Main.rand.Next(-100, 101), (float)Main.rand.Next(-100, 101));
+                            while (velocity.X == 0f && velocity.Y == 0f)
+                            {
+                                velocity = new Vector2((float)Main.rand.Next(-100, 101), (float)Main.rand.Next(-100, 101));
+                            }
+                            velocity.Normalize();
+                            velocity *= (float)Main.rand.Next(70, 101) * 0.1f;
+                            int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<BonebreakerFragment1>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack * 0.5f, Projectile.owner, Main.rand.Next(0, 4), 0f);
+                            if (proj.WithinBounds(Main.maxProjectiles))
+                                Main.projectile[proj].DamageType = RogueDamageClass.Instance;
+                        }
+                    }
                 }
 
                 Bouncing = 1f;

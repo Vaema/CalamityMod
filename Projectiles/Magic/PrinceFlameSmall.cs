@@ -1,4 +1,6 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -13,9 +15,10 @@ namespace CalamityMod.Projectiles.Magic
         public const int AttackDelay = 12;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 3;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 3;
         }
 
         public override void SetDefaults()
@@ -23,29 +26,39 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.width = Projectile.height = 16;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.timeLeft = 240;
-            Projectile.penetrate = 1;
             Projectile.DamageType = DamageClass.Magic;
-            Projectile.extraUpdates = 2;
+            Projectile.MaxUpdates = 3;
+            Projectile.timeLeft = 80 * Projectile.MaxUpdates;
         }
 
         public override void AI()
         {
             Time++;
             Projectile.frameCounter++;
-            Projectile.frame = Projectile.frameCounter / 5 % Main.projFrames[Projectile.type];
+            Projectile.frame = Projectile.frameCounter / 5 % Main.projFrames[Type];
             Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
             Projectile.Opacity = Utils.GetLerpValue(0f, 15f, Projectile.timeLeft, true);
 
+            if (Main.rand.NextBool(3))
+            {
+                Particle mist = new MediumMistParticle(Projectile.Center, Projectile.velocity * 0.5f, PrinceFlameLarge.FlameColor * Projectile.Opacity, Color.DarkSlateGray * Projectile.Opacity, Main.rand.NextFloat(0.4f, 0.6f), 140, Main.rand.NextFloat(-0.1f, 0.1f));
+                GeneralParticleHandler.SpawnParticle(mist);
+            }
+
             if (Time > AttackDelay)
+            {
                 CalamityUtils.HomeInOnNPC(Projectile, false, 600f, 14f, 32f);
+
+                Particle fire = new GlowOrbParticle(Projectile.Center + Main.rand.NextVector2Circular(6f, 6f), (-Projectile.velocity).RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.1f, 0.4f), false, 9, Main.rand.NextFloat(0.4f, 1f), PrinceFlameLarge.FlameColor);
+                GeneralParticleHandler.SpawnParticle(fire);
+            }
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
             lightColor = Color.Lerp(lightColor, Color.White, 0.8f);
-            lightColor.A /= 3;
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            lightColor.A /= 2;
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
@@ -56,9 +69,18 @@ namespace CalamityMod.Projectiles.Magic
             return false;
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<HolyFlames>(), 60);
+
+        public override void OnKill(int timeLeft)
         {
-            target.AddBuff(ModContent.BuffType<HolyFlames>(), 60);
+            for (int i = 0; i < 5; i++)
+            {
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), (Vector2.UnitX).RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(2f, 12f));
+                dust.noGravity = true;
+                dust.scale = Main.rand.NextFloat(0.8f, 1.5f);
+                dust.color = Main.hslToRgb(Main.rand.NextFloat(0.033f, 0.167f), 1f, 0.66f);
+                dust.noLightEmittence = true;
+            }
         }
     }
 }

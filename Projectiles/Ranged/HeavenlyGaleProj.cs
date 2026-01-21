@@ -1,27 +1,26 @@
-﻿using CalamityMod.Items.Weapons.Ranged;
+﻿using System;
+using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Particles;
+using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.ModLoader;
 using Microsoft.Xna.Framework.Graphics;
-using System;
+using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
-using CalamityMod.Sounds;
-using CalamityMod.Projectiles.BaseProjectiles;
-using CalamityMod.Particles;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
     public class HeavenlyGaleProj : BaseIdleHoldoutProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
-        public bool OwnerCanShoot => Owner.HasAmmo(Owner.ActiveItem()) && !Owner.noItems && !Owner.CCed;
+        public bool OwnerCanShoot => Owner.HasAmmo(Owner.HeldItem) && !Owner.noItems && !Owner.CCed;
 
         public float StringReelbackInterpolant
         {
             get
             {
-                int duration = Owner.ActiveItem().useAnimation;
+                int duration = Owner.HeldItem.useAnimation;
                 float time = duration - ShootDelay;
                 float firstHalf = Utils.GetLerpValue(8f, 0f, time, true);
                 float secondHalf = Utils.GetLerpValue(8f, duration * 0.6f, time, true);
@@ -65,12 +64,12 @@ namespace CalamityMod.Projectiles.Ranged
             if (Main.myPlayer == Projectile.owner && OwnerCanShoot && activatingShoot)
             {
                 SoundEngine.PlaySound(HeavenlyGale.FireSound, Projectile.Center);
-                ShootDelay = Owner.ActiveItem().useAnimation;
+                ShootDelay = Owner.HeldItem.useAnimation;
                 Projectile.netUpdate = true;
             }
 
             // Update damage based on current ranged damage stat, since this projectile exists regardless of if it's being fired.
-            Projectile.damage = Owner.ActiveItem() is null ? 0 : Owner.GetWeaponDamage(Owner.ActiveItem());
+            Projectile.damage = Owner.HeldItem is null ? 0 : Owner.GetWeaponDamage(Owner.HeldItem);
 
             UpdateProjectileHeldVariables(armPosition);
             ManipulatePlayerVariables();
@@ -78,7 +77,7 @@ namespace CalamityMod.Projectiles.Ranged
             // Fire arrows.
             if (ShootDelay > 0f && Projectile.FinalExtraUpdate())
             {
-                float shootCompletionRatio = 1f - ShootDelay / (Owner.ActiveItem().useAnimation - 1f);
+                float shootCompletionRatio = 1f - ShootDelay / (Owner.HeldItem.useAnimation - 1f);
                 float bowAngularOffset = (float)Math.Sin(MathHelper.TwoPi * shootCompletionRatio) * 0.4f;
                 float damageFactor = Utils.Remap(ChargeTimer, 0f, HeavenlyGale.MaxChargeTime, 1f, HeavenlyGale.MaxChargeDamageBoost);
 
@@ -96,9 +95,9 @@ namespace CalamityMod.Projectiles.Ranged
                     // Update the tip position for one frame.
                     tipPosition = armPosition + arrowDirection * Projectile.width * 0.45f;
 
-                    if (Main.myPlayer == Projectile.owner && Owner.HasAmmo(Owner.ActiveItem()))
+                    if (Main.myPlayer == Projectile.owner && Owner.HasAmmo(Owner.HeldItem))
                     {
-                        Item heldItem = Owner.ActiveItem();
+                        Item heldItem = Owner.HeldItem;
                         Owner.PickAmmo(heldItem, out int projectileType, out float shootSpeed, out int damage, out float knockback, out _);
                         damage = (int)(damage * damageFactor);
                         projectileType = ModContent.ProjectileType<ExoCrystalArrow>();
@@ -146,7 +145,7 @@ namespace CalamityMod.Projectiles.Ranged
                     float unitOffsetY = (float)Math.Pow(Math.Sin(offsetAngle), 3D);
 
                     Vector2 puffDustVelocity = new Vector2(unitOffsetX, unitOffsetY) * 5f;
-                    Dust magic = Dust.NewDustPerfect(tipPosition, 267, puffDustVelocity);
+                    Dust magic = Dust.NewDustPerfect(tipPosition, DustID.RainbowMk2, puffDustVelocity);
                     magic.scale = 1.8f;
                     magic.fadeIn = 0.5f;
                     magic.color = CalamityUtils.MulticolorLerp(i / 75f, CalamityUtils.ExoPalette);
@@ -160,14 +159,13 @@ namespace CalamityMod.Projectiles.Ranged
         {
             if (Main.myPlayer == Projectile.owner)
             {
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, this is only used to aim the Heavenly Gale bow
+
                 float aimInterpolant = Utils.GetLerpValue(10f, 40f, Projectile.Distance(Main.MouseWorld), true);
                 Vector2 oldVelocity = Projectile.velocity;
                 Projectile.velocity = Vector2.Lerp(Projectile.velocity, Projectile.SafeDirectionTo(Main.MouseWorld), aimInterpolant);
                 if (Projectile.velocity != oldVelocity)
-                {
-                    Projectile.netSpam = 0;
-                    Projectile.netUpdate = true;
-                }
+                    Projectile.ForceNetUpdate();
             }
 
             Projectile.position = armPosition - Projectile.Size * 0.5f + Projectile.velocity.SafeNormalize(Vector2.UnitY) * 44f;
@@ -196,7 +194,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D textureGlow = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/HeavenlyGaleProjGlow").Value;
             Vector2 origin = texture.Size() * 0.5f;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;

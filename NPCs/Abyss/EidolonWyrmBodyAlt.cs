@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -8,12 +9,18 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Abyss
 {
+    [LongDistanceNetSync(SyncWith = typeof(EidolonWyrmHead))]
     public class EidolonWyrmBodyAlt : ModNPC
     {
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.EidolonWyrmHead.DisplayName");
+        public static Asset<Texture2D> GlowTexture;
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -52,9 +59,9 @@ namespace CalamityMod.NPCs.Abyss
 
             // Check if other segments are still alive, if not, die
             bool shouldDespawn = true;
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC n in Main.ActiveNPCs)
             {
-                if (Main.npc[i].active && Main.npc[i].type == ModContent.NPCType<EidolonWyrmHead>())
+                if (n.type == ModContent.NPCType<EidolonWyrmHead>())
                 {
                     shouldDespawn = false;
                     break;
@@ -99,7 +106,8 @@ namespace CalamityMod.NPCs.Abyss
                     segmentPosition = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)NPC.height * 0.5f);
                     targetXDirection = Main.npc[(int)NPC.ai[1]].position.X + (float)(Main.npc[(int)NPC.ai[1]].width / 2) - segmentPosition.X;
                     targetYDirection = Main.npc[(int)NPC.ai[1]].position.Y + (float)(Main.npc[(int)NPC.ai[1]].height / 2) - segmentPosition.Y;
-                } catch
+                }
+                catch
                 {
                 }
                 NPC.rotation = (float)System.Math.Atan2((double)targetYDirection, (double)targetXDirection) + 1.57f;
@@ -127,12 +135,12 @@ namespace CalamityMod.NPCs.Abyss
                 spriteEffects = SpriteEffects.FlipHorizontally;
             }
             Vector2 center = new Vector2(NPC.Center.X, NPC.Center.Y);
-            Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[NPC.type].Value.Width / 2), (float)(TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2));
+            Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[Type].Value.Width / 2), (float)(TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2));
             Vector2 vector = center - screenPos;
-            vector -= new Vector2((float)ModContent.Request<Texture2D>("CalamityMod/NPCs/Abyss/EidolonWyrmBodyAltGlow").Value.Width, (float)(ModContent.Request<Texture2D>("CalamityMod/NPCs/Abyss/EidolonWyrmBodyAltGlow").Value.Height / Main.npcFrameCount[NPC.type])) * 1f / 2f;
+            vector -= new Vector2((float)GlowTexture.Value.Width, (float)(GlowTexture.Value.Height / Main.npcFrameCount[Type])) * 1f / 2f;
             vector += halfSizeTexture * 1f + new Vector2(0f, NPC.gfxOffY);
             Color color = new Color(127 - NPC.alpha, 127 - NPC.alpha, 127 - NPC.alpha, 0).MultiplyRGBA(Color.White);
-            Main.spriteBatch.Draw(ModContent.Request<Texture2D>("CalamityMod/NPCs/Abyss/EidolonWyrmBodyAltGlow").Value, vector,
+            Main.spriteBatch.Draw(GlowTexture.Value, vector,
                 new Microsoft.Xna.Framework.Rectangle?(NPC.frame), color, NPC.rotation, halfSizeTexture, 1f, spriteEffects, 0f);
         }
 
@@ -147,9 +155,9 @@ namespace CalamityMod.NPCs.Abyss
             {
                 for (int k = 0; k < 10; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 4, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.Center, NPC.velocity, Mod.Find<ModGore>("Wyrm3").Type, 1f);
                 }

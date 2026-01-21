@@ -23,38 +23,50 @@ namespace CalamityMod.Items.Weapons.Ranged
         public static int AftershotCooldownFrames = 9;
         public static int Charge1Frames = 156;
         public static int Charge2Frames = 308;
+        public static Color mainColor = new Color(116, 225, 0);
 
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+
+        public override void SetStaticDefaults() => ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
+
         public override void SetDefaults()
         {
-            Item.width = 72;
-            Item.height = 38;
-            Item.damage = 172;
+            Item.width = 58;
+            Item.height = 28;
+            Item.damage = 125;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = Item.useAnimation = AftershotCooldownFrames;
+            Item.useAnimation = Item.useTime = AftershotCooldownFrames;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.channel = true;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 4f;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.UseSound = null;
             Item.autoReuse = false;
             Item.shoot = ModContent.ProjectileType<ArcNovaDiffuserHoldout>();
             Item.shootSpeed = 12f;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
+
+        public override void HoldItem(Player player) => player.Calamity().mouseWorldListener = true;
+
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        {
+            Projectile holdout = Projectile.NewProjectileDirect(source, player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<ArcNovaDiffuserHoldout>(), damage, knockback, player.whoAmI, 0, 1);
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
+            holdout.velocity = player.Calamity().mouseWorld - player.RotatedRelativePoint(player.MountedCenter);
+            return false;
+        }
 
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient<OpalStriker>().
                 AddIngredient<MagnaCannon>().
-                AddIngredient<LifeAlloy>(3).
-                AddIngredient(ItemID.MartianConduitPlating, 15).
+                AddIngredient<CoreofCalamity>().
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

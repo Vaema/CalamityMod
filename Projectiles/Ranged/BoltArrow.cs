@@ -1,9 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -19,14 +18,13 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.arrow = true;
             Projectile.penetrate = 1;
             Projectile.timeLeft = 180;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Electrified, 60);
 
         public override void AI()
         {
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             Projectile.localAI[0] += 1f;
             if (Projectile.localAI[0] == 15f)
             {
@@ -36,7 +34,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Vector2 rotate = Vector2.UnitX * (float)-(float)Projectile.width / 2f;
                     rotate += -Vector2.UnitY.RotatedBy((double)((float)l * 3.14159274f / 6f), default) * new Vector2(8f, 16f);
                     rotate = rotate.RotatedBy((double)(Projectile.rotation - 1.57079637f), default);
-                    int blueDust = Dust.NewDust(Projectile.Center, 0, 0, 221, 0f, 0f, 160, default, 1f);
+                    int blueDust = Dust.NewDust(Projectile.Center, 0, 0, DustID.FireworkFountain_Blue, 0f, 0f, 160, default, 1f);
                     Main.dust[blueDust].scale = 1.1f;
                     Main.dust[blueDust].noGravity = true;
                     Main.dust[blueDust].position = Projectile.Center + rotate;
@@ -69,7 +67,7 @@ namespace CalamityMod.Projectiles.Ranged
             int rando = Main.rand.Next(10, 20);
             for (int i = 0; i < rando; i++)
             {
-                int dust = Dust.NewDust(Projectile.Center - Projectile.velocity / 2f, 0, 0, 135, 0f, 0f, 100, default, 2f);
+                int dust = Dust.NewDust(Projectile.Center - Projectile.velocity / 2f, 0, 0, DustID.IceTorch, 0f, 0f, 100, default, 2f);
                 Main.dust[dust].velocity *= 2f;
                 Main.dust[dust].noGravity = true;
             }

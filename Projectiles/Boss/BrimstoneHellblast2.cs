@@ -1,11 +1,10 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Events;
-using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.NPCs;
-using CalamityMod.World;
+using CalamityMod.NPCs.SupremeCalamitas;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -17,7 +16,7 @@ namespace CalamityMod.Projectiles.Boss
         public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
+            Main.projFrames[Type] = 4;
         }
 
         public override void SetDefaults()
@@ -38,10 +37,10 @@ namespace CalamityMod.Projectiles.Boss
         public override void AI()
         {
             // Cal Clone bullet hell projectiles accelerate after a certain time has passed
-            if (Projectile.ai[0] == 2f && Main.expertMode && Projectile.timeLeft < 1260)
+            if (Projectile.ai[0] == 2f && (Main.expertMode || BossRushEvent.BossRushActive) && Projectile.timeLeft < 1260)
             {
-                if (Projectile.velocity.Length() < (BossRushEvent.BossRushActive ? 15f : 10f))
-                    Projectile.velocity *= 1.005f;
+                if (Projectile.velocity.Length() < 10f)
+                    Projectile.velocity *= 1.002f;
             }
 
             Projectile.frameCounter++;
@@ -75,17 +74,21 @@ namespace CalamityMod.Projectiles.Boss
         public override bool PreDraw(ref Color lightColor)
         {
             SpriteEffects spriteEffects = Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-            int frameHeight = texture.Height / Main.projFrames[Projectile.type];
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int frameHeight = texture.Height / Main.projFrames[Type];
             int drawStart = frameHeight * Projectile.frame;
             lightColor.R = (byte)(255 * Projectile.Opacity);
 
-            if (CalamityGlobalNPC.SCal != -1)
+            if (CalamityGlobalNPC.SCal != -1 && NPC.AnyNPCs(ModContent.NPCType<SupremeCalamitas>()) == true)
             {
                 if (Main.npc[CalamityGlobalNPC.SCal].active)
                 {
-                    if (Main.npc[CalamityGlobalNPC.SCal].ModNPC<SupremeCalamitas>().cirrus)
+                    if (Main.npc[CalamityGlobalNPC.SCal].ModNPC<SupremeCalamitas>().permafrost)
+                    {
+                        lightColor.G = (byte)(255 * Projectile.Opacity);
                         lightColor.B = (byte)(255 * Projectile.Opacity);
+                        lightColor.R = 0;
+                    }
                 }
             }
 
@@ -101,9 +104,9 @@ namespace CalamityMod.Projectiles.Boss
                 return;
 
             if (Projectile.ai[0] == 0f || Main.zenithWorld)
-                target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 120);
+                target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 180);
             else
-                target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 90);
+                target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120);
         }
     }
 }

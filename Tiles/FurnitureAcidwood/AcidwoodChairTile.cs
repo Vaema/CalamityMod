@@ -16,8 +16,6 @@ namespace CalamityMod.Tiles.FurnitureAcidwood
     {
         public override void SetStaticDefaults()
         {
-            RegisterItemDrop(ModContent.ItemType<AcidwoodChair>());
-
             Main.tileFrameImportant[Type] = true;
             Main.tileLavaDeath[Type] = true;
             Main.tileWaterDeath[Type] = false;
@@ -28,6 +26,7 @@ namespace CalamityMod.Tiles.FurnitureAcidwood
             TileObjectData.newTile.CoordinatePadding = 2;
             TileObjectData.newTile.Direction = TileObjectDirection.PlaceLeft;
             TileObjectData.newTile.StyleHorizontal = true;
+            TileObjectData.newTile.StyleMultiplier = 2;
             TileObjectData.newTile.Origin = new Point16(1, 1);
             TileObjectData.newTile.UsesCustomCanPlace = true;
             TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop, 2, 0);
@@ -48,7 +47,7 @@ namespace CalamityMod.Tiles.FurnitureAcidwood
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 7, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.WoodFurniture, 0f, 0f, 1, new Color(255, 255, 255), 1f);
             return false;
         }
 
@@ -57,11 +56,11 @@ namespace CalamityMod.Tiles.FurnitureAcidwood
             num = fail ? 1 : 3;
         }
 
-        public override void ModifySittingTargetInfo(int i, int j, ref TileRestingInfo info) => CalamityUtils.ChairSitInfo(i, j, ref info, 40, true, true);
+        public override void ModifySittingTargetInfo(int i, int j, ref TileRestingInfo info) => FurnitureCommon.ChairSitInfo(i, j, ref info, 40, true, true);
 
-        public override bool RightClick(int i, int j) => CalamityUtils.ChairRightClick(i, j);
+        public override bool RightClick(int i, int j) => FurnitureCommon.ChairRightClick(i, j);
 
-        public override void MouseOver(int i, int j) => CalamityUtils.ChairMouseOver(i, j, ModContent.ItemType<AcidwoodChair>(), true);
+        public override void MouseOver(int i, int j) => FurnitureCommon.ChairMouseOver(i, j, ModContent.ItemType<AcidwoodChair>(), true);
 
         public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings)
         {

@@ -1,8 +1,8 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 50;
             Item.height = 48;
-            Item.damage = 90;
+            Item.damage = 95;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.autoReuse = true;

@@ -1,10 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.UI.Chat;
+using Terraria.GameContent;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.GameContent;
+using Terraria.UI.Chat;
 
 namespace CalamityMod.UI
 {

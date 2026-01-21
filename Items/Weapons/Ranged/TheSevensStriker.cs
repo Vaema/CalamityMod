@@ -6,35 +6,42 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class TheSevensStriker : ModItem, ILocalizedModType
+    public class TheSevensStriker : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
+        public bool ShowExtensionIndicator => false;
         public new string LocalizationCategory => "Items.Weapons.Ranged";
-        public static readonly SoundStyle RouletteSound = new("CalamityMod/Sounds/Item/SevensStrikerRoulette") { Volume = 0.6f, SoundLimitBehavior = SoundLimitBehavior.ReplaceOldest};
-        public static readonly SoundStyle RouletteTickSound = new("CalamityMod/Sounds/Item/SevensStrikerRouletteTick") { Volume = 0.5f};
+        public static readonly SoundStyle RouletteSound = new("CalamityMod/Sounds/Item/SevensStrikerRoulette") { Volume = 0.6f, SoundLimitBehavior = SoundLimitBehavior.ReplaceOldest };
+        public static readonly SoundStyle RouletteTickSound = new("CalamityMod/Sounds/Item/SevensStrikerRouletteTick") { Volume = 0.5f };
         public static readonly SoundStyle BustSound = new("CalamityMod/Sounds/Item/SevensStrikerBust");
+        public static readonly SoundStyle BustGFB = new("CalamityMod/Sounds/Item/SevensStrikerBustGFB");
         public static readonly SoundStyle DoublesSound = new("CalamityMod/Sounds/Item/SevensStrikerDoubles");
         public static readonly SoundStyle TriplesSound = new("CalamityMod/Sounds/Item/SevensStrikerTriples");
         public static readonly SoundStyle JackpotSound = new("CalamityMod/Sounds/Item/SevensStrikerJackpot");
+        public static readonly SoundStyle JackpotGFB = new("CalamityMod/Sounds/Item/SevensStrikerJackpotGFB");
         public static readonly SoundStyle CoinSound = new("CalamityMod/Sounds/Item/SevensStrikerCoinShot") { MaxInstances = 0, PitchVariance = 0.5f };
 
         public static int ShotCoin = 0; // projectile ID to use for right click, affects damage multiplier
         public static readonly float RightClickCopperMultiplier = 0.04f;
         public static readonly float RightClickSilverMultiplier = 0.08f;
-        public static readonly float RightClickGoldMultiplier   = 0.16f;
+        public static readonly float RightClickGoldMultiplier = 0.16f;
+        public static int RightClickAmmoSavedPercent = 80;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RightClickAmmoSavedPercent);
 
         public static readonly float DoublesMultiplier = 1f; // Unfortunately doubles can't be doubles. Balancing!
         public static readonly float TriplesCherryMultiplier = 1f;
         public static readonly float TriplesCherrySplitMultiplier = 0.333f;
         public static readonly float TriplesGrapeMultiplier = 0.333f; // fixed the grapes interfering with each other's iframes
-        public static readonly float JackpotMultiplier = 0.5f; // Jackpot fires 49 shots total and thus needs to be reduced somehow
+        public static readonly float JackpotMultiplier = 0.5f; // Jackpot fires 49 shots total and thus needs to be reduced somehow...
+        public static readonly float JackpotMultiplierGFB = 7f; // ...Unless you simply cannot stop winning
 
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
         public override void SetDefaults()
@@ -54,7 +61,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useAmmo = AmmoID.Coin;
             Item.shootSpeed = 24f;
             Item.shoot = ProjectileID.PlatinumCoin;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.Calamity().donorItem = true;
         }
@@ -63,10 +70,10 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override bool? UseItem(Player player)
         {
-            // Right click has a 20% chance to consume money
+            // Right click has a chance to save money
             if (player.altFunctionUse == 2)
             {
-                bool consumeCoin = Main.rand.NextFloat() > 0.8f;
+                bool consumeCoin = Main.rand.Next(100) >= RightClickAmmoSavedPercent;
                 long coinCount = Utils.CoinsCount(out bool overflow, player.inventory);
                 int price;
 
@@ -165,12 +172,11 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddIngredient(ItemID.CoinGun).
-                AddIngredient<ClockGatlignum>().
                 AddIngredient(ItemID.PlatinumCoin, 7).
                 AddIngredient(ItemID.GoldCoin, 77).
-                AddIngredient<TwistingNether>(2).
                 AddIngredient(ItemID.LunarBar, 12).
-                AddTile(TileID.LunarCraftingStation).
+                AddIngredient<TwistingNether>(3).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

@@ -1,5 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useAnimation = 45;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 3f;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -32,7 +32,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ModContent.ProjectileType<MaelstromHoldout>();
             Item.shootSpeed = 20f;
             Item.useAmmo = AmmoID.Arrow;
-            Item.Calamity().canFirePointBlankShots = true;
             Item.Calamity().donorItem = true;
         }
 
@@ -49,7 +48,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient<ReaperTooth>(3).
                 AddIngredient<DivineGeode>(20).
                 AddIngredient<Voidstone>(50).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

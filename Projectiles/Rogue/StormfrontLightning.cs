@@ -1,12 +1,9 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Projectiles.Rogue;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Graphics.Primitives;
 using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Graphics.Shaders;
@@ -21,7 +18,6 @@ namespace CalamityMod.Projectiles.Rogue
     public class StormfrontLightning : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
-        internal PrimitiveTrail LightningDrawer;
 
         private int noTileHitCounter = 81; //Using other projectile's methods to not collide until a certain time has passed, allowing use inside caves
 
@@ -39,8 +35,8 @@ namespace CalamityMod.Projectiles.Rogue
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 50;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
+            ProjectileID.Sets.TrailCacheLength[Type] = 50;
         }
 
         public override void SetDefaults()
@@ -83,7 +79,7 @@ namespace CalamityMod.Projectiles.Rogue
             //dust sparks are now a feature
             if (Main.rand.NextBool(10))
             {
-                int d = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, 226, 0f, 0f, 100, new Color(Main.rand.Next(20, 100), 204, 250), 1f);
+                int d = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.Electric, 0f, 0f, 100, new Color(Main.rand.Next(20, 100), 204, 250), 1f);
                 Main.dust[d].scale += (float)Main.rand.Next(50) * 0.01f;
                 Main.dust[d].noGravity = true;
                 Main.dust[d].position = Projectile.Center;
@@ -153,11 +149,11 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public float PrimitiveWidthFunction(float completionRatio) => CalamityUtils.Convert01To010(completionRatio) * Projectile.scale * Projectile.width;
+        public float PrimitiveWidthFunction(float completionRatio, Vector2 vertexPos) => CalamityUtils.Convert01To010(completionRatio) * Projectile.scale * Projectile.width;
 
-        public Color PrimitiveColorFunction(float completionRatio)
+        public Color PrimitiveColorFunction(float completionRatio, Vector2 vertexPos)
         {
-            //Why did you have to overcomplicate it Dom, I could have just fucking used "lightningColor = new Color(Main.rand.Next(20,100), 204, 250);" and shove it in PreDraw - Shade
+            //Why did you have to overcomplicate it Lucille, I could have just fucking used "lightningColor = new Color(Main.rand.Next(20,100), 204, 250);" and shove it in PreDraw - Shade
             float colorInterpolant = (float)Math.Sin(Projectile.identity / 3f + completionRatio * 20f + Main.GlobalTimeWrappedHourly * 1.1f) * 0.5f + 0.5f;
             Color color = CalamityUtils.MulticolorLerp(colorInterpolant, new Color(Main.rand.Next(20, 100), 204, 250), new Color(Main.rand.Next(20, 100), 204, 250));
             return color;
@@ -166,27 +162,25 @@ namespace CalamityMod.Projectiles.Rogue
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             SoundEngine.PlaySound(SoundID.Item93, Projectile.position);
-            target.AddBuff(BuffID.Electrified, 150);
+            target.AddBuff(ModContent.BuffType<StaticDischarge>(), 150);
             Sparks();
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             SoundEngine.PlaySound(SoundID.Item93, Projectile.position);
-            target.AddBuff(BuffID.Electrified, 150);
+            target.AddBuff(ModContent.BuffType<StaticDischarge>(), 150);
             Sparks();
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            //Just gonna use Dom's work on Heavenly Gale, tried to do a new one myself but I barely understand the .fx files and how they work, might revist it again eventually - Shade
-            if (LightningDrawer is null)
-                LightningDrawer = new PrimitiveTrail(PrimitiveWidthFunction, PrimitiveColorFunction, PrimitiveTrail.RigidPointRetreivalFunction, GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"]);
-
+            //Just gonna use Lucille's work on Heavenly Gale, tried to do a new one myself but I barely understand the .fx files and how they work, might revist it again eventually - Shade
             GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"].UseImage1("Images/Misc/Perlin");
             GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"].Apply();
 
-            LightningDrawer.Draw(Projectile.oldPos, Projectile.Size * 0.3f - Main.screenPosition, 10);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_,_) => Projectile.Size * 0.3f, false,
+                shader: GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"]), 10);
             return false;
         }
 

@@ -25,7 +25,7 @@ namespace CalamityMod.Tiles.Abyss
             TileObjectData.newTile.DrawYOffset = 2;
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(47, 79, 79), Language.GetText("MapObject.Pot")); // dark slate gray
-            DustType = 29;
+            DustType = DustID.WaterCandle;
             HitSound = SoundID.Shatter;
         }
 
@@ -34,25 +34,27 @@ namespace CalamityMod.Tiles.Abyss
             Tile tileAtPosition = CalamityUtils.ParanoidTileRetrieval(i, j);
             if (tileAtPosition.TileFrameX % 36 == 0 && tileAtPosition.TileFrameY % 36 == 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
-                    int goreAmt = Main.rand.Next(1, 2 + 1);
+                    int goreAmt = Main.rand.Next(2, 4 + 1);
                     for (int k = 0; k < goreAmt; k++)
                     {
-                        Gore.NewGore(new EntitySource_TileBreak(i, j), new Vector2(i, j) * 16, Main.rand.NextVector2CircularEdge(3f, 3f), Mod.Find<ModGore>("AbyssPotGore1").Type);
-                        Gore.NewGore(new EntitySource_TileBreak(i, j), new Vector2(i, j) * 16, Main.rand.NextVector2CircularEdge(3f, 3f), Mod.Find<ModGore>("AbyssPotGore2").Type);
+                        Gore.NewGore(new EntitySource_TileBreak(i, j), new Vector2(i, j) * 16, Main.rand.NextVector2CircularEdge(3f, 3f), Mod.Find<ModGore>($"AbyssPot{WorldGen.genRand.Next(1, 6 + 1)}").Type);
                     }
                 }
 
-                // 1 in 400 for a Coin Portal
+                // Coin Portal @ 0.25% (varies with luck)
                 if (Player.GetClosestRollLuck(i, j, 400) == 0f)
                 {
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                         Projectile.NewProjectile(new EntitySource_TileBreak(i, j), i * 16 + 16, j * 16 + 16, 0f, -12f, ProjectileID.CoinPortal, 0, 0f, Main.myPlayer);
                 }
-                // Followed by a 1 in 4 for a bomb in For The Worthy worlds
-                else if (Main.getGoodWorld && Main.rand.NextBool(4))
+                // FTW/GFB drop bombs @ 16.63%
+                else if (Main.getGoodWorld && Main.rand.NextBool(6))
                     Projectile.NewProjectile(new EntitySource_TileBreak(i, j), i * 16 + 16, j * 16 + 8, (float)Main.rand.Next(-100, 101) * 0.002f, 0f, ProjectileID.Bomb, 0, 0f, Player.FindClosest(new Vector2(i * 16, j * 16), 16, 16));
+                // Remix/GFB drop fallen stars @ 19.95% (@ 16.68% GFB)
+                else if (Main.remixWorld && Main.rand.NextBool(5))
+                    yield return new Item(ItemID.FallenStar);
                 else
                     yield return new Item(ModContent.ItemType<AbyssalTreasure>());
             }

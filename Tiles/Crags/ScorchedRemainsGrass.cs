@@ -1,7 +1,9 @@
 ﻿using CalamityMod.Dusts;
+using CalamityMod.Systems;
 using CalamityMod.Tiles.Crags.Lily;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -11,16 +13,17 @@ namespace CalamityMod.Tiles.Crags
 {
     public class ScorchedRemainsGrass : ModTile
     {
+        public Asset<Texture2D> GrassTexture;
+
         private const short subsheetWidth = 234;
         private const short subsheetHeight = 90;
         private int extraFrameHeight = 36;
         private int extraFrameWidth = 90;
 
-        public byte[,] tileAdjacency;
-        public byte[,] secondTileAdjacency;
-
         public override void SetStaticDefaults()
         {
+            GrassTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/Crags/CinderBlossomGrassGrass");
+
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
             Main.tileLighted[Type] = true;
@@ -31,11 +34,11 @@ namespace CalamityMod.Tiles.Crags
 
             HitSound = SoundID.Dig;
             MinPick = 100;
-            RegisterItemDrop(ModContent.ItemType<Items.Placeables.ScorchedRemains>());
+            RegisterItemDrop(ModContent.ItemType<Items.Placeables.Crags.ScorchedRemains>());
             AddMapEntry(new Color(212, 82, 227));
 
-            TileFraming.SetUpUniversalMerge(Type, ModContent.TileType<BrimstoneSlag>(), out tileAdjacency);
-            TileFraming.SetUpUniversalMerge(Type, TileID.Ash, out secondTileAdjacency);
+            this.RegisterBlendMergeWith(ModContent.TileType<BrimstoneSlag>());
+            this.RegisterBlendMergeWith(TileID.Ash);
         }
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
@@ -47,7 +50,7 @@ namespace CalamityMod.Tiles.Crags
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 1, 0f, 0f, 1, new Color(100, 100, 100), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Stone, 0f, 0f, 1, new Color(100, 100, 100), 1f);
             return false;
         }
 
@@ -76,7 +79,7 @@ namespace CalamityMod.Tiles.Crags
                 Main.tile[i, j].TileType = (ushort)ModContent.TileType<ScorchedRemains>();
             }
 
-            if (WorldGen.genRand.Next(5) == 0 && !up.HasTile && !up2.HasTile && up.LiquidAmount == 0)
+            if (WorldGen.genRand.NextBool(5) && !up.HasTile && !up2.HasTile && up.LiquidAmount == 0)
             {
                 up.TileType = (ushort)ModContent.TileType<CinderBlossomTallPlants>();
                 up.HasTile = true;
@@ -84,7 +87,7 @@ namespace CalamityMod.Tiles.Crags
                 up.TileFrameX = (short)(WorldGen.genRand.Next(20) * 18);
                 WorldGen.SquareTileFrame(i, j - 1, true);
 
-                if (Main.netMode == NetmodeID.Server) 
+                if (Main.dedServ)
                 {
                     NetMessage.SendTileSquare(-1, i, j - 1, 3, TileChangeType.None);
                 }
@@ -107,7 +110,7 @@ namespace CalamityMod.Tiles.Crags
                 Main.tile[i, j].TileType = (ushort)ModContent.TileType<ScorchedRemains>();
             }
 
-            if (WorldGen.genRand.Next(60) == 0 && !up.HasTile && !up2.HasTile && up.LiquidAmount == 0)
+            if (WorldGen.genRand.NextBool(60) && !up.HasTile && !up2.HasTile && up.LiquidAmount == 0)
             {
                 up.TileType = (ushort)ModContent.TileType<LavaPistil>();
                 up.HasTile = true;
@@ -115,10 +118,23 @@ namespace CalamityMod.Tiles.Crags
                 up.TileFrameX = (short)(WorldGen.genRand.Next(8) * 18);
                 WorldGen.SquareTileFrame(i, j - 1, true);
 
-                if (Main.netMode == NetmodeID.Server)
+                if (Main.dedServ)
                 {
                     NetMessage.SendTileSquare(-1, i, j - 1, 3, TileChangeType.None);
                 }
+            }
+        }
+
+        public override void PostTileFrame(int i, int j, int up, int down, int left, int right, int upLeft, int upRight, int downLeft, int downRight)
+        {
+            if (Main.tile[i - 1, j - 1].TileType != Type || Main.tile[i, j - 1].TileType != Type || Main.tile[i + 1, j - 1].TileType != Type ||
+                Main.tile[i - 1, j - 2].TileType != Type || Main.tile[i, j - 2].TileType != Type || Main.tile[i + 1, j - 2].TileType != Type)
+            {
+                Main.tile[i, j].Get<TileSpecialDrawData>().HasSpecialPoint = true;
+            }
+            else
+            {
+                Main.tile[i, j].Get<TileSpecialDrawData>().HasSpecialPoint = false;
             }
         }
 
@@ -129,45 +145,33 @@ namespace CalamityMod.Tiles.Crags
 
             if (!Main.gamePaused && Main.instance.IsActive && !Above.HasTile && isPlayerNear)
             {
-                if (Main.rand.Next(300) == 0)
+                if (Main.rand.NextBool(300))
                 {
                     int newDust = Dust.NewDust(new Vector2((i - 2) * 16, (j - 1) * 16), 5, 5, ModContent.DustType<CinderBlossomDust>());
                     Main.dust[newDust].velocity.Y += 0.09f;
                 }
             }
 
-            if (Main.tile[i - 1, j - 1].TileType != Type || Main.tile[i, j - 1].TileType != Type || Main.tile[i + 1, j - 1].TileType != Type ||
-                Main.tile[i - 1, j - 2].TileType != Type || Main.tile[i, j - 2].TileType != Type || Main.tile[i + 1, j - 2].TileType != Type)
+            if (Main.tile[i, j].Get<TileSpecialDrawData>().HasSpecialPoint)
             {
-                try
-                {
-                    Main.instance.TilesRenderer.AddSpecialLegacyPoint(i, j);
-                }
-                catch { }
+                Main.instance.TilesRenderer.AddSpecialLegacyPoint(i, j);
             }
         }
 
         public override void SpecialDraw(int i, int j, SpriteBatch spriteBatch)
         {
+            Tile tile = Main.tile[i, j];
+            if (tile.IsTileActuallyInvisible())
+                return;
+
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + zero;
-            Color drawColour = GetDrawColour(i, j);
-            Texture2D leaves = ModContent.Request<Texture2D>("CalamityMod/Tiles/Crags/CinderBlossomGrassGrass").Value;
+            Color drawColour = CalamityUtils.ApplyPaint(tile.TileColor, Lighting.GetColor(i, j));
+            Texture2D leaves = GrassTexture.Value;
 
             DrawExtraTop(i, j, leaves, drawOffset, drawColour);
             DrawExtraWallEnds(i, j, leaves, drawOffset, drawColour);
             DrawExtraDrapes(i, j, leaves, drawOffset, drawColour);
-        }
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
-        {
-            TileFraming.DrawUniversalMergeFrames(i, j, secondTileAdjacency, "CalamityMod/Tiles/Merges/AshMerge");
-            TileFraming.DrawUniversalMergeFrames(i, j, tileAdjacency, "CalamityMod/Tiles/Merges/BrimstoneSlagMerge");
-        }
-        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
-        {
-            TileFraming.GetAdjacencyData(i, j, ModContent.TileType<BrimstoneSlag>(), out tileAdjacency[i, j]);
-            TileFraming.GetAdjacencyData(i, j, TileID.Ash, out secondTileAdjacency[i, j]);
-            return true;
         }
 
         #region 'Extra Drapes' Drawing
@@ -290,27 +294,6 @@ namespace CalamityMod.Tiles.Crags
         {
             //Subtract y so that y is vertical for ease of readability
             return Main.tile[i + x, j - y].TileType == type == equal;
-        }
-
-        private Color GetDrawColour(int i, int j)
-        {
-            int colType = Main.tile[i, j].TileColor;
-            Color paintCol = WorldGen.paintColor(colType);
-            if (colType < 13)
-            {
-                paintCol.R = (byte)((paintCol.R / 2f) + 128);
-                paintCol.G = (byte)((paintCol.G / 2f) + 128);
-                paintCol.B = (byte)((paintCol.B / 2f) + 128);
-            }
-            if (colType == 29)
-            {
-                paintCol = Color.Black;
-            }
-            Color col = Lighting.GetColor(i, j);
-            col.R = (byte)(paintCol.R / 255f * col.R);
-            col.G = (byte)(paintCol.G / 255f * col.G);
-            col.B = (byte)(paintCol.B / 255f * col.B);
-            return col;
         }
 
         private int GetExtraState(string type)

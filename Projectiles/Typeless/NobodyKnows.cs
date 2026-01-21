@@ -1,4 +1,4 @@
-using Terraria.ModLoader;
+﻿using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Typeless
 {
     public class NobodyKnows : ModProjectile, ILocalizedModType

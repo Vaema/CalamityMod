@@ -1,8 +1,9 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -15,8 +16,8 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -38,6 +39,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
+
             bool isMinion = Projectile.type == ModContent.ProjectileType<SilvaCrystal>();
             if (!modPlayer.silvaSummon)
             {
@@ -47,14 +49,11 @@ namespace CalamityMod.Projectiles.Summon
             if (isMinion)
             {
                 if (player.dead)
-                {
                     modPlayer.sCrystal = false;
-                }
                 if (modPlayer.sCrystal)
-                {
                     Projectile.timeLeft = 2;
-                }
             }
+
             Projectile.Center = player.Center + Vector2.UnitY * (player.gfxOffY - 60f);
             if (player.gravDir == -1f)
             {
@@ -65,36 +64,27 @@ namespace CalamityMod.Projectiles.Summon
             {
                 Projectile.rotation = 0f;
             }
-            Projectile.position.X = (int)Projectile.position.X;
-            Projectile.position.Y = (int)Projectile.position.Y;
+
             Projectile.velocity = Vector2.Zero;
             Projectile.alpha -= 5;
             if (Projectile.alpha < 0)
-            {
                 Projectile.alpha = 0;
-            }
             if (Projectile.direction == 0)
-            {
                 Projectile.direction = Main.player[Projectile.owner].direction;
-            }
+
             if (Projectile.alpha == 0 && Main.rand.NextBool(15))
             {
-                Dust silvaDust = Main.dust[Dust.NewDust(Projectile.Top, 0, 0, 267, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1f)];
-                silvaDust.velocity.X = 0f;
+                Vector2 dustSpawn = Projectile.Center + Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(26f, 30f);
+                Dust silvaDust = Dust.NewDustPerfect(dustSpawn, DustID.RainbowMk2, Vector2.UnitY * Main.rand.NextFloat(-2f, 2f), 100, new Color(Main.DiscoR, 203, 103), 0.5f);
                 silvaDust.noGravity = true;
                 silvaDust.fadeIn = 1f;
-                silvaDust.position = Projectile.Center + Vector2.UnitY.RotatedByRandom(6.2831854820251465) * (4f * Main.rand.NextFloat() + 26f);
-                silvaDust.scale = 0.5f;
             }
+
             Projectile.localAI[0] += 1f;
             if (Projectile.localAI[0] >= 60f)
-            {
                 Projectile.localAI[0] = 0f;
-            }
             if (Projectile.ai[0] < 0f)
-            {
                 Projectile.ai[0] += 1f;
-            }
             if (Projectile.ai[0] == 0f)
             {
                 int targetID = -1;
@@ -114,26 +104,23 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 if (targetID < 0)
                 {
-                    int targetIDCopy;
-                    for (int i = 0; i < Main.maxNPCs; i = targetIDCopy + 1)
+                    foreach (NPC target in Main.ActiveNPCs)
                     {
-                        NPC target = Main.npc[i];
-                        if (target.CanBeChasedBy(Projectile, false))
+                        if (target.CanBeChasedBy(Projectile))
                         {
                             float targetDistance = Projectile.Distance(target.Center);
                             if (targetDistance < attackRange && Collision.CanHitLine(Projectile.Center, 0, 0, target.Center, 0, 0))
                             {
                                 attackRange = targetDistance;
-                                targetID = i;
+                                targetID = target.whoAmI;
                             }
                         }
-                        targetIDCopy = i;
                     }
                 }
                 if (targetID != -1)
                 {
                     Projectile.ai[0] = 1f;
-                    Projectile.ai[1] = (float)targetID;
+                    Projectile.ai[1] = targetID;
                     Projectile.netUpdate = true;
                     return;
                 }
@@ -141,7 +128,7 @@ namespace CalamityMod.Projectiles.Summon
             if (Projectile.ai[0] > 0f)
             {
                 int npcTrack = (int)Projectile.ai[1];
-                if (!Main.npc[npcTrack].CanBeChasedBy(Projectile, false))
+                if (!Main.npc[npcTrack].CanBeChasedBy(Projectile))
                 {
                     Projectile.ai[0] = 0f;
                     Projectile.ai[1] = 0f;
@@ -157,49 +144,34 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.netUpdate = true;
                     if (Projectile.owner == Main.myPlayer)
                     {
-                        Vector2 attackPos = Main.npc[npcTrack].position + Main.npc[npcTrack].Size * Utils.RandomVector2(Main.rand, 0f, 1f) - Projectile.Center;
-                        int attackAmt;
-                        for (int j = 0; j < 3; j = attackAmt + 1)
+                        Vector2 attackPos = Main.npc[npcTrack].Center - Projectile.Center;
+                        for (int j = 0; j < 3; j++)
                         {
-                            Vector2 finalAttackPos = Projectile.Center + attackPos;
-                            if (j > 0)
-                            {
-                                finalAttackPos = Projectile.Center + attackPos.RotatedByRandom(0.78539818525314331) * (Main.rand.NextFloat() * 0.5f + 0.75f);
-                            }
-                            float x4 = Main.rgbToHsl(new Color(Main.DiscoR, 203, 103)).X;
-                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), finalAttackPos, Vector2.Zero, ModContent.ProjectileType<SilvaCrystalExplosion>(), Projectile.damage, Projectile.knockBack, Projectile.owner, x4, (float)Projectile.whoAmI);
-                            attackAmt = j;
+                            Vector2 finalAttackPos = Projectile.Center + attackPos.RotatedByRandom(j > 0 ? MathHelper.Pi * 0.125f : 0f) * (j > 0 ? Main.rand.NextFloat(0.9f, 1.1f) : 1f);
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), finalAttackPos, Vector2.Zero, ModContent.ProjectileType<SilvaCrystalExplosion>(), Projectile.damage, Projectile.knockBack, Projectile.owner, Main.rgbToHsl(new Color(Main.DiscoR, 203, 103)).X, Projectile.whoAmI);
                         }
                         return;
                     }
                 }
             }
         }
+        public override bool? CanDamage() => false;
 
-        public override Color? GetAlpha(Color lightColor)
-        {
-            return new Color(255 - Projectile.alpha, 255 - Projectile.alpha, 255 - Projectile.alpha, 127 - Projectile.alpha / 2);
-        }
-
+        public override Color? GetAlpha(Color lightColor) => new Color(255 - Projectile.alpha, 255 - Projectile.alpha, 255 - Projectile.alpha, 127 - Projectile.alpha / 2);
         public override bool PreDraw(ref Color lightColor)
         {
-            Color colorArea = Lighting.GetColor((int)((double)Projectile.position.X + (double)Projectile.width * 0.5) / 16, (int)(((double)Projectile.position.Y + (double)Projectile.height * 0.5) / 16.0));
-            Vector2 projPos = Projectile.position + new Vector2((float)Projectile.width, (float)Projectile.height) / 2f + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition;
-            Texture2D texture2D34 = ModContent.Request<Texture2D>(Texture).Value;
-            Rectangle rectangular = texture2D34.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
-            Color colorAlpha = Projectile.GetAlpha(colorArea);
-            Vector2 halfRectangle = rectangular.Size() / 2f;
-            float scaleFactor = (float)Math.Cos((double)(6.28318548f * (Projectile.localAI[0] / 60f))) + 3f + 3f;
-            for (float k = 0f; k < 4f; k += 1f)
+            Texture2D tex = TextureAssets.Projectile[Type].Value;
+            Vector2 projPos = Projectile.Center + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition;
+            Color colorArea = Lighting.GetColor((int)(Projectile.position.X + Projectile.width * 0.5) / 16, (int)((Projectile.position.Y + Projectile.height * 0.5) / 16.0));
+            Color colorAlpha = Projectile.GetAlpha(colorArea) * 0.2f;
+            Vector2 origin = tex.Size() / 2f;
+            float scaleFactor = MathF.Cos(MathHelper.TwoPi * (Projectile.localAI[0] / 60f)) + 6f;
+
+            for (int k = 0; k < 4; k++)
             {
-                SpriteBatch spritebatch = Main.spriteBatch;
-                double arg_F8BE_1 = (double)(k * MathHelper.PiOver2);
-                Vector2 center = default;
-                Main.EntitySpriteDraw(texture2D34, projPos + Vector2.UnitY.RotatedBy(arg_F8BE_1, center) * scaleFactor, new Microsoft.Xna.Framework.Rectangle?(rectangular), colorAlpha * 0.2f, Projectile.rotation, halfRectangle, Projectile.scale, SpriteEffects.None, 0);
+                Main.EntitySpriteDraw(tex, projPos + Vector2.UnitY.RotatedBy(k * MathHelper.PiOver2) * scaleFactor, null, colorAlpha, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
             }
             return false;
         }
-
-        public override bool? CanDamage() => false;
     }
 }

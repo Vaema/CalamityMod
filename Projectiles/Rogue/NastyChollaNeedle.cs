@@ -1,7 +1,7 @@
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -41,5 +41,9 @@ namespace CalamityMod.Projectiles.Rogue
 
         //So you can stick a needle up the Tinkerer's ass
         public override bool? CanHitNPC(NPC target) => target.type != NPCID.DD2EterniaCrystal && !target.immortal && !target.dontTakeDamage;
+
+        // 18NOV2024: Ozzatron: Nasty Cholla needles are not allowed to deal more than 1 damage under any circumstances.
+        // This prevents them from becoming demonchungus when given flat damage boosts like Copper armor or Thorium's The Ring.
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.SetMaxDamage(1);
     }
 }

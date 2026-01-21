@@ -7,6 +7,7 @@ using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.Events;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
@@ -39,7 +40,7 @@ namespace CalamityMod.Projectiles.Typeless
         public override void AI()
         {
             Time++;
-            if (!Owner.channel || Owner.noItems || Owner.CCed)
+            if (Owner.CantUseHoldout())
             {
                 // Reset the boss rush timer to what it would normally be if disabling is done prematurely.
                 if (BossRushEvent.BossRushActive || BossRushEvent.StartTimer > 0)
@@ -94,13 +95,13 @@ namespace CalamityMod.Projectiles.Typeless
 
             float currentShakePower = MathHelper.Lerp(0.2f, 8f, Utils.GetLerpValue(Lifetime * 0.725f, Lifetime, Time, true));
             currentShakePower *= 1f - Utils.GetLerpValue(1000f, 3100f, Main.LocalPlayer.Distance(Projectile.Center), true);
-            Main.LocalPlayer.Calamity().GeneralScreenShakePower = currentShakePower;
+            Main.LocalPlayer.SetScreenshake(currentShakePower);
         }
 
         public void CreateEffectsHandler()
         {
             SoundEngine.PlaySound(BossRushEvent.StartBuildupSound, Main.LocalPlayer.Center);
-            Main.LocalPlayer.Calamity().GeneralScreenShakePower = 16f;
+            Main.LocalPlayer.SetScreenshake(16f);
             if (Main.myPlayer == Projectile.owner)
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BossRushEffectThing>(), 0, 0f, Projectile.owner);
         }
@@ -112,7 +113,7 @@ namespace CalamityMod.Projectiles.Typeless
 
             for (int i = 0; i < 20; i++)
             {
-                Dust paleMagic = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(22f, 28f), 261);
+                Dust paleMagic = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(22f, 28f), DustID.AncientLight);
                 paleMagic.velocity = -Vector2.UnitY * Main.rand.NextFloat(1.8f, 3.2f);
                 paleMagic.color = Color.White;
                 paleMagic.scale = Main.rand.NextFloat(1.1f, 1.35f);
@@ -134,7 +135,7 @@ namespace CalamityMod.Projectiles.Typeless
                 Vector2 spawnPosition = Projectile.Center + Main.rand.NextVector2Unit() * outwardness * Main.rand.NextFloat(0.75f, 1.1f);
                 Vector2 dustVelocity = (Projectile.Center - spawnPosition) * 0.085f + Owner.velocity;
 
-                Dust paleMagic = Dust.NewDustPerfect(spawnPosition, 264);
+                Dust paleMagic = Dust.NewDustPerfect(spawnPosition, DustID.PortalBoltTrail);
                 paleMagic.velocity = dustVelocity;
                 paleMagic.scale = dustScale * Main.rand.NextFloat(0.75f, 1.15f);
                 paleMagic.color = Color.Lerp(Color.LightCoral, Color.White, Time / Lifetime * Main.rand.NextFloat(0.65f, 1f));
@@ -161,7 +162,7 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Main.zenithWorld ? ModContent.Request<Texture2D>("CalamityMod/Items/SummonItems/Terminus_GFB").Value : ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Main.zenithWorld ? ModContent.Request<Texture2D>("CalamityMod/Items/SummonItems/Terminus_GFB").Value : Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 baseDrawPosition = Projectile.Center - Main.screenPosition;
             Vector2 origin = texture.Size() * 0.5f;
             Color baseColor = Color.Lerp(Projectile.GetAlpha(lightColor), Color.White, Utils.GetLerpValue(40f, 120f, Time, true));

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Linq;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
@@ -14,31 +15,60 @@ namespace CalamityMod.Items.SummonItems.Invasion
         public int frame = 0;
         public override void SetStaticDefaults()
         {
-           	ItemID.Sets.SortingPriorityBossSpawns[Type] = 17; // Solar Tablet (1 above Lihzahrd Power Cell)
+            Item.ResearchUnlockCount = 3;
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 17; // Solar Tablet (1 above Lihzahrd Power Cell)
         }
 
         public override void SetDefaults()
         {
             Item.width = 26;
             Item.height = 52;
-            Item.maxStack = 1;
-            Item.rare = ItemRarityID.Yellow;
-            Item.useAnimation = 10;
-            Item.useTime = 10;
+            Item.consumable = true;
+            Item.maxStack = Item.CommonMaxStack;
+            Item.useAnimation = Item.useTime = 10;
+            Item.UseSound = SoundID.Zombie67;
             Item.useStyle = ItemUseStyleID.HoldUp;
-            Item.consumable = false;
+            Item.value = Item.buyPrice(gold: 50); // Sold by Cyborg
+            Item.rare = ItemRarityID.Yellow;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.EventItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.EventItem;
+        }
 
-        public override bool CanUseItem(Player player) => Main.invasionType == InvasionID.None;
+        public override bool CanUseItem(Player player)
+        {
+            // Do not start new invasion when it's already on going
+            if (Main.invasionType != InvasionID.None)
+                return false;
+
+            // This is the requirement for StartInvasion for some reason
+            // If this part is missing MartianRemote will show DD2 invasion GUI without any enemy spawn on MP
+            if (!Main.player.Any(p => p.active && p.ConsumedLifeCrystals >= 5))
+                return false;
+
+            return true;
+        }
 
         public override bool? UseItem(Player player)
         {
-            Main.StartInvasion(InvasionID.MartianMadness);
+            // Single Player case
+            if (Main.netMode == NetmodeID.SinglePlayer)
+            {
+                Main.invasionDelay = 0;
+                Main.StartInvasion(InvasionID.MartianMadness);
+                return true;
+            }
+
+            // MP case: only owner should send Spawn Message to Master
+            if (player.whoAmI == Main.myPlayer)
+            {
+                //-7.0 is hardcoded id for MartianMadness Event
+                NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, number: player.whoAmI, number2: -7.0f);
+                return true;
+            }
+
             return true;
         }
 

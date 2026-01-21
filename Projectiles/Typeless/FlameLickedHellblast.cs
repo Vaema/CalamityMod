@@ -9,15 +9,15 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
- public class FlameLickedHellblast : ModProjectile, ILocalizedModType
+    public class FlameLickedHellblast : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Projectiles/Boss/BrimstoneHellblast";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 2;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.TrailCacheLength[Type] = 2;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -27,7 +27,7 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
-            Projectile.penetrate = -1;
+            Projectile.penetrate = 5;
             Projectile.timeLeft = 255;
             Projectile.localNPCHitCooldown = -1;
             Projectile.usesLocalNPCImmunity = true;
@@ -74,7 +74,7 @@ namespace CalamityMod.Projectiles.Typeless
         {
             lightColor.R = (byte)(255 * Projectile.Opacity);
 
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
@@ -89,7 +89,9 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 90);
+            //Doze - I gave all parry accessories long debuff infliction times due to the lack of weapons that inflict debuffs for a decent time, and the scarcity of using the parry
+            //Most common vanilla debuffs have a way to inflict them for 15, 20, or even 30 seconds
+            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), CalamityUtils.SecondsToFrames(15));
         }
 
         public override void OnKill(int timeLeft)

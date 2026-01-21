@@ -1,4 +1,5 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.Collections.Generic;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
@@ -13,7 +14,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 26;
             Item.height = 34;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.accessory = true;
         }
@@ -31,6 +32,13 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<PerennialBar>(2).
                 AddTile(TileID.MythrilAnvil).
                 Register();
+        }
+
+        public override void ModifyTooltips(List<TooltipLine> list)
+        {
+            var player = Main.LocalPlayer;
+            if (player != null)
+                list.FindAndReplace("[DAMAGE]", (0.3f * (1 - player.statLife / (float)player.statLifeMax2)).ToPercent());
         }
     }
 }

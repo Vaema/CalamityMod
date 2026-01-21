@@ -1,9 +1,9 @@
 ﻿using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Summon
 {
     public class MK2FlaskSummon : ModProjectile, ILocalizedModType
@@ -13,8 +13,8 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            ProjectileID.Sets.MinionShot[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -51,11 +51,11 @@ namespace CalamityMod.Projectiles.Summon
                     Main.projectile[p].originalDamage = Projectile.originalDamage;
 
                 int beeArrayIndex = 0;
-                for (int i = 0; i < Main.projectile.Length; i++)
+                foreach (Projectile pro in Main.ActiveProjectiles)
                 {
-                    if (Main.projectile[i].active && Main.projectile[i].owner == Projectile.owner && Main.projectile[i].type == ModContent.ProjectileType<PlaguebringerMK2>())
+                    if (pro.owner == Projectile.owner && pro.type == ModContent.ProjectileType<PlaguebringerMK2>())
                     {
-                        Main.projectile[i].ai[1] = beeArrayIndex;
+                        pro.ai[1] = beeArrayIndex;
                         beeArrayIndex++;
                     }
                 }

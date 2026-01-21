@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Buffs.StatBuffs;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -17,14 +18,14 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.damage = 12;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.useTime = 5;
-            Item.useAnimation = 5;
+            Item.useTime = 6;
+            Item.useAnimation = 6;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 1.5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.rare = ItemRarityID.Green;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.shoot = ModContent.ProjectileType<MycorootProj>();
             Item.shootSpeed = 20f;
             Item.DamageType = RogueDamageClass.Instance;
@@ -32,28 +33,25 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            int stealth = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 0f);
+            int stealth = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
             if (player.Calamity().StealthStrikeAvailable() && player.ownedProjectileCounts[ModContent.ProjectileType<ShroomerangSpore>()] < 20 && stealth.WithinBounds(Main.maxProjectiles))
             {
                 Main.projectile[stealth].Calamity().stealthStrike = true;
-				int projAmt = Main.rand.Next(7,11);
-                for (int i = 0; i < projAmt; i++)
+                for (int i = 0; i < 8; i++)
                 {
-                    int spore = Projectile.NewProjectile(source, player.Center, velocity, ModContent.ProjectileType<ShroomerangSpore>(), (int)(damage * 0.5f), knockback, player.whoAmI);
-                    if (spore.WithinBounds(Main.maxProjectiles))
-                        Main.projectile[spore].ai[1] = 1f;
+                    int spore = Projectile.NewProjectile(source, player.Center, velocity, ModContent.ProjectileType<ShroomerangSpore>(), damage, knockback, player.whoAmI, 0f, 1f);
                 }
-                for (int i = 0; i < Main.maxPlayers; i++)
+                foreach (Player other in Main.ActivePlayers)
                 {
-					Player other = Main.player[i];
-					if (other is null || !other.active || other.dead)
-						continue;
-					if ((other.team == player.team && player.team != 0) || player.whoAmI == i)
+                    if (other.dead)
+                        continue;
+
+                    if ((other.team == player.team && player.team != 0) || player.whoAmI == other.whoAmI)
                     {
                         if (player.Distance(other.Center) <= 800f)
-                            other.AddBuff(ModContent.BuffType<Mushy>(), 900);
+                            other.AddBuff(ModContent.BuffType<Mushy>(), 900, quiet: false);
                     }
-				}
+                }
             }
             return false;
         }

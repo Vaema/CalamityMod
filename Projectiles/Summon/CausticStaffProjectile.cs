@@ -10,7 +10,7 @@ namespace CalamityMod.Projectiles.Summon
         public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            ProjectileID.Sets.MinionShot[Type] = true;
         }
 
         public override void SetDefaults()
@@ -28,7 +28,7 @@ namespace CalamityMod.Projectiles.Summon
         }
         public override void AI()
         {
-            int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 6, 0f, 0f, 0, default, 0.5f);
+            int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 0, default, 0.5f);
             Dust dust = Main.dust[fire];
             dust.velocity *= 0.1f;
             dust.scale = 1.3f;
@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             for (int i = 0; i < 5; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 6);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.Torch);
                 dust.noGravity = true;
                 dust.velocity = Vector2.UnitY.RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(2f);
             }
@@ -51,20 +51,14 @@ namespace CalamityMod.Projectiles.Summon
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Player player = Main.player[Projectile.owner];
-            if ((player.ActiveItem().CountsAsClass<SummonDamageClass>() &&
-                !player.ActiveItem().CountsAsClass<MeleeDamageClass>() &&
-                !player.ActiveItem().CountsAsClass<RangedDamageClass>() &&
-                !player.ActiveItem().CountsAsClass<MagicDamageClass>() &&
-                !player.ActiveItem().CountsAsClass<ThrowingDamageClass>()) ||
-                player.ActiveItem().hammer > 0 ||
-                player.ActiveItem().pick > 0 ||
-                player.ActiveItem().axe > 0)
+            Item heldItem = player.HeldItem;
+            if (!CalamityUtils.ShouldTriggerSummonPenalty(player, heldItem))
             {
                 int duration = Main.rand.Next(60, 181); // Anywhere between 1 and 3 seconds
                 switch ((int)Projectile.ai[0])
                 {
                     case 0:
-                        if (target.Calamity().marked <= 0)
+                        if (target.Calamity().markedForDeath)
                             target.AddBuff(ModContent.BuffType<MarkedforDeath>(), duration);
                         break;
                     case 1:

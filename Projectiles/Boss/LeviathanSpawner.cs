@@ -1,6 +1,6 @@
-﻿using CalamityMod.World;
+﻿using System;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.Shaders;
@@ -21,7 +21,7 @@ namespace CalamityMod.Projectiles.Boss
         public static readonly SoundStyle RumbleSound = new("CalamityMod/Sounds/Custom/LeviathanRumble");
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
         }
 
         public override void SetDefaults()
@@ -50,7 +50,7 @@ namespace CalamityMod.Projectiles.Boss
 
             if (Projectile.timeLeft == 45)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     WaterShaderData ripple = (WaterShaderData)Filters.Scene["WaterDistortion"].GetShader();
                     Vector2 ripplePos = Projectile.Center;
@@ -73,7 +73,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public void CreateVisuals()
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             WorldUtils.Find((Projectile.Center - Vector2.UnitY * 1200f).ToTileCoordinates(), Searches.Chain(new Searches.Down(150), new CustomConditions.IsWater()), out Point waterTop);
@@ -84,7 +84,7 @@ namespace CalamityMod.Projectiles.Boss
                 float xArea = MathHelper.Lerp(400f, 1150f, Time / 300f);
                 Vector2 dustSpawnPosition = waterTop.ToWorldCoordinates() + Vector2.UnitY * 25f;
                 dustSpawnPosition.X += Main.rand.NextFloatDirection() * xArea * 0.35f;
-                Dust bubble = Dust.NewDustPerfect(dustSpawnPosition, 267, Vector2.UnitY * -12f);
+                Dust bubble = Dust.NewDustPerfect(dustSpawnPosition, DustID.RainbowMk2, Vector2.UnitY * -12f);
                 bubble.noGravity = true;
                 bubble.scale = 1.9f;
                 bubble.color = Color.CornflowerBlue;

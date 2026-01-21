@@ -1,70 +1,51 @@
-﻿using CalamityMod.Projectiles.Melee;
+﻿using CalamityMod.Items.BaseItems;
+using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
-using System;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class HolyCollider : ModItem, ILocalizedModType
+    public class HolyCollider : CustomUseProjItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetDefaults()
         {
-            Item.width = 94;
-            Item.height = 80;
-            Item.scale = 1.5f;
-            Item.damage = 270;
+            Item.width = 114;
+            Item.height = 146;
+            Item.damage = 3140;
             Item.DamageType = DamageClass.Melee;
-            Item.useAnimation = 22;
+            Item.useAnimation = 45;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 22;
+            Item.useTime = 45;
             Item.useTurn = true;
             Item.knockBack = 7.75f;
-            Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.shootSpeed = 10f;
 
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.channel = true;
+            Item.shoot = ModContent.ProjectileType<HolyColliderHoldout>();
+            Item.noUseGraphic = true;
+            Item.noMelee = true;
+
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
         }
-
-        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
+        public override bool MeleePrefix() => true;
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            var source = player.GetSource_ItemUse(Item);
-            SoundEngine.PlaySound(SoundID.Item14, target.Center);
-            float spread = 45f * 0.0174f;
-            double startAngle = Math.Atan2(Item.shootSpeed, Item.shootSpeed) - spread / 2;
-            double deltaAngle = spread / 8f;
-            double offsetAngle;
-            int i;
-            int holyFireDamage = player.CalcIntDamage<MeleeDamageClass>(0.3f * Item.damage);
-            for (i = 0; i < 4; i++)
-            {
-                offsetAngle = startAngle + deltaAngle * (i + i * i) / 2f + 32f * i;
-                Projectile.NewProjectile(source, target.Center.X, target.Center.Y, (float)(Math.Sin(offsetAngle) * 5f), (float)(Math.Cos(offsetAngle) * 5f), ModContent.ProjectileType<HolyColliderHolyFire>(), holyFireDamage, hit.Knockback, Main.myPlayer);
-                Projectile.NewProjectile(source, target.Center.X, target.Center.Y, (float)(-Math.Sin(offsetAngle) * 5f), (float)(-Math.Cos(offsetAngle) * 5f), ModContent.ProjectileType<HolyColliderHolyFire>(), holyFireDamage, hit.Knockback, Main.myPlayer);
-            }
+            Projectile.NewProjectileDirect(source, player.MountedCenter, Vector2.Zero, type, damage, knockback, player.whoAmI, 0, 0, 5);
+            return false;
         }
-
-        public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
+        public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
         {
-            var source = player.GetSource_ItemUse(Item);
-            SoundEngine.PlaySound(SoundID.Item14, target.Center);
-            float spread = 45f * 0.0174f;
-            double startAngle = Math.Atan2(Item.shootSpeed, Item.shootSpeed) - spread / 2;
-            double deltaAngle = spread / 8f;
-            double offsetAngle;
-            int i;
-            int holyFireDamage = player.CalcIntDamage<MeleeDamageClass>(0.3f * Item.damage);
-            for (i = 0; i < 4; i++)
-            {
-                offsetAngle = startAngle + deltaAngle * (i + i * i) / 2f + 32f * i;
-                Projectile.NewProjectile(source, target.Center.X, target.Center.Y, (float)(Math.Sin(offsetAngle) * 5f), (float)(Math.Cos(offsetAngle) * 5f), ModContent.ProjectileType<HolyColliderHolyFire>(), holyFireDamage, Item.knockBack, Main.myPlayer);
-                Projectile.NewProjectile(source, target.Center.X, target.Center.Y, (float)(-Math.Sin(offsetAngle) * 5f), (float)(-Math.Cos(offsetAngle) * 5f), ModContent.ProjectileType<HolyColliderHolyFire>(), holyFireDamage, Item.knockBack, Main.myPlayer);
-            }
+            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, Request<Texture2D>(Texture + "Glow").Value);
         }
     }
 }

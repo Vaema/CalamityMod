@@ -11,7 +11,7 @@ namespace CalamityMod.Projectiles.Rogue
         public bool hitTile = false;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 3;
+            Main.projFrames[Type] = 3;
         }
 
         public override void SetDefaults()

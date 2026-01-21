@@ -19,21 +19,21 @@ namespace CalamityMod.Items.Materials
             Item.ResearchUnlockCount = 25;
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(6, 6));
             ItemID.Sets.AnimatesAsSoul[Type] = true;
-            ItemID.Sets.ItemNoGravity[Item.type] = true;
-			ItemID.Sets.SortingPriorityMaterials[Type] = 118;
+            ItemID.Sets.ItemNoGravity[Type] = true;
+            ItemID.Sets.SortingPriorityMaterials[Type] = 118;
         }
 
         public override void SetDefaults()
         {
             Item.width = 32;
             Item.height = 54;
-            Item.maxStack = 9999;
-            Item.rare = ModContent.RarityType<DarkBlue>();
-            Item.value = Item.sellPrice(gold: 40);
+            Item.maxStack = Item.CommonMaxStack;
+            Item.value = Item.sellPrice(gold: 6);
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
         public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
         {
-            Texture2D texture = TextureAssets.Item[Item.type].Value;
+            Texture2D texture = TextureAssets.Item[Type].Value;
             spriteBatch.Draw(texture, Item.position - Main.screenPosition, Item.GetCurrentFrame(ref frame, ref frameCounter, 6, 6), lightColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
             return false;
         }
@@ -53,11 +53,11 @@ namespace CalamityMod.Items.Materials
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<Polterplasm>(2).
+                AddIngredient<Necroplasm>(2).
                 AddIngredient<NightmareFuel>(5).
                 AddIngredient<EndothermicEnergy>(5).
                 AddIngredient<DarksunFragment>(2).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

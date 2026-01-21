@@ -1,7 +1,8 @@
-﻿using CalamityMod.World;
+﻿using System;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -10,23 +11,29 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.PrimordialWyrm
 {
+    [LongDistanceNetSync(SyncWith = typeof(PrimordialWyrmHead))]
     public class PrimordialWyrmTail : ModNPC
     {
+        public static Asset<Texture2D> GlowTexture;
+
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.PrimordialWyrmHead.DisplayName");
         public override void SetStaticDefaults()
         {
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
             this.HideFromBestiary();
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "_Lightmask", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
         {
-            NPC.damage = 100;
-            NPC.width = 86;
+            NPC.damage = 0;
+            NPC.width = 100;
             NPC.height = 120;
             NPC.defense = 0;
             NPC.LifeMaxNERB(2500000, 3000000);
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -46,8 +53,6 @@ namespace CalamityMod.NPCs.PrimordialWyrm
 
         public override void AI()
         {
-            NPC.damage = 0;
-
             // Difficulty modes
             bool death = CalamityWorld.death;
             bool revenge = CalamityWorld.revenge;
@@ -57,16 +62,8 @@ namespace CalamityMod.NPCs.PrimordialWyrm
                 NPC.realLife = (int)NPC.ai[2];
 
             // Check if other segments are still alive. If not, die.
-            bool shouldDespawn = true;
             int wyrmHeadID = ModContent.NPCType<PrimordialWyrmHead>();
-            for (int i = 0; i < Main.maxNPCs; i++)
-            {
-                if (Main.npc[i].active && Main.npc[i].type == wyrmHeadID)
-                {
-                    shouldDespawn = false;
-                    break;
-                }
-            }
+            bool shouldDespawn = !NPC.AnyNPCs(wyrmHeadID);
             if (!shouldDespawn)
             {
                 if (NPC.ai[1] <= 0f)
@@ -120,22 +117,33 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             NPC.spriteDirection = (directionToNextSegment.X > 0).ToDirectionInt();
         }
 
+        public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
+        {
+            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
+        }
+
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
-            Vector2 vector = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2);
+            Texture2D texture = TextureAssets.Npc[Type].Value;
+            Vector2 vector = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2);
 
             Vector2 center = NPC.Center - screenPos;
-            center -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+            center -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
             center += vector * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture, center, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
 
-            texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/PrimordialWyrm/PrimordialWyrmTailGlow").Value;
-            spriteBatch.Draw(texture, center, NPC.frame, Color.White * NPC.Opacity, NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
+            // this math is so incredibly scuffed. please someone fix it i dont even know what any of this actually does
+            float brightness = 1f;
+            float nameWasTooLong = Main.GameUpdateCount * 0.01f;
+            float saneVelocity = MathHelper.Clamp((int)PrimordialWyrmHead.PWHeadVelocity, 6f, 8f);
+            brightness = MathF.Sin(nameWasTooLong * (6f + saneVelocity) - NPC.whoAmI);
+            brightness = MathHelper.Clamp(brightness, 0.25f, 1f);
+            texture = GlowTexture.Value;
+            spriteBatch.Draw(texture, center, NPC.frame, Color.White * (NPC.Opacity * brightness), NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
 
             return false;
         }
@@ -147,11 +155,11 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 10; k++)
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 4, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, hit.HitDirection, -1f, 0, default, 1f);
 
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.Center, NPC.velocity, Mod.Find<ModGore>("PrimordialWyrm4").Type, 1f);
+                    Gore.NewGore(NPC.GetSource_Death(), NPC.Center, NPC.velocity, Mod.Find<ModGore>("PrimordialWyrm5").Type, 1f);
                 }
             }
         }

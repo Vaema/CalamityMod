@@ -12,10 +12,10 @@ namespace CalamityMod.Items.Accessories
             Item.width = 24;
             Item.height = 26;
             Item.rare = ItemRarityID.Orange;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = Item.buyPrice(gold: 20); // Sold by Bandit
             Item.accessory = true;
         }
 
-        public override void UpdateAccessory(Player player, bool hideVisual) => player.luck += 0.2f;
+        public override void UpdateAccessory(Player player, bool hideVisual) => player.Calamity().calamityBonusLuck += 0.2f;
     }
 }

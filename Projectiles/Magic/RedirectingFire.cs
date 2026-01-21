@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -14,6 +14,7 @@ namespace CalamityMod.Projectiles.Magic
         public ref float Time => ref Projectile.ai[1];
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = Projectile.height = 18;
@@ -89,7 +90,7 @@ namespace CalamityMod.Projectiles.Magic
 
             for (int i = 0; i < 15; i++)
             {
-                Dust ectoplasm = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(30f, 30f) * BurstIntensity, 264);
+                Dust ectoplasm = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(30f, 30f) * BurstIntensity, DustID.PortalBoltTrail);
                 ectoplasm.velocity = Main.rand.NextVector2Circular(2f, 2f);
                 ectoplasm.color = Color.Lerp(Color.Orange, Color.Yellow, Main.rand.NextFloat(0.67f));
                 ectoplasm.scale = MathHelper.Lerp(1f, 1.6f, BurstIntensity);

@@ -1,8 +1,8 @@
-﻿using CalamityMod.Balancing;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.Balancing;
 using CalamityMod.CalPlayer;
 using CalamityMod.World;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -17,9 +17,8 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 26;
             Item.height = 26;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
-            Item.accessory = true;
         }
 
         public override void UpdateInventory(Player player)
@@ -30,15 +29,15 @@ namespace CalamityMod.Items.Accessories
 
         public override void ModifyTooltips(List<TooltipLine> list)
         {
-            Player player = Main.player[Main.myPlayer];
+            Player player = Main.LocalPlayer;
             if (player is null)
                 return;
             CalamityPlayer modPlayer = player.Calamity();
 
             Item heldItem = null;
             if (player.selectedItem >= 0 && player.selectedItem < Main.InventorySlotsTotal)
-                heldItem = player.ActiveItem();
-            
+                heldItem = player.HeldItem;
+
             static string OnePlace(float f) => f.ToString("n1");
             static string TwoPlaces(float f) => f.ToString("n2");
 
@@ -63,13 +62,13 @@ namespace CalamityMod.Items.Accessories
             if (heldItem != null && !heldItem.IsAir)
             {
                 // If block/wall, add respective placement stats, and ignore all combat stats
-                if (heldItem.createWall >= 0 || heldItem.createTile >= 0)
+                if (heldItem.createWall >= 0 || heldItem.createTile >= TileID.Dirt)
                 {
                     int extraBlockRangeX = player.blockRange + Player.tileRangeX - 5;
                     int extraBlockRangeY = player.blockRange + Player.tileRangeY - 4;
                     stats2 += "\n" + this.GetLocalization("PlacementRange").Format(Sign(extraBlockRangeX) + extraBlockRangeX, Sign(extraBlockRangeY) + extraBlockRangeY);
 
-                    if (heldItem.createTile >= 0 && player.tileSpeed != 0f)
+                    if (heldItem.createTile >= TileID.Dirt && player.tileSpeed != 0f)
                     {
                         float tileSpeed = (1f / player.tileSpeed) - 1f;
                         stats2 += this.GetLocalization("TileSpeed").Format(Sign(tileSpeed) + OnePlace(100f * tileSpeed));
@@ -153,22 +152,22 @@ namespace CalamityMod.Items.Accessories
                         }
                     }
 
-                    // If ranged, or any direct subclass thereof, display ranged ammo consumption
-                    if (dc == DamageClass.Ranged || dc.GetModifierInheritance(DamageClass.Ranged).Equals(StatInheritanceData.Full))
-                        stats2 += "\n" + this.GetLocalization("RangedStats").Format(TwoPlaces(100f * player.GetRangedAmmoCostReduction()));
+                    // If held item uses ammo, display ammo consumption
+                    if (heldItem.useAmmo > 0)
+                        stats2 += "\n" + this.GetLocalization("AmmoStats").Format(OnePlace(100f * player.GetAmmoCostReduction()));
 
-                    // If magic, or any direct subclass thereof, display mana stats
-                    if (dc == DamageClass.Magic || dc == DamageClass.MagicSummonHybrid || dc.GetModifierInheritance(DamageClass.Magic).Equals(StatInheritanceData.Full))
-                        stats2 += "\n" + this.GetLocalization("MagicStats").Format(TwoPlaces(100f * player.manaCost), player.manaRegen);
+                    // If held item uses mana, display mana stats
+                    if (heldItem.mana > 0)
+                        stats2 += "\n" + this.GetLocalization("ManaStats").Format(OnePlace(100f * player.manaCost), player.manaRegen);
 
                     // If summon, or any direct subclass thereof, AND NOT A WHIP, display minion/sentry slots
                     if (dc != DamageClass.SummonMeleeSpeed && (dc == DamageClass.Summon || dc.GetModifierInheritance(DamageClass.Summon).Equals(StatInheritanceData.Full)))
                         stats2 += "\n" + this.GetLocalization("SummonStats").Format(player.maxMinions, player.maxTurrets);
-                    
+
                     // If whip, show whip range
                     float whipRange = player.whipRangeMultiplier - 1f;
                     if (dc == DamageClass.SummonMeleeSpeed || dc.GetModifierInheritance(DamageClass.SummonMeleeSpeed).Equals(StatInheritanceData.Full))
-                        stats2 += "\n" + this.GetLocalization("WhipStats").Format(Sign(whipRange) + TwoPlaces(100f * whipRange));
+                        stats2 += "\n" + this.GetLocalization("WhipStats").Format(Sign(whipRange) + OnePlace(100f * whipRange));
 
                     // If throwing or rogue, display rogue stats.
                     float rogueVelocity = modPlayer.rogueVelocity - 1f;
@@ -178,11 +177,7 @@ namespace CalamityMod.Items.Accessories
                             (int)(100f * modPlayer.rogueStealthMax),
                             TwoPlaces(60f * player.GetStandingStealthRegen()),
                             TwoPlaces(60f * player.GetMovingStealthRegen()),
-                            Sign(rogueVelocity) + TwoPlaces(100f * rogueVelocity));
-
-                        // Rogue consumable chance only if item is consumable
-                        if (heldItem.consumable)
-                            stats2 += this.GetLocalization("RogueConsumption").Format(100f * modPlayer.rogueAmmoCost);
+                            Sign(rogueVelocity) + OnePlace(100f * rogueVelocity));
                     }
 
                     // If tool, add tool range
@@ -203,7 +198,7 @@ namespace CalamityMod.Items.Accessories
             }
             list.FindAndReplace("[ITEMS]", stats2);
 
-            float moveSpeedBoost = player.moveSpeed - 1f;
+            float moveSpeedBoost = CalamityServerConfig.Instance.FasterBaseSpeed ? (player.moveSpeed / BalancingConstants.DefaultMoveSpeedBoost) - 1f : player.moveSpeed - 1f;
             float wingFlightTime = player.wingTimeMax;
             // Does not use NormalizedLuck. Presents the player's luck exactly as it is used by the game engine.
             // NormalizedLuck is only used in one place: the Wizard's luck report. Which is entirely obsoleted by this Meter.
@@ -213,7 +208,7 @@ namespace CalamityMod.Items.Accessories
             string stats3 = "\n" + this.GetLocalization("GenericStats").Format(
                 player.GetCurrentDefense(false),
                 TwoPlaces(100f * player.endurance),
-                player.lifeRegen, // Normally we'd divide this by 2 in Expert without Well Fed, but we disable that shit
+                OnePlace((float)player.lifeRegen / 2f), // Divided by 2 to show HP/s, because vanilla! Also normally we'd divide this by 2 in Expert without Well Fed, but we disable that shit
                 Sign(moveSpeedBoost) + TwoPlaces(100f * moveSpeedBoost),
                 TwoPlaces(20f * player.GetJumpBoost()));
             // Show wing stats only if over 0 flight time
@@ -226,8 +221,9 @@ namespace CalamityMod.Items.Accessories
 
             // Detailed Abyss stats only render if the player is in the Abyss.
             string stats4 = "\n" + (!modPlayer.ZoneAbyss ? this.GetLocalizedValue("AbyssStatsHidden") : this.GetLocalization("AbyssStats").Format(
-                player.GetCurrentAbyssLightLevel(),
-                TwoPlaces(modPlayer.abyssBreathLossStat),
+                modPlayer.abyssDarkness,
+                modPlayer.abyssPlayerGlowMultiplier,
+                modPlayer.abyssFlashlightWidthMultiplier,
                 TwoPlaces(modPlayer.abyssBreathLossRateStat),
                 modPlayer.abyssLifeLostAtZeroBreathStat,
                 modPlayer.abyssDefenseLossStat));

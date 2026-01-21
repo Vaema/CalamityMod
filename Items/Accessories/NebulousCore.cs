@@ -1,10 +1,8 @@
 ﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -17,8 +15,9 @@ namespace CalamityMod.Items.Accessories
             Item.width = 16;
             Item.height = 14;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
+            Item.rare = ModContent.RarityType<CosmicPurple>();
+            Item.expert = true;
         }
 
         public override void Update(ref float gravity, ref float maxFallSpeed)
@@ -31,71 +30,46 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.nCore = true;
+            modPlayer.nebulousCore = true;
             player.GetDamage<GenericDamageClass>() += 0.1f;
-            int damage = (int)player.GetBestClassDamage().ApplyTo(250);
-            damage = player.ApplyArmorAccDamageBonusesTo(damage);
-            float knockBack = 3f;
+
+            // Spawn nebula stars
             if (Main.rand.NextBool(15))
             {
+                // Count the number of current active nebula stars; if this is at least 10, no more can spawn
                 int numProj = 0;
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    if (Main.projectile[i].active && Main.projectile[i].owner == player.whoAmI && Main.projectile[i].type == ModContent.ProjectileType<NebulaStar>())
+                    if (p.owner == player.whoAmI && p.type == ModContent.ProjectileType<NebulaStar>())
                     {
                         numProj++;
                     }
                 }
-                var source = player.GetSource_Accessory(Item);
                 if (Main.rand.Next(15) >= numProj && numProj < 10)
                 {
                     int spawnRadius = 24;
-                    int backupSpawnRadius = 90;
-                    for (int j = 0; j < 50; j++)
+                    for (int j = 0; j < 50; j++) // Attempt to spawn the star randomly around the player
                     {
-                        int randomProjOffset = Main.rand.Next(200 - j * 2, 400 + j * 2);
+                        float randomProjOffset = Main.rand.NextFloat(200 - j * 2, 400 + j * 2);
                         Vector2 center = player.Center;
-                        center.X += (float)Main.rand.Next(-randomProjOffset, randomProjOffset + 1);
-                        center.Y += (float)Main.rand.Next(-randomProjOffset, randomProjOffset + 1);
+                        center.X += Main.rand.NextFloat(-randomProjOffset, randomProjOffset + 1);
+                        center.Y += Main.rand.NextFloat(-randomProjOffset, randomProjOffset + 1);
+                        // Ensure we are not trying to spawn the star on top of a solid tile or liquid
                         if (!Collision.SolidCollision(center, spawnRadius, spawnRadius) && !Collision.WetCollision(center, spawnRadius, spawnRadius))
                         {
                             center.X += (float)(spawnRadius / 2);
                             center.Y += (float)(spawnRadius / 2);
-                            if (Collision.CanHit(new Vector2(player.Center.X, player.position.Y), 1, 1, center, 1, 1) || Collision.CanHit(new Vector2(player.Center.X, player.position.Y - 50f), 1, 1, center, 1, 1))
+                            // Ensure the star's spawn point has line-of-sight with the player
+                            if (Collision.CanHit(player.Center, 1, 1, center, 1, 1) || Collision.CanHit(player.Center - new Vector2(0f, 50f), 1, 1, center, 1, 1))
                             {
-                                int projTileX = (int)center.X / 16;
-                                int projTileY = (int)center.Y / 16;
-                                bool canSpawnProj = false;
-                                if (Main.rand.NextBool(3) && Main.tile[projTileX, projTileY] != null && Main.tile[projTileX, projTileY].WallType > 0)
+                                if (Main.rand.NextBool(3) && Main.myPlayer == player.whoAmI)
                                 {
-                                    canSpawnProj = true;
-                                }
-                                else
-                                {
-                                    center.X -= (float)(backupSpawnRadius / 2);
-                                    center.Y -= (float)(backupSpawnRadius / 2);
-                                    if (Collision.SolidCollision(center, backupSpawnRadius, backupSpawnRadius))
-                                    {
-                                        center.X += (float)(backupSpawnRadius / 2);
-                                        center.Y += (float)(backupSpawnRadius / 2);
-                                        canSpawnProj = true;
-                                    }
-                                }
-                                if (canSpawnProj)
-                                {
-                                    for (int k = 0; k < Main.maxProjectiles; k++)
-                                    {
-                                        if (Main.projectile[k].active && Main.projectile[k].owner == player.whoAmI && Main.projectile[k].type == ModContent.ProjectileType<NebulaStar>() && (center - Main.projectile[k].Center).Length() < 48f)
-                                        {
-                                            canSpawnProj = false;
-                                            break;
-                                        }
-                                    }
-                                    if (canSpawnProj && Main.myPlayer == player.whoAmI)
-                                    {
-                                        Projectile.NewProjectile(source, center.X, center.Y, 0f, 0f, ModContent.ProjectileType<NebulaStar>(), damage, knockBack, player.whoAmI);
-                                        return;
-                                    }
+                                    var source = player.GetSource_Accessory(Item);
+                                    int damage = (int)player.GetBestClassDamage().ApplyTo(250);
+                                    float knockBack = 3f;
+
+                                    Projectile.NewProjectile(source, center, Vector2.Zero, ModContent.ProjectileType<NebulaStar>(), damage, knockBack, player.whoAmI);
+                                    return;
                                 }
                             }
                         }

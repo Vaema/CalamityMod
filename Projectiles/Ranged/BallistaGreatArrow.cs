@@ -1,10 +1,9 @@
 ﻿using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Ranged
 {
     public class BallistaGreatArrow : ModProjectile, ILocalizedModType
@@ -12,8 +11,8 @@ namespace CalamityMod.Projectiles.Ranged
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
         }
 
         public override void SetDefaults()
@@ -28,7 +27,6 @@ namespace CalamityMod.Projectiles.Ranged
             AIType = ProjectileID.WoodenArrowFriendly;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 10;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)
@@ -41,24 +39,19 @@ namespace CalamityMod.Projectiles.Ranged
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 180);
-        }
 
-        public override void OnKill(int timeLeft)
-        {
-            SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
-            if (Projectile.owner == Main.myPlayer)
+            for (int i = 0; i < 2; i++) // Burst into 2 shards upwards
             {
-                for (int i = -1; i < 2; i++) // Burst into 3 shards upwards
-                {
-                    Vector2 baseVelocity = Vector2.UnitY * -12f;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Top, baseVelocity.RotatedBy(MathHelper.ToRadians(10 * i)), ModContent.ProjectileType<FossilShard>(), Projectile.damage / 4, Projectile.knockBack * 0.25f, Projectile.owner);
-                }
+                Vector2 baseVelocity = Vector2.UnitY * -12f;
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Top, baseVelocity.RotatedByRandom(MathHelper.Pi * 0.1f), ModContent.ProjectileType<FossilShard>(), Projectile.damage / 4, Projectile.knockBack * 0.25f, Projectile.owner);
             }
         }
 
+        public override void OnKill(int timeLeft) => SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
+
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 2);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 2);
             return false;
         }
     }

@@ -1,6 +1,5 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using Terraria;
 using Terraria.ID;
-using Terraria;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Melee
 {
@@ -9,6 +8,7 @@ namespace CalamityMod.Projectiles.Melee
         public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = 6;
@@ -56,7 +56,7 @@ namespace CalamityMod.Projectiles.Melee
 
             Projectile.rotation += Projectile.velocity.X * 0.1f;
 
-            int coldFire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 135, 0f, 0f, 100, default, 1f);
+            int coldFire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.IceTorch, 0f, 0f, 100, default, 1f);
             Dust expr_8976_cp_0 = Main.dust[coldFire];
             expr_8976_cp_0.position.X -= 2f;
             Dust expr_8994_cp_0 = Main.dust[coldFire];
@@ -68,7 +68,7 @@ namespace CalamityMod.Projectiles.Melee
 
             if (Main.rand.NextBool())
             {
-                int coldFiery = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 135, 0f, 0f, 100, default, 1f);
+                int coldFiery = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.IceTorch, 0f, 0f, 100, default, 1f);
                 Dust expr_8A4E_cp_0 = Main.dust[coldFiery];
                 expr_8A4E_cp_0.position.X -= 2f;
                 Dust expr_8A6C_cp_0 = Main.dust[coldFiery];

@@ -1,4 +1,5 @@
-﻿using CalamityMod.Dusts;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -12,6 +13,7 @@ namespace CalamityMod.Projectiles.Rogue
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/GacruxianMollusk";
 
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = 20;
@@ -42,9 +44,9 @@ namespace CalamityMod.Projectiles.Rogue
             CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 250f, 12f, 20f);
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Electrified, 120);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<StaticDischarge>(), 120);
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.Electrified, 120);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<StaticDischarge>(), 120);
 
         public override void OnKill(int timeLeft)
         {

@@ -1,12 +1,14 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using System;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using CalamityMod.Items.Weapons.Summon;
 using Microsoft.Xna.Framework;
-using System;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -14,12 +16,14 @@ namespace CalamityMod.Projectiles.Summon
     {
         public new string LocalizationCategory => "Projectiles.Summon";
         public const float DistanceToCheck = 2600f;
+        public ref float Timer => ref Projectile.ai[0];
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            ProjectileID.Sets.SentryShot[Projectile.type] = true;
+            Main.projFrames[Type] = 4;
+            Main.projPet[Type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -36,8 +40,6 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.minion = true;
             Projectile.DamageType = DamageClass.Summon;
         }
-
-        public override bool? CanDamage() => false;
 
         public override void AI()
         {
@@ -76,24 +78,25 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.frame = 0;
             }
 
             if (potentialTarget != null)
             {
-                Projectile.ai[0]++;
-                if (Projectile.ai[0] % 360f < 180f)
+                Timer++;
+                if (Timer % 330f < 180f)
                 {
                     Projectile.rotation = Projectile.rotation.AngleTowards(0f, 0.2f);
-                    float angle = MathHelper.ToRadians(2f * Projectile.ai[0] % 180f);
+                    float angle = MathHelper.ToRadians(2f * Timer % 180f);
                     Vector2 destination = potentialTarget.Center - new Vector2((float)Math.Cos(angle) * potentialTarget.width * 0.65f, 250f);
                     Projectile.velocity = Vector2.Lerp(Projectile.velocity, Projectile.SafeDirectionTo(destination) * 24f, 0.03f);
 
-                    if (Projectile.ai[0] % MidnightSunBeacon.MachineGunRate == Projectile.localAI[0] && potentialTarget.Top.Y > Projectile.Bottom.Y)
+                    if (Timer % MidnightSunBeacon.MachineGunRate == Projectile.localAI[0] && potentialTarget.Top.Y > Projectile.Bottom.Y)
                     {
-                        Vector2 laserVelocity = Projectile.SafeDirectionTo(potentialTarget.Center, Vector2.UnitY).RotatedByRandom(0.15f) * 25f;
+                        // Vector2 laserVelocity = Projectile.SafeDirectionTo(potentialTarget.Center, Vector2.UnitY).RotatedByRandom(0.05f) * 25f;
+                        Vector2 laserVelocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(Projectile.Center, potentialTarget, 25f, MidnightSunShot.MaxUpdate).RotatedByRandom(0.04f);
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Bottom, laserVelocity, ModContent.ProjectileType<MidnightSunShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                     }
                     Projectile.MinionAntiClump(0.35f);
@@ -102,12 +105,12 @@ namespace CalamityMod.Projectiles.Summon
                 else
                 {
                     // Move very, very quickly above the target.
-                    Vector2 hoverDestination = potentialTarget.Top - Vector2.UnitY * 40f + (Projectile.minionPos + Projectile.ai[0] / 7f).ToRotationVector2() * 40f;
+                    Vector2 hoverDestination = potentialTarget.Top - Vector2.UnitY * 40f + (Projectile.minionPos + Timer / 7f).ToRotationVector2() * 40f;
                     Projectile.Center = Vector2.Lerp(Projectile.Center, hoverDestination, 0.1f).MoveTowards(hoverDestination, 20f);
                     Projectile.velocity = Projectile.velocity.MoveTowards(Vector2.Zero, 4f);
                     Projectile.ai[1] = Math.Abs(hoverDestination.Y - potentialTarget.Bottom.Y) + MathHelper.Lerp(30f, 50f, Projectile.identity % 7f / 7f);
 
-                    if (Projectile.ai[0] % 360f == 240f)
+                    if (Timer % 330f == 210f)
                     {
                         if (Main.myPlayer == Projectile.owner)
                         {
@@ -135,7 +138,21 @@ namespace CalamityMod.Projectiles.Summon
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            Texture2D tex = TextureAssets.Projectile[Type].Value;
+            Rectangle frame = tex.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
+            Color drawColor = Projectile.GetAlpha(lightColor);
+
+            if (CalamityClientConfig.Instance.Afterimages)
+            {
+                for (int i = 0; i < Projectile.oldPos.Length; i++)
+                {
+                    Color trailColor = Color.Lerp(drawColor, Color.Transparent, i / (float)Projectile.oldPos.Length);
+                    Vector2 trailPos = Projectile.oldPos[i] + Projectile.Size * 0.5f - Main.screenPosition;
+                    Main.EntitySpriteDraw(tex, trailPos, frame, trailColor, Projectile.rotation, frame.Size() * 0.5f, Projectile.scale, SpriteEffects.None);
+                }
+            }
+
+            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, frame, drawColor, Projectile.rotation, frame.Size() * 0.5f, Projectile.scale, SpriteEffects.None);
             return false;
         }
     }

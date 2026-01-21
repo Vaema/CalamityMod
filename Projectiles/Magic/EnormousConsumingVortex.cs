@@ -1,15 +1,15 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.Audio;
 using Terraria.Graphics.Shaders;
-using CalamityMod.Particles;
-using CalamityMod.Items.Weapons.Magic;
-using System.Collections.Generic;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -72,6 +72,7 @@ namespace CalamityMod.Projectiles.Magic
                 {
                     if (Main.myPlayer == Projectile.owner)
                     {
+                        // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                         Projectile.velocity = Projectile.SafeDirectionTo(Main.MouseWorld) * SubsumingVortex.ReleaseSpeed;
                         Projectile.damage = (int)(Projectile.damage * SubsumingVortex.ReleaseDamageFactor);
                         HasBeenReleased = true;
@@ -82,6 +83,7 @@ namespace CalamityMod.Projectiles.Magic
                 {
                     if (Main.myPlayer == Projectile.owner)
                     {
+                        // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                         Projectile.velocity = Projectile.SafeDirectionTo(Main.MouseWorld) * SubsumingVortex.ReleaseSpeed;
                         Projectile.damage = (int)(Projectile.damage * (1f + Time * 0.0152f));
                         HasBeenReleased = true;
@@ -117,7 +119,7 @@ namespace CalamityMod.Projectiles.Magic
                 if (potentialTarget != null && Time % SubsumingVortex.VortexReleaseRate == SubsumingVortex.VortexReleaseRate - 1 && Time < SubsumingVortex.LargeVortexChargeupTime && !HasBeenReleased)
                 {
                     // CheckMana returns true if the mana cost can be paid..
-                    bool allowContinuedUse = Owner.CheckMana(Owner.ActiveItem(), -1, true, false);
+                    bool allowContinuedUse = Owner.CheckMana(Owner.HeldItem, -1, true, false);
                     bool vortexStillInUse = Owner.Calamity().mouseRight && allowContinuedUse && !Owner.noItems && !Owner.CCed;
                     if (vortexStillInUse)
                     {
@@ -163,12 +165,11 @@ namespace CalamityMod.Projectiles.Magic
                 // Smoothly approach a sinusoidal offset as time goes on.
                 float verticalOffset = Utils.Remap(Time, 0f, 90f, -30f, (float)Math.Cos(Projectile.timeLeft / 32f) * 30f);
                 Vector2 hoverDestination = Owner.Top + new Vector2(Owner.direction * Projectile.scale * 30f, verticalOffset);
-                hoverDestination += (Main.MouseWorld - hoverDestination) * SubsumingVortex.GiantVortexMouseDriftFactor;
+                hoverDestination += (Owner.ClampedMouseWorld() - hoverDestination) * SubsumingVortex.GiantVortexMouseDriftFactor;
 
                 Vector2 idealVelocity = Vector2.Zero.MoveTowards(hoverDestination - Projectile.Center, 32f);
                 Projectile.velocity = Vector2.Lerp(Projectile.velocity, idealVelocity, 0.04f);
-                Projectile.netSpam = 0;
-                Projectile.netUpdate = true;
+                Projectile.ForceNetUpdate();
             }
 
             // Re-determine the hitbox size.
@@ -217,9 +218,10 @@ namespace CalamityMod.Projectiles.Magic
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Vector2 scale = Projectile.Size / worleyNoise.Size() * 2f;
             float spinRotation = Main.GlobalTimeWrappedHourly * 2.4f;
-            
+
+            GameShaders.Misc["CalamityMod:ExoVortex"].UseOpacity(1f);
             GameShaders.Misc["CalamityMod:ExoVortex"].Apply();
-            
+
             // Draw the vortex.
             for (int i = 0; i < CalamityUtils.ExoPalette.Length; i++)
             {

@@ -1,14 +1,14 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.IO;
+using System.Reflection;
+using CalamityMod.CalPlayer;
+using CalamityMod.Items.DraedonMisc;
+using CalamityMod.Packets;
 using CalamityMod.Tiles.DraedonStructures;
 using Microsoft.Xna.Framework;
-using System.IO;
-using System.Reflection;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
-using CalamityMod.Items.DraedonMisc;
 
 namespace CalamityMod.TileEntities
 {
@@ -16,14 +16,15 @@ namespace CalamityMod.TileEntities
     {
         public Vector2 Center => Position.ToWorldCoordinates(8f * PowerCellFactory.Width, 8f * PowerCellFactory.Height);
         public long Time = 0;
-        private short _stack = 0;
+
+        internal short Stack_Internal = 0;
 
         public short CellStack
         {
-            get => _stack;
+            get => Stack_Internal;
             set
             {
-                _stack = value;
+                Stack_Internal = value;
                 SendSyncPacket();
             }
         }
@@ -71,11 +72,15 @@ namespace CalamityMod.TileEntities
 
         public override void Update()
         {
-            ++Time;
-            int maxCellStack = ModContent.GetModItem(ModContent.ItemType<DraedonPowerCell>()).Item.maxStack;
-            if (IsCellFrame && CellStack < maxCellStack)
-                // The property setter will automatically send the necessary packet.
-                CellStack++;
+            // CIT 7OCT2024: Power Cell Factories now produce power cells faster when sleeping or using Journey's time rate multiplier.
+            for (int t = 0; t < Main.desiredWorldTilesUpdateRate; t++)
+            {
+                ++Time;
+                int maxCellStack = ModContent.GetModItem(ModContent.ItemType<DraedonPowerCell>()).Item.maxStack;
+                if (IsCellFrame && CellStack < maxCellStack)
+                    // The property setter will automatically send the necessary packet.
+                    CellStack++;
+            }
         }
 
         // This code is called as a hook when the player places the Power Cell Factory tile so that the tile entity may be placed.
@@ -103,12 +108,8 @@ namespace CalamityMod.TileEntities
         // If this factory breaks, anyone who's viewing it is no longer viewing it.
         public override void OnKill()
         {
-            for (int i = 0; i < Main.maxPlayers; ++i)
+            foreach (Player p in Main.ActivePlayers)
             {
-                Player p = Main.player[i];
-                if (!p.active)
-                    continue;
-
                 // Use reflection to stop TML from spitting an error here.
                 // Try-catching will not stop this error, TML will print it to console anyway. The error is harmless.
                 ModPlayer[] mpStorageArray = (ModPlayer[])typeof(Player).GetField("modPlayers", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(p);
@@ -124,68 +125,33 @@ namespace CalamityMod.TileEntities
         public override void SaveData(TagCompound tag)
         {
             tag["time"] = Time;
-            tag["cells"] = _stack;
+            tag["cells"] = Stack_Internal;
         }
 
         public override void LoadData(TagCompound tag)
         {
             Time = tag.GetLong("time");
-            _stack = tag.GetShort("cells");
+            Stack_Internal = tag.GetShort("cells");
         }
 
         public override void NetSend(BinaryWriter writer)
         {
             writer.Write(Time);
-            writer.Write(_stack);
+            writer.Write(Stack_Internal);
         }
 
         public override void NetReceive(BinaryReader reader)
         {
             Time = reader.ReadInt64();
-            _stack = reader.ReadInt16();
+            Stack_Internal = reader.ReadInt16();
         }
 
         private void SendSyncPacket()
         {
             if (Main.netMode == NetmodeID.SinglePlayer)
                 return;
-            ModPacket packet = Mod.GetPacket();
-            packet.Write((byte)CalamityModMessageType.PowerCellFactory);
-            packet.Write(ID);
-            packet.Write(Time);
-            packet.Write(_stack);
-            packet.Send(-1, -1);
-        }
 
-        internal static bool ReadSyncPacket(Mod mod, BinaryReader reader)
-        {
-            int teID = reader.ReadInt32();
-            bool exists = ByID.TryGetValue(teID, out TileEntity te);
-
-            // The rest of the packet must be read even if it turns out the factory doesn't exist for whatever reason.
-            long time = reader.ReadInt64();
-            short cellStack = reader.ReadInt16();
-
-            // When a server gets this packet, it immediately sends an equivalent packet to all clients.
-            if (Main.netMode == NetmodeID.Server)
-            {
-                ModPacket packet = mod.GetPacket();
-                packet.Write((byte)CalamityModMessageType.PowerCellFactory);
-                packet.Write(teID);
-                packet.Write(time);
-                packet.Write(cellStack);
-                packet.Send(-1, -1);
-            }
-
-            if (exists && te is TEPowerCellFactory factory)
-            {
-                // Only clients update their timer from this packet. When a server receives this packet it ignores the time variable.
-                if (Main.netMode == NetmodeID.MultiplayerClient)
-                    factory.Time = time;
-                factory._stack = cellStack;
-                return true;
-            }
-            return false;
+            TEPowerCellFactoryPacket.Send(this, Time, Stack_Internal);
         }
     }
 }

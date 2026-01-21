@@ -3,9 +3,54 @@ AbyssalWarhammer: {
 	Tooltip: ""
 }
 
+AcidwoodAxe: {
+	DisplayName: Acidwood Axe
+	Tooltip: ""
+}
+
+AcidwoodHammer: {
+	DisplayName: Acidwood Hammer
+	Tooltip: ""
+}
+
+AcidwoodPickaxe: {
+	DisplayName: Acidwood Pickaxe
+	Tooltip: ""
+}
+
 AerialHamaxe: {
 	DisplayName: Aerial Hamaxe
 	Tooltip: ""
+}
+
+AntiCystOintment: {
+	DisplayName: Anti-Cyst Ointment
+	Tooltip:
+		'''
+		Toggle this item to prevent hive cysts from spawning near you
+		Press <right> to toggle
+		[STATE]
+		'''
+}
+
+AntiTumorOintment: {
+	DisplayName: Anti-Tumor Ointment
+	Tooltip:
+		'''
+		Toggle this item to prevent hive tumors from spawning near you
+		Press <right> to toggle
+		[STATE]
+		'''
+}
+
+AridArtifact: {
+	DisplayName: Arid Artifact
+	Tooltip:
+		'''
+		Summons a sandstorm
+		The sandstorm will happen shortly after the item is used
+		If used during a sandstorm, the sandstorm will stop some time afterward.
+		'''
 }
 
 AstralHamaxe: {
@@ -22,9 +67,34 @@ AxeofPurity: {
 	DisplayName: Axe of Purity
 	Tooltip:
 		'''
-		Left click to use as a tool
-		Right click to cleanse evil
+		<left> to use as a tool
+		<right> to cleanse evil
 		'''
+}
+
+Bakidon: {
+	DisplayName: Bakidon
+	Tooltip:
+		'''
+		A lost artifact said to pin the heavens in place
+		<left> to freeze the passage of day and night temporarily
+		This does not work during celestial anomalies
+		The time freeze recharges while not in use
+		'''
+}
+
+BallAndChain: {
+	DisplayName: Ball and Chain
+	Tooltip:
+		'''
+		Toggle this item to disable any dashes granted by equipment
+		<right> to toggle
+		[STATE]
+		'So heavy...'
+		'''
+	// This is "backwards" because enabling this disables dashes
+	TooltipEnabled: Dashes are currently disabled
+	TooltipDisabled: Dashes are currently enabled
 }
 
 BeastialPickaxe: {
@@ -37,6 +107,16 @@ BerserkerWaraxe: {
 	Tooltip: ""
 }
 
+BleachBall: {
+	DisplayName: Bleach Ball
+	Tooltip:
+		'''
+		Toggle this item to prevent Aquatic Scourge from spawning
+		Press <right> to toggle
+		[STATE]
+		'''
+}
+
 BlossomPickaxe: {
 	DisplayName: Blossom Pickaxe
 	Tooltip: Can mine Auric Ore
@@ -47,20 +127,27 @@ BobbitHook: {
 	Tooltip:
 		'''
 		Retracts upon attaching to a tile with extreme speeds
-		Reach: 40
-		Launch Velocity: 25
-		Reelback Velocity: 28
-		Pull Velocity: 24
+		{$Common.GrappleStats}
 		'''
 }
 
-AridArtifact: {
-	DisplayName: Arid Artifact
+BrimstoneLocus: {
+	DisplayName: Brimstone Locus
 	Tooltip:
 		'''
-		Summons a sandstorm
-		The sandstorm will happen shortly after the item is used
-		If used during a sandstorm, the sandstorm will stop some time afterward.
+		[c/C61B40:'Not only can I enhance your equipment with potent magic,]
+		[c/C61B40:I can also transcend some of your weaponry to entirely new forms.]
+		[c/C61B40:Such items are revealed while this item is in your inventory.']
+		'''
+}
+
+BrokenWaterFilter: {
+	DisplayName: Broken Water Filter
+	Tooltip:
+		'''
+		Toggle this item to prevent Acid Rain from occurring
+		Press <right> to toggle
+		[STATE]
 		'''
 }
 
@@ -68,18 +155,10 @@ Cosmolight: {
 	DisplayName: Cosmolight
 	Tooltip:
 		'''
-		Advances time immediately to the next dawn, noon, dusk or midnight
-		Does not work while a boss is alive
-		'''
-}
-
-TorrentialTear: {
-	DisplayName: Torrential Tear
-	Tooltip:
-		'''
-		Summons the rain
-		Rain will start some time after this item is used
-		If used while it's raining, the rain will stop some time afterward
+		A lost artifact freshly rekindled by exposure to raw cosmic energies
+		Hold <left> to drastically accelerate the passage of day and night
+		<right> to freeze the passage of day and night indefinitely
+		The time freeze lasts forever and works during celestial anomalies
 		'''
 }
 
@@ -88,13 +167,38 @@ CrystylCrusher: {
 	Tooltip:
 		'''
 		Hold <right> to channel a beam that destroys just about anything
-		'Gotta dig faster, gotta go deeper'
+		'A primitive weapon from a bygone era...'
 		'''
+}
+
+DisgustingMeat: {
+	DisplayName: Disgusting Meat
+	Tooltip:
+		'''
+		<left> will remove health and mana upgrades, use with no Calamity upgrades to remove vanilla upgrades
+		<right> will remove rage and adrenaline upgrades, plus other miscellaneous boosters
+		Removed boosters will be vomited out of you as items
+		'''
+}
+
+DriftwoodAxe: {
+	DisplayName: Driftwood Axe
+	Tooltip: Improved efficiency while you are wet
+}
+
+DriftwoodHammer: {
+	DisplayName: Driftwood Hammer
+	Tooltip: Improved efficiency while you are wet
+}
+
+DriftwoodPickaxe: {
+	DisplayName: Driftwood Pickaxe
+	Tooltip: Improved efficiency while you are wet
 }
 
 FellerofEvergreens: {
 	DisplayName: Feller of Evergreens
-	Tooltip: ""
+	Tooltip: Occasionally drops extra fruits from shaking trees
 }
 
 Gelpick: {
@@ -104,14 +208,14 @@ Gelpick: {
 
 GenesisPickaxe: {
 	DisplayName: Genesis Pickaxe
-	Tooltip: Can mine Uelibloom Ore
+	Tooltip: "{$Common.CanMineUelibloom}"
 }
 
 Grax: {
 	DisplayName: Grax
 	Tooltip:
 		'''
-		Hitting an enemy will greatly boost your defense, melee damage and melee crit for a short time
+		Hitting an enemy will greatly boost your damage, defense, and damage reduction for a short time
 		Press <right> to use without hammering down walls or chopping down trees
 		'''
 }
@@ -135,7 +239,7 @@ MarniteDeconstructor: {
 	Tooltip:
 		'''
 		Its engine generates hardlight rays capable of excavating walls from a long distance
-		Ignores 10 points of enemy Defense
+		{$Common.ArmorPenetration}
 		'''
 }
 
@@ -144,13 +248,88 @@ MarniteObliterator: {
 	Tooltip:
 		'''
 		Uses a diamond focus to project a long-range digging beam of light
-		Ignores 5 points of enemy Defense
+		{$Common.ArmorPenetration}
+		'''
+}
+
+MomentumCapacitor: {
+	DisplayName: Momentum Capacitor
+	GFBName: Burden Breaker
+	Tooltip: "[GFB]"
+	TooltipNormal:
+		'''
+		While using the Momentum Capacitor,
+		your top speed will continuously and uncontrollably increase
+		This effect only works if there are no bosses alive
+		'''
+	TooltipGFB:
+		'''
+		The good time
+		Go fast
+		WARNING: May have disastrous results
+		Only works if there are no bosses alive
+		'''
+}
+
+MonolithAxe: {
+	DisplayName: Monolith Axe
+	Tooltip: ""
+}
+
+MonolithHammer: {
+	DisplayName: Monolith Hammer
+	Tooltip: ""
+}
+
+MonolithPickaxe: {
+	DisplayName: Monolith Pickaxe
+	Tooltip: ""
+}
+
+NormalityRelocator: {
+	DisplayName: Normality Relocator
+	Tooltip:
+		'''
+		Press [KEY] to teleport to the position of the mouse
+		Fall speed is doubled for 0.5 seconds after teleporting
+		Teleportation is disabled while Chaos State is active
+		Works while in the inventory
+		'I'll be there in the blink of an eye'
 		'''
 }
 
 ReefclawHamaxe: {
 	DisplayName: Reefclaw Hamaxe
 	Tooltip: ""
+}
+
+RelicOfConvergence: {
+	DisplayName: Relic of Convergence
+	Tooltip:
+		'''
+		Creates a profaned crystal at the cursor that channels a healing aura before shattering
+		All players within the area of effect are healed for {0} HP
+		Allies gain 50% extra healing
+		Holding out the crystal heavily reduces the damage of all summons
+		[c/FF8C00:Never once had I known kindness. Neither my peers or family had a shred of compassion for me.]
+		[c/FF8C00:I wished for someone I could confide. A presence that cleansed me of anxiety.]
+		[c/FF8C00:And when I saw Her radiant smile when we met, I knew I had finally found it.]
+		'''
+}
+
+RelicOfResilience: {
+	DisplayName: Relic of Resilience
+	Tooltip:
+		'''
+		Holding this item creates orbiting rock shards around you and nearby allies
+		While they orbit you, your minimum defense is set to 150 and minimum damage reduction to 10%
+		Taking a hit or pressing <right> will pull in the shards, then blast them outward, crippling hit enemies
+		This effect has a 10 second cooldown after taking a hit
+		Holding out the shield heavily reduces the damage of all summons while rocks are active, only for you
+		[c/FF8C00:I saw a massacre and did nothing to stop it. My vow broken, I was shunned.]
+		[c/FF8C00:My will to forge ahead vanished. My final wish was simply to not die alone.]
+		[c/FF8C00:But when She put faith in my shield, I would never again let it falter.]
+		'''
 }
 
 SeismicHampick: {
@@ -168,14 +347,65 @@ ShardlightPickaxe: {
 	Tooltip: ""
 }
 
+SirenproofEarMuffs: {
+	DisplayName: Sirenproof Earmuffs
+	Tooltip:
+		'''
+		Toggle this item to prevent Anahita from spawning
+		Press <right> to toggle
+		[STATE]
+		'''
+}
+
 SkyfringePickaxe: {
 	DisplayName: Skyfringe Pickaxe
 	Tooltip: Able to mine Hellstone
 }
 
+SulphurousSeaWorldSideChanger: {
+	DisplayName: Sulphurous Sea World Side Changer
+	Tooltip:
+		'''
+		Spawn and use this if your regular ocean counts as a Sulphurous Sea
+		This will also fix the Abyss if it is broken
+		'''
+}
+
+SuperDummy: {
+	DisplayName: Super Dummy
+	Tooltip:
+		'''
+		Creates a super dummy
+		Regenerates 1 million life per second
+		Will not die when taking damage over time from debuffs
+		<right> to kill all super dummies
+		Can only spawn 50 super dummies at once
+		'''
+}
+
 TectonicTruncator: {
 	DisplayName: Tectonic Truncator
 	Tooltip: ""
+}
+
+TorrentialTear: {
+	DisplayName: Torrential Tear
+	Tooltip:
+		'''
+		Summons the rain
+		Rain will start some time after this item is used
+		If used while it's raining, the rain will stop some time afterward
+		'''
+}
+
+VoodooDemonVoodooDoll: {
+	DisplayName: Voodoo Demon Voodoo Doll
+	Tooltip:
+		'''
+		Toggle this item to prevent voodoo demons from spawning near you
+		Press <right> to toggle
+		[STATE]
+		'''
 }
 
 WulfrumDiggingTurtle: {
@@ -184,6 +414,7 @@ WulfrumDiggingTurtle: {
 		'''
 		Throws a rickety mining contraption to dig out a small tunnel
 		In case of an emergency, press <right> to instantly detonate all your digging turtles
+		The turtle scales with your pickaxe power
 		'''
 }
 
@@ -196,7 +427,7 @@ WulfrumScaffoldKit: {
 	DisplayName: Wulfrum Scaffold Kit
 	Tooltip:
 		'''
-		Places down temporary metal scaffolding. Uses up one wulfrum metal scrap for 40 tiles built
+		Places down temporary metal scaffolding. Uses up [i:CalamityMod/WulfrumMetalScrap] {$Items.Materials.WulfrumMetalScrap.DisplayName} for {0} tiles built
 		Scaffold needs to be adjacent to a solid tile to be placed down
 		'For when you need something built fast and don't need it to last.'
 		'''

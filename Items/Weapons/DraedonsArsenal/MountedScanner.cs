@@ -1,9 +1,9 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -24,23 +24,18 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.damage = 24;
             Item.knockBack = 2f;
             Item.mana = 10;
-            Item.useTime = Item.useAnimation = 24;
+            Item.useAnimation = Item.useTime = 36;
             Item.autoReuse = true;
 
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.UseSound = SoundID.Item15;
             Item.noMelee = true;
 
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
 
             Item.shoot = ModContent.ProjectileType<MountedScannerSummon>();
             Item.shootSpeed = 1f;
-
-            modItem.UsesCharge = true;
-            modItem.MaxCharge = 85f;
-            modItem.ChargePerUse = 0.85f;
-            modItem.ChargePerAltUse = 0f;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

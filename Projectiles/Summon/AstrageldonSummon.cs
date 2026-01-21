@@ -1,10 +1,10 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Dusts;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
+using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -20,9 +20,10 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 6;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 6;
+            Main.projPet[Type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -54,7 +55,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void AI()
         {
-            Player player = Main.player[Projectile.owner];;
+            Player player = Main.player[Projectile.owner]; ;
             CalamityPlayer modPlayer = player.Calamity();
             CalamityGlobalProjectile modProj = Projectile.Calamity();
 
@@ -123,9 +124,8 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 else
                 {
-                    for (int i = 0; i < Main.npc.Length; i++)
+                    foreach (NPC npc in Main.ActiveNPCs)
                     {
-                        NPC npc = Main.npc[i];
                         if (npc.CanBeChasedBy(Projectile, false))
                         {
                             bool lineOfSight = Collision.CanHit(Projectile.position, Projectile.width, Projectile.height, npc.position, npc.width, npc.height);
@@ -166,7 +166,7 @@ namespace CalamityMod.Projectiles.Summon
                             randAdjust = rand3 / randAdjust;
                             rand1 *= randAdjust;
                             rand2 *= randAdjust;
-                            int astralDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 2f);
+                            int astralDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 2f);
                             Dust dust = Main.dust[astralDust];
                             dust.noGravity = true;
                             dust.position.X = Projectile.Center.X;
@@ -210,6 +210,8 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
+        public override bool MinionContactDamage() => true;
+
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
@@ -219,8 +221,8 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-            int height = texture.Height / Main.projFrames[Projectile.type];
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int height = texture.Height / Main.projFrames[Type];
             int y6 = height * Projectile.frame;
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture.Width, height)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture.Width / 2f, (float)height / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;

@@ -1,16 +1,17 @@
-﻿using System.Linq;
-using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Melee;
+﻿using CalamityMod.Items.Materials;
+using CalamityMod.Projectiles.Melee.MaceFlails;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    [LegacyName("RedtideSword")]
+    [LegacyName("RedtideSword", "UrchinFlail")]
     public class UrchinMace : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+
+        public override void SetStaticDefaults() => ItemID.Sets.ToolTipDamageMultiplier[Type] = 2f;
         public override void SetDefaults()
         {
             Item.width = 42;
@@ -26,20 +27,15 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.useTime = 19;
             Item.knockBack = 4;
             Item.UseSound = SoundID.Item1;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
-            Item.shoot = ModContent.ProjectileType<UrchinMaceProjectile>();
+            Item.shoot = ModContent.ProjectileType<UrchinMaceProj>();
             Item.shootSpeed = 9f;
         }
 
         public override void HoldItem(Player player)
         {
             player.Calamity().mouseWorldListener = true;
-        }
-
-        public override bool CanUseItem(Player player)
-        {
-            return !Main.projectile.Any(n => n.active && n.owner == player.whoAmI && n.type == ModContent.ProjectileType<UrchinMaceProjectile>());
         }
 
         public override void AddRecipes()

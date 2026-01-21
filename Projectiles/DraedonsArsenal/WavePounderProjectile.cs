@@ -1,8 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Items.Weapons.DraedonsArsenal;
+using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.Audio;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
@@ -39,7 +40,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     float offset = Main.rand.NextFloat(38f, 42f);
                     if (Projectile.Calamity().stealthStrike)
                         offset *= 1.66f;
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2CircularEdge(offset, offset), 107);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2CircularEdge(offset, offset), DustID.Terra);
                     dust.velocity = Projectile.DirectionFrom(dust.position) * offset / 12f + Projectile.velocity;
                     dust.noGravity = true;
                 }

@@ -1,6 +1,9 @@
 ﻿using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Items.Materials;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
@@ -9,29 +12,34 @@ namespace CalamityMod.Items.Potions.Alcohol
     {
         public new string LocalizationCategory => "Items.Potions";
 
-        public static readonly float AccessoryAndSetBonusDamageMultiplier = 1.5f;
-        public static readonly float DamageStatReduction = 0.25f;
+        public static readonly float DamageBoostMultiplier = 1.25f;
+        public static readonly float DamageReductionMultiplier = 0.75f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs((DamageBoostMultiplier).ToString("N2"), (DamageReductionMultiplier).ToString("N2"));
 
         public override void SetStaticDefaults()
         {
-            Item.ResearchUnlockCount = 5;
+            Item.ResearchUnlockCount = 20;
+            ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
+                new Color(255, 118, 3),
+                new Color(255, 200, 82),
+                new Color(255, 228, 122)
+            };
         }
 
         public override void SetDefaults()
         {
-            Item.width = 28;
-            Item.height = 40;
-            Item.useTurn = true;
-            Item.maxStack = 9999;
+            Item.DefaultToFood(30, 38, ModContent.BuffType<OldFashionedBuff>(), CalamityUtils.MinutesToFrames(6), true);
+
+            Item.value = Item.sellPrice(silver: 60);
             Item.rare = ItemRarityID.Lime;
-            Item.useAnimation = 17;
-            Item.useTime = 17;
-            Item.useStyle = ItemUseStyleID.DrinkLiquid;
-            Item.UseSound = SoundID.Item3;
-            Item.consumable = true;
-            Item.buffType = ModContent.BuffType<OldFashionedBuff>();
-            Item.buffTime = CalamityUtils.SecondsToFrames(360f);
-            Item.value = Item.buyPrice(0, 5, 30, 0);
+        }
+        public override void AddRecipes()
+        {
+            CreateRecipe(10).
+                AddIngredient(ItemID.Bottle, 10).
+                AddIngredient(ItemID.Grapefruit).
+                AddTile(TileID.Kegs).
+                Register();
         }
     }
 }

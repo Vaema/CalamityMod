@@ -1,16 +1,12 @@
-﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.StatBuffs;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Dusts;
+﻿using System.Collections.Generic;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Particles;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System.Collections.Generic;
 
 namespace CalamityMod.Projectiles.Healing
 {
@@ -27,7 +23,7 @@ namespace CalamityMod.Projectiles.Healing
         public static readonly SoundStyle Spawnsound = new("CalamityMod/Sounds/Custom/OrbHeal1") { Volume = 0.5f };
         public ref int CleansingEffect => ref Main.player[Projectile.owner].Calamity().CleansingEffect;
         public List<bool> cleanseList = new List<bool>(new bool[Main.maxPlayers]);
-        
+
 
         public override void SetDefaults()
         {
@@ -36,7 +32,7 @@ namespace CalamityMod.Projectiles.Healing
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
-            Projectile.timeLeft = 1810;
+            Projectile.timeLeft = CleansingJelly.AuraLifetime + 10;
         }
 
         public override void AI()
@@ -55,15 +51,15 @@ namespace CalamityMod.Projectiles.Healing
                     CleansingEffect = 1;
                     for (int l = 0; l < Player.MaxBuffs; l++)
                     {
-                        int hasBuff = player.buffType[l];
-                        if (player.buffTime[l] > 2 && CalamityLists.debuffList.Contains(hasBuff))
+                        int buffID = player.buffType[l];
+                        if (player.buffTime[l] > 2 && CalamityBuffSets.IsDebuff[buffID])
                         {
                             player.buffTime[l] *= 0;
                         }
                     }
                     for (int i = 0; i < 55; i++)
                     {
-                        int dust = Dust.NewDust(player.Center, player.width + 4, player.height + 4, 187, player.velocity.X * 0.2f, player.velocity.Y * 0.2f, 100, default, 5.5f);
+                        int dust = Dust.NewDust(player.Center, player.width + 4, player.height + 4, DustID.Flare_Blue, player.velocity.X * 0.2f, player.velocity.Y * 0.2f, 100, default, 5.5f);
                         Main.dust[dust].noGravity = true;
                         Main.dust[dust].velocity *= 1.2f;
                         Main.dust[dust].velocity.Y -= 0.5f;
@@ -98,19 +94,19 @@ namespace CalamityMod.Projectiles.Healing
 
                 for (int i = 0; i < 1; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2CircularEdge(155f, 155f), 187);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2CircularEdge(155f, 155f), DustID.BlueFlare);
                     dust.scale = Main.rand.NextFloat(2.2f, 3.3f);
                     dust.noGravity = true;
                 }
 
                 for (int i = 0; i < 1; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(150f, 150f), 187);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(150f, 150f), DustID.BlueFlare);
                     dust.scale = Main.rand.NextFloat(0.8f, 1.3f);
                     dust.noGravity = true;
                 }
 
-                if (Framecounter == 1800)
+                if (Framecounter == CleansingJelly.AuraLifetime)
                 {
                     ShinkGrow = 2;
                 }

@@ -19,12 +19,12 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
             TileObjectData.newTile.DrawYOffset = 2;
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(106, 80, 102));
-            DustType = 33;
+            DustType = DustID.Water;
 
             base.SetStaticDefaults();
         }
 
-        public override void KillMultiTile(int i, int j, int frameX, int frameY) 
+        public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
             if (Main.rand.NextBool(5))
                 Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 32, 32, ItemID.PinkPearl);

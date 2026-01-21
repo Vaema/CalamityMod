@@ -1,11 +1,11 @@
 ﻿using CalamityMod.CalPlayer;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    [AutoloadEquip(new EquipType[] { EquipType.HandsOn, EquipType.HandsOff } )]
+    [AutoloadEquip(new EquipType[] { EquipType.HandsOn, EquipType.HandsOff })]
     public class GloveOfRecklessness : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 28;
             Item.height = 36;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.accessory = true;
             Item.rare = ItemRarityID.Lime;
         }

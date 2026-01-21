@@ -1,10 +1,10 @@
 ﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
@@ -28,9 +28,10 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
-            ProjectileID.Sets.NeedsUUID[Projectile.type] = true;
+            Main.projPet[Type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
+            ProjectileID.Sets.NeedsUUID[Type] = true;
         }
 
         public override void SetDefaults()
@@ -50,7 +51,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public override void AI()
         {
             Player player = Main.player[Projectile.owner];
-            Projectile.Center = player.Center + AngularOffsetRelativeToPlayer.ToRotationVector2() * OffsetDistanceFromPlayer;
+            Projectile.Center = player.Center + AngularOffsetRelativeToPlayer.ToRotationVector2() * OffsetDistanceFromPlayer + Vector2.UnitY * player.gfxOffY;
             GrantBuffs(player);
 
             NPC potentialTarget = Projectile.Center.MinionHoming(960f, player);
@@ -114,6 +115,5 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 SoundEngine.PlaySound(CommonCalamitySounds.LaserCannonSound, Projectile.Center);
             }
         }
-        public override bool? CanDamage() => false;
     }
 }

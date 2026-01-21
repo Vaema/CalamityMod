@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.ObjectInteractions;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.FurnitureAbyss
@@ -17,7 +18,7 @@ namespace CalamityMod.Tiles.FurnitureAbyss
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 1, 0f, 0f, 1, new Color(100, 130, 150), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Stone, 0f, 0f, 1, new Color(100, 130, 150), 1f);
             return false;
         }
 
@@ -28,7 +29,7 @@ namespace CalamityMod.Tiles.FurnitureAbyss
 
         public override bool RightClick(int x, int y)
         {
-            return CalamityUtils.ClockRightClick();
+            return FurnitureCommon.ClockRightClick();
         }
 
         public override void NearbyEffects(int i, int j, bool closer)
@@ -39,6 +40,6 @@ namespace CalamityMod.Tiles.FurnitureAbyss
             }
         }
 
-        public override void MouseOver(int i, int j) => CalamityUtils.MouseOver(i, j, ModContent.ItemType<Items.Placeables.FurnitureAbyss.AbyssClock>());
+        public override void MouseOver(int i, int j) => FurnitureCommon.MouseOver(i, j, ModContent.ItemType<Items.Placeables.FurnitureAbyss.AbyssClock>());
     }
 }

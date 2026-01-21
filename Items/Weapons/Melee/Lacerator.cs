@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee.Yoyos;
 using CalamityMod.Rarities;
-using CalamityMod.World;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
@@ -13,11 +12,16 @@ namespace CalamityMod.Items.Weapons.Melee
     public class Lacerator : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+
+        public static float Reach = 640f;
+        public static float Speed = 48f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(Reach.ToTiles(), Speed);
+
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.Yoyo[Item.type] = true;
-            ItemID.Sets.GamepadExtraRange[Item.type] = 15;
-            ItemID.Sets.GamepadSmartQuickReach[Item.type] = true;
+            ItemID.Sets.Yoyo[Type] = true;
+            ItemID.Sets.GamepadExtraRange[Type] = 15;
+            ItemID.Sets.GamepadSmartQuickReach[Type] = true;
         }
 
         public override void SetDefaults()
@@ -25,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = 30;
             Item.height = 26;
             Item.DamageType = DamageClass.MeleeNoSpeed;
-            Item.damage = 130;
+            Item.damage = 115;
             Item.knockBack = 7f;
             Item.useTime = 20;
             Item.useAnimation = 20;
@@ -40,7 +44,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shoot = ModContent.ProjectileType<LaceratorYoyo>();
             Item.shootSpeed = 16f;
 
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
         }
 
@@ -50,7 +54,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CreateRecipe().
                 AddIngredient<BloodstoneCore>(4).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

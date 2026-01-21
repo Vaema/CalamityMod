@@ -2,6 +2,7 @@
 using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.PlagueReaper
@@ -10,19 +11,22 @@ namespace CalamityMod.Items.Armor.PlagueReaper
     public class PlagueReaperVest : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
+
+        public static float RangedDamageBoost = 0.16f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedDamageBoost.ToPercent());
+
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
-            Item.defense = 14;
+            Item.defense = 19;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<RangedDamageClass>() += 0.15f;
-            player.GetCritChance<RangedDamageClass>() += 5;
+            player.GetDamage<RangedDamageClass>() += RangedDamageBoost;
             player.buffImmune[ModContent.BuffType<Plague>()] = true;
         }
 
@@ -33,6 +37,7 @@ namespace CalamityMod.Items.Armor.PlagueReaper
                 AddIngredient<PlagueCellCanister>(29).
                 AddIngredient(ItemID.Nanites, 19).
                 AddTile(TileID.MythrilAnvil).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<PlagueReaperStriders>()).
                 Register();
         }
     }

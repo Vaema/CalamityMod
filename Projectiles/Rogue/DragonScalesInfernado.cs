@@ -1,10 +1,11 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.StatDebuffs;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Rogue
 {
     public class DragonScalesInfernado : ModProjectile, ILocalizedModType
@@ -16,7 +17,7 @@ namespace CalamityMod.Projectiles.Rogue
         bool intersectingSomething = false;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 12;
+            Main.projFrames[Type] = 12;
         }
 
         public override void SetDefaults()
@@ -46,7 +47,7 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (Main.rand.NextBool(25))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 244, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.CopperCoin, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
             if (Projectile.velocity.X != 0f)
             {
@@ -58,7 +59,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.frame = 0;
             }
@@ -116,7 +117,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
             if (Projectile.ai[0] <= 0f)
             {
-                float constant = 0.104719758f;
+                float constant = MathHelper.Pi / 30f;
                 float smallWidth = (float)Projectile.width / 5f;
                 smallWidth *= 2f;
                 float xFluctuation = (float)(Math.Cos((double)(constant * -(double)Projectile.ai[0])) - 0.5) * smallWidth;
@@ -144,8 +145,8 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture2D13 = ModContent.Request<Texture2D>(Texture).Value;
-            int frameDraw = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
+            Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int frameDraw = Terraria.GameContent.TextureAssets.Projectile[Type].Value.Height / Main.projFrames[Type];
             int y6 = frameDraw * Projectile.frame;
             Main.spriteBatch.Draw(texture2D13, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture2D13.Width, frameDraw)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture2D13.Width / 2f, (float)frameDraw / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;

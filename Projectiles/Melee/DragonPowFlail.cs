@@ -1,12 +1,12 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Melee
 {
     public class DragonPowFlail : ModProjectile, ILocalizedModType
@@ -139,9 +139,8 @@ namespace CalamityMod.Projectiles.Melee
             if (Main.player[Projectile.owner].WithinRange(target.Center, 345f))
                 return;
 
-            // Inflicts Daybroken, Abyssal Flames and Holy Flames for 3 seconds on-hit
-            target.AddBuff(BuffID.Daybreak, 180);
-            target.AddBuff(ModContent.BuffType<HolyFlames>(), 180);
+            // Inflicts Dragonfire for 3 seconds on-hit
+            target.AddBuff(ModContent.BuffType<Dragonfire>(), 180);
 
             Projectile.ai[0] = 1f;
             Projectile.netUpdate = true;

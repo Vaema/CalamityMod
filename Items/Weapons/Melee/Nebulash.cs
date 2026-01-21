@@ -1,7 +1,8 @@
-﻿using Terraria.DataStructures;
+﻿using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -14,7 +15,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 16;
             Item.height = 16;
-            Item.damage = 60;
+            Item.damage = 85;
             Item.rare = ItemRarityID.Lime;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -26,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 2f;
             Item.UseSound = SoundID.Item117;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.shootSpeed = 24f;
             Item.shoot = ModContent.ProjectileType<NebulashFlail>();
         }
@@ -34,7 +35,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             float ai3 = (Main.rand.NextFloat() - 0.5f) * 0.7853982f; //0.5
-            Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, type, damage, knockback, player.whoAmI, 0f, ai3);
+            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, ai3);
             return false;
         }
     }

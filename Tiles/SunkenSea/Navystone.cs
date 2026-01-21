@@ -1,36 +1,34 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using CalamityMod.Systems;
+using CalamityMod.Tiles.SunkenSea.Ambient;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.SunkenSea
 {
     public class Navystone : ModTile
     {
-        public byte[,] tileAdjacency;
-        public byte[,] secondTileAdjacency;
-        public byte[,] thirdTileAdjacency;
-        public byte[,] fourthTileAdjacency;
-
         public override void SetStaticDefaults()
         {
+            TileID.Sets.GeneralPlacementTiles[Type] = false;
+
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
+            TileID.Sets.HasSlopeFrames[Type] = true;
 
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeWithDesert(Type);
 
             TileID.Sets.ChecksForMerge[Type] = true;
-            DustType = 96;
-            AddMapEntry(new Color(31, 92, 114));
+            DustType = DustID.BlueMoss;
+            AddMapEntry(new Color(28, 72, 96));
             HitSound = SoundID.Tink;
 
-            TileFraming.SetUpUniversalMerge(Type, ModContent.TileType<EutrophicSand>(), out tileAdjacency);
-            TileFraming.SetUpUniversalMerge(Type, TileID.Sandstone, out secondTileAdjacency);
-            TileFraming.SetUpUniversalMerge(Type, TileID.Sand, out thirdTileAdjacency);
-            TileFraming.SetUpUniversalMerge(Type, TileID.HardenedSand, out fourthTileAdjacency);
+            this.RegisterBlendMergeWith(ModContent.TileType<Shellstone>());
+            this.RegisterBlendMergeWith(TileID.Sandstone);
+            this.RegisterBlendMergeWith(TileID.Sand);
+            this.RegisterBlendMergeWith(TileID.HardenedSand);
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
@@ -38,21 +36,30 @@ namespace CalamityMod.Tiles.SunkenSea
             num = fail ? 1 : 3;
         }
 
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
-        {
-            TileFraming.DrawUniversalMergeFrames(i, j, tileAdjacency, "CalamityMod/Tiles/Merges/EutrophicSandMerge");
-            TileFraming.DrawUniversalMergeFrames(i, j, secondTileAdjacency, "CalamityMod/Tiles/Merges/SandstoneMerge");
-            TileFraming.DrawUniversalMergeFrames(i, j, thirdTileAdjacency, "CalamityMod/Tiles/Merges/SandMerge");
-            TileFraming.DrawUniversalMergeFrames(i, j, fourthTileAdjacency, "CalamityMod/Tiles/Merges/HardenedSandMerge");
-        }
-
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
         {
-            TileFraming.GetAdjacencyData(i, j, ModContent.TileType<EutrophicSand>(), out tileAdjacency[i, j]);
-            TileFraming.GetAdjacencyData(i, j, TileID.Sandstone, out secondTileAdjacency[i, j]);
-            TileFraming.GetAdjacencyData(i, j, TileID.Sand, out thirdTileAdjacency[i, j]);
-            TileFraming.GetAdjacencyData(i, j, TileID.HardenedSand, out thirdTileAdjacency[i, j]);
-            return TileFraming.BrimstoneFraming(i, j, resetFrame);
+            return TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
+        }
+
+        public override void RandomUpdate(int i, int j)
+        {
+            Tile Tile = Framing.GetTileSafely(i, j);
+            Tile Below = Framing.GetTileSafely(i, j + 1);
+            Tile Above = Framing.GetTileSafely(i, j - 1);
+
+            if (!Below.HasTile && Below.LiquidType <= LiquidID.Water && !Tile.BottomSlope)
+            {
+                if (Main.rand.NextBool(10))
+                {
+                    Below.TileType = (ushort)ModContent.TileType<DepthVines>();
+                    Below.HasTile = true;
+                    WorldGen.SquareTileFrame(i, j + 1, true);
+                    if (Main.dedServ)
+                    {
+                        NetMessage.SendTileSquare(-1, i, j + 1, 3, TileChangeType.None);
+                    }
+                }
+            }
         }
     }
 }

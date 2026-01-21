@@ -1,12 +1,12 @@
-﻿using Terraria.DataStructures;
+﻿using CalamityMod.Items.Materials;
+using CalamityMod.Projectiles.Rogue;
+using CalamityMod.Rarities;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Rogue;
-using Microsoft.Xna.Framework;
-using Terraria.Audio;
-using CalamityMod.Rarities;
 
 namespace CalamityMod.Items.Weapons.Rogue
 {
@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 86;
             Item.height = 102;
-            Item.damage = 225;
+            Item.damage = 420;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useAnimation = 37;
@@ -30,13 +30,13 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 9f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.shoot = ModContent.ProjectileType<RealityRuptureMini>();
             Item.shootSpeed = 10f;
             Item.DamageType = RogueDamageClass.Instance;
         }
-        public override float StealthDamageMultiplier => 3.9f;
+        public override float StealthDamageMultiplier => 2.25f;
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (player.Calamity().StealthStrikeAvailable()) //setting the stealth strike
@@ -54,19 +54,16 @@ namespace CalamityMod.Items.Weapons.Rogue
             {
                 int projType = BigSpear ? ModContent.ProjectileType<RealityRuptureLance>() : type;
 
-                if (!BigSpear)
-                    SoundEngine.PlaySound(ThrowSound, player.Center);
-                else
-                    SoundEngine.PlaySound(ThrowSound2, player.Center);
+                SoundEngine.PlaySound(BigSpear ? ThrowSound2 : ThrowSound, player.Center);
 
                 if (BigSpear)
                 {
-                    Projectile.NewProjectile(source, position, velocity, projType, BigSpear ? damage * 4 : damage, knockback * 1.5f, player.whoAmI);
+                    Projectile.NewProjectile(source, position, velocity, projType, damage * 4, knockback * 1.5f, player.whoAmI);
                 }
-                int index = 4;
-                for (int i = -index; i <= index; i += index)
+                else
                 {
-                    if (!BigSpear)
+                    int index = 4;
+                    for (int i = -index; i <= index; i += index)
                     {
                         Vector2 perturbedSpeed = velocity.RotatedBy(MathHelper.ToRadians(i));
                         int spear = Projectile.NewProjectile(source, position, perturbedSpeed, projType, damage, knockback, player.whoAmI);
@@ -88,7 +85,7 @@ namespace CalamityMod.Items.Weapons.Rogue
                 AddIngredient<ArmoredShell>().
                 AddIngredient<TwistingNether>().
                 AddIngredient<DarkPlasma>().
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

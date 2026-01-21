@@ -1,19 +1,19 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.NPCs.ExoMechs.Thanatos;
 using CalamityMod.Projectiles.BaseProjectiles;
+using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using ReLogic.Content;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -33,7 +33,7 @@ namespace CalamityMod.Projectiles.Boss
         public override float Lifetime => 180;
         public override Color LaserOverlayColor => new(250, 250, 250, 100);
         public override Color LightCastColor => Color.White;
-        public override Texture2D LaserBeginTexture => ModContent.Request<Texture2D>(Texture).Value;
+        public override Texture2D LaserBeginTexture => Terraria.GameContent.TextureAssets.Projectile[Type].Value;
         public override Texture2D LaserMiddleTexture => ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/ThanatosBeamMiddle", AssetRequestMode.ImmediateLoad).Value;
         public override Texture2D LaserEndTexture => ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/ThanatosBeamEnd", AssetRequestMode.ImmediateLoad).Value;
 
@@ -41,8 +41,8 @@ namespace CalamityMod.Projectiles.Boss
         {
             // Thanatos' mouth laser
             // This is its serious name
-            Main.projFrames[Projectile.type] = 5;
-            ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
+            Main.projFrames[Type] = 5;
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
         }
 
         public override void SetDefaults()
@@ -107,10 +107,9 @@ namespace CalamityMod.Projectiles.Boss
                 return;
 
             // Difficulty modes. Used during the firing of the perpendicular lasers.
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             // Spawn dust at the end of the beam.
             int dustType = (int)CalamityDusts.Brimstone;
@@ -137,7 +136,7 @@ namespace CalamityMod.Projectiles.Boss
             }
 
             // Periodically fire beams along the laser perpendicular to its direction.
-            float laserFireRate = (CalamityWorld.LegendaryMode && revenge) ? 60f : expertMode ? 80f : 160f;
+            float laserFireRate = Main.getGoodWorld ? 60f : expertMode ? 80f : 160f;
             if (Main.npc[OwnerIndex].Calamity().newAI[2] % laserFireRate == 0f)
             {
                 // Play a laser sound to go with the beams.
@@ -146,19 +145,18 @@ namespace CalamityMod.Projectiles.Boss
                 if (Projectile.owner == Main.myPlayer)
                 {
                     Vector2 beamDirection = Projectile.velocity.SafeNormalize(Vector2.UnitY);
-                    float distanceBetweenProjectiles = bossRush ? 160f : death ? 256f : revenge ? 288f : 320f;
+                    float distanceBetweenProjectiles = death ? 256f : revenge ? 288f : 320f;
                     Vector2 laserFirePosition = Main.npc[OwnerIndex].Center + beamDirection * distanceBetweenProjectiles;
                     int laserCount = (int)(LaserLength / distanceBetweenProjectiles);
-                    int type = ModContent.ProjectileType<ThanatosLaser>();
-                    int damage = Projectile.GetProjectileDamage(Main.npc[OwnerIndex].type);
+                    int type = ModContent.ProjectileType<THanosSideLaser>();
                     for (int i = 0; i < laserCount; i++)
                     {
                         int totalProjectiles = 2;
                         float radians = MathHelper.TwoPi / totalProjectiles;
                         for (int j = 0; j < totalProjectiles; j++)
                         {
-                            Vector2 projVelocity = (CalamityWorld.LegendaryMode && revenge) ? new Vector2(Main.rand.Next(-12, 12), Main.rand.Next(-12, 12)) : Projectile.velocity.RotatedBy(radians * j + MathHelper.PiOver2) * 12f;
-                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), laserFirePosition, projVelocity, type, damage, 0f, Main.myPlayer, 0f, -1f);
+                            Vector2 projVelocity = Main.getGoodWorld ? new Vector2(Main.rand.Next(-12, 12), Main.rand.Next(-12, 12)) : Projectile.velocity.RotatedBy(radians * j + MathHelper.PiOver2) * 12f;
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), laserFirePosition, projVelocity, type, ThanatosHead.LaserDamage, 0f, Main.myPlayer, 0f, -1f);
                         }
                         laserFirePosition += beamDirection * distanceBetweenProjectiles;
                     }
@@ -168,7 +166,7 @@ namespace CalamityMod.Projectiles.Boss
             // Determine frames.
             Projectile.frameCounter++;
             if (Projectile.frameCounter % 5f == 0f)
-                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Projectile.type];
+                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Type];
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -181,9 +179,9 @@ namespace CalamityMod.Projectiles.Boss
                 return false;
 
             Color beamColor = LaserOverlayColor;
-            Rectangle startFrameArea = LaserBeginTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
-            Rectangle middleFrameArea = LaserMiddleTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
-            Rectangle endFrameArea = LaserEndTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
+            Rectangle startFrameArea = LaserBeginTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
+            Rectangle middleFrameArea = LaserMiddleTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
+            Rectangle endFrameArea = LaserEndTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
 
             // Start texture drawing.
             Main.EntitySpriteDraw(LaserBeginTexture,
@@ -218,7 +216,7 @@ namespace CalamityMod.Projectiles.Boss
                                      0);
                     incrementalBodyLength += laserOffset;
                     centerOnLaser += Projectile.velocity * laserOffset;
-                    middleFrameArea.Y += LaserMiddleTexture.Height / Main.projFrames[Projectile.type];
+                    middleFrameArea.Y += LaserMiddleTexture.Height / Main.projFrames[Type];
                     if (middleFrameArea.Y + middleFrameArea.Height > LaserMiddleTexture.Height)
                         middleFrameArea.Y = 0;
                 }
@@ -242,7 +240,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 180);
+            target.AddBuff(ModContent.BuffType<MiracleBlight>(), 300);
         }
 
         public override bool CanHitPlayer(Player target) => OwnerIsValid && Projectile.scale >= 0.5f;

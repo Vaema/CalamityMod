@@ -1,14 +1,16 @@
-﻿using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
     public class IceBlock : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
+
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = 58;
@@ -21,7 +23,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.alpha = 255;
             Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 60;
+            Projectile.localNPCHitCooldown = 30;
             Projectile.coldDamage = true;
         }
 
@@ -30,42 +32,45 @@ namespace CalamityMod.Projectiles.Magic
             if (Projectile.alpha > 20)
             {
                 Projectile.alpha -= 12;
+                if (Projectile.alpha < 20)
+                    Projectile.alpha = 20;
             }
-            if(Projectile.alpha < 20)
+
+            foreach (Projectile proj in Main.ActiveProjectiles)
             {
-                Projectile.alpha = 20;
-            }
-            for (int i = 0; i < Main.maxProjectiles; i++)
-            {
-                Projectile proj = Main.projectile[i];
                 if (proj.type == ModContent.ProjectileType<IceBarrageMain>() && proj.owner == Main.myPlayer)
                 {
-                    Vector2 pos1 = new Vector2(proj.Center.X, proj.Center.Y - (proj.height * 0.5f) - 44f);
-                    Vector2 pos2 = new Vector2(proj.Center.X + (proj.width * 0.5f) + 48f, proj.Center.Y);
-                    Vector2 pos3 = new Vector2(proj.Center.X, proj.Center.Y + (proj.height * 0.5f) + 44f);
-                    Vector2 pos4 = new Vector2(proj.Center.X - (proj.width * 0.5f) - 49f, proj.Center.Y);
+                    // 0 = Bottom, 1 = Left, 2 = Top, 3 = Right
+                    // Why is 0 Bottom instead of Top? Hitbox alignment.
                     switch (Projectile.ai[0])
                     {
-                        case 0: Projectile.Center = pos1;
-                                break;
-                        case 1: Projectile.Center = pos2;
-                                break;
-                        case 2: Projectile.Center = pos3;
-                                break;
-                        case 3: Projectile.Center = pos4;
-                                break;
+                        case 0:
+                            Projectile.Center = new Vector2(proj.Center.X, proj.Center.Y + (proj.height * 0.5f) + 20f);
+                            break;
+                        case 1:
+                            Projectile.Center = new Vector2(proj.Center.X - (proj.width * 0.5f) - 20f, proj.Center.Y);
+                            break;
+                        case 2:
+                            Projectile.Center = new Vector2(proj.Center.X, proj.Center.Y - (proj.height * 0.5f) - 20f);
+                            break;
+                        case 3:
+                            Projectile.Center = new Vector2(proj.Center.X + (proj.width * 0.5f) + 20f, proj.Center.Y);
+                            break;
                         default: break;
                     }
                 }
             }
             switch (Projectile.ai[0])
             {
-                case 1: Projectile.rotation = (MathHelper.Pi * 0.5f);
-                        break;
-                case 2: Projectile.rotation = MathHelper.Pi;
-                        break;
-                case 3: Projectile.rotation = (MathHelper.Pi * 1.5f);
-                        break;
+                case 1:
+                    Projectile.rotation = MathHelper.PiOver2;
+                    break;
+                case 2:
+                    Projectile.rotation = MathHelper.Pi;
+                    break;
+                case 3:
+                    Projectile.rotation = MathHelper.Pi * 1.5f;
+                    break;
                 default: break;
             }
         }
@@ -84,7 +89,7 @@ namespace CalamityMod.Projectiles.Magic
                 Main.dust[dust].noGravity = true;
             }
             SoundEngine.PlaySound(SoundID.NPCHit5, Projectile.Center);
-            for (int i = 0; i< 8; i++)
+            for (int i = 0; i < 8; i++)
             {
                 Vector2 projdir = new Vector2(Main.rand.NextFloat(-10f, 10f), Main.rand.NextFloat(-10f, 10f));
                 Vector2 projpos = Projectile.Center + new Vector2(Main.rand.NextFloat(-50f, 50f), Main.rand.NextFloat(-50f, 50f));

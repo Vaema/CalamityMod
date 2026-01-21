@@ -1,16 +1,13 @@
-﻿using CalamityMod.Items.Materials;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
+﻿using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Dyes
 {
     public class ElementalDye : BaseDye
     {
-        public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(new Ref<Effect>(Mod.Assets.Request<Effect>("Effects/Dyes/ElementalDyeShader", AssetRequestMode.ImmediateLoad).Value), "DyePass").UseImage("Images/Misc/Perlin");
+        public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(Mod.Assets.Request<Effect>("Effects/Dyes/ElementalDyeShader"), "DyePass").UseImage("Images/Misc/Perlin");
         public override void SafeSetStaticDefaults()
         {
             Item.ResearchUnlockCount = 3;
@@ -19,7 +16,7 @@ namespace CalamityMod.Items.Dyes
         public override void SafeSetDefaults()
         {
             Item.rare = ItemRarityID.Purple;
-            Item.value = Item.sellPrice(0, 2, 50, 0);
+            Item.value = Item.sellPrice(gold: 2, silver: 50);
         }
 
         public override void AddRecipes()
@@ -27,9 +24,9 @@ namespace CalamityMod.Items.Dyes
             CreateRecipe(5).
                 AddIngredient(ItemID.SolarDye).
                 AddIngredient(ItemID.VortexDye).
-                AddIngredient(ItemID.StardustDye).
                 AddIngredient(ItemID.NebulaDye).
-                AddIngredient<GalacticaSingularity>().
+                AddIngredient(ItemID.StardustDye).
+                AddIngredient<MeldDye>().
                 AddTile(TileID.DyeVat).
                 Register();
         }

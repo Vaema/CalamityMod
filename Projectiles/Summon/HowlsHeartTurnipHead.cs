@@ -11,8 +11,8 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 5;
-            Main.projPet[Projectile.type] = true;
+            Main.projFrames[Type] = 5;
+            Main.projPet[Type] = true;
         }
 
         public override void SetDefaults()
@@ -38,7 +38,7 @@ namespace CalamityMod.Projectiles.Summon
         }
 
         public override void AI()
-        {            
+        {
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
 
@@ -66,7 +66,7 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.frame = 0;
             }

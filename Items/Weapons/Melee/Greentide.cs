@@ -1,7 +1,9 @@
-﻿using CalamityMod.Projectiles.Melee;
+﻿using System;
+using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -10,146 +12,162 @@ namespace CalamityMod.Items.Weapons.Melee
     public class Greentide : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+
+        internal const float ShootSpeed = 32f;
+
+        internal const float TeethSpread = 960f;
+
+        internal const float HalvedTeethSpread = TeethSpread * 0.5f;
+
+        internal const int TotalRows = 2;
+
+        internal const int TotalTeeth = 3;
+
         public override void SetDefaults()
         {
             Item.width = 62;
             Item.height = 62;
-            Item.damage = 95;
+            Item.damage = 81;
             Item.DamageType = DamageClass.Melee;
-            Item.scale = 1.5f;
-            Item.useTime = 24;
-            Item.useAnimation = 24;
+            Item.useTime = Item.useAnimation = 30;
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.knockBack = 7;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.knockBack = 7f;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.UseSound = SoundID.Item1;
+            Item.shoot = ModContent.ProjectileType<GreenWater>();
             Item.autoReuse = true;
-            Item.shootSpeed = 18f;
+            Item.shootSpeed = 10;
+        }
+        public override void HoldItem(Player player)
+        {
+            player.Calamity().mouseWorldListener = true;
+        }
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        {
+            for (int i = -2; i <= 2; i++)
+            {
+                if (i == 0)
+                {
+                    Projectile strongTooth = Projectile.NewProjectileDirect(source, position, velocity * 1.2f, type, damage, knockback, player.whoAmI, 2f, 0f);
+                    strongTooth.penetrate = -1;
+                    strongTooth.timeLeft = 150;
+                }
+                else
+                {
+                    Projectile.NewProjectile(source, position, velocity.RotatedBy(0.1f * i).RotatedByRandom(0.06f) * (1 - (Math.Abs(i) - 1) * 0.3f), type, (int)(damage * 0.5f), knockback / 3, player.whoAmI, 1f, 0f);
+                }
+            }
+            return false;
         }
 
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
-            var source = player.GetSource_ItemUse(Item);
-            int i = Main.myPlayer;
-            float projSpeed = Item.shootSpeed;
-            float playerKnockback = hit.Knockback;
-            playerKnockback = player.GetWeaponKnockback(Item, playerKnockback);
-            player.itemTime = Item.useTime;
-            Vector2 realPlayerPos = player.RotatedRelativePoint(player.MountedCenter, true);
-            float mouseXDist = (float)Main.mouseX - Main.screenPosition.X - realPlayerPos.X;
-            float mouseYDist = (float)Main.mouseY - Main.screenPosition.Y - realPlayerPos.Y;
-            if (player.gravDir == -1f)
-            {
-                mouseYDist = Main.screenPosition.Y + (float)Main.screenHeight - (float)Main.mouseY - realPlayerPos.Y;
-            }
-            float mouseDistance = (float)Math.Sqrt((double)(mouseXDist * mouseXDist + mouseYDist * mouseYDist));
-            if ((float.IsNaN(mouseXDist) && float.IsNaN(mouseYDist)) || (mouseXDist == 0f && mouseYDist == 0f))
-            {
-                mouseXDist = (float)player.direction;
-                mouseYDist = 0f;
-                mouseDistance = projSpeed;
-            }
-            else
-            {
-                mouseDistance = projSpeed / mouseDistance;
-            }
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for aiming a projectile
+            NPC target2 = player.Calamity().mouseWorld.ClosestNPCAt(300);
+            if (target2 == null)
+                target2 = target;
 
-            for (int j = 0; j < 3; j++)
+            Vector2 destination = target.Center;
+
+            Vector2 position = new Vector2(target2.Center.X, target2.Center.Y - 350);
+            Vector2 cachedPosition = position;
+            Vector2 secondPosition = new Vector2(target2.Center.X, target2.Center.Y + 350);
+            Vector2 secondCachedPosition = secondPosition;
+
+            Vector2 velocity = (destination - position).SafeNormalize(Vector2.UnitY) * ShootSpeed;
+            Vector2 cachedVelocity = velocity;
+            Vector2 secondVelocity = (destination - secondPosition).SafeNormalize(Vector2.UnitY) * ShootSpeed;
+            Vector2 secondCachedVelocity = secondVelocity;
+
+            int teethDamage = player.CalcIntDamage<MeleeDamageClass>((int)(Item.damage * 0.1f));
+            float teethKnockback = Item.knockBack * 0.2f;
+            int centralProjectile = TotalTeeth / 2;
+            float teethXVelocityReduction = 0.9f;
+            float minVelocityAdjustment = 0.8f;
+            float maxVelocityAdjustment = 1f;
+            for (int i = 0; i < TotalRows; i++)
             {
-                realPlayerPos = new Vector2(player.position.X + (float)player.width * 0.5f + (float)(Main.rand.Next(201) * -(float)player.direction) + ((float)Main.mouseX + Main.screenPosition.X - player.position.X), player.MountedCenter.Y - 600f);
-                realPlayerPos.X = (realPlayerPos.X + player.Center.X) / 2f + (float)Main.rand.Next(-200, 201);
-                realPlayerPos.Y -= (float)(100 * j);
-                mouseXDist = (float)Main.mouseX + Main.screenPosition.X - realPlayerPos.X;
-                mouseYDist = (float)Main.mouseY + Main.screenPosition.Y - realPlayerPos.Y;
-                if (mouseYDist < 0f)
+                bool topTeeth = i == 0;
+                for (int j = 0; j < TotalTeeth; j++)
                 {
-                    mouseYDist *= -1f;
+                    float velocityAdjustment = j == centralProjectile ? minVelocityAdjustment : MathHelper.Lerp(minVelocityAdjustment, maxVelocityAdjustment, Math.Abs(j + 0.5f - centralProjectile) / (float)centralProjectile);
+                    if (topTeeth)
+                    {
+                        position.X += MathHelper.Lerp(-HalvedTeethSpread * 0.3f, HalvedTeethSpread * 0.3f, j / (float)(TotalTeeth - 1));
+                        velocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(position, target2, ShootSpeed, 1) * velocityAdjustment;
+                        velocity.X *= teethXVelocityReduction;
+                        Projectile.NewProjectile(player.GetSource_ItemUse(Item), position, velocity * 0.25f, ModContent.ProjectileType<GreenWater>(), teethDamage, teethKnockback, player.whoAmI, 0f, i, target2.Center.Y);
+                        position = cachedPosition;
+                        velocity = cachedVelocity;
+                    }
+                    else
+                    {
+                        secondPosition.X += MathHelper.Lerp(-HalvedTeethSpread * 0.3f, HalvedTeethSpread * 0.3f, j / (float)(TotalTeeth - 1));
+                        secondVelocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(secondPosition, target2, ShootSpeed, 1) * velocityAdjustment;
+                        secondVelocity.X *= teethXVelocityReduction;
+                        Projectile.NewProjectile(player.GetSource_ItemUse(Item), secondPosition, secondVelocity * 0.25f, ModContent.ProjectileType<GreenWater>(), teethDamage, teethKnockback, player.whoAmI, 0f, i, target2.Center.Y);
+                        secondPosition = secondCachedPosition;
+                        secondVelocity = secondCachedVelocity;
+                    }
                 }
-                if (mouseYDist < 20f)
-                {
-                    mouseYDist = 20f;
-                }
-                mouseDistance = (float)Math.Sqrt((double)(mouseXDist * mouseXDist + mouseYDist * mouseYDist));
-                mouseDistance = projSpeed / mouseDistance;
-                mouseXDist *= mouseDistance;
-                mouseYDist *= mouseDistance;
-                float speedX4 = mouseXDist;
-                float speedY5 = mouseYDist + (float)Main.rand.Next(-180, 181) * 0.02f;
-                int greenWaterDamage = player.CalcIntDamage<MeleeDamageClass>(Item.damage);
-                Projectile.NewProjectile(source, realPlayerPos.X, realPlayerPos.Y, speedX4, speedY5, ModContent.ProjectileType<GreenWater>(), greenWaterDamage, playerKnockback, i, 0f, (float)Main.rand.Next(10));
             }
         }
 
         public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
         {
-            var source = player.GetSource_ItemUse(Item);
-            int i = Main.myPlayer;
-            float projSpeed = Item.shootSpeed;
-            float playerKnockback = Item.knockBack;
-            playerKnockback = player.GetWeaponKnockback(Item, playerKnockback);
-            player.itemTime = Item.useTime;
-            Vector2 realPlayerPos = player.RotatedRelativePoint(player.MountedCenter, true);
-            float mouseXDist = (float)Main.mouseX - Main.screenPosition.X - realPlayerPos.X;
-            float mouseYDist = (float)Main.mouseY - Main.screenPosition.Y - realPlayerPos.Y;
-            if (player.gravDir == -1f)
-            {
-                mouseYDist = Main.screenPosition.Y + (float)Main.screenHeight - (float)Main.mouseY - realPlayerPos.Y;
-            }
-            float mouseDistance = (float)Math.Sqrt((double)(mouseXDist * mouseXDist + mouseYDist * mouseYDist));
-            if ((float.IsNaN(mouseXDist) && float.IsNaN(mouseYDist)) || (mouseXDist == 0f && mouseYDist == 0f))
-            {
-                mouseXDist = (float)player.direction;
-                mouseYDist = 0f;
-                mouseDistance = projSpeed;
-            }
-            else
-            {
-                mouseDistance = projSpeed / mouseDistance;
-            }
+            Vector2 destination = target.Center;
 
-            for (int j = 0; j < 4; j++)
+            Vector2 position = destination - (Vector2.UnitY * (destination.Y - Main.screenPosition.Y + 80f));
+            Vector2 cachedPosition = position;
+            Vector2 secondPosition = cachedPosition + (Vector2.UnitY * (Main.screenHeight + 160f));
+            Vector2 secondCachedPosition = secondPosition;
+
+            Vector2 velocity = (destination - position).SafeNormalize(Vector2.UnitY) * ShootSpeed;
+            Vector2 cachedVelocity = velocity;
+            Vector2 secondVelocity = (destination - secondPosition).SafeNormalize(Vector2.UnitY) * ShootSpeed;
+            Vector2 secondCachedVelocity = secondVelocity;
+
+            int teethDamage = player.CalcIntDamage<MeleeDamageClass>((int)(Item.damage * 0.1f));
+            float teethKnockback = Item.knockBack * 0.2f;
+            int centralProjectile = TotalTeeth / 2;
+            float teethXVelocityReduction = 0.9f;
+            float minVelocityAdjustment = 0.8f;
+            float maxVelocityAdjustment = 1f;
+            for (int i = 0; i < TotalRows; i++)
             {
-                realPlayerPos = new Vector2(player.position.X + (float)player.width * 0.5f + (float)(Main.rand.Next(201) * -(float)player.direction) + ((float)Main.mouseX + Main.screenPosition.X - player.position.X), player.MountedCenter.Y - 600f);
-                realPlayerPos.X = (realPlayerPos.X + player.Center.X) / 2f + (float)Main.rand.Next(-200, 201);
-                realPlayerPos.Y -= (float)(100 * j);
-                mouseXDist = (float)Main.mouseX + Main.screenPosition.X - realPlayerPos.X;
-                mouseYDist = (float)Main.mouseY + Main.screenPosition.Y - realPlayerPos.Y;
-                if (mouseYDist < 0f)
+                bool topTeeth = i == 0;
+                for (int j = 0; j < TotalTeeth; j++)
                 {
-                    mouseYDist *= -1f;
+                    float velocityAdjustment = j == centralProjectile ? minVelocityAdjustment : MathHelper.Lerp(minVelocityAdjustment, maxVelocityAdjustment, Math.Abs(j + 0.5f - centralProjectile) / (float)centralProjectile);
+                    if (topTeeth)
+                    {
+                        position.X += MathHelper.Lerp(-HalvedTeethSpread, HalvedTeethSpread, j / (float)(TotalTeeth - 1));
+                        velocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(position, target, ShootSpeed, 1) * velocityAdjustment;
+                        velocity.X *= teethXVelocityReduction;
+                        Projectile.NewProjectile(player.GetSource_ItemUse(Item), position, velocity, ModContent.ProjectileType<GreenWater>(), teethDamage, teethKnockback, player.whoAmI, 0f, i, target.Center.Y);
+                        position = cachedPosition;
+                        velocity = cachedVelocity;
+                    }
+                    else
+                    {
+                        secondPosition.X += MathHelper.Lerp(-HalvedTeethSpread, HalvedTeethSpread, j / (float)(TotalTeeth - 1));
+                        secondVelocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(secondPosition, target, ShootSpeed, 1) * velocityAdjustment;
+                        secondVelocity.X *= teethXVelocityReduction;
+                        Projectile.NewProjectile(player.GetSource_ItemUse(Item), secondPosition, secondVelocity, ModContent.ProjectileType<GreenWater>(), teethDamage, teethKnockback, player.whoAmI, 0f, i, target.Center.Y);
+                        secondPosition = secondCachedPosition;
+                        secondVelocity = secondCachedVelocity;
+                    }
                 }
-                if (mouseYDist < 20f)
-                {
-                    mouseYDist = 20f;
-                }
-                mouseDistance = (float)Math.Sqrt((double)(mouseXDist * mouseXDist + mouseYDist * mouseYDist));
-                mouseDistance = projSpeed / mouseDistance;
-                mouseXDist *= mouseDistance;
-                mouseYDist *= mouseDistance;
-                float speedX4 = mouseXDist;
-                float speedY5 = mouseYDist + (float)Main.rand.Next(-180, 181) * 0.02f;
-                int greenWaterDamage = player.CalcIntDamage<MeleeDamageClass>(Item.damage);
-                Projectile.NewProjectile(source, realPlayerPos.X, realPlayerPos.Y, speedX4, speedY5, ModContent.ProjectileType<GreenWater>(), greenWaterDamage, playerKnockback, i, 0f, (float)Main.rand.Next(10));
             }
         }
 
         public override void MeleeEffects(Player player, Rectangle hitbox)
         {
-            int randomDust = Main.rand.Next(2);
-            if (randomDust == 0)
-            {
-                randomDust = 33;
-            }
-            else
-            {
-                randomDust = 89;
-            }
-            if (Main.rand.NextBool(4))
-            {
-                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, randomDust);
-            }
+            Vector2 dustVel = Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(0.9f, 1.5f);
+            if (Main.rand.NextBool(3))
+                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.Water_Desert, dustVel.X, dustVel.Y);
         }
     }
 }

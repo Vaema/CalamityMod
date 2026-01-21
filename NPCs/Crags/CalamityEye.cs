@@ -14,8 +14,8 @@ namespace CalamityMod.NPCs.Crags
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0);
+            Main.npcFrameCount[Type] = 4;
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
             value.Position.Y -= 10f;
             value.PortraitPositionYOverride = -36f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
@@ -30,9 +30,9 @@ namespace CalamityMod.NPCs.Crags
             NPC.height = 30;
             NPC.defense = 12;
             NPC.lifeMax = 140;
-            NPC.knockBackResist = 0f;
+            NPC.knockBackResist = 0.75f;
             AnimationType = NPCID.DemonEye;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(silver: 5);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             if (DownedBossSystem.downedProvidence)
@@ -51,9 +51,9 @@ namespace CalamityMod.NPCs.Crags
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.CalamityEye")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.CalamityEye")
             });
         }
 
@@ -79,7 +79,7 @@ namespace CalamityMod.NPCs.Crags
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("CalamityEye").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("CalamityEye2").Type, 1f);
@@ -95,7 +95,7 @@ namespace CalamityMod.NPCs.Crags
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 60, true);
+                target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120);
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)

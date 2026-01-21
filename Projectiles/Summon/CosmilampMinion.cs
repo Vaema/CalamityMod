@@ -1,8 +1,8 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using System;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.Items.Weapons.Summon;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -38,11 +38,12 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
+            Main.projFrames[Type] = 4;
+            Main.projPet[Type] = true;
             ProjectileID.Sets.TrailingMode[Type] = 2;
             ProjectileID.Sets.TrailCacheLength[Type] = 8;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -107,12 +108,12 @@ namespace CalamityMod.Projectiles.Summon
         public void DecideFrames()
         {
             Projectile.frameCounter++;
-            Projectile.frame = Projectile.frameCounter / 8 % Main.projFrames[Projectile.type];
+            Projectile.frame = Projectile.frameCounter / 8 % Main.projFrames[Type];
         }
 
         public void HoverInPlace()
         {
-            Vector2 hoverDestination = Owner.Top + new Vector2(MathHelper.Lerp(-100f, 100f, HoverOffsetInterpolant), -80f);
+            Vector2 hoverDestination = Owner.Top + Vector2.UnitY * Owner.gfxOffY + new Vector2(MathHelper.Lerp(-100f, 100f, HoverOffsetInterpolant), -80f);
             hoverDestination.Y += ((float)Math.Sin(MathHelper.TwoPi * HoverOffsetInterpolant + Timer / 50f) * 0.5f + 0.5f) * 40f;
 
             // Zoom towards the hover destination.
@@ -121,7 +122,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
@@ -147,8 +148,5 @@ namespace CalamityMod.Projectiles.Summon
             Main.EntitySpriteDraw(texture, drawPosition, frame, Projectile.GetAlpha(lightColor), Projectile.rotation, origin, Projectile.scale, direction, 0);
             return false;
         }
-
-        // The lamps themselves do not do damage, but they do store damage for the sake of shooting projectiles.
-        public override bool? CanDamage() => false;
     }
 }

@@ -1,4 +1,5 @@
-﻿using CalamityMod.Particles;
+﻿using CalamityMod.DataStructures;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -9,25 +10,28 @@ namespace CalamityMod.Buffs.DamageOverTime
 {
     public class CrushDepth : ModBuff
     {
+        public static DebuffData debuffData = new DebuffData()
+        {
+            EnemyLostRegen = 100,
+            WaterDebuffScaling = 1
+        };
         public override void SetStaticDefaults()
         {
             Main.debuff[Type] = true;
             Main.pvpBuff[Type] = true;
             Main.buffNoSave[Type] = true;
             BuffID.Sets.LongerExpertDebuff[Type] = true;
+            BuffDatasets.DebuffDataset[Type] = debuffData;
         }
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.Calamity().cDepth = true;
+            player.Calamity().crushDepth = true;
         }
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            if (npc.Calamity().cDepth < npc.buffTime[buffIndex])
-                npc.Calamity().cDepth = npc.buffTime[buffIndex];
-            npc.DelBuff(buffIndex);
-            buffIndex--;
+            npc.Calamity().crushDepth = true;
         }
 
         internal static void DrawEffects(PlayerDrawSet drawInfo)
@@ -53,15 +57,15 @@ namespace CalamityMod.Buffs.DamageOverTime
             }
 
             // Blue n black dust
-            int dust = Dust.NewDust(drawInfo.Position - new Vector2(2f), Player.width + 4, Player.height + 4, Main.rand.NextBool(3) ? 104 : 186, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 1.4f);
-            Main.dust[dust].noGravity = true;
-            Main.dust[dust].velocity *= 0.75f;
-            Main.dust[dust].velocity.X = Main.dust[dust].velocity.X * 0.75f;
-            Main.dust[dust].velocity.Y = Main.dust[dust].velocity.Y - 1f;
+            Dust water = Dust.NewDustDirect(drawInfo.Position - new Vector2(2f), Player.width + 4, Player.height + 4, Main.rand.NextBool(3) ? 104 : 186, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 1.4f);
+            water.noGravity = true;
+            water.velocity *= 0.75f;
+            water.velocity.X *= 0.75f;
+            water.velocity.Y -= 1f;
             if (Main.rand.NextBool(4))
             {
-                Main.dust[dust].noGravity = false;
-                Main.dust[dust].scale *= 0.2f;
+                water.noGravity = false;
+                water.scale *= 0.2f;
             }
         }
 
@@ -84,15 +88,15 @@ namespace CalamityMod.Buffs.DamageOverTime
                 BloodParticle blood = new BloodParticle(npcSize, bloodVelocity, bloodLifetime, bloodScale, bloodColor);
                 GeneralParticleHandler.SpawnParticle(blood);
             }
-            int dust = Dust.NewDust(npc.position - new Vector2(2f), npc.width + 4, npc.height + 4, Main.rand.NextBool(3) ? 104 : 186, npc.velocity.X * 0.4f, npc.velocity.Y * 0.4f, 100, default, 1.4f);
-            Main.dust[dust].noGravity = true;
-            Main.dust[dust].velocity *= 0.75f;
-            Main.dust[dust].velocity.X = Main.dust[dust].velocity.X * 0.75f;
-            Main.dust[dust].velocity.Y = Main.dust[dust].velocity.Y - 1f;
+            Dust water = Dust.NewDustDirect(npc.position - new Vector2(2f), npc.width + 4, npc.height + 4, Main.rand.NextBool(3) ? 104 : 186, npc.velocity.X * 0.4f, npc.velocity.Y * 0.4f, 100, default, 1.4f);
+            water.noGravity = true;
+            water.velocity *= 0.75f;
+            water.velocity.X = water.velocity.X * 0.75f;
+            water.velocity.Y = water.velocity.Y - 1f;
             if (Main.rand.NextBool(4))
             {
-                Main.dust[dust].noGravity = false;
-                Main.dust[dust].scale *= 0.2f;
+                water.noGravity = false;
+                water.scale *= 0.2f;
             }
         }
     }

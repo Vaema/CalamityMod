@@ -1,12 +1,11 @@
-﻿using Terraria.DataStructures;
+﻿using CalamityMod.Items.Materials;
+using CalamityMod.NPCs.SlimeGod;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.NPCs.SlimeGod;
-using CalamityMod.Tiles.Furniture.CraftingStations;
-using CalamityMod.Items.Materials;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
@@ -19,11 +18,11 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.height = 34;
             Item.damage = 10;
             Item.mana = 10;
-            Item.useTime = Item.useAnimation = 29;
+            Item.useAnimation = Item.useTime = 29;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noMelee = true;
             Item.knockBack = 3.6f;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.UseSound = SlimeGodCore.PossessionSound;
             Item.shoot = ModContent.ProjectileType<SlimePuppet>();
@@ -38,7 +37,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             if (player.altFunctionUse != 2)
             {
-                int p = Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, type, damage, knockback, Main.myPlayer);
+                int p = Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, Main.myPlayer);
                 if (Main.projectile.IndexInRange(p))
                     Main.projectile[p].originalDamage = Item.damage;
             }
@@ -50,7 +49,7 @@ namespace CalamityMod.Items.Weapons.Summon
             CreateRecipe().
                 AddIngredient<PurifiedGel>(18).
                 AddIngredient<BlightedGel>(18).
-                AddTile<StaticRefiner>().
+                AddTile(TileID.Solidifier).
                 Register();
         }
     }

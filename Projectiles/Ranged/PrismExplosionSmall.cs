@@ -10,7 +10,7 @@ namespace CalamityMod.Projectiles.Ranged
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 7;
+            Main.projFrames[Type] = 7;
         }
 
         public override void SetDefaults()
@@ -35,7 +35,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (Projectile.frameCounter % 8 == 7)
                 Projectile.frame++;
 
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
                 Projectile.Kill();
             Projectile.scale *= 1.0115f;
             Projectile.Opacity = Utils.GetLerpValue(5f, 36f, Projectile.timeLeft, true);
@@ -43,9 +43,9 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D lightTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/SmallGreyscaleCircle").Value;
-            Rectangle frame = texture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
+            Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Vector2 origin = frame.Size() * 0.5f;
 

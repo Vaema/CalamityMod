@@ -50,7 +50,7 @@ namespace CalamityMod.NPCs.SulphurousSea
             }
             if (NPC.ai[0] % 32f == 31f)
             {
-                Dust dust = Dust.NewDustPerfect(NPC.Center, (int)CalamityDusts.SulfurousSeaAcid);
+                Dust dust = Dust.NewDustPerfect(NPC.Center, (int)CalamityDusts.SulphurousSeaAcid);
                 dust.velocity = Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(1f, 2f);
                 dust.noGravity = true;
                 dust.scale = 1.6f;
@@ -65,7 +65,7 @@ namespace CalamityMod.NPCs.SulphurousSea
             {
                 for (int k = 0; k < 6; k++)
                 {
-                    Dust dust = Dust.NewDustPerfect(NPC.Center, (int)CalamityDusts.SulfurousSeaAcid);
+                    Dust dust = Dust.NewDustPerfect(NPC.Center, (int)CalamityDusts.SulphurousSeaAcid);
                     dust.velocity = Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(1f, 2f);
                     dust.scale = 1.2f;
                 }

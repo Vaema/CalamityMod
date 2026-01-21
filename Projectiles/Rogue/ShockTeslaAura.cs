@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -52,7 +51,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D sprite = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D sprite = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
 
             Color drawColour = Color.White;
             Rectangle sourceRect = new Rectangle(Projectile.width * (int)Projectile.localAI[1], Projectile.height * (int)Projectile.localAI[0], Projectile.width, Projectile.height);
@@ -91,25 +90,15 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(BuffID.Electrified, 180);
+            target.AddBuff(BuffID.Electrified, 60);
             target.AddBuff(ModContent.BuffType<GalvanicCorrosion>(), 60);
-
-            if (target.knockBackResist <= 0f)
-                return;
-
-            // 12AUG2023: Ozzatron: TML was giving NaN knockback, probably due to 0 base knockback. Do not use hit.Knockback
-            if (CalamityGlobalNPC.ShouldAffectNPC(target))
-            {
-                float knockbackMultiplier = MathHelper.Clamp(1f - target.knockBackResist, 0f, 1f);
-                Vector2 trueKnockback = target.Center - Projectile.Center;
-                trueKnockback.Normalize();
-                target.velocity = trueKnockback * knockbackMultiplier;
-            }
         }
+        // CIT 2MAY2025: Replaced old manual knockback code with setting HitDirectionOverride
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.HitDirectionOverride = (target.Center.X > Projectile.Center.X).ToDirectionInt();
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            target.AddBuff(BuffID.Electrified, 180);
+            target.AddBuff(BuffID.Electrified, 60);
             target.AddBuff(ModContent.BuffType<GalvanicCorrosion>(), 60);
         }
 

@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -15,12 +16,12 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.YoyosLifeTimeMultiplier[Projectile.type] = -1f;
-            ProjectileID.Sets.YoyosMaximumRange[Projectile.type] = 512f;
-            ProjectileID.Sets.YoyosTopSpeed[Projectile.type] = 36f / MaxUpdates;
+            ProjectileID.Sets.YoyosLifeTimeMultiplier[Type] = -1f;
+            ProjectileID.Sets.YoyosMaximumRange[Type] = Oblivion.Reach;
+            ProjectileID.Sets.YoyosTopSpeed[Type] = Oblivion.Speed / MaxUpdates;
 
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -37,7 +38,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
         public override void AI()
         {
-            CalamityUtils.MagnetSphereHitscan(Projectile, 300f, 6f, 48f, 5, ModContent.ProjectileType<BrimstoneLaserFriendly>(), 0.5);
+            CalamityUtils.MagnetSphereHitscan(Projectile, 300f, 9f, 48f, 5, ModContent.ProjectileType<SeethingDischargeBrimstoneBarrage>(), 0.5, damageType: Projectile.DamageType);
             if ((Projectile.position - Main.player[Projectile.owner].position).Length() > 3200f) //200 blocks
                 Projectile.Kill();
         }
@@ -46,7 +47,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

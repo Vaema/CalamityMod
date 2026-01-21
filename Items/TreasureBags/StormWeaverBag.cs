@@ -1,8 +1,10 @@
-﻿using CalamityMod.Items.Armor.Vanity;
+﻿using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Pets;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.NPCs.StormWeaver;
 using Microsoft.Xna.Framework;
@@ -20,27 +22,27 @@ namespace CalamityMod.Items.TreasureBags
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 3;
-			ItemID.Sets.BossBag[Item.type] = true;
+            ItemID.Sets.BossBag[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 24;
             Item.height = 24;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
             Item.rare = ItemRarityID.Cyan;
             Item.expert = true;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossBags;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossBags;
+        }
 
         public override bool CanRightClick() => true;
 
-		public override Color? GetAlpha(Color lightColor) => Color.Lerp(lightColor, Color.White, 0.4f);
+        public override Color? GetAlpha(Color lightColor) => Color.Lerp(lightColor, Color.White, 0.4f);
 
         public override void PostUpdate() => Item.TreasureBagLightAndDust();
 
@@ -51,23 +53,23 @@ namespace CalamityMod.Items.TreasureBags
 
         public override void ModifyItemLoot(ItemLoot itemLoot)
         {
-			// Money
-			itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<StormWeaverHead>()));
+            // Money
+            itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<StormWeaverHead>()));
 
             // Materials
-            itemLoot.Add(ModContent.ItemType<ArmoredShell>(), 1, 6, 9);
+            itemLoot.Add(ModContent.ItemType<ArmoredShell>(), 1, 12, 16);
 
             // Weapons
             itemLoot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, new int[]
             {
-                ModContent.ItemType<StormDragoon>(),
-                ModContent.ItemType<TheStorm>()
+                ModContent.ItemType<SkytideDragoon>(),
+                ModContent.ItemType<TheStorm>(),
+                ModContent.ItemType<Volterion>()
             }));
-            itemLoot.Add(ModContent.ItemType<Thunderstorm>(), 10);
 
             // Equipment
+            itemLoot.Add(ModContent.ItemType<ArcFlashRing>());
             itemLoot.AddRevBagAccessories();
-            // Stay tuned for Definitely Not Charged Perforator Runald's Band As A Single Item
 
             // Vanity
             itemLoot.Add(ModContent.ItemType<StormWeaverMask>(), 7);

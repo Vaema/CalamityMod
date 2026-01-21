@@ -1,8 +1,7 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using CalamityMod.Events;
 using CalamityMod.Projectiles.Boss;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -14,30 +13,24 @@ namespace CalamityMod.NPCs.SlimeGod
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 2;
+            Main.npcFrameCount[Type] = 2;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
         }
 
         public override void SetDefaults()
         {
             NPC.aiStyle = NPCAIStyleID.Slime;
-            NPC.GetNPCDamage();
+            NPC.damage = 20; // 40
             NPC.width = 40;
             NPC.height = 30;
-            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
-                NPC.scale = 2f;
 
             NPC.defense = 4;
-            NPC.lifeMax = BossRushEvent.BossRushActive ? 10000 : (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 220 : 110;
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
-            NPC.knockBackResist = 0f;
+            NPC.lifeMax = BossRushEvent.BossRushActive ? 10000 : 110;
+            NPC.knockBackResist = 0.8f;
             AnimationType = NPCID.CorruptSlime;
-            NPC.Opacity = 0.8f;
             NPC.lavaImmune = false;
             NPC.noGravity = false;
             NPC.noTileCollide = false;
-            NPC.canGhostHeal = false;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.Calamity().VulnerableToHeat = true;
@@ -49,28 +42,34 @@ namespace CalamityMod.NPCs.SlimeGod
             int associatedNPCType = ModContent.NPCType<SplitCrimulanPaladin>();
             bestiaryEntry.UIInfoProvider = new CommonEnemyUICollectionInfoProvider(ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[associatedNPCType], quickUnlock: true);
 
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheCorruption,
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheCrimson,
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.CrimsonSlimeSpawn")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.CrimsonSlimeSpawn")
             });
+        }
+
+        public override void AI()
+        {
+            Vector3 light = new Vector3(0.5f, 0.1f, 0.1f);
+            Lighting.AddLight(NPC.Center, light.X, light.Y, light.Z);
+
+            NPC.damage = (NPC.velocity.Y == 0f || NPC.velocity.Length() < 3f) ? 0 : NPC.defDamage;
         }
 
         public override void HitEffect(NPC.HitInfo hit)
         {
             Color dustColor = Color.Crimson;
             dustColor.A = 150;
+
             for (int k = 0; k < 5; k++)
-            {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 4, hit.HitDirection, -1f, NPC.alpha, dustColor, 1f);
-            }
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, hit.HitDirection, -1f, 0, dustColor, 1f);
+
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 20; k++)
-                {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 4, hit.HitDirection, -1f, NPC.alpha, dustColor, 1f);
-                }
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, hit.HitDirection, -1f, 0, dustColor, 1f);
             }
         }
 
@@ -101,14 +100,6 @@ namespace CalamityMod.NPCs.SlimeGod
                     }
                 }
             }
-        }
-
-        public override void ModifyNPCLoot(NPCLoot npcLoot) => npcLoot.Add(ItemID.Blindfold, 50);
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Darkness, 90, true);
         }
     }
 }

@@ -1,10 +1,9 @@
-﻿using CalamityMod.Buffs.Mounts;
+﻿using System.Collections.Generic;
+using CalamityMod.Buffs.Mounts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Mounts
@@ -17,29 +16,33 @@ namespace CalamityMod.Items.Mounts
             MountData.spawnDust = 182;
             MountData.spawnDustNoGravity = true;
             MountData.buff = ModContent.BuffType<DraedonGamerChairBuff>();
-            MountData.heightBoost = 0;
-            MountData.flightTimeMax = int.MaxValue;
-            MountData.fatigueMax = int.MaxValue;
-            MountData.fallDamage = 0f;
-            MountData.usesHover = true;
+
+            // Horizontal movement
             MountData.runSpeed = MovementSpeed;
             MountData.dashSpeed = MovementSpeed;
-            MountData.acceleration = MovementSpeed;
             MountData.swimSpeed = MovementSpeed;
-            MountData.jumpHeight = 8;
+            MountData.acceleration = MovementSpeed;
+
+            // Vertical movement
+            MountData.fallDamage = 0f;
+            MountData.fatigueMax = int.MaxValue;
+            MountData.flightTimeMax = int.MaxValue;
             MountData.jumpSpeed = 8f;
             MountData.blockExtraJumps = true;
-            MountData.totalFrames = 5;
+            MountData.usesHover = true;
 
+            // Frames and offsets
+            MountData.totalFrames = 5;
+            MountData.heightBoost = 0;
             int[] verticalOffsets = new int[MountData.totalFrames];
             for (int l = 0; l < verticalOffsets.Length; l++)
                 verticalOffsets[l] = 0;
 
             MountData.playerYOffsets = verticalOffsets;
-            MountData.xOffset = 2;
-            MountData.bodyFrame = 3;
-            MountData.yOffset = 28;
             MountData.playerHeadOffset = 3;
+            MountData.bodyFrame = 3;
+            MountData.xOffset = 2;
+            MountData.yOffset = 28;
             MountData.standingFrameCount = 5;
             MountData.standingFrameDelay = 5;
             MountData.standingFrameStart = 0;
@@ -59,7 +62,7 @@ namespace CalamityMod.Items.Mounts
             MountData.swimFrameCount = 5;
             MountData.swimFrameDelay = 5;
             MountData.swimFrameStart = 0;
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 MountData.frontTextureGlow = ModContent.Request<Texture2D>("CalamityMod/Items/Mounts/DraedonGamerChairMount_Glowmask");
                 MountData.textureWidth = MountData.frontTexture.Width();

@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CalamityMod.Items.Tools.ClimateChange;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Chat;
-using Terraria.GameContent.Events;
+using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -16,7 +15,13 @@ namespace CalamityMod
 {
     public static partial class CalamityUtils
     {
-        public static void DisplayLocalizedText(string key, Color? textColor = null)
+        /// <summary>
+        /// Broadcast a LocalizedText. This only should be run on Singleplayer or Server.
+        /// Multiplayer Clients Do NOT ask Server to Broadcast nor the print message locally.
+        /// </summary>
+        /// <param name="key">LocalizedText key</param>
+        /// <param name="textColor">Text Color to use</param>
+        public static void BroadcastLocalizedText(string key, Color? textColor = null)
         {
             // An attempt to bypass the need for a separate method and runtime/compile-time parameter
             // constraints by using nulls for defaults.
@@ -25,8 +30,22 @@ namespace CalamityMod
 
             if (Main.netMode == NetmodeID.SinglePlayer)
                 Main.NewText(Language.GetTextValue(key), textColor.Value);
-            else if (Main.netMode == NetmodeID.Server || Main.netMode == NetmodeID.MultiplayerClient)
+            else if (Main.dedServ)
                 ChatHelper.BroadcastChatMessage(NetworkText.FromKey(key), textColor.Value);
+        }
+
+        /// <summary>
+        /// Broadcast a LocalizedText with formatting. This only should be run on Singleplayer or Server.
+        /// Multiplayer Clients Do NOT ask Server to Broadcast nor the print message locally.
+        /// </summary>
+        /// <param name="key">LocalizedText key</param>
+        /// <param name="textColor">Text Color to use</param>
+        public static void BroadcastFormattedText(string key, Color textColor, params object[] args)
+        {
+            if (Main.netMode == NetmodeID.SinglePlayer)
+                Main.NewText(Language.GetOrRegister(key).Format(args), textColor);
+            else if (Main.dedServ)
+                ChatHelper.BroadcastChatMessage(NetworkText.FromKey(key, args), textColor);
         }
 
         public static int IngredientIndex(this Recipe r, int itemID)
@@ -121,7 +140,7 @@ namespace CalamityMod
         /// <typeparam name="T">The base type of the collection.</typeparam>
         /// <param name="collection">The collection.</param>
         /// <param name="type">The type to search for.</param>
-        public static bool ContainsType<T>(this IEnumerable<T> collection, Type type) => collection.Any(entry => entry.GetType() == type.GetType());
+        public static bool ContainsType<T>(this IEnumerable<T> collection, Type type) => collection.Any(entry => entry.GetType() == type);
 
         /// <summary>
         /// Calculates the sound volume and panning for a sound which is played at the specified location in the game world.<br/>
@@ -137,7 +156,7 @@ namespace CalamityMod
 
             if (soundPos.X == -1f || soundPos.Y == -1f)
                 volume = 1f;
-            else if (WorldGen.gen || Main.dedServ || Main.netMode == NetmodeID.Server)
+            else if (WorldGen.gen || Main.dedServ)
                 volume = 0f;
             else
             {
@@ -195,98 +214,21 @@ namespace CalamityMod
             sfx.Volume = MathHelper.Clamp(sfx.Volume * volumeMultiplier, 0f, 1f);
         }
 
-        public static void StartRain(bool torrentialTear = false, bool maxSeverity = false)
-        {
-            int framesInDay = 86400;
-            int framesInHour = framesInDay / 24;
-            Main.rainTime = Main.rand.Next(framesInHour * 8, framesInDay);
-            if (Main.rand.NextBool(3))
-            {
-                Main.rainTime += Main.rand.Next(0, framesInHour);
-            }
-            if (Main.rand.NextBool(4))
-            {
-                Main.rainTime += Main.rand.Next(0, framesInHour * 2);
-            }
-            if (Main.rand.NextBool(5))
-            {
-                Main.rainTime += Main.rand.Next(0, framesInHour * 2);
-            }
-            if (Main.rand.NextBool(6))
-            {
-                Main.rainTime += Main.rand.Next(0, framesInHour * 3);
-            }
-            if (Main.rand.NextBool(7))
-            {
-                Main.rainTime += Main.rand.Next(0, framesInHour * 4);
-            }
-            if (Main.rand.NextBool(8))
-            {
-                Main.rainTime += Main.rand.Next(0, framesInHour * 5);
-            }
-            float randRainExtender = 1f;
-            if (Main.rand.NextBool())
-            {
-                randRainExtender += 0.05f;
-            }
-            if (Main.rand.NextBool(3))
-            {
-                randRainExtender += 0.1f;
-            }
-            if (Main.rand.NextBool(4))
-            {
-                randRainExtender += 0.15f;
-            }
-            if (Main.rand.NextBool(5))
-            {
-                randRainExtender += 0.2f;
-            }
-            Main.rainTime = (int)(Main.rainTime * randRainExtender);
-            Main.raining = true;
-            if (torrentialTear)
-                TorrentialTear.AdjustRainSeverity(maxSeverity);
-            CalamityNetcode.SyncWorld();
-        }
-
-        public static void StartSandstorm()
-        {
-			// If it's not windy enough, make it windy enough for a sandstorm
-			// 0.6f is the minimum for vanilla but Calamity changes it to 0.2f
-			// Windy days occur when wind speed is at least 0.5f (0.4f in vanilla) so this should never cause a windy day
-			float windSpeed = 0f;
-			if (Main.windSpeedCurrent < 0.2f && Main.windSpeedCurrent > 0f)
-			{
-				windSpeed = Main.rand.NextFloat(0.2f, 0.4f);
-			}
-			else if (Main.windSpeedCurrent > -0.2f && Main.windSpeedCurrent < 0f)
-			{
-				windSpeed = Main.rand.NextFloat(-0.4f, -0.2f);
-			}
-			if (windSpeed != 0f)
-			{
-				Main.windSpeedCurrent = windSpeed < 0f ? -0.2f : 0.2f;
-				Main.windSpeedTarget = windSpeed;
-			}
-
-            Sandstorm.StartSandstorm();
-        }
-
-        public static void StopSandstorm()
-        {
-            Terraria.GameContent.Events.Sandstorm.Happening = false;
-        }
-
         public static void AddWithCondition<T>(this List<T> list, T type, bool condition)
         {
             if (condition)
                 list.Add(type);
         }
 
+        public static int ScaleWithDifficulty(this int value) => value * (Main.masterMode ? 3 : Main.expertMode ? 2 : 1);
+
         public static int SecondsToFrames(int seconds) => seconds * 60;
-        public static int SecondsToFrames(float seconds) => (int)(seconds * 60);
+        public static int SecondsToFrames(float seconds) => (int)MathF.Round(seconds * 60);
+        public static int MinutesToFrames(int minutes) => minutes * 3600;
 
         public static bool WithinBounds(this int index, int cap) => index >= 0 && index < cap;
 
+        /// <summary>
         /// Clamps the distance between vectors via normalization.
         /// </summary>
         /// <param name="start">The starting point.</param>
@@ -331,12 +273,12 @@ namespace CalamityMod
             for (int i = 0; i < originalText.Length; i++)
             {
                 for (int j = 0; j < 37; j++)
-                {
+            {
                     if (TextKeys[j] == originalText[i])
                     {
                         morseText += MorseKeys[j];
                         break;
-                    }
+                }
                 }
             }
 
@@ -360,6 +302,24 @@ namespace CalamityMod
             }
 
             return morseState[(int)((morseState.Count - 1) * completion)];
+        }
+
+        public static List<string> GetAssignedKeysOrEmpty(this ModKeybind keybind, InputMode mode = InputMode.Keyboard)
+        {
+            if (keybind == null)
+                return [];
+
+            if (Main.dedServ) // Server does not have key assigned
+                return [];
+
+            try
+            {
+                return keybind.GetAssignedKeys(mode);
+            }
+            catch
+            {
+                return [];
+            }
         }
     }
 }

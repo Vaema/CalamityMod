@@ -1,11 +1,10 @@
+﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
-using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Magic
 {
     public class HellfireExplosionFriendly : ModProjectile, ILocalizedModType
@@ -21,10 +20,10 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 180;
+            Projectile.timeLeft = 120;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
+            Projectile.localNPCHitCooldown = 20;
         }
 
         public override void AI()
@@ -32,7 +31,7 @@ namespace CalamityMod.Projectiles.Magic
             Lighting.AddLight(Projectile.Center, 0.9f, 0f, 0f);
             if (Projectile.localAI[0] == 0f)
             {
-                SoundEngine.PlaySound(SoundID.Item20, Projectile.position);
+                SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
                 Projectile.localAI[0] += 1f;
             }
             float projTimer = 25f;
@@ -57,7 +56,7 @@ namespace CalamityMod.Projectiles.Magic
                 randoAdjuster = rando3 / randoAdjuster;
                 rando1 *= randoAdjuster;
                 rando2 *= randoAdjuster;
-                int brimDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 1.5f);
+                int brimDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 1.5f);
                 Dust dust = Main.dust[brimDust];
                 dust.noGravity = true;
                 dust.position.X = Projectile.Center.X;

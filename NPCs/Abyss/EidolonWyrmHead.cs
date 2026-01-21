@@ -3,17 +3,17 @@ using System.IO;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Pets;
+using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Items.Pets;
-using CalamityMod.NPCs.PrimordialWyrm;
 using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.NPCs.PrimordialWyrm;
 using CalamityMod.Sounds;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -25,6 +25,7 @@ using Terraria.ModLoader.Utilities;
 
 namespace CalamityMod.NPCs.Abyss
 {
+    [LongDistanceNetSync]
     public class EidolonWyrmHead : ModNPC
     {
         private Vector2 patrolSpot = Vector2.Zero;
@@ -34,16 +35,19 @@ namespace CalamityMod.NPCs.Abyss
         public float speed = 5f; //10
         public float turnSpeed = 0.1f; //0.15
         bool TailSpawned = false;
-
+        public static Asset<Texture2D> GlowTexture;
         public override void SetStaticDefaults()
         {
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
-                CustomTexturePath = "CalamityMod/ExtraTextures/Bestiary/EidolonWyrm_Bestiary",
                 PortraitPositionXOverride = 40
             };
             value.Position.X += 40;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -54,12 +58,11 @@ namespace CalamityMod.NPCs.Abyss
             NPC.width = 126; //36
             NPC.height = 76; //20
             NPC.defense = 70;
-            NPC.DR_NERD(0.15f);
             NPC.lifeMax = 160000;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 25, 0, 0);
+            NPC.value = Item.buyPrice(gold: 25);
             NPC.behindTiles = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
@@ -78,9 +81,9 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.EidolonWyrm")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.EidolonWyrm")
             });
         }
 
@@ -109,19 +112,18 @@ namespace CalamityMod.NPCs.Abyss
             }
 
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead)
-            {
-                NPC.TargetClosest(true);
-            }
+                NPC.TargetClosest();
+
             if (NPC.justHit || detectsPlayer || Main.player[NPC.target].chaosState || adultWyrmAlive || (Main.player[NPC.target].Center - NPC.Center).Length() < Main.player[NPC.target].Calamity().GetAbyssAggro(160f))
             {
                 detectsPlayer = true;
                 NPC.damage = Main.expertMode ? 340 : 170;
             }
             else
-            {
                 NPC.damage = 0;
-            }
+
             NPC.chaseable = detectsPlayer;
+
             if (detectsPlayer)
             {
                 if (NPC.soundDelay <= 0)
@@ -133,14 +135,12 @@ namespace CalamityMod.NPCs.Abyss
             else
             {
                 if (Main.rand.NextBool(900))
-                {
                     SoundEngine.PlaySound(roar, NPC.Center);
-                }
             }
+
             if (NPC.ai[2] > 0f)
-            {
                 NPC.realLife = (int)NPC.ai[2];
-            }
+
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
                 if (!TailSpawned && NPC.ai[0] == 0f)
@@ -152,18 +152,13 @@ namespace CalamityMod.NPCs.Abyss
                         if (segments >= 0 && segments < minLength)
                         {
                             if (segments % 2 == 0)
-                            {
                                 lol = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.position.X + (NPC.width / 2), (int)NPC.position.Y + (NPC.height / 2), ModContent.NPCType<EidolonWyrmBody>(), NPC.whoAmI);
-                            }
                             else
-                            {
                                 lol = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.position.X + (NPC.width / 2), (int)NPC.position.Y + (NPC.height / 2), ModContent.NPCType<EidolonWyrmBodyAlt>(), NPC.whoAmI);
-                            }
                         }
                         else
-                        {
                             lol = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.position.X + (NPC.width / 2), (int)NPC.position.Y + (NPC.height / 2), ModContent.NPCType<EidolonWyrmTail>(), NPC.whoAmI);
-                        }
+
                         Main.npc[lol].realLife = NPC.whoAmI;
                         Main.npc[lol].ai[2] = (float)NPC.whoAmI;
                         Main.npc[lol].ai[1] = (float)Previous;
@@ -171,17 +166,16 @@ namespace CalamityMod.NPCs.Abyss
                         NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, lol, 0f, 0f, 0f, 0);
                         Previous = lol;
                     }
+
                     TailSpawned = true;
                 }
             }
+
             if (NPC.velocity.X < 0f)
-            {
                 NPC.spriteDirection = -1;
-            }
             else if (NPC.velocity.X > 0f)
-            {
                 NPC.spriteDirection = 1;
-            }
+
             if (Main.player[NPC.target].dead)
             {
                 NPC.TargetClosest(false);
@@ -190,7 +184,7 @@ namespace CalamityMod.NPCs.Abyss
                 if (NPC.position.Y > Main.worldSurface * 16.0)
                     NPC.velocity.Y += 3f;
 
-                if (NPC.position.Y > (Main.maxTilesY - 200) * 16.0)
+                if (NPC.position.Y > Main.UnderworldLayer * 16.0)
                 {
                     for (int a = 0; a < Main.maxNPCs; a++)
                     {
@@ -199,19 +193,21 @@ namespace CalamityMod.NPCs.Abyss
                     }
                 }
             }
+
             NPC.alpha -= 42;
             if (NPC.alpha < 0)
-            {
                 NPC.alpha = 0;
-            }
+
             if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > 6400f)
             {
-                NPC.active = false;
+                NPC.TargetClosest(false);
+                if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > 6400f)
+                    NPC.active = false;
             }
 
             float currentSpeed = speed;
             float currentTurnSpeed = turnSpeed;
-            Vector2 segmentPosition = new Vector2(NPC.position.X + NPC.width * 0.5f, NPC.position.Y + NPC.height * 0.5f);
+            Vector2 segmentPosition = NPC.Center;
 
             if (patrolSpot == Vector2.Zero)
                 patrolSpot = Main.player[NPC.target].Center;
@@ -416,20 +412,31 @@ namespace CalamityMod.NPCs.Abyss
             return null;
         }
 
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            if (NPC.IsABestiaryIconDummy)
+            {
+                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, NPC, drawColor, TextureAssets.Npc[Type].Value, TextureAssets.Npc[ModContent.NPCType<EidolonWyrmBody>()].Value, TextureAssets.Npc[ModContent.NPCType<EidolonWyrmBodyAlt>()].Value, 2, 26, 0.6f, new Vector2(70, 30), 2, 20);
+            }
+            return true;
+        }
+
         public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            if (NPC.IsABestiaryIconDummy)
+                return;
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
             {
                 spriteEffects = SpriteEffects.FlipHorizontally;
             }
             Vector2 center = new Vector2(NPC.Center.X, NPC.Center.Y);
-            Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[NPC.type].Value.Width / 2), (float)(TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2));
+            Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[Type].Value.Width / 2), (float)(TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2));
             Vector2 vector = center - screenPos;
-            vector -= new Vector2((float)ModContent.Request<Texture2D>("CalamityMod/NPCs/Abyss/EidolonWyrmHeadGlow").Value.Width, (float)(ModContent.Request<Texture2D>("CalamityMod/NPCs/Abyss/EidolonWyrmHeadGlow").Value.Height / Main.npcFrameCount[NPC.type])) * 1f / 2f;
+            vector -= new Vector2((float)GlowTexture.Value.Width, (float)(GlowTexture.Value.Height / Main.npcFrameCount[Type])) * 1f / 2f;
             vector += halfSizeTexture * 1f + new Vector2(0f, NPC.gfxOffY);
             Color color = new Color(127 - NPC.alpha, 127 - NPC.alpha, 127 - NPC.alpha, 0).MultiplyRGBA(Color.White);
-            Main.spriteBatch.Draw(ModContent.Request<Texture2D>("CalamityMod/NPCs/Abyss/EidolonWyrmHeadGlow").Value, vector,
+            Main.spriteBatch.Draw(GlowTexture.Value, vector,
                 new Microsoft.Xna.Framework.Rectangle?(NPC.frame), color, NPC.rotation, halfSizeTexture, 1f, spriteEffects, 0f);
         }
 
@@ -453,16 +460,16 @@ namespace CalamityMod.NPCs.Abyss
             aewMinionCondition.Add(ModContent.ItemType<AbyssShellFossil>(), 50);
 
             // Post-Polterghast: Soul Edge, Eidolic Wail, Stardust Staff
-            LeadingConditionRule postPolter = npcLoot.DefineConditionalDropSet(DropHelper.PostPolter());
+            LeadingConditionRule postPolter = new LeadingConditionRule(DropHelper.If(() => DownedBossSystem.downedPolterghast));
             aewMinionCondition.Add(postPolter);
-            postPolter.Add(ModContent.ItemType<SoulEdge>(), 3);
+            postPolter.Add(ModContent.ItemType<VoidEdge>(), 3);
             postPolter.Add(ModContent.ItemType<EidolicWail>(), 3);
             postPolter.Add(ModContent.ItemType<EidolonStaff>(), 3);
 
-            // Post-Clone: 6-8 Lumenyl (8-11 on Expert)
-            LeadingConditionRule postClone = npcLoot.DefineConditionalDropSet(DropHelper.PostCal());
-            aewMinionCondition.Add(postClone);
-            postClone.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<Lumenyl>(), 1, 6, 8, 8, 11));
+            // Post-Leviathan: 6-8 Lumenyl (8-11 on Expert)
+            LeadingConditionRule postLevi = new LeadingConditionRule(DropHelper.If(() => DownedBossSystem.downedLeviathan));
+            aewMinionCondition.Add(postLevi);
+            postLevi.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<Lumenyl>(), 1, 6, 8, 8, 11));
 
             // Post-Plantera: 8-12 Ectoplasm
             aewMinionCondition.Add(ItemDropRule.ByCondition(new Conditions.DownedPlantera(), ItemID.Ectoplasm, 1, 8, 12));
@@ -472,15 +479,15 @@ namespace CalamityMod.NPCs.Abyss
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 4, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 15; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 4, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Wyrm").Type, 1f);
                 }
@@ -499,7 +506,7 @@ namespace CalamityMod.NPCs.Abyss
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<CrushDepth>(), 300, true);
+                target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 300, true);
         }
     }
 }

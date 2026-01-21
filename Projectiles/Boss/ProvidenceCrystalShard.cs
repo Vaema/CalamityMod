@@ -1,22 +1,30 @@
-﻿using CalamityMod.NPCs;
+﻿using System;
+using System.IO;
+using CalamityMod.NPCs;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
-using System.IO;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Boss
 {
     public class ProvidenceCrystalShard : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Boss";
+
+        public override void SetStaticDefaults()
+        {
+            ProjectileID.Sets.TrailCacheLength[Type] = 20;
+            ProjectileID.Sets.TrailingMode[Type] = 3;
+        }
+
         public override void SetDefaults()
         {
-            Projectile.Calamity().DealsDefenseDamage = true;
             Projectile.width = 34;
             Projectile.height = 34;
             Projectile.hostile = true;
@@ -42,23 +50,16 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void AI()
         {
+            ProvUtils.ApplyGFBDamage(Projectile, 0, 10);
+
             bool healerGuardianAlive = true;
             if (CalamityGlobalNPC.doughnutBossHealer < 0 || !Main.npc[CalamityGlobalNPC.doughnutBossHealer].active)
                 healerGuardianAlive = false;
 
             Lighting.AddLight(Projectile.Center, 0.3f * Projectile.Opacity, 0.3f * Projectile.Opacity, 0.3f * Projectile.Opacity);
 
-            // Day mode by default but syncs with the boss
-            if (CalamityGlobalNPC.holyBoss != -1)
-            {
-                if (Main.npc[CalamityGlobalNPC.holyBoss].active)
-                    Projectile.maxPenetrate = (int)Main.npc[CalamityGlobalNPC.holyBoss].localAI[1];
-            }
-            else
-                Projectile.maxPenetrate = (int)Providence.BossMode.Day;
-            
-            // Night AI or Guardian Healer
-            if (Projectile.maxPenetrate != (int)Providence.BossMode.Day || healerGuardianAlive)
+            // Enraged AI or Guardian Healer
+            if (!ProvUtils.StandardAI() || healerGuardianAlive)
                 Projectile.extraUpdates = 1;
 
             if (Projectile.timeLeft < 300)
@@ -83,7 +84,7 @@ namespace CalamityMod.Projectiles.Boss
             else
             {
                 Projectile.velocity.Y *= 1.06f;
-                float fallSpeed = (CalamityWorld.revenge || (Projectile.maxPenetrate != (int)Providence.BossMode.Day)) ? 3.5f : 3f;
+                float fallSpeed = (CalamityWorld.revenge || (Projectile.maxPenetrate != (int)Providence.BossMode.Normal)) ? 3.5f : 3f;
                 if (Projectile.velocity.Y > fallSpeed)
                     Projectile.velocity.Y = fallSpeed;
             }
@@ -101,7 +102,7 @@ namespace CalamityMod.Projectiles.Boss
                 if (Main.rand.NextBool(10))
                 {
                     Vector2 dustRotation = Vector2.UnitY.RotatedBy(i * MathHelper.Pi).RotatedBy(Projectile.rotation);
-                    Dust crystalDust = Main.dust[Dust.NewDust(Projectile.Center, 0, 0, 267, 0f, 0f, 225, newColor2, 1.5f)];
+                    Dust crystalDust = Main.dust[Dust.NewDust(Projectile.Center, 0, 0, DustID.RainbowMk2, 0f, 0f, 225, newColor2, 1.5f)];
                     crystalDust.noGravity = true;
                     crystalDust.noLight = true;
                     crystalDust.scale = Projectile.Opacity * Projectile.localAI[0];
@@ -115,7 +116,7 @@ namespace CalamityMod.Projectiles.Boss
                 if (Main.rand.NextBool(10))
                 {
                     Vector2 dustRotate = Vector2.UnitY.RotatedBy(j * MathHelper.Pi);
-                    Dust crystalDust2 = Main.dust[Dust.NewDust(Projectile.Center, 0, 0, 267, 0f, 0f, 225, newColor2, 1.5f)];
+                    Dust crystalDust2 = Main.dust[Dust.NewDust(Projectile.Center, 0, 0, DustID.RainbowMk2, 0f, 0f, 225, newColor2, 1.5f)];
                     crystalDust2.noGravity = true;
                     crystalDust2.noLight = true;
                     crystalDust2.scale = Projectile.Opacity * Projectile.localAI[0];
@@ -148,7 +149,7 @@ namespace CalamityMod.Projectiles.Boss
                 }
                 if (shouldSpawn)
                 {
-                    Dust holyDust = Main.dust[Dust.NewDust(dustPos, 0, 0, 267, 0f, 0f, 127, newColor2, 1f)];
+                    Dust holyDust = Main.dust[Dust.NewDust(dustPos, 0, 0, DustID.RainbowMk2, 0f, 0f, 127, newColor2, 1f)];
                     holyDust.noGravity = true;
                     holyDust.position = dustPos;
                     holyDust.velocity = -Vector2.UnitY * dustVelScale * (Main.rand.NextFloat() * 0.9f + 1.6f);
@@ -175,7 +176,7 @@ namespace CalamityMod.Projectiles.Boss
             newColor.A = 255;
             for (float i = 0f; i < dustAmt; i++)
             {
-                int killDust = Dust.NewDust(Projectile.Center, 0, 0, 267, 0f, 0f, 0, newColor, 1f);
+                int killDust = Dust.NewDust(Projectile.Center, 0, 0, DustID.RainbowMk2, 0f, 0f, 0, newColor, 1f);
                 Main.dust[killDust].position = Projectile.Center;
                 Main.dust[killDust].velocity = spinningpoint.RotatedBy(MathHelper.TwoPi * i / dustAmt) * randomDustVelMod * (0.8f + Main.rand.NextFloat() * 0.4f);
                 Main.dust[killDust].noGravity = true;
@@ -190,7 +191,7 @@ namespace CalamityMod.Projectiles.Boss
             }
             for (float j = 0f; j < dustAmt; j++)
             {
-                int killDust2 = Dust.NewDust(Projectile.Center, 0, 0, 267, 0f, 0f, 0, newColor, 1f);
+                int killDust2 = Dust.NewDust(Projectile.Center, 0, 0, DustID.RainbowMk2, 0f, 0f, 0, newColor, 1f);
                 Main.dust[killDust2].position = Projectile.Center;
                 Main.dust[killDust2].velocity = spinningpoint.RotatedBy(MathHelper.TwoPi * j / dustAmt) * randomDustVelMod * (0.8f + Main.rand.NextFloat() * 0.4f);
                 Dust dust = Main.dust[killDust2];
@@ -207,22 +208,21 @@ namespace CalamityMod.Projectiles.Boss
             }
         }
 
-        public override Color? GetAlpha(Color lightColor) => new Color(255 * Projectile.Opacity, 255 * Projectile.Opacity, 255 * Projectile.Opacity, 0);
-
-        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
+        public override bool PreDraw(ref Color lightColor)
         {
-            // In GFB, "real damage" is replaced with negative healing
-            if (Projectile.maxPenetrate >= (int)Providence.BossMode.Red)
-                modifiers.SourceDamage *= 0f;
+            Asset<Texture2D> texture = ModContent.Request<Texture2D>(Texture);
+
+            for (int i = 1; i < Projectile.oldPos.Length; i++)
+            {
+                Main.EntitySpriteDraw(texture.Value, Projectile.oldPos[i] + (Projectile.Size / 2) - Main.screenPosition, texture.Frame(), Color.Lerp(Color.Violet, new Color(42, 25, 60), (float)i / (float)Projectile.oldPos.Length).MultiplyRGBA(new Color(1f, 1f, 1f, 0f)), Projectile.oldRot[i], texture.Frame().Center(), Projectile.scale * MathHelper.Lerp(1.3f, 0.4f, (float)i / (float)Projectile.oldPos.Length), SpriteEffects.None);
+            }
+
+            Projectile.DrawBackglow(Color.Violet.MultiplyRGBA(new Color(1f, 1f, 1f, 0f)), 4f);
+            Main.EntitySpriteDraw(texture.Value, Projectile.Center - Main.screenPosition, texture.Frame(), Projectile.GetAlpha(lightColor), Projectile.rotation, texture.Frame().Center(), Projectile.scale, SpriteEffects.None);
+
+            return false;
         }
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            // If the player is dodging, don't apply debuffs
-            if ((info.Damage <= 0 && Projectile.maxPenetrate < (int)Providence.BossMode.Red) || target.creativeGodMode)
-                return;
-
-            ProvUtils.ApplyHitEffects(target, Projectile.maxPenetrate, 0, 10);
-        }
+        public override Color? GetAlpha(Color lightColor) => new Color(255 * Projectile.Opacity, 255 * Projectile.Opacity, 255 * Projectile.Opacity, 255 * Projectile.Opacity);
     }
 }

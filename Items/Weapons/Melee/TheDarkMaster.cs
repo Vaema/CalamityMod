@@ -15,12 +15,13 @@ namespace CalamityMod.Items.Weapons.Melee
         public const float DamagePerHealth = 0.001f; // 0.1 damage per additional health. 100 health = 10% damage.
         public new string LocalizationCategory => "Items.Weapons.Melee";
 
-        BloomRing ring;
+        [CloneByReference]
+        public BloomRing ring;
 
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            Item.staff[Type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
         public override void SetDefaults()
@@ -34,7 +35,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.useTurn = true;
             Item.knockBack = 7f;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.shoot = ModContent.ProjectileType<DarkMasterBeam>();
             Item.shootSpeed = 16f;
@@ -48,17 +49,24 @@ namespace CalamityMod.Items.Weapons.Melee
                 // only fire beams at max health
                 if (player.statLife >= (player.statLifeMax2 * 0.75f))
                 {
-                    SoundEngine.PlaySound(SoundID.Item71, player.position);
+                    SoundEngine.PlaySound(SoundID.Item71, player.Center);
                     // increase the beam's damage by the player's additional health starting from the vanilla maximum amount with just life crystals
                     int baseMaxHealth = 400;
                     int bonusHealth = player.statLifeMax2 - baseMaxHealth;
                     float bonusDamage = DamagePerHealth * bonusHealth;
-                    Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, type, (int)(damage * (1 + bonusDamage)), knockback, player.whoAmI, 0, 0);
+                    Projectile.NewProjectile(source, position, velocity, type, (int)(damage * (1 + bonusDamage)), knockback, player.whoAmI);
                 }
                 // still play the sound if the clones are out since they always fire beams
                 else if (player.ownedProjectileCounts[ModContent.ProjectileType<DarkMasterClone>()] > 0)
                 {
-                    SoundEngine.PlaySound(SoundID.Item71, player.position);
+                    SoundEngine.PlaySound(SoundID.Item71, player.Center);
+                }
+
+                // force clones to shoot regardless of health
+                foreach (Projectile p in Main.ActiveProjectiles)
+                {
+                    if (p.type == ModContent.ProjectileType<DarkMasterClone>() && p.owner == player.whoAmI)
+                        p.ai[1] = 1f;
                 }
             }
             else
@@ -71,7 +79,9 @@ namespace CalamityMod.Items.Weapons.Melee
                     // summon the clones. position is determined by ai[0]
                     for (int i = 0; i < 3; i++)
                     {
-                        Projectile.NewProjectile(Item.GetSource_FromThis(), player.Center.X, player.Center.Y, 0, 0, ModContent.ProjectileType<DarkMasterClone>(), damage, knockback, player.whoAmI, i);
+                        // Stats are set to dynamically update, so damage, kb, crit have to be feeded
+                        Projectile clone = Projectile.NewProjectileDirect(Item.GetSource_FromThis(), player.Center, Vector2.Zero, ModContent.ProjectileType<DarkMasterClone>(), Item.damage, Item.knockBack, player.whoAmI, i);
+                        clone.OriginalCritChance = Item.crit;
                     }
                 }
             }

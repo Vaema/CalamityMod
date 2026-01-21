@@ -1,16 +1,17 @@
-﻿using CalamityMod.DataStructures;
+﻿using System;
+using CalamityMod.DataStructures;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
+using CalamityMod.Sounds;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static CalamityMod.CalamityUtils;
 using static Terraria.ModLoader.ModContent;
-using Terraria.Audio;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -128,29 +129,19 @@ namespace CalamityMod.Projectiles.Melee
 
         public void Attune(OmegaBiomeBlade item)
         {
-            bool jungle = Owner.ZoneJungle;
-            bool snow = Owner.ZoneSnow;
-            bool evil = Owner.ZoneCorrupt || Owner.ZoneCrimson;
-            bool desert = Owner.ZoneDesert;
-            bool hell = Owner.ZoneUnderworldHeight;
-            bool ocean = Owner.ZoneBeach || Owner.Calamity().ZoneSulphur;
-            bool hallow = Owner.ZoneHallow;
-            bool astral = Owner.Calamity().ZoneAstral;
-            bool marine = Owner.Calamity().ZoneAbyss || Owner.Calamity().ZoneSunkenSea;
+            bool flailAttune = Owner.ZoneJungle || Owner.ZoneSnow || Owner.ZoneSkyHeight;
+            bool pogoAttune = Owner.ZoneDesert || Owner.ZoneUnderworldHeight || Owner.ZoneCorrupt || Owner.ZoneCrimson;
+            bool whirlAttune = Owner.ZoneHallow || Owner.Calamity().ZoneAstral;
 
-            Attunement attunement = Attunement.attunementArray[(int)AttunementID.Whirlwind];
-            if (desert || hell)
-                attunement = Attunement.attunementArray[(int)AttunementID.SuperPogo];
-            if (jungle || ocean || snow) //Check put after the desert check so ocean doesnt get overriden as desert
-                attunement = Attunement.attunementArray[(int)AttunementID.FlailBlade];
-            if (evil) //Evil check separated so that it overrides corrupted beach & snow biomes
-                attunement = Attunement.attunementArray[(int)AttunementID.SuperPogo];
-            if (astral || marine)
-                attunement = Attunement.attunementArray[(int)AttunementID.Shockwave];
-            if (hallow)
-                attunement = Attunement.attunementArray[(int)AttunementID.Whirlwind]; //Putting holy check  at the end so it may override hallowed variants of biomes
+            Attunement attunement = AttunementSystem.FindOrNull(AttunementID.Shockwave);
+            if (flailAttune) //Check put after the desert check so ocean doesnt get overriden as desert
+                attunement = AttunementSystem.FindOrNull(AttunementID.FlailBlade);
+            if (pogoAttune) //Evil check separated so that it overrides corrupted beach & snow biomes
+                attunement = AttunementSystem.FindOrNull(AttunementID.SuperPogo);
+            if (whirlAttune)
+                attunement = AttunementSystem.FindOrNull(AttunementID.Whirlwind); //Putting holy check  at the end so it may override hallowed variants of biomes
 
-            //If the owner already had the attunement , break out of it (And unswap)
+            // If the owner already had the attunement, break out of it (And unswap)
             if (item.secondaryAttunement == attunement)
             {
                 SoundEngine.PlaySound(SoundID.DD2_LightningBugZap, Projectile.Center);
@@ -158,15 +149,18 @@ namespace CalamityMod.Projectiles.Melee
                 item.mainAttunement = attunement;
                 return;
             }
-            //Chunger
             var Sound = SoundEngine.PlaySound(CommonCalamitySounds.LightningSound with { Volume = CommonCalamitySounds.LightningSound.Volume * 0.4f }, Projectile.Center);
 
-            Particle thunder = new ThunderBoltVFX(Projectile.Center + Vector2.UnitY * 20f, Main.rand.NextBool() ? Main.rand.NextBool() ? Color.Goldenrod : Color.GreenYellow : Main.rand.NextBool() ? Color.Cyan : Color.Magenta, 0f, 1.5f, Vector2.One, 1f, 15f, Projectile, 20f);
+            Particle thunder = new ThunderBoltVFX(
+                () => Projectile.Center + Vector2.UnitY * 20f,
+                0f,
+                1.5f,
+                Main.rand.NextBool() ? Main.rand.NextBool() ? Color.Goldenrod : Color.GreenYellow : Main.rand.NextBool() ? Color.Cyan : Color.Magenta,
+                30,
+                15f);
             GeneralParticleHandler.SpawnParticle(thunder);
 
-            if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 5)
-                Main.LocalPlayer.Calamity().GeneralScreenShakePower = 5;
-
+            Main.LocalPlayer.SetScreenshake(5f);
             item.mainAttunement = attunement;
         }
 
@@ -190,7 +184,7 @@ namespace CalamityMod.Projectiles.Melee
 
             if (ChanneledState == 0f && ChannelTimer > 10f)
             {
-                Texture2D tex = Request<Texture2D>(Texture).Value;
+                Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
                 Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, tex.Size() / 2, 1, 0, 0);
 
                 return false;
@@ -198,7 +192,7 @@ namespace CalamityMod.Projectiles.Melee
             }
             else if (ChanneledState == 1f)
             {
-                Texture2D tex = Request<Texture2D>(Texture).Value;
+                Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
                 Vector2 squishyScale = new Vector2(Math.Abs((float)Math.Sin(MathHelper.Pi + MathHelper.TwoPi * Projectile.timeLeft / 30f)), 1f);
                 SpriteEffects flip = (float)Math.Sin(MathHelper.Pi + MathHelper.TwoPi * Projectile.timeLeft / 30f) > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
                 Main.EntitySpriteDraw(tex, Projectile.position - Main.screenPosition, null, lightColor * (Projectile.timeLeft / 60f), 0, tex.Size() / 2, squishyScale * (2f - (Projectile.timeLeft / 60f)), flip, 0);

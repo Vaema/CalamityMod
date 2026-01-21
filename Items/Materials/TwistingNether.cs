@@ -11,17 +11,17 @@ namespace CalamityMod.Items.Materials
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 5;
-            ItemID.Sets.ItemNoGravity[Item.type] = true;
+            ItemID.Sets.ItemNoGravity[Type] = true;
 
-			ItemID.Sets.SortingPriorityMaterials[Type] = 109;
+            ItemID.Sets.SortingPriorityMaterials[Type] = 109;
         }
 
         public override void SetDefaults()
         {
             Item.width = 15;
             Item.height = 12;
-            Item.maxStack = 9999;
-            Item.value = Item.buyPrice(0, 7, 0, 0);
+            Item.maxStack = Item.CommonMaxStack;
+            Item.value = Item.sellPrice(gold: 1, silver: 40);
             Item.rare = ModContent.RarityType<Turquoise>();
         }
         public override void Update(ref float gravity, ref float maxFallSpeed)

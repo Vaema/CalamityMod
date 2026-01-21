@@ -3,6 +3,7 @@ using CalamityMod.Items.Critters;
 using CalamityMod.Items.Placeables.Banners;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -14,17 +15,25 @@ namespace CalamityMod.NPCs.DraedonLabThings
 {
     public class Androomba : ModNPC
     {
+
+        public static Asset<Texture2D> GlowTexture;
+
         public SoundStyle HurrySound = new("CalamityMod/Sounds/Custom/WulfrumDroidHurry", 2) { PitchVariance = 0.3f };
+
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 22;
-            NPCID.Sets.CountsAsCritter[NPC.type] = true;
-            Main.npcCatchable[NPC.type] = true;
+            Main.npcFrameCount[Type] = 22;
+            NPCID.Sets.CountsAsCritter[Type] = true;
+            Main.npcCatchable[Type] = true;
             NPCID.Sets.NormalGoldCritterBestiaryPriority.Add(Type);
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0);
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
             value.Position.Y += 18;
             value.PortraitPositionYOverride = 38f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "_Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -51,9 +60,9 @@ namespace CalamityMod.NPCs.DraedonLabThings
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Androomba")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Androomba")
             });
         }
 
@@ -78,9 +87,8 @@ namespace CalamityMod.NPCs.DraedonLabThings
                             NPC.ai[2] *= -1;
                         }
                         // If she sees someone, start running
-                        for (int i = 0; i < Main.maxPlayers; i++)
+                        foreach (Player player in Main.ActivePlayers)
                         {
-                            Player player = Main.player[i];
                             if (Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height))
                             {
                                 ChangeAI(1);
@@ -143,12 +151,8 @@ namespace CalamityMod.NPCs.DraedonLabThings
                     break;
             }
 
-            for (int i = 0; i < Main.maxPlayers; i++)
+            foreach (Player player in Main.ActivePlayers)
             {
-                Player player = Main.player[i];
-                if (player is null || !player.active)
-                    continue;
-
                 if (NPC.Hitbox.Intersects(player.HitboxForBestiaryNearbyCheck))
                 {
                     Main.BestiaryTracker.Kills.RegisterKill(NPC);
@@ -247,13 +251,13 @@ namespace CalamityMod.NPCs.DraedonLabThings
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int i = 0; i < 6; i++)
-                Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, 226);
+                Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.Electric);
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D critterTexture = TextureAssets.Npc[NPC.type].Value;
-            Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/DraedonLabThings/Androomba_Glow").Value;
+            Texture2D critterTexture = TextureAssets.Npc[Type].Value;
+            Texture2D glowmask = GlowTexture.Value;
             Vector2 drawPosition = NPC.Center - screenPos + Vector2.UnitY * NPC.gfxOffY;
             drawPosition.Y += DrawOffsetY;
             SpriteEffects direction = NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;

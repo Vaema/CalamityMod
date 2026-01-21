@@ -1,5 +1,4 @@
-﻿using System.Text;
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -24,7 +23,7 @@ namespace CalamityMod.Buffs.StatBuffs
 
         public override void ModifyBuffText(ref string buffName, ref string tip, ref int rare)
         {
-            if (CalamityConfig.Instance.BossZen)
+            if (CalamityServerConfig.Instance.BossZen)
                 tip = tip.Replace(":", ":\n" + this.GetLocalizedValue("ZenDescription"));
         }
     }

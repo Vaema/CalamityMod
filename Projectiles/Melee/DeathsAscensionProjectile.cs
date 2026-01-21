@@ -1,10 +1,9 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Projectiles.Healing;
+﻿using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Melee
 {
     public class DeathsAscensionProjectile : ModProjectile, ILocalizedModType
@@ -12,15 +11,16 @@ namespace CalamityMod.Projectiles.Melee
         public new string LocalizationCategory => "Projectiles.Melee";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
         }
 
         public override void SetDefaults()
         {
             Projectile.width = 102;
             Projectile.height = 82;
-            Projectile.aiStyle = ProjAIStyleID.Sickle;
+            Projectile.aiStyle = -1;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Melee;
             Projectile.tileCollide = false;
@@ -30,7 +30,6 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 30;
-            AIType = ProjectileID.DeathSickle;
         }
 
         public override void AI()
@@ -39,21 +38,44 @@ namespace CalamityMod.Projectiles.Melee
 
             if (Main.rand.NextBool(3))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 173, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
 
-            CalamityUtils.HomeInOnNPC(Projectile, true, 900f, 18f, 20f);
+            int startLife = Projectile.ai[2] > 0 ? DeathsAscension.RiftLifeTime : 180;
+            // Player scythes just home
+            if (Projectile.ai[2] <= 0)
+            {
+                CalamityUtils.HomeInOnNPC(Projectile, true, 900f, 18f, 20f);
+                Projectile.velocity *= 0.96f;
+            }
+            // Rift scythes have orbital motion
+            else
+            {
+                Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(0.1f) * 20;
+            }
+            // Smoothly disappear
+            if (Projectile.timeLeft < 60)
+            {
+                Projectile.alpha += 3;
+            }
+            // Rotation direction stuff from the vanilla Death Sickle
+            if (Projectile.velocity.X < 0f)
+            {
+                Projectile.spriteDirection = -1;
+            }
+            Projectile.rotation += (float)Projectile.direction * 0.05f;
+            Projectile.rotation += (float)Projectile.direction * 0.5f * ((float)Projectile.timeLeft / startLife);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 2);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor * Projectile.Opacity, 2);
             return false;
         }
 
         public override Color? GetAlpha(Color lightColor)
         {
-            return new Color(150, 0, 200, 0);
+            return new Color(150, 0, 200, 0) * Projectile.Opacity;
         }
     }
 }

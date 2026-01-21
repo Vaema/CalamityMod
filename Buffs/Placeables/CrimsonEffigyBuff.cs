@@ -1,4 +1,5 @@
-using Terraria;
+﻿using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.Placeables
@@ -7,10 +8,11 @@ namespace CalamityMod.Buffs.Placeables
     {
         public override void SetStaticDefaults()
         {
+            Main.buffNoSave[Type] = false;
             Main.buffNoTimeDisplay[Type] = true;
-            Main.debuff[Type] = false;
+            Main.persistentBuff[Type] = true;
             Main.pvpBuff[Type] = true;
-            Main.buffNoSave[Type] = true;
+            BuffID.Sets.TimeLeftDoesNotDecrease[Type] = true;
         }
 
         public override void Update(Player player, ref int buffIndex)

@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Melee;
+﻿using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -14,16 +14,15 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 58;
             Item.height = 64;
-            Item.damage = 66;
+            Item.damage = 50;
             Item.DamageType = DamageClass.Melee;
-            Item.useAnimation = 23;
-            Item.useTime = 23;
+            Item.useTime = Item.useAnimation = 23;
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 6f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.shoot = ModContent.ProjectileType<StormBeam>();
             Item.shootSpeed = 12f;
@@ -31,15 +30,15 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, type, (int)(damage * 0.8), knockback, player.whoAmI, 0f, 0f);
+            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
 
             Vector2 spawnPos = new Vector2(player.MountedCenter.X + Main.rand.Next(-200, 201), player.MountedCenter.Y - 600f);
-            Vector2 targetPos = Main.MouseWorld + new Vector2(Main.rand.Next(-30, 31), Main.rand.Next(-30, 31));
-            velocity = targetPos - spawnPos;
-            velocity.Normalize();
-            velocity *= 13f;
 
-            Projectile.NewProjectile(source, spawnPos, velocity, type, (int)(damage * 0.6), knockback, player.whoAmI);
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
+            Vector2 targetPos = Main.MouseWorld + new Vector2(Main.rand.Next(-30, 31), Main.rand.Next(-30, 31));
+            velocity = Utils.DirectionTo(spawnPos, targetPos) * Item.shootSpeed;
+
+            Projectile.NewProjectile(source, spawnPos, velocity, type, (int)(damage * 0.75), knockback, player.whoAmI);
             return false;
         }
 
@@ -47,7 +46,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             if (Main.rand.NextBool(5))
             {
-                int swingDust = Dust.NewDust(new Vector2((float)hitbox.X, (float)hitbox.Y), hitbox.Width, hitbox.Height, 187, (float)(player.direction * 2), 0f, 150, default, 1.3f);
+                int swingDust = Dust.NewDust(new Vector2((float)hitbox.X, (float)hitbox.Y), hitbox.Width, hitbox.Height, DustID.Flare_Blue, (float)(player.direction * 2), 0f, 150, default, 1.3f);
                 Main.dust[swingDust].velocity *= 0.2f;
             }
         }

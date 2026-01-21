@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -13,56 +13,32 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 36;
             Item.height = 38;
-            Item.damage = 64;
+            Item.damage = 43;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.useAnimation = Item.useTime = 15;
+            Item.useAnimation = Item.useTime = 9;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 1f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.maxStack = 1;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.shoot = ModContent.ProjectileType<LeviathanTooth>();
-            Item.shootSpeed = 12f;
+            Item.shootSpeed = 7.5f;
             Item.DamageType = RogueDamageClass.Instance;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            bool stealthStrike = false;
-            int teethCount;
             if (player.Calamity().StealthStrikeAvailable())
             {
-                teethCount = 6;
-                stealthStrike = true;
+                Projectile tooth = Projectile.NewProjectileDirect(source, position, velocity.SafeNormalize(Vector2.UnitX), ModContent.ProjectileType<LeviathanToothStealth>(), damage, 0, player.whoAmI, 0, 0);
+                tooth.Calamity().stealthStrike = true;
             }
             else
             {
-                teethCount = Main.rand.Next(2, 3 + 1);
-            }
-
-            for (int i = 0; i < teethCount; i++)
-            {
-                float offsetSpeedX = velocity.X + Main.rand.NextFloat(-2f, 2f);
-                float offsetSpeedY = velocity.Y + Main.rand.NextFloat(-2f, 2f);
-
-                if (stealthStrike)
-                {
-                    int tooth = Projectile.NewProjectile(source, position.X, position.Y, offsetSpeedX * 1.5f, offsetSpeedY * 1.5f, type, damage, knockback * 10f, player.whoAmI);
-                    if (tooth.WithinBounds(Main.maxProjectiles))
-                    {
-                        Main.projectile[tooth].Calamity().stealthStrike = true;
-                        Main.projectile[tooth].Calamity().lineColor = Main.rand.Next(3);
-                    }
-                }
-                else
-                {
-                    int tooth = Projectile.NewProjectile(source, position.X, position.Y, offsetSpeedX, offsetSpeedY, type, damage, knockback, player.whoAmI);
-                    if (tooth.WithinBounds(Main.maxProjectiles))
-                        Main.projectile[tooth].Calamity().lineColor = Main.rand.Next(3);
-                }
+                for (int i = 0; i < 2; i++)
+                    Projectile.NewProjectile(source, position, velocity.RotatedByRandom(0.05f + i * 0.15f) * Main.rand.NextFloat(0.8f, 1f), type, damage, knockback, player.whoAmI, 0f, Main.rand.Next(1, 3+1));
             }
             return false;
         }

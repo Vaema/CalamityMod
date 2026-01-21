@@ -3,7 +3,7 @@ using CalamityMod.Items.Accessories.Wings;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Pets;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
@@ -26,14 +26,14 @@ namespace CalamityMod.Items.TreasureBags
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 3;
-            ItemID.Sets.BossBag[Item.type] = true;
+            ItemID.Sets.BossBag[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 24;
             Item.height = 24;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
             Item.rare = ItemRarityID.Cyan;
             Item.expert = true;
@@ -61,7 +61,7 @@ namespace CalamityMod.Items.TreasureBags
             itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<Yharon>()));
 
             // Materials
-            itemLoot.Add(ModContent.ItemType<YharonSoulFragment>(), 1, 30, 35);
+            itemLoot.Add(ModContent.ItemType<YharonSoulFragment>(), 1, 40, 50);
 
             // Weapons
             itemLoot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, new int[]
@@ -72,13 +72,13 @@ namespace CalamityMod.Items.TreasureBags
                 ModContent.ItemType<DragonsBreath>(),
                 ModContent.ItemType<PhoenixFlameBarrage>(),
                 ModContent.ItemType<YharonsKindleStaff>(),
-                ModContent.ItemType<FinalDawn>(),
+                ModContent.ItemType<TheFinalDawn>(),
                 ModContent.ItemType<Wrathwing>(),
             }));
             itemLoot.Add(ModContent.ItemType<YharimsCrystal>(), 10);
 
             // Equipment
-            itemLoot.Add(ModContent.ItemType<DrewsWings>());
+            itemLoot.Add(ModContent.ItemType<WingsofRebirth>());
             itemLoot.Add(ModContent.ItemType<YharimsGift>());
             itemLoot.AddRevBagAccessories();
 

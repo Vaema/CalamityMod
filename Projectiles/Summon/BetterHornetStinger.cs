@@ -54,14 +54,12 @@ namespace CalamityMod.Projectiles.Summon
                 }
             }
 
-            Projectile.netUpdate = true;
-            if (Projectile.netSpam >= 10)
-                Projectile.netSpam = 9;
+            Projectile.ForceNetUpdate(false);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Rectangle frame = texture.Frame();
             Vector2 origin = frame.Size() * 0.5f;

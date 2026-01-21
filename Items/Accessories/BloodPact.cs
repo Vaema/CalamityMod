@@ -1,7 +1,8 @@
-﻿using CalamityMod.CalPlayer;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.CalPlayer;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -13,15 +14,20 @@ namespace CalamityMod.Items.Accessories
             Item.width = 26;
             Item.height = 26;
             Item.rare = ItemRarityID.Yellow;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.accessory = true;
+            Item.expert = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.bloodPact = true; // This applies the +25% health boost.
-            modPlayer.healingPotionMultiplier += 0.25f;
+            modPlayer.healingPotionMultiplier += 0.33f;
+            //Grants immunity to most Bleeding debuffs
+            player.buffImmune[BuffID.Bleeding] = true;
+            player.buffImmune[ModContent.BuffType<BurningBlood>()] = true;
+            player.buffImmune[ModContent.BuffType<HeavyBleeding>()] = true; 
         }
     }
 }

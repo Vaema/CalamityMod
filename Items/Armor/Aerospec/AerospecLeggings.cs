@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Aerospec
@@ -9,19 +10,20 @@ namespace CalamityMod.Items.Armor.Aerospec
     public class AerospecLeggings : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
+
+        public static float MoveSpeedBoost = 0.12f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MoveSpeedBoost.ToPercent());
+
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.defense = 6;
         }
 
-        public override void UpdateEquip(Player player)
-        {
-            player.moveSpeed += 0.12f;
-        }
+        public override void UpdateEquip(Player player) => player.moveSpeed += MoveSpeedBoost;
 
         public override void AddRecipes()
         {
@@ -29,7 +31,7 @@ namespace CalamityMod.Items.Armor.Aerospec
                 AddIngredient<AerialiteBar>(7).
                 AddIngredient(ItemID.SunplateBlock, 4).
                 AddIngredient(ItemID.Feather, 2).
-                AddTile(TileID.SkyMill).
+                AddTile(TileID.Anvils).
                 Register();
         }
     }

@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -24,7 +24,7 @@ namespace CalamityMod.Particles
         private float HueShift;
         static int FrameAmount = 6;
 
-        public HeavySmokeParticle(Vector2 position, Vector2 velocity, Color color, int lifetime, float scale, float opacity, float rotationSpeed = 0f, bool glowing = false, float hueshift = 0f, bool required = false)
+        public HeavySmokeParticle(Vector2 position, Vector2 velocity, Color color, int lifetime, float scale, float opacity, float rotationSpeed = 0f, bool glowing = false, float hueshift = 0f, bool required = false, bool affectedByLight = false)
         {
             Position = position;
             Velocity = velocity;
@@ -37,7 +37,7 @@ namespace CalamityMod.Particles
             StrongVisual = required;
             Glowing = glowing;
             HueShift = hueshift;
-
+            AffectedByLight = affectedByLight;
         }
 
         public override void Update()
@@ -62,8 +62,14 @@ namespace CalamityMod.Particles
             int animationFrame = (int)Math.Floor(Time / ((float)(Lifetime / (float)FrameAmount)));
             Rectangle frame = new Rectangle(80 * Variant, 80 * animationFrame, 80, 80);
 
+            Color col = Color * Opacity;
 
-            spriteBatch.Draw(tex, Position - Main.screenPosition, frame, Color * Opacity, Rotation, frame.Size() / 2f, Scale, SpriteEffects.None, 0);
+            if (AffectedByLight)
+            {
+                col = col.MultiplyRGBA(Lighting.GetColor((Position / 16).ToPoint()));
+            }
+
+            spriteBatch.Draw(tex, Position - Main.screenPosition, frame, col, Rotation, frame.Size() / 2f, Scale, SpriteEffects.None, 0);
         }
 
     }

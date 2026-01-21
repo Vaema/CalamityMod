@@ -15,14 +15,14 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 58;
             Item.height = 58;
-            Item.damage = 105;
+            Item.damage = 75;
             Item.DamageType = DamageClass.Melee;
             Item.useTime = 20;
             Item.useAnimation = 20;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTurn = false;
             Item.knockBack = 4f;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
@@ -42,7 +42,6 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
         {
             target.AddBuff(BuffID.Frostburn2, 300);
-            target.AddBuff(ModContent.BuffType<GlacialState>(), 60);
             var source = player.GetSource_ItemUse(Item);
             int p = Projectile.NewProjectile(source, target.Center, Vector2.Zero, ModContent.ProjectileType<DarkIceZero>(), Item.damage, 12f, player.whoAmI);
             Main.projectile[p].Kill();

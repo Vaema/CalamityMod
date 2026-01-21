@@ -11,18 +11,18 @@ namespace CalamityMod.Items.Ammo
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 99;
-                   }
+        }
 
         public override void SetDefaults()
         {
             Item.width = 22;
             Item.height = 24;
             Item.damage = 1;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
             Item.knockBack = 10f;
-            Item.value = Item.buyPrice(gold: 1);
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.value = Item.buyPrice(gold: 1); // Sold by Archmage
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.Calamity().donorItem = true;
             Item.shoot = ModContent.ProjectileType<IceBarrageMain>();
             Item.shootSpeed = 0f;

@@ -3,6 +3,7 @@ using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Rarities;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Prismatic
@@ -11,10 +12,17 @@ namespace CalamityMod.Items.Armor.Prismatic
     public class PrismaticRegalia : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PostMoonLord";
+
+        public static float MagicDamageBoost = 0.15f;
+        public static int MagicCritBoost = 15; // NOTE: Tooltip shares this number with damage % as they're equal
+        public static float NonMagicDamageDecrease = 0.2f;
+        public static int RocketChanceDenominator = 20;
+        public static float RocketDamageRatio = 0.25f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MagicDamageBoost.ToPercent(), NonMagicDamageDecrease.ToPercent(), RocketChanceDenominator.GetChanceFromDenominator());
+
         public override void SetStaticDefaults()
         {
-           
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             int equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
@@ -29,7 +37,7 @@ namespace CalamityMod.Items.Armor.Prismatic
             Item.height = 18;
             Item.defense = 33;
 
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.Calamity().donorItem = true;
         }
@@ -37,12 +45,10 @@ namespace CalamityMod.Items.Armor.Prismatic
         public override void UpdateEquip(Player player)
         {
             player.Calamity().prismaticRegalia = true;
-            player.statLifeMax2 += 20;
-            player.statManaMax2 += 40;
-            player.GetDamage<MagicDamageClass>() += 0.12f;
-            player.GetCritChance<MagicDamageClass>() += 15;
-            player.GetDamage<GenericDamageClass>() -= 0.2f;
-            player.GetDamage<MagicDamageClass>() += 0.2f;
+            player.GetDamage<MagicDamageClass>() += MagicDamageBoost;
+            player.GetCritChance<MagicDamageClass>() += MagicCritBoost;
+            player.GetDamage<GenericDamageClass>() -= NonMagicDamageDecrease;
+            player.GetDamage<MagicDamageClass>() += NonMagicDamageDecrease;
         }
 
         public override void AddRecipes()
@@ -52,7 +58,8 @@ namespace CalamityMod.Items.Armor.Prismatic
                 AddIngredient<ExodiumCluster>(5).
                 AddIngredient<DivineGeode>(8).
                 AddIngredient(ItemID.Nanites, 300).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<PrismaticGreaves>()).
                 Register();
         }
     }

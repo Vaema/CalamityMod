@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -12,8 +12,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -25,17 +25,16 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.MaxUpdates = 5;
             Projectile.penetrate = 1;
             Projectile.DamageType = DamageClass.Ranged;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Projectile.RotatingHitboxCollision(targetHitbox.TopLeft(), targetHitbox.Size());
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Projectile.RotatingHitboxCollision(targetHitbox);
 
         public override void AI()
         {
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             if (Projectile.timeLeft < 85 && Main.rand.NextBool(3))
             {
-                Dust dust = Dust.NewDustDirect(Projectile.Center, 1, 1, 171);
+                Dust dust = Dust.NewDustDirect(Projectile.Center, 1, 1, DustID.Venom);
                 dust.velocity = Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(5f)) * -0.5f;
                 dust.scale = Main.rand.NextFloat(0.3f, 1.6f);
                 dust.noGravity = true;
@@ -46,7 +45,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             for (int i = 0; i < 14; i++)
             {
-                Dust dust = Dust.NewDustDirect(Projectile.position, 14, 14, 171);
+                Dust dust = Dust.NewDustDirect(Projectile.position, 14, 14, DustID.Venom);
                 dust.scale = Main.rand.NextFloat(0.3f, 1.6f);
                 dust.noGravity = true;
             }

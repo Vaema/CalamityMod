@@ -1,16 +1,18 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using System.IO;
 using CalamityMod.Items.Weapons.Melee;
-using Terraria.Graphics.Shaders;
+using CalamityMod.Particles;
+using CalamityMod.Projectiles.Boss;
+using CalamityMod.Tiles.Astral;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
 using static CalamityMod.CalamityUtils;
-using Terraria.Audio;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -22,8 +24,7 @@ namespace CalamityMod.Projectiles.Melee
         Vector2 direction = Vector2.Zero;
         public ref float CurrentState => ref Projectile.ai[0];
         public Player Owner => Main.player[Projectile.owner];
-        private bool OwnerCanShoot => Owner.channel && !Owner.noItems && !Owner.CCed;
-        public const float throwOutTime = 90f;
+        public const float throwOutTime = 60f;
         public const float throwOutDistance = 440f;
 
         public static float snapPoint = 0.45f;
@@ -40,15 +41,12 @@ namespace CalamityMod.Projectiles.Melee
 
 
         public float AngleReset = 0f;
-        public bool CanDirectFire = true;
         public Particle smear;
-        public Particle sightLine;
-        public NPC lastTarget;
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
         public override void SetDefaults()
         {
@@ -78,10 +76,11 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
-            if (!initialized) //Initialization. Here its litterally just playing a sound tho lmfao
+            if (!initialized) //Initialization.
             {
                 SoundEngine.PlaySound(SoundID.Item90, Projectile.Center);
                 Projectile.velocity = Vector2.Zero;
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 direction = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
                 direction.Normalize();
                 initialized = true;
@@ -89,7 +88,7 @@ namespace CalamityMod.Projectiles.Melee
 
             Projectile.rotation = direction.ToRotation(); //Only done for afterimages
 
-            if (!OwnerCanShoot)
+            if (Owner.CantUseHoldout())
             {
                 if (CurrentState == 2f || (CurrentState == 0f && Empowerment / maxEmpowerment < 0.5))
                 {
@@ -102,8 +101,10 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     CurrentState = 1f;
                     SoundEngine.PlaySound(SoundID.Item80, Projectile.Center);
+
+                    // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     direction = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
-                    //PARTICLES LOTS OF PARTICLES LOTS OF SPARKLES YES YES MH YES YES
+                    //PARTICLES LOTS OF PARTICLES LOTS OF SPARKLES
                     for (int i = 0; i <= 8; i++)
                     {
                         float variation = Main.rand.NextFloat(-MathHelper.PiOver4, MathHelper.PiOver4);
@@ -123,40 +124,37 @@ namespace CalamityMod.Projectiles.Melee
 
             if (CurrentState == 0f)
             {
-
-                if (hasMadeChargeSound == 0f && Empowerment / maxEmpowerment >= 0.5)
-                {
-                    hasMadeChargeSound = 1f;
-                    SoundEngine.PlaySound(SoundID.Item76, Projectile.Center);
-                }
-
                 float rotation = direction.ToRotation();
                 if (rotation > -MathHelper.PiOver2 - MathHelper.PiOver4 && rotation < -MathHelper.PiOver2 + MathHelper.PiOver4 && hasMadeSound == 1f)
                     hasMadeSound = 0f;
 
                 else if (rotation > MathHelper.PiOver2 - MathHelper.PiOver4 && rotation < MathHelper.PiOver2 + MathHelper.PiOver4 && hasMadeSound == 0f)
                 {
-                    CanDirectFire = true;
                     hasMadeSound = 1f;
                     SoundEngine.PlaySound(SoundID.Item71, Projectile.Center);
                 }
 
+                if ((hasMadeChargeSound == 0f && Empowerment / maxEmpowerment >= 0.5) || (hasMadeChargeSound == 1f && Empowerment / maxEmpowerment >= 0.75))
+                {
+                    hasMadeChargeSound++;
+                    SoundEngine.PlaySound(DeusRitualDrama.PulseSound with { Pitch = -0.1f + hasMadeChargeSound * 0.1f }, Projectile.Center);
+                }
+                if (hasMadeChargeSound == 2f && Empowerment >= maxEmpowerment)
+                {
+                    hasMadeChargeSound++;
+                    SoundEngine.PlaySound(AstralBeacon.UseSound, Projectile.Center);
+                }
 
                 if (Empowerment / maxEmpowerment >= 0.5 && (Empowerment + OverEmpowerment) % 30 == 29 && Owner.whoAmI == Main.myPlayer)
                 {
-                    Vector2 shotDirection = Main.rand.NextVector2CircularEdge(15f, 15f);
-                    if (lastTarget != null && lastTarget.active) //If you've got an actual target, angle your shots towards them
-                    {
-                        shotDirection = (shotDirection.ToRotation().AngleTowards(Owner.AngleTo(lastTarget.Center), MathHelper.PiOver2)).ToRotationVector2() * 15f;
-                    }
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, shotDirection, ProjectileType<SwordsmithsPrideBeam>(), (int)(Projectile.damage * OmegaBiomeBlade.WhirlwindAttunement_BeamDamageReduction), 0f, Owner.whoAmI);
+                    Vector2 shotDirection = Main.rand.NextVector2CircularEdge(10f, 10f);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, shotDirection, ProjectileType<SwordsmithsPrideAstralEnergy>(), (int)(Projectile.damage * OmegaBiomeBlade.WhirlwindAttunement_EnergyDamageMult), 0f, Owner.whoAmI);
 
                 }
 
-
                 if (Empowerment / maxEmpowerment >= 0.75)
                 {
-                    Color currentColor = Color.Lerp(Color.HotPink, Color.GreenYellow, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 2f)) * (((Empowerment / maxEmpowerment) - 0.75f) / 0.25f * 0.8f);
+                    Color currentColor = Color.Lerp(Color.HotPink, Color.DarkViolet, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 2f)) * (((Empowerment / maxEmpowerment) - 0.75f) / 0.25f * 0.8f);
                     if (smear == null)
                     {
                         smear = new CircularSmearVFX(Owner.Center, Color.HotPink, direction.ToRotation(), Projectile.scale * 1.5f);
@@ -172,38 +170,6 @@ namespace CalamityMod.Projectiles.Melee
                         smear.Color = currentColor;
                     }
 
-                    if (sightLine == null)
-                    {
-                        sightLine = new LineVFX(Owner.Center, Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.One), 0.2f, Color.HotPink, false);
-                        GeneralParticleHandler.SpawnParticle(sightLine);
-                    }
-                    else
-                    {
-                        sightLine.Position = Owner.Center + Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.One) * Projectile.scale * 1.88f * 40;
-                        (sightLine as LineVFX).LineVector = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.One) * Projectile.scale * 1.88f * 38f;
-                        sightLine.Scale = 0.2f;
-                        sightLine.Time = 0;
-                        sightLine.Color = currentColor * 0.7f;
-                    }
-
-                    float rotationAdjusted = MathHelper.WrapAngle(Projectile.rotation) + MathHelper.Pi;
-                    float mouseAngleAdjusted = MathHelper.WrapAngle(Owner.SafeDirectionTo(Main.MouseWorld, Vector2.One).ToRotation()) + MathHelper.Pi;
-                    float deltaAngleShoot = Math.Abs(MathHelper.WrapAngle(rotationAdjusted - mouseAngleAdjusted));
-
-                    if (CanDirectFire && deltaAngleShoot < 0.1f)
-                    {
-                        Particle Blink = new GenericSparkle(Owner.Center + Owner.SafeDirectionTo(Main.MouseWorld, Vector2.One) * Projectile.scale * 1.88f * 78f, Owner.velocity, Color.White, currentColor, 1.5f, 10, 0.1f, 3f);
-                        GeneralParticleHandler.SpawnParticle(Blink);
-
-                        if (Owner.whoAmI == Main.myPlayer)
-                        {
-                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, Owner.SafeDirectionTo(Main.MouseWorld, Vector2.One) * 15f, ProjectileType<SwordsmithsPrideBeam>(), (int)(Projectile.damage * OmegaBiomeBlade.WhirlwindAttunement_BeamDamageReduction), 0f, Owner.whoAmI);
-                        }
-                        CanDirectFire = false;
-                        AngleReset = Owner.SafeDirectionTo(Main.MouseWorld, Vector2.One).ToRotation();
-                    }
-
-
                     if (Main.rand.NextBool())
                     {
                         float maxDistance = Projectile.scale * 1.9f * 78f;
@@ -218,7 +184,7 @@ namespace CalamityMod.Projectiles.Melee
                 //Manage position and rotation
                 Projectile.scale = 1 + Empowerment / maxEmpowerment * 1.5f;
 
-                direction = direction.RotatedBy(MathHelper.Clamp(Empowerment / maxEmpowerment, 0.4f, 1f) * MathHelper.PiOver4 * 0.20f);
+                direction = direction.RotatedBy(MathHelper.Clamp(Empowerment * 1.1f / maxEmpowerment, 0.45f, 1f) * MathHelper.PiOver4 * 0.20f);
                 direction.Normalize();
                 Projectile.rotation = direction.ToRotation();
                 Projectile.Center = Owner.Center + (direction * Projectile.scale * 10);
@@ -243,20 +209,36 @@ namespace CalamityMod.Projectiles.Melee
             Owner.itemRotation = direction.ToRotation();
             if (Owner.direction != 1)
             {
-                Owner.itemRotation -= 3.14f;
+                Owner.itemRotation -= MathHelper.Pi;
             }
             Owner.itemRotation = MathHelper.WrapAngle(Owner.itemRotation);
             Owner.itemTime = 2;
             Owner.itemAnimation = 2;
         }
 
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            if (CurrentState == 1f && !CalamityUtils.AnyProjectiles(ProjectileType<SwordsmithsPrideMonolith>()))
+            {
+                float monolithScale = MathHelper.Clamp(target.width / 100f, 0.3f, 1.25f);
+                Vector2 monolithDirection = -Vector2.UnitY.RotatedByRandom(MathHelper.Pi / 10f);
+                Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, monolithDirection, ProjectileType<SwordsmithsPrideMonolith>(), (int)(Projectile.damage * OmegaBiomeBlade.WhirlwindAttunement_MonolithDamageMult), Projectile.knockBack, Owner.whoAmI, Main.rand.Next(4), 1f, hasMadeChargeSound);
+                if (proj.ModProjectile is SwordsmithsPrideMonolith monolith)
+                {
+                    monolith.Scale = monolithScale;
+                    monolith.OriginDirection = monolithDirection;
+                    monolith.Facing = 0f;
+                    monolith.Target = target;
+                }
+            }
+        }
+
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-
             if (CurrentState == 1f)
                 modifiers.SourceDamage *= MathHelper.Lerp(1f, OmegaBiomeBlade.WhirlwindAttunement_ThrowDamageBoost, Empowerment / maxEmpowerment);
             else
-                modifiers.SourceDamage *= OmegaBiomeBlade.WhirlwindAttunement_BaseDamageReduction + (OmegaBiomeBlade.WhirlwindAttunement_FullChargeDamageBoost * Empowerment / maxEmpowerment);
+                modifiers.SourceDamage *= MathHelper.Lerp(OmegaBiomeBlade.WhirlwindAttunement_BaseSwingDamageMult, OmegaBiomeBlade.WhirlwindAttunement_FullSwingDamageMult, Empowerment / maxEmpowerment);
 
             if (CurrentState != 1)
             {
@@ -267,28 +249,12 @@ namespace CalamityMod.Projectiles.Melee
 
             if (Owner.HeldItem.ModItem is OmegaBiomeBlade blade && Main.rand.NextFloat() <= OmegaBiomeBlade.WhirlwindAttunement_SwordThrowProc)
                 blade.OnHitProc = true;
-
-            lastTarget = target;
-            foreach (Projectile proj in Main.projectile)
-            {
-                if (proj.active && proj.type == ProjectileType<PurityProjectionSigil>() && proj.owner == Owner.whoAmI)
-                {
-                    //Reset the timeleft on the sigil & give it its new target (or the same, it doesnt matter really.
-                    proj.ai[0] = target.whoAmI;
-                    proj.timeLeft = OmegaBiomeBlade.WhirlwindAttunement_SigilTime;
-                    return;
-                }
-            }
-            Projectile sigil = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ProjectileType<PurityProjectionSigil>(), 0, 0, Owner.whoAmI, target.whoAmI);
-            sigil.timeLeft = OmegaBiomeBlade.WhirlwindAttunement_SigilTime;
         }
 
         public override void OnKill(int timeLeft)
         {
             if (smear != null)
                 smear.Kill();
-            if (sightLine != null)
-                sightLine.Kill();
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -311,7 +277,7 @@ namespace CalamityMod.Projectiles.Melee
             drawOrigin = new Vector2(0f, blade.Height);
 
             //Afterimages
-            if (CalamityConfig.Instance.Afterimages && CurrentState == 0f && Empowerment / maxEmpowerment > 0.4f)
+            if (CalamityClientConfig.Instance.Afterimages && CurrentState == 0f && Empowerment / maxEmpowerment > 0.4f)
             {
                 for (int i = 0; i < Projectile.oldRot.Length; ++i)
                 {

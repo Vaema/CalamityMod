@@ -1,10 +1,10 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System;
+using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
-using System;
-using CalamityMod.Dusts;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -31,7 +31,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.alpha = 255;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 11;
+            Projectile.idStaticNPCHitCooldown = 15;
         }
 
         public override bool PreAI()
@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.Rogue
                     dustloop += Main.rand.Next(1, 3);
                 for (int i = 0; i < dustloop; ++i)
                 {
-                    int dustType = (int)CalamityDusts.SulfurousSeaAcid;
+                    int dustType = (int)CalamityDusts.SulphurousSeaAcid;
                     float scale = Main.rand.NextFloat(0.5f, 1.5f);
                     float randX = Main.rand.NextFloat(-30f, 30f);
                     float randY = Main.rand.NextFloat(-30f, 30f);

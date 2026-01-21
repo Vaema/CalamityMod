@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 7f;
-            Item.value = CalamityGlobalItem.Rarity6BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.UseSound = SoundID.Item9;
             Item.autoReuse = true;
@@ -41,7 +41,7 @@ namespace CalamityMod.Items.Weapons.Magic
         // Terraria seems to really dislike high crit values in SetDefaults
         public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 25;
 
-        
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             Vector2 realPlayerPos = player.RotatedRelativePoint(player.MountedCenter, true);
@@ -61,12 +61,11 @@ namespace CalamityMod.Items.Weapons.Magic
                 }
                 f = Main.rand.NextFloat() * MathHelper.TwoPi;
             }
-            Vector2 mouseWorld = Main.MouseWorld;
-            Vector2 projSpawnPos = mouseWorld - projSpawnOffset;
+            Vector2 projSpawnPos = player.ClampedMouseWorld() - projSpawnOffset;
             Vector2 projVelocity = new Vector2(mouseXDist, mouseYDist).SafeNormalize(Vector2.UnitY) * projSpeed;
             projSpawnPos = projSpawnPos.SafeNormalize(projVelocity) * projSpeed;
             projSpawnPos = Vector2.Lerp(projSpawnPos, projVelocity, 0.25f);
-            Projectile.NewProjectile(source, projSpawnOffset, projSpawnPos, type, damage, knockback, player.whoAmI, 0f, 0f);
+            Projectile.NewProjectile(source, projSpawnOffset, projSpawnPos, type, damage, knockback, player.whoAmI);
             return false;
         }
 

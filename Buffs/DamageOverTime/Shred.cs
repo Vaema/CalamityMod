@@ -1,6 +1,7 @@
 ﻿using System;
 using CalamityMod.NPCs;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -10,10 +11,12 @@ namespace CalamityMod.Buffs.DamageOverTime
 {
     public class Shred : ModBuff
     {
+        //This is not ported to the custom debuff system yet due to the complexities of it.
+        //I didn't want to break it! It will be done in a future PR
         internal const int StackFalloffFrames = 320;
 
-        // 150 DPS (30x5) per stack may seem low, but it gets boosted by ranged stats and can supercrit.
-        internal static int BaseDamage = 30;
+        // This deals 600 DPS per stack, is boosted by ranged stats and can supercrit.
+        internal static int BaseDamage = 120;
         internal static int FramesPerDamageTick = 12;
 
         public override void SetStaticDefaults()
@@ -62,15 +65,20 @@ namespace CalamityMod.Buffs.DamageOverTime
                     // This cannot be done with SimpleStrikeNPC because that would not allow for supercrits.
                     int bleedTickDamage = (int)applicator.GetTotalDamage<RangedDamageClass>().ApplyTo(BaseDamage * cgn.somaShredStacks);
                     Projectile tick = Projectile.NewProjectileDirect(target.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), bleedTickDamage, 0f, applicator.whoAmI, target.whoAmI);
+
                     tick.DamageType = DamageClass.Ranged; // Uncommon for DirectStrikes, but it needs to be able to crit.
-                    tick.Calamity().supercritHits = -1;
+
+                    // All ticks of Shred have a 3x base crit multiplier and have supercrits enabled.
+                    CalamityGlobalProjectile cgp = tick.Calamity();
+                    cgp.supercritHits = -1;
+                    cgp.bonusCritDamage += 1f;
                 }
             }
         }
 
         internal static void DrawEffects(Player player)
         {
-
+            // TODO -- Players inflicted with Shred don't display any visuals.
         }
 
         // Enemies suffering from Soma Prime's Shred spray blood like Violence

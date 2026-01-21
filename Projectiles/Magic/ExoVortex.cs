@@ -1,5 +1,6 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -13,7 +14,6 @@ namespace CalamityMod.Projectiles.Magic
     public class ExoVortex : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
-        public PrimitiveTrail EnergyTrail = null;
 
         public float Hue => Projectile.ai[0];
 
@@ -25,8 +25,9 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 35;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 35;
         }
 
         public override void SetDefaults()
@@ -50,7 +51,7 @@ namespace CalamityMod.Projectiles.Magic
         public override void AI()
         {
             Time++;
-            
+
             // Move sharply towards nearby targets.
             NPC potentialTarget = Projectile.Center.ClosestNPCAt(SubsumingVortex.SmallVortexTargetRange);
             if (potentialTarget != null)
@@ -87,14 +88,14 @@ namespace CalamityMod.Projectiles.Magic
             behindProjectiles.Add(index);
         }
 
-        public float PrimitiveWidthFunction(float completionRatio)
+        public float PrimitiveWidthFunction(float completionRatio, Vector2 vertexPos)
         {
             float width = Projectile.width * 0.6f;
             width *= MathHelper.SmoothStep(0.6f, 1f, Utils.GetLerpValue(0f, 0.3f, completionRatio, true));
             return width;
         }
 
-        public Color PrimitiveTrailColor(float completionRatio)
+        public Color PrimitiveTrailColor(float completionRatio, Vector2 vertexPos)
         {
             float hue = Hue % 1f + HueShiftAcrossAfterimages;
             if (hue >= 0.99f)
@@ -105,6 +106,8 @@ namespace CalamityMod.Projectiles.Magic
             return c * Utils.GetLerpValue(0.04f, 0.2f, completionRatio, true) * velocityOpacityFadeout;
         }
 
+        public Vector2 PrimitiveOffsetFunction(float completionRatio, Vector2 _) => Projectile.Size * 0.5f + Projectile.velocity.SafeNormalize(Vector2.Zero) * Projectile.scale * 2f;
+
         public override bool PreDraw(ref Color lightColor)
         {
             Main.spriteBatch.EnterShaderRegion(BlendState.Additive);
@@ -114,12 +117,11 @@ namespace CalamityMod.Projectiles.Magic
             Main.spriteBatch.EnterShaderRegion();
 
             // Draw the streak trail.
-            EnergyTrail ??= new(PrimitiveWidthFunction, PrimitiveTrailColor, null, GameShaders.Misc["CalamityMod:SideStreakTrail"]);
-
             GameShaders.Misc["CalamityMod:SideStreakTrail"].UseImage1("Images/Misc/Perlin");
-            EnergyTrail.Draw(Projectile.oldPos, Projectile.Size * 0.5f - Main.screenPosition + Projectile.velocity.SafeNormalize(Vector2.Zero) * Projectile.scale * 2f, 51);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PrimitiveWidthFunction, PrimitiveTrailColor, PrimitiveOffsetFunction, shader: GameShaders.Misc["CalamityMod:SideStreakTrail"]), 51);
             Main.spriteBatch.EnterShaderRegion(BlendState.Additive);
-            
+
+            GameShaders.Misc["CalamityMod:ExoVortex"].UseOpacity(1f);
             GameShaders.Misc["CalamityMod:ExoVortex"].Apply();
 
             // Draw the vortex, along with some afterimages.

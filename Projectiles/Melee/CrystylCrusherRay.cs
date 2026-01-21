@@ -1,13 +1,13 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using CalamityMod.Items.Tools;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.Enums;
 using Terraria.GameContent.Achievements;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Items.Tools;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -47,7 +47,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             Projectile.width = 10;
             Projectile.height = 10;
-            Projectile.scale = 1.5f;
+            Projectile.scale = 7f;
             Projectile.friendly = true;
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
@@ -60,39 +60,39 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
+            Player owner = Main.player[Projectile.owner];
             // We start drawing the laser if we have charged up
             if (IsAtMaxCharge)
             {
-                Vector2 maxLength = Main.MouseWorld - Main.player[Projectile.owner].Center;
+                Vector2 maxLength = owner.ClampedMouseWorld() - owner.Center;
 
-                DrawLaser(ModContent.Request<Texture2D>(Texture).Value, Main.player[Projectile.owner].Center,
-                    Projectile.velocity, 15f, Projectile.damage, -1.57f, Projectile.scale, maxLength.Length(), new Color(Main.DiscoR, 0, 255), (int)MOVE_DISTANCE);
+                DrawLaser(Terraria.GameContent.TextureAssets.Projectile[Type].Value, owner.Center,
+                    Projectile.velocity, 15f, -MathHelper.PiOver2, Projectile.scale, maxLength.Length(), new Color(Main.DiscoR, 0, 255), (int)MOVE_DISTANCE);
             }
             return false;
         }
 
         // The core function of drawing a laser
-        public void DrawLaser(Texture2D texture, Vector2 start, Vector2 unit, float step, int damage, float rotation = 0f, float scale = 1f, float maxDist = 2000f, Color color = default(Color), int transDist = 50)
+        public void DrawLaser(Texture2D texture, Vector2 start, Vector2 unit, float step, float rotation = 0f, float scale = 1f, float maxDist = 2000f, Color color = default, int transDist = 50)
         {
             float r = unit.ToRotation() + rotation;
 
             // Draws the laser 'body'
             for (float i = transDist; i <= Distance; i += step)
             {
-                Color c = new Color(Main.DiscoR, 0, 255);
                 var origin = start + i * unit;
                 Main.EntitySpriteDraw(texture, origin - Main.screenPosition,
-                    new Rectangle(0, 26, 28, 26), i < transDist ? Color.Transparent : c, r,
-                    new Vector2(28 * .5f, 26 * .5f), scale, 0, 0);
+                    new Rectangle(0, 26, 28, 26), i < transDist ? Color.Transparent : color, r,
+                    new Vector2(28 * .5f, 26 * .5f), MathHelper.Lerp(1f, scale, i / Distance), 0, 0);
             }
 
             // Draws the laser 'tail'
             Main.EntitySpriteDraw(texture, start + unit * (transDist - step) - Main.screenPosition,
-                new Rectangle(0, 0, 28, 26), new Color(Main.DiscoR, 0, 255), r, new Vector2(28 * .5f, 26 * .5f), scale, 0, 0);
+                new Rectangle(0, 0, 28, 26), color, r, new Vector2(28 * .5f, 26 * .5f), 1f, 0, 0);
 
             // Draws the laser 'head'
             Main.EntitySpriteDraw(texture, start + (Distance + step) * unit - Main.screenPosition,
-                new Rectangle(0, 52, 28, 26), new Color(Main.DiscoR, 0, 255), r, new Vector2(28 * .5f, 26 * .5f), scale, 0, 0);
+                new Rectangle(0, 52, 28, 26), color, r, new Vector2(28 * .5f, 26 * .5f), scale, 0, 0);
         }
 
         // Change the way of collision check of the projectile
@@ -118,7 +118,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Projectile.timeLeft == 300)
                 SoundEngine.PlaySound(CrystylCrusher.ChargeSound, player.Center);
 
-            Projectile.position = player.Center + Projectile.velocity * MOVE_DISTANCE;
+            Projectile.Center = player.Center + Projectile.velocity * MOVE_DISTANCE;
             Projectile.timeLeft = 2;
 
             // By separating large AI into methods it becomes very easy to see the flow of the AI in a broader sense
@@ -149,7 +149,7 @@ namespace CalamityMod.Projectiles.Melee
          */
         private void SetLaserPosition(Player player)
         {
-            Distance = MathHelper.Max(Main.player[Projectile.owner].Distance(Main.MouseWorld) - 20f, MOVE_DISTANCE + 5f);
+            Distance = MathHelper.Max(player.Distance(player.ClampedMouseWorld()) - 20f, MOVE_DISTANCE + 5f);
         }
 
         private void ChargeLaser(Player player)
@@ -170,7 +170,7 @@ namespace CalamityMod.Projectiles.Melee
                 }
                 int chargeFact = (int)(Charge / 20f);
                 Vector2 dustVelocity = Vector2.UnitX * 18f;
-                dustVelocity = dustVelocity.RotatedBy(Projectile.rotation - 1.57f);
+                dustVelocity = dustVelocity.RotatedBy(Projectile.rotation - MathHelper.PiOver2);
                 Vector2 spawnPos = Projectile.Center + dustVelocity;
                 for (int k = 0; k < chargeFact + 1; k++)
                 {
@@ -204,6 +204,7 @@ namespace CalamityMod.Projectiles.Melee
             // Multiplayer support here, only run this code if the client running it is the owner of the projectile
             if (Projectile.owner == Main.myPlayer)
             {
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Vector2 diff = Main.MouseWorld - player.Center;
                 diff.Normalize();
                 Projectile.velocity = diff;
@@ -230,6 +231,7 @@ namespace CalamityMod.Projectiles.Melee
         /*
          * Update CutTiles so the laser will cut tiles (like grass)
          */
+        public override bool? CanCutTiles() => IsAtMaxCharge ? null : false;
         public override void CutTiles()
         {
             DelegateMethods.tilecut_0 = TileCuttingContext.AttackProjectile;
@@ -242,11 +244,11 @@ namespace CalamityMod.Projectiles.Melee
             if (Projectile.owner == Main.myPlayer)
             {
                 Vector2 destroyVector = Projectile.Center + Projectile.velocity * (Distance - MOVE_DISTANCE);
-                int threeMod = 3;
-                int mineXLeft = (int)(destroyVector.X / 16f - threeMod);
-                int mineXRight = (int)(destroyVector.X / 16f + threeMod);
-                int mineXUp = (int)(destroyVector.Y / 16f - threeMod);
-                int mineXDown = (int)(destroyVector.Y / 16f + threeMod);
+                int radius = 7;
+                int mineXLeft = (int)(destroyVector.X / 16f - radius);
+                int mineXRight = (int)(destroyVector.X / 16f + radius);
+                int mineXUp = (int)(destroyVector.Y / 16f - radius);
+                int mineXDown = (int)(destroyVector.Y / 16f + radius);
                 if (mineXLeft < 0)
                 {
                     mineXLeft = 0;
@@ -271,7 +273,7 @@ namespace CalamityMod.Projectiles.Melee
                         float destroyTileX = Math.Abs(i - destroyVector.X / 16f);
                         float destroyTileY = Math.Abs(j - destroyVector.Y / 16f);
                         double destroyTileArea = Math.Sqrt(destroyTileX * destroyTileX + destroyTileY * destroyTileY);
-                        if (destroyTileArea < threeMod)
+                        if (destroyTileArea < radius)
                         {
                             if (Main.tile[i, j] != null && Main.tile[i, j].HasTile)
                             {

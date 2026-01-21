@@ -1,8 +1,10 @@
-﻿using CalamityMod.Dusts;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.Dusts;
+using CalamityMod.Items.Materials;
 using CalamityMod.Tiles.Astral;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -11,7 +13,7 @@ namespace CalamityMod.Tiles.Ores
 {
     public class AstralOre : ModTile
     {
-        public byte[,] TileAdjacency;
+
         public override void SetStaticDefaults()
         {
             Main.tileLighted[Type] = true;
@@ -27,20 +29,23 @@ namespace CalamityMod.Tiles.Ores
             TileID.Sets.Ore[Type] = true;
             TileID.Sets.OreMergesWithMud[Type] = true;
 
-            MinPick = 210;
-            DustType = 173;
+            MinPick = 110;
+            DustType = DustID.ShadowbeamStaff;
             AddMapEntry(new Color(255, 153, 255), CreateMapEntryName());
             MineResist = 3f;
             HitSound = SoundID.Tink;
 
             TileID.Sets.Ore[Type] = true;
             TileID.Sets.ChecksForMerge[Type] = true;
-            TileID.Sets.DoesntGetReplacedWithTileReplacement[Type] = true;
+            // TileID.Sets.DoesntGetReplacedWithTileReplacement[Type] = true;
+            TileID.Sets.AvoidedByMeteorLanding[Type] = true;
 
-            TileFraming.SetUpUniversalMerge(Type, ModContent.TileType<AstralDirt>(), out TileAdjacency);
+            this.RegisterBlendMergeWith(ModContent.TileType<AstralDirt>());
         }
         public override void NearbyEffects(int i, int j, bool closer)
         {
+            if (j < 2)
+                return;
             Tile tile = Main.tile[i, j];
             Tile up = Main.tile[i, j - 1];
             Tile up2 = Main.tile[i, j - 2];
@@ -56,14 +61,28 @@ namespace CalamityMod.Tiles.Ores
             }
         }
 
-        public override bool CanKillTile(int i, int j, ref bool blockDamaged)
+        public override void RandomUpdate(int i, int j)
         {
-            return DownedBossSystem.downedAstrumDeus;
+            if (Main.rand.NextBool(4))
+            {
+                int xRandom = Main.rand.Next(-3, 3);
+                int yRandom = Main.rand.Next(-3, 3);
+                if (Main.tile[i + xRandom, j + yRandom].TileType == TileID.Meteorite)
+                    AstralBiome.ConvertToAstral(i + xRandom, j + yRandom, true);
+            }
         }
 
-        public override bool CanExplode(int i, int j)
+        public override IEnumerable<Item> GetItemDrops(int i, int j)
         {
-            return false;
+            if (!DownedBossSystem.downedAstrumDeus)
+            {
+                if (Main.rand.NextBool())
+                    yield return new Item(ModContent.ItemType<StarblightSoot>());
+                else
+                    yield return new Item(0);
+            }
+            else
+                yield return new Item(ModContent.ItemType<Items.Placeables.Ores.AstralOre>());
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
@@ -84,16 +103,6 @@ namespace CalamityMod.Tiles.Ores
             r *= brightness;
             g *= brightness;
             b *= brightness;
-        }
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
-        {
-            TileFraming.DrawUniversalMergeFrames(i, j, TileAdjacency, "CalamityMod/Tiles/Merges/AstralDirtMerge");
-        }
-
-        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
-        {
-            TileFraming.GetAdjacencyData(i, j, ModContent.TileType<AstralDirt>(), out TileAdjacency[i, j]);
-            return true;
         }
     }
 }

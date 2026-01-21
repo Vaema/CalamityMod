@@ -11,9 +11,9 @@ namespace CalamityMod.Projectiles.Rogue
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 5;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 20;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            Main.projFrames[Type] = 5;
+            ProjectileID.Sets.TrailCacheLength[Type] = 20;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -26,14 +26,14 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.penetrate = 1;
             Projectile.timeLeft = 180;
             Projectile.aiStyle = ProjAIStyleID.Arrow;
-            AIType = ProjectileID.DD2BetsyFireball;
             Projectile.DamageType = RogueDamageClass.Instance;
         }
 
         public override void AI()
         {
             // Cancel out the first ten frames of Betsy fireball gravity, and half of all gravity thereafter
-            Projectile.velocity.Y -= 0.1f;
+            Projectile.velocity.Y += 0.2f;
+            Projectile.velocity.X *= 0.99f;
 
             // Animation
             Projectile.frameCounter++;
@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
                 Projectile.frame = 0;
 
             // Keep the fireball rotated the correct way because the sheet faces down, not up
@@ -53,11 +53,11 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-            int frameHeight = texture.Height / Main.projFrames[Projectile.type];
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int frameHeight = texture.Height / Main.projFrames[Type];
             int frameY = frameHeight * Projectile.frame;
             Rectangle rectangle = new Rectangle(0, frameY, texture.Width, frameHeight);
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 0; i < Projectile.oldPos.Length; i++)
                 {
@@ -87,14 +87,14 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.Damage();
 
             for (int i = 0; i < 2; i++)
-                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 55, 0f, 0f, 50, default, 1.5f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Pixie, 0f, 0f, 50, default, 1.5f);
 
             for (int i = 0; i < 20; i++)
             {
-                int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 55, 0f, 0f, 0, default, 2.5f);
+                int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Pixie, 0f, 0f, 0, default, 2.5f);
                 Main.dust[d].noGravity = true;
                 Main.dust[d].velocity *= 3f;
-                d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 55, 0f, 0f, 50, default, 1.5f);
+                d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Pixie, 0f, 0f, 50, default, 1.5f);
                 Main.dust[d].velocity *= 2f;
                 Main.dust[d].noGravity = true;
             }

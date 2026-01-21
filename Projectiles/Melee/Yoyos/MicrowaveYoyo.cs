@@ -1,10 +1,10 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Utilities;
-using System.IO;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -18,18 +18,17 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<TheMicrowave>();
         public const int MaxUpdates = 3;
         private const float Radius = 100f;
-        private SlotId mmmmmm;
         private bool spawnedAura = false;
         public int soundCooldown = 0;
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.YoyosLifeTimeMultiplier[Projectile.type] = -1f;
-            ProjectileID.Sets.YoyosMaximumRange[Projectile.type] = 512f;
-            ProjectileID.Sets.YoyosTopSpeed[Projectile.type] = 54f / MaxUpdates;
+            ProjectileID.Sets.YoyosLifeTimeMultiplier[Type] = -1f;
+            ProjectileID.Sets.YoyosMaximumRange[Type] = TheMicrowave.Reach;
+            ProjectileID.Sets.YoyosTopSpeed[Type] = TheMicrowave.Speed / MaxUpdates;
 
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -49,24 +48,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
         public override void AI()
         {
-            // Sound is done manually, so that it can loop correctly.
-            ActiveSound MMMMMMMMMMMMMMM;
-
-            bool mmmIsThere = SoundEngine.TryGetActiveSound(mmmmmm, out MMMMMMMMMMMMMMM);
-
-            if (!mmmIsThere)
-            {
-                mmmmmm = SoundEngine.PlaySound(TheMicrowave.MMMSound, Projectile.Center);
-            }
-
-            else if (mmmIsThere)
-            {
-                if (MMMMMMMMMMMMMMM.IsPlaying)
-                    MMMMMMMMMMMMMMM.Position = Projectile.Center;
-
-                else
-                    MMMMMMMMMMMMMMM.Resume();
-            }
+            SingularSoundInstanceSystem.PlaySingleInstance(TheMicrowave.MMMSound, 6, 6, Projectile);
 
             // Spawn invisible but damaging aura projectile
             if (Projectile.owner == Main.myPlayer && !spawnedAura)
@@ -104,19 +86,9 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                 Projectile.Kill();
         }
 
-        public override void OnKill(int timeLeft)
-        {
-            ActiveSound MMMMMMMMMMMMMMM;
-            if (SoundEngine.TryGetActiveSound(mmmmmm, out MMMMMMMMMMMMMMM))
-            {
-                MMMMMMMMMMMMMMM.Stop();
-                //No more dispose function?
-            }
-        }
-
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 

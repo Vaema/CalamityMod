@@ -12,27 +12,33 @@ namespace CalamityMod.Items.Weapons.Typeless
         {
             Item.width = 32;
             Item.height = 46;
-            Item.damage = 1350;
-            Item.useTime = Item.useAnimation = 25;
+            Item.damage = 1700;
+            Item.useAnimation = Item.useTime = 35;
             Item.reuseDelay = 15;
             Item.useStyle = ItemUseStyleID.Shoot;
+            Item.DamageType = AverageDamageClass.Instance;
             Item.UseSound = SoundID.Item46;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.channel = true;
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.shoot = ModContent.ProjectileType<RelicOfDeliveranceSpear>();
             Item.Calamity().CannotBeEnchanted = true;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ToolsOther;
-		}
+        public override void HoldItem(Player player)
+        {
+            player.Calamity().mouseWorldListener = true;
+        }
+
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ToolsOther;
+        }
 
         // Terraria seems to really dislike high crit values in SetDefaults
-        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 16;
+        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 55;
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
     }

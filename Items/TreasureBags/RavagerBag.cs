@@ -1,7 +1,7 @@
 ﻿using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.PermanentBoosters;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.TreasureBags.MiscGrabBags;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
@@ -25,27 +25,27 @@ namespace CalamityMod.Items.TreasureBags
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 3;
-			ItemID.Sets.BossBag[Item.type] = true;
+            ItemID.Sets.BossBag[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 24;
             Item.height = 24;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
             Item.expert = true;
             Item.rare = ItemRarityID.Cyan;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossBags;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossBags;
+        }
 
         public override bool CanRightClick() => true;
 
-		public override Color? GetAlpha(Color lightColor) => Color.Lerp(lightColor, Color.White, 0.4f);
+        public override Color? GetAlpha(Color lightColor) => Color.Lerp(lightColor, Color.White, 0.4f);
 
         public override void PostUpdate() => Item.TreasureBagLightAndDust();
 
@@ -56,8 +56,8 @@ namespace CalamityMod.Items.TreasureBags
 
         public override void ModifyItemLoot(ItemLoot itemLoot)
         {
-			// Money
-			itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<RavagerBody>()));
+            // Money
+            itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<RavagerBody>()));
 
             // Materials (contained in Geodes to prevent overwhelming item floods)
             itemLoot.AddIf(() => !DownedBossSystem.downedProvidence, ModContent.ItemType<FleshyGeode>());
@@ -76,10 +76,8 @@ namespace CalamityMod.Items.TreasureBags
             itemLoot.Add(ModContent.ItemType<CorpusAvertor>(), 20);
 
             // Equipment
-            itemLoot.Add(ItemDropRule.OneFromOptionsNotScalingWithLuck(1,
-                ModContent.ItemType<BloodPact>(),
-                ModContent.ItemType<FleshTotem>()
-            ));
+            itemLoot.Add(ModContent.ItemType<BloodPact>());
+            itemLoot.Add(ModContent.ItemType<FleshTotem>(), 2);
             itemLoot.AddIf(() => DownedBossSystem.downedProvidence, ModContent.ItemType<BloodflareCore>());
             itemLoot.AddRevBagAccessories();
             itemLoot.AddIf((info) => CalamityWorld.revenge && !info.player.Calamity().rageBoostTwo, ModContent.ItemType<InfernalBlood>());

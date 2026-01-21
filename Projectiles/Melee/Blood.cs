@@ -1,6 +1,8 @@
-using Microsoft.Xna.Framework;
+﻿using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Melee
 {
     public class Blood : ModProjectile, ILocalizedModType
@@ -8,6 +10,7 @@ namespace CalamityMod.Projectiles.Melee
         public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = 4;
@@ -27,7 +30,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    int blood = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 5, 0f, 0f, 100, default, 1f);
+                    int blood = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Blood, 0f, 0f, 100, default, 1f);
                     Main.dust[blood].noGravity = true;
                     Main.dust[blood].velocity *= 0f;
                 }
@@ -37,15 +40,6 @@ namespace CalamityMod.Projectiles.Melee
                 CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 600f, 6f, 20f);
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            Player player = Main.player[Projectile.owner];
-            if (player.moonLeech)
-                return;
-
-            int healAmt = 2;
-            player.statLife += healAmt;
-            player.HealEffect(healAmt);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => Main.player[Projectile.owner].SpawnLifeStealProjectile(target, Projectile, ProjectileID.VampireHeal, (int)Math.Round(hit.Damage * 0.075));
     }
 }

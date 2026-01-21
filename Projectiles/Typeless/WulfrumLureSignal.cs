@@ -1,16 +1,12 @@
-﻿using CalamityMod.NPCs.AstrumDeus;
+﻿using System.Collections.Generic;
+using CalamityMod.Items.Placeables.Furniture;
+using CalamityMod.Items.Tools;
+using CalamityMod.NPCs.NormalNPCs;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
-using Terraria.DataStructures;
-using Terraria.Graphics.Shaders;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Items.Placeables.Furniture;
-using CalamityMod.NPCs.NormalNPCs;
-using CalamityMod.Items.Tools;
 
 namespace CalamityMod.Projectiles.Typeless
 {
@@ -18,6 +14,14 @@ namespace CalamityMod.Projectiles.Typeless
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+
+        public static List<int> LureSpawnPool => new List<int>()
+        {
+            ModContent.NPCType<WulfrumDrone>(),
+            ModContent.NPCType<WulfrumGyrator>(),
+            ModContent.NPCType<WulfrumHovercraft>(),
+            ModContent.NPCType<WulfrumRover>()
+        };
 
         public ref float Time => ref Projectile.ai[0];
 
@@ -43,13 +47,13 @@ namespace CalamityMod.Projectiles.Typeless
                 if (Main.netMode == NetmodeID.MultiplayerClient)
                 {
                     float closestPlayerDistance = (Main.LocalPlayer.Center - Projectile.Center).Length();
-                    for (int i = 0; i < Main.maxPlayers; i++)
+                    foreach (Player plr in Main.ActivePlayers)
                     {
-                        float newDistance = (Main.player[i].Center - Projectile.Center).Length();
+                        float newDistance = (plr.Center - Projectile.Center).Length();
                         if (newDistance < closestPlayerDistance)
                         {
                             closestPlayerDistance = newDistance;
-                            player = Main.player[i];
+                            player = plr;
                         }
                     }
                 }
@@ -77,25 +81,25 @@ namespace CalamityMod.Projectiles.Typeless
 
                     if (tries < 500)
                     {
-                        int npcToSpawn = Main.rand.NextBool() ? ModContent.NPCType<WulfrumDrone>() : Main.rand.NextBool() ? ModContent.NPCType<WulfrumHovercraft>() : ModContent.NPCType<WulfrumGyrator>() ;
-                        int index = NPC.NewNPC(Projectile.GetSource_FromAI(), (int)spawnPosition.X, (int)spawnPosition.Y, npcToSpawn, Target:player.whoAmI);
+                        int npcToSpawn = LureSpawnPool[Main.rand.Next(LureSpawnPool.Count)];
+                        int index = NPC.NewNPC(Projectile.GetSource_FromAI(), (int)spawnPosition.X, (int)spawnPosition.Y, npcToSpawn, Target: player.whoAmI);
 
                         for (int iy = 0; iy < 16; iy++)
                         {
-                            Dust zapDust = Dust.NewDustPerfect(spawnPosition + Main.rand.NextVector2Circular(1f, 1f) * 20f, 226, Main.rand.NextVector2Circular(1f, 1f) * Main.rand.NextFloat(1f, 2.3f) - Vector2.UnitY * 6f);
+                            Dust zapDust = Dust.NewDustPerfect(spawnPosition + Main.rand.NextVector2Circular(1f, 1f) * 20f, DustID.Electric, Main.rand.NextVector2Circular(1f, 1f) * Main.rand.NextFloat(1f, 2.3f) - Vector2.UnitY * 6f);
                             zapDust.noGravity = true;
                         }
                     }
                 }
             }
 
-            if (Time%2 == 0 && CalamityUtils.IntoMorseCode("perimeter breached", Time / WulfrumLureItem.SignalTime))
+            if (Time % 2 == 0 && CalamityUtils.IntoMorseCode("perimeter breached", Time / WulfrumLureItem.SignalTime))
             {
                 float dustCount = MathHelper.TwoPi * 300 / 8f;
                 for (int i = 0; i < dustCount; i++)
                 {
                     float angle = MathHelper.TwoPi * i / dustCount;
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, 229);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.Vortex);
                     dust.position = Projectile.Center + angle.ToRotationVector2() * 300;
                     dust.scale = 0.7f;
                     dust.noGravity = true;

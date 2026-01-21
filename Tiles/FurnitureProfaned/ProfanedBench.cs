@@ -4,7 +4,9 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.ObjectInteractions;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Tiles.FurnitureProfaned
 {
     public class ProfanedBench : ModTile
@@ -13,7 +15,7 @@ namespace CalamityMod.Tiles.FurnitureProfaned
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 246, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.GoldCoin, 0f, 0f, 1, new Color(255, 255, 255), 1f);
             Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, ModContent.DustType<ProfanedTileRock>(), 0f, 0f, 1, new Color(255, 255, 255), 1f);
             return false;
         }
@@ -23,11 +25,11 @@ namespace CalamityMod.Tiles.FurnitureProfaned
             num = fail ? 1 : 3;
         }
 
-        public override void ModifySittingTargetInfo(int i, int j, ref TileRestingInfo info) => CalamityUtils.BenchSitInfo(i, j, ref info);
+        public override void ModifySittingTargetInfo(int i, int j, ref TileRestingInfo info) => FurnitureCommon.BenchSitInfo(i, j, ref info);
 
-        public override bool RightClick(int i, int j) => CalamityUtils.ChairRightClick(i, j);
+        public override bool RightClick(int i, int j) => FurnitureCommon.ChairRightClick(i, j);
 
-        public override void MouseOver(int i, int j) => CalamityUtils.BenchMouseOver(i, j, ModContent.ItemType<Items.Placeables.FurnitureProfaned.ProfanedBench>());
+        public override void MouseOver(int i, int j) => FurnitureCommon.BenchMouseOver(i, j, ModContent.ItemType<Items.Placeables.FurnitureProfaned.ProfanedBench>());
 
         public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings)
         {

@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 56;
             Item.height = 50;
-            Item.damage = 165;
+            Item.damage = 130;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 10;
             Item.useTime = 5;
@@ -26,8 +26,8 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.noMelee = true;
             Item.knockBack = 5f;
 
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.Calamity().donorItem = true;
 
             Item.shoot = ModContent.ProjectileType<MelterNote1>();
@@ -59,7 +59,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             if (player.altFunctionUse == 2)
             {
-                Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, ModContent.ProjectileType<MelterAmp>(), damage, knockback, player.whoAmI);
+                Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, ModContent.ProjectileType<MelterAmp>(), damage, knockback, player.whoAmI);
                 return false;
             }
             else

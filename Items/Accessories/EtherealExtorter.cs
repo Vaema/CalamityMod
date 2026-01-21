@@ -1,7 +1,7 @@
 ﻿using CalamityMod.CalPlayer;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Accessories
             Item.width = 28;
             Item.height = 32;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = Item.buyPrice(platinum: 1); // Sold by Bandit
             Item.rare = ItemRarityID.Yellow;
         }
 

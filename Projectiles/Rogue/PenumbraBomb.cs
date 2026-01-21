@@ -1,10 +1,9 @@
-﻿using Terraria;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using Terraria.Audio;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -15,8 +14,8 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 6;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -54,19 +53,19 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.alpha = 10;
             //Rotation
             Projectile.spriteDirection = Projectile.direction = (Projectile.velocity.X > 0).ToDirectionInt();
-            Projectile.rotation = (Projectile.velocity.ToRotation() + (Projectile.spriteDirection == 1 ? 0f : MathHelper.Pi)) + (MathHelper.ToRadians(180)*Projectile.direction);
+            Projectile.rotation = Projectile.velocity.ToRotation() + (Projectile.spriteDirection == 1 ? 0f : MathHelper.Pi) + (MathHelper.ToRadians(180) * Projectile.direction);
 
             //Dust
             float dfreq = Projectile.Calamity().stealthStrike ? 8f : 4f;
             if (Projectile.ai[0] == dfreq)
             {
-                Vector2 dustspeed = Projectile.velocity * Main.rand.NextFloat(0.5f,0.8f);
-                int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 54, dustspeed.X, dustspeed.Y, 0, new Color(38, 30, 43), 1.4f);
+                Vector2 dustspeed = Projectile.velocity * Main.rand.NextFloat(0.5f, 0.8f);
+                int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Wraith, dustspeed.X, dustspeed.Y, 0, new Color(38, 30, 43), 1.4f);
                 Main.dust[d].velocity = dustspeed;
                 if (Projectile.Calamity().stealthStrike)
                 {
-                    Vector2 dustspeed2 = new Vector2 (Main.rand.NextFloat(-3f,3f),Main.rand.NextFloat(-3f,3f));
-                    int d2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 54, dustspeed2.X, dustspeed2.Y, 0, new Color(38, 30, 43), 1.3f);
+                    Vector2 dustspeed2 = new Vector2(Main.rand.NextFloat(-3f, 3f), Main.rand.NextFloat(-3f, 3f));
+                    int d2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Wraith, dustspeed2.X, dustspeed2.Y, 0, new Color(38, 30, 43), 1.3f);
                     Main.dust[d2].velocity = dustspeed2;
                 }
                 Projectile.ai[0] = 0f;
@@ -81,27 +80,24 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override void OnKill(int timeLeft)
         {
-            //Dark soul projectiles
-            int ad = Projectile.Calamity().stealthStrike ? 40 : 60;
-            float dmgMult = Projectile.Calamity().stealthStrike ? 0.08f : 0.15f;
-            int randrot = Main.rand.Next(-30,31);
-            for (int i = 0; i < 360; i += ad)
+            // Dark soul projectiles
+            int projAmt = Projectile.Calamity().stealthStrike ? 8 : 6;
+            for (int i = 0; i < projAmt; i++)
             {
-                Vector2 SoulSpeed = new Vector2(13f, 13f).RotatedBy(MathHelper.ToRadians(i + randrot));
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, SoulSpeed, ModContent.ProjectileType<PenumbraSoul>(), (int)(Projectile.damage * dmgMult), 3f, Projectile.owner, 0f, 0f);
+                Vector2 SoulSpeed = Vector2.UnitX.RotatedBy(MathHelper.TwoPi * i / projAmt) * 13f;
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, SoulSpeed, ModContent.ProjectileType<PenumbraSoul>(), (int)(Projectile.damage * 0.15f), 3f, Projectile.owner, 0f, 0f);
             }
-            //Dust
+
+            // Dust
             int maxDust = Projectile.Calamity().stealthStrike ? 100 : 70;
             for (int i = 0; i < maxDust; i++)
             {
                 Vector2 dustspeed = new Vector2(Main.rand.NextFloat(-6f, 6f), Main.rand.NextFloat(-6f, 6f));
-                int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 54, dustspeed.X, dustspeed.Y, 0, new Color(38, 30, 43), 1.6f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Wraith, dustspeed.X, dustspeed.Y, 0, new Color(38, 30, 43), 1.6f);
             }
+
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
-            Projectile.width = 110;
-            Projectile.height = 110;
-            Projectile.position.X = Projectile.position.X - (Projectile.width / 2);
-            Projectile.position.Y = Projectile.position.Y - (Projectile.height / 2);
+            Projectile.ExpandHitboxBy(110);
             Projectile.maxPenetrate = -1;
             Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
@@ -112,10 +108,8 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.Blackout, 300);
     }
 }

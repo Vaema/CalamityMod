@@ -1,80 +1,86 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
+using CalamityMod.Projectiles.BaseProjectiles;
+using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class TheMutilator : ModItem, ILocalizedModType
+    public class TheMutilator : BaseSwordHoldoutItem, ILocalizedModType
     {
+        public static int MaximumCharge = 7;
+        public int Charge = 0;
+
+        public int DecayTimer = 0;
         public new string LocalizationCategory => "Items.Weapons.Melee";
+        public override int ProjectileType => ModContent.ProjectileType<MutilatorSwordProj>();
         public override void SetDefaults()
         {
             Item.width = 90;
             Item.height = 90;
-            Item.scale = 1.5f;
-            Item.damage = 483;
-            Item.DamageType = DamageClass.Melee;
-            Item.useAnimation = 18;
+            Item.damage = 1005;
+            Item.DamageType = TrueMeleeDamageClass.Instance;
+            Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 18;
-            Item.useTurn = true;
+            Item.useTime = 30;
             Item.knockBack = 8f;
-            Item.UseSound = SoundID.Item1;
-            Item.autoReuse = true;
             Item.shootSpeed = 10f;
 
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
+            base.SetDefaults();
         }
 
-        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
+
+        public override void ModifyWeaponDamage(Player player, ref StatModifier damage)
         {
-            if (target.life <= (target.lifeMax * 0.2f) && target.canGhostHeal)
+            damage *= 1 + Charge / 7f;
+        }
+        public override void UpdateInventory(Player player)
+        {
+            if (DecayTimer > 0) DecayTimer--;
+            else
             {
-                if (!CalamityPlayer.areThereAnyDamnBosses || Main.rand.NextBool())
+                if (Charge > 0)
                 {
-                    int heartDrop = CalamityPlayer.areThereAnyDamnBosses ? 1 : Main.rand.Next(1, 3);
-                    for (int i = 0; i < heartDrop; i++)
-                    {
-                        Item.NewItem(player.GetSource_OnHit(target), (int)target.position.X, (int)target.position.Y, target.width, target.height, 58, 1, false, 0, false, false);
-                    }
-                }
-                SoundEngine.PlaySound(SoundID.Item14, target.Center);
-                target.position.X += target.width / 2;
-                target.position.Y += target.height / 2;
-                target.position.X -= target.width / 2;
-                target.position.Y -= target.height / 2;
-                for (int i = 0; i < 30; i++)
-                {
-                    int bloodDust = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, 5, 0f, 0f, 100, default, 2f);
-                    Main.dust[bloodDust].velocity *= 3f;
-                    if (Main.rand.NextBool())
-                    {
-                        Main.dust[bloodDust].scale = 0.5f;
-                        Main.dust[bloodDust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
-                    }
-                }
-                for (int j = 0; j < 50; j++)
-                {
-                    int bloodDust2 = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, 5, 0f, 0f, 100, default, 3f);
-                    Main.dust[bloodDust2].noGravity = true;
-                    Main.dust[bloodDust2].velocity *= 5f;
-                    bloodDust2 = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, 5, 0f, 0f, 100, default, 2f);
-                    Main.dust[bloodDust2].velocity *= 2f;
+                    Charge--;
+                    DecayTimer = 60;
                 }
             }
         }
+
+        public override void PostDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+        {
+            float fill = Charge / (float)MaximumCharge;
+            if (fill <= 0)
+                return;
+
+            float barScale = 3f;
+
+            var barBG = ModContent.Request<Texture2D>("CalamityMod/UI/MiscTextures/GenericBarBack").Value;
+            var barFG = ModContent.Request<Texture2D>("CalamityMod/UI/MiscTextures/GenericBarFront").Value;
+
+            Vector2 barOrigin = barBG.Size() * 0.5f;
+            float yOffset = 44f;
+            Vector2 drawPos = position + Vector2.UnitY * scale * (frame.Height - yOffset);
+            Rectangle frameCrop = new Rectangle(0, 0, (int)((fill) * barFG.Width), barFG.Height);
+            Color colorBG = Color.Crimson;
+            Color colorFG = Color.Lerp(Color.OrangeRed, Color.DarkOrange, fill);
+
+            spriteBatch.Draw(barBG, drawPos, null, colorBG, 0f, barOrigin, scale * barScale, 0f, 0f);
+            spriteBatch.Draw(barFG, drawPos, frameCrop, colorFG, 0f, barOrigin, scale * barScale, 0f, 0f);
+        }
+
 
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient<BloodstoneCore>(5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

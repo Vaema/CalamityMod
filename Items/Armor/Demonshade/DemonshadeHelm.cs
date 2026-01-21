@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Buffs.Summon;
-using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Rarities;
@@ -7,9 +6,9 @@ using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
-using Terraria.ModLoader;
 using Terraria.DataStructures;
-using CalamityMod.Items.Potions.Alcohol;
+using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Demonshade
 {
@@ -20,20 +19,32 @@ namespace CalamityMod.Items.Armor.Demonshade
         public static readonly SoundStyle ActivationSound = new("CalamityMod/Sounds/Custom/AbilitySounds/DemonshadeEnrage");
         internal static string ShadowScytheEntitySourceContext => "SetBonus_Calamity_Demonshade";
 
+        public static int MinionSlotBoost = 2;
+        public static float DamageBoost = 0.3f;
+        public static int CritBoost = 15;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MinionSlotBoost, DamageBoost.ToPercent(), CritBoost);
+
+        // Set Bonus
+        public static int SetBonusMinionSlotBoost = 8;
+        public static float SetBonusSummonDamageBoost = 1f;
+        public static int DevilDamage = 1000;
+        public static int BeamDamage => CalamityUtils.ScaleWithDifficulty(300);
+        public static int ScytheDamage => CalamityUtils.ScaleWithDifficulty(500);
+        public static int EnrageDuration = CalamityUtils.SecondsToFrames(10);
+        public static float MultDamageBoost = 0.5f;
+        public static double MultDamageTakenBoost = 0.25D;
+
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
             Item.defense = 50;
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
         }
 
-        public override bool IsArmorSet(Item head, Item body, Item legs)
-        {
-            return body.type == ModContent.ItemType<DemonshadeBreastplate>() && legs.type == ModContent.ItemType<DemonshadeGreaves>();
-        }
+        public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ModContent.ItemType<DemonshadeBreastplate>() && legs.type == ModContent.ItemType<DemonshadeGreaves>();
 
         public override void ArmorSetShadows(Player player)
         {
@@ -43,8 +54,7 @@ namespace CalamityMod.Items.Armor.Demonshade
 
         public override void UpdateArmorSet(Player player)
         {
-            var hotkey = CalamityKeybinds.ArmorSetBonusHotKey.TooltipHotkeyString();
-            player.setBonus = this.GetLocalization("SetBonus").Format(hotkey);
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusMinionSlotBoost, SetBonusSummonDamageBoost.ToPercent(), CalamityUtils.GetArmorSetBonusKey(), EnrageDuration.FramesToSeconds(), (1f + MultDamageBoost).Round(), (1D + MultDamageTakenBoost).Round());
             var modPlayer = player.Calamity();
             modPlayer.dsSetBonus = true;
             modPlayer.wearingRogueArmor = true;
@@ -59,22 +69,21 @@ namespace CalamityMod.Items.Armor.Demonshade
                 }
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<DemonshadeRedDevil>()] < 1)
                 {
-                    // 08DEC2023: Ozzatron: Demonshade Red Devils spawned with Old Fashioned active will retain their bonus damage indefinitely. Oops. Don't care.
-                    var baseDamage = player.ApplyArmorAccDamageBonusesTo(10000);
-                    var damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(baseDamage);
+                    int damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(DevilDamage);
 
-                    var devil = Projectile.NewProjectileDirect(source, player.Center, -Vector2.UnitY, ModContent.ProjectileType<DemonshadeRedDevil>(), damage, 0f, Main.myPlayer, 0f, 0f);
-                    devil.originalDamage = baseDamage;
+                    var devil = Projectile.NewProjectileDirect(source, player.Center, -Vector2.UnitY, ModContent.ProjectileType<DemonshadeRedDevil>(), damage, 0f, Main.myPlayer, 2f, 0f);
+                    devil.originalDamage = DevilDamage;
                 }
             }
-            player.GetDamage<SummonDamageClass>() += 1f;
-            player.maxMinions += 10;
+            player.maxMinions += SetBonusMinionSlotBoost;
+            player.GetDamage<SummonDamageClass>() += SetBonusSummonDamageBoost;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<GenericDamageClass>() += 0.3f;
-            player.GetCritChance<GenericDamageClass>() += 15;
+            player.maxMinions += MinionSlotBoost;
+            player.GetDamage<GenericDamageClass>() += DamageBoost;
+            player.GetCritChance<GenericDamageClass>() += CritBoost;
         }
 
         public override void AddRecipes()
@@ -82,6 +91,7 @@ namespace CalamityMod.Items.Armor.Demonshade
             CreateRecipe().
                 AddIngredient<ShadowspecBar>(12).
                 AddTile<DraedonsForge>().
+                SortBeforeFirstRecipesOf(ModContent.ItemType<DemonshadeBreastplate>()).
                 Register();
         }
 

@@ -1,6 +1,6 @@
-using CalamityMod.Tiles.Furniture.CraftingStations;
+﻿using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.Tiles.FurniturePlaguedPlate;
-using Terraria.ID;
+using Terraria;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurniturePlagued
 {
@@ -9,16 +9,8 @@ namespace CalamityMod.Items.Placeables.FurniturePlagued
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.width = 8;
-            Item.height = 10;
-            Item.maxStack = 9999;
-            Item.useTurn = true;
-            Item.autoReuse = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.consumable = true;
-            Item.createTile = ModContent.TileType<PlaguedPlateDoorClosed>();
+            Item.DefaultToPlaceableTile(ModContent.TileType<PlaguedPlateDoorClosed>());
+            Item.value = Item.sellPrice(copper: 40);
         }
 
         public override void AddRecipes()

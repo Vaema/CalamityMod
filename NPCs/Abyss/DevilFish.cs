@@ -1,21 +1,21 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using System.IO;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
-using Terraria.GameContent;
+using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
-using Terraria.Audio;
 namespace CalamityMod.NPCs.Abyss
 {
     public class DevilFish : ModNPC
@@ -24,31 +24,35 @@ namespace CalamityMod.NPCs.Abyss
 
         public bool brokenMask = false;
         public int hitCounter = 0;
+        public static Asset<Texture2D> GlowTexture;
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 16;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            Main.npcFrameCount[Type] = 16;
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 PortraitPositionXOverride = 5f
             };
             value.Position.X += 30f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
         {
             NPC.noGravity = true;
             NPC.lavaImmune = true;
-            NPC.Calamity().canBreakPlayerDefense = true;
             NPC.damage = 90;
             NPC.width = 136;
             NPC.height = 62;
             NPC.defense = 999999;
-            NPC.lifeMax = 400;
+            NPC.lifeMax = 800;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 10, 0);
+            NPC.value = Item.buyPrice(silver: 5);
             NPC.HitSound = SoundID.NPCHit4;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.knockBackResist = 0.85f;
@@ -63,9 +67,9 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.DevilFish")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.DevilFish")
             });
         }
 
@@ -99,8 +103,8 @@ namespace CalamityMod.NPCs.Abyss
             {
                 brokenMask = true;
                 NPC.HitSound = SoundID.NPCHit1;
-                NPC.defense = 15;
-                if (Main.netMode != NetmodeID.Server)
+                NPC.defense = 25;
+                if (!Main.dedServ)
                 {
                     for (int i = 1; i < 4; i++)
                     {
@@ -282,11 +286,9 @@ namespace CalamityMod.NPCs.Abyss
         {
             if (!NPC.IsABestiaryIconDummy)
             {
-                Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/NPCs/Abyss/DevilFishGlow").Value;
-
                 var effects = NPC.direction == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
-                Main.EntitySpriteDraw(tex, NPC.Center - Main.screenPosition + new Vector2(0, NPC.gfxOffY + 4), 
+                Main.EntitySpriteDraw(GlowTexture.Value, NPC.Center - Main.screenPosition + new Vector2(0, NPC.gfxOffY + 4),
                 NPC.frame, Color.White * 0.5f, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, effects, 0);
             }
         }
@@ -308,9 +310,8 @@ namespace CalamityMod.NPCs.Abyss
 
         public static void DefineDevilFishLoot(NPCLoot npcLoot)
         {
-            var postClone = npcLoot.DefineConditionalDropSet(DropHelper.PostCal());
-            postClone.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 1, 2, 2, 3));
-            postClone.Add(ModContent.ItemType<Lumenyl>(), 2);
+            var postLevi = npcLoot.DefineConditionalDropSet(DropHelper.PostLevi());
+            postLevi.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 1, 2, 2, 3));
             npcLoot.AddIf(() => NPC.downedGolemBoss, ModContent.ItemType<ScoriaOre>(), 1, 3, 9);
             npcLoot.Add(ModContent.ItemType<PyreMantle>(), 1, 10, 20);
         }
@@ -329,7 +330,7 @@ namespace CalamityMod.NPCs.Abyss
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Devilfish").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Devilfish2").Type, 1f);

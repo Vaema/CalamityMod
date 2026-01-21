@@ -15,7 +15,7 @@ namespace CalamityMod.NPCs.SulphurousSea
     {
         public override void SetStaticDefaults()
         {
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0);
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
             value.Position.Y += 12;
             value.PortraitPositionYOverride = 32f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
@@ -29,9 +29,9 @@ namespace CalamityMod.NPCs.SulphurousSea
             NPC.width = 20;
             NPC.height = 20;
             NPC.defense = 10;
-            NPC.lifeMax = Main.hardMode ? 300 : 50;
+            NPC.lifeMax = Main.hardMode ? 300 : 100;
             NPC.knockBackResist = 0.8f;
-            NPC.value = Item.buyPrice(0, 0, 0, 80);
+            NPC.value = Item.buyPrice(silver: 3);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath15;
             NPC.behindTiles = true;
@@ -50,7 +50,7 @@ namespace CalamityMod.NPCs.SulphurousSea
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.AquaticUrchin")
             });
@@ -130,7 +130,7 @@ namespace CalamityMod.NPCs.SulphurousSea
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<Irradiated>(), 120, true);
+                target.AddBuff(ModContent.BuffType<Irradiated>(), 120);
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
@@ -146,7 +146,7 @@ namespace CalamityMod.NPCs.SulphurousSea
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(ModContent.ItemType<UrchinStinger>(), 1, 30, 50);
+            npcLoot.Add(ModContent.ItemType<UrchinStinger>(), 15);
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -161,7 +161,7 @@ namespace CalamityMod.NPCs.SulphurousSea
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("AquaticUrchin").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("AquaticUrchin2").Type, 1f);

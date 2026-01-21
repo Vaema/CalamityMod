@@ -1,28 +1,46 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Dusts.WaterSplash;
+using CalamityMod.Gores.WaterDroplet;
+using CalamityMod.Systems.Graphic.LiquidSystem;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.Graphics;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Waters
 {
-    public class MiddleAbyssWater : ModWaterStyle
+    public class MiddleAbyssWaterflow : ModWaterfallStyle, IWaterfallStyleModifyColor
     {
-        public override int ChooseWaterfallStyle()
+        public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor) => WaterStyleCommon.ModifyTransparentWaterColor(x, y, ref liquidColor, false);
+    }
+
+    public class MiddleAbyssWater : ModWaterStyle, IWaterStyleModifyColor
+    {
+        public static ModWaterStyle Instance { get; private set; }
+        public static ModWaterfallStyle WaterfallStyle { get; private set; }
+        public static int SplashDust { get; private set; }
+        public static int DropletGore { get; private set; }
+
+        public override void SetStaticDefaults()
         {
-            return ModContent.Find<ModWaterfallStyle>("CalamityMod/MiddleAbyssWaterflow").Slot;
+            Instance = this;
+            WaterfallStyle = ModContent.Find<ModWaterfallStyle>("CalamityMod/MiddleAbyssWaterflow");
+            SplashDust = ModContent.DustType<MiddleAbyssSplash>();
+            DropletGore = ModContent.GoreType<MiddleAbyssWaterDroplet>();
         }
 
-        public override int GetSplashDust()
+        public override void Unload()
         {
-            return 33;
+            Instance = null;
+            WaterfallStyle = null;
+            SplashDust = 0;
+            DropletGore = 0;
         }
 
-        public override int GetDropletGore()
-        {
-            return 713;
-        }
+        public override int ChooseWaterfallStyle() => WaterfallStyle.Slot;
+        public override int GetSplashDust() => SplashDust;
+        public override int GetDropletGore() => DropletGore;
+        public override Color BiomeHairColor() => new Color(36, 23, 19);
 
-        public override Color BiomeHairColor()
-        {
-            return Color.Blue;
-        }
+        public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor, bool isSlope) => WaterStyleCommon.ModifyTransparentWaterColor(x, y, ref liquidColor, isSlope);
     }
 }

@@ -1,10 +1,11 @@
 ﻿using CalamityMod.Events;
+using CalamityMod.NPCs;
 using CalamityMod.NPCs.Providence;
+using CalamityMod.Projectiles.Boss;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using Terraria.DataStructures;
 
 namespace CalamityMod.Items.SummonItems
 {
@@ -14,7 +15,7 @@ namespace CalamityMod.Items.SummonItems
         public new string LocalizationCategory => "Items.SummonItems";
         public override void SetStaticDefaults()
         {
-			ItemID.Sets.SortingPriorityBossSpawns[Type] = 19; // Celestial Sigil
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 19; // Celestial Sigil
         }
 
         public override void SetDefaults()
@@ -28,28 +29,34 @@ namespace CalamityMod.Items.SummonItems
             Item.rare = ItemRarityID.Purple;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
+        }
 
         public override bool CanUseItem(Player player)
         {
-            return !NPC.AnyNPCs(ModContent.NPCType<Providence>()) && (player.ZoneHallow || player.ZoneUnderworldHeight) && !BossRushEvent.BossRushActive;
+            var Prov = CalamityGlobalNPC.holyBoss;
+            bool canPissOffProvi = Prov != -1 && Main.npc[Prov].life >= (Main.npc[Prov].lifeMax * 0.95f) && Main.npc[Prov].Calamity().newAI[3] >= 180f && !Main.npc[Prov].Calamity().CurrentlyEnraged;
+            return (!NPC.AnyNPCs(ModContent.NPCType<Providence>()) || canPissOffProvi) && (player.ZoneHallow || player.ZoneUnderworldHeight) && !BossRushEvent.BossRushActive;
         }
 
         public override bool? UseItem(Player player)
         {
-            SoundEngine.PlaySound(Providence.SpawnSound, player.Center);
-            if (Main.netMode != NetmodeID.MultiplayerClient)
+            var Prov = CalamityGlobalNPC.holyBoss;
+            bool usingToMakeProviPissedOff = Prov != -1 && Main.npc[Prov].life >= (Main.npc[Prov].lifeMax * 0.95f) && Main.npc[Prov].Calamity().newAI[3] >= 180f && !Main.npc[Prov].Calamity().CurrentlyEnraged;
+            if (usingToMakeProviPissedOff)
             {
-                int npc = NPC.NewNPC(new EntitySource_BossSpawn(player), (int)(player.position.X + Main.rand.Next(-500, 501)), (int)(player.position.Y - 250f), ModContent.NPCType<Providence>(), 1);
-                Main.npc[npc].timeLeft *= 20;
-                CalamityUtils.BossAwakenMessage(npc);
+                (Main.npc[Prov].ModNPC as Providence).hasBeenGivenFullPower = true;
+                Projectile.NewProjectile(Item.GetSource_FromThis(), player.Center, Vector2.Zero, ModContent.ProjectileType<HolyProfanedCore>(), 0, 0);
             }
             else
-                NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, player.whoAmI, ModContent.NPCType<Providence>());
-
+            {
+                int posX = (int)player.position.X;
+                int posY = (int)(player.position.Y - 100f);
+                int bossToSpawn = ModContent.NPCType<Providence>();
+                CalamityUtils.SpawnBossOnPosUsingItem(player, bossToSpawn, posX, posY, Providence.SpawnSound);
+            }
             return true;
         }
     }

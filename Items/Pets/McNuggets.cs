@@ -3,7 +3,6 @@ using CalamityMod.Projectiles.Pets;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Pets
@@ -13,12 +12,9 @@ namespace CalamityMod.Items.Pets
         public new string LocalizationCategory => "Items.Pets";
         public override void SetDefaults()
         {
-            Item.CloneDefaults(ItemID.ZephyrFish);
-            Item.shoot = ModContent.ProjectileType<YharonSonPet>();
-            Item.buffType = ModContent.BuffType<YharonSonBuff>();
-
-            Item.value = Item.sellPrice(gold: 30);
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.DefaultToVanitypet(ModContent.ProjectileType<YharonSonPet>(), ModContent.BuffType<YharonSonBuff>());
+            Item.value = Item.sellPrice(gold: 20);
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override void UseStyle(Player player, Rectangle heldItemFrame)

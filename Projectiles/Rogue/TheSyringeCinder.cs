@@ -1,8 +1,8 @@
+﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -11,7 +11,7 @@ namespace CalamityMod.Projectiles.Rogue
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
+            Main.projFrames[Type] = 4;
         }
 
         public override void SetDefaults()
@@ -37,7 +37,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
             else
             {
-                Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + ((3 * MathHelper.Pi) / 2);
+                Projectile.rotation = Projectile.velocity.ToRotation() + ((3 * MathHelper.Pi) / 2);
                 Projectile.spriteDirection = ((Projectile.velocity.X > 0f) ? -1 : 1);
             }
 
@@ -83,7 +83,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
             if (Main.rand.NextBool(4))
             {
-                int num199 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 89, 0f, 0f, 100, default, 1f);
+                int num199 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GemEmerald, 0f, 0f, 100, default, 1f);
                 Dust dust = Main.dust[num199];
                 dust.position.X -= 2f;
                 dust.position.Y += 2f;
@@ -93,7 +93,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
             if (Main.rand.NextBool(10))
             {
-                int num200 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 89, 0f, 0f, 100, default, 1f);
+                int num200 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GemEmerald, 0f, 0f, 100, default, 1f);
                 Dust dust = Main.dust[num200];
                 dust.position.X -= 2f;
                 dust.position.Y += 2f;

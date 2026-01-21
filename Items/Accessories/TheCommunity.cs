@@ -1,14 +1,13 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.Rarities;
+﻿using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.GameContent;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -25,9 +24,9 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 34;
             Item.height = 64;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.accessory = true;
-            Item.rare = ModContent.RarityType<Rainbow>();
+            Item.rare = ItemRarityID.Lime;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -106,9 +105,13 @@ namespace CalamityMod.Items.Accessories
         // Mobility stat boosts
         public const float SpeedMultiplier = 0.5f; // 2.5% to 10% (x100)
         public const float FlightMultiplier = 1f; // 5% to 20% (x100)
-        
+
         public override void ModifyTooltips(List<TooltipLine> list)
         {
+            var ThankYouTooltip = list.FirstOrDefault(x => x.Name == "Tooltip2" && x.Mod == "Terraria");
+            if (ThankYouTooltip != null)
+                ThankYouTooltip.OverrideColor = Main.DiscoColor;
+
             float power = CalculatePower();
             string statList = this.GetLocalization("StatsList").Format(
                 (DamageMultiplier * power * 100).ToString("N1"),

@@ -1,4 +1,4 @@
-﻿using CalamityMod.Tiles.Furniture.CraftingStations;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurnitureWulfrum
@@ -8,16 +8,8 @@ namespace CalamityMod.Items.Placeables.FurnitureWulfrum
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.width = 34;
-            Item.height = 20;
-            Item.maxStack = 9999;
-            Item.useTurn = true;
-            Item.autoReuse = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.consumable = true;
-            Item.createTile = ModContent.TileType<Tiles.FurnitureWulfrum.WulfrumBed>();
+            Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.FurnitureWulfrum.WulfrumBed>());
+            Item.value = Item.sellPrice(silver: 4);
         }
 
         public override void AddRecipes()
@@ -25,7 +17,7 @@ namespace CalamityMod.Items.Placeables.FurnitureWulfrum
             CreateRecipe().
                 AddIngredient<WulfrumPlating>(15).
                 AddIngredient(ItemID.Silk, 5).
-                AddTile<WulfrumLabstation>().
+                AddTile(TileID.HeavyWorkBench).
                 Register();
         }
     }

@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Magic;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -16,17 +15,17 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.damage = 23;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 5;
-            Item.useTime = 12;
-            Item.useAnimation = 12;
+            Item.useTime = 15;
+            Item.useAnimation = 15;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.UseSound = SoundID.Item7;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<TradewindsProjectile>();
-            Item.shootSpeed = 20f;
+            Item.shootSpeed = 25f;
         }
 
         public override void AddRecipes()

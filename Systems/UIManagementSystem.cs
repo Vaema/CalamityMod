@@ -89,7 +89,7 @@ namespace CalamityMod.Systems
                     SulphurousWaterMeterUI.Draw(Main.spriteBatch, Main.LocalPlayer);
                     return true;
                 }, InterfaceScaleType.None));
-                
+
                 //Flight bar
                 layers.Insert(mouseIndex, new LegacyGameInterfaceLayer("Flight UI", () =>
                 {
@@ -101,6 +101,13 @@ namespace CalamityMod.Systems
                 layers.Insert(mouseIndex, new LegacyGameInterfaceLayer("Charge UI", () =>
                 {
                     ChargeMeterUI.Draw(Main.spriteBatch, Main.LocalPlayer);
+                    return true;
+                }, InterfaceScaleType.None));
+
+                // Unstable Caster's Gauntlet vis meter
+                layers.Insert(mouseIndex, new LegacyGameInterfaceLayer("Vis UI", () =>
+                {
+                    VisUI.Draw(Main.spriteBatch, Main.LocalPlayer);
                     return true;
                 }, InterfaceScaleType.None));
 
@@ -147,6 +154,14 @@ namespace CalamityMod.Systems
                 {
                     if (Main.EquipPage != 1 && Main.EquipPage != 2)
                         DefenseDamageDisplayUI.Draw(Main.spriteBatch);
+                    return true;
+                }, InterfaceScaleType.None));
+
+                // Canvas painting.
+                layers.Insert(mouseIndex, new LegacyGameInterfaceLayer("Canvas Painting", () =>
+                {
+                    if (Main.LocalPlayer.Calamity().CurrentlyViewedCanvasID != -1)
+                        CanvasPaintingUIState.DrawCanvasUI(Main.spriteBatch);
                     return true;
                 }, InterfaceScaleType.None));
             }

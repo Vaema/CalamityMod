@@ -18,9 +18,9 @@ namespace CalamityMod.Items.Ammo
         {
             Item.width = 22;
             Item.height = 36;
-            Item.damage = 20;
+            Item.damage = 15;
             Item.DamageType = DamageClass.Ranged;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
             Item.knockBack = 3f;
             Item.value = Item.sellPrice(copper: 24);
@@ -35,7 +35,7 @@ namespace CalamityMod.Items.Ammo
             CreateRecipe(150).
                 AddIngredient(ItemID.HolyArrow, 150).
                 AddIngredient<UnholyEssence>().
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

@@ -1,5 +1,4 @@
-﻿using CalamityMod.BiomeManagers;
-using CalamityMod.Dusts;
+﻿using CalamityMod.Dusts;
 using CalamityMod.Items.Critters;
 using Terraria;
 using Terraria.GameContent.Bestiary;
@@ -13,9 +12,9 @@ namespace CalamityMod.NPCs.Astral
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 8;
-            Main.npcCatchable[NPC.type] = true;
-            NPCID.Sets.CountsAsCritter[NPC.type] = true;
+            Main.npcFrameCount[Type] = 8;
+            Main.npcCatchable[Type] = true;
+            NPCID.Sets.CountsAsCritter[Type] = true;
         }
 
         public override void SetDefaults()
@@ -26,12 +25,12 @@ namespace CalamityMod.NPCs.Astral
             AIType = NPCID.LightningBug;
             AnimationType = NPCID.LightningBug;
             NPC.catchItem = (short)ModContent.ItemType<TwinklerItem>();
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<AbovegroundAstralBiome>().Type };
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<BiomeManagers.AstralInfectionBiome>().Type };
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Twinkler")
             });

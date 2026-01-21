@@ -1,7 +1,6 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Melee.Yoyos;
-using Terraria;
+﻿using CalamityMod.Projectiles.Melee.Yoyos;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
@@ -9,11 +8,17 @@ namespace CalamityMod.Items.Weapons.Melee
     public class Aorta : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+
+        public static float Reach = 330f;
+        public static float Speed = 25f;
+        public static float Duration = 24f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(Reach.ToTiles(), Speed, Duration);
+
         public override void SetStaticDefaults()
         {
-                       ItemID.Sets.Yoyo[Item.type] = true;
-            ItemID.Sets.GamepadExtraRange[Item.type] = 15;
-            ItemID.Sets.GamepadSmartQuickReach[Item.type] = true;
+            ItemID.Sets.Yoyo[Type] = true;
+            ItemID.Sets.GamepadExtraRange[Type] = 15;
+            ItemID.Sets.GamepadSmartQuickReach[Type] = true;
         }
 
         public override void SetDefaults()
@@ -21,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = 30;
             Item.height = 26;
             Item.DamageType = DamageClass.MeleeNoSpeed;
-            Item.damage = 29;
+            Item.damage = 31;
             Item.knockBack = 4.25f;
             Item.useTime = 22;
             Item.useAnimation = 22;
@@ -37,17 +42,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shootSpeed = 8f;
 
             Item.rare = ItemRarityID.Orange;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.CrimtaneBar, 3).
-                AddIngredient<BloodSample>(9).
-                AddIngredient(ItemID.Vertebrae, 3).
-                AddTile(TileID.DemonAltar).
-                Register();
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
         }
     }
 }

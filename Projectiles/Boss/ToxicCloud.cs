@@ -1,11 +1,9 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Events;
-using CalamityMod.World;
+﻿using System;
+using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -14,9 +12,9 @@ namespace CalamityMod.Projectiles.Boss
         public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 10;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 2;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            Main.projFrames[Type] = 10;
+            ProjectileID.Sets.TrailCacheLength[Type] = 2;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -36,8 +34,7 @@ namespace CalamityMod.Projectiles.Boss
         {
             Lighting.AddLight(Projectile.Center, 0.1f, 0.7f, 0f);
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            if (Projectile.velocity.Length() < (bossRush ? 6.25f : 5f))
+            if (Projectile.velocity.Length() < 5f)
                 Projectile.velocity *= 1.01f;
 
             Projectile.ai[0] += 1f;
@@ -58,7 +55,7 @@ namespace CalamityMod.Projectiles.Boss
             {
                 Projectile.damage = 0;
             }
-            else if (Projectile.frame >= Main.projFrames[Projectile.type])
+            else if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.Kill();
             }
@@ -74,7 +71,8 @@ namespace CalamityMod.Projectiles.Boss
             lightColor.R = (byte)(255 * Projectile.Opacity);
             lightColor.G = (byte)(255 * Projectile.Opacity);
             lightColor.B = (byte)(255 * Projectile.Opacity);
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawProjectileWithBackglow(Projectile, new Color(66, 236, 113), lightColor, 3.75f);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
@@ -87,9 +85,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(BuffID.Poisoned, 240);
-            target.AddBuff(BuffID.Venom, 240);
-            target.AddBuff(ModContent.BuffType<Irradiated>(), 240);
+            target.AddBuff(ModContent.BuffType<Irradiated>(), 480);
         }
     }
 }

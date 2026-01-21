@@ -1,4 +1,4 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -11,6 +11,7 @@ namespace CalamityMod.Items.Weapons.Magic
     public class ShaderainStaff : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
+
         #region Other stats
 
         // Stats for the shaderain.
@@ -26,30 +27,29 @@ namespace CalamityMod.Items.Weapons.Magic
         public const float DeaccelerationStrenght = 0.95f; // A number lower than 1, non-including 1, changing it very slightly will have drastic results.
 
         #endregion
-
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = Item.height = 42;
-            Item.damage = 20;
-            Item.shootSpeed = 11f;
-            Item.useTime = Item.useAnimation = 30;
-            Item.mana = 10;
-            Item.knockBack = 0f;
-
-            Item.shoot = ModContent.ProjectileType<Shaderain>();
-
+            Item.damage = 19;
             Item.DamageType = DamageClass.Magic;
-            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.mana = 10;
+            Item.useAnimation = Item.useTime = 34;
+            Item.knockBack = 0.25f;
+            Item.shoot = ModContent.ProjectileType<Shaderain>();
+            Item.shootSpeed = 11f;
+
             Item.UseSound = SoundID.Item66;
-            Item.rare = ItemRarityID.Orange;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.useStyle = ItemUseStyleID.Shoot;
             Item.autoReuse = true;
             Item.noMelee = true;
+
+            Item.rare = ItemRarityID.Orange;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -76,16 +76,6 @@ namespace CalamityMod.Items.Weapons.Magic
                 player.whoAmI);
 
             return false;
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.DemoniteBar, 3).
-                AddIngredient<RottenMatter>(9).
-                AddIngredient(ItemID.RottenChunk, 3).
-                AddTile(TileID.DemonAltar).
-                Register();
         }
     }
 }

@@ -12,8 +12,8 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Summon
                 for (int i = 0; i < 56; i++)
                 {
                     float angle = MathHelper.TwoPi / 56f * i;
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, (int)CalamityDusts.SulfurousSeaAcid);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, (int)CalamityDusts.SulphurousSeaAcid);
                     dust.scale = 1.5f;
                     dust.velocity = angle.ToRotationVector2() * 7f;
                     dust.noGravity = true;
@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 Projectile.frame++;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.frame = 0;
             }

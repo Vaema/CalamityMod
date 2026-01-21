@@ -1,13 +1,14 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Rogue
 {
     public class DesecratedBubble : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = 20;
@@ -54,7 +55,7 @@ namespace CalamityMod.Projectiles.Rogue
             int rando = Main.rand.Next(5, 9);
             for (int i = 0; i < rando; i++)
             {
-                int dust = Dust.NewDust(Projectile.Center, 0, 0, 179, 0f, 0f, 100, default, 1.4f);
+                int dust = Dust.NewDust(Projectile.Center, 0, 0, DustID.BubbleBurst_Purple, 0f, 0f, 100, default, 1.4f);
                 Main.dust[dust].velocity *= 0.8f;
                 Main.dust[dust].position = Vector2.Lerp(Main.dust[dust].position, Projectile.Center, 0.5f);
                 Main.dust[dust].noGravity = true;

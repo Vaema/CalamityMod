@@ -15,12 +15,12 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.YoyosLifeTimeMultiplier[Projectile.type] = -1f;
-            ProjectileID.Sets.YoyosMaximumRange[Projectile.type] = 480f;
-            ProjectileID.Sets.YoyosTopSpeed[Projectile.type] = 40f / MaxUpdates;
+            ProjectileID.Sets.YoyosLifeTimeMultiplier[Type] = -1f;
+            ProjectileID.Sets.YoyosMaximumRange[Type] = FaultLine.Reach;
+            ProjectileID.Sets.YoyosTopSpeed[Type] = FaultLine.Speed / MaxUpdates;
 
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -40,7 +40,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             if (Main.rand.NextBool(5))
                 Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, Main.rand.NextBool(3) ? 16 : 127, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
 
-            if (Main.rand.NextBool(8) && Main.netMode != NetmodeID.Server)
+            if (Main.rand.NextBool(8) && !Main.dedServ)
             {
                 int smoke = Gore.NewGore(Projectile.GetSource_FromAI(), Projectile.position, default, Main.rand.Next(375, 378), 0.5f);
                 Main.gore[smoke].behindTiles = true;
@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

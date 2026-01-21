@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
@@ -7,6 +8,8 @@ namespace CalamityMod.Projectiles.Magic
     public class LightBead : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
+
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = 8;
@@ -26,7 +29,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.ai[1] += 1f;
             if (Main.rand.NextBool(5))
             {
-                Dust whiteMagic = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 0, default, 1f);
+                Dust whiteMagic = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 0, default, 1f);
                 whiteMagic.noGravity = true;
                 whiteMagic.velocity *= 0.5f;
                 whiteMagic.scale *= 0.9f;
@@ -53,7 +56,7 @@ namespace CalamityMod.Projectiles.Magic
         public override void OnKill(int timeLeft)
         {
             for (int k = 0; k < 4; k++)
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 244, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.CopperCoin, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
 
             int beadAmt = Main.rand.Next(2, 3);
             if (Projectile.owner == Main.myPlayer)

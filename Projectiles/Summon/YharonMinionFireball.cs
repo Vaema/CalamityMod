@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -15,10 +15,11 @@ namespace CalamityMod.Projectiles.Summon
         public override string Texture => "CalamityMod/Projectiles/Boss/YharonFireball";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 5;
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
+            Main.projFrames[Type] = 5;
+            ProjectileID.Sets.MinionShot[Type] = true;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 8;
         }
 
         public override void SetDefaults()
@@ -36,7 +37,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void AI()
         {
             Projectile.frameCounter++;
-            Projectile.frame = Projectile.frameCounter / 5 % Main.projFrames[Projectile.type];
+            Projectile.frame = Projectile.frameCounter / 5 % Main.projFrames[Type];
             Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
             Projectile.Opacity = MathHelper.Clamp(Projectile.Opacity + 0.075f, 0f, 1f);
 
@@ -58,13 +59,13 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-            Rectangle frame = texture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             SpriteEffects direction = SpriteEffects.None;
             if (Projectile.spriteDirection == -1)
                 direction = SpriteEffects.FlipHorizontally;
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 0; i < Projectile.oldPos.Length; i++)
                 {
@@ -85,15 +86,15 @@ namespace CalamityMod.Projectiles.Summon
             SoundEngine.PlaySound(SoundID.Item74, Projectile.Center);
 
             for (int d = 0; d < 2; d++)
-                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 55, 0f, 0f, 50, default, 1.5f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Pixie, 0f, 0f, 50, default, 1.5f);
 
             for (int d = 0; d < 20; d++)
             {
-                Dust fire = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 0, default, 2.2f);
+                Dust fire = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 0, default, 2.2f);
                 fire.noGravity = true;
                 fire.velocity *= 4f;
 
-                fire = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 50, default, 1.5f);
+                fire = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 50, default, 1.5f);
                 fire.velocity *= 5f;
                 fire.noGravity = true;
             }

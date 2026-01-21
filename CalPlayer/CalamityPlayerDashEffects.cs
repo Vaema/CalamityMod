@@ -1,10 +1,11 @@
-﻿using CalamityMod.Balancing;
+﻿using System;
+using CalamityMod.Balancing;
 using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.EntitySources;
 using CalamityMod.Enums;
 using CalamityMod.Items.Mounts;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,8 +14,7 @@ namespace CalamityMod.CalPlayer
 {
     public partial class CalamityPlayer : ModPlayer
     {
-        public int VerticalGodslayerDashTimer;
-        public int VerticalSpeedBlasterDashTimer;
+        public int VerticalOmnidashTimer;
 
         private string dashID; //private backing variable
 
@@ -22,15 +22,15 @@ namespace CalamityMod.CalPlayer
         {
             get
             {
-                return (String.IsNullOrEmpty(dashID) && Player.dashType == 0 && CalamityConfig.Instance.DefaultDashEnabled) ? DefaultDash.ID : dashID; //gives default dash ONLY if no custom or vanilla dash.
+                return (String.IsNullOrEmpty(dashID) && Player.dashType == 0 && CalamityServerConfig.Instance.DefaultDashEnabled) ? DefaultDash.ID : dashID; //gives default dash ONLY if no custom or vanilla dash.
             }
             set => dashID = value;
         }
 
-    public string DeferredDashID;
+        public string DeferredDashID;
 
         public string LastUsedDashID;
-        
+
         public PlayerDashEffect UsedDash
         {
             get
@@ -52,8 +52,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // Neither scarf can be used if either is on cooldown
-            // TODO -- Why do the two scarves not use the same cooldown? They're both called "Scarf Cooldown".
-            if (playerDashing && DashID == CounterScarfDash.ID && Player.dashDelay < 0 && dodgeScarf && !(Player.HasCooldown(Cooldowns.CounterScarf.ID) || Player.HasCooldown(Cooldowns.EvasionScarf.ID)))
+            if (playerDashing && DashID == CounterScarfDash.ID && Player.dashDelay < 0 && dodgeScarf && !Player.HasCooldown(Cooldowns.ScarfCooldown.ID))
             {
                 CounterScarfDodge();
                 return true;
@@ -66,21 +65,31 @@ namespace CalamityMod.CalPlayer
             if (Player.whoAmI != Main.myPlayer)
                 return;
 
+            if ((HasCustomDash && Player.dashDelay < 0 && UsedDash.dashTime < UsedDash.dashStartup))
+            {
+                UsedDash.DashStartupEffects(Player);
+                UsedDash.dashTime++;
+                return;
+            }
+            else if (HasCustomDash && UsedDash.dashStartup > 0 && Player.dashDelay < 0 && UsedDash.dashTime == UsedDash.dashStartup)
+            {
+                if (DoADash(UsedDash.CalculateDashSpeed(Player), true))
+                    UsedDash.OnDashEffects(Player);
+            }
+
             var source = new ProjectileSource_PlayerDashHit(Player);
 
             // Handle collision slam-through effects.
             if (HasCustomDash && Player.dashDelay < 0)
             {
                 Rectangle hitArea = new Rectangle((int)(Player.position.X + Player.velocity.X * 0.5 - 4f), (int)(Player.position.Y + Player.velocity.Y * 0.5 - 4), Player.width + 8, Player.height + 8);
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    NPC n = Main.npc[i];
-
                     // Ignore critters with the Guide to Critter Companionship
                     if (Player.dontHurtCritters && NPCID.Sets.CountsAsCritter[n.type])
                         continue;
 
-                    if (n.active && !n.dontTakeDamage && !n.friendly && n.Calamity().dashImmunityTime[Player.whoAmI] <= 0)
+                    if (!n.dontTakeDamage && !n.friendly && n.Calamity().dashImmunityTime[Player.whoAmI] <= 0)
                     {
                         if (hitArea.Intersects(n.getRect()) && (n.noTileCollide || Player.CanHit(n)))
                         {
@@ -93,10 +102,10 @@ namespace CalamityMod.CalPlayer
 
                             // Duplicated from the way TML edits vanilla ram dash damage (and Shield of Cthulhu)
                             int dashDamage = (int)Player.GetTotalDamage(hitContext.damageClass).ApplyTo(hitContext.BaseDamage);
-                            float dashKB = Player.GetTotalKnockback(hitContext.damageClass).ApplyTo(hitContext.BaseKnockback);
-                            bool rollCrit = Main.rand.Next(100) < Player.GetTotalCritChance(hitContext.damageClass);
 
-                            Player.ApplyDamageToNPC(n, dashDamage, dashKB, hitContext.HitDirection, rollCrit, hitContext.damageClass, true);
+                            Projectile ram = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), n.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), dashDamage, 0f, Player.whoAmI, n.whoAmI);
+                            ram.DamageType = hitContext.damageClass;
+
                             if (n.Calamity().dashImmunityTime[Player.whoAmI] < 12)
                                 n.Calamity().dashImmunityTime[Player.whoAmI] = 12;
 
@@ -104,18 +113,12 @@ namespace CalamityMod.CalPlayer
                         }
                     }
                 }
-            }
-
-            if (Player.dashDelay > 0) //Speed Blaster
-            {
-                VerticalSpeedBlasterDashTimer = 0;
-                LastUsedDashID = string.Empty;
-                return;
+                UsedDash.dashTime++;
             }
 
             if (Player.dashDelay > 0)
             {
-                VerticalGodslayerDashTimer = 0;
+                VerticalOmnidashTimer = 0;
                 LastUsedDashID = string.Empty;
                 return;
             }
@@ -127,7 +130,11 @@ namespace CalamityMod.CalPlayer
                     dashDelayToApply = BalancingConstants.UniversalShieldSlamCooldown;
                 else if (UsedDash.CollisionType == DashCollisionType.ShieldBonk)
                     dashDelayToApply = BalancingConstants.UniversalShieldBonkCooldown;
-                
+                if (DashID == DeepDiverDash.ID || (evasionScarf && DashID == CounterScarfDash.ID))
+                    dashDelayToApply = (int)(dashDelayToApply * 0.75f);
+                if (DashID == StatisNinjaBeltDash.ID || DashID == StatisVoidSashDash.ID || Player.dashType == 1)
+                    dashDelayToApply = BalancingConstants.UniversalSashDashCooldown;
+
                 float dashSpeed = 12f;
                 float dashSpeedDecelerationFactor = 0.985f;
                 float runSpeed = Math.Max(Player.accRunSpeed, Player.maxRunSpeed);
@@ -137,21 +144,11 @@ namespace CalamityMod.CalPlayer
 
                 // Handle mid-dash effects.
                 UsedDash.MidDashEffects(Player, ref dashSpeed, ref dashSpeedDecelerationFactor, ref runSpeedDecelerationFactor);
-                if (UsedDash.IsOmnidirectional && VerticalGodslayerDashTimer < 25)
+                int VerticalOmnidashCap = DashID == GodslayerArmorDash.ID ? 75 : 25;
+                if (UsedDash.IsOmnidirectional && VerticalOmnidashTimer < VerticalOmnidashCap)
                 {
-                    VerticalGodslayerDashTimer++;
-                    if (VerticalGodslayerDashTimer >= 25)
-                    {
-                        Player.dashDelay = dashDelayToApply;
-                        // Stop the player from going flying
-                        Player.velocity *= 0.2f;
-                    }
-                }
-
-                if (UsedDash.IsOmnidirectional && VerticalSpeedBlasterDashTimer < 25)
-                {
-                    VerticalSpeedBlasterDashTimer++;
-                    if (VerticalSpeedBlasterDashTimer >= 25)
+                    VerticalOmnidashTimer++;
+                    if (VerticalOmnidashTimer >= VerticalOmnidashCap)
                     {
                         Player.dashDelay = dashDelayToApply;
                         // Stop the player from going flying
@@ -170,6 +167,9 @@ namespace CalamityMod.CalPlayer
                     // Handle mid-dash movement.
                     if (UsedDash.IsOmnidirectional)
                     {
+                        if (DashID == GodslayerArmorDash.ID)
+                            return;
+
                         if (Player.velocity.Length() > dashSpeed)
                         {
                             Player.velocity *= dashSpeedDecelerationFactor;
@@ -196,7 +196,8 @@ namespace CalamityMod.CalPlayer
                     }
 
                     // Dash delay depends on the type of dash used.
-                    Player.dashDelay = dashDelayToApply;
+                    if (!(HasCustomDash && UsedDash.dashStartup > 0 && Player.dashDelay < 0 && UsedDash.dashTime <= UsedDash.dashStartup + 10))
+                        Player.dashDelay = dashDelayToApply;
 
                     if (UsedDash.IsOmnidirectional)
                     {
@@ -232,20 +233,24 @@ namespace CalamityMod.CalPlayer
             // Handle first-frame effects.
             else if (HasCustomDash && !Player.mount.Active)
             {
+                UsedDash.dashTime = 0;
                 if (DoADash(UsedDash.CalculateDashSpeed(Player)))
-                    UsedDash.OnDashEffects(Player);
+                    if (UsedDash.dashStartup <= 0)
+                        UsedDash.OnDashEffects(Player);
+                    else
+                        UsedDash.OnDashStartupEffects(Player);
             }
         }
 
-        public bool HandleHorizontalDash(out DashDirection direction)
+        public bool HandleHorizontalDash(out DashDirection direction, bool forceDash = false)
         {
             direction = DashDirection.Directionless;
             bool dashWasExecuted = false;
 
             // If the manual hotkey is bound, standard Terraria dashes cannot be triggered by double tapping.
-            var manualDashHotkeys = CalamityKeybinds.DashHotkey.GetAssignedKeys();
+            var manualDashHotkeys = CalamityKeybinds.DashHotkey.GetAssignedKeysOrEmpty();
             bool manualHotkeyBound = (manualDashHotkeys?.Count ?? 0) > 0;
-            bool pressedManualHotkey = manualHotkeyBound && CalamityKeybinds.DashHotkey.JustPressed;
+            bool pressedManualHotkey = manualHotkeyBound && (CalamityKeybinds.DashHotkey.JustPressed || forceDash);
 
             int dashDirectionToUse = 0;
 
@@ -404,9 +409,32 @@ namespace CalamityMod.CalPlayer
             return justDashed;
         }
 
-        public bool DoADash(float dashSpeed)
+        public bool HandleGodSlayerDash(out DashDirection direction)
         {
-            bool justDashed;
+            bool justDashed = false;
+            direction = DashDirection.Directionless;
+
+            // God Slayer armor's dash will dash towards the player's cursor.
+            // 14NOV2024: Ozzatron: Intentionally does not use clamped mouse position so that player dash direction is not strangely bent on larger screens.
+            Vector2 dashVel = Main.MouseWorld - Player.Center;
+            dashVel = dashVel.SafeNormalize(Vector2.UnitX) * UsedDash.CalculateDashSpeed(Player);
+
+            Player.velocity = dashVel;
+
+            if (dashTimeMod > 0)
+            {
+                justDashed = true;
+                dashTimeMod = 0;
+            }
+            else
+                dashTimeMod = 15;
+
+            return justDashed;
+        }
+
+        public bool DoADash(float dashSpeed, bool forceDash = false)
+        {
+            bool justDashed = forceDash;
             bool omnidirectionalDash = UsedDash?.IsOmnidirectional ?? false;
             DashDirection direction;
 
@@ -415,10 +443,19 @@ namespace CalamityMod.CalPlayer
                 dashTimeMod -= (dashTimeMod > 0).ToDirectionInt();
 
             // Determine dash times.
-            if (omnidirectionalDash)
+            if (DashID == GodslayerArmorDash.ID)
+                justDashed = HandleGodSlayerDash(out direction);
+            else if (omnidirectionalDash)
                 justDashed = HandleOmnidirectionalDash(out direction);
             else
-                justDashed = HandleHorizontalDash(out direction);
+                justDashed = HandleHorizontalDash(out direction, forceDash);
+
+            if (justDashed && !forceDash && UsedDash.dashStartup > 0)
+            {
+                Player.timeSinceLastDashStarted = 0;
+                Player.dashDelay = -1;
+                return justDashed;
+            }
 
             // Make dash movements happen if ready.
             if (justDashed)
@@ -481,6 +518,7 @@ namespace CalamityMod.CalPlayer
                 if (WorldGen.SolidOrSlopedTile(upwardTilePoint.X, upwardTilePoint.Y) || WorldGen.SolidOrSlopedTile(aheadTilePoint.X, aheadTilePoint.Y))
                     Player.velocity.X /= 2f;
 
+                Player.timeSinceLastDashStarted = 0;
                 Player.dashDelay = -1;
             }
 
@@ -489,7 +527,8 @@ namespace CalamityMod.CalPlayer
 
         public void ModHorizontalMovement()
         {
-            if (Player.mount.Active && Player.mount.Type == ModContent.MountType<AlicornMount>() && Math.Abs(Player.velocity.X) > Player.mount.DashSpeed - Player.mount.RunSpeed / 2f)
+
+            if (Player.mount.Active && Player.mount.Type == ModContent.MountType<ExoTank>() && Math.Abs(Player.velocity.X) > Player.mount.RunSpeed)
             {
                 Rectangle damageHitbox = Player.getRect();
 
@@ -498,7 +537,7 @@ namespace CalamityMod.CalPlayer
 
                 damageHitbox.Width = 2;
                 damageHitbox.Inflate(6, 12);
-                float damage = Player.GetTotalDamage<SummonDamageClass>().ApplyTo(800f);
+                float damage = Player.GetTotalDamage<SummonDamageClass>().ApplyTo(ExoTank.DashDamage);
                 float knockback = 10f;
                 int NPCImmuneTime = 30;
                 int playerImmuneTime = 6;
@@ -541,15 +580,13 @@ namespace CalamityMod.CalPlayer
         public int DoMountDashDamage(Rectangle myRect, float Damage, float Knockback, int NPCImmuneTime, int PlayerImmuneTime)
         {
             int totalHurtNPCs = 0;
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC n in Main.ActiveNPCs)
             {
-                NPC n = Main.npc[i];
-
                 // Ignore critters with the Guide to Critter Companionship
                 if (Player.dontHurtCritters && NPCID.Sets.CountsAsCritter[n.type])
                     continue;
 
-                if (n.active && !n.dontTakeDamage && !n.friendly && n.Calamity().dashImmunityTime[Player.whoAmI] <= 0)
+                if (!n.dontTakeDamage && !n.friendly && n.Calamity().dashImmunityTime[Player.whoAmI] <= 0)
                 {
                     Rectangle npcHitbox = n.getRect();
                     if (myRect.Intersects(npcHitbox) && (n.noTileCollide || Collision.CanHit(Player.position, Player.width, Player.height, n.position, n.width, n.height)))
@@ -560,12 +597,18 @@ namespace CalamityMod.CalPlayer
                         if (hitDirection == 0)
                             hitDirection = Player.direction;
 
-                        // TODO -- This should probably use DirectStrike?
-                        if (Player.whoAmI == Main.myPlayer)
-                            Player.ApplyDamageToNPC(n, (int)Damage, Knockback, hitDirection, false);
+                        Vector2 hitVelocity = new Vector2(2 * hitDirection, 0); // Projectile velocity will determine the hit directon of direct strikes
 
+                        if (Player.whoAmI == Main.myPlayer)
+                        {
+                            Projectile ram = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), n.Center, hitVelocity, ModContent.ProjectileType<DirectStrike>(), (int)Damage, Knockback, Player.whoAmI, n.whoAmI);
+                            ram.DamageType = DamageClass.Summon;
+                        }
+
+                        // 17APR2024: Ozzatron: Dash iframes are not boosted by Cross Necklace at all and are fixed.
                         n.Calamity().dashImmunityTime[Player.whoAmI] = NPCImmuneTime;
-                        Player.GiveIFrames(PlayerImmuneTime, false);
+                        Player.GiveUniversalIFrames(PlayerImmuneTime, false);
+
                         totalHurtNPCs++;
                         break;
                     }

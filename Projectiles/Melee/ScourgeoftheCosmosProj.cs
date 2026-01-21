@@ -1,9 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -14,8 +13,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -33,25 +32,19 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (Projectile.alpha <= 200)
             {
-                int inc;
-                for (int i = 0; i < 2; i = inc + 1)
+                for (int i = 0; i < 2; i++)
                 {
                     int dustType = Main.rand.NextBool(3) ? 56 : 242;
-                    float shortXVel = Projectile.velocity.X / 4f * i;
-                    float shortYVel = Projectile.velocity.Y / 4f * i;
-                    int scourgeDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 0, default, 1f);
-                    Main.dust[scourgeDust].position.X = Projectile.Center.X - shortXVel;
-                    Main.dust[scourgeDust].position.Y = Projectile.Center.Y - shortYVel;
-                    Dust dust = Main.dust[scourgeDust];
-                    dust.velocity *= 0f;
-                    Main.dust[scourgeDust].scale = 0.7f;
-                    inc = i;
+                    Dust scourgeDust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 0, default, 1f);
+                    scourgeDust.position = Projectile.Center - Projectile.velocity * i * 0.25f;
+                    scourgeDust.velocity *= 0f;
+                    scourgeDust.scale = 0.7f;
                 }
             }
             Projectile.alpha -= 50;
             if (Projectile.alpha < 0)
                 Projectile.alpha = 0;
-            Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + 0.785f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4;
             Projectile.ai[0] += 1f;
             if (Projectile.ai[0] >= 180f)
             {
@@ -64,7 +57,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
@@ -82,18 +75,10 @@ namespace CalamityMod.Projectiles.Melee
                     Projectile.velocity.Y = -oldVelocity.Y;
                 if (Projectile.owner == Main.myPlayer)
                 {
-                    int minisAmt = 1;
-                    if (Main.rand.NextBool(10))
-                        minisAmt++;
-                    int inc;
-                    for (int j = 0; j < minisAmt; j = inc + 1)
+                    int minisAmt = Main.rand.Next(1, 2 + 1);
+                    for (int j = 0; j < minisAmt; j++)
                     {
-                        float randXDirect = Main.rand.Next(-35, 36) * 0.02f;
-                        float randYDirect = Main.rand.Next(-35, 36) * 0.02f;
-                        randXDirect *= 10f;
-                        randYDirect *= 10f;
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.position.X, Projectile.position.Y, randXDirect, randYDirect, ModContent.ProjectileType<ScourgeoftheCosmosMini>(), (int)(Projectile.damage * 0.75), Projectile.knockBack * 0.35f, Main.myPlayer);
-                        inc = j;
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Main.rand.NextVector2Circular(2f, 2f), ModContent.ProjectileType<ScourgeoftheCosmosMini>(), (int)(Projectile.damage * 0.75), Projectile.knockBack * 0.35f, Projectile.owner);
                     }
                 }
             }
@@ -103,40 +88,27 @@ namespace CalamityMod.Projectiles.Melee
         public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.NPCHit4, Projectile.position);
-            int inc;
-            for (int i = 0; i < 10; i = inc + 1)
+            for (int i = 0; i < 10; i++)
             {
                 int dustType = Main.rand.NextBool(3) ? 56 : 242;
-                int killedDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, dustType, 0f, 0f, 0, default, 1f);
-                Dust dust = Main.dust[killedDust];
+                Dust dust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 0, default, 1f);
                 dust.scale *= 1.1f;
-                Main.dust[killedDust].noGravity = true;
-                inc = i;
+                dust.noGravity = true;
             }
-            for (int j = 0; j < 15; j = inc + 1)
+            for (int j = 0; j < 15; j++)
             {
                 int dustType = Main.rand.NextBool(3) ? 56 : 242;
-                int killedDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, dustType, 0f, 0f, 0, default, 1f);
-                Dust dust = Main.dust[killedDust2];
+                Dust dust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 0, default, 1f);
                 dust.velocity *= 2.5f;
-                dust = Main.dust[killedDust2];
                 dust.scale *= 0.8f;
-                Main.dust[killedDust2].noGravity = true;
-                inc = j;
+                dust.noGravity = true;
             }
             if (Projectile.owner == Main.myPlayer)
             {
-                int minisAmt = 3;
-                if (Main.rand.NextBool(10))
-                    minisAmt++;
-                for (int j = 0; j < minisAmt; j = inc + 1)
+                int minisAmt = Main.rand.Next(3, 4 + 1);
+                for (int j = 0; j < minisAmt; j++)
                 {
-                    float randXDirect = Main.rand.Next(-35, 36) * 0.02f;
-                    float randYDirect = Main.rand.Next(-35, 36) * 0.02f;
-                    randXDirect *= 10f;
-                    randYDirect *= 10f;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.position.X, Projectile.position.Y, randXDirect, randYDirect, ModContent.ProjectileType<ScourgeoftheCosmosMini>(), (int)(Projectile.damage * 0.7), Projectile.knockBack * 0.35f, Main.myPlayer);
-                    inc = j;
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Main.rand.NextVector2Circular(2f, 2f), ModContent.ProjectileType<ScourgeoftheCosmosMini>(), (int)(Projectile.damage * 0.75), Projectile.knockBack * 0.35f, Projectile.owner);
                 }
             }
         }

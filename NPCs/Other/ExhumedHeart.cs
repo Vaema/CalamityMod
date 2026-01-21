@@ -21,7 +21,7 @@ namespace CalamityMod.NPCs.Other
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            Main.npcFrameCount[NPC.type] = 6;
+            Main.npcFrameCount[Type] = 6;
         }
 
         public override void SetDefaults()
@@ -32,7 +32,6 @@ namespace CalamityMod.NPCs.Other
             NPC.lifeMax = 50000;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.value = 0f;
             NPC.HitSound = SoundID.NPCHit13;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.knockBackResist = 0f;
@@ -44,8 +43,6 @@ namespace CalamityMod.NPCs.Other
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToWater = true;
         }
-
-        public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment) => NPC.lifeMax = 50000;
 
         public override void AI()
         {
@@ -68,7 +65,7 @@ namespace CalamityMod.NPCs.Other
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter++;
-            NPC.frame.Y = (int)(NPC.frameCounter / 5) % Main.npcFrameCount[NPC.type] * frameHeight;
+            NPC.frame.Y = (int)(NPC.frameCounter / 5) % Main.npcFrameCount[Type] * frameHeight;
         }
 
         public override Color? GetAlpha(Color drawColor)

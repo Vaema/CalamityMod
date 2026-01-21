@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
-using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Typeless;
 using Terraria;
 using Terraria.ID;
@@ -17,9 +16,10 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 38;
             Item.height = 42;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.accessory = true;
+            Item.expert = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -35,14 +35,11 @@ namespace CalamityMod.Items.Accessories
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<FungalClumpMinion>()] < 1)
                 {
                     var source = player.GetSource_Accessory(Item);
-
-                    // 08DEC2023: Ozzatron: Fungal Clumps spawned with Old Fashioned active will retain their bonus damage indefinitely. Oops. Don't care.
-                    int baseDamage = player.ApplyArmorAccDamageBonusesTo(FungalClumpDamage);
-                    int damage = (int)player.GetBestClassDamage().ApplyTo(baseDamage);
+                    int damage = (int)player.GetBestClassDamage().ApplyTo(FungalClumpDamage);
 
                     int p = Projectile.NewProjectile(source, player.Center.X, player.Center.Y, 0f, -1f, ModContent.ProjectileType<FungalClumpMinion>(), damage, 1f, player.whoAmI);
                     if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = baseDamage;
+                        Main.projectile[p].originalDamage = FungalClumpDamage;
                 }
             }
         }
@@ -62,12 +59,11 @@ namespace CalamityMod.Items.Accessories
                     var source = player.GetSource_Accessory(Item);
 
                     // 08DEC2023: Ozzatron: Fungal Clumps spawned with... Hold on a second. Why the fuck are we doing damage calculations when the accessory is in vanity?!
-                    int baseDamage = player.ApplyArmorAccDamageBonusesTo(FungalClumpDamage);
-                    int damage = (int)player.GetBestClassDamage().ApplyTo(baseDamage);
+                    int damage = (int)player.GetBestClassDamage().ApplyTo(FungalClumpDamage);
 
                     int p = Projectile.NewProjectile(source, player.Center.X, player.Center.Y, 0f, -1f, ModContent.ProjectileType<FungalClumpMinion>(), damage, 1f, player.whoAmI);
                     if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = baseDamage;
+                        Main.projectile[p].originalDamage = FungalClumpDamage;
                 }
             }
         }

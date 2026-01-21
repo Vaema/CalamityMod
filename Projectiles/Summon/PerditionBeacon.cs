@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.Utilities;
 
@@ -15,16 +16,14 @@ namespace CalamityMod.Projectiles.Summon
         public override int AssociatedProjectileTypeID => ModContent.ProjectileType<PerditionBeacon>();
         public override int AssociatedBuffTypeID => ModContent.BuffType<PerditionBuff>();
         public override ref bool AssociatedMinionBool => ref ModdedOwner.perditionBeacon;
-        public override float MinionSlots => 5f;
-
         public ref float AttackTime => ref Projectile.ai[0];
         public ref float AttackTimer => ref Projectile.ai[1];
         public ref float DownwardCrossFade => ref Projectile.localAI[1];
 
         public override void SetStaticDefaults()
         {
-            base.SetStaticDefaults();
             Main.projFrames[Type] = 16;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -32,6 +31,10 @@ namespace CalamityMod.Projectiles.Summon
             base.SetDefaults();
             Projectile.width = 48;
             Projectile.height = 90;
+            Projectile.minion = false;
+            Projectile.sentry = true;
+            Projectile.minionSlots = 0;
+            Projectile.timeLeft = Projectile.SentryLifeTime;
         }
 
         public override void SetOwnerTarget()
@@ -77,7 +80,7 @@ namespace CalamityMod.Projectiles.Summon
         internal void AttackTarget()
         {
             // Release cinders around the target.
-            Dust cinder = Dust.NewDustPerfect(Target.Center + Main.rand.NextVector2Circular(800f, 800f), 6);
+            Dust cinder = Dust.NewDustPerfect(Target.Center + Main.rand.NextVector2Circular(800f, 800f), DustID.Torch);
             cinder.velocity = Vector2.UnitY * -Main.rand.NextFloat(3f, 7f);
             cinder.scale = 1f + cinder.velocity.Length() * 0.17f;
             cinder.noGravity = true;
@@ -111,13 +114,14 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void OnSpawn(IEntitySource source)
         {
+            Main.player[Projectile.owner].UpdateMaxTurrets();
             // Release a burst of fire dust on spawn.
             if (Main.dedServ)
                 return;
 
             for (int i = 0; i < 55; i++)
             {
-                Dust fire = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(35f, 35f), 267);
+                Dust fire = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(35f, 35f), DustID.RainbowMk2);
                 fire.velocity = Vector2.Lerp(fire.velocity, Vector2.UnitY * -Main.rand.NextFloat(3.5f, 6f), 0.5f);
                 fire.color = Color.Lerp(Color.Orange, Color.Red, Main.rand.NextFloat(0f, 0.67f));
                 fire.scale = Main.rand.NextFloat(1.2f, 1.5f);

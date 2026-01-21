@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -33,7 +33,7 @@ namespace CalamityMod.Projectiles.Melee
                 float shortXVel = Projectile.velocity.X / 3f * (float)i;
                 float shortYVel = Projectile.velocity.Y / 3f * (float)i;
                 int fourConst = 4;
-                int watery = Dust.NewDust(new Vector2(Projectile.position.X + (float)fourConst, Projectile.position.Y + (float)fourConst), Projectile.width - fourConst * 2, Projectile.height - fourConst * 2, 56, 0f, 0f, 100, default, 1.2f);
+                int watery = Dust.NewDust(new Vector2(Projectile.position.X + (float)fourConst, Projectile.position.Y + (float)fourConst), Projectile.width - fourConst * 2, Projectile.height - fourConst * 2, DustID.BlueFairy, 0f, 0f, 100, default, 1.2f);
                 Main.dust[watery].noGravity = true;
                 Main.dust[watery].velocity *= 0.25f;
                 Main.dust[watery].velocity += Projectile.velocity * 0.1f;
@@ -47,7 +47,7 @@ namespace CalamityMod.Projectiles.Melee
                 float shortXVel2 = Projectile.velocity.X / 3f * (float)j;
                 float shortYVel2 = Projectile.velocity.Y / 3f * (float)j;
                 int otherFourConst = 4;
-                int superWet = Dust.NewDust(new Vector2(Projectile.position.X + (float)otherFourConst, Projectile.position.Y + (float)otherFourConst), Projectile.width - otherFourConst * 2, Projectile.height - otherFourConst * 2, 245, 0f, 0f, 100, default, 1.2f);
+                int superWet = Dust.NewDust(new Vector2(Projectile.position.X + (float)otherFourConst, Projectile.position.Y + (float)otherFourConst), Projectile.width - otherFourConst * 2, Projectile.height - otherFourConst * 2, DustID.SilverCoin, 0f, 0f, 100, default, 1.2f);
                 Main.dust[superWet].noGravity = true;
                 Main.dust[superWet].velocity *= 0.1f;
                 Main.dust[superWet].velocity += Projectile.velocity * 0.25f;
@@ -89,8 +89,8 @@ namespace CalamityMod.Projectiles.Melee
             SoundEngine.PlaySound(SoundID.Item27, Projectile.Center);
             for (int k = 0; k < 3; k++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 56, Projectile.oldVelocity.X * 0.25f, Projectile.oldVelocity.Y * 0.25f);
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 245, Projectile.oldVelocity.X * 0.25f, Projectile.oldVelocity.Y * 0.25f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.BlueFairy, Projectile.oldVelocity.X * 0.25f, Projectile.oldVelocity.Y * 0.25f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.SilverCoin, Projectile.oldVelocity.X * 0.25f, Projectile.oldVelocity.Y * 0.25f);
             }
         }
     }

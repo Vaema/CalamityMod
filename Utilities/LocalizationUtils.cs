@@ -1,4 +1,6 @@
-﻿using Terraria.ID;
+﻿using CalamityMod.Enums;
+using Terraria;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
@@ -79,5 +81,47 @@ namespace CalamityMod
         /// <para>NOTE: Modded translations are not loaded until after PostSetupContent.</para>Caching the result is suggested.
         /// </returns>
         public static string GetTextValueFromModItem<T>(string suffix) where T : ModItem => GetTextFromModItem(ModContent.ItemType<T>(), suffix).ToString();
+
+        #region Tooltip Format Helper
+        public static string EmbedItemIcon(this int itemID) => $"[i:{itemID}] " + GetItemName(itemID);
+
+        public static string FramesToSeconds(this int frame) => Round(frame / 60f, "N2");
+
+        public static string ToMph(this float velocity) => Round(velocity * 216000f / 42240f, "N0");
+        public static string ToMphps(this float velocity) => Round(velocity * 60f * 216000f / 42240f, "N2");
+        public static string ToTiles(this float pixel) => Round(pixel / 16f);
+
+        public static string ToRegenPerSecond(this int regen) => Round(regen * 0.5f, "N2");
+        public static string ToJumpSpeedPercent(this float boost) => Round(boost * 20f, "N2");
+        public static string ToStealth(this float stealth) => Round(stealth * 100f, "N0");
+
+        public static string GetChanceFromDenominator(this int denominator) => ToPercent(1 / (float)denominator);
+
+        public static string ToPercent(this float percent, string precision = "N1") => Round(percent * 100f, precision);
+        public static string ToPercent(this double percent, string precision = "N1") => Round(percent * 100D, precision);
+        // Double-rounded for proper digit cutoffs
+        public static string Round(this float number, string precision = "N4") => float.Parse((number).ToString(precision)).ToString();
+        public static string Round(this double number, string precision = "N4") => float.Parse((number).ToString(precision)).ToString();
+        #endregion
+
+        public static string GetArmorSetBonusKey()
+        {
+            ModKeybind setBonusKey = CalamityKeybinds.ArmorSetBonusHotKey;
+            bool hasHotkey = setBonusKey.GetAssignedKeysOrEmpty().Count != 0;
+            string directionKey = (Main.ReversedUpDownArmorSetBonuses ? Language.GetTextValue("Key.UP") : Language.GetTextValue("Key.DOWN"));
+
+            // Allow both
+            if (hasHotkey && CalamityClientConfig.Instance.SetBonusDoubleTap == SetBonusDoubleTapOptions.On)
+                return GetText("Common.BothArmorSetBonusKeys").Format(setBonusKey.TooltipHotkeyString(), directionKey);
+            // Literally bind nothing (mentions the key name to you)
+            else if (!hasHotkey && CalamityClientConfig.Instance.SetBonusDoubleTap == SetBonusDoubleTapOptions.Off)
+                return GetTextValue("Common.NoArmorSetBonusKey");
+            // Hotkey only
+            else if (hasHotkey)
+                return GetText("Common.ArmorSetBonusKey").Format(setBonusKey.TooltipHotkeyString());
+            // Double tap only
+            else
+                return GetText("Common.DoubleTapDown").Format(directionKey);
+        }
     }
 }

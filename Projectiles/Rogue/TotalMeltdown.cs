@@ -8,7 +8,7 @@ namespace CalamityMod.Projectiles.Rogue
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 13;
+            Main.projFrames[Type] = 13;
         }
 
         public override void SetDefaults()
@@ -18,9 +18,9 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.friendly = true;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = Main.projFrames[Projectile.type] * 5;
+            Projectile.timeLeft = Main.projFrames[Type] * 5;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 30;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override void AI()

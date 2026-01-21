@@ -1,9 +1,10 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
-using System;
+using CalamityMod.World;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.ItemDropRules;
@@ -15,8 +16,8 @@ namespace CalamityMod.NPCs.Crags
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            Main.npcFrameCount[Type] = 4;
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 SpriteDirection = -1,
                 PortraitPositionYOverride = -32f
@@ -28,16 +29,18 @@ namespace CalamityMod.NPCs.Crags
 
         public override void SetDefaults()
         {
-            NPC.aiStyle = NPCAIStyleID.AncientVision;
+            NPC.lavaImmune = true;
+            NPC.aiStyle = -1;
             NPC.damage = 33;
             NPC.width = 40;
             NPC.height = 40;
             NPC.defense = 8;
             NPC.lifeMax = 50;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 0, 1, 0);
+            NPC.value = Item.buyPrice(silver: 1);
             NPC.HitSound = SoundID.NPCHit52;
             NPC.DeathSound = SoundID.NPCDeath55;
+            NPC.noGravity = true;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<HeatSpiritBanner>();
             NPC.Calamity().VulnerableToHeat = false;
@@ -48,7 +51,7 @@ namespace CalamityMod.NPCs.Crags
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.HeatSpirit")
             });
@@ -82,7 +85,7 @@ namespace CalamityMod.NPCs.Crags
                 NPC.rotation = (float)Math.Atan2((double)(NPC.velocity.Y * (float)NPC.direction), (double)(NPC.velocity.X * (float)NPC.direction));
             }
             NPC.frameCounter += 0.15f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
@@ -90,6 +93,8 @@ namespace CalamityMod.NPCs.Crags
         public override void AI()
         {
             Lighting.AddLight((int)((NPC.position.X + (float)(NPC.width / 2)) / 16f), (int)((NPC.position.Y + (float)(NPC.height / 2)) / 16f), 0.5f, 0f, 0.05f);
+
+            CalamityGlobalNPC.DoFlyingAI(NPC, (CalamityWorld.death ? 12.8f : CalamityWorld.revenge ? 8.8f : 7.8f), (CalamityWorld.death ? 0.1f : CalamityWorld.revenge ? 0.05f : 0.04f), 350f);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)

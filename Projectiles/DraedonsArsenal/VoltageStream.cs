@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -55,13 +56,13 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     Vector2 dustSpawnPosition = dustInitialPosition + angularOffset.ToRotationVector2() * 4f;
                     dustSpawnPosition.X += 10f * (float)Math.Sin(completionRatio * MathHelper.ToRadians(360f));
 
-                    Dust dust = Dust.NewDustPerfect(dustSpawnPosition, 261);
+                    Dust dust = Dust.NewDustPerfect(dustSpawnPosition, DustID.AncientLight);
                     dust.velocity = Vector2.Zero;
                     dust.noGravity = true;
 
                     dustSpawnPosition = dustInitialPosition + angularOffset.ToRotationVector2() * 4f;
                     dustSpawnPosition.X -= 10f * (float)Math.Sin(completionRatio * MathHelper.ToRadians(360f));
-                    dust = Dust.NewDustPerfect(dustSpawnPosition, 261);
+                    dust = Dust.NewDustPerfect(dustSpawnPosition, DustID.AncientLight);
                     dust.velocity = Vector2.Zero;
                     dust.noGravity = true;
                 }
@@ -72,7 +73,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 {
                     float angle = MathHelper.TwoPi / 50f * i + Utils.GetLerpValue(90f, 150f, Time, true) * MathHelper.ToRadians(1080f);
                     float radius = MathHelper.Lerp(0f, 25f, Utils.GetLerpValue(90f, 150f, Time, true));
-                    Dust dust = Dust.NewDustPerfect(Target.Center + angle.ToRotationVector2() * radius, 226);
+                    Dust dust = Dust.NewDustPerfect(Target.Center + angle.ToRotationVector2() * radius, DustID.Electric);
                     dust.velocity = Vector2.Zero;
                     if (Main.rand.NextBool(6))
                         dust.velocity = Target.SafeDirectionTo(dust.position) * 4.5f;
@@ -85,13 +86,13 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 for (int i = 0; i < 120; i++)
                 {
                     float angle = MathHelper.TwoPi / 120f * i;
-                    Dust dust = Dust.NewDustPerfect(Target.Center + angle.ToRotationVector2() * 25f, 226);
+                    Dust dust = Dust.NewDustPerfect(Target.Center + angle.ToRotationVector2() * 25f, DustID.Electric);
                     dust.velocity = angle.ToRotationVector2() * Main.rand.NextFloat(2f, 9f) * Main.rand.NextBool().ToDirectionInt();
                     dust.velocity = dust.velocity.RotatedBy(dust.velocity.ToRotation() * -0.02f);
                     dust.velocity *= 2.1f;
                     dust.noGravity = true;
                 }
-                Target.AddBuff(BuffID.Electrified, 180);
+                Target.AddBuff(ModContent.BuffType<StaticDischarge>(), 180);
                 Projectile.Kill();
             }
             Time++;

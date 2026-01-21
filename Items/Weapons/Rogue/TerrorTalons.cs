@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 40;
             Item.height = 24;
-            Item.damage = 52;
+            Item.damage = 47;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -23,14 +23,14 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 3f;
             Item.UseSound = SoundID.Item39;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity6BuyPrice;
-            Item.rare = ItemRarityID.LightPurple;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
+            Item.rare = ItemRarityID.Lime;
             Item.shoot = ModContent.ProjectileType<TalonSmallProj>();
-            Item.shootSpeed = 10.5f;
+            Item.shootSpeed = 12f;
             Item.DamageType = RogueDamageClass.Instance;
         }
 
-		public override float StealthDamageMultiplier => 9f;
+        public override float StealthDamageMultiplier => 1.8f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

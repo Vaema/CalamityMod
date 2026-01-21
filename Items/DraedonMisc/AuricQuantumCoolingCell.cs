@@ -1,17 +1,16 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.TileEntities;
 using CalamityMod.Tiles.DraedonSummoner;
 using CalamityMod.Tiles.Furniture.CraftingStations;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using System.Collections.Generic;
-using System.Linq;
-using System;
 
 namespace CalamityMod.Items.DraedonMisc
 {
@@ -23,11 +22,11 @@ namespace CalamityMod.Items.DraedonMisc
         {
             Item.width = 26;
             Item.height = 44;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = Item.useAnimation = 15;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.useAnimation = Item.useTime = 15;
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips) => CalamityGlobalItem.InsertKnowledgeTooltip(tooltips, 5, true);
@@ -48,7 +47,7 @@ namespace CalamityMod.Items.DraedonMisc
 
             if (Main.myPlayer == player.whoAmI && player.WithinRange(Main.MouseWorld, checkDistance) && tile.HasTile && tile.TileType == ModContent.TileType<CodebreakerTile>())
             {
-                SoundEngine.PlaySound(InstallSound, Main.player[Main.myPlayer].Center);
+                SoundEngine.PlaySound(InstallSound, Main.LocalPlayer.Center);
 
                 TECodebreaker codebreakerTileEntity = CalamityUtils.FindTileEntity<TECodebreaker>(placeTileCoords.X, placeTileCoords.Y, CodebreakerTile.Width, CodebreakerTile.Height, CodebreakerTile.SheetSquare);
                 if (codebreakerTileEntity is null || codebreakerTileEntity.ContainsCoolingCell || codebreakerTileEntity.DecryptionCountdown > 0)
@@ -65,11 +64,11 @@ namespace CalamityMod.Items.DraedonMisc
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<AuricBar>(2).
+                AddIngredient<AuricBar>(5).
                 AddIngredient<MysteriousCircuitry>(8).
                 AddIngredient<DubiousPlating>(8).
                 AddIngredient<EndothermicEnergy>(40).
-                AddIngredient<CoreofEleum>(6).
+                AddIngredient<EssenceofEleum>(6).
                 AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(5, out Func<bool> condition), condition).
                 AddTile<CosmicAnvil>().
                 Register();

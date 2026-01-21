@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Daedalus
@@ -9,9 +10,13 @@ namespace CalamityMod.Items.Armor.Daedalus
     public class DaedalusBreastplate : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
+
+        public static float DamageBoost = 0.08f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent());
+
         public override void Load()
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Armor/Daedalus/DaedalusBreastplate_Waist", EquipType.Waist, this);
@@ -21,16 +26,12 @@ namespace CalamityMod.Items.Armor.Daedalus
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
-            Item.defense = 19; //41
+            Item.defense = 19;
         }
 
-        public override void UpdateEquip(Player player)
-        {
-            player.GetDamage<GenericDamageClass>() += 0.03f;
-            player.GetCritChance<GenericDamageClass>() += 3;
-        }
+        public override void UpdateEquip(Player player) => player.GetDamage<GenericDamageClass>() += DamageBoost;
 
         public override void AddRecipes()
         {

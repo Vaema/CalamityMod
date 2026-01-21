@@ -1,8 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
-using CalamityMod.Tiles.Furniture.CraftingStations;
+﻿using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -22,14 +21,13 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 3.5f;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.UseSound = SoundID.Item36;
             Item.autoReuse = true;
             Item.shoot = ProjectileID.PurificationPowder;
             Item.shootSpeed = 5f;
             Item.useAmmo = AmmoID.Bullet;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override Vector2? HoldoutOffset()
@@ -44,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             {
                 float SpeedX = velocity.X + (float)Main.rand.Next(-25, 26) * 0.05f;
                 float SpeedY = velocity.Y + (float)Main.rand.Next(-25, 26) * 0.05f;
-                Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, damage, knockback, player.whoAmI, 0f, 0f);
+                Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, damage, knockback, player.whoAmI);
             }
             return false;
         }
@@ -54,7 +52,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             CreateRecipe().
                 AddIngredient<PurifiedGel>(18).
                 AddIngredient<BlightedGel>(18).
-                AddTile<StaticRefiner>().
+                AddTile(TileID.Solidifier).
                 Register();
         }
     }

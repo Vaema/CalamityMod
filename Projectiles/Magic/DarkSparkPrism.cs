@@ -1,11 +1,11 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.IO;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -16,8 +16,8 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.NeedsUUID[Projectile.type] = true;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.NeedsUUID[Type] = true;
         }
 
         public override void SetDefaults()
@@ -29,6 +29,8 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.ignoreWater = true;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -59,7 +61,7 @@ namespace CalamityMod.Projectiles.Magic
             if (Projectile.ai[0] > 480f)
                 hitCooldown = 5f;
 
-            Projectile.damage = player.ActiveItem() is null ? 0 : player.GetWeaponDamage(player.ActiveItem());
+            Projectile.damage = player.HeldItem is null ? 0 : player.GetWeaponDamage(player.HeldItem);
 
             Projectile.ai[0] += 1f;
             Projectile.ai[1] += 1f;
@@ -88,7 +90,7 @@ namespace CalamityMod.Projectiles.Magic
 
                 if (Main.myPlayer == Projectile.owner)
                 {
-                    float scaleFactor5 = player.ActiveItem().shootSpeed * Projectile.scale;
+                    float scaleFactor5 = player.HeldItem.shootSpeed * Projectile.scale;
                     Vector2 projRotation = playerRotation;
                     Vector2 gravityAdjustedRotation = Main.screenPosition + new Vector2(Main.mouseX, Main.mouseY) - projRotation;
                     if (player.gravDir == -1f)
@@ -120,14 +122,13 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.soundDelay = 10;
                 Projectile.soundDelay *= 2;
                 if (Projectile.ai[0] != 1f)
-                    SoundEngine.PlaySound(SoundID.Item15, Projectile.position);
+                    SoundEngine.PlaySound(SoundID.Item15, Projectile.Center);
             }
 
             if (shouldHitChargedUp && Main.myPlayer == Projectile.owner)
             {
-                bool hasMana = !shouldHitNotCharged || player.CheckMana(player.ActiveItem(), -1, true, false);
-                bool canUseItem = player.channel && hasMana && !player.noItems && !player.CCed;
-                if (canUseItem)
+                bool hasMana = !shouldHitNotCharged || player.CheckMana(player.HeldItem, -1, true, false);
+                if (!player.CantUseHoldout() && hasMana)
                 {
                     if (Projectile.ai[0] == 1f)
                     {
@@ -161,7 +162,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             Vector2 mountedCenter = Main.player[Projectile.owner].MountedCenter;
             Color prismColorArea = Lighting.GetColor((int)((double)Projectile.position.X + (double)Projectile.width * 0.5) / 16, (int)(((double)Projectile.position.Y + (double)Projectile.height * 0.5) / 16.0));
-            if (Projectile.hide && !ProjectileID.Sets.DontAttachHideToAlpha[Projectile.type])
+            if (Projectile.hide && !ProjectileID.Sets.DontAttachHideToAlpha[Type])
             {
                 prismColorArea = Lighting.GetColor((int)mountedCenter.X / 16, (int)(mountedCenter.Y / 16f));
             }
@@ -170,8 +171,8 @@ namespace CalamityMod.Projectiles.Magic
             {
                 spriteEffects = SpriteEffects.FlipHorizontally;
             }
-            Texture2D texture2D14 = ModContent.Request<Texture2D>(Texture).Value;
-            int framing = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
+            Texture2D texture2D14 = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int framing = Terraria.GameContent.TextureAssets.Projectile[Type].Value.Height / Main.projFrames[Type];
             int y7 = framing * Projectile.frame;
             Vector2 drawStart = (Projectile.position + new Vector2((float)Projectile.width, (float)Projectile.height) / 2f + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition).Floor();
             if (Main.player[Projectile.owner].shroomiteStealth && Main.player[Projectile.owner].inventory[Main.player[Projectile.owner].selectedItem].CountsAsClass<RangedDamageClass>())

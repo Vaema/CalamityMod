@@ -1,12 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
-using System.Collections.Generic;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Dusts;
-using CalamityMod.Buffs.DamageOverTime;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -16,7 +13,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         }
 
         public override void SetDefaults()
@@ -80,7 +78,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
                 Projectile.frame = 0;
 
             NPC target = Projectile.FindTargetWithinRange(1600f);
@@ -90,8 +88,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-            int height = texture.Height / Main.projFrames[Projectile.type];
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int height = texture.Height / Main.projFrames[Type];
             int drawStart = height * Projectile.frame;
             Vector2 origin = Projectile.Size / 2;
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, drawStart, texture.Width, height)), Color.White, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
@@ -100,8 +98,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void PostDraw(Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-            int height = texture.Height / Main.projFrames[Projectile.type];
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int height = texture.Height / Main.projFrames[Type];
             int drawStart = height * Projectile.frame;
             Vector2 origin = Projectile.Size / 2;
             SpriteEffects spriteEffects = SpriteEffects.None;
@@ -120,7 +118,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if (target.Calamity().pFlames > 0) {
+            if (target.Calamity().plague)
+            {
                 if (Projectile.ai[1] == 1)
                     return;
                 else if (Main.rand.Next(4) < 3)
@@ -140,7 +139,7 @@ namespace CalamityMod.Projectiles.Ranged
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
             for (int i = 0; i < 20; i++)
             {
-                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 89, 0f, 0f, 100, default, 2f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GemEmerald, 0f, 0f, 100, default, 2f);
                 Main.dust[dust].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -150,14 +149,14 @@ namespace CalamityMod.Projectiles.Ranged
             }
             for (int j = 0; j < 40; j++)
             {
-                int dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 6, 0f, 0f, 100, default, 3f);
+                int dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 3f);
                 Main.dust[dust2].noGravity = true;
                 Main.dust[dust2].velocity *= 5f;
-                dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 6, 0f, 0f, 100, default, 2f);
+                dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 2f);
                 Main.dust[dust2].velocity *= 2f;
             }
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 Vector2 goreSource = Projectile.Center;
                 int goreAmt = 2;

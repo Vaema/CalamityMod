@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.Spears[Item.type] = true;
+            ItemID.Sets.Spears[Type] = true;
         }
 
         public override void SetDefaults()
@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 6.75f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.shoot = ModContent.ProjectileType<VulcaniteLanceProj>();
             Item.shootSpeed = 10f;

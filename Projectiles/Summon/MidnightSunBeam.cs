@@ -1,12 +1,13 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.IO;
-using Terraria;
-using Terraria.ID;
-using Terraria.Enums;
-using Terraria.ModLoader;
+using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
+using Terraria;
+using Terraria.Enums;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -18,7 +19,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            ProjectileID.Sets.MinionShot[Type] = true;
         }
 
         public override void SetDefaults()
@@ -31,7 +32,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.tileCollide = false;
             Projectile.timeLeft = TrueTimeLeft;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 16;
+            Projectile.localNPCHitCooldown = 15;
             Projectile.DamageType = DamageClass.Summon;
         }
 
@@ -173,5 +174,8 @@ namespace CalamityMod.Projectiles.Summon
             }
             return false;
         }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<AuricRebuke>(), 120);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<AuricRebuke>(), 120);
     }
 }

@@ -1,8 +1,8 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -11,30 +11,31 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class AstrealDefeat : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+
         public override void SetDefaults()
         {
             Item.width = 40;
             Item.height = 78;
-            Item.damage = 153;
+            Item.damage = 160;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 4;
             Item.useAnimation = 20;
+            Item.useLimitPerAnimation = 5;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5.5f;
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.UseSound = SoundID.Item102;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<AstrealArrow>();
             Item.shootSpeed = 4f;
             Item.useAmmo = AmmoID.Arrow;
-            Item.Calamity().canFirePointBlankShots = true;
+            Item.consumeAmmoOnLastShotOnly = true;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-
             float speed = velocity.Length();
             if (speed > 8f)
                 velocity *= 8f / speed;
@@ -55,7 +56,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient(ItemID.ShadowFlameBow).
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<AshesofCalamity>(5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

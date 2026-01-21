@@ -1,4 +1,4 @@
-using CalamityMod.Dusts;
+﻿using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -11,8 +11,8 @@ namespace CalamityMod.Projectiles.Summon
         public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
-            Main.projFrames[Projectile.type] = 6;
+            ProjectileID.Sets.MinionShot[Type] = true;
+            Main.projFrames[Type] = 6;
         }
 
         public override void SetDefaults()
@@ -21,7 +21,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.friendly = true;
             Projectile.hostile = false;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = Main.projFrames[Projectile.type] * 5;
+            Projectile.timeLeft = Main.projFrames[Type] * 5;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 10;
         }

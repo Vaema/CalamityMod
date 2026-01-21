@@ -12,10 +12,8 @@ namespace CalamityMod.Items.Fishing.SunkenSeaCatches
         public new string LocalizationCategory => "Items.Fishing";
         public override void SetDefaults()
         {
-            Item.CloneDefaults(ItemID.WispinaBottle);
-            Item.shoot = ModContent.ProjectileType<BabyGhostBell>();
-            Item.buffType = ModContent.BuffType<BabyGhostBellBuff>();
-            Item.value = Item.sellPrice(gold: 5);
+            Item.DefaultToVanitypet(ModContent.ProjectileType<BabyGhostBell>(), ModContent.BuffType<BabyGhostBellBuff>());
+            Item.value = Item.sellPrice(gold: 3); // Equal to Zephyr Fish
             Item.rare = ItemRarityID.Orange;
         }
 

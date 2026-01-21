@@ -1,9 +1,9 @@
-﻿using Terraria.DataStructures;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
@@ -26,18 +26,14 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 4f;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.UseSound = null;
             Item.autoReuse = true;
             Item.shoot = ProjectileID.PurificationPowder;
             Item.shootSpeed = 12f;
             Item.useAmmo = AmmoID.Arrow;
-            Item.Calamity().canFirePointBlankShots = true;
         }
-
-        // Terraria seems to really dislike high crit values in SetDefaults
-        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 20;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
@@ -69,6 +65,16 @@ namespace CalamityMod.Items.Weapons.Ranged
                 arrowScale = 0.5f;
 
             return false;
+        }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe().
+                AddRecipeGroup("AnyMythrilBar", 10).
+                AddIngredient(ItemID.Cog, 15).
+                AddIngredient(ItemID.SoulofSight, 10).
+                AddTile(TileID.MythrilAnvil).
+                Register();
         }
     }
 }

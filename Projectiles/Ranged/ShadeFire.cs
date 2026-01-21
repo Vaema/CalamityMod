@@ -1,9 +1,8 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
@@ -26,7 +25,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.MaxUpdates = 3;
             Projectile.timeLeft = Lifetime; // 20 effectively
             Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 15;
+            Projectile.idStaticNPCHitCooldown = 12;
         }
 
         public override void AI()
@@ -57,6 +56,9 @@ namespace CalamityMod.Projectiles.Ranged
         // Circular hitbox adjusted for the size of the smoke particles (which is 52 here)
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 52 * Projectile.scale * 0.5f, targetHitbox);
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<BrainRot>(), 240);
+
+        //Doze - Flamethrowers in vanilla are long debuff infliction tools (20 seconds of their debuff).
+        //I am applying this as the base for Cal flamethrowers, with shorter times being the exception instead of the rule
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<BrainRot>(), 1200);
     }
 }

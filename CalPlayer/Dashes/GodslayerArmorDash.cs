@@ -10,15 +10,14 @@ using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.CalPlayer.Dashes
 {
     public class GodslayerArmorDash : PlayerDashEffect
     {
-        public static new string ID => "Godslayer Armor";
-
-        public static int GodslayerCooldown = 45;
+        public static new string ID { get; private set; }
 
         public SlotId GSDashSlot;
 
@@ -27,12 +26,17 @@ namespace CalamityMod.CalPlayer.Dashes
         public override DashCollisionType CollisionType => DashCollisionType.ShieldSlam;
 
         public override bool IsOmnidirectional => true;
-        
+
         public int Time = 0;
         public float Size = 2.2f;
         public bool SoundOnce = true;
 
-        public override float CalculateDashSpeed(Player player) => 80f;
+        public override void Load()
+        {
+            ID = DashID;
+        }
+
+        public override float CalculateDashSpeed(Player player) => 32f;
 
         public override void OnDashEffects(Player player)
         {
@@ -46,7 +50,7 @@ namespace CalamityMod.CalPlayer.Dashes
 
             for (int i = 0; i <= 15; i++)
             {
-                Dust dust = Dust.NewDustPerfect(player.position, 181, -player.velocity.RotatedByRandom(MathHelper.ToRadians(35f)) * Main.rand.NextFloat(0.3f, 0.9f), 0, default, Main.rand.NextFloat(3.1f, 3.9f));
+                Dust dust = Dust.NewDustPerfect(player.position, DustID.GiantCursedSkullBolt, -player.velocity.RotatedByRandom(MathHelper.ToRadians(35f)) * Main.rand.NextFloat(0.3f, 0.9f), 0, default, Main.rand.NextFloat(3.1f, 3.9f));
                 dust.noGravity = false;
             }
         }
@@ -57,11 +61,23 @@ namespace CalamityMod.CalPlayer.Dashes
                 Dashsound.Position = player.Center;
 
             Time++;
-            Size -= 0.04f;
+            Size -= 0.01f;
+
+            const int totalDashTime = 75;
+
+            // Constantly update the player's velocity direction.
+            float progress = MathHelper.Clamp(Time / (float)totalDashTime, 0f, 1f);
+            float ease = 1f - (float)Math.Pow(1f - progress, 0.2f);
+            float finalSpeed = MathHelper.Lerp(32f, 11f, ease);
+
+            Vector2 dashVel = Main.MouseWorld - player.Center;
+            Vector2 targetDirection = player.velocity.ToRotation().AngleTowards(dashVel.ToRotation(), 0.175f).ToRotationVector2();
+            player.velocity = targetDirection * finalSpeed;
 
             // Fall way, way, faster than usual.
             player.maxFallSpeed = 50f;
-            if (Time < 20)
+
+            if (Time < 75)
             {
                 Particle jaws = new Jaws(player.Center + player.velocity * 0.5f, player.velocity, Color.Fuchsia, new Vector2(0.8f, 1f), player.velocity.ToRotation() + MathHelper.PiOver2, Size, Size, 2);
                 GeneralParticleHandler.SpawnParticle(jaws);
@@ -70,7 +86,7 @@ namespace CalamityMod.CalPlayer.Dashes
             }
 
             float radiusFactor = MathHelper.Lerp(0f, 1f, Utils.GetLerpValue(2f, 2.5f, Time, true));
-            for (int i = 0; i < 9; i++)
+            for (int i = 0; i < 3; i++)
             {
                 float offsetRotationAngle = player.velocity.ToRotation() + Time / 20f;
                 float radius = (30f + (float)Math.Cos(Time / 3f) * 24f) * radiusFactor;
@@ -84,29 +100,33 @@ namespace CalamityMod.CalPlayer.Dashes
                 dust2.noGravity = true;
             }
 
-            float sparkscale = Size * 1.3f;
-            Vector2 SparkVelocity1 = player.velocity.RotatedBy(player.direction * -4, default) * 0.08f - player.velocity / 2f;
-            SparkParticle spark = new SparkParticle(player.Center + player.velocity.RotatedBy(2f * player.direction) * 1.2f, SparkVelocity1, false, Main.rand.Next(11, 13), sparkscale, Main.rand.NextBool(3) ? Color.Aqua : Color.Fuchsia);
-            GeneralParticleHandler.SpawnParticle(spark);
-            Vector2 SparkVelocity2 = player.velocity.RotatedBy(player.direction * 4, default) * 0.08f - player.velocity / 2f;
-            SparkParticle spark2 = new SparkParticle(player.Center + player.velocity.RotatedBy(-2f * player.direction) * 1.2f, SparkVelocity2, false, Main.rand.Next(11, 13), sparkscale, Main.rand.NextBool(3) ? Color.Aqua : Color.Fuchsia);
-            GeneralParticleHandler.SpawnParticle(spark2);
+            if (Time % 2 == 0)
+            {
+                float sparkscale = Size * 1.3f;
+                Vector2 SparkVelocity1 = player.velocity.RotatedBy(player.direction * -4, default) * 0.08f - player.velocity / 2f;
+                SparkParticle spark = new SparkParticle(player.Center + player.velocity.RotatedBy(2f * player.direction) * 1.2f, SparkVelocity1, false, Main.rand.Next(11, 13), sparkscale, Main.rand.NextBool(3) ? Color.Aqua : Color.Fuchsia);
+                GeneralParticleHandler.SpawnParticle(spark);
+                Vector2 SparkVelocity2 = player.velocity.RotatedBy(player.direction * 4, default) * 0.08f - player.velocity / 2f;
+                SparkParticle spark2 = new SparkParticle(player.Center + player.velocity.RotatedBy(-2f * player.direction) * 1.2f, SparkVelocity2, false, Main.rand.Next(11, 13), sparkscale, Main.rand.NextBool(3) ? Color.Aqua : Color.Fuchsia);
+                GeneralParticleHandler.SpawnParticle(spark2);
+            }
 
-            if (Time > 20 && Time < 100)
+            if (Time > 75 && Time < 78)
             {
                 Particle pulse = new DirectionalPulseRing(player.Center - player.velocity * 0.52f, player.velocity / 1.5f, Color.Fuchsia, new Vector2(1f, 2f), player.velocity.ToRotation(), 0.82f, 0.32f, 60);
                 GeneralParticleHandler.SpawnParticle(pulse);
                 Particle pulse2 = new DirectionalPulseRing(player.Center - player.velocity * 0.40f, player.velocity / 1.5f * 0.9f, Color.Aqua, new Vector2(0.8f, 1.5f), player.velocity.ToRotation(), 0.58f, 0.28f, 50);
                 GeneralParticleHandler.SpawnParticle(pulse2);
-                Time = 111;
+
+                Time = 95;
             }
 
             // Dash at a much, much faster speed than the default value.
-            dashSpeed = 40f;
+            dashSpeed = finalSpeed;
             runSpeedDecelerationFactor = 0.8f;
 
             // Cooldown for God Slayer Armor dash.
-            player.AddCooldown(Cooldowns.GodSlayerDash.ID, CalamityUtils.SecondsToFrames(GodslayerCooldown));
+            player.AddCooldown(Cooldowns.GodSlayerDash.ID, GodSlayerChestplate.DashCooldown);
             player.Calamity().godSlayerDashHotKeyPressed = false;
         }
 
@@ -132,16 +152,15 @@ namespace CalamityMod.CalPlayer.Dashes
             hitContext.PlayerImmunityFrames = AsgardianAegis.ShieldSlamIFrames;
 
             // Define damage parameters.
-            int dashDamage = 3000;
             hitContext.damageClass = player.GetBestClass();
-            hitContext.BaseDamage = player.ApplyArmorAccDamageBonusesTo(dashDamage);
-            hitContext.BaseKnockback = 15f;
+            hitContext.BaseDamage = GodSlayerChestplate.DashDamage;
+            hitContext.BaseKnockback = GodSlayerChestplate.DashKnockback;
 
             // God Slayer Dash intentionally does not use the vanilla function for collision attack iframes.
             // This is because its immunity is meant to be completely consistent and not subject to vanilla anticheese.
             hitContext.PlayerImmunityFrames = GodSlayerChestplate.DashIFrames;
 
-            npc.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 300);
+            npc.AddBuff(ModContent.BuffType<GodSlayerInferno>(), GodSlayerChestplate.DashGodSlayerInfernoDuration);
         }
     }
 }

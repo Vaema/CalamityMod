@@ -1,8 +1,8 @@
-﻿using CalamityMod.Items.Placeables;
+﻿using CalamityMod.Items.Placeables.SunkenSea;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent;
-using Terraria.Localization;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -10,7 +10,7 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
 {
     public class TubeCoralEcho : ModTile
     {
-        public override string Texture => "CalamityMod/Tiles/SunkenSea/TubeCoral";
+        public override string Texture => "CalamityMod/Tiles/SunkenSea/Ambient/TubeCoral";
         public override void SetStaticDefaults()
         {
             Main.tileFrameImportant[Type] = true;
@@ -24,10 +24,10 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
                 16
             };
             TileObjectData.addTile(Type);
-            DustType = 253;
+            DustType = DustID.TsunamiInABottle;
             AddMapEntry(new Color(36, 61, 111));
-            RegisterItemDrop(ModContent.ItemType<Navystone>());
-            FlexibleTileWand.RubblePlacementMedium.AddVariations(ModContent.ItemType<Navystone>(), Type, 0);
+            RegisterItemDrop(ModContent.ItemType<HardenedEutrophicSand>());
+            FlexibleTileWand.RubblePlacementMedium.AddVariations(ModContent.ItemType<HardenedEutrophicSand>(), Type, 0);
 
             base.SetStaticDefaults();
         }

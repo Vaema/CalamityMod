@@ -1,7 +1,7 @@
-﻿using CalamityMod.Items.Tools;
+﻿using System;
+using CalamityMod.Items.Tools;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -29,6 +29,8 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.ownerHitCheck = true;
             Projectile.DamageType = TrueMeleeNoSpeedDamageClass.Instance;
             Projectile.scale = 0.93f;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override bool ShouldUpdatePosition() => false;
@@ -58,7 +60,9 @@ namespace CalamityMod.Projectiles.Typeless
                 Projectile.soundDelay = 30;
             }
 
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Projectile.velocity = (Owner.Calamity().mouseWorld - Owner.MountedCenter).SafeNormalize(Vector2.One);
+
             //Projectile.spriteDirection = Math.Sign(Projectile.velocity.X);
             Owner.heldProj = Projectile.whoAmI;
             Owner.ChangeDir(Math.Sign(Projectile.velocity.X));
@@ -73,7 +77,7 @@ namespace CalamityMod.Projectiles.Typeless
 
             if (Main.rand.NextBool(6))
             {
-                Dust whirrDust = Dust.NewDustDirect(Projectile.position + Projectile.velocity * Main.rand.Next(6, 10) * 0.1f, Projectile.width, Projectile.height, 31, 0f, 0f, 80, Scale: 1.4f) ;
+                Dust whirrDust = Dust.NewDustDirect(Projectile.position + Projectile.velocity * Main.rand.Next(6, 10) * 0.1f, Projectile.width, Projectile.height, DustID.Smoke, 0f, 0f, 80, Scale: 1.4f);
                 whirrDust.position.X -= 4f;
                 whirrDust.noGravity = true;
                 whirrDust.velocity *= 0.2f;
@@ -87,9 +91,9 @@ namespace CalamityMod.Projectiles.Typeless
             if (!Projectile.active)
                 return false;
 
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 origin = new Vector2(9f, tex.Height / 2f);
-            Vector2 shake = Main.rand.NextVector2Circular(1f, 1f) * ((float)Math.Sin(Main.GlobalTimeWrappedHourly ) * 0.25f + 0.75f);
+            Vector2 shake = Main.rand.NextVector2Circular(1f, 1f) * ((float)Math.Sin(Main.GlobalTimeWrappedHourly) * 0.25f + 0.75f);
             SpriteEffects effect = SpriteEffects.None;
             if (Owner.direction * Owner.gravDir < 0)
                 effect = SpriteEffects.FlipVertically;

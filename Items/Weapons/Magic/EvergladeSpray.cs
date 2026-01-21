@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Magic;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -13,15 +12,15 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 34;
             Item.height = 30;
-            Item.damage = 28;
+            Item.damage = 65;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 8;
+            Item.mana = 7;
             Item.useTime = 6;
             Item.useAnimation = 18;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
-            Item.knockBack = 4.5f;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.knockBack = 2f;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.UseSound = SoundID.Item13;
             Item.autoReuse = true;

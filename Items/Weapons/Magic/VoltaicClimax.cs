@@ -14,44 +14,41 @@ namespace CalamityMod.Items.Weapons.Magic
     public class VoltaicClimax : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
-        public const int OrbFireRate = 10;
 
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 78;
             Item.height = 78;
-            Item.damage = 104;
+            Item.damage = 215;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 30;
-            Item.useTime = 33;
-            Item.useAnimation = 33;
+            Item.mana = 32;
+            Item.useTime = Item.useAnimation = 34;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5f;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.UseSound = SoundID.Item20;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<ClimaxProj>();
             Item.shootSpeed = 12f;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            int numOrbs = 8;
-            Vector2 clickPos = Main.MouseWorld;
+            int numOrbs = 9;
+            Vector2 clickPos = player.ClampedMouseWorld();
             float orbSpeed = 14f;
             Vector2 vel = Main.rand.NextVector2CircularEdge(orbSpeed, orbSpeed);
             for (int i = 0; i < numOrbs; i++)
             {
-                // Choose random firing stagger values for each orb to create a desynchronized barrage of lasers
-                float timingStagger = Main.rand.Next(OrbFireRate);
-                Projectile.NewProjectile(source, clickPos, vel, type, damage, knockback, player.whoAmI, ai0: timingStagger);
+                float timingStagger = i * 2;
+                Projectile.NewProjectile(source, clickPos, vel, type, damage, knockback, player.whoAmI, timingStagger);
 
                 vel = vel.RotatedBy(MathHelper.TwoPi / numOrbs);
             }
@@ -62,6 +59,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient<MagneticMeltdown>().
+                AddIngredient<CosmiliteBar>(8).
                 AddIngredient<DarksunFragment>(8).
                 AddTile<CosmicAnvil>().
                 Register();

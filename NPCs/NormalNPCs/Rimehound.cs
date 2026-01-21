@@ -1,13 +1,14 @@
-﻿using CalamityMod.Items.Placeables.Banners;
+﻿using System.IO;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.World;
-using System.IO;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.NPCs.NormalNPCs
 {
     public class Rimehound : ModNPC
@@ -19,8 +20,8 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 9;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            Main.npcFrameCount[Type] = 9;
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Scale = 0.7f,
                 PortraitPositionXOverride = 10f,
@@ -36,17 +37,17 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 56;
             NPC.height = 56;
             NPC.defense = 4;
-            NPC.lifeMax = 50;
+            NPC.lifeMax = 80;
             if (DownedBossSystem.downedCryogen)
             {
                 NPC.damage = 60;
                 NPC.defense = 10;
-                NPC.lifeMax = 1000;
+                NPC.lifeMax = 600;
             }
             NPC.knockBackResist = 0.3f;
             AnimationType = NPCID.Hellhound;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 3, 0);
+            NPC.value = Item.buyPrice(silver: 2);
             NPC.HitSound = HitSound;
             NPC.DeathSound = SoundID.NPCDeath5;
             Banner = NPC.type;
@@ -59,11 +60,11 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Snow,
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.UndergroundSnow,
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Rimehound")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Rimehound")
             });
         }
 
@@ -97,10 +98,10 @@ namespace CalamityMod.NPCs.NormalNPCs
                 {
                     NPC.ai[1] += 1f;
                 }
-                CalamityAI.UnicornAI(NPC, Mod, true, CalamityWorld.death ? 8f : CalamityWorld.revenge ? 6f : 4f, 5f, 0.2f);
+                CalamityRegularEnemyAI.UnicornAI(NPC, Mod, true, CalamityWorld.death ? 8f : CalamityWorld.revenge ? 6f : 4f, 5f, 0.2f);
                 return;
             }
-            CalamityAI.UnicornAI(NPC, Mod, false, CalamityWorld.death ? 8f : CalamityWorld.revenge ? 6f : 4f, 6f, CalamityWorld.death ? 0.1f : CalamityWorld.revenge ? 0.085f : 0.07f);
+            CalamityRegularEnemyAI.UnicornAI(NPC, Mod, false, CalamityWorld.death ? 8f : CalamityWorld.revenge ? 6f : 4f, 6f, CalamityWorld.death ? 0.1f : CalamityWorld.revenge ? 0.085f : 0.07f);
         }
 
         public override void FindFrame(int frameHeight)
@@ -165,7 +166,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("AngryDog").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("AngryDog2").Type, 1f);

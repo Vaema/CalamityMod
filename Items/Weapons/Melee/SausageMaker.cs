@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Melee.Spears;
+﻿using CalamityMod.Projectiles.Melee.Spears;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -11,7 +10,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.Spears[Item.type] = true;
+            ItemID.Sets.Spears[Type] = true;
         }
 
         public override void SetDefaults()
@@ -29,22 +28,12 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 6.25f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.shoot = ModContent.ProjectileType<SausageMakerSpear>();
             Item.shootSpeed = 6f;
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.CrimtaneBar, 4).
-                AddIngredient<BloodSample>(12).
-                AddIngredient(ItemID.Vertebrae, 4).
-                AddTile(TileID.DemonAltar).
-                Register();
-        }
     }
 }

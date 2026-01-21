@@ -1,16 +1,13 @@
-﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
+﻿using System.Collections.Generic;
 using CalamityMod.Buffs.StatBuffs;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Dusts;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Particles;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System.Collections.Generic;
 
 namespace CalamityMod.Projectiles.Healing
 {
@@ -35,7 +32,7 @@ namespace CalamityMod.Projectiles.Healing
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
-            Projectile.timeLeft = 1810;
+            Projectile.timeLeft = GrandGelatin.AuraLifetime + 10;
         }
 
         public override void AI()
@@ -57,15 +54,15 @@ namespace CalamityMod.Projectiles.Healing
                         CleansingEffect = 1;
                         for (int l = 0; l < Player.MaxBuffs; l++)
                         {
-                            int hasBuff = player.buffType[l];
-                            if (player.buffTime[l] > 2 && CalamityLists.debuffList.Contains(hasBuff))
+                            int buffID = player.buffType[l];
+                            if (player.buffTime[l] > 2 && CalamityBuffSets.IsDebuff[buffID])
                             {
                                 player.buffTime[l] *= 0;
                             }
                         }
                         for (int i = 0; i < 55; i++)
                         {
-                            int dust = Dust.NewDust(player.Center, player.width + 4, player.height + 4, 298, player.velocity.X * 0.2f, player.velocity.Y * 0.2f, 100, default, 5.5f);
+                            int dust = Dust.NewDust(player.Center, player.width + 4, player.height + 4, DustID.JungleTorch, player.velocity.X * 0.2f, player.velocity.Y * 0.2f, 100, default, 5.5f);
                             Main.dust[dust].noGravity = true;
                             Main.dust[dust].velocity *= 1.5f;
                             Main.dust[dust].velocity.Y -= 0.5f;
@@ -100,19 +97,19 @@ namespace CalamityMod.Projectiles.Healing
 
                 for (int i = 0; i < 2; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2CircularEdge(232f, 232f), 298);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2CircularEdge(232f, 232f), DustID.JungleTorch);
                     dust.scale = Main.rand.NextFloat(2.2f, 3.3f);
                     dust.noGravity = true;
                 }
 
                 for (int i = 0; i < 1; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(225f, 225f), 298);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(225f, 225f), DustID.JungleTorch);
                     dust.scale = Main.rand.NextFloat(0.8f, 1.3f);
                     dust.noGravity = true;
                 }
 
-                if (Framecounter == 1800)
+                if (Framecounter == GrandGelatin.AuraLifetime)
                 {
                     ShinkGrow = 2;
                 }

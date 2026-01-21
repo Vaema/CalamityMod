@@ -1,17 +1,17 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using System.IO;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.SummonItems;
+using CalamityMod.NPCs.PrimordialWyrm;
 using Microsoft.Xna.Framework;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.NPCs.PrimordialWyrm;
 
 namespace CalamityMod.NPCs.NormalNPCs
 {
@@ -23,8 +23,9 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 6;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
+            Main.npcFrameCount[Type] = 6;
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Scale = 0.75f,
                 PortraitPositionYOverride = 16f
@@ -37,12 +38,12 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.damage = 50;
+            NPC.damage = 0; // 0 contact damage, projectile damage is handled separately
             NPC.width = 60;
             NPC.height = 80;
             NPC.lifeMax = 5000;
-            NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 1, 0, 0);
+            NPC.knockBackResist = 0.5f;
+            NPC.value = Item.buyPrice(silver: 30);
             NPC.Opacity = 0f;
             NPC.noGravity = true;
             NPC.noTileCollide = false;
@@ -60,9 +61,9 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Eidolist")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Eidolist")
             });
         }
 
@@ -80,9 +81,6 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void AI()
         {
-            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
-            NPC.damage = 0;
-
             bool adultWyrmAlive = false;
             if (CalamityGlobalNPC.adultEidolonWyrmHead != -1)
             {
@@ -188,7 +186,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     targetDist = speed / targetDist;
                     targetVec.X *= targetDist;
                     targetVec.Y *= targetDist;
-                    int damage = adultWyrmAlive ? (Main.expertMode ? 150 : 200) : (Main.expertMode ? 30 : 40);
+                    int damage = adultWyrmAlive ? (Main.masterMode ? 127 : Main.expertMode ? 150 : 200) : (Main.masterMode ? 25 : Main.expertMode ? 30 : 40);
                     if (Main.rand.NextBool())
                     {
                         Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, targetVec, ProjectileID.CultistBossLightningOrb, damage, 0f, Main.myPlayer, 0f, 0f);
@@ -228,7 +226,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 SoundEngine.PlaySound(SoundID.Item8, NPC.Center);
                 for (int i = 0; i < 20; i++)
                 {
-                    int eidolistDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, 20, 0f, 0f, 100, Color.Transparent, 1f);
+                    int eidolistDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.PurificationPowder, 0f, 0f, 100, Color.Transparent, 1f);
                     Dust dust = Main.dust[eidolistDust];
                     dust.velocity *= 3f;
                     dust.noGravity = true;
@@ -241,7 +239,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 SoundEngine.PlaySound(SoundID.Item8, NPC.Center);
                 for (int j = 0; j < 20; j++)
                 {
-                    int eidolistDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, 20, 0f, 0f, 100, Color.Transparent, 1f);
+                    int eidolistDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.PurificationPowder, 0f, 0f, 100, Color.Transparent, 1f);
                     Dust dust = Main.dust[eidolistDust2];
                     dust.velocity *= 3f;
                     dust.noGravity = true;
@@ -307,14 +305,14 @@ namespace CalamityMod.NPCs.NormalNPCs
                 NPC.Opacity = 1f;
 
             NPC.frameCounter += hasBeenHit ? 0.15f : 0.075f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            // waffles% stipulation: eidolists are accessible by beating cal clone, even without beating WoF
+            // Waffles% stipulation: Eidolists are accessible by beating Cal Clone, even without beating WoF
             bool hardmodeOrCalClone = Main.hardMode || DownedBossSystem.downedCalamitasClone;
             if (!hardmodeOrCalClone || !spawnInfo.Player.InAbyss())
                 return 0f;
@@ -322,7 +320,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             // Keep this as a separate if check, because it's a loop and we don't want to be checking it constantly.
             if (NPC.AnyNPCs(NPC.type))
                 return 0f;
-
+            
             if (spawnInfo.Player.Calamity().ZoneAbyssLayer3 && spawnInfo.Water)
                 return Main.remixWorld ? 2.25f : 0.25f;
 
@@ -336,15 +334,15 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 4, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 20; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 4, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Eidolist").Type, NPC.scale);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Eidolist2").Type, NPC.scale);
@@ -363,9 +361,9 @@ namespace CalamityMod.NPCs.NormalNPCs
             notDuringCultistFight.Add(ModContent.ItemType<EidolonTablet>(), 4);
             aewMinionCondition.Add(notDuringCultistFight);
 
-            LeadingConditionRule postClone = new LeadingConditionRule(DropHelper.PostCal());
-            postClone.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<Lumenyl>(), 1, 8, 10, 10, 14));
-            aewMinionCondition.Add(postClone);
+            LeadingConditionRule postLevi = new LeadingConditionRule(DropHelper.PostLevi());
+            postLevi.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<Lumenyl>(), 1, 8, 10, 10, 14));
+            aewMinionCondition.Add(postLevi);
 
             LeadingConditionRule postPlant = new LeadingConditionRule(DropHelper.PostPlant());
             postPlant.Add(ItemID.Ectoplasm, 1, 3, 5);

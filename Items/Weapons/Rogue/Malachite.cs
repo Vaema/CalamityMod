@@ -1,27 +1,33 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Rogue
 {
-    public class Malachite : RogueWeapon
+    // Have to directly implement the interface instead of extending LegendaryItem since it already extends RogueWeapon
+    public class Malachite : RogueWeapon, IHoldShiftTooltipItem
     {
+        public string ExtensionIndicatorKey => "Items.Misc.LegendaryShortTooltip";
+        public Color? ExtensionIndicatorColor => null;
+        public string TooltipExtensionKey => "LegendaryText";
+        public Color? TooltipExtensionColor => Color.Lime;
+
         public override void SetStaticDefaults()
         {
-                       ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 28;
             Item.height = 58;
-            Item.damage = 55;
+            Item.damage = 52;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.useTime = Item.useAnimation = 14;
+            Item.useAnimation = Item.useTime = 14;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 1.25f;
             Item.UseSound = SoundID.Item1;
@@ -30,7 +36,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shootSpeed = 10f;
             Item.DamageType = RogueDamageClass.Instance;
 
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
         }
 
@@ -63,13 +69,11 @@ namespace CalamityMod.Items.Weapons.Rogue
             return 2f;
         }
 
-		public override float StealthDamageMultiplier => 1.3f;
-
         public override void ModifyStatsExtra(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
-		{
-			if (player.altFunctionUse == 2 && !player.Calamity().StealthStrikeAvailable())
-				damage = (int)(damage * 1.75f);
-		}
+        {
+            if (player.altFunctionUse == 2 && !player.Calamity().StealthStrikeAvailable())
+                damage = (int)(damage * 1.75f);
+        }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

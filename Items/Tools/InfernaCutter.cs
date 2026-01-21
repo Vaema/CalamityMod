@@ -1,5 +1,4 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -25,7 +24,7 @@ namespace CalamityMod.Items.Tools
             Item.DamageType = DamageClass.Melee;
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
@@ -123,7 +122,7 @@ namespace CalamityMod.Items.Tools
             }
             if (Main.rand.NextBool(4))
             {
-                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 6);
+                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.Torch);
             }
         }
 

@@ -2,9 +2,9 @@
 using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -15,8 +15,9 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 6;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -114,19 +115,19 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<CrushDepth>(), 180);
+            target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 180);
             OnHitEffects();
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            target.AddBuff(ModContent.BuffType<CrushDepth>(), 180);
+            target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 180);
             OnHitEffects();
         }
 
@@ -161,7 +162,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.Center = Projectile.position;
             for (int d = 0; d < 5; d++)
             {
-                int water = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 33, 0f, 0f, 100, default, 2f);
+                int water = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 2f);
                 Main.dust[water].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -171,10 +172,10 @@ namespace CalamityMod.Projectiles.Rogue
             }
             for (int d = 0; d < 8; d++)
             {
-                int water = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 33, 0f, 0f, 100, default, 3f);
+                int water = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 3f);
                 Main.dust[water].noGravity = true;
                 Main.dust[water].velocity *= 5f;
-                water = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 33, 0f, 0f, 100, default, 2f);
+                water = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 2f);
                 Main.dust[water].velocity *= 2f;
             }
         }

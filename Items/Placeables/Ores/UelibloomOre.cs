@@ -11,23 +11,14 @@ namespace CalamityMod.Items.Placeables.Ores
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 100;
-			ItemID.Sets.SortingPriorityMaterials[Type] = 105;
+            ItemID.Sets.SortingPriorityMaterials[Type] = 105;
         }
 
         public override void SetDefaults()
         {
-            Item.width = 10;
-            Item.height = 10;
-            Item.createTile = ModContent.TileType<Tiles.Ores.UelibloomOre>();
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTurn = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.autoReuse = true;
-            Item.consumable = true;
-            Item.maxStack = 9999;
+            Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.Ores.UelibloomOre>());
+            Item.value = Item.sellPrice(silver: 35);
             Item.rare = ModContent.RarityType<Turquoise>();
-            Item.value = Item.sellPrice(gold: 1);
         }
     }
 }

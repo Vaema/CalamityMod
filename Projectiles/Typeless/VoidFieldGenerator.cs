@@ -1,10 +1,10 @@
 ﻿using CalamityMod.CalPlayer;
+using CalamityMod.Graphics.Metaballs;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Graphics.Metaballs;
 
 namespace CalamityMod.Projectiles.Typeless
 {
@@ -68,7 +68,7 @@ namespace CalamityMod.Projectiles.Typeless
                         Vector2 dustpos = Vector2.UnitX * (float)-(float)proj.width / 2f;
                         dustpos += -Vector2.UnitY.RotatedBy((double)((float)i * 3.14159274f / 6f), default) * new Vector2(8f, 16f);
                         dustpos = dustpos.RotatedBy((double)(proj.rotation - 1.57079637f), default);
-                        int dust = Dust.NewDust(proj.Center, 0, 0, 27, 0f, 0f, 100, Color.HotPink, 1f);
+                        int dust = Dust.NewDust(proj.Center, 0, 0, DustID.Shadowflame, 0f, 0f, 100, Color.HotPink, 1f);
                         Main.dust[dust].scale = 1.1f;
                         Main.dust[dust].noGravity = true;
                         Main.dust[dust].position = proj.Center + dustpos;

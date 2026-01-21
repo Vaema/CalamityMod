@@ -12,19 +12,10 @@ namespace CalamityMod.Items.Pets
         public new string LocalizationCategory => "Items.Pets";
         public override void SetDefaults()
         {
-            /*item.DefaultToVanitypet(ModContent.ProjectileType<MiniHiveMind>(), ModContent.BuffType<HiveMindPet>());
-            item.rare = -13;*/
-            Item.width = 16;
-            Item.height = 30;
-            Item.value = Item.buyPrice(0, 4, 0, 0);
-            Item.damage = 0;
-            Item.useTime = Item.useAnimation = 20;
-            Item.useStyle = 1;
-            Item.noMelee = true;
+            Item.DefaultToVanitypet(ModContent.ProjectileType<MiniHiveMind>(), ModContent.BuffType<MiniMindBuff>());
             Item.UseSound = SoundID.NPCHit2;
-            Item.rare = 3;
-            Item.shoot = ModContent.ProjectileType<MiniHiveMind>();
-            Item.buffType = ModContent.BuffType<MiniMindBuff>();
+            Item.value = Item.sellPrice(gold: 2);
+            Item.rare = ItemRarityID.Orange;
         }
 
         public override void UseStyle(Player player, Rectangle heldItemFrame)

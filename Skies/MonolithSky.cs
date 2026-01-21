@@ -1,11 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.GameContent;
 using Terraria.Graphics.Effects;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Skies
@@ -104,7 +102,7 @@ namespace CalamityMod.Skies
 
             if (maxDepth >= float.MaxValue && minDepth < float.MaxValue && Main.LocalPlayer.Calamity().monolithAccursedShader > 21)
             {
-                Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/MainMenu/MenuBackground").Value;
+                Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/MainMenu/ClassicMenuBackground").Value;
                 int offset = Main.BackgroundEnabled ? 200 : 0;
                 spriteBatch.Draw(texture, new Rectangle(0, Math.Max(0, (int)((Main.worldSurface * 16 - Main.screenPosition.Y - texture.Height * 2) * 0.1f)) - offset, Main.screenWidth, Main.screenHeight), Color.White * Math.Min(1f, (Main.screenPosition.Y - 800f) / 1000f * opacity));
             }

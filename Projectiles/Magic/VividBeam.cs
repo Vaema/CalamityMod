@@ -1,10 +1,11 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Magic
 {
     public class VividBeam : ModProjectile, ILocalizedModType
@@ -38,7 +39,7 @@ namespace CalamityMod.Projectiles.Magic
                     Vector2 offset = Vector2.UnitX * 0f;
                     offset += -Vector2.UnitY.RotatedBy((double)((float)d * (MathHelper.TwoPi / dustAmt)), default) * new Vector2(1f, 4f);
                     offset = offset.RotatedBy((double)Projectile.velocity.ToRotation(), default);
-                    int i = Dust.NewDust(Projectile.Center, 0, 0, 66, 0f, 0f, 0, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1f);
+                    int i = Dust.NewDust(Projectile.Center, 0, 0, DustID.RainbowTorch, 0f, 0f, 0, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1f);
                     Main.dust[i].scale = 1.5f;
                     Main.dust[i].noGravity = true;
                     Main.dust[i].position = Projectile.Center + offset;
@@ -59,7 +60,7 @@ namespace CalamityMod.Projectiles.Magic
                 {
                     Vector2 offset = Vector2.UnitX * -12f;
                     offset = -Vector2.UnitY.RotatedBy((double)(Projectile.ai[0] * pi / 24f + (float)d * pi), default) * new Vector2(5f, 10f) - Projectile.rotation.ToRotationVector2() * 10f;
-                    int i = Dust.NewDust(Projectile.Center, 0, 0, 66, 0f, 0f, 160, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1f);
+                    int i = Dust.NewDust(Projectile.Center, 0, 0, DustID.RainbowTorch, 0f, 0f, 160, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1f);
                     Main.dust[i].scale = 0.75f;
                     Main.dust[i].noGravity = true;
                     Main.dust[i].position = Projectile.Center + offset;
@@ -73,7 +74,7 @@ namespace CalamityMod.Projectiles.Magic
                 {
                     Vector2 source = Projectile.position;
                     source -= Projectile.velocity * ((float)d * 0.25f);
-                    int i = Dust.NewDust(source, 1, 1, 66, 0f, 0f, 0, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1f);
+                    int i = Dust.NewDust(source, 1, 1, DustID.RainbowTorch, 0f, 0f, 0, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1f);
                     Main.dust[i].noGravity = true;
                     Main.dust[i].position = source;
                     Main.dust[i].scale = Main.rand.NextFloat(0.91f, 1.417f);
@@ -123,15 +124,11 @@ namespace CalamityMod.Projectiles.Magic
                     break;
 
                 case 2f:
-                    float spread = 30f * 0.01f * MathHelper.PiOver2;
-                    double startAngle = Math.Atan2(Projectile.velocity.X, Projectile.velocity.Y) - spread / 2;
-                    double deltaAngle = spread / 8f;
-                    double offsetAngle;
-                    for (int i = 0; i < 4; i++)
+                    float offset = Main.rand.NextFloat(MathHelper.TwoPi);
+                    for (int i = 0; i < 8; i++)
                     {
-                        offsetAngle = startAngle + deltaAngle * (i + i * i) / 2f + 32f * i;
-                        Projectile.NewProjectile(source, Projectile.Center.X, Projectile.Center.Y, (float)(Math.Sin(offsetAngle) * 5f), (float)(Math.Cos(offsetAngle) * 5f), ModContent.ProjectileType<VividLaser2>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-                        Projectile.NewProjectile(source, Projectile.Center.X, Projectile.Center.Y, (float)(-Math.Sin(offsetAngle) * 5f), (float)(-Math.Cos(offsetAngle) * 5f), ModContent.ProjectileType<VividLaser2>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                        Vector2 velocity = ((MathHelper.TwoPi * i / 8f) - offset).ToRotationVector2() * 4f;
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<VividLaser2>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                     }
                     break;
             }

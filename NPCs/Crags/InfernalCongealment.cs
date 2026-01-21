@@ -1,9 +1,9 @@
 ﻿using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
+using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Placeables.Ores;
-using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.ItemDropRules;
@@ -15,7 +15,7 @@ namespace CalamityMod.NPCs.Crags
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 2;
+            Main.npcFrameCount[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -25,11 +25,11 @@ namespace CalamityMod.NPCs.Crags
             NPC.damage = 40;
             NPC.width = 40;
             NPC.height = 30;
-            NPC.defense = 10;
+            NPC.defense = 30;
             NPC.lifeMax = 250;
-            NPC.knockBackResist = 0f;
+            NPC.knockBackResist = 0.5f;
             AnimationType = NPCID.CorruptSlime;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(silver: 2);
             NPC.alpha = 50;
             NPC.lavaImmune = true;
             NPC.noGravity = false;
@@ -52,10 +52,15 @@ namespace CalamityMod.NPCs.Crags
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.InfernalCongealment")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.InfernalCongealment")
             });
+        }
+
+        public override void AI()
+        {
+            NPC.damage = (NPC.velocity.Y == 0f || NPC.velocity.Length() < 3f) ? 0 : NPC.defDamage;
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
@@ -70,7 +75,7 @@ namespace CalamityMod.NPCs.Crags
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 60, true);
+                target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120);
         }
 
         public override void HitEffect(NPC.HitInfo hit)

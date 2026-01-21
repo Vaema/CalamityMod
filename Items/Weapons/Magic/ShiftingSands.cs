@@ -12,9 +12,9 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void SetDefaults()
         {
             Item.width = Item.height = 58;
-            Item.damage = 76;
+            Item.damage = 81;
             Item.knockBack = 5f;
-            Item.useTime = Item.useAnimation = 30;
+            Item.useAnimation = Item.useTime = 30;
             Item.mana = 20;
             Item.DamageType = DamageClass.Magic;
             Item.channel = true;
@@ -25,19 +25,18 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.UseSound = SoundID.Item20;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
         }
 
-        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
+        public override bool CanUseItem(Player player) => !player.channel;
 
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient(ItemID.MagicMissile).
+                AddIngredient(ItemID.AncientCloth, 5).
                 AddIngredient<GrandScale>().
-                AddIngredient(ItemID.AncientBattleArmorMaterial, 2).
-                AddIngredient(ItemID.SpectreBar, 5).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

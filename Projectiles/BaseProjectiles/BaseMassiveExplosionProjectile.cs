@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Graphics.Shaders;
@@ -26,8 +26,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             if (UsesScreenshake)
             {
                 float screenShakePower = GetScreenshakePower(Projectile.timeLeft / (float)Lifetime) * Utils.GetLerpValue(1300f, 0f, Projectile.Distance(Main.LocalPlayer.Center), true);
-                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < screenShakePower)
-                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = screenShakePower;
+                Main.LocalPlayer.SetScreenshake(screenShakePower);
             }
 
             // Expand outward.

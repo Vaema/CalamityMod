@@ -1,4 +1,5 @@
 ﻿using CalamityMod.NPCs;
+using CalamityMod.Systems.Collections;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -17,12 +18,9 @@ namespace CalamityMod.Buffs.StatDebuffs
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            if (npc.Calamity().timeSlow < npc.buffTime[buffIndex])
-                npc.Calamity().timeSlow = npc.buffTime[buffIndex];
-            if ((CalamityLists.enemyImmunityList.Contains(npc.type) || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
-                npc.Calamity().debuffResistanceTimer = CalamityGlobalNPC.slowingDebuffResistanceMin + npc.Calamity().timeSlow;
-            npc.DelBuff(buffIndex);
-            buffIndex--;
+            npc.Calamity().timeDistortion = true;
+            if ((CalamityNPCSets.ResistSlowingDebuffsAndOtherSpecialEffects[npc.type] || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
+                npc.Calamity().debuffResistanceTimer = CalamityGlobalNPC.slowingDebuffResistanceMin + npc.buffTime[buffIndex];
         }
     }
 }

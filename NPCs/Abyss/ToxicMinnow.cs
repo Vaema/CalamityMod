@@ -1,31 +1,38 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using System.IO;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.Projectiles.Enemy;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
-using Terraria.GameContent;
+using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
-using Terraria.Audio;
 
 namespace CalamityMod.NPCs.Abyss
 {
     public class ToxicMinnow : ModNPC
     {
+        public static Asset<Texture2D> GlowTexture;
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            Main.npcFrameCount[Type] = 4;
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Scale = 0.8f,
             };
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -35,10 +42,10 @@ namespace CalamityMod.NPCs.Abyss
             NPC.width = 80;
             NPC.height = 40;
             NPC.defense = 20;
-            NPC.lifeMax = 240;
+            NPC.lifeMax = 300;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(silver: 4);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.knockBackResist = 0.15f;
@@ -54,9 +61,9 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.ToxicMinnow")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.ToxicMinnow")
             });
         }
 
@@ -72,7 +79,7 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void AI()
         {
-            CalamityAI.PassiveSwimmingAI(NPC, Mod, 2, 0f, 0f, 0f, 0f, 0f, 0.1f);
+            CalamityRegularEnemyAI.PassiveSwimmingAI(NPC, Mod, 2, 0f, 0f, 0f, 0f, 0f, 0.1f);
         }
 
         public override bool? CanBeHitByProjectile(Projectile projectile)
@@ -100,7 +107,7 @@ namespace CalamityMod.NPCs.Abyss
                 double deltaAngleBoom = spreadBoom / 8f;
                 double offsetAngleBoom;
                 int iBoom;
-                int damageBoom = 30;
+                int damageBoom = Main.masterMode ? 19 : Main.expertMode ? 22 : 30;
                 for (iBoom = 0; iBoom < 5; iBoom++)
                 {
                     int projectileType = ModContent.ProjectileType<ToxicMinnowCloud>();
@@ -117,11 +124,9 @@ namespace CalamityMod.NPCs.Abyss
         {
             if (!NPC.IsABestiaryIconDummy)
             {
-                Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/NPCs/Abyss/ToxicMinnowGlow").Value;
-
                 var effects = NPC.direction == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
-                Main.EntitySpriteDraw(tex, NPC.Center - Main.screenPosition + new Vector2(0, NPC.gfxOffY + 4), 
+                Main.EntitySpriteDraw(GlowTexture.Value, NPC.Center - Main.screenPosition + new Vector2(0, NPC.gfxOffY + 4),
                 NPC.frame, Color.White * 0.5f, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, effects, 0);
             }
         }
@@ -155,7 +160,7 @@ namespace CalamityMod.NPCs.Abyss
             else
             {
                 NPC.frameCounter += 0.15f;
-                NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+                NPC.frameCounter %= Main.npcFrameCount[Type];
                 int frame = (int)NPC.frameCounter;
                 NPC.frame.Y = frame * frameHeight;
             }
@@ -176,21 +181,22 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            var postClone = npcLoot.DefineConditionalDropSet(DropHelper.PostCal());
-            postClone.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 2, 3, 4, 6));
+            var postLevi = npcLoot.DefineConditionalDropSet(DropHelper.PostLevi());
+            postLevi.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 2, 3, 4, 6));
+            npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Bezoar, 100, 50));
         }
 
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 40, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.JunglePlants, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 50; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 40, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.JunglePlants, hit.HitDirection, -1f, 0, default, 1f);
                 }
             }
         }

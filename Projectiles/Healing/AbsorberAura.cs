@@ -1,16 +1,14 @@
 ﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
+using System.Collections.Generic;
 using CalamityMod.Buffs.StatBuffs;
-using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
-using CalamityMod.Particles;
+using CalamityMod.Items.Accessories;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
-using Terraria.ID;
 using Terraria.ModLoader;
-using System.Collections.Generic;
 
 namespace CalamityMod.Projectiles.Healing
 {
@@ -18,7 +16,7 @@ namespace CalamityMod.Projectiles.Healing
     {
         public new string LocalizationCategory => "Projectiles.Healing";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-        private int AbDust = ModContent.DustType<AbsorberDust>();
+        private int AbDust = ModContent.DustType<LightDust>();
         public int ShinkGrow = 0;
         public int Framecounter = 0;
         public int CleanseOnce = 1;
@@ -36,12 +34,13 @@ namespace CalamityMod.Projectiles.Healing
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
-            Projectile.timeLeft = 1810;
+            Projectile.timeLeft = TheAbsorber.AuraLifetime + 10;
         }
 
         public override void AI()
         {
             Framecounter++;
+            float sine = Math.Abs((float)Math.Sin((Main.GlobalTimeWrappedHourly * 1.1f) * 5f / MathHelper.Pi));
             for (int playerIndex = 0; playerIndex < Main.maxPlayers; playerIndex++)
             {
                 Player player = Main.player[playerIndex];
@@ -57,77 +56,71 @@ namespace CalamityMod.Projectiles.Healing
                         CleansingEffect = 1;
                         for (int l = 0; l < Player.MaxBuffs; l++)
                         {
-                            int hasBuff = player.buffType[l];
-                            if (player.buffTime[l] > 2 && CalamityLists.debuffList.Contains(hasBuff))
+                            int buffID = player.buffType[l];
+                            if (player.buffTime[l] > 2 && CalamityBuffSets.IsDebuff[buffID])
                             {
                                 player.buffTime[l] *= 0;
                             }
                         }
                         for (int i = 0; i < 55; i++)
                         {
-                            int dust = Dust.NewDust(player.Center, player.width + 4, player.height + 4, AbDust, player.velocity.X * 0.2f, player.velocity.Y * 0.2f, 100, Color.DarkSeaGreen, 5.5f);
+                            int dust = Dust.NewDust(player.Center, player.width + 4, player.height + 4, AbDust, player.velocity.X * 0.2f, player.velocity.Y * 0.2f, 100, default, 5.5f);
                             Main.dust[dust].noGravity = true;
                             Main.dust[dust].velocity *= 1.5f;
                             Main.dust[dust].velocity.Y -= 0.5f;
+                            Main.dust[dust].color = Main.rand.NextBool(3) ? Color.PaleGreen : Color.DarkSeaGreen;
                         }
                         SoundEngine.PlaySound(Spawnsound with { Pitch = -0.9f }, Projectile.Center);
                     }
                 }
             }
 
-            if (ShinkGrow == 0)
+            if (Framecounter >= 10)
             {
-                if (PulseOnce == 1)
-                {
-                    Particle pulse = new StaticPulseRing(Projectile.Center, Vector2.Zero, Color.DarkSeaGreen, new Vector2(1f, 1f), 0f, 0f, 0.2925f, 10);
-                    GeneralParticleHandler.SpawnParticle(pulse);
-                    PulseOnce = 0;
-                }
-
-                if (Framecounter == 10)
-                {
-                    ShinkGrow = 1;
-                }
-            }
-            if (ShinkGrow == 1)
-            {
-                if (PulseOnce2 == 1)
-                {
-                    Particle pulse2 = new StaticPulseRing(Projectile.Center, Vector2.Zero, Color.DarkSeaGreen, new Vector2(1f, 1f), 0f, 0.2925f, 0.2925f, 1790);
-                    GeneralParticleHandler.SpawnParticle(pulse2);
-                    PulseOnce2 = 0;
-                }
-
                 for (int i = 0; i < 3; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2CircularEdge(301.6f, 301.6f), AbDust, null, 0, Color.DarkSeaGreen);
+                    float areaSize = 305f;
+                    Vector2 spawnSpot = Projectile.Center + Main.rand.NextVector2CircularEdge(areaSize, areaSize);
+                    Dust dust = Dust.NewDustPerfect(spawnSpot, AbDust, null, 0);
                     dust.scale = Main.rand.NextFloat(1.2f, 2.3f);
                     dust.noGravity = true;
+                    dust.color = Main.rand.NextBool(3) ? Color.PaleGreen : Color.DarkSeaGreen;
+                    dust.velocity = (Utils.DirectionTo(Projectile.Center, spawnSpot) * Main.rand.NextFloat(1.5f, 4.5f) * sine).RotatedByRandom(0.4f);
                 }
 
                 for (int i = 0; i < 1; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(292.5f, 292.5f), AbDust, null, 0, Color.DarkSeaGreen);
+                    float areaSize = 272.5f + 20 * sine;
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(areaSize, areaSize), AbDust, null, 0);
                     dust.scale = Main.rand.NextFloat(0.3f, 0.9f);
                     dust.noGravity = true;
-                }
-
-                if (Framecounter == 1800)
-                {
-                    ShinkGrow = 2;
+                    dust.color = Main.rand.NextBool(3) ? Color.PaleGreen : Color.DarkSeaGreen;
                 }
             }
-            if (ShinkGrow == 2)
-            {
-                if (PulseOnce3 == 1)
-                {
-                    Particle pulse3 = new StaticPulseRing(Projectile.Center, Vector2.Zero, Color.DarkSeaGreen, new Vector2(1f, 1f), 0f, 0.2925f, 0f, 10);
-                    GeneralParticleHandler.SpawnParticle(pulse3);
-                    PulseOnce3 = 0;
-                }
-            }
+            Projectile.rotation += 0.15f * sine;
         }
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Particles/HighResFoggyCircleHardEdge").Value;
+            Texture2D tex2 = ModContent.Request<Texture2D>("CalamityMod/Particles/HighResHollowCircleHardEdge").Value;
+            Color drawColor1 = Color.DarkSeaGreen;
+            Color drawColor2 = Color.PaleGreen;
+            float sine = Math.Abs((float)Math.Sin((Main.GlobalTimeWrappedHourly * 1.1f) * 5f / MathHelper.Pi));
+            float areaScale = Math.Min(Utils.GetLerpValue(TheAbsorber.AuraLifetime + 10, TheAbsorber.AuraLifetime, Projectile.timeLeft, true), Utils.GetLerpValue(0, 10, Projectile.timeLeft, true));
 
+            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, drawColor1 with { A = 0 } * 0.6f, 0, tex.Size() / 2f, (0.305f - 0.006f * sine) * areaScale, SpriteEffects.None, 0);
+            for (int i = 1; i <= 8; i++)
+            {
+                if (i != 0)
+                {
+                    float rot = (MathHelper.TwoPi * i / 8f);
+                    Main.EntitySpriteDraw(tex2, Projectile.Center - Main.screenPosition, null, drawColor2 with { A = 0 } * 0.03f, Projectile.rotation + rot, tex2.Size() / 2f, new Vector2((0.2f * sine) + 0.8f, 1) * 0.29f * areaScale, SpriteEffects.None, 0);
+                }
+            }
+            //Main.EntitySpriteDraw(tex2, Projectile.Center - Main.screenPosition, null, drawColor1 with { A = 0 } * 0.3f, -Projectile.rotation, tex2.Size() / 2f, new Vector2(0.97f, 1) * 0.3f * areaScale, SpriteEffects.None, 0);
+
+            return false;
+        }
         public override bool? CanDamage() => false;
     }
 }

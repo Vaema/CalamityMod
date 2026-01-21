@@ -1,39 +1,46 @@
 ﻿using System;
 using System.Linq;
-using System.Reflection;
 using CalamityMod.Balancing;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer;
+using CalamityMod.Cooldowns;
 using CalamityMod.DataStructures;
+using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.FluidSimulation;
-using CalamityMod.ForegroundDrawing;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Armor.Wulfrum;
+using CalamityMod.Items.Critters;
 using CalamityMod.Items.Dyes;
+using CalamityMod.Items.Placeables.FurniturePlagued;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs;
+using CalamityMod.NPCs.Abyss;
 using CalamityMod.NPCs.Astral;
-using CalamityMod.NPCs.AstrumAureus;
-using CalamityMod.NPCs.Crabulon;
-using CalamityMod.NPCs.Ravager;
+using CalamityMod.NPCs.DraedonLabThings;
+using CalamityMod.NPCs.SunkenSea;
+using CalamityMod.Packets;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles;
+using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
-using CalamityMod.Tiles.Abyss;
-using CalamityMod.Waters;
+using CalamityMod.Systems.Mechanic;
+using CalamityMod.Tiles;
+using CalamityMod.Utilities.Daybreak;
+using CalamityMod.Walls;
+using CalamityMod.Walls.UnsafeWalls;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
-using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.Drawing;
 using Terraria.GameContent.Events;
-using Terraria.GameContent.Liquid;
+using Terraria.GameContent.UI.Elements;
 using Terraria.GameInput;
-using Terraria.Graphics;
 using Terraria.Graphics.Light;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
@@ -51,16 +58,8 @@ namespace CalamityMod.ILEditing
         private static int aLabDoorClosed = -1;
         private static int exoDoorOpen = -1;
         private static int exoDoorClosed = -1;
-        // Cached for use in ChangeWaterQuadColors.
-        private static CustomLavaStyle cachedLavaStyle = default;
 
-        // Holds the vanilla game function which spawns town NPCs, wrapped in a delegate for reflection purposes.
-        // This function is (optionally) invoked manually in an IL edit to enable NPCs to spawn at night.
-        private static Action VanillaSpawnTownNPCs;
-
-        private static readonly MethodInfo textureGetValueMethod = typeof(Asset<Texture2D>).GetMethod("get_Value", BindingFlags.Public | BindingFlags.Instance);
-
-        public static event Func<VertexColors, int, Point, VertexColors> ExtraColorChangeConditions;
+        //private static readonly MethodInfo textureGetValueMethod = typeof(Asset<Texture2D>).GetMethod("get_Value", BindingFlags.Public | BindingFlags.Instance);
 
         #region Dash Fixes and Improvements
         private static void MakeShieldSlamIFramesConsistent(ILContext il)
@@ -78,7 +77,8 @@ namespace CalamityMod.ILEditing
             cursor.Remove();
 
             // Emit a delegate which calls the Calamity utility to consistently provide iframes.
-            cursor.EmitDelegate<Action<Player, int>>((p, frames) => CalamityUtils.GiveIFrames(p, frames, false));
+            // 17APR2024: Ozzatron: Consistent shield slam iframes are not boosted by Cross Necklace at all and are fixed.
+            cursor.EmitDelegate<Action<Player, int>>((p, frames) => CalamityUtils.GiveUniversalIFrames(p, frames, false));
         }
 
         private static readonly Func<Player, int> CalamityDashEquipped = (Player p) => p.Calamity().HasCustomDash ? 1 : 0;
@@ -108,26 +108,7 @@ namespace CalamityMod.ILEditing
             // This will occur precisely when the player has no vanilla OR Calamity dash items equipped.
             cursor.Emit(OpCodes.Or);
 
-            //
-            // SHIELD OF CTHULHU
-            //
-
-            // Move to Shield of Cthulhu's code by finding its function call for iframes.
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchCall<Player>("GiveImmuneTimeForCollisionAttack")))
-            {
-                LogFailure("Vanilla Dash Fixes", "Could not locate function call for Shield of Cthulhu iframes.");
-                return;
-            }
-
-            if (!cursor.TryGotoPrev(MoveType.AfterLabel, i => i.MatchLdcI4(30)))
-            {
-                LogFailure("Vanilla Dash Fixes", "Could not locate amount of frames of dash cooldown applied on impact with Shield of Cthulhu.");
-                return;
-            }
-
-            // Remove the instruction and replace it with one which gives Calamity's (customizable) amount of dash cooldown.
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_I4, BalancingConstants.OnShieldBonkCooldown);
+            // CIT 22JUL2025: Shield of Cthulhu bonk is reimplemented in a separate On edit; removed the change made to it via this IL edit.
 
             //
             // SOLAR FLARE ARMOR
@@ -229,7 +210,7 @@ namespace CalamityMod.ILEditing
             cursor.Emit(OpCodes.Ldc_I4, 10 - BalancingConstants.ShieldOfCthulhuBonkNoCollideFrames);
         }
 
-        private static void ApplyDashKeybind(Terraria.On_Player.orig_DoCommonDashHandle orig, Player self, out int dir, out bool dashing, Player.DashStartAction dashStartAction)
+        private static void ApplyDashKeybind(On_Player.orig_DoCommonDashHandle orig, Player self, out int dir, out bool dashing, Player.DashStartAction dashStartAction)
         {
             // we feasting multiplayer bugs
             if (self.whoAmI != Main.myPlayer)
@@ -253,16 +234,14 @@ namespace CalamityMod.ILEditing
 
                 dir = self.direction;
                 dashing = true;
-                if (self.dashTime > 0)
-                    self.dashTime--;
-                if (self.dashTime < 0)
-                    self.dashTime++;
 
-                if ((self.dashTime <= 0 && self.direction == -1) || (self.dashTime >= 0 && self.direction == 1))
+                // CIT 16OCT2024: Commented this code out, as there's no reason for custom dash hotkey to use Player.dashTime
+                // and was causing the return of Celestial Starboard's dash bug from early 1.4 versions
+                /*if ((self.dashTime <= 0 && self.direction == -1) || (self.dashTime >= 0 && self.direction == 1))
                 {
                     self.dashTime = 15;
                     return;
-                }
+                }*/
 
                 dashing = true;
                 self.dashTime = 0;
@@ -271,40 +250,87 @@ namespace CalamityMod.ILEditing
                 return;
             }
 
-            if (CalamityKeybinds.DashHotkey.GetAssignedKeys().Count == 0)
+            if (CalamityKeybinds.DashHotkey.GetAssignedKeysOrEmpty().Count == 0)
                 orig(self, out dir, out dashing, dashStartAction);
             else
             {
                 dir = 1;
                 dashing = false;
+                self.dashTime = 0;
             }
         }
-        #endregion
 
-        #region Allow Empress to Enrage in Boss Rush
-        private static bool AllowEmpressToEnrageInBossRush(Terraria.On_NPC.orig_ShouldEmpressBeEnraged orig)
+        private static void DisableDoubleTapOnConfig(On_Player.orig_KeyDoubleTap orig, Player self, int keyDir)
         {
-            if (Main.dayTime || BossRushEvent.BossRushActive)
-                return true;
+            if (self.whoAmI != Main.myPlayer)
+            {
+                orig(self, keyDir);
+                return;
+            }
 
-            return orig();
+            if ((CalamityKeybinds.ArmorSetBonusHotKey.GetAssignedKeysOrEmpty().Count != 0 && CalamityClientConfig.Instance.SetBonusDoubleTap == SetBonusDoubleTapOptions.Auto) || CalamityClientConfig.Instance.SetBonusDoubleTap == SetBonusDoubleTapOptions.Off)
+                return;
+
+            orig(self, keyDir);
         }
         #endregion
 
-        #region Enabling of Triggered NPC Platform Fallthrough
-        // Why this isn't a mechanism provided by TML itself or vanilla itself is beyond me.
-        private static void AllowTriggeredFallthrough(Terraria.On_NPC.orig_ApplyTileCollision orig, NPC self, bool fall, Vector2 cPosition, int cWidth, int cHeight)
+        #region Prevent Vanilla Bosses From Being Marked as Defeated in Boss Rush
+        private static void PreventVanillaBossDeathsInBossRush(ILContext il)
+        {
+            // GOAL: Prevent vanilla boss defeated flags from getting set during Boss Rush.
+            // All of this is handled within a switch case directly in the DoDeathEvents function.
+            // Thus, the objective here is to add a branch past the entire switch case if it is Boss Rush.
+            var cursor = new ILCursor(il);
+
+            // Move to the point right before the switch case.
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCall<NPC>("SpawnOnPlayer")))
+            {
+                LogFailure("Prevent Vanilla Defeated Flags in Boss Rush", "Could not move to before the switch case.");
+                return;
+            }
+
+            // Define a branch label, load the Boss Rush check, and create the branch if it is true.
+            var label = il.DefineLabel();
+            cursor.Emit(OpCodes.Ldsfld, typeof(BossRushEvent).GetField("BossRushActive"));
+            cursor.Emit(OpCodes.Brtrue, label);
+
+            // Move to after the switch case to place the label.
+            for (int i = 0; i < 2; i++)
+            {
+                if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCall<NPC>("SpawnBoss")))
+                {
+                    LogFailure("Prevent Vanilla Defeated Flags in Boss Rush", "Could not move to after the switch case.");
+                    return;
+                }
+            }
+            if (!cursor.TryGotoNext(MoveType.AfterLabel, i => i.MatchLdarg0()))
+            {
+                LogFailure("Prevent Vanilla Defeated Flags in Boss Rush", "Could not move to after the switch case.");
+                return;
+            }
+            cursor.MarkLabel(label);
+        }
+        #endregion
+
+        #region Enabling of Fusion Feeder Sand Digging
+        private static void AllowFusionFeederToDigThroughSand(On_NPC.orig_ApplyTileCollision orig, NPC self, bool fall, Vector2 cPosition, int cWidth, int cHeight)
         {
             if (self.active && self.type == ModContent.NPCType<FusionFeeder>())
             {
                 self.velocity = Collision.AdvancedTileCollision(TileID.Sets.ForAdvancedCollision.ForSandshark, cPosition, self.velocity, cWidth, cHeight, fall, fall, 1);
                 return;
             }
-            var isNpcValid = self.TryGetGlobalNPC(out CalamityGlobalNPC npc); //why the fuck this errors is anybody's guess, it absolutely shouldn't and yet it does
-            if (isNpcValid && self.active && npc.ShouldFallThroughPlatforms)
-                fall = true;
-
             orig(self, fall, cPosition, cWidth, cHeight);
+        }
+        #endregion
+
+        #region Prevent Diabolists from Dropping Stuff in GFB Before Plantera
+        private static void PreventDiabolistLootLogic(On_NPC.orig_NPCLoot orig, NPC self)
+        {
+            if (self.type == NPCID.DiabolistWhite && Main.getGoodWorld && !NPC.downedPlantBoss)
+                return;
+            orig(self);
         }
         #endregion
 
@@ -316,25 +342,23 @@ namespace CalamityMod.ILEditing
             var cursor = new ILCursor(il);
             cursor.EmitDelegate<Action>(() =>
             {
-                // A cached delegate is used here instead of direct reflection for performance reasons
-                // since UpdateTime is called every frame.
-                if (Main.dayTime || CalamityConfig.Instance.TownNPCsSpawnAtNight)
-                    VanillaSpawnTownNPCs();
+                if (Main.dayTime || CalamityServerConfig.Instance.TownNPCsSpawnAtNight)
+                    Main.UpdateTime_SpawnTownNPCs();
             });
 
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchCallOrCallvirt<Main>("UpdateTime_SpawnTownNPCs")))
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchCallOrCallvirt<Main>(nameof(Main.UpdateTime_SpawnTownNPCs))))
             {
-                CalamityMod.Instance.Logger.Warn("Town NPC spawn editing code failed.");
+                CalamityMod.Log.Warn("Town NPC spawn editing code failed.");
                 return;
             }
 
             cursor.Emit(OpCodes.Ret);
         }
 
-        private static void AlterTownNPCSpawnRate(Terraria.On_Main.orig_UpdateTime_SpawnTownNPCs orig)
+        private static void AlterTownNPCSpawnRate(On_Main.orig_UpdateTime_SpawnTownNPCs orig)
         {
             double oldWorldRate = Main.desiredWorldTilesUpdateRate;
-            Main.desiredWorldTilesUpdateRate *= CalamityConfig.Instance.TownNPCSpawnRateMultiplier;
+            Main.desiredWorldTilesUpdateRate *= CalamityServerConfig.Instance.TownNPCSpawnRateMultiplier;
             orig();
             Main.desiredWorldTilesUpdateRate = oldWorldRate;
         }
@@ -406,10 +430,17 @@ namespace CalamityMod.ILEditing
 
             // No interference with ShadowDodge (previously Titanium armor, now Hallowed armor)
         }
+
+        private static void AddHolyProtectionCooldown(On_Player.orig_PutHallowedArmorSetBonusOnCooldown orig, Player self)
+        {
+            // Adds Calamity's Holy Protection cooldown when triggering Hallowed armor's dodge.
+            orig(self);
+            self.AddCooldown(HolyProtection.ID, CalamityUtils.SecondsToFrames(30));
+        }
         #endregion
 
         #region Custom Gate Door Logic
-        private static bool OpenDoor_LabDoorOverride(Terraria.On_WorldGen.orig_OpenDoor orig, int i, int j, int direction)
+        private static bool OpenDoor_LabDoorOverride(On_WorldGen.orig_OpenDoor orig, int i, int j, int direction)
         {
             Tile tile = Main.tile[i, j];
 
@@ -425,7 +456,7 @@ namespace CalamityMod.ILEditing
             return orig(i, j, direction);
         }
 
-        private static bool CloseDoor_LabDoorOverride(Terraria.On_WorldGen.orig_CloseDoor orig, int i, int j, bool forced)
+        private static bool CloseDoor_LabDoorOverride(On_WorldGen.orig_CloseDoor orig, int i, int j, bool forced)
         {
             Tile tile = Main.tile[i, j];
 
@@ -442,20 +473,8 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Platform Collision Checks for Grounded Bosses
-        private static bool EnableCalamityBossPlatformCollision(Terraria.On_NPC.orig_Collision_DecideFallThroughPlatforms orig, NPC self)
-        {
-            if ((self.type == ModContent.NPCType<AstrumAureus>() || self.type == ModContent.NPCType<Crabulon>() || self.type == ModContent.NPCType<RavagerBody>() ||
-                self.type == ModContent.NPCType<RockPillar>() || self.type == ModContent.NPCType<FlamePillar>()) &&
-                self.target >= 0 && Main.player[self.target].position.Y > self.position.Y + self.height)
-                return true;
-
-            return orig(self);
-        }
-        #endregion
-
         #region Incorporate Enchantments in Item Names
-        private static string IncorporateEnchantmentInAffix(Terraria.On_Item.orig_AffixName orig, Item self)
+        private static string IncorporateEnchantmentInAffix(On_Item.orig_AffixName orig, Item self)
         {
             string result = orig(self);
 
@@ -470,34 +489,85 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Hellbound Enchantment Projectile Creation Effects
-        private static int IncorporateMinionExplodingCountdown(Terraria.On_Projectile.orig_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float orig, IEntitySource spawnSource, float x, float y, float xSpeed, float ySpeed, int type, int damage, float knockback, int owner, float ai0, float ai1, float ai2)
+        #region Apply Projectile Variables Upon Creation
+        private static int IncorporateExtraProjectileVariables(On_Projectile.orig_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float orig, IEntitySource spawnSource, float x, float y, float xSpeed, float ySpeed, int type, int damage, float knockback, int owner, float ai0, float ai1, float ai2)
         {
             // This is unfortunately not something that can be done via SetDefaults since owner is set
             // after that method is called. Doing it directly when the projectile is spawned appears to be the only reasonable way.
             int proj = orig(spawnSource, x, y, xSpeed, ySpeed, type, damage, knockback, owner, ai0, ai1, ai2);
             Projectile projectile = Main.projectile[proj];
-            if (projectile.minion)
+
+            Player player = Main.player[projectile.owner];
+            if (Main.gameMenu || !player.active)
+                return proj;
+
+            if (!projectile.TryGetGlobalProjectile<CalamityGlobalProjectile>(out var calProj))
+                return proj;
+
+            // Old Fashioned
+            if (spawnSource is EntitySource_Parent parentSource)
             {
-                Player player = Main.player[projectile.owner];
-                if (Main.gameMenu || !player.active)
-                    return proj;
+                // Parent-spawned projectiles involve 5 relevant sources: Buff, Item, NPC, Player, Projectile
+                // 1. Buffs: Old Fashioned inherently does not affect them, they have no effect
 
-                // Do not apply Hellbound effects to minions not spawned by the item itself, if it came out of an item
-                // This prevent minions like Luxor's Gift getting it, but minions spawned out of minions such as Temporal Umbrella will work fine
-                if (spawnSource is EntitySource_ItemUse && player.ActiveItem().shoot != projectile.type)
-                    return proj;
+                /* 2. Item: If detected to be from weapons, are assumedly debuffed
+                *The criteria includes: A. has damage, B. has use animation, and C. came out of an item
+                *This rules out items such as Bombs or Shield of Cthulhu (hypothetically were it to spawn projectiles)
+                *This source is *not* from item use, but is still used for a multitude of purposes in weapons */
+                if (parentSource.Entity is Item item && item.damage > 0 && item.useAnimation > 0)
+                    calProj.buffedByOldFashioned = false;
 
-                CalamityPlayer.EnchantHeldItemEffects(player, player.Calamity(), player.ActiveItem());
+                // 3. NPCs: Not considered at all; no effect
+
+                // 4. Players: Only considered if the source owner matches the projectile's, otherwise no effect
+                else if (parentSource.Entity is Player parentPlayer && parentPlayer.whoAmI == projectile.owner)
+                {
+                    // 4A. The primary player-based source is item use, which follows the same logic as items (see above)
+                    // Edge case: Wulfrum Fusion Cannon is coded like a weapon. There may be a better way to approach this but an exclusion works for now
+                    if (spawnSource is EntitySource_ItemUse itemSource && itemSource.Item is Item usedItem
+                    && usedItem.damage > 0 && usedItem.useAnimation > 0 && usedItem.type != ModContent.ItemType<WulfrumFusionCannon>())
+                        calProj.buffedByOldFashioned = false;
+                    // 4B. Every non item-use source is assumed safe to buff
+                    else
+                        calProj.buffedByOldFashioned = true;
+                }
+
+                // 5. Projectiles: Directly inherited by its parent projectile
+                else if (parentSource.Entity is Projectile parentProj)
+                    calProj.buffedByOldFashioned = parentProj.Calamity().buffedByOldFashioned;
+            }
+
+            // Hellbound Enchantment
+            // This only applies to minions spawned by weapon uses, preventing other minions such as Luxor's Gift from exploding
+            if (projectile.minion && spawnSource is EntitySource_ItemUse useSource && useSource.Item is Item weapon && weapon.useAnimation > 0)
+            {
+                CalamityPlayer.EnchantHeldItemEffects(player, player.Calamity(), player.HeldItem);
                 if (player.Calamity().explosiveMinionsEnchant)
-                    projectile.Calamity().ExplosiveEnchantCountdown = CalamityGlobalProjectile.ExplosiveEnchantTime;
+                    calProj.ExplosiveEnchantCountdown = CalamityGlobalProjectile.ExplosiveEnchantTime;
+            }
+            // Minion shots inherit the "explode countdown" from the parent minion
+            // This is only to inherit the damage scaling of the minion and does NOT mean the shot will explode too
+            else if (ProjectileID.Sets.MinionShot[projectile.type])
+            {
+                // Going down the chain
+                if (spawnSource is EntitySource_Parent trueSource && trueSource.Entity is Projectile parent)
+                    calProj.ExplosiveEnchantCountdown = parent.Calamity().ExplosiveEnchantCountdown;
             }
             return proj;
         }
         #endregion
 
+        #region Apply Old Fashioned Damage to Miscellanous Hits
+        private static void ApplyOldFashionedDamageToMiscHits(On_Player.orig_ApplyDamageToNPC orig, Player self, NPC npc, int damage, float knockback, int direction, bool crit = false, DamageClass? damageType = null, bool damageVariation = false)
+        {
+            if (self.Calamity().oldFashioned)
+                damage = (int)(damage * OldFashioned.DamageBoostMultiplier);
+            orig(self, npc, damage, knockback, direction, crit, damageType, damageVariation);
+        }
+        #endregion
+
         #region Chaos Stone and Chalice of the Blood God
-        private static void ManaSicknessAndChaliceBufferHeal(ILContext il)
+        private static void ChaliceBufferHeal(ILContext il)
         {
             ILCursor cursor = new ILCursor(il);
 
@@ -512,26 +582,32 @@ namespace CalamityMod.ILEditing
                 return;
             }
 
-            // Load the player onto the stack for use in the following delegate.
+            // Load the player and the healing potion used onto the stack for use in the following delegate.
             cursor.Emit(OpCodes.Ldarg_0);
+            cursor.Emit(OpCodes.Ldarg_1);
 
             // Insert a delegate which applies Chalice of the Blood God's function as appropriate.
-            cursor.EmitDelegate<Action<Player>>(player =>
+            cursor.EmitDelegate<Action<Player, Item>>((player, potion) =>
             {
-                if (!player.active || player.dead)
+                // If the consumed item heals 0 health, don't bother.
+                if (!player.active || player.dead || potion.healLife <= 0)
                     return;
 
                 CalamityPlayer modPlayer = player.Calamity();
                 if (modPlayer is null)
                     return;
 
-                if (modPlayer.chaliceOfTheBloodGod && modPlayer.chaliceBleedoutBuffer > 0D)
+                // CIT 17MAY2025: Bleedout clear has a special interaction with Bloom Stone handled elsewhere; do not run this if wearing Bloom Stone
+                if (modPlayer.chaliceOfTheBloodGod && modPlayer.chaliceBleedoutBuffer > 0D && !modPlayer.bloomStone)
                 {
-                    int amountOfBleedToClear = (int)(modPlayer.chaliceBleedoutBuffer * (1f - ChaliceOfTheBloodGod.HealingPotionBufferClear));
+                    // 20FEB2024: Ozzatron: to prevent abuse, buffer clearing is now 50% of the potion instead of 50% of your buffer
+                    float amountOfBleedToClear = ChaliceOfTheBloodGod.HealingPotionRatioForBufferClear * player.GetHealLife(potion, true);
+
+                    // Actually clear the buffer
                     modPlayer.chaliceBleedoutBuffer -= amountOfBleedToClear;
 
-                    // Display text indicating that damage was transferred to bleedout.
-                    if (Main.netMode != NetmodeID.Server)
+                    // Display text indicating that healing was applied to the bleedout buffer.
+                    if (!Main.dedServ)
                     {
                         string text = $"(+{amountOfBleedToClear})";
                         Rectangle location = new Rectangle((int)player.position.X + 4, (int)player.position.Y - 3, player.width - 4, player.height - 4);
@@ -539,36 +615,39 @@ namespace CalamityMod.ILEditing
                     }
                 }
             });
+        }
+        #endregion
 
-            //
-            // The following section enables Mana Burn for Chaos Stone by conditionally replacing Mana Sickness.
-            //
-
-            // Start by finding the vanilla code which applies Mana Sickness (buff ID 94).
-            if (!cursor.TryGotoNext(c => c.MatchLdcI4(BuffID.ManaSickness)))
+        #region Chaos Stone Mana Burn changes
+        private static bool AllowNegativeCheckMana(On_Player.orig_CheckMana_int_bool_bool orig, Player self, int amount, bool pay, bool blockQuickMana)
+        {
+            if (self.Calamity().ChaosStone)
             {
-                LogFailure("Conditionally Replace Mana Sickness", "Could not locate the mana sickness buff ID.");
-                return;
+                if (pay)
+                    self.statMana -= amount;
+                if (self.statMana < -self.statManaMax2)
+                    self.statMana = -self.statManaMax2;
+                return true;
             }
+            return orig(self, amount, pay, blockQuickMana);
+        }
 
-            // Remove the constant buff ID.
-            cursor.Remove();
-
-            // Load the player onto the stack for use in the following delegate.
-            cursor.Emit(OpCodes.Ldarg_0);
-
-            // Emit code which checks for the Chaos Stone. If equipped, the player gets Mana Burn instead of Mana Sickness.
-            cursor.EmitDelegate<Func<Player, int>>(player =>
+        private static bool AllowNegativeCheckMana(On_Player.orig_CheckMana_Item_int_bool_bool orig, Player self, Item item, int amount, bool pay, bool blockQuickMana)
+        {
+            if (self.Calamity().ChaosStone)
             {
-                if (!player.active || !player.Calamity().ChaosStone)
-                    return BuffID.ManaSickness;
-                return ModContent.BuffType<ManaBurn>();
-            });
+                if (pay)
+                    self.statMana -= item.mana;
+                if (self.statMana < -self.statManaMax2)
+                    self.statMana = -self.statManaMax2;
+                return true;
+            }
+            return orig(self, item, amount, pay, blockQuickMana);
         }
         #endregion
 
         #region Fire Cursor Effect for the Calamity Accessory
-        private static void UseCoolFireCursorEffect(Terraria.On_Main.orig_DrawCursor orig, Vector2 bonus, bool smart)
+        private static void UseCoolFireCursorEffect(On_Main.orig_DrawCursor orig, Vector2 bonus, bool smart)
         {
             Player player = Main.LocalPlayer;
 
@@ -712,11 +791,16 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Custom Draw Layers
-        private static void AdditiveDrawing(ILContext il)
+        #region Custom DoDraw Changes
+        private static void CustomDoDrawChanges(ILContext il)
         {
-            ILCursor cursor = new(il);
-            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCall<MoonlordDeathDrama>("DrawWhite")))
+            // Allows for drawing additive blend projectiles using IAdditiveDrawer.
+            ILCursor cursor = new ILCursor(il);
+
+            // Move before the place we want to inject code.
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchCallOrCallvirt<Main>("DrawInfernoRings")))
+                return;
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCall<ScreenObstruction>("Draw")))
                 return;
 
             cursor.EmitDelegate<Action>(() =>
@@ -724,22 +808,16 @@ namespace CalamityMod.ILEditing
                 Main.spriteBatch.SetBlendState(BlendState.Additive);
 
                 // Draw Projectiles.
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    if (!Main.projectile[i].active)
-                        continue;
-
-                    if (Main.projectile[i].ModProjectile is IAdditiveDrawer d)
+                    if (p.ModProjectile is IAdditiveDrawer d)
                         d.AdditiveDraw(Main.spriteBatch);
                 }
 
                 // Draw NPCs.
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    if (!Main.npc[i].active)
-                        continue;
-
-                    if (Main.npc[i].ModNPC is IAdditiveDrawer d)
+                    if (n.ModNPC is IAdditiveDrawer d)
                         d.AdditiveDraw(Main.spriteBatch);
                 }
 
@@ -749,7 +827,7 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region General Particle Rendering
-        private static void DrawFusableParticles(Terraria.On_Main.orig_SortDrawCacheWorms orig, Main self)
+        private static void DrawFusableParticles(On_Main.orig_SortDrawCacheWorms orig, Main self)
         {
             DeathAshParticle.DrawAll();
 
@@ -759,425 +837,42 @@ namespace CalamityMod.ILEditing
             orig(self);
         }
 
-        private static void DrawForegroundParticles(Terraria.On_Main.orig_DrawInfernoRings orig, Main self)
-        {
-            GeneralParticleHandler.DrawAllParticles(Main.spriteBatch);
-            orig(self);
-        }
         #endregion
 
-        #region Custom Lava Visuals
-
-        private static void CacheLavaStyle(Terraria.On_Main.orig_RenderWater orig, Main self)
+        #region Disable Moon Lord Style Flashes With Photosensitivity Config
+        private static void DisableFlashesWithPhotosensitivityConfig(On_MoonlordDeathDrama.orig_RequestLight orig, float light, Vector2 spot)
         {
-            // Immediately cache the lava drawing style.
-            // This will pay off in SPADES when we go to draw the tiles.
-            foreach (CustomLavaStyle style in CustomLavaManagement.CustomLavaStyles)
-            {
-                if (style.ChooseLavaStyle())
-                {
-                    cachedLavaStyle = style;
-                    orig(self);
-                    return;
-                }
-            }
-
-            cachedLavaStyle = default;
-            orig(self);
-        }
-        
-        private static void DrawCustomLava(Terraria.GameContent.Drawing.On_TileDrawing.orig_DrawPartialLiquid orig, TileDrawing self, bool behindBlocks, Tile tileCache, ref Vector2 position, ref Rectangle liquidSize, int liquidType, ref VertexColors colors)
-        {
-            if (liquidType != 1)
-            {
-                orig(self, behindBlocks, tileCache, ref position, ref liquidSize, liquidType, ref colors);
-                return;
-            }
-
-            int slope = (int)tileCache.Slope;
-            colors = SelectLavaQuadColor(TextureAssets.LiquidSlope[liquidType].Value, ref colors, true);
-            if (!TileID.Sets.BlocksWaterDrawingBehindSelf[tileCache.TileType] || behindBlocks || slope == 0)
-            {
-                Texture2D liquidTexture = SelectLavaTexture(liquidType == 1 ? CustomLavaManagement.LavaBlockTexture : TextureAssets.Liquid[liquidType].Value, LiquidTileType.Block);
-                Main.tileBatch.Draw(liquidTexture, position, liquidSize, colors, default(Vector2), 1f, SpriteEffects.None);
-                return;
-            }
-
-            Texture2D slopeTexture = SelectLavaTexture(liquidType == 1 ? CustomLavaManagement.LavaSlopeTexture : TextureAssets.LiquidSlope[liquidType].Value, LiquidTileType.Slope);
-            liquidSize.X += 18 * (slope - 1);
-            switch (slope)
-            {
-                case 1:
-                    Main.tileBatch.Draw(slopeTexture, position, liquidSize, colors, Vector2.Zero, 1f, SpriteEffects.None);
-                    break;
-                case 2:
-                    Main.tileBatch.Draw(slopeTexture, position, liquidSize, colors, Vector2.Zero, 1f, SpriteEffects.None);
-                    break;
-                case 3:
-                    Main.tileBatch.Draw(slopeTexture, position, liquidSize, colors, Vector2.Zero, 1f, SpriteEffects.None);
-                    break;
-                case 4:
-                    Main.tileBatch.Draw(slopeTexture, position, liquidSize, colors, Vector2.Zero, 1f, SpriteEffects.None);
-                    break;
-            }
-        }
-
-        private static void ChangeWaterQuadColors(ILContext il)
-        {
-            ILCursor cursor = new ILCursor(il);
-
-            if (!cursor.TryGotoNext(c => c.MatchLdfld<LiquidRenderer>("_liquidTextures")))
-            {
-                LogFailure("Custom Lava Drawing", "Could not locate the liquid texture array load.");
-                return;
-            }
-
-            // Move to the end of the get_Value() call and then use the resulting texture to check if a new one should replace it.
-            // Adding to the index directly would seem like a simple, direct way of achieving this since the operation is incredibly light, but
-            // it also unsafe due to the potential for NOP operations to appear.
-            if (!cursor.TryGotoNext(MoveType.After, c => c.MatchCallvirt(textureGetValueMethod)))
-            {
-                LogFailure("Custom Lava Drawing", "Could not locate the liquid texture Value call.");
-                return;
-            }
-            cursor.EmitDelegate<Func<Texture2D, Texture2D>>(initialTexture => SelectLavaTexture(initialTexture, LiquidTileType.Waterflow));
-
-            if (!cursor.TryGotoNext(MoveType.After, c => c.MatchLdloc(9)))
-            {
-                LogFailure("Custom Lava Drawing", "Could not locate the liquid light color.");
-                return;
-            }
-
-            // Pass the texture in so that the method can ensure it is not messing around with non-lava textures.
-            cursor.Emit(OpCodes.Ldarg_0);
-            cursor.Emit(OpCodes.Ldfld, typeof(LiquidRenderer).GetField("_liquidTextures"));
-            cursor.Emit(OpCodes.Ldloc, 8);
-            cursor.Emit(OpCodes.Ldelem_Ref);
-            cursor.Emit(OpCodes.Ldloc, 8);
-            cursor.Emit(OpCodes.Ldloc, 3);
-            cursor.Emit(OpCodes.Ldloc, 4);
-            
-            // Caching these values can save a LOT of overhead at runtime.
-            ModWaterStyle sunkenSeaWater = ModContent.GetInstance<SunkenSeaWater>();
-            ModWaterStyle sulphuricWater = ModContent.GetInstance<SulphuricWater>();
-            ModWaterStyle sulphuricDepthsWater = ModContent.GetInstance<SulphuricDepthsWater>();
-            ModWaterStyle upperAbyssWater = ModContent.GetInstance<UpperAbyssWater>();
-            ModWaterStyle middleAbyssWater = ModContent.GetInstance<MiddleAbyssWater>();
-            ModWaterStyle voidWater = ModContent.GetInstance<VoidWater>();
-            
-            cursor.EmitDelegate<Func<VertexColors, Texture2D, int, int, int, VertexColors>>((initialColor, initialTexture, liquidType, x, y) =>
-            {
-                // Don't bother changing the color if the cached drawing style is null.
-                if (cachedLavaStyle != default)
-                {
-                    initialColor = SelectLavaQuadColor(initialTexture, ref initialColor, liquidType == 1);
-                }
-
-                if (liquidType == sunkenSeaWater.Slot ||
-                liquidType == sulphuricWater.Slot ||
-                liquidType == sulphuricDepthsWater.Slot ||
-                liquidType == upperAbyssWater.Slot ||
-                liquidType == middleAbyssWater.Slot ||
-                liquidType == voidWater.Slot)
-                {
-                    SelectSulphuricWaterColor(x, y, ref initialColor);
-                }
-
-                // Apply any extra color conditions.
-                initialColor = ExtraColorChangeConditions?.Invoke(initialColor, liquidType, new(x, y)) ?? initialColor;
-
-                return initialColor;
-            });
-        }
-
-        private static void DrawCustomLava3(ILContext il)
-        {
-            ILCursor cursor = new ILCursor(il);
-
-            // Locate the local index for the liquid color and tile coordinates.
-            int xCoordLocalIndex = 0;
-            int yCoordLocalIndex = 0;
-            int liquidColorLocalIndex = 0;
-            MethodInfo lightingGetColorMethod = typeof(Lighting).GetMethod("GetColor", new Type[] { typeof(int), typeof(int) });
-            if (!cursor.TryGotoNext(MoveType.Before, c => c.MatchCallOrCallvirt(lightingGetColorMethod)))
-            {
-                LogFailure("Custom Lava Drawing", "Could not lighting GetColor call.");
-                return;
-            }
-            if (!cursor.TryGotoPrev(c => c.MatchLdloc(out xCoordLocalIndex)))
-            {
-                LogFailure("Custom Lava Drawing", "Could not X coordinate local variable index.");
-                return;
-            }
-            if (!cursor.TryGotoPrev(c => c.MatchLdloc(out yCoordLocalIndex)))
-            {
-                LogFailure("Custom Lava Drawing", "Could not Y coordinate local variable index.");
-                return;
-            }
-            if (!cursor.TryGotoNext(c => c.MatchStloc(out liquidColorLocalIndex)))
-            {
-                LogFailure("Custom Lava Drawing", "Could not lighting GetColor local variable index.");
-                return;
-            }
-
-            // Shortly after the liquid color local is the liquid type integer. Locate it.
-            int liquidTypeLocalIndex = 0;
-            if (!cursor.TryGotoNext(MoveType.Before, c => c.MatchLdcI4(0)))
-            {
-                LogFailure("Custom Lava Drawing", "Could not default value for the liquid type.");
-                return;
-            }
-            if (!cursor.TryGotoNext(c => c.MatchStloc(out liquidTypeLocalIndex)))
-            {
-                LogFailure("Custom Lava Drawing", "Could not liquid type local variable index.");
-                return;
-            }
-
-            // Select the lava color.
-            if (!cursor.TryGotoNext(MoveType.After, c => c.MatchCallOrCallvirt<Lighting>("get_NotRetro")))
-            {
-                LogFailure("Custom Lava Drawing", "Could not locate the retro style check.");
-                return;
-            }
-
-            // Pass the texture in so that the method can ensure it is not messing around with non-lava textures.
-            cursor.Emit(OpCodes.Ldloc, liquidColorLocalIndex);
-            cursor.Emit(OpCodes.Ldsfld, typeof(TextureAssets).GetField("Liquid"));
-            cursor.Emit(OpCodes.Ldloc, liquidTypeLocalIndex);
-            cursor.Emit(OpCodes.Ldelem_Ref);
-            cursor.Emit(OpCodes.Call, textureGetValueMethod);
-            cursor.Emit(OpCodes.Ldloc, xCoordLocalIndex);
-            cursor.Emit(OpCodes.Ldloc, yCoordLocalIndex);
-            cursor.EmitDelegate<Func<Color, Texture2D, int, int, Color>>((initialColor, initialTexture, x, y) =>
-            {
-                Color c = SelectLavaColor(initialTexture, initialColor);
-
-                if (ExtraColorChangeConditions is not null)
-                    c = ExtraColorChangeConditions(new(c), Main.waterStyle, new(x, y)).TopLeftColor;
-
-                return c;
-            });
-            cursor.Emit(OpCodes.Stloc, liquidColorLocalIndex);
-
-            // Go back to the start and change textures as necessary.
-            cursor.Index = 0;
-
-            while (cursor.TryGotoNext(c => c.MatchLdsfld(typeof(TextureAssets).GetField("Liquid"))))
-            {
-                // Move to the end of the get_Value() call and then use the resulting texture to check if a new one should replace it.
-                // Adding to the index directly would seem like a simple, direct way of achieving this since the operation is incredibly light, but
-                // it is unsafe due to the potential for NOP operations to appear.
-                if (!cursor.TryGotoNext(MoveType.After, c => c.MatchCallvirt(textureGetValueMethod)))
-                {
-                    LogFailure("Custom Lava Drawing", "Could not locate the liquid texture Value call.");
-                    return;
-                }
-
-                cursor.EmitDelegate<Func<Texture2D, Texture2D>>(initialTexture => SelectLavaTexture(initialTexture, LiquidTileType.Block));
-            }
-        }
-
-        private static void DrawCustomLavafalls(Terraria.On_WaterfallManager.orig_DrawWaterfall_int_int_int_float_Vector2_Rectangle_Color_SpriteEffects orig, WaterfallManager self, int waterfallType, int x, int y, float opacity, Vector2 position, Rectangle sourceRect, Color color, SpriteEffects effects)
-        {
-            waterfallType = CustomLavaManagement.SelectLavafallStyle(waterfallType);
-            color = CustomLavaManagement.SelectLavafallColor(waterfallType, color);
-
-            orig(self, waterfallType, x, y, opacity, position, sourceRect, color, effects);
-        }
-        #endregion
-
-        #region Water Visuals
-        private static void MakeSulphSeaWaterBetter(Terraria.Graphics.Light.On_TileLightScanner.orig_GetTileLight orig, TileLightScanner self, int x, int y, out Vector3 outputColor)
-        {
-            orig(self, x, y, out outputColor);
-            if (outputColor == Vector3.One || outputColor == new Vector3(0.25f, 0.25f, 0.25f) || outputColor == new Vector3(0.5f, 0.5f, 0.5f))
+            // Disable this function from running if the Photosensitivity config is enabled.
+            if (CalamityClientConfig.Instance.Photosensitivity)
                 return;
 
-            Tile tile = CalamityUtils.ParanoidTileRetrieval(x, y);
-            if (tile.LiquidAmount <= 0 || tile.HasTile || (Main.waterStyle != SulphuricWater.Type &&
-            Main.waterStyle != SulphuricDepthsWater.Type && Main.waterStyle != SunkenSeaWater.Type))
-                return;
-
-            Tile above = CalamityUtils.ParanoidTileRetrieval(x, y - 1);
-            if (!Main.gamePaused && !above.HasTile && above.LiquidAmount <= 0 && Main.rand.NextBool(9) &&
-            Main.waterStyle == SulphuricWater.Type)
-            {
-                MediumMistParticle acidFoam = new(new(x * 16f + Main.rand.NextFloat(16f), y * 16f + 8f), -Vector2.UnitY.RotatedByRandom(0.67f) * Main.rand.NextFloat(1f, 2.4f), Color.LightSeaGreen, Color.White, 0.16f, 128f, 0.02f);
-                GeneralParticleHandler.SpawnParticle(acidFoam);
-            }
-
-            if (tile.TileType != (ushort)ModContent.TileType<RustyChestTile>())
-            {
-                if (Main.waterStyle == SulphuricWater.Type && Main.dayTime && !Main.raining)
-                {
-                    float brightness = MathHelper.Clamp(0.2f - (y / 680), 0f, 0.2f);
-                    if (y > 580)
-                        brightness *= 1f - (y - 580) / 100f;
-
-                    float waveScale1 = Main.GameUpdateCount * 0.014f;
-                    float waveScale2 = Main.GameUpdateCount * 0.1f;
-                    int scalar = x + (-y / 2);
-                    float wave1 = waveScale1 * -50 + scalar * 15;
-                    float wave2 = waveScale2 * -10 + scalar * 14;
-                    float wave3 = waveScale1 * -100 + scalar * 13;
-                    float wave4 = waveScale2 * 10 + scalar * 25;
-                    float wave5 = waveScale1 * -70 + scalar * 5;
-                    float wave1angle = 0.55f + 0.45f * (float)Math.Sin(MathHelper.ToRadians(wave1));
-                    float wave2angle = 0.55f + 0.45f * (float)Math.Sin(MathHelper.ToRadians(wave2));
-                    float wave3angle = 0.55f + 0.45f * (float)Math.Sin(MathHelper.ToRadians(wave3));
-                    float wave4angle = 0.55f + 0.45f * (float)Math.Sin(MathHelper.ToRadians(wave4));
-                    float wave5angle = 0.55f + 0.45f * (float)Math.Sin(MathHelper.ToRadians(wave5));
-                    outputColor = Vector3.Lerp(outputColor, Color.LightSeaGreen.ToVector3(), 0.41f + wave1angle + wave2angle + wave3angle + wave4angle + wave5angle);
-                    outputColor *= brightness;
-                }
-
-                if (Main.waterStyle == SulphuricWater.Type && !Main.dayTime && !Main.raining)
-                {
-                    float brightness = MathHelper.Clamp(0.17f - (y / 680), 0f, 0.17f);
-                    if (y > 580)
-                        brightness *= 1f - (y - 580) / 100f;
-
-                    float waveScale1 = Main.GameUpdateCount * 0.014f;
-                    float waveScale2 = Main.GameUpdateCount * 0.1f;
-                    int scalar = x + (-y / 2);
-                    float wave1 = waveScale1 * -50 + scalar * 15;
-                    float wave2 = waveScale2 * -10 + scalar * 14;
-                    float wave3 = waveScale1 * -100 + scalar * 13;
-                    float wave4 = waveScale2 * 10 + scalar * 25;
-                    float wave5 = waveScale1 * -70 + scalar * 5;
-                    float wave1angle = 0.55f + 0.45f * (float)Math.Sin(MathHelper.ToRadians(wave1));
-                    float wave2angle = 0.55f + 0.45f * (float)Math.Sin(MathHelper.ToRadians(wave2));
-                    float wave3angle = 0.55f + 0.45f * (float)Math.Sin(MathHelper.ToRadians(wave3));
-                    float wave4angle = 0.55f + 0.45f * (float)Math.Sin(MathHelper.ToRadians(wave4));
-                    float wave5angle = 0.55f + 0.45f * (float)Math.Sin(MathHelper.ToRadians(wave5));
-                    outputColor = Vector3.Lerp(outputColor, Color.LightSeaGreen.ToVector3(), 0.41f + wave1angle + wave2angle + wave3angle + wave4angle + wave5angle);
-                    outputColor *= brightness;
-                }
-
-                if (Main.waterStyle == SulphuricWater.Type && Main.raining)
-                {
-                    float brightness = MathHelper.Clamp(1f - (y / 680), 0f, 1f);
-                    if (y > 580)
-                        brightness *= 1f - (y - 580) / 100f;
-
-                    outputColor = Vector3.Lerp(outputColor, Color.LightSeaGreen.ToVector3(), 0.41f);
-                    outputColor *= brightness;
-                }
-
-                if (Main.waterStyle == SulphuricDepthsWater.Type)
-                    outputColor = Vector3.Lerp(outputColor, Color.MediumSeaGreen.ToVector3(), 0.18f);
-
-                if (Main.waterStyle == SunkenSeaWater.Type)
-                {
-                    float brightness = MathHelper.Clamp(0.07f, 0f, 0.07f);
-                    float waveScale1 = Main.GameUpdateCount * 0.028f;
-                    float waveScale2 = Main.GameUpdateCount * 0.1f;
-                    int yScale = -y / 2;
-                    int xScale = x / 15;
-                    float wave1 = Main.GameUpdateCount * 0.024f * -50 + ((-x / 30) + (y / 30)) * 25;
-                    float wave2 = waveScale2 * -10 + ((-xScale) + yScale) * 45;
-                    float wave3 = waveScale1 * -100 + ((x / 7) + (y / 50)) * 25;
-                    float wave4 = Main.GameUpdateCount * 0.15f * 10 + ((x / 3) + yScale) * 45;
-                    float wave5 = waveScale1 * -70 + ((-x / 25) + (-y / 25)) * 20;
-                    float wave6 = waveScale2 * -10 + (xScale + yScale) * 45;
-                    float bigwave = Main.GameUpdateCount * 0.01f * -70 + ((-x / 2) + (-y / 40)) * 5;
-                    float wave1angle = 0.55f + 0.45f * (float)Math.Sin(MathHelper.ToRadians(wave1));
-                    float wave2angle = 0.55f + 0.45f * (float)Math.Sin(MathHelper.ToRadians(wave2));
-                    float wave3angle = 0.55f + 0.45f * (float)Math.Sin(MathHelper.ToRadians(wave3));
-                    float wave4angle = 0.55f + 0.45f * (float)Math.Sin(MathHelper.ToRadians(wave4));
-                    float wave5angle = 0.55f + 0.45f * (float)Math.Sin(MathHelper.ToRadians(wave5));
-                    float wave6angle = 0.55f + 0.45f * (float)Math.Sin(MathHelper.ToRadians(wave6));
-                    float bigwaveangle = 0.55f + 0.80f * (float)Math.Sin(MathHelper.ToRadians(bigwave));
-                    outputColor = Vector3.Lerp(outputColor, Color.DeepSkyBlue.ToVector3(), 0.07f + wave1angle + wave2angle + wave3angle + wave4angle + wave5angle + wave6angle + bigwaveangle);
-                    outputColor *= brightness;
-                }
-            }
+            orig(light, spot);
         }
         #endregion
 
         #region Statue Additions
-        /// <summary>
-        /// Change the following code sequence in Wiring.HitWireSingle
-        /// num8 = (int) Utils.SelectRandom<short>(Main.rand, new short[2]
-        /// {
-        ///     355,
-        ///     358
-        /// });
-        ///
-        /// to
-        ///
-        /// var arr = new short[2]
-        /// {
-        ///     355,
-        ///     358
-        /// });
-        /// arr = arr.ToList().Add(id).ToArray();
-        /// num8 = Utils.SelectRandom(Main.rand, arr);
-        ///
-        /// </summary>
-        /// <param name="il"></param>
         private static void AddTwinklersToStatue(ILContext il)
         {
-            // obtain a cursor positioned before the first instruction of the method
-            // the cursor is used for navigating and modifying the il
-            var c = new ILCursor(il);
+            // Allow Twinklers to be spawned by the Firefly Statue.
+            var cursor = new ILCursor(il);
 
-            // the exact location for this hook is very complex to search for due to the hook instructions not being unique, and buried deep in control flow
-            // switch statements are sometimes compiled to if-else chains, and debug builds litter the code with no-ops and redundant locals
-
-            // in general you want to search using structure and function rather than numerical constants which may change across different versions or compile settings
-            // using local variable indices is almost always a bad idea
-
-            // we can search for
-            // switch (*)
-            //   case 54:
-            //     Utils.SelectRandom *
-
-            // in general you'd want to look for a specific switch variable, or perhaps the containing switch (type) { case 105:
-            // but the generated IL is really variable and hard to match in this case
-
-            // we'll just use the fact that there are no other switch statements with case 54, followed by a SelectRandom
-
-            ILLabel[] targets = null;
-            while (c.TryGotoNext(i => i.MatchSwitch(out targets)))
+            // Move to the method which randomly selects an NPC for the Statue to spawn. This is the second call of the method in this function.
+            for (int i = 0; i < 2; i++)
             {
-                // some optimising compilers generate a sub so that all the switch cases start at 0
-                // ldc.i4.s 51
-                // sub
-                // switch
-                int offset = 0;
-                if (c.Prev.MatchSub() && c.Prev.Previous.MatchLdcI4(out offset))
+                if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchCall(typeof(Utils), nameof(Utils.SelectRandom))))
                 {
-                    ;
+                    LogFailure("Add Twinkler to Firefly Statue", "Could not move to the SelectRandom method.");
+                    return;
                 }
-
-                // get the label for case 54: if it exists
-                int case54Index = 54 - offset;
-                if (case54Index < 0 || case54Index >= targets.Length || !(targets[case54Index] is ILLabel target))
-                {
-                    continue;
-                }
-
-                // move the cursor to case 54:
-                c.GotoLabel(target);
-                // there's lots of extra checks we could add here to make sure we're at the right spot, such as not encountering any branching instructions
-                c.GotoNext(i => i.MatchCall(typeof(Utils), nameof(Utils.SelectRandom)));
-
-                // goto next positions us before the instruction we searched for, so we can insert our array modifying code right here
-                c.EmitDelegate<Func<short[], short[]>>(arr =>
-                {
-                    // resize the array and add our custom firefly
-                    Array.Resize(ref arr, arr.Length + 1);
-                    arr[arr.Length - 1] = (short)ModContent.NPCType<Twinkler>();
-                    return arr;
-                });
-
-                // hook applied successfully
-                return;
             }
 
-            // couldn't find the right place to insert
-            throw new Exception("Hook location not found, switch(*) { case 54: ...");
+            // Emit a delegate which resizes the array and adds Twinkler to it.
+            cursor.EmitDelegate<Func<short[], short[]>>(arr =>
+            {
+                Array.Resize(ref arr, arr.Length + 1);
+                arr[arr.Length - 1] = (short)ModContent.NPCType<Twinkler>();
+                return arr;
+            });
         }
         #endregion
 
@@ -1185,43 +880,26 @@ namespace CalamityMod.ILEditing
         private static void MakeTaxCollectorUseful(ILContext il)
         {
             ILCursor cursor = new(il);
-            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCall<Item>("buyPrice")))
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCall<Item>(nameof(Item.buyPrice))))
             {
                 LogFailure("Tax Collector Money Boosts", "Could not locate the amount of money to collect per town NPC.");
                 return;
             }
             cursor.Emit(OpCodes.Pop);
-            cursor.Emit<CalamityGlobalNPC>(OpCodes.Call, "get_TotalTaxesPerNPC");
+            cursor.Emit<CalamityGlobalTownNPC>(OpCodes.Call, $"get_{nameof(CalamityGlobalTownNPC.TotalTaxesPerNPC)}");
 
-            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCall<Item>("buyPrice")))
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCall<Item>(nameof(Item.buyPrice))))
             {
                 LogFailure("Tax Collector Money Boosts", "Could not locate the maximum amount of money to collect.");
                 return;
             }
             cursor.Emit(OpCodes.Pop);
-            cursor.Emit<CalamityGlobalNPC>(OpCodes.Call, "get_TaxesToCollectLimit");
-        }
-        #endregion
-
-        #region Foreground tiles drawing
-        private static void DrawForegroundStuff(Terraria.On_Main.orig_DrawGore orig, Main self)
-        {
-            orig(self);
-            if (Main.PlayerLoaded && !Main.gameMenu)
-                ForegroundManager.DrawTiles();
-        }
-
-        private static void ClearForegroundStuff(Terraria.GameContent.Drawing.On_TileDrawing.orig_PreDrawTiles orig, Terraria.GameContent.Drawing.TileDrawing self, bool solidLayer, bool forRenderTargets, bool intoRenderTargets)
-        {
-            orig(self, solidLayer, forRenderTargets, intoRenderTargets);
-
-            if (!solidLayer && (intoRenderTargets || Lighting.UpdateEveryFrame))
-                ForegroundManager.ClearTiles();
+            cursor.Emit<CalamityGlobalTownNPC>(OpCodes.Call, $"get_{nameof(CalamityGlobalTownNPC.TaxesToCollectLimit)}");
         }
         #endregion
 
         #region Tile ping overlay
-        private static void ClearTilePings(Terraria.GameContent.Drawing.On_TileDrawing.orig_Draw orig, Terraria.GameContent.Drawing.TileDrawing self, bool solidLayer, bool forRenderTargets, bool intoRenderTargets, int waterStyleOverride)
+        private static void ClearTilePings(On_TileDrawing.orig_Draw orig, TileDrawing self, bool solidLayer, bool forRenderTargets, bool intoRenderTargets, int waterStyleOverride)
         {
             //Retro & Trippy light modes are fine. Just reset the cache before every time stuff gets drawn.
             if (Lighting.UpdateEveryFrame)
@@ -1254,7 +932,7 @@ namespace CalamityMod.ILEditing
         /// <summary>
         /// Determines if the custom grapple movement should take place or not. Useful for hooks that only do movement tricks in some cases
         /// </summary>
-        private static void CustomGrappleMovementCheck(Terraria.On_Player.orig_GrappleMovement orig, Player self)
+        private static void CustomGrappleMovementCheck(On_Player.orig_GrappleMovement orig, Player self)
         {
             WulfrumPackPlayer mp = self.GetModPlayer<WulfrumPackPlayer>();
 
@@ -1267,7 +945,7 @@ namespace CalamityMod.ILEditing
         /// <summary>
         /// This is called right before the game decides wether or not to update the players velocity based on "real" physics (aka not tongued or hooked or with a pulley)
         /// </summary>
-        private static void CustomGrapplePreDefaultMovement(Terraria.On_Player.orig_UpdatePettingAnimal orig, Player self)
+        private static void CustomGrapplePreDefaultMovement(On_Player.orig_UpdatePettingAnimal orig, Player self)
         {
             orig(self);
 
@@ -1291,7 +969,7 @@ namespace CalamityMod.ILEditing
         /// Used before the player steps up a half tile. If we don't do that, players that are grappled but don't use hook movement won't be able to go over tiles.
         /// The hook cache is reset in PreUpdateMovement
         /// </summary>
-        private static void CustomGrapplePreStepUp(Terraria.On_Player.orig_SlopeDownMovement orig, Player self)
+        private static void CustomGrapplePreStepUp(On_Player.orig_SlopeDownMovement orig, Player self)
         {
             orig(self);
 
@@ -1305,9 +983,9 @@ namespace CalamityMod.ILEditing
         }
 
         /// <summary>
-        /// This is done to put the hook if it was cacehd during the frame instruction.
+        /// This is done to put the hook if it was cached during the frame instruction.
         /// </summary>
-        private static void CustomGrapplePostFrame(Terraria.On_Player.orig_PlayerFrame orig, Player self)
+        private static void CustomGrapplePostFrame(On_Player.orig_PlayerFrame orig, Player self)
         {
             orig(self);
             WulfrumPackPlayer mp = self.GetModPlayer<WulfrumPackPlayer>();
@@ -1319,16 +997,6 @@ namespace CalamityMod.ILEditing
             }
 
             mp.hookCache = -1;
-        }
-        #endregion
-
-        #region Find Calamity Item Dye Shader
-
-        internal static void FindCalamityItemDyeShader(Terraria.On_Player.orig_UpdateItemDye orig, Player self, bool isNotInVanitySlot, bool isSetToHidden, Item armorItem, Item dyeItem)
-        {
-            orig(self, isNotInVanitySlot, isSetToHidden, armorItem, dyeItem);
-            if (armorItem.type == ModContent.ItemType<Calamity>())
-                self.Calamity().CalamityFireDyeShader = GameShaders.Armor.GetShaderFromItemId(dyeItem.type);
         }
         #endregion
 
@@ -1353,6 +1021,941 @@ namespace CalamityMod.ILEditing
             cursor.EmitDelegate<Func<bool, bool>>((x) => !x);
 
             // The next (untouched) instruction stores this value into Player.scope.
+        }
+        #endregion
+
+        #region Custom world selection difficulties
+        internal static void GetDifficultyOverride(On_AWorldListItem.orig_GetDifficulty orig, AWorldListItem self, out string expertText, out Color gameModeColor)
+        {
+            // Run the original code and pull out the original text and text color
+            orig(self, out expertText, out gameModeColor);
+
+            string difficultyText = expertText;
+            Color difficultyColor = gameModeColor;
+
+            // Journey Mode takes ultimate priority
+            if (difficultyColor == Main.creativeModeColor)
+            {
+                return;
+            }
+
+            // Go through the World Selection Difficulty System's World Difficulty list backwards and choose the latest difficulty that applies
+            for (int i = WorldSelectionDifficultySystem.WorldDifficulties.Count - 1; i >= 0; i--)
+            {
+                WorldSelectionDifficultySystem.WorldDifficulty d = WorldSelectionDifficultySystem.WorldDifficulties[i];
+                {
+                    if (d.function(self))
+                    {
+                        difficultyText = d.name;
+                        difficultyColor = d.color;
+                        break;
+                    }
+                }
+            }
+
+            // Set the text and text color
+            expertText = difficultyText;
+            gameModeColor = difficultyColor;
+        }
+        #endregion
+
+        #region Shimmer effect edits
+        public static void ShimmerEffectEdits(On_Item.orig_GetShimmered orig, Item self)
+        {
+            // Make Plagued Containment Bricks turn into Plagued Nanodroids if shimmered before defeating Golem
+            if (self.type == ModContent.ItemType<PlaguedContainmentBrick>())
+            {
+                if (NPC.downedGolemBoss)
+                    orig(self);
+                else
+                {
+                    for (int i = 0; i < 3; i++)
+                    {
+                        int nanodroidType = Main.rand.NextBool() ? ModContent.NPCType<NanodroidPlagueGreen>() : ModContent.NPCType<NanodroidPlagueRed>();
+                        NPC droids = NPC.NewNPCDirect(self.GetSource_FromThis(), (int)self.Center.X, (int)self.Center.Y, nanodroidType);
+                        droids.velocity = -self.velocity.RotatedByRandom(MathHelper.Pi / 20f) * 2f;
+                        droids.netUpdate = true;
+                        droids.shimmerTransparency = 1f;
+                        NetMessage.SendData(MessageID.ShimmerActions, -1, -1, null, 2, droids.whoAmI);
+                    }
+
+                    self.TurnToAir();
+                    self.shimmerWet = true;
+                    self.wet = true;
+                    self.velocity *= 0.1f;
+                    if (Main.netMode == NetmodeID.SinglePlayer)
+                    {
+                        Item.ShimmerEffect(self.Center);
+                    }
+                    else
+                    {
+                        NetMessage.SendData(MessageID.ShimmerActions, -1, -1, null, 0, (int)self.Center.X, (int)self.Center.Y);
+                        NetMessage.SendData(MessageID.SyncItemsWithShimmer, -1, -1, null, self.whoAmI, 1f);
+                    }
+                }
+            }
+            else
+            {
+                orig(self);
+            }
+        }
+        #endregion
+
+        #region Block Abyss from Teleportation Potions
+
+        public static void TPOverride(On_Player.orig_Teleport orig, Player self, Vector2 newPos, int Style = 0, int extraInfo = 0)
+        {
+            // Grab the tile from where the potion wants to teleport
+            Tile t = CalamityUtils.ParanoidTileRetrieval(newPos.ToTileCoordinates().X, newPos.ToTileCoordinates().Y);
+            // Check if it's a Teleportation Potion
+            if (Style == 2)
+            {
+                // Check if it's an Abyss wall
+                if (t.WallType == ModContent.WallType<UnsafeSulphurousShaleWall>() || t.WallType == ModContent.WallType<UnsafeAbyssGravelWall>() || t.WallType == ModContent.WallType<PyreMantleWall>() || t.WallType == ModContent.WallType<UnsafeVoidstoneWall>() || t.WallType == ModContent.WallType<HardenedSulphurousSandstoneWall>() || t.WallType == ModContent.WallType<UnsafeSulphurousSandstoneWall>())
+                {
+                    // If an Abyss wall is detected, try to find another teleportation location
+                    bool canSpawn = false;
+                    int teleportStartX = 100;
+                    int teleportRangeX = Main.maxTilesX - 200;
+                    int teleportStartY = 100;
+                    int underworldLayer = Main.UnderworldLayer;
+                    Vector2 newerPos = self.CheckForGoodTeleportationSpot(ref canSpawn, teleportStartX, teleportRangeX, teleportStartY, underworldLayer, new Player.RandomTeleportationAttemptSettings
+                    {
+                        avoidLava = true,
+                        avoidHurtTiles = true,
+                        maximumFallDistanceFromOrignalPoint = 100,
+                        attemptsBeforeGivingUp = 1000
+                    });
+                    // Attempt teleporting again with the new location
+                    orig(self, newerPos, Style, extraInfo);
+                }
+                else
+                {
+                    orig(self, newPos, Style, extraInfo);
+                }
+            }
+            else
+            {
+                orig(self, newPos, Style, extraInfo);
+                // Potion of Return triggers Jared if used in the Abyss
+                if (Style == 8)
+                {
+                    if (t.WallType == ModContent.WallType<UnsafeSulphurousShaleWall>() || t.WallType == ModContent.WallType<UnsafeAbyssGravelWall>() || t.WallType == ModContent.WallType<PyreMantleWall>() || t.WallType == ModContent.WallType<UnsafeVoidstoneWall>() || t.WallType == ModContent.WallType<HardenedSulphurousSandstoneWall>() || t.WallType == ModContent.WallType<UnsafeSulphurousSandstoneWall>())
+                        self.AddBuff(BuffID.ChaosState, 2);
+                }
+            }
+        }
+        #endregion
+
+        #region Optimized GlowMask Rendering on Tile
+        private static void GlowMaskTileRender(On_TileDrawing.orig_DrawSingleTile orig, TileDrawing self, TileDrawInfo drawData, bool solidLayer, int waterStyleOverride, Vector2 screenPosition, Vector2 screenOffset, int tileX, int tileY)
+        {
+            orig(self, drawData, solidLayer, waterStyleOverride, screenPosition, screenOffset, tileX, tileY);
+
+            var type = drawData.typeCache;
+            if (type >= GlowMaskTile.LookupLength)
+                return;
+
+            var glowMaskTile = GlowMaskTile.InstanceLookup[type];
+            if (glowMaskTile is null || !TileDrawing.IsVisible(drawData.tileCache))
+                return;
+
+            var glowMask = glowMaskTile.GlowMask;
+            var xPos = drawData.tileFrameX + drawData.addFrX;
+            var yPos = drawData.tileFrameY + drawData.addFrY;
+            if (glowMask.HasContentInFramePos(xPos, yPos))
+            {
+                ref Tile tileCache = ref drawData.tileCache;
+                int colType = tileCache.TileColor;
+
+                Color drawColor = glowMaskTile.GetGlowMaskColor(tileX, tileY, drawData);
+
+                if (glowMaskTile.GlowMaskAffectedByLight)
+                {
+                    Color tileLight = drawData.tileLight;
+
+                    if (tileLight.R > drawColor.R) drawColor.R = tileLight.R;
+                    if (tileLight.G > drawColor.G) drawColor.G = tileLight.G;
+                    if (tileLight.B > drawColor.B) drawColor.B = tileLight.B;
+                }
+
+                drawColor = glowMaskTile.GlowMaskPaintInteraction switch
+                {
+                    GlowMaskTile.PaintColorTint.OnlyByDeepPaint => CalamityUtils.ApplyPaint(colType, drawColor, deepPaintOnly: true),
+                    GlowMaskTile.PaintColorTint.ByEveryPaint => CalamityUtils.ApplyPaint(colType, drawColor, deepPaintOnly: false),
+                    _ => drawColor
+                };
+
+                if (glowMaskTile.GlowMaskCanBeCulled)
+                {
+                    // Cull no lit and too dark colors
+                    if (drawColor.R <= 1 && drawColor.G <= 1 && drawColor.B <= 1)
+                        return;
+                }
+
+                drawColor.A = 255;
+
+                if (Main.tileSolid[type])
+                {
+                    var drawRect = new Rectangle(xPos, yPos, 16, 16);
+                    TileFramingSystem.SlopedGlowmask(in tileCache, tileX, tileY, glowMask.Texture, drawRect, drawColor, default);
+                }
+                else
+                {
+                    Vector2 drawPos = new Vector2(tileX * 16, tileY * 16) - screenPosition + screenOffset;
+                    Rectangle drawRect = new Rectangle(xPos, yPos, 16, 16);
+                    Main.spriteBatch.Draw(glowMask.Texture, drawPos, drawRect, drawColor, 0.0f, default, 1.0f, drawData.tileSpriteEffect, 0.0f);
+                }
+            }
+        }
+        #endregion
+
+        #region Allow Cannons to use jellyfish
+        public static void AllowCannonJellyfishUse(On_Player.orig_PlaceThing_CannonBall orig, Player self)
+        {
+            // Check if the player is holding a jelly
+            if (self.HeldItem.type == ModContent.ItemType<BabyCannonballJellyfishItem>())
+            {
+                // I have no comments here.
+                bool veryLongRangeCheck = self.position.X / 16f - (float)Player.tileRangeX - (float)self.HeldItem.tileBoost - (float)self.blockRange <= (float)Player.tileTargetX
+                    && (self.position.X + (float)self.width) / 16f + (float)Player.tileRangeX + (float)self.HeldItem.tileBoost - 1f + (float)self.blockRange >= (float)Player.tileTargetX
+                    && self.position.Y / 16f - (float)Player.tileRangeY - (float)self.HeldItem.tileBoost - (float)self.blockRange <= (float)Player.tileTargetY
+                    && (self.position.Y + (float)self.height) / 16f + (float)Player.tileRangeY + (float)self.HeldItem.tileBoost - 2f + (float)self.blockRange >= (float)Player.tileTargetY;
+
+                int targX = Player.tileTargetX;
+                int targY = Player.tileTargetY;
+
+                Tile t = CalamityUtils.ParanoidTileRetrieval(targX, targY);
+
+                // All vanilla cannon types (such as the Bunny Cannon) are a single tile ID, this lets us determine that this tile is the normal Cannon
+                int cannonType = t.TileFrameX / 72;
+
+                // If the player's target tile is within range, is a normal Cannon, they are using an item, and their item time is zero, shoot the baby
+                if (t.TileType == TileID.Cannon && cannonType == 0 && self.ItemTimeIsZero && self.controlUseItem && veryLongRangeCheck)
+                {
+                    self.cursorItemIconEnabled = true;
+                    self.cursorItemIconID = ModContent.ItemType<BabyCannonballJellyfishItem>();
+                    self.HeldItem.makeNPC = -1; // Prevent it from spawning critters when used
+
+                    // Determines where all the action should happen and what the angle of the cannon is
+                    int tileX = t.TileFrameX / 18;
+                    int angle = 0;
+                    while (tileX >= 4)
+                    {
+                        tileX -= 4;
+                    }
+                    tileX = targX - tileX;
+                    int tileY;
+                    for (tileY = t.TileFrameY / 18; tileY >= 3; tileY -= 3)
+                    {
+                        angle++;
+                    }
+                    tileY = targY - tileY;
+
+                    self.ApplyItemTime(self.HeldItem);
+
+                    float speedX = 0f;
+                    float speedY = 0f;
+
+                    // Vanilla code for determining the velocity of shot cannonballs kept intact for consistency
+                    if (angle == 0)
+                    {
+                        speedX = 10f;
+                        speedY = 0f;
+                    }
+                    if (angle == 1)
+                    {
+                        speedX = 7.5f;
+                        speedY = -2.5f;
+                    }
+                    if (angle == 2)
+                    {
+                        speedX = 5f;
+                        speedY = -5f;
+                    }
+                    if (angle == 3)
+                    {
+                        speedX = 2.75f;
+                        speedY = -6f;
+                    }
+                    if (angle == 4)
+                    {
+                        speedX = 0f;
+                        speedY = -10f;
+                    }
+                    if (angle == 5)
+                    {
+                        speedX = -2.75f;
+                        speedY = -6f;
+                    }
+                    if (angle == 6)
+                    {
+                        speedX = -5f;
+                        speedY = -5f;
+                    }
+                    if (angle == 7)
+                    {
+                        speedX = -7.5f;
+                        speedY = -2.5f;
+                    }
+                    if (angle == 8)
+                    {
+                        speedX = -10f;
+                        speedY = 0f;
+                    }
+                    Vector2 spawnPosition = new Vector2((tileX + 2) * 16, (tileY + 2) * 16);
+                    // Finally shoot the projectile
+                    int jellyfishb = Projectile.NewProjectile(new EntitySource_TileInteraction(self, tileX, tileY), spawnPosition.X, spawnPosition.Y, speedX, speedY, ModContent.ProjectileType<BabyCannonballProjectile>(), self.HeldItem.damage, 8f, self.whoAmI);
+                    Main.projectile[jellyfishb].originatedFromActivableTile = true;
+                    // Shlorb
+                    SoundEngine.PlaySound(SoundID.Item95, spawnPosition);
+                }
+                else
+                {
+                    // Reset the item to be able to spawn critters again if any of the conditions aren't met
+                    self.HeldItem.makeNPC = ModContent.NPCType<BabyCannonballJellyfish>();
+                }
+            }
+            else
+                orig(self);
+        }
+        #endregion
+
+        #region Hellscape for GlowMask ModPlants
+
+        #region Tree Trunk / Cactus GlowMask
+        private static void DrawTreeTrunkAndCactusGlowMask(On_TileDrawing.orig_DrawBasicTile orig, TileDrawing self, Vector2 screenPosition, Vector2 screenOffset, int tileX, int tileY, TileDrawInfo drawData, Rectangle normalTileRect, Vector2 normalTilePosition)
+        {
+            orig(self, screenPosition, screenOffset, tileX, tileY, drawData, normalTileRect, normalTilePosition);
+
+            var type = drawData.typeCache;
+
+            #region GlowMask Cactus
+            if (type == TileID.Cactus)
+            {
+                var frameX = drawData.tileFrameX;
+                var frameY = drawData.tileFrameY;
+                var xPos = drawData.tileFrameX + drawData.addFrX;
+                var yPos = drawData.tileFrameY + drawData.addFrY;
+
+                WorldGen.GetCactusType(tileX, tileY, frameX, frameY, out var sandType);
+                if (PlantLoader.Get<ModCactus>(TileID.Cactus, sandType) is GlowMaskCactus glowCacti)
+                {
+                    Vector2 drawPos = new Vector2(tileX * 16, tileY * 16) - screenPosition + screenOffset;
+                    Rectangle drawRect = new Rectangle(xPos, yPos, 16, 16);
+
+                    // Fruit Check
+                    var isFruit = drawData.tileFrameX == 204 || drawData.tileFrameY == 202;
+                    var textureToDraw = isFruit ? glowCacti.GetFruitGlowTexture() : glowCacti.GetGlowTexture();
+                    var texture = textureToDraw?.Value;
+                    if (texture is not null)
+                        Main.spriteBatch.Draw(texture, drawPos, drawRect, glowCacti.GetGlowColor(tileX, tileY), 0.0f, default, 1.0f, drawData.tileSpriteEffect, 0.0f);
+                }
+                return;
+            }
+            #endregion
+
+            #region GlowMask Tree Trunk
+            else if (type == TileID.Trees)
+            {
+                var xPos = drawData.tileFrameX + drawData.addFrX;
+                var yPos = drawData.tileFrameY + drawData.addFrY;
+
+                WorldGen.GetTreeBottom(tileX, tileY, out var groundX, out var groundY);
+                Tile tile = Main.tile[groundX, groundY];
+                if (PlantLoader.Get<ModTree>(TileID.Trees, tile.TileType) is GlowMaskTree glowTree)
+                {
+                    Vector2 drawPos = new Vector2(tileX * 16, tileY * 16) - screenPosition + screenOffset;
+                    Rectangle drawRect = new Rectangle(xPos, yPos, 16, 16);
+
+                    var texture = glowTree.GetGlowTexture()?.Value;
+                    if (texture is not null)
+                        Main.spriteBatch.Draw(texture, drawPos, drawRect, glowTree.GetGlowColor(tileX, tileY), 0.0f, default, 1.0f, drawData.tileSpriteEffect, 0.0f);
+                }
+                return;
+            }
+            #endregion
+
+            #region GlowMask Palm Tree Trunk
+            else if (type == TileID.PalmTree)
+            {
+                var xPos = drawData.tileFrameX + drawData.addFrX;
+                var yPos = drawData.tileFrameY + drawData.addFrY;
+
+                WorldGen.GetTreeBottom(tileX, tileY, out var groundX, out var groundY);
+                Tile tile = Main.tile[groundX, groundY];
+                if (PlantLoader.Get<ModPalmTree>(TileID.PalmTree, tile.TileType) is GlowMaskPalmTree glowTree)
+                {
+                    Rectangle drawRect = new Rectangle(xPos, yPos, 16, 16);
+
+                    var texture = glowTree.GetGlowTexture()?.Value;
+                    if (texture is not null)
+                        Main.spriteBatch.Draw(texture, normalTilePosition, drawRect, glowTree.GetGlowColor(tileX, tileY), 0.0f, default, 1.0f, drawData.tileSpriteEffect, 0.0f);
+                }
+                return;
+            }
+            #endregion
+        }
+        #endregion
+
+        #region Disable Tree/Cactus Culling
+        private static void DisableCullingForTreeAndCactus(ILContext il)
+        {
+            // Justification:
+            //   Culling for Tree/Cactus should be disabled to simplify the GlowMask rendering on Plants
+            //   Without this We would need to setup more ilchanges to properly gather draw position
+            //   Furthermore we might need to clone the whole vanilla code for tree rendering
+            //
+            //   And disable culling for pitch black tree/cactus would not affect the performance that much as it's really niche case
+
+            var cursor = new ILCursor(il);
+
+            int visibleFlagIndex = 0;
+            if (!cursor.TryGotoNext(MoveType.Before,
+            [
+                x => x.MatchLdloc(out visibleFlagIndex),
+                x => x.MatchLdarg(out _),
+                x => x.MatchLdfld(out _),
+                x => x.MatchCallOrCallvirt<TileDrawing>("IsVisible")
+            ]))
+            {
+                LogFailure("Disable Tree And Cactus Culling", "Unable to Locate IsVisible Call");
+                return;
+            }
+
+            if (!cursor.TryGotoPrev(MoveType.Before, x => x.MatchBrfalse(out _)))
+            {
+                LogFailure("Disable Tree And Cactus Culling", "Unable to Locate Brfalse.s");
+                return;
+            }
+
+            cursor.EmitLdarg1(); // TileDrawInfo drawInfo
+            cursor.EmitDelegate((TileDrawInfo drawInfo) =>
+            {
+                var type = drawInfo.typeCache;
+                return type == TileID.Cactus || type == TileID.Trees || type == TileID.PalmTree;
+            });
+            cursor.EmitLdloc(visibleFlagIndex);
+            cursor.EmitOr(); // visible || isTree || isCactus || isPalmTree
+            cursor.EmitStloc(visibleFlagIndex);
+        }
+        #endregion
+
+        #region Tree Parts GlowMask
+        private static void DrawTreeGlowMask(ILContext il)
+        {
+            var cursor = new ILCursor(il);
+
+            if (!cursor.TryGotoNext(MoveType.After, x => x.MatchLdfld<Point>("X")))
+            {
+                LogFailure("GlowMask Tree Rendering", "Unable to Locate Ldfld for Point::X");
+                return;
+            }
+
+            if (!cursor.Next.MatchStloc(out var xLocaIdx))
+            {
+                LogFailure("GlowMask Tree Rendering", "Unable to Locate Stloc Index for Point::X");
+                return;
+            }
+
+            if (!cursor.TryGotoNext(MoveType.After, x => x.MatchLdfld<Point>("Y")))
+            {
+                LogFailure("GlowMask Tree Rendering", "Unable to Locate Ldfld for Point::Y");
+                return;
+            }
+
+            if (!cursor.Next.MatchStloc(out var yLocaIdx))
+            {
+                LogFailure("GlowMask Tree Rendering", "Unable to Locate Stloc Index for Point::Y");
+                return;
+            }
+
+            ApplyTreeGlowMaskSubParts<GlowMaskTree>(cursor, "GlowMaskTree-Top", "GetTreeTopTexture", xLocaIdx, yLocaIdx,
+                (glowMaskTree, tileX, tileY) =>
+            {
+                return new GlowMaskPlantDrawInfo()
+                {
+                    Texture = glowMaskTree.GetTopGlowTextures().Value,
+                    Color = glowMaskTree.GetGlowColor(tileX, tileY)
+                };
+            });
+
+            ApplyTreeGlowMaskSubParts<GlowMaskTree>(cursor, "GlowMaskTree-R", "GetTreeBranchTexture", xLocaIdx, yLocaIdx,
+                (glowMaskTree, tileX, tileY) =>
+            {
+                return new GlowMaskPlantDrawInfo()
+                {
+                    Texture = glowMaskTree.GetBranchGlowTextures().Value,
+                    Color = glowMaskTree.GetGlowColor(tileX, tileY)
+                };
+            });
+
+            ApplyTreeGlowMaskSubParts<GlowMaskTree>(cursor, "GlowMaskTree-L", "GetTreeBranchTexture", xLocaIdx, yLocaIdx,
+                (glowMaskTree, tileX, tileY) =>
+            {
+                return new GlowMaskPlantDrawInfo()
+                {
+                    Texture = glowMaskTree.GetBranchGlowTextures().Value,
+                    Color = glowMaskTree.GetGlowColor(tileX, tileY)
+                };
+            });
+
+            ApplyPalmTreeGlowMaskSubParts<GlowMaskPalmTree>(cursor, "GlowMaskPalmTree-Top", "GetTreeTopTexture", xLocaIdx, yLocaIdx,
+                (glowMaskPalmTree, tileX, tileY) =>
+            {
+                return new GlowMaskPlantDrawInfo()
+                {
+                    Texture = WorldGen.IsPalmOasisTree(tileX) ?
+                        glowMaskPalmTree.GetOasisTopGlowTextures().Value :
+                        glowMaskPalmTree.GetTopGlowTextures().Value,
+
+                    Color = glowMaskPalmTree.GetGlowColor(tileX, tileY)
+                };
+            });
+        }
+        #endregion
+
+        #region GlowMask Patch Tree Sub Parts
+        private static void ApplyTreeGlowMaskSubParts<PlantType>(
+            ILCursor cursor,
+            string debugSubpartName,
+            string getTextureMethodName,
+            int xLocaIdx,
+            int yLocaIdx,
+            Func<PlantType, int, int, GlowMaskPlantDrawInfo?> onPlantDrawn) where PlantType : IPlant
+        {
+            if (!cursor.TryGotoNext(MoveType.Before, x => x.MatchCallOrCallvirt<TileDrawing>(getTextureMethodName)))
+            {
+                LogFailure("GlowMask Tree Rendering", $"Could not locate First {getTextureMethodName} call ({debugSubpartName})");
+                return;
+            }
+
+            if (!cursor.TryGotoPrev([x => x.MatchLdcI4(out var styleEq) && styleEq == 14, x => x.MatchBneUn(out _)]))
+            {
+                LogFailure("GlowMask Tree Rendering", $"Could not locate Bne.Un for TreeStyleIndex ({debugSubpartName})");
+                return;
+            }
+
+            if (!cursor.Prev.MatchLdloc(out var treeStyleLocaIdx))
+            {
+                LogFailure("GlowMask Tree Rendering", $"Prev Instruction is not a LdLoc. Cannot locate TreeStyleIndex ({debugSubpartName})");
+                return;
+            }
+
+            if (!cursor.TryGotoNext(MoveType.Before, x => x.MatchCallOrCallvirt<SpriteBatch>("Draw")))
+            {
+                LogFailure("GlowMask Tree Rendering", $"Could not locate DrawCall ({debugSubpartName})");
+                return;
+            }
+
+            cursor.EmitLdloc(treeStyleLocaIdx); // TreeStyle
+            cursor.EmitLdloc(xLocaIdx);
+            cursor.EmitLdloc(yLocaIdx);
+            cursor.EmitDelegate((
+                SpriteBatch spriteBatch,
+                Texture2D texture,
+                Vector2 position,
+                Rectangle? sourceRectangle,
+                Color color,
+                float rotation,
+                Vector2 origin,
+                float scale,
+                SpriteEffects effects,
+                float layerDepth,
+
+                int style,
+                int tileX,
+                int tileY) =>
+            {
+                spriteBatch.Draw(texture, position, sourceRectangle, color, rotation, origin, scale, effects, layerDepth);
+
+                // Spooky Hardcoded Index: style above 100 is modded tile
+                if (style < 100)
+                    return;
+
+                int lookup = style - 100;
+                if (PlantLoader.Get<ModTree>(TileID.Trees, lookup) is not PlantType plant)
+                    return;
+
+                GlowMaskPlantDrawInfo? drawInfo = onPlantDrawn?.Invoke(plant, tileX, tileY) ?? default;
+                if (drawInfo.HasValue)
+                {
+                    var info = drawInfo.Value;
+                    spriteBatch.Draw(info.Texture, position, sourceRectangle, info.Color, rotation, origin, scale, effects, layerDepth);
+                }
+            });
+            cursor.Next.OpCode = OpCodes.Nop; // remove next drawcall
+        }
+        #endregion
+
+        #region GlowMask Patch Palm Tree Sub Parts
+        private static void ApplyPalmTreeGlowMaskSubParts<PlantType>(
+            ILCursor cursor,
+            string debugSubpartName,
+            string getTextureMethodName,
+            int xLocaIdx,
+            int yLocaIdx,
+            Func<PlantType, int, int, GlowMaskPlantDrawInfo?> onPlantDrawn)
+        {
+            if (!cursor.TryGotoNext(MoveType.Before, x => x.MatchCallOrCallvirt<TileDrawing>(getTextureMethodName)))
+            {
+                LogFailure("GlowMask Tree Rendering", $"Could not locate First {getTextureMethodName} call ({debugSubpartName})");
+                return;
+            }
+
+            if (!cursor.TryGotoNext(MoveType.Before, x => x.MatchCallOrCallvirt<SpriteBatch>("Draw")))
+            {
+                LogFailure("GlowMask Tree Rendering", $"Could not locate DrawCall ({debugSubpartName})");
+                return;
+            }
+
+            cursor.EmitLdloc(xLocaIdx);
+            cursor.EmitLdloc(yLocaIdx);
+            cursor.EmitDelegate((
+                SpriteBatch spriteBatch,
+                Texture2D texture,
+                Vector2 position,
+                Rectangle? sourceRectangle,
+                Color color,
+                float rotation,
+                Vector2 origin,
+                float scale,
+                SpriteEffects effects,
+                float layerDepth,
+
+                int tileX,
+                int tileY) =>
+            {
+                spriteBatch.Draw(texture, position, sourceRectangle, color, rotation, origin, scale, effects, layerDepth);
+
+                // TODO: This can be replace to read style and biome index from ilcode
+                // ... When we can figure out how to extract info from them
+                // Check TileDrawing.DrawTrees for context
+                WorldGen.GetTreeBottom(tileX, tileY, out var sandX, out var sandY);
+                var sandType = Main.tile[sandX, sandY].TileType;
+
+                if (PlantLoader.Get<ModPalmTree>(TileID.PalmTree, sandType) is not PlantType plant)
+                    return;
+
+                GlowMaskPlantDrawInfo? drawInfo = onPlantDrawn?.Invoke(plant, tileX, tileY) ?? default;
+                if (drawInfo.HasValue)
+                {
+                    var info = drawInfo.Value;
+                    spriteBatch.Draw(info.Texture, position, sourceRectangle, info.Color, rotation, origin, scale, effects, layerDepth);
+                }
+            });
+            cursor.Next.OpCode = OpCodes.Nop; // remove next drawcall
+        }
+        #endregion
+
+        #endregion
+
+        #region Sunken Sea critter variants
+        public static void ReleaseCritterVariant(On_Player.orig_ItemCheck_ReleaseCritter orig, Player player, Item item)
+        {
+            int mouseX = Main.mouseX + (int)Main.screenPosition.X;
+            int mouseY = Main.mouseY + (int)Main.screenPosition.Y;
+            int tileX = mouseX / 16;
+            int tileY = mouseY / 16;
+            if (item.makeNPC == ModContent.NPCType<BabyGhostBell>())
+            {
+                if (!WorldGen.SolidTile(tileX, tileY))
+                {
+                    int colorType = (int)BabyGhostBell.JellyColor.Blue;
+                    if (item.type == ModContent.ItemType<BabyGhostBellGreenItem>())
+                    {
+                        colorType = (int)BabyGhostBell.JellyColor.Green;
+                    }
+                    if (item.type == ModContent.ItemType<BabyGhostBellPinkItem>())
+                    {
+                        colorType = (int)BabyGhostBell.JellyColor.Pink;
+                    }
+                    if (item.type == ModContent.ItemType<BabyGhostBellRadiantItem>())
+                    {
+                        colorType = (int)BabyGhostBell.JellyColor.Radiant;
+                    }
+                    if (item.type == ModContent.ItemType<BabyGhostBellGoldItem>())
+                    {
+                        colorType = (int)BabyGhostBell.JellyColor.Gold;
+                    }
+                    player.ApplyItemTime(item);
+
+                    if (Main.netMode == NetmodeID.SinglePlayer)
+                    {
+                        int n = NPC.NewNPC(player.GetSource_ReleaseEntity(), mouseX, mouseY, item.makeNPC);
+                        Main.npc[n].ai[1] = colorType;
+                        Main.npc[n].catchItem = item.type;
+                        Main.npc[n].releaseOwner = (short)player.whoAmI;
+                    }
+                    else
+                    {
+                        PlaceAltCritterPacket.Send(player, mouseX, mouseY, item, colorType);
+                    }
+                }
+            }
+            else if (item.makeNPC == ModContent.NPCType<PolypPanasea>())
+            {
+                if (!WorldGen.SolidTile(tileX, tileY))
+                {
+                    int colorType = (int)PolypPanasea.FishColor.Red;
+                    if (item.type == ModContent.ItemType<PolypPanaseaGreenItem>())
+                    {
+                        colorType = (int)PolypPanasea.FishColor.Green;
+                    }
+                    if (item.type == ModContent.ItemType<PolypPanaseaTurquoiseItem>())
+                    {
+                        colorType = (int)PolypPanasea.FishColor.Turquoise;
+                    }
+                    if (item.type == ModContent.ItemType<PolypPanaseaPurpleItem>())
+                    {
+                        colorType = (int)PolypPanasea.FishColor.Purple;
+                    }
+                    if (item.type == ModContent.ItemType<PolypPanaseaRadiantItem>())
+                    {
+                        colorType = (int)PolypPanasea.FishColor.Radiant;
+                    }
+                    if (item.type == ModContent.ItemType<PolypPanaseaGoldItem>())
+                    {
+                        colorType = (int)PolypPanasea.FishColor.Gold;
+                    }
+                    player.ApplyItemTime(item);
+
+                    if (Main.netMode == NetmodeID.SinglePlayer)
+                    {
+                        int n = NPC.NewNPC(player.GetSource_ReleaseEntity(), mouseX, mouseY, item.makeNPC);
+                        Main.npc[n].ai[1] = colorType;
+                        Main.npc[n].catchItem = item.type;
+                        Main.npc[n].releaseOwner = (short)player.whoAmI;
+                    }
+                    else
+                    {
+                        PlaceAltCritterPacket.Send(player, mouseX, mouseY, item, colorType);
+                    }
+                }
+            }
+            else if (item.makeNPC == ModContent.NPCType<PrismaticGuppy>())
+            {
+                if (!WorldGen.SolidTile(tileX, tileY))
+                {
+                    int colorType = (int)PrismaticGuppy.FishColor.Blue;
+                    if (item.type == ModContent.ItemType<PrismaticGuppyGreenItem>())
+                    {
+                        colorType = (int)PrismaticGuppy.FishColor.Green;
+                    }
+                    if (item.type == ModContent.ItemType<PrismaticGuppyPinkItem>())
+                    {
+                        colorType = (int)PrismaticGuppy.FishColor.Pink;
+                    }
+                    if (item.type == ModContent.ItemType<PrismaticGuppyRadiantItem>())
+                    {
+                        colorType = (int)PrismaticGuppy.FishColor.Radiant;
+                    }
+                    if (item.type == ModContent.ItemType<PrismaticGuppyGoldItem>())
+                    {
+                        colorType = (int)PrismaticGuppy.FishColor.Gold;
+                    }
+
+                    player.ApplyItemTime(item);
+
+                    if (Main.netMode == NetmodeID.SinglePlayer)
+                    {
+                        int n = NPC.NewNPC(player.GetSource_ReleaseEntity(), mouseX, mouseY, item.makeNPC);
+                        Main.npc[n].ai[1] = colorType;
+                        Main.npc[n].catchItem = item.type;
+                        Main.npc[n].releaseOwner = (short)player.whoAmI;
+                    }
+                    else
+                    {
+                        PlaceAltCritterPacket.Send(player, mouseX, mouseY, item, colorType);
+                    }
+                }
+            }
+            else if (item.makeNPC == ModContent.NPCType<Slugbun>())
+            {
+                if (!WorldGen.SolidTile(tileX, tileY))
+                {
+                    int colorType = (int)Slugbun.SlugSkin.Reef;
+                    if (item.type == ModContent.ItemType<SlugbunPolypItem>())
+                    {
+                        colorType = (int)Slugbun.SlugSkin.Polyp;
+                    }
+                    if (item.type == ModContent.ItemType<SlugbunBurrowsItem>())
+                    {
+                        colorType = (int)Slugbun.SlugSkin.Burrows;
+                    }
+                    if (item.type == ModContent.ItemType<SlugbunRadiantItem>())
+                    {
+                        colorType = (int)Slugbun.SlugSkin.Radiant;
+                    }
+                    player.ApplyItemTime(item);
+
+                    if (Main.netMode == NetmodeID.SinglePlayer)
+                    {
+                        int n = NPC.NewNPC(player.GetSource_ReleaseEntity(), mouseX, mouseY, item.makeNPC, ai1: colorType);
+                        Main.npc[n].catchItem = item.type;
+                        Main.npc[n].releaseOwner = (short)player.whoAmI;
+                    }
+                    else
+                    {
+                        PlaceAltCritterPacket.Send(player, mouseX, mouseY, item, colorType);
+                    }
+                }
+            }
+            else
+            {
+                orig(player, item);
+            }
+        }
+        #endregion
+
+        #region Make Celestial Onion give the Master Mode slot
+        public static bool MasterModeCelestialOnionCheck(On_Player.orig_IsItemSlotUnlockedAndUsable orig, Player self, int slot)
+        {
+            if ((slot == 9 || slot == 19) && self.Calamity().extraAccessoryML && !Main.gameMenu)
+            {
+                return true;
+            }
+            return orig(self, slot);
+        }
+        #endregion
+
+        #region Allow Grappling Hooks to grab arena walls
+        public static void AllowHooksToGrabArenabox(On_Projectile.orig_AI_007_GrapplingHooks orig, Projectile self)
+        {
+            if (Main.player[self.owner].dead || Main.player[self.owner].stoned || Main.player[self.owner].webbed || Main.player[self.owner].frozen)
+            {
+                self.Kill();
+                return;
+            }
+            static bool Vector2PointCollision(Vector2 position, Vector2 size, Vector2 point)
+            {
+                return (point.X >= position.X && point.X <= position.X + size.X && point.Y >= position.Y && point.Y <= position.Y + size.Y);
+            }
+
+            bool intersectingWall = false;
+            if (self.Calamity().arenaBox is not null)
+            {
+                var box = self.Calamity().arenaBox;
+                if (ArenaWallSystem.ActiveBoxes.Contains(box))
+                {
+                    self.Center = box.TopLeft + box.Size * self.Calamity().arenaBoxPosition;
+                }
+                else
+                {
+                    self.Calamity().arenaBox = null;
+                }
+            }
+            if (ArenaWallSystem.ActiveBoxes.Count > 0)
+            {
+                foreach (var box in ArenaWallSystem.ActiveBoxes)
+                {
+                    if (!Vector2PointCollision(box.TopLeft, box.Size, self.Center) && Vector2PointCollision(box.TopLeft - new Vector2(box.borderThickness), box.Size + new Vector2(box.borderThickness) * 2, self.Center))
+                    {
+                        if (self.ai[0] == 0)
+                        {
+                            if (Main.myPlayer == self.owner)
+                            {
+                                if (self.type == ProjectileID.QueenSlimeHook)
+                                {
+                                    Main.player[self.owner].DoQueenSlimeHookTeleport(self.Center);
+                                }
+                                NetMessage.SendData(MessageID.PlayerControls, -1, -1, null, self.owner);
+                            }
+                            SoundEngine.PlaySound(SoundID.DD2_EtherianPortalSpawnEnemy with { Volume = 0.75f }, self.Center);
+                            self.ai[0] = 2;
+                            self.velocity = Vector2.Zero;
+                            self.Calamity().arenaBoxPosition = new Vector2(Utils.Remap(self.Center.X, box.TopLeft.X, box.BottomRight.X, 0, 1, false), Utils.Remap(self.Center.Y, box.TopLeft.Y, box.BottomRight.Y, 0, 1, false));
+                            self.Calamity().arenaBox = box;
+                        }
+                        if (self.ai[0] == 2) //don't run this if the hook is returning!
+                        {
+                            self.rotation = self.DirectionFrom(Main.player[self.owner].Center).ToRotation() + MathHelper.PiOver2;
+                            intersectingWall = true;
+
+                            if (Main.player[self.owner].grapCount < 10)
+                            {
+                                Main.player[self.owner].grappling[Main.player[self.owner].grapCount] = self.whoAmI;
+                                Main.player[self.owner].grapCount++;
+                            }
+                        }
+                    }
+                }
+            }
+            if (!intersectingWall)
+                orig(self);
+        }
+        #endregion
+
+        #region Arena Collision for other things
+
+        private static bool ArenaCollision_Vector2_int_int_bool(On_Collision.orig_SolidCollision_Vector2_int_int_bool orig, Vector2 Position, int Width, int Height, bool acceptTopSurfaces)
+        {
+            if (ArenaWallSystem.ActiveBoxes.Count > 0)
+            {
+                foreach (var item in ArenaWallSystem.ActiveBoxes)
+                {
+                    if (item.Vector2PairInWall(Position, new(Width, Height)))
+                        return true;
+                }
+            }
+            return orig(Position, Width, Height, acceptTopSurfaces);
+        }
+
+        private static bool ArenaCollision_Vector2_int_int(On_Collision.orig_SolidCollision_Vector2_int_int orig, Vector2 Position, int Width, int Height)
+        {
+            if (ArenaWallSystem.ActiveBoxes.Count > 0)
+            {
+                foreach (var item in ArenaWallSystem.ActiveBoxes)
+                {
+                    if (item.Vector2PairInWall(Position, new(Width, Height)))
+                        return true;
+                }
+            }
+            return orig(Position, Width, Height);
+        }
+
+
+        private static Vector2 ArenaCollision_TileCollision(On_Collision.orig_TileCollision orig, Vector2 Position, Vector2 Velocity, int Width, int Height, bool fallThrough, bool fall2, int gravDir)
+        {
+            Velocity = orig(Position, Velocity, Width, Height, fallThrough, fall2, gravDir);
+            if (ArenaWallSystem.ActiveBoxes.Count > 0 && Velocity != Vector2.Zero)
+            {
+                foreach (var item in ArenaWallSystem.ActiveBoxes)
+                {
+                    var oldVel = Velocity;
+                    if (item.InnerEffect(Position, new Vector2(Width, Height)))
+                        Velocity = ArenaCollisionLogic(item, Position, Width, Height, Velocity);
+                    var dif = (oldVel - Velocity).Length();
+                }
+            }
+            return Velocity;
+        }
+
+        private static Vector2 ArenaCollisionLogic(ArenaWallSystem.Box box, Vector2 Position, int Width, int Height, Vector2 Velocity)
+        {
+            var originalVelocity = Velocity;
+            var originalTopLeft = Position;
+            var originalBottomRight = Position + new Vector2(Height, Width);
+            Position += originalVelocity;
+
+            if (Position.X < box.TopLeft.X)
+            {
+                Velocity.X = box.TopLeft.X - originalTopLeft.X;
+            }
+            if (Position.X + Width > box.BottomRight.X)
+            {
+                Velocity.X = box.BottomRight.X - originalBottomRight.X;
+            }
+            if (Position.Y < box.TopLeft.Y)
+            {
+                Velocity.Y = box.TopLeft.Y - originalTopLeft.Y;
+            }
+
+            if (Position.Y + Height > box.BottomRight.Y)
+            {
+                Velocity.Y = box.BottomRight.Y - originalBottomRight.Y;
+            }
+            return Velocity;
         }
         #endregion
     }

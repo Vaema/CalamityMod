@@ -1,19 +1,22 @@
-﻿using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
-using CalamityMod.CalPlayer;
+﻿using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
     public class Baroclaw : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static int ThornsDamage => CalamityUtils.ScaleWithDifficulty(150);
+
         public override void SetDefaults()
         {
             Item.width = 40;
             Item.height = 26;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.accessory = true;
         }
@@ -22,7 +25,6 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.baroclaw = true;
-            player.thorns += 2.5f;
         }
         public override void AddRecipes()
         {

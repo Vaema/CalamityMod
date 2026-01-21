@@ -3,6 +3,7 @@ using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Plaguebringer
@@ -11,9 +12,14 @@ namespace CalamityMod.Items.Armor.Plaguebringer
     public class PlaguebringerCarapace : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
+
+        public static int MinionSlotBoost = 1;
+        public static float SummonDamageBoost = 0.15f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MinionSlotBoost, SummonDamageBoost.ToPercent());
+
         public override void SetStaticDefaults()
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             int equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
@@ -26,8 +32,8 @@ namespace CalamityMod.Items.Armor.Plaguebringer
         {
             Item.width = 18;
             Item.height = 18;
-            Item.defense = 17;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.defense = 13;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.Calamity().donorItem = true;
         }
@@ -35,7 +41,8 @@ namespace CalamityMod.Items.Armor.Plaguebringer
         public override void UpdateEquip(Player player)
         {
             player.Calamity().plaguebringerCarapace = true;
-            player.GetDamage<SummonDamageClass>() += 0.15f;
+            player.maxMinions += MinionSlotBoost;
+            player.GetDamage<SummonDamageClass>() += SummonDamageBoost;
             player.buffImmune[ModContent.BuffType<Plague>()] = true;
         }
 
@@ -43,9 +50,9 @@ namespace CalamityMod.Items.Armor.Plaguebringer
         {
             CreateRecipe().
                 AddIngredient(ItemID.BeeBreastplate).
-                AddIngredient<AlchemicalFlask>(2).
-                AddIngredient<PlagueCellCanister>(7).
+                AddIngredient<AlchemicalDecanter>(2).
                 AddIngredient<InfectedArmorPlating>(7).
+                AddIngredient<PlagueCellCanister>(7).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

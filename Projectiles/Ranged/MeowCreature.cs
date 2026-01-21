@@ -1,8 +1,8 @@
+﻿using System;
+using CalamityMod.Graphics.Primitives;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Linq;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -14,12 +14,11 @@ namespace CalamityMod.Projectiles.Ranged
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
 
-        internal PrimitiveTrail TrailDrawer;
-
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 36;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 36;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -52,8 +51,8 @@ namespace CalamityMod.Projectiles.Ranged
             }
         }
 
-        internal float WidthFunction(float completionRatio) => (1f - completionRatio) * Projectile.scale * 9f;
-        internal Color ColorFunction(float completionRatio)
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos) => (1f - completionRatio) * Projectile.scale * 9f;
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float hue = 0.5f + 0.5f * completionRatio * MathF.Sin(Main.GlobalTimeWrappedHourly * 5f);
             Color trailColor = Main.hslToRgb(hue, 1f, 0.8f);
@@ -63,12 +62,8 @@ namespace CalamityMod.Projectiles.Ranged
         // The creature glows
         public override void PostDraw(Color lightColor)
         {
-            if (TrailDrawer is null)
-                TrailDrawer = new PrimitiveTrail(WidthFunction, ColorFunction);
-
-            TrailDrawer.Draw(Projectile.oldPos.Where(oldPos => oldPos != Vector2.Zero), Projectile.Size * 0.5f - Main.screenPosition, 30);
-
-            Texture2D glow = ModContent.Request<Texture2D>(Texture).Value;
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_,_) => Projectile.Size * 0.5f), 30);
+            Texture2D glow = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Main.EntitySpriteDraw(glow, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, glow.Size() * 0.5f, Projectile.scale, SpriteEffects.None);
         }
     }

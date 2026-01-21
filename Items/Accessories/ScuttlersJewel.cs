@@ -1,7 +1,7 @@
 ﻿using CalamityMod.CalPlayer;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -10,14 +10,14 @@ namespace CalamityMod.Items.Accessories
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ExtractinatorMode[Item.type] = Item.type;
+            ItemID.Sets.ExtractinatorMode[Type] = Item.type;
         }
 
         public override void SetDefaults()
         {
             Item.width = 26;
             Item.height = 26;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.accessory = true;
             Item.MakeUsableWithChlorophyteExtractinator();

@@ -1,7 +1,7 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -16,11 +16,11 @@ namespace CalamityMod.Projectiles.Summon
         public override string Texture => "CalamityMod/NPCs/SupremeCalamitas/SupremeCatastrophe";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 6;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = false;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = false;
+            Main.projFrames[Type] = 6;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.MinionSacrificable[Type] = false;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = false;
         }
 
         public override void SetDefaults()
@@ -55,7 +55,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Rectangle frame = texture.Frame(2, 8, Projectile.frame / 8, Projectile.frame % 8);
             Vector2 origin = frame.Size() * 0.5f;
             for (int i = 0; i < Projectile.oldPos.Length; i++)

@@ -3,9 +3,9 @@ using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -23,8 +23,9 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = NumAfterimages;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = NumAfterimages;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -129,7 +130,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.NPCHit3, Projectile.position);
+            SoundEngine.PlaySound(SoundID.NPCHit3, Projectile.Center);
             int numDust = Main.rand.Next(4, 10);
             for (int i = 0; i < numDust; i++)
             {
@@ -151,7 +152,7 @@ namespace CalamityMod.Projectiles.Magic
             Point projTile = Projectile.Center.ToTileCoordinates();
             Color localLight = Lighting.GetColor(projTile.X, projTile.Y);
 
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Rectangle rect = new Rectangle(38 * Projectile.frame, 0, 38, 38);
             Vector2 halfSpriteSize = rect.Size() / 2f;
 

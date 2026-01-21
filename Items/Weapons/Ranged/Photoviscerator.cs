@@ -3,11 +3,12 @@ using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
-using System.Linq;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
@@ -19,21 +20,26 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
 
         // Left-click stats
-        public static float AmmoNotConsumeChance = 0.95f;
+        public static int AmmoSavedPercent = 95;
         public static int LightBombCooldown = 10;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
 
         // Right-click stats
         public static float RightClickVelocityMult = 2.5f;
-        public static int RightClickCooldown = 20;
+        public static int RightClickCooldown = 25;
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
+        }
 
         public override void SetDefaults()
         {
             Item.width = 208;
             Item.height = 66;
 
-            Item.damage = 445;
+            Item.damage = 495;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = Item.useAnimation = LightBombCooldown;
+            Item.useAnimation = Item.useTime = LightBombCooldown;
             Item.shootSpeed = 6f;
             Item.knockBack = 2f;
             Item.shoot = ModContent.ProjectileType<PhotovisceratorHoldout>();
@@ -43,7 +49,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.noMelee = true;
             Item.noUseGraphic = true;
 
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
         }
 
@@ -54,40 +60,34 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void HoldItem(Player player)
         {
-            if (player.whoAmI != Main.myPlayer)
-                return;
-            
-            // Right-click channeling
-            player.Calamity().rightClickListener = true;
-
-            if (player.Calamity().mouseRight && CanUseItem(player) && !Main.mapFullscreen && !Main.blockMouse)
-            {
-                // Only one out at a time
-                if (Main.projectile.Any(n => n.active && n.type == Item.shoot && n.owner == player.whoAmI))
-                    return;
-                // If you don't have any Gel don't even spawn the holdout
-                if (!player.HasAmmo(Item))
-                    return;
-
-                var source = player.GetSource_ItemUse_WithPotentialAmmo(Item, ItemID.Gel);
-                Projectile.NewProjectile(source, player.Center, Vector2.Zero, Item.shoot, 0, 0f, player.whoAmI);
-            }
+            if (Main.myPlayer == player.whoAmI)
+                player.Calamity().rightClickListener = true;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             // The holdout will initially double up when right clicking otherwise
             if (player.altFunctionUse == 2f)
-                return false;
-            
-            Projectile.NewProjectile(source, position, Vector2.Zero, type, 0, 0f, player.whoAmI);
+            {
+                if (player.Calamity().mouseRight && player.whoAmI == Main.myPlayer && !Main.mapFullscreen && !Main.blockMouse)
+                    Projectile.NewProjectile(source, position, Vector2.Zero, type, 0, 0f, player.whoAmI);
+                else
+                    return false;
+            }
+            else
+                Projectile.NewProjectile(source, position, Vector2.Zero, type, 0, 0f, player.whoAmI);
             return false;
+        }
+
+        public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
+        {
+            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/PhotovisceratorGlow").Value);
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<ElementalEruption>().
+                AddIngredient<ChromaticEruption>().
                 AddIngredient<HalleysInferno>().
                 AddIngredient<DeadSunsWind>().
                 AddIngredient<MiracleMatter>().

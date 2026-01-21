@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -9,6 +10,7 @@ namespace CalamityMod.Projectiles.Summon
         public new string LocalizationCategory => "Projectiles.Summon";
         public override string Texture => "CalamityMod/Projectiles/Magic/BlueBubble";
 
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = 14;
@@ -26,8 +28,8 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.localAI[0] += 1f;
             if (Projectile.localAI[0] > 4f)
             {
-                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 132, 0f, 0f, 100, default, 1f);
-                if (Main.rand.Next(6) != 0)
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Firework_Blue, 0f, 0f, 100, default, 1f);
+                if (!Main.rand.NextBool(6))
                     Main.dust[dust].noGravity = true;
                 Main.dust[dust].velocity *= 0f;
             }
@@ -36,6 +38,6 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.velocity = (Projectile.velocity * 20f + Projectile.SafeDirectionTo(potentialTarget.Center) * 10f) / 21f;
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Electrified, 120);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<StaticDischarge>(), 90);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.ObjectInteractions;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
@@ -10,29 +11,29 @@ namespace CalamityMod.Tiles.FurnitureAshen
     {
         public override void SetStaticDefaults()
         {
-            this.SetUpChest(ModContent.ItemType< Items.Placeables.FurnitureAshen.AshenChest>(), true);
+            this.SetUpChest(ModContent.ItemType<Items.Placeables.FurnitureAshen.AshenChest>(), true);
             AddMapEntry(new Color(191, 142, 111), this.GetLocalization("MapEntry0"), MapChestName);
             AddMapEntry(new Color(174, 129, 92), this.GetLocalization("MapEntry1"), MapChestName);
         }
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 60, 0f, 0f, 1, new Color(255, 255, 255), 1f);
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 1, 0f, 0f, 1, new Color(100, 100, 100), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.RedTorch, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Stone, 0f, 0f, 1, new Color(100, 100, 100), 1f);
             return false;
         }
         public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings) => true;
-        public override void NumDust(int i, int j, bool fail, ref int num) => num = 1;        
+        public override void NumDust(int i, int j, bool fail, ref int num) => num = 1;
 
-        public string MapChestName(string name, int i, int j) => CalamityUtils.GetMapChestName(name, i, j);
+        public string MapChestName(string name, int i, int j) => FurnitureCommon.GetMapChestName(name, i, j);
         public override ushort GetMapOption(int i, int j) => (ushort)(Main.tile[i, j].TileFrameX / 36);
         public override LocalizedText DefaultContainerName(int frameX, int frameY)
         {
             int option = frameX / 36;
             return this.GetLocalization("MapEntry" + option);
         }
-        public override void MouseOver(int i, int j) => CalamityUtils.ChestMouseOver<Items.Placeables.FurnitureAshen.AshenChest>(i, j);
-        public override void MouseOverFar(int i, int j) => CalamityUtils.ChestMouseFar<Items.Placeables.FurnitureAshen.AshenChest>(i, j);
+        public override void MouseOver(int i, int j) => FurnitureCommon.ChestMouseOver<Items.Placeables.FurnitureAshen.AshenChest>(i, j);
+        public override void MouseOverFar(int i, int j) => FurnitureCommon.ChestMouseFar<Items.Placeables.FurnitureAshen.AshenChest>(i, j);
         public override void KillMultiTile(int i, int j, int frameX, int frameY) => Chest.DestroyChest(i, j);
 
         // Locked Chest stuff
@@ -57,7 +58,7 @@ namespace CalamityMod.Tiles.FurnitureAshen
             {
                 top--;
             }
-            return CalamityUtils.LockedChestRightClick(IsLockedChest(left, top), left, top, i, j);
+            return FurnitureCommon.LockedChestRightClick(IsLockedChest(left, top), left, top, i, j);
         }
     }
 }

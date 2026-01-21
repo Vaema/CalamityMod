@@ -10,7 +10,7 @@ namespace CalamityMod.Projectiles.Melee
         public new string LocalizationCategory => "Projectiles.Melee";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
+            Main.projFrames[Type] = 4;
         }
 
         public override void SetDefaults()
@@ -33,7 +33,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.frame = 0;
             }
@@ -51,7 +51,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             for (int k = 0; k < 5; k++)
             {
-                int volcano = Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 174, 0f, 0f);
+                int volcano = Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.InfernoFork, 0f, 0f);
                 Main.dust[volcano].noGravity = true;
                 Main.dust[volcano].velocity *= 0f;
             }

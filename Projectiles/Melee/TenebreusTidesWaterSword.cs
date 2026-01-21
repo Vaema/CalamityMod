@@ -1,10 +1,11 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Melee
 {
     public class TenebreusTidesWaterSword : ModProjectile, ILocalizedModType
@@ -41,7 +42,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + MathHelper.ToRadians(45f);
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.ToRadians(45f);
 
             // If projectile hasn't hit anything yet
             if (Projectile.ai[0] == 0f)
@@ -49,7 +50,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.localAI[0] += 1f;
                 if (Projectile.localAI[0] > 7f)
                 {
-                    int water = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 33, 0f, 0f, 100, default, 0.4f);
+                    int water = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 0.4f);
                     Main.dust[water].noGravity = true;
                     Main.dust[water].velocity *= 0.5f;
                     Main.dust[water].velocity += Projectile.velocity * 0.1f;
@@ -103,9 +104,8 @@ namespace CalamityMod.Projectiles.Melee
                     int whoAmI = -1;
                     Vector2 targetSpot = Projectile.Center;
                     float detectRange = 700f;
-                    for (int i = 0; i < Main.maxNPCs; i++)
+                    foreach (NPC npc in Main.ActiveNPCs)
                     {
-                        NPC npc = Main.npc[i];
                         if (npc.CanBeChasedBy(Projectile, false))
                         {
                             float targetDist = Vector2.Distance(npc.Center, Projectile.Center);
@@ -113,7 +113,7 @@ namespace CalamityMod.Projectiles.Melee
                             {
                                 detectRange = targetDist;
                                 targetSpot = npc.Center;
-                                whoAmI = i;
+                                whoAmI = npc.whoAmI;
                             }
                         }
                     }
@@ -132,7 +132,7 @@ namespace CalamityMod.Projectiles.Melee
 
                 if (Main.rand.NextBool(3))
                 {
-                    int water = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 33, 0f, 0f, 100, default, 0.4f);
+                    int water = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 0.4f);
                     Main.dust[water].noGravity = true;
                     Main.dust[water].velocity *= 0.5f;
                     Main.dust[water].velocity += Projectile.velocity * 0.1f;
@@ -164,7 +164,7 @@ namespace CalamityMod.Projectiles.Melee
 
                 Projectile.localAI[0] += 1f;
 
-                int water = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 33, 0f, 0f, 100, default, 0.4f);
+                int water = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 0.4f);
                 Main.dust[water].noGravity = true;
                 Main.dust[water].velocity *= 0.5f;
                 Main.dust[water].velocity += Projectile.velocity * 0.1f;
@@ -186,7 +186,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (dontDraw)
                 return false;
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, 0, texture.Width, texture.Height)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture.Width / 2f, (float)texture.Height / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;
         }

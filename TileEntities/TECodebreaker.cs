@@ -1,9 +1,11 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System.IO;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.DraedonMisc;
-using CalamityMod.Items.Materials;
+using CalamityMod.Items.Pets;
+using CalamityMod.Packets;
+using CalamityMod.Systems.Collections;
 using CalamityMod.Tiles.DraedonSummoner;
 using Microsoft.Xna.Framework;
-using System.IO;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -38,17 +40,16 @@ namespace CalamityMod.TileEntities
             get
             {
                 // You can't decrypt nothing.
-                if (HeldSchematicID == 0 || !CalamityLists.EncryptedSchematicIDRelationship.ContainsKey(HeldSchematicID))
+                if (HeldSchematicID == 0 || !EncryptedSchematicIDRelationshipDict.TryGet(HeldSchematicID, out var schematicItemType))
                     return 0;
 
-                int schematicType = CalamityLists.EncryptedSchematicIDRelationship[HeldSchematicID];
-                if (schematicType == ModContent.ItemType<EncryptedSchematicPlanetoid>())
+                if (schematicItemType == ModContent.ItemType<EncryptedSchematicPlanetoid>())
                     return 500;
-                if (schematicType == ModContent.ItemType<EncryptedSchematicJungle>())
+                if (schematicItemType == ModContent.ItemType<EncryptedSchematicJungle>())
                     return 950;
-                if (schematicType == ModContent.ItemType<EncryptedSchematicHell>())
+                if (schematicItemType == ModContent.ItemType<EncryptedSchematicHell>())
                     return 1750;
-                if (schematicType == ModContent.ItemType<EncryptedSchematicIce>())
+                if (schematicItemType == ModContent.ItemType<EncryptedSchematicIce>())
                     return 5000;
 
                 return 0;
@@ -64,24 +65,23 @@ namespace CalamityMod.TileEntities
         public bool ContainsVoltageRegulationSystem;
         public bool ContainsCoolingCell;
 
-        public bool ContainsBloodSample;
+        public bool ContainsBloodyVein;
 
         public bool CanDecryptHeldSchematic
         {
             get
             {
                 // You can't decrypt nothing.
-                if (HeldSchematicID == 0 || !CalamityLists.EncryptedSchematicIDRelationship.ContainsKey(HeldSchematicID))
+                if (HeldSchematicID == 0 || !EncryptedSchematicIDRelationshipDict.TryGet(HeldSchematicID, out var schematicItemType))
                     return false;
 
-                int schematicType = CalamityLists.EncryptedSchematicIDRelationship[HeldSchematicID];
-                if (schematicType == ModContent.ItemType<EncryptedSchematicPlanetoid>())
+                if (schematicItemType == ModContent.ItemType<EncryptedSchematicPlanetoid>())
                     return ContainsDecryptionComputer;
-                if (schematicType == ModContent.ItemType<EncryptedSchematicJungle>())
+                if (schematicItemType == ModContent.ItemType<EncryptedSchematicJungle>())
                     return ContainsDecryptionComputer && ContainsSensorArray;
-                if (schematicType == ModContent.ItemType<EncryptedSchematicHell>())
+                if (schematicItemType == ModContent.ItemType<EncryptedSchematicHell>())
                     return ContainsDecryptionComputer && ContainsSensorArray && ContainsAdvancedDisplay;
-                if (schematicType == ModContent.ItemType<EncryptedSchematicIce>())
+                if (schematicItemType == ModContent.ItemType<EncryptedSchematicIce>())
                     return ContainsDecryptionComputer && ContainsSensorArray && ContainsAdvancedDisplay && ContainsVoltageRegulationSystem;
 
                 return false;
@@ -93,15 +93,14 @@ namespace CalamityMod.TileEntities
             get
             {
                 // You can't decrypt nothing.
-                if (HeldSchematicID == 0 || !CalamityLists.EncryptedSchematicIDRelationship.ContainsKey(HeldSchematicID))
+                if (HeldSchematicID == 0 || !EncryptedSchematicIDRelationshipDict.TryGet(HeldSchematicID, out var schematicItemType))
                     return string.Empty;
 
-                int schematicType = CalamityLists.EncryptedSchematicIDRelationship[HeldSchematicID];
-                if (schematicType == ModContent.ItemType<EncryptedSchematicPlanetoid>()
-                || schematicType == ModContent.ItemType<EncryptedSchematicJungle>()
-                || schematicType == ModContent.ItemType<EncryptedSchematicHell>()
-                || schematicType == ModContent.ItemType<EncryptedSchematicIce>())
-                    return CalamityUtils.GetTextValueFromModItem(schematicType, "Content");
+                if (schematicItemType == ModContent.ItemType<EncryptedSchematicPlanetoid>()
+                || schematicItemType == ModContent.ItemType<EncryptedSchematicJungle>()
+                || schematicItemType == ModContent.ItemType<EncryptedSchematicHell>()
+                || schematicItemType == ModContent.ItemType<EncryptedSchematicIce>())
+                    return CalamityUtils.GetTextValueFromModItem(schematicItemType, "Content");
 
                 return string.Empty;
             }
@@ -154,8 +153,8 @@ namespace CalamityMod.TileEntities
             if (ContainsCoolingCell)
                 Item.NewItem(source, x * 16, y * 16, 32, 32, ModContent.ItemType<AuricQuantumCoolingCell>());
 
-            if (CalamityLists.EncryptedSchematicIDRelationship.ContainsKey(HeldSchematicID))
-                Item.NewItem(source, x * 16, y * 16, 32, 32, CalamityLists.EncryptedSchematicIDRelationship[HeldSchematicID]);
+            if (EncryptedSchematicIDRelationshipDict.TryGet(HeldSchematicID, out var schematicItemType))
+                Item.NewItem(source, x * 16, y * 16, 32, 32, schematicItemType);
 
             while (InputtedCellCount > 0)
             {
@@ -164,7 +163,7 @@ namespace CalamityMod.TileEntities
                     totalCellsToDrop = 999;
 
                 InputtedCellCount -= totalCellsToDrop;
-                int itemType = ContainsBloodSample ? ModContent.ItemType<BloodSample>() : ModContent.ItemType<DraedonPowerCell>();
+                int itemType = ContainsBloodyVein ? ModContent.ItemType<BloodyVein>() : ModContent.ItemType<DraedonPowerCell>();
                 Item.NewItem(new EntitySource_TileEntity(this), x * 16, y * 16, 32, 32, itemType, totalCellsToDrop);
             }
         }
@@ -175,56 +174,7 @@ namespace CalamityMod.TileEntities
             if (Main.netMode == NetmodeID.SinglePlayer)
                 return;
 
-            ModPacket packet = Mod.GetPacket();
-            BitsByte containmentFlagWrapper = new BitsByte();
-            containmentFlagWrapper[0] = ContainsDecryptionComputer;
-            containmentFlagWrapper[1] = ContainsSensorArray;
-            containmentFlagWrapper[2] = ContainsAdvancedDisplay;
-            containmentFlagWrapper[3] = ContainsVoltageRegulationSystem;
-            containmentFlagWrapper[4] = ContainsCoolingCell;
-
-            packet.Write((byte)CalamityModMessageType.UpdateCodebreakerConstituents);
-            packet.Write(ID);
-            packet.Write(sender);
-            packet.Write(containmentFlagWrapper);
-            packet.Send(-1, sender);
-        }
-
-        public static void ReadConstituentsUpdateSync(Mod mod, BinaryReader reader)
-        {
-            int id = reader.ReadInt32();
-            short sender = reader.ReadInt16();
-            bool exists = ByID.TryGetValue(id, out TileEntity tileEntity);
-
-            // Continue reading to the end even if a tile entity with the given ID does not exist.
-            // Not doing this will cause errors/bugs.
-            BitsByte containmentFlagWrapper = reader.ReadByte();
-            bool containsDecryptionComputer = containmentFlagWrapper[0];
-            bool containsSensorArray = containmentFlagWrapper[1];
-            bool containsAdvancedDisplay = containmentFlagWrapper[2];
-            bool containsVoltageRegulationSystem = containmentFlagWrapper[3];
-            bool containsCoolingCell = containmentFlagWrapper[4];
-
-            // After doing reading, check again to see if the tile entity is actually there.
-            // If it isn't don't bother doing anything else.
-            if (!exists)
-                return;
-
-            // Furthermore, verify to ensure that the tile entity is a valid one.
-            if (!(tileEntity is TECodebreaker codebreakerTileEntity))
-                return;
-
-            codebreakerTileEntity.ContainsDecryptionComputer = containsDecryptionComputer;
-            codebreakerTileEntity.ContainsSensorArray = containsSensorArray;
-            codebreakerTileEntity.ContainsAdvancedDisplay = containsAdvancedDisplay;
-            codebreakerTileEntity.ContainsVoltageRegulationSystem = containsVoltageRegulationSystem;
-            codebreakerTileEntity.ContainsCoolingCell = containsCoolingCell;
-
-            // Send the packet again to the other clients if this packet was received on the server.
-            // Since ModPackets go solely to the server when sent by a client this is necesssary
-            // to ensure that all clients are informed of what happened.
-            if (Main.netMode == NetmodeID.Server)
-                codebreakerTileEntity.SyncConstituents(sender);
+            TEUpdateCodebreakerConstituentsPacket.Send(this);
         }
 
         public void SyncContainedStuff()
@@ -233,39 +183,7 @@ namespace CalamityMod.TileEntities
             if (Main.netMode == NetmodeID.SinglePlayer)
                 return;
 
-            ModPacket packet = Mod.GetPacket();
-            packet.Write((byte)CalamityModMessageType.UpdateCodebreakerContainedStuff);
-            packet.Write(ID);
-            packet.Write(InputtedCellCount);
-            packet.Write(InitialCellCountBeforeDecrypting);
-            packet.Write(HeldSchematicID);
-            packet.Write(ContainsBloodSample);
-            packet.Send();
-        }
-
-        public static void ReadContainmentSync(Mod mod, BinaryReader reader)
-        {
-            int id = reader.ReadInt32();
-            bool exists = ByID.TryGetValue(id, out TileEntity tileEntity);
-
-            // Continue reading to the end even if a tile entity with the given ID does not exist.
-            // Not doing this will cause errors/bugs.
-            int cellCount = reader.ReadInt32();
-            int cellCountBeforeDecrypting = reader.ReadInt32();
-            int schematicID = reader.ReadInt32();
-
-            // After doing reading, check again to see if the tile entity is actually there.
-            // If it isn't don't bother doing anything else.
-            if (!exists)
-                return;
-
-            // Furthermore, verify to ensure that the tile entity is a valid one.
-            if (!(tileEntity is TECodebreaker codebreakerTileEntity))
-                return;
-
-            codebreakerTileEntity.InputtedCellCount = cellCount;
-            codebreakerTileEntity.InitialCellCountBeforeDecrypting = cellCountBeforeDecrypting;
-            codebreakerTileEntity.HeldSchematicID = schematicID;
+            TEUpdateCodebreakerContainedStuffPacket.Send(this);
         }
 
         public void SyncDecryptCountdown()
@@ -274,32 +192,7 @@ namespace CalamityMod.TileEntities
             if (Main.netMode == NetmodeID.SinglePlayer)
                 return;
 
-            ModPacket packet = Mod.GetPacket();
-            packet.Write((byte)CalamityModMessageType.UpdateCodebreakerDecryptCountdown);
-            packet.Write(ID);
-            packet.Write(DecryptionCountdown);
-            packet.Send();
-        }
-
-        public static void ReadDecryptCountdownSync(Mod mod, BinaryReader reader)
-        {
-            int id = reader.ReadInt32();
-            bool exists = ByID.TryGetValue(id, out TileEntity tileEntity);
-
-            // Continue reading to the end even if a tile entity with the given ID does not exist.
-            // Not doing this will cause errors/bugs.
-            int countdown = reader.ReadInt32();
-
-            // After doing reading, check again to see if the tile entity is actually there.
-            // If it isn't don't bother doing anything else.
-            if (!exists)
-                return;
-
-            // Furthermore, verify to ensure that the tile entity is a valid one.
-            if (!(tileEntity is TECodebreaker codebreakerTileEntity))
-                return;
-
-            codebreakerTileEntity.DecryptionCountdown = countdown;
+            TEUpdateCodebreakerDecryptCountdownPacket.Send(this);
         }
 
         public void UpdateTime()
@@ -322,7 +215,7 @@ namespace CalamityMod.TileEntities
                     InitialCellCountBeforeDecrypting = 0;
 
                     LearnFromHeldSchematic(out bool anythingChanged);
-                    if (Main.netMode == NetmodeID.Server)
+                    if (Main.dedServ)
                     {
                         SyncDecryptCountdown();
                         SyncContainedStuff();
@@ -338,33 +231,31 @@ namespace CalamityMod.TileEntities
             anythingChanged = false;
 
             // Do nothing if no valid schematic is inputted at the moment.
-            if (!CalamityLists.EncryptedSchematicIDRelationship.ContainsKey(HeldSchematicID))
+            if (!EncryptedSchematicIDRelationshipDict.TryGet(HeldSchematicID, out var schematicItemType))
                 return;
 
-            int schematicType = CalamityLists.EncryptedSchematicIDRelationship[HeldSchematicID];
-
-            if (!RecipeUnlockHandler.HasUnlockedT2ArsenalRecipes && schematicType == ModContent.ItemType<EncryptedSchematicPlanetoid>())
+            if (!RecipeUnlockHandler.HasUnlockedT2ArsenalRecipes && schematicItemType == ModContent.ItemType<EncryptedSchematicPlanetoid>())
             {
                 RecipeUnlockHandler.HasUnlockedT2ArsenalRecipes = true;
                 anythingChanged = true;
             }
-            if (!RecipeUnlockHandler.HasUnlockedT3ArsenalRecipes && schematicType == ModContent.ItemType<EncryptedSchematicJungle>())
+            if (!RecipeUnlockHandler.HasUnlockedT3ArsenalRecipes && schematicItemType == ModContent.ItemType<EncryptedSchematicJungle>())
             {
                 RecipeUnlockHandler.HasUnlockedT3ArsenalRecipes = true;
                 anythingChanged = true;
             }
-            if (!RecipeUnlockHandler.HasUnlockedT4ArsenalRecipes && schematicType == ModContent.ItemType<EncryptedSchematicHell>())
+            if (!RecipeUnlockHandler.HasUnlockedT4ArsenalRecipes && schematicItemType == ModContent.ItemType<EncryptedSchematicHell>())
             {
                 RecipeUnlockHandler.HasUnlockedT4ArsenalRecipes = true;
                 anythingChanged = true;
             }
-            if (!RecipeUnlockHandler.HasUnlockedT5ArsenalRecipes && schematicType == ModContent.ItemType<EncryptedSchematicIce>())
+            if (!RecipeUnlockHandler.HasUnlockedT5ArsenalRecipes && schematicItemType == ModContent.ItemType<EncryptedSchematicIce>())
             {
                 RecipeUnlockHandler.HasUnlockedT5ArsenalRecipes = true;
                 anythingChanged = true;
             }
 
-            if (Main.netMode == NetmodeID.Server && anythingChanged)
+            if (Main.dedServ && anythingChanged)
                 CalamityNetcode.SyncWorld();
         }
 
@@ -379,7 +270,7 @@ namespace CalamityMod.TileEntities
             tag["HeldSchematicID"] = HeldSchematicID;
             tag["DecryptionCountdown"] = DecryptionCountdown;
             tag["InitialCellCountBeforeDecrypting"] = InitialCellCountBeforeDecrypting;
-            tag["ContainsBloodSample"] = ContainsBloodSample;
+            tag["ContainsBloodyVein"] = ContainsBloodyVein;
         }
 
         public override void LoadData(TagCompound tag)
@@ -393,7 +284,7 @@ namespace CalamityMod.TileEntities
             HeldSchematicID = tag.GetInt("HeldSchematicID");
             DecryptionCountdown = tag.GetInt("DecryptionCountdown");
             InitialCellCountBeforeDecrypting = tag.GetInt("InitialCellCountBeforeDecrypting");
-            ContainsBloodSample = tag.GetBool("ContainsBloodSample");
+            ContainsBloodyVein = tag.GetBool("ContainsBloodyVein");
         }
 
         public override void NetSend(BinaryWriter writer)
@@ -407,7 +298,7 @@ namespace CalamityMod.TileEntities
             writer.Write(HeldSchematicID);
             writer.Write(DecryptionCountdown);
             writer.Write(InitialCellCountBeforeDecrypting);
-            writer.Write(ContainsBloodSample);
+            writer.Write(ContainsBloodyVein);
         }
 
         public override void NetReceive(BinaryReader reader)
@@ -421,7 +312,7 @@ namespace CalamityMod.TileEntities
             HeldSchematicID = reader.ReadInt32();
             DecryptionCountdown = reader.ReadInt32();
             InitialCellCountBeforeDecrypting = reader.ReadInt32();
-            ContainsBloodSample= reader.ReadBoolean();
+            ContainsBloodyVein = reader.ReadBoolean();
         }
     }
 }

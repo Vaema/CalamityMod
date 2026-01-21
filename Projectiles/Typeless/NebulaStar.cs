@@ -3,6 +3,7 @@ using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
@@ -10,6 +11,7 @@ namespace CalamityMod.Projectiles.Typeless
     public class NebulaStar : BaseSporeSacProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = Projectile.height = 34;
@@ -34,7 +36,7 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void PostDraw(Color lightColor)
         {
-            Rectangle frame = new Rectangle(0, 0, ModContent.Request<Texture2D>(Texture).Value.Width, ModContent.Request<Texture2D>(Texture).Value.Height);
+            Rectangle frame = new Rectangle(0, 0, Terraria.GameContent.TextureAssets.Projectile[Type].Value.Width, Terraria.GameContent.TextureAssets.Projectile[Type].Value.Height);
             Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Projectiles/Typeless/NebulaStarGlow").Value, Projectile.Center - Main.screenPosition, frame, Color.White * ((255 - Projectile.alpha) / 255f), Projectile.rotation, Projectile.Size / 2, 1f, SpriteEffects.None, 0);
         }
     }

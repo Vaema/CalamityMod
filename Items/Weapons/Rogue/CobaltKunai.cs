@@ -1,40 +1,33 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.Rogue
 {
     public class CobaltKunai : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 14;
             Item.height = 38;
-            Item.damage = 58;
+            Item.damage = 56;
             Item.noMelee = true;
-            Item.consumable = true;
             Item.noUseGraphic = true;
             Item.useAnimation = Item.useTime = 10;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 2.5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.maxStack = 9999;
-            Item.value = 900;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.shoot = ModContent.ProjectileType<CobaltKunaiProjectile>();
             Item.shootSpeed = 14f;
             Item.DamageType = RogueDamageClass.Instance;
         }
 
-        public override float StealthDamageMultiplier => 1.85f;
+        public override float StealthDamageMultiplier => 1.4f;
         public override float StealthVelocityMultiplier => 0.9f;
         public override float StealthKnockbackMultiplier => 0.5f;
 
@@ -42,9 +35,9 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             if (player.Calamity().StealthStrikeAvailable())
             {
-                for (int i = -1; i <= 1; i++)
+                for (float i = -1.5f; i <= 1.5f; i++)
                 {
-                    Vector2 perturbedSpeed = velocity.RotatedBy(MathHelper.ToRadians(i * 9f));
+                    Vector2 perturbedSpeed = velocity.RotatedBy(MathHelper.ToRadians(i * 7f));
                     int stealth = Projectile.NewProjectile(source, position, perturbedSpeed, ModContent.ProjectileType<CobaltEnergy>(), damage, knockback, player.whoAmI);
                     if (stealth.WithinBounds(Main.maxProjectiles))
                         Main.projectile[stealth].Calamity().stealthStrike = true;
@@ -56,8 +49,8 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void AddRecipes()
         {
-            CreateRecipe(150).
-                AddIngredient(ItemID.CobaltBar).
+            CreateRecipe().
+                AddIngredient(ItemID.CobaltBar, 10).
                 AddTile(TileID.Anvils).
                 Register();
         }

@@ -1,17 +1,15 @@
-﻿using CalamityMod.Dusts;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
-using Terraria.ModLoader;
+using Terraria.ID;
 using Terraria.ObjectData;
 
 namespace CalamityMod.Tiles.Abyss.AbyssAmbient
 {
-    public class SulphurPireCoral1 : ModTile
+    public class SulphurPireCoral1 : GlowMaskTile
     {
-        public override void SetStaticDefaults()
+        public override void SetupStatic()
         {
             Main.tileLighted[Type] = true;
             Main.tileFrameImportant[Type] = true;
@@ -28,9 +26,7 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
             TileObjectData.newTile.DrawYOffset = 2;
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(91, 128, 13));
-            DustType = 32;
-
-            base.SetStaticDefaults();
+            DustType = DustID.Sand;
         }
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
@@ -45,37 +41,13 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
             num = fail ? 1 : 2;
         }
 
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
+        public override Color GetGlowMaskColor(int i, int j, TileDrawInfo drawData)
         {
-            Tile tile = Framing.GetTileSafely(i, j);
-			Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Tiles/Abyss/AbyssAmbient/SulphurPireCoral1Glow").Value;
-			Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
-
-			spriteBatch.Draw(tex, new Vector2(i * 16, j * 16 + 2) - Main.screenPosition + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, 16), Color.White);
+            return Color.White;
         }
     }
 
-    public class SulphurPireCoral2 : SulphurPireCoral1
-    {
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
-        {
-            Tile tile = Framing.GetTileSafely(i, j);
-			Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Tiles/Abyss/AbyssAmbient/SulphurPireCoral2Glow").Value;
-			Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
+    public class SulphurPireCoral2 : SulphurPireCoral1;
 
-			spriteBatch.Draw(tex, new Vector2(i * 16, j * 16 + 2) - Main.screenPosition + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, 16), Color.White);
-        }
-    }
-    
-    public class SulphurPireCoral3 : SulphurPireCoral1
-    {
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
-        {
-            Tile tile = Framing.GetTileSafely(i, j);
-			Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Tiles/Abyss/AbyssAmbient/SulphurPireCoral3Glow").Value;
-			Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
-
-			spriteBatch.Draw(tex, new Vector2(i * 16, j * 16 + 2) - Main.screenPosition + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, 16), Color.White);
-        }
-    }
+    public class SulphurPireCoral3 : SulphurPireCoral1;
 }

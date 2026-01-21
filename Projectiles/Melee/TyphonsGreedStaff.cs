@@ -1,14 +1,17 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Enums;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
+    [PierceResistException]
     public class TyphonsGreedStaff : ModProjectile
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<TyphonsGreed>();
@@ -87,7 +90,7 @@ namespace CalamityMod.Projectiles.Melee
             Vector2 tipDustDirection = staffTipDirection.RotatedBy((double)(1.57079637f * (float)Projectile.spriteDirection), default);
             if (Main.rand.NextBool())
             {
-                Dust staffDust = Dust.NewDustDirect(dustSpawn - new Vector2(5f), 10, 10, 33, player.velocity.X, player.velocity.Y, 150, default, 1f);
+                Dust staffDust = Dust.NewDustDirect(dustSpawn - new Vector2(5f), 10, 10, DustID.Water, player.velocity.X, player.velocity.Y, 150, default, 1f);
                 staffDust.velocity = Projectile.SafeDirectionTo(staffDust.position) * 0.1f + staffDust.velocity * 0.1f;
             }
             for (int j = 0; j < 4; j++)
@@ -108,9 +111,9 @@ namespace CalamityMod.Projectiles.Melee
                         scaleFactor2 = 0.5f;
                         break;
                 }
-                if (Main.rand.Next(6) != 0)
+                if (!Main.rand.NextBool(6))
                 {
-                    Dust staffTipDust = Dust.NewDustDirect(Projectile.position, 0, 0, 186, 0f, 0f, 100, default, 1f);
+                    Dust staffTipDust = Dust.NewDustDirect(Projectile.position, 0, 0, DustID.RedsWingsRun, 0f, 0f, 100, default, 1f);
                     staffTipDust.position = Projectile.Center + staffTipDirection * (60f + Main.rand.NextFloat() * 20f) * scaleFactor3;
                     staffTipDust.velocity = tipDustDirection * (4f + 4f * Main.rand.NextFloat()) * scaleFactor3 * scaleFactor2;
                     staffTipDust.noGravity = true;

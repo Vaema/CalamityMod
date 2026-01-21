@@ -1,10 +1,9 @@
-﻿using CalamityMod.Dusts;
+﻿using System;
+using System.IO;
+using CalamityMod.Dusts;
 using CalamityMod.Projectiles.Boss;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -19,24 +18,23 @@ namespace CalamityMod.NPCs.Polterghast
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
+            NPCID.Sets.TrailingMode[Type] = 1;
         }
+
+        public static int MineDamage = 70; // 280
 
         public override void SetDefaults()
         {
-            NPC.aiStyle = -1;
-            AIType = -1;
+            NPC.damage = 0; // No contact damage
             NPC.width = 30;
             NPC.height = 30;
             NPC.defense = 45;
-            NPC.DR_NERD(0.1f);
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.canGhostHeal = false;
-            NPC.damage = 50;
+            NPC.chaseable = false;
             NPC.lifeMax = 20000;
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
+            NPC.dontTakeDamage = true;
             NPC.HitSound = SoundID.NPCHit36;
             NPC.DeathSound = SoundID.NPCDeath39;
             NPC.Calamity().VulnerableToSickness = false;
@@ -58,16 +56,13 @@ namespace CalamityMod.NPCs.Polterghast
 
         public override void AI()
         {
-            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
-            NPC.damage = 0;
-
             if (start)
             {
                 start = false;
 
                 for (int i = 0; i < 10; i++)
                 {
-                    int dust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 2f);
+                    int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 2f);
                     Main.dust[dust].noGravity = true;
                 }
 
@@ -102,7 +97,7 @@ namespace CalamityMod.NPCs.Polterghast
             direction *= 0.5f;
             NPC.rotation = direction.ToRotation();
 
-            if (!chargePhase || (CalamityWorld.LegendaryMode && CalamityWorld.revenge))
+            if (!chargePhase || Main.getGoodWorld)
             {
                 NPC.ai[2] += 1f;
                 float shootMineGateValue = 150f;
@@ -114,10 +109,9 @@ namespace CalamityMod.NPCs.Polterghast
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         int type = ModContent.ProjectileType<PhantomMine>();
-                        int damage = NPC.GetProjectileDamage(type);
                         float maxVelocity = 8f * tileEnrageMult;
                         float acceleration = 1.15f + (tileEnrageMult - 1f) * 0.15f;
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, direction, type, damage, 1f, NPC.target, maxVelocity, acceleration);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, direction, type, MineDamage, 1f, NPC.target, maxVelocity, acceleration);
                     }
                     NPC.ai[2] = 0f;
                 }
@@ -150,11 +144,11 @@ namespace CalamityMod.NPCs.Polterghast
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture2D15 = TextureAssets.Npc[NPC.type].Value;
-            Vector2 halfSizeTexture = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / 2);
+            Texture2D texture2D15 = TextureAssets.Npc[Type].Value;
+            Vector2 halfSizeTexture = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / 2);
             int afterimageAmt = 5;
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 1; i < afterimageAmt; i += 2)
                 {
@@ -179,7 +173,7 @@ namespace CalamityMod.NPCs.Polterghast
 
         public override void HitEffect(NPC.HitInfo hit)
         {
-            Dust.NewDust(NPC.position, NPC.width, NPC.height, 180, hit.HitDirection, -1f, 0, default, 1f);
+            Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.DungeonSpirit, hit.HitDirection, -1f, 0, default, 1f);
             if (NPC.life <= 0)
             {
                 NPC.position.X = NPC.position.X + (NPC.width / 2);
@@ -190,7 +184,7 @@ namespace CalamityMod.NPCs.Polterghast
                 NPC.position.Y = NPC.position.Y - (NPC.height / 2);
                 for (int i = 0; i < 2; i++)
                 {
-                    int ghostDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.Polterplasm, 0f, 0f, 100, default, 2f);
+                    int ghostDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Necroplasm, 0f, 0f, 100, default, 2f);
                     Main.dust[ghostDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -200,10 +194,10 @@ namespace CalamityMod.NPCs.Polterghast
                 }
                 for (int j = 0; j < 10; j++)
                 {
-                    int ghostDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 180, 0f, 0f, 100, default, 3f);
+                    int ghostDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.DungeonSpirit, 0f, 0f, 100, default, 3f);
                     Main.dust[ghostDust2].noGravity = true;
                     Main.dust[ghostDust2].velocity *= 5f;
-                    ghostDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 180, 0f, 0f, 100, default, 2f);
+                    ghostDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.DungeonSpirit, 0f, 0f, 100, default, 2f);
                     Main.dust[ghostDust2].velocity *= 2f;
                 }
             }

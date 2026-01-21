@@ -1,40 +1,50 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
 using CalamityMod.Events;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.NPCs.Perforator
 {
+    [HasPierceResist]
+    [LongDistanceNetSync(SyncWith = typeof(PerforatorHeadMedium))]
     public class PerforatorTailMedium : ModNPC
     {
         public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/PerfMediumHit", 3);
         public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/PerfMediumDeath");
 
+        public static Asset<Texture2D> GlowTexture;
+
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.PerforatorHeadMedium.DisplayName");
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
         {
-            NPC.GetNPCDamage();
+            NPC.damage = 12; // 24
             NPC.npcSlots = 5f;
             NPC.width = 40;
             NPC.height = 50;
             NPC.defense = 10;
-            NPC.LifeMaxNERB(180, 216, 7000);
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
+
+            NPC.LifeMaxNERB(130, 170, 7000);
+            if (Main.zenithWorld)
+                NPC.lifeMax *= 4;
+
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -42,15 +52,12 @@ namespace CalamityMod.NPCs.Perforator
             NPC.behindTiles = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.canGhostHeal = false;
             NPC.HitSound = HitSound;
             NPC.DeathSound = DeathSound;
             NPC.netAlways = true;
             NPC.dontCountMe = true;
 
-            if (BossRushEvent.BossRushActive)
-                NPC.scale *= 1.25f;
-            else if (CalamityWorld.death)
+            if (CalamityWorld.death || BossRushEvent.BossRushActive)
                 NPC.scale *= 1.2f;
             else if (CalamityWorld.revenge)
                 NPC.scale *= 1.15f;
@@ -66,6 +73,8 @@ namespace CalamityMod.NPCs.Perforator
 
         public override void AI()
         {
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+
             NPC.realLife = -1;
 
             // Target
@@ -75,18 +84,19 @@ namespace CalamityMod.NPCs.Perforator
             if (Main.player[NPC.target].dead)
                 NPC.TargetClosest(false);
 
-            if (Main.npc[(int)NPC.ai[1]].alpha < 128)
-            {
-                NPC.alpha -= 42;
-                if (NPC.alpha < 0)
-                    NPC.alpha = 0;
-            }
-
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
                 // Splitting effect
+                bool spawnedBlob = false;
                 if (!Main.npc[(int)NPC.ai[1]].active && !Main.npc[(int)NPC.ai[0]].active)
                 {
+                    if (death)
+                    {
+                        spawnedBlob = true;
+                        int type = ModContent.ProjectileType<IchorBlob>();
+                        Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, Main.rand.NextVector2CircularEdge(3f, 3f), type, PerforatorHive.IchorBlobDamage, 0f, Main.myPlayer, 0f, NPC.Center.Y);
+                    }
+
                     NPC.life = 0;
                     NPC.HitEffect(0, 10.0);
                     NPC.checkDead();
@@ -95,6 +105,12 @@ namespace CalamityMod.NPCs.Perforator
                 }
                 if (!Main.npc[(int)NPC.ai[1]].active)
                 {
+                    if (death && !spawnedBlob)
+                    {
+                        int type = ModContent.ProjectileType<IchorBlob>();
+                        Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, Main.rand.NextVector2CircularEdge(3f, 3f), type, PerforatorHive.IchorBlobDamage, 0f, Main.myPlayer, 0f, NPC.Center.Y);
+                    }
+
                     NPC.life = 0;
                     NPC.HitEffect(0, 10.0);
                     NPC.checkDead();
@@ -102,13 +118,13 @@ namespace CalamityMod.NPCs.Perforator
                     NetMessage.SendData(MessageID.DamageNPC, -1, -1, null, NPC.whoAmI, -1f, 0f, 0f, 0, 0, 0);
                 }
 
-                if (!NPC.active && Main.netMode == NetmodeID.Server)
+                if (!NPC.active && Main.dedServ)
                     NetMessage.SendData(MessageID.DamageNPC, -1, -1, null, NPC.whoAmI, -1f, 0f, 0f, 0, 0, 0);
             }
 
-            Vector2 segmentDirection = new Vector2(NPC.position.X + NPC.width * 0.5f, NPC.position.Y + NPC.height * 0.5f);
-            float targetX = Main.player[NPC.target].position.X + (Main.player[NPC.target].width / 2);
-            float targetY = Main.player[NPC.target].position.Y + (Main.player[NPC.target].height / 2);
+            Vector2 segmentDirection = NPC.Center;
+            float targetX = Main.player[NPC.target].Center.X;
+            float targetY = Main.player[NPC.target].Center.Y;
 
             targetX = (int)(targetX / 16f) * 16;
             targetY = (int)(targetY / 16f) * 16;
@@ -122,9 +138,9 @@ namespace CalamityMod.NPCs.Perforator
             {
                 try
                 {
-                    segmentDirection = new Vector2(NPC.position.X + NPC.width * 0.5f, NPC.position.Y + NPC.height * 0.5f);
-                    targetX = Main.npc[(int)NPC.ai[1]].position.X + (Main.npc[(int)NPC.ai[1]].width / 2) - segmentDirection.X;
-                    targetY = Main.npc[(int)NPC.ai[1]].position.Y + (Main.npc[(int)NPC.ai[1]].height / 2) - segmentDirection.Y;
+                    segmentDirection = NPC.Center;
+                    targetX = Main.npc[(int)NPC.ai[1]].Center.X - segmentDirection.X;
+                    targetY = Main.npc[(int)NPC.ai[1]].Center.Y - segmentDirection.Y;
                 }
                 catch
                 {
@@ -141,6 +157,32 @@ namespace CalamityMod.NPCs.Perforator
                 NPC.position.X += targetX;
                 NPC.position.Y += targetY;
             }
+
+            if (Main.npc[(int)NPC.ai[1]].alpha >= 85)
+            {
+                if (NPC.alpha > 0 && NPC.life > 0)
+                {
+                    for (int dustIndex = 0; dustIndex < 2; dustIndex++)
+                    {
+                        int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, Main.rand.NextBool() ? DustID.Ichor : DustID.Blood, 0f, 0f, 100, default, 2f);
+                        Main.dust[dust].noGravity = true;
+                        Main.dust[dust].noLight = true;
+                    }
+                }
+
+                if ((NPC.position - NPC.oldPosition).Length() > 2f)
+                {
+                    NPC.alpha -= 42;
+                    if (NPC.alpha < 0)
+                        NPC.alpha = 0;
+                }
+            }
+            else if (NPC.alpha > 0)
+            {
+                NPC.alpha -= 42;
+                if (NPC.alpha < 0)
+                    NPC.alpha = 0;
+            }
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -149,15 +191,15 @@ namespace CalamityMod.NPCs.Perforator
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture2D15 = TextureAssets.Npc[NPC.type].Value;
-            Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[NPC.type].Value.Width / 2), (float)(TextureAssets.Npc[NPC.type].Value.Height / 2));
+            Texture2D texture2D15 = TextureAssets.Npc[Type].Value;
+            Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[Type].Value.Width / 2), (float)(TextureAssets.Npc[Type].Value.Height / 2));
 
             Vector2 drawLocation = NPC.Center - screenPos;
             drawLocation -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height)) * NPC.scale / 2f;
             drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-            texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/Perforator/PerforatorTailMediumGlow").Value;
+            texture2D15 = GlowTexture.Value;
             Color glowmaskColor = Color.Lerp(Color.White, Color.Yellow, 0.5f);
 
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, glowmaskColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
@@ -177,7 +219,7 @@ namespace CalamityMod.NPCs.Perforator
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("MediumPerf3").Type, NPC.scale);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("MediumPerf4").Type, NPC.scale);
@@ -195,19 +237,18 @@ namespace CalamityMod.NPCs.Perforator
             int closestPlayer = Player.FindClosest(NPC.Center, 1, 1);
             if (Main.rand.NextBool(4) && Main.player[closestPlayer].statLife < Main.player[closestPlayer].statLifeMax2)
                 Item.NewItem(NPC.GetSource_Loot(), (int)NPC.position.X, (int)NPC.position.Y, NPC.width, NPC.height, ItemID.Heart);
-            
+
             if (Main.netMode != NetmodeID.MultiplayerClient && Main.zenithWorld)
             {
                 int type = ModContent.ProjectileType<IchorBlob>();
-                int damage = NPC.GetProjectileDamage(type);
-                Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, Vector2.UnitY, type, damage, 0f, Main.myPlayer);
+                Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, Vector2.UnitY, type, PerforatorHive.IchorBlobDamage, 0f, Main.myPlayer);
 
                 for (int i = -1; i < 2; i++) //releases 3 Ichor Shots
                 {
                     int type2 = ModContent.ProjectileType<IchorShot>();
                     Vector2 baseVelocity = Vector2.UnitY * Main.rand.NextFloat(-12.5f, -5f);
                     int spread = Main.rand.Next(16, 36);
-                    Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, baseVelocity.RotatedBy(MathHelper.ToRadians(spread * i)), type2, damage, 0f, Main.myPlayer);
+                    Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, baseVelocity.RotatedBy(MathHelper.ToRadians(spread * i)), type2, PerforatorHive.IchorShotDamage, 0f, Main.myPlayer);
                 }
             }
         }
@@ -215,7 +256,9 @@ namespace CalamityMod.NPCs.Perforator
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<BurningBlood>(), 60, true);
+            {
+                target.AddBuff(BuffID.Ichor, 240);
+            }
         }
     }
 }

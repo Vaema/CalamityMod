@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Items.Armor.Silva;
-using CalamityMod.Rarities;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -14,19 +13,13 @@ namespace CalamityMod.Items.Armor.Vanity
         {
             Item.width = 24;
             Item.height = 26;
-            Item.value = Item.buyPrice(0, 8, 0, 0);
             Item.vanity = true;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.value = Item.buyPrice(gold: 10); // Sold by Clothier
+            Item.rare = ItemRarityID.Blue;
         }
 
-        public override bool IsArmorSet(Item head, Item body, Item legs)
-        {
-            return body.type == ModContent.ItemType<SilvaArmor>() && legs.type == ModContent.ItemType<SilvaLeggings>();
-        }
+        public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ModContent.ItemType<SilvaArmor>() && legs.type == ModContent.ItemType<SilvaLeggings>();
 
-        public override void ArmorSetShadows(Player player)
-        {
-            player.armorEffectDrawShadow = true;
-        }
+        public override void ArmorSetShadows(Player player) => player.armorEffectDrawShadow = true;
     }
 }

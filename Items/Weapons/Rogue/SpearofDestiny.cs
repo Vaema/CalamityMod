@@ -1,11 +1,10 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Items.Accessories;
 
 namespace CalamityMod.Items.Weapons.Rogue
 {
@@ -19,23 +18,22 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 52;
             Item.height = 52;
-            Item.damage = 50;
+            Item.damage = 70;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.useAnimation = 40;
+            Item.useAnimation = Item.useTime = 41;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 40;
             Item.knockBack = 2f;
             Item.UseSound = ThrowSound;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity6BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightPurpleBuyPrice;
             Item.rare = ItemRarityID.LightPurple;
             Item.shoot = ModContent.ProjectileType<SpearofDestinyProjectile>();
             Item.shootSpeed = 10f;
             Item.DamageType = RogueDamageClass.Instance;
         }
 
-        public override float StealthDamageMultiplier => 4.2f;
+        public override float StealthDamageMultiplier => 2.8f;
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (player.Calamity().StealthStrikeAvailable()) //setting the stealth strike
@@ -53,19 +51,16 @@ namespace CalamityMod.Items.Weapons.Rogue
             {
                 int projType = BigSpear ? ModContent.ProjectileType<LanceofDestiny>() : type;
 
-                if (!BigSpear)
-                    SoundEngine.PlaySound(ThrowSound, player.Center);
-                else
-                    SoundEngine.PlaySound(ThrowSound2, player.Center);
+                SoundEngine.PlaySound(BigSpear ? ThrowSound2 : ThrowSound, player.Center);
 
                 if (BigSpear)
                 {
-                    Projectile.NewProjectile(source, position, velocity, projType, BigSpear ? damage * 3 : damage, knockback, player.whoAmI);
+                    Projectile.NewProjectile(source, position, velocity, projType, damage * 3, knockback, player.whoAmI);
                 }
-                int index = 5;
-                for (int i = -index; i <= index; i += index)
+                else
                 {
-                    if (!BigSpear)
+                    int index = 5;
+                    for (int i = -index; i <= index; i += index)
                     {
                         Vector2 perturbedSpeed = velocity.RotatedBy(MathHelper.ToRadians(i));
                         int spear = Projectile.NewProjectile(source, position, perturbedSpeed, projType, damage, knockback, player.whoAmI);

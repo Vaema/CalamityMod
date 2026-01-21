@@ -1,28 +1,28 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.NPCs.Astral
 {
     public class AstralachneaGround : ModNPC
     {
-        private static Texture2D glowmask;
+        public static Asset<Texture2D> glowmask;
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 5;
+            Main.npcFrameCount[Type] = 5;
 
             if (!Main.dedServ)
-                glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/Astral/AstralachneaGroundGlow", AssetRequestMode.ImmediateLoad).Value;
+                glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/Astral/AstralachneaGroundGlow", AssetRequestMode.AsyncLoad);
 
             this.HideFromBestiary();
         }
@@ -33,12 +33,11 @@ namespace CalamityMod.NPCs.Astral
             NPC.height = 34;
             NPC.aiStyle = NPCAIStyleID.Fighter;
             NPC.damage = 55;
-            NPC.defense = 20;
-            NPC.DR_NERD(0.15f);
+            NPC.defense = 30;
             NPC.lifeMax = 500;
             NPC.DeathSound = CommonCalamitySounds.AstralNPCDeathSound;
             NPC.knockBackResist = 0.38f;
-            NPC.value = Item.buyPrice(0, 0, 20, 0);
+            NPC.value = Item.buyPrice(silver: 8);
             NPC.timeLeft = NPC.activeTime * 2;
             AnimationType = NPCID.WallCreeper;
             Banner = ModContent.NPCType<AstralachneaWall>();
@@ -46,7 +45,7 @@ namespace CalamityMod.NPCs.Astral
             if (DownedBossSystem.downedAstrumAureus)
             {
                 NPC.damage = 90;
-                NPC.defense = 30;
+                NPC.defense = 40;
                 NPC.knockBackResist = 0.28f;
                 NPC.lifeMax = 750;
             }
@@ -66,7 +65,7 @@ namespace CalamityMod.NPCs.Astral
                 {
                     for (int j = y - 1; j <= y + 1; j++)
                     {
-                        if (Main.tile[i, j] != null && Main.tile[i, j].WallType > 0)
+                        if (Main.tile[i, j] != null && Main.tile[i, j].WallType > WallID.None)
                         {
                             transform = true;
                         }
@@ -119,7 +118,7 @@ namespace CalamityMod.NPCs.Astral
             //if dead do gores
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     for (int i = 0; i < 6; i++)
                     {
@@ -132,7 +131,7 @@ namespace CalamityMod.NPCs.Astral
         public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             Vector2 origin = new Vector2(40f, 21f);
-            spriteBatch.Draw(glowmask, NPC.Center - screenPos, NPC.frame, Color.White * 0.6f, NPC.rotation, origin, 1f, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+            spriteBatch.Draw(glowmask.Value, NPC.Center - screenPos, NPC.frame, Color.White * 0.6f, NPC.rotation, origin, 1f, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
@@ -151,7 +150,7 @@ namespace CalamityMod.NPCs.Astral
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 75, true);
+                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 180);
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot) => AstralachneaWall.ModifyAstralachneaLoot(npcLoot);

@@ -1,9 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Ranged
 {
     public class ThePackMissile : ModProjectile, ILocalizedModType
@@ -11,9 +10,10 @@ namespace CalamityMod.Projectiles.Ranged
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            Main.projFrames[Type] = 9;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 6;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -32,15 +32,15 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X);
+            Projectile.rotation = Projectile.velocity.ToRotation();
             Vector2 targetCenter = Projectile.Center;
             float minTargetDistance = 2500f;
             bool homeIn = false;
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC n in Main.ActiveNPCs)
             {
-                if (Main.npc[i].CanBeChasedBy(Projectile, false) && Collision.CanHit(Projectile.Center, 1, 1, Main.npc[i].Center, 1, 1))
+                if (n.CanBeChasedBy(Projectile, false) && Collision.CanHit(Projectile.Center, 1, 1, n.Center, 1, 1))
                 {
-                    float distanceFromTarget = Projectile.Center.ManhattanDistance(Main.npc[i].Center);
+                    float distanceFromTarget = Projectile.Center.ManhattanDistance(n.Center);
                     if (distanceFromTarget < 200f)
                     {
                         if (Projectile.owner == Main.myPlayer)
@@ -58,7 +58,7 @@ namespace CalamityMod.Projectiles.Ranged
                     else if (distanceFromTarget < minTargetDistance)
                     {
                         minTargetDistance = distanceFromTarget;
-                        targetCenter = Main.npc[i].Center;
+                        targetCenter = n.Center;
                         homeIn = true;
                     }
                 }
@@ -70,15 +70,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
 
             Projectile.frameCounter++;
-            if (Projectile.frameCounter > 3)
-            {
-                Projectile.frame++;
-                Projectile.frameCounter = 0;
-            }
-            if (Projectile.frame > 3)
-            {
-                Projectile.frame = 0;
-            }
+            Projectile.frame = Projectile.frameCounter / 4 % Main.projFrames[Type];
         }
 
         public override void OnKill(int timeLeft)
@@ -91,7 +83,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
             for (int i = 0; i < 40; i++)
             {
-                int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 255, 0f, 0f, 0, default, 1.5f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CrystalPulse2, 0f, 0f, 0, default, 1.5f);
                 Main.dust[dust].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -101,10 +93,10 @@ namespace CalamityMod.Projectiles.Ranged
             }
             for (int j = 0; j < 60; j++)
             {
-                int dust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 255, 0f, 0f, 0, default, 2f);
+                int dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CrystalPulse2, 0f, 0f, 0, default, 2f);
                 Main.dust[dust2].noGravity = true;
                 Main.dust[dust2].velocity *= 5f;
-                dust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 255, 0f, 0f, 0, default, 1.5f);
+                dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CrystalPulse2, 0f, 0f, 0, default, 1.5f);
                 Main.dust[dust2].velocity *= 2f;
             }
             Projectile.Damage();
@@ -112,7 +104,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

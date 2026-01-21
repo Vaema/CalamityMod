@@ -1,5 +1,9 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using CalamityMod.Dusts;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -9,100 +13,97 @@ namespace CalamityMod.Projectiles.Summon
     public class LuxorsGiftSummon : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Summon";
-        private int dust = 3;
-
+        public NPC targeted;
+        public int attackTime = 0;
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
         }
 
         public override void SetDefaults()
         {
             Projectile.width = 14;
-            Projectile.height = 14;
-            Projectile.netImportant = true;
+            Projectile.height = 46;
             Projectile.friendly = true;
-            Projectile.ignoreWater = true;
-            Projectile.minionSlots = 0f;
-            Projectile.timeLeft = 180000;
-            Projectile.penetrate = -1;
-            Projectile.tileCollide = false;
-            Projectile.timeLeft *= 5;
-            Projectile.minion = true;
+            Projectile.penetrate = -1; // 3
+            Projectile.timeLeft = 600;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 10;
-            Projectile.DamageType = DamageClass.Summon;
+            Projectile.extraUpdates = 2;
+            Projectile.tileCollide = false;
         }
-
         public override void AI()
         {
-            Player player = Main.player[Projectile.owner];
-            CalamityPlayer modPlayer = player.Calamity();
-            if (dust > 0)
-            {
-                int dustAmt = 36;
-                for (int i = 0; i < dustAmt; i++)
-                {
-                    Vector2 rotate = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
-                    rotate = rotate.RotatedBy((double)((float)(i - (dustAmt / 2 - 1)) * 6.28318548f / (float)dustAmt), default) + Projectile.Center;
-                    Vector2 faceDirection = rotate - Projectile.Center;
-                    int dust = Dust.NewDust(rotate + faceDirection, 0, 0, 107, faceDirection.X * 1.75f, faceDirection.Y * 1.75f, 100, default, 1.1f);
-                    Main.dust[dust].noGravity = true;
-                    Main.dust[dust].velocity = faceDirection;
-                }
-                dust--;
-            }
-            if (Projectile.localAI[0] == 0f)
-            {
-                Projectile.scale -= 0.01f;
-                Projectile.alpha += 15;
-                if (Projectile.alpha >= 250)
-                {
-                    Projectile.alpha = 255;
-                    Projectile.localAI[0] = 1f;
-                }
-            }
-            else if (Projectile.localAI[0] == 1f)
-            {
-                Projectile.scale += 0.01f;
-                Projectile.alpha -= 15;
-                if (Projectile.alpha <= 0)
-                {
-                    Projectile.alpha = 0;
-                    Projectile.localAI[0] = 0f;
-                }
-            }
-
-            bool isMinion = Projectile.type == ModContent.ProjectileType<LuxorsGiftSummon>();
-            if (isMinion)
-            {
-                if (!modPlayer.luxorsGift || player.dead)
-                {
-                    Projectile.Kill();
-                }
-            }
-
-            Projectile.ChargingMinionAI(700f, 1000f, 2200f, 150f, 0, 40f, 9f, 4f, new Vector2(0f, -60f), 40f, 9f, true, true);
-
+            Lighting.AddLight(Projectile.Center, Color.Lime.ToVector3() * 0.35f);
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
-        }
-
-        public override Color? GetAlpha(Color lightColor)
-        {
-            if (Projectile.timeLeft < 85)
+            if (targeted == null || !targeted.active || targeted.life <= 0)
+                targeted = Projectile.Center.ClosestNPCAt(500);
+            if (targeted != null && attackTime == 0)
             {
-                byte b2 = (byte)(Projectile.timeLeft * 3);
-                byte a2 = (byte)(100f * ((float)b2 / 255f));
-                return new Color((int)b2, (int)b2, (int)b2, (int)a2);
+                CalamityUtils.HomeInOnSelectedNPC(Projectile, targeted, true, 0.8f, 12, 0.93f, 0.99f);
             }
-            return new Color(255, 255, 255, 100);
-        }
+            if (attackTime > 0)
+            {
+                attackTime--;
+                Projectile.velocity = Projectile.velocity.RotatedBy(0.09f * (Projectile.numHits % 2 == 0 ? -1 : 1));
+                if (Projectile.velocity.Length() < 12)
+                    Projectile.velocity *= 1.025f;
+            }
 
+            if (Projectile.timeLeft % 2 == 0)
+            {
+                bool sparkly = Main.rand.NextBool(3);
+                Vector2 dustVel = -(Projectile.rotation - MathHelper.PiOver2).ToRotationVector2().RotatedByRandom(0.5f) * Main.rand.NextFloat(0.8f, 1.3f);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(8, 8), sparkly ? DustID.FireworksRGB : ModContent.DustType<LightDust>(), dustVel * Main.rand.NextFloat(0.5f, 1.2f));
+                dust.noGravity = !sparkly;
+                dust.scale = Main.rand.NextFloat(0.45f, 0.6f) * (sparkly ? 1.6f : 1);
+                dust.color = Color.Lime;
+                dust.noLightEmittence = true;
+                dust.velocity *= (sparkly ? 1 : 8);
+            }
+
+            Particle spark = new CustomSpark(Projectile.Center - Projectile.velocity * 0.5f, -Projectile.velocity * 0.01f, "CalamityMod/Particles/BloomCircle", false, 9, 0.18f, Color.Lime * 0.7f, new Vector2(0.9f, 1.2f), true, false, 0.4f);
+            GeneralParticleHandler.SpawnParticle(spark);
+        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            float minMult = 0.5f;
+            int hitsToMinMult = 3;
+            float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+            modifiers.SourceDamage *= damageMult;
+
+            attackTime = 45;
+
+            if (Projectile.numHits >= 2)
+            {
+                for (int i = 0; i < 12; i++)
+                {
+                    Vector2 dustVel = -(Projectile.rotation - MathHelper.PiOver2).ToRotationVector2().RotatedByRandom(0.8f) * Main.rand.NextFloat(6f, 14f);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(8, 8), ModContent.DustType<LightDust>(), dustVel);
+                    dust.noGravity = Main.rand.NextBool();
+                    dust.scale = Main.rand.NextFloat(0.65f, 1.2f);
+                    dust.color = Color.Lime;
+                    dust.noLightEmittence = true;
+                }
+                Projectile.Kill();
+            }
+        }
+        public override bool? CanHitNPC(NPC target) => (targeted != null && target == targeted && attackTime == 0) ? null : false;
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 8, targetHitbox);
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 2);
+            Asset<Texture2D> tex = ModContent.Request<Texture2D>(Texture);
+            Color drawColor = Color.Lime;
+            float fade = Utils.GetLerpValue(0, 90, Projectile.timeLeft, true);
+
+
+            for (int i = 0; i < 8; i++)
+            {
+                Vector2 drawOffset = (MathHelper.TwoPi * i / 8f).ToRotationVector2() * 1f;
+                Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition + drawOffset, null, drawColor with { A = 0 } * 0.4f * (float)Math.Pow(fade, 3), Projectile.rotation, tex.Size() * 0.5f, Projectile.scale, SpriteEffects.None);
+            }
+            Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition, null, Color.White * fade, Projectile.rotation, tex.Size() * 0.5f, Projectile.scale, SpriteEffects.None);
             return false;
         }
     }

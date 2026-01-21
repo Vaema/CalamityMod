@@ -1,9 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -12,9 +11,10 @@ namespace CalamityMod.Projectiles.Ranged
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 5;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Projectile.frame = 0;
             }
-            int redDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 60, 0f, 0f, 0, default, 1f);
+            int redDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RedTorch, 0f, 0f, 0, default, 1f);
             Dust dust = Main.dust[redDust];
             dust.velocity *= 0.1f;
             Main.dust[redDust].scale = 1.3f;
@@ -73,7 +73,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
@@ -101,7 +101,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Vector2 rotate = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
                 rotate = rotate.RotatedBy((double)((float)(i - (constant / 2 - 1)) * 6.28318548f / (float)constant), default) + Projectile.Center;
                 Vector2 faceDirection = rotate - Projectile.Center;
-                int dust = Dust.NewDust(rotate + faceDirection, 0, 0, 60, faceDirection.X * 1.5f, faceDirection.Y * 1.5f, 100, default, 2f);
+                int dust = Dust.NewDust(rotate + faceDirection, 0, 0, DustID.RedTorch, faceDirection.X * 1.5f, faceDirection.Y * 1.5f, 100, default, 2f);
                 Main.dust[dust].noGravity = true;
                 Main.dust[dust].noLight = true;
                 Main.dust[dust].velocity = faceDirection;

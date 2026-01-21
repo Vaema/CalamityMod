@@ -1,15 +1,16 @@
-﻿using CalamityMod.DataStructures;
+﻿using System;
+using CalamityMod.DataStructures;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Items.Weapons.Melee;
-using static Terraria.ModLoader.ModContent;
 using static CalamityMod.CalamityUtils;
-using Terraria.Audio;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -119,30 +120,23 @@ namespace CalamityMod.Projectiles.Melee
 
         public void Attune(BrokenBiomeBlade item)
         {
-            bool jungle = Owner.ZoneJungle;
-            bool snow = Owner.ZoneSnow;
-            bool evil = Owner.ZoneCorrupt || Owner.ZoneCrimson;
-            bool desert = Owner.ZoneDesert;
-            bool hell = Owner.ZoneUnderworldHeight;
-            bool ocean = Owner.ZoneBeach || Owner.Calamity().ZoneSulphur;
+            bool coldAttune = Owner.ZoneSnow || Owner.ZoneSkyHeight;
+            bool evilAttune = Owner.ZoneCorrupt || Owner.ZoneCrimson;
+            bool hotAttune = Owner.ZoneDesert || Owner.ZoneUnderworldHeight;
 
-            Attunement attunement = Attunement.attunementArray[(int)AttunementID.Default];
+            Attunement attunement = AttunementSystem.FindOrNull(AttunementID.Default);
 
-            if (desert || hell)
+            if (hotAttune)
             {
-                attunement = Attunement.attunementArray[(int)AttunementID.Hot];
+                attunement = AttunementSystem.FindOrNull(AttunementID.Hot);
             }
-            if (snow)
+            if (coldAttune)
             {
-                attunement = Attunement.attunementArray[(int)AttunementID.Cold];
+                attunement = AttunementSystem.FindOrNull(AttunementID.Cold);
             }
-            if (jungle || ocean)
+            if (evilAttune)
             {
-                attunement = Attunement.attunementArray[(int)AttunementID.Tropical];
-            }
-            if (evil)
-            {
-                attunement = Attunement.attunementArray[(int)AttunementID.Evil];
+                attunement = AttunementSystem.FindOrNull(AttunementID.Evil);
             }
 
             //If the owner already had the attunement , break out of it (And unswap)
@@ -182,7 +176,7 @@ namespace CalamityMod.Projectiles.Melee
 
             else if (ChanneledState == 1f)
             {
-                Texture2D tex = Request<Texture2D>(Texture).Value;
+                Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
                 Vector2 squishyScale = new Vector2(Math.Abs((float)Math.Sin(MathHelper.Pi + MathHelper.TwoPi * Projectile.timeLeft / 30f)), 1f);
                 SpriteEffects flip = (float)Math.Sin(MathHelper.Pi + MathHelper.TwoPi * Projectile.timeLeft / 30f) > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
                 Main.EntitySpriteDraw(tex, Projectile.position - Main.screenPosition, null, lightColor * (Projectile.timeLeft / 60f), 0, tex.Size() / 2, squishyScale * (2f - (Projectile.timeLeft / 60f)), flip, 0);

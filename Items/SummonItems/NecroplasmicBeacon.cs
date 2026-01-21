@@ -5,7 +5,6 @@ using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -14,9 +13,10 @@ namespace CalamityMod.Items.SummonItems
     public class NecroplasmicBeacon : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.SummonItems";
+
         public override void SetStaticDefaults()
         {
-           	ItemID.Sets.SortingPriorityBossSpawns[Type] = 19; // Celestial Sigil
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 19; // Celestial Sigil
         }
 
         public override void SetDefaults()
@@ -30,10 +30,10 @@ namespace CalamityMod.Items.SummonItems
             Item.rare = ModContent.RarityType<Turquoise>();
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
+        }
 
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
         {
@@ -47,12 +47,7 @@ namespace CalamityMod.Items.SummonItems
 
         public override bool? UseItem(Player player)
         {
-            SoundEngine.PlaySound(Polterghast.SpawnSound, player.Center);
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-                NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<Polterghast>());
-            else
-                NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, player.whoAmI, ModContent.NPCType<Polterghast>());
-
+            CalamityUtils.SpawnBossUsingItem<Polterghast>(player, Polterghast.SpawnSound);
             return true;
         }
 
@@ -60,8 +55,8 @@ namespace CalamityMod.Items.SummonItems
         {
             CreateRecipe().
                 AddRecipeGroup("Wood", 25).
-                AddIngredient<Polterplasm>(50).
-                AddTile(TileID.LunarCraftingStation).
+                AddIngredient<Necroplasm>(50).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

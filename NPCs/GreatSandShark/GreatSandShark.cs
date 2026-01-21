@@ -1,4 +1,7 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.NPCs.Astral;
@@ -7,14 +10,12 @@ using CalamityMod.Projectiles.Enemy;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.NPCs.GreatSandShark
 {
@@ -24,21 +25,21 @@ namespace CalamityMod.NPCs.GreatSandShark
         private bool resetAI = false;
 
         public static readonly SoundStyle RoarSound = new("CalamityMod/Sounds/Custom/GreatSandSharkRoar");
-	public static readonly SoundStyle HurtSound = new("CalamityMod/Sounds/NPCHit/GreatSandSharkHit");
-	public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/GreatSandSharkDeath");
+        public static readonly SoundStyle HurtSound = new("CalamityMod/Sounds/NPCHit/GreatSandSharkHit");
+        public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/GreatSandSharkDeath");
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 8;
+            Main.npcFrameCount[Type] = 8;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Scale = 0.6f,
                 PortraitPositionXOverride = 70f
             };
             value.Position.X += 60f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
-			NPCID.Sets.MPAllowedEnemies[Type] = true;
+            NPCID.Sets.MPAllowedEnemies[Type] = true;
         }
 
         public override void SetDefaults()
@@ -51,14 +52,13 @@ namespace CalamityMod.NPCs.GreatSandShark
             NPC.width = 300;
             NPC.height = 120;
             NPC.defense = 40;
-            NPC.DR_NERD(0.25f);
             NPC.LifeMaxNERB(9200, 11000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 5, 0, 0);
-            NPCID.Sets.TrailCacheLength[NPC.type] = 8;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            NPC.value = Item.buyPrice(gold: 5);
+            NPCID.Sets.TrailCacheLength[Type] = 8;
+            NPCID.Sets.TrailingMode[Type] = 1;
             NPC.behindTiles = true;
             NPC.netAlways = true;
             NPC.DeathSound = DeathSound;
@@ -79,11 +79,11 @@ namespace CalamityMod.NPCs.GreatSandShark
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Desert,
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Events.Sandstorm,
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.GreatSandShark")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.GreatSandShark")
             });
         }
 
@@ -118,14 +118,14 @@ namespace CalamityMod.NPCs.GreatSandShark
 
             if (!Terraria.GameContent.Events.Sandstorm.Happening)
             {
-                CalamityUtils.StartSandstorm();
+                CalamityWorld.StartSandstorm();
                 CalamityNetcode.SyncWorld();
             }
 
             if (NPC.soundDelay <= 0)
             {
                 NPC.soundDelay = 480;
-                SoundEngine.PlaySound(RoarSound, NPC.position);
+                SoundEngine.PlaySound(RoarSound, NPC.Center);
             }
 
             if (NPC.localAI[3] >= 1f || Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > 1000f)
@@ -335,7 +335,7 @@ namespace CalamityMod.NPCs.GreatSandShark
                     {
                         int npcType = Main.zenithWorld ? ModContent.NPCType<FusionFeeder>() : NPCID.SandShark;
                         NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y + 50, npcType, 0, 0f, 0f, 0f, 0f, 255);
-                        SoundEngine.PlaySound(RoarSound, NPC.position);
+                        SoundEngine.PlaySound(RoarSound, NPC.Center);
                     }
                 }
 
@@ -424,11 +424,11 @@ namespace CalamityMod.NPCs.GreatSandShark
                         {
                             if (NPC.localAI[0] == 0f)
                             {
-                                SoundEngine.PlaySound(SoundID.NPCDeath15, NPC.position);
+                                SoundEngine.PlaySound(SoundID.NPCDeath15, NPC.Center);
                                 NPC.localAI[0] = -1f;
                                 for (int i = 0; i < 25; i++)
                                 {
-                                    int burrowDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 32, 0f, 0f, 100, default, 2f);
+                                    int burrowDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Sand, 0f, 0f, 100, default, 2f);
                                     Main.dust[burrowDust].velocity.Y *= 6f;
                                     Main.dust[burrowDust].velocity.X *= 3f;
                                     if (Main.rand.NextBool())
@@ -439,17 +439,22 @@ namespace CalamityMod.NPCs.GreatSandShark
                                 }
                                 for (int j = 0; j < 50; j++)
                                 {
-                                    int burrowDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 85, 0f, 0f, 100, default, 3f);
+                                    int burrowDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.UnusedBrown, 0f, 0f, 100, default, 3f);
                                     Main.dust[burrowDust2].noGravity = true;
                                     Main.dust[burrowDust2].velocity.Y *= 10f;
-                                    burrowDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 268, 0f, 0f, 100, default, 2f);
+                                    burrowDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Sandstorm, 0f, 0f, 100, default, 2f);
                                     Main.dust[burrowDust2].velocity.X *= 2f;
                                 }
-                                int spawnX = (int)(NPC.width / 2);
-                                int projType = Main.zenithWorld ? ModContent.ProjectileType<AstralMeteorProj>() : ModContent.ProjectileType<GreatSandBlast>();
-                                for (int sand = 0; sand < 5; sand++)
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center.X + (float)Main.rand.Next(-spawnX, spawnX), NPC.Center.Y,
-                                        (float)Main.rand.Next(-3, 4), (float)Main.rand.Next(-12, -6), projType, 40, 0f, Main.myPlayer);
+
+                                if (Main.netMode != NetmodeID.MultiplayerClient)
+                                {
+                                    int spawnX = (int)(NPC.width / 2);
+                                    int projType = Main.zenithWorld ? ModContent.ProjectileType<AstralMeteorProj>() : ModContent.ProjectileType<GreatSandBlast>();
+                                    int damage = Main.masterMode ? 25 : Main.expertMode ? 30 : 40;
+                                    for (int sand = 0; sand < 5; sand++)
+                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center.X + (float)Main.rand.Next(-spawnX, spawnX), NPC.Center.Y,
+                                            (float)Main.rand.Next(-3, 4), (float)Main.rand.Next(-12, -6), projType, damage, 0f, Main.myPlayer);
+                                }
                             }
                             NPC.ai[2] = -30f;
 
@@ -552,14 +557,17 @@ namespace CalamityMod.NPCs.GreatSandShark
                 if (NPC.Calamity().newAI[0] >= 120)
                 {
                     SoundEngine.PlaySound(SoundID.Item105, Main.player[NPC.target].Center);
-                    for (int i = 0; i < 5; i++)
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        float speedX = 2f + (float)Main.rand.Next(-8, 5);
-                        float speedY = 2f + (float)Main.rand.Next(1, 6);
-                        int p = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center.X, Main.player[NPC.target].Center.Y - 800, speedX, speedY, ModContent.ProjectileType<AstralFlame>(), 40, 0, Main.myPlayer);
-                        if (p.WithinBounds(Main.maxProjectiles))
+                        for (int i = 0; i < 5; i++)
                         {
-                            Main.projectile[p].timeLeft = 180;
+                            float speedX = 2f + (float)Main.rand.Next(-8, 5);
+                            float speedY = 2f + (float)Main.rand.Next(1, 6);
+                            int p = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center.X, Main.player[NPC.target].Center.Y - 800, speedX, speedY, ModContent.ProjectileType<AstralFlame>(), 40, 0, Main.myPlayer);
+                            if (p.WithinBounds(Main.maxProjectiles))
+                            {
+                                Main.projectile[p].timeLeft = 180;
+                            }
                         }
                     }
                     NPC.Calamity().newAI[0] = 0;
@@ -574,7 +582,7 @@ namespace CalamityMod.NPCs.GreatSandShark
                 NPC.spriteDirection = -NPC.direction;
             }
             NPC.frameCounter += 0.15f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
@@ -593,30 +601,30 @@ namespace CalamityMod.NPCs.GreatSandShark
                 mainAfterimageColor = Color.Silver;
                 extraAfterimageColor = Color.Orange;
             }
-            Texture2D texture2D3 = TextureAssets.Npc[NPC.type].Value;
-            int currentFrame = TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type];
+            Texture2D texture2D3 = TextureAssets.Npc[Type].Value;
+            int currentFrame = TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type];
             int y3 = currentFrame * (int)NPC.frameCounter;
             Rectangle rectangle = new Rectangle(0, y3, texture2D3.Width, currentFrame);
             Vector2 halfRectSize = rectangle.Size() / 2f;
             int eightConst = 8;
             int afterimageInc = 2;
             int afterimageCounter = 1;
-            while (((afterimageInc > 0 && afterimageCounter < eightConst) || (afterimageInc < 0 && afterimageCounter > eightConst)) && CalamityConfig.Instance.Afterimages)
+            while (((afterimageInc > 0 && afterimageCounter < eightConst) || (afterimageInc < 0 && afterimageCounter > eightConst)) && CalamityClientConfig.Instance.Afterimages)
             {
                 Color alphaAfterimageColor = NPC.GetAlpha(extraAfterimageColor);
                 {
                     goto IL_6899;
                 }
-                IL_6881:
+IL_6881:
                 afterimageCounter += afterimageInc;
                 continue;
-                IL_6899:
+IL_6899:
                 float afterimagesRemaining = (float)(eightConst - afterimageCounter);
                 if (afterimageInc < 0)
                 {
                     afterimagesRemaining = (float)(1 - afterimageCounter);
                 }
-                alphaAfterimageColor *= afterimagesRemaining / ((float)NPCID.Sets.TrailCacheLength[NPC.type] * 1.5f);
+                alphaAfterimageColor *= afterimagesRemaining / ((float)NPCID.Sets.TrailCacheLength[Type] * 1.5f);
                 Vector2 afterimagePos = NPC.oldPos[afterimageCounter];
                 float afterimageRotation = NPC.rotation;
                 Main.spriteBatch.Draw(texture2D3, afterimagePos + NPC.Size / 2f - screenPos + new Vector2(0, NPC.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(rectangle), alphaAfterimageColor, afterimageRotation + NPC.rotation * 0f * (float)(afterimageCounter - 1) * -(float)spriteEffects.HasFlag(SpriteEffects.FlipHorizontally).ToDirectionInt(), halfRectSize, NPC.scale, spriteEffects, 0f);
@@ -630,7 +638,7 @@ namespace CalamityMod.NPCs.GreatSandShark
 
         public override void HitEffect(NPC.HitInfo hit)
         {
-	    // Hit sound
+            // Hit sound
             if (NPC.soundDelay == 0)
             {
                 NPC.soundDelay = 15;
@@ -645,7 +653,7 @@ namespace CalamityMod.NPCs.GreatSandShark
             {
                 for (int i = 0; i < 50; i++)
                 {
-                    int burrowDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 5, 0f, 0f, 100, default, 2f);
+                    int burrowDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 2f);
                     Main.dust[burrowDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -655,10 +663,10 @@ namespace CalamityMod.NPCs.GreatSandShark
                 }
                 for (int j = 0; j < 100; j++)
                 {
-                    int burrowDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 5, 0f, 0f, 100, default, 3f);
+                    int burrowDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 3f);
                     Main.dust[burrowDust2].noGravity = true;
                     Main.dust[burrowDust2].velocity *= 5f;
-                    burrowDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 5, 0f, 0f, 100, default, 2f);
+                    burrowDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 2f);
                     Main.dust[burrowDust2].velocity *= 2f;
                 }
             }
@@ -667,9 +675,6 @@ namespace CalamityMod.NPCs.GreatSandShark
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ItemID.AncientBattleArmorMaterial);
-
-            // Great Sand Shark drops the Desert Key
-            npcLoot.Add(ItemID.DungeonDesertKey, 3);
 
             // 1 Grand Scale guaranteed; on Expert, 33% chance of getting a second one
             npcLoot.Add(ModContent.ItemType<GrandScale>());
@@ -701,7 +706,7 @@ namespace CalamityMod.NPCs.GreatSandShark
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Bleeding, 600, true);
+                target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180, true);
         }
     }
 }

@@ -1,8 +1,8 @@
-﻿using Terraria;
+﻿using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Rogue
 {
     public class SphereYellow : ModProjectile, ILocalizedModType
@@ -10,8 +10,8 @@ namespace CalamityMod.Projectiles.Rogue
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 5;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -25,6 +25,8 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.timeLeft = 300;
             AIType = ProjectileID.WoodenBoomerang;
             Projectile.DamageType = RogueDamageClass.Instance;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -32,7 +34,7 @@ namespace CalamityMod.Projectiles.Rogue
             Lighting.AddLight(Projectile.Center, 1f, 1f, 0f);
             if (Main.rand.NextBool(5))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 229, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 100);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Vortex, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 100);
             }
             if (Projectile.ai[0] == 1f)
             {
@@ -60,7 +62,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

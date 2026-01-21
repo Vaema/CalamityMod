@@ -1,26 +1,26 @@
-﻿using CalamityMod.Items.Accessories;
+﻿using System;
+using System.IO;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Weapons.Summon;
-using CalamityMod.World;
 using CalamityMod.Projectiles.Enemy;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using Terraria.GameContent;
-using System.IO;
 
 namespace CalamityMod.NPCs.NormalNPCs
 {
     public class IceClasper : ModNPC
     {
         public Player player => Main.player[NPC.target];
-        
+
         public bool expert = Main.expertMode;
         public bool revenge = CalamityWorld.revenge;
         public bool death = CalamityWorld.death;
@@ -50,7 +50,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public float MaxVelocity = 10f;
         public float DistanceFromPlayer = 500f;
-        
+
         // Although it is weird that Death Mode less projectiles, the AI also changes, making it a shotgun spread of 3 projectiles, so it'd be 2*3.
         public float AmountOfProjectiles = (CalamityWorld.death) ? 2f : (CalamityWorld.revenge) ? 4f : (Main.expertMode) ? 3f : 3f;
         public float TimeBetweenProjectiles = (CalamityWorld.death) ? 50f : (CalamityWorld.revenge) ? 35f : (Main.expertMode) ? 40f : 45f;
@@ -65,12 +65,12 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 6;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0);
+            Main.npcFrameCount[Type] = 6;
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
             value.Rotation = MathHelper.ToRadians(135);
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
-            NPCID.Sets.TrailingMode[NPC.type] = 0;
-            NPCID.Sets.TrailCacheLength[NPC.type] = 6;
+            NPCID.Sets.TrailingMode[Type] = 0;
+            NPCID.Sets.TrailCacheLength[Type] = 6;
         }
 
         public override void SetDefaults()
@@ -86,7 +86,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.noTileCollide = true;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 25, 0);
+            NPC.value = Item.buyPrice(silver: 5);
             NPC.HitSound = SoundID.NPCHit5;
             NPC.DeathSound = SoundID.NPCDeath7;
             NPC.rarity = 2;
@@ -100,11 +100,11 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Snow,
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.UndergroundSnow,
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.IceClasper")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.IceClasper")
             });
         }
 
@@ -165,11 +165,11 @@ namespace CalamityMod.NPCs.NormalNPCs
         }
 
         public void State_Shooting(Player player)
-        {                        
+        {
             // Minimun distance so the minion is able to shoot.
             if (NPC.Distance(player.Center) > 800f)
                 return;
-            
+
             AITimer++;
 
             if (AITimer >= TimeBetweenBurst)
@@ -179,6 +179,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     Vector2 vecToPlayer = NPC.SafeDirectionTo(player.Center);
                     Vector2 projVelocity = vecToPlayer * ProjectileSpeed;
                     int type = ModContent.ProjectileType<IceClasperEnemyProjectile>();
+                    int damage = Main.masterMode ? 15 : Main.expertMode ? 18 : 24;
 
                     // If Death Mode on, the enemy will shoot out a spead of projectiles, instead of a burst.
                     if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -192,7 +193,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                                     NPC.Center + projVelocity.SafeNormalize(Vector2.Zero) * 10f,
                                     spreadVelocity,
                                     type,
-                                    24,
+                                    damage,
                                     0f,
                                     Main.myPlayer);
                                 Main.projectile[projectile].timeLeft = 300;
@@ -205,7 +206,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                                 NPC.Center + projVelocity.SafeNormalize(Vector2.Zero) * 10f,
                                 projVelocity,
                                 type,
-                                24,
+                                damage,
                                 0f,
                                 Main.myPlayer);
                             Main.projectile[projectile].timeLeft = 300;
@@ -235,11 +236,11 @@ namespace CalamityMod.NPCs.NormalNPCs
             else if (AITimer >= TimeBetweenBurst / 2f && AITimer < TimeBetweenBurst)
             {
                 Vector2 randPos = Main.rand.NextVector2CircularEdge(100f, 100f);
-                Dust telegraphDust = Dust.NewDustPerfect(NPC.Center + randPos, 172, NPC.DirectionFrom(NPC.Center + NPC.velocity + randPos) * Main.rand.NextFloat(5f, 7f), 0, default, 1.5f);
+                Dust telegraphDust = Dust.NewDustPerfect(NPC.Center + randPos, DustID.DungeonWater, NPC.DirectionFrom(NPC.Center + NPC.velocity + randPos) * Main.rand.NextFloat(5f, 7f), 0, default, 1.5f);
                 telegraphDust.noGravity = true;
                 NPC.netUpdate = true;
             }
-        }   
+        }
 
         public void State_Dashing(Player player)
         {
@@ -270,7 +271,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter += (isDashing) ? 0.4f : 0.15f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
@@ -288,8 +289,8 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             if (hurtInfo.Damage > 0)
             {
-                target.AddBuff(BuffID.Frostburn, 180, true);
-                target.AddBuff(BuffID.Chilled, 120, true);
+                target.AddBuff(BuffID.Frostburn, 240);
+                target.AddBuff(BuffID.Chilled, 120);
             }
         }
 
@@ -297,15 +298,15 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             for (int k = 0; k < 3; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 92, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Frost, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 15; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 92, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Frost, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.Center, NPC.velocity, Mod.Find<ModGore>("IceClasper").Type);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.Center, NPC.velocity, Mod.Find<ModGore>("IceClasper2").Type);
@@ -325,10 +326,10 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture = TextureAssets.Npc[Type].Value;
             Vector2 position = NPC.Center - screenPos;
-            Vector2 origin = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2);
-            position -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+            Vector2 origin = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2);
+            position -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
             position += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
 
             // If the enemy is preparing to dash, it'll fade in afterimages.
@@ -337,7 +338,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 (MathHelper.Clamp(AITimer, 0f, TimeBeforeDash) / TimeBeforeDash);
             float AfterimageFade = MathHelper.Lerp(0f, 1f, interpolant);
 
-            if (CurrentState == IceClasperAIState.Dashing && CalamityConfig.Instance.Afterimages)
+            if (CurrentState == IceClasperAIState.Dashing && CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 0; i < NPC.oldPos.Length; i++)
                 {

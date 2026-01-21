@@ -1,9 +1,10 @@
-﻿using CalamityMod.Projectiles.Magic;
+﻿using System;
+using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
@@ -11,11 +12,16 @@ namespace CalamityMod.Items.Weapons.Magic
     public class Serpentine : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
+
+        public static int ArmorPenetration = 15;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(ArmorPenetration);
+
         public override void SetDefaults()
         {
             Item.width = 28;
             Item.height = 32;
             Item.damage = 10;
+            Item.ArmorPenetration = ArmorPenetration;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 20;
             Item.useTime = 35;
@@ -23,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 3f;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.UseSound = SoundID.Item20;
             Item.autoReuse = true;
@@ -38,7 +44,10 @@ namespace CalamityMod.Items.Weapons.Magic
             player.itemTime = Item.useTime;
             Vector2 realPlayerPos = player.RotatedRelativePoint(player.MountedCenter, true);
             Vector2 projRotation = Vector2.UnitX.RotatedBy((double)player.fullRotation, default);
+
+            // 14NOV2024: Ozzatron: clamped mouse position is inappropriate to apply here due to excessive use of decompiled vanilla shitcode
             Vector2 projSpawnPos = Main.MouseWorld - realPlayerPos;
+
             float velX = (float)Main.mouseX + Main.screenPosition.X - realPlayerPos.X;
             float velY = (float)Main.mouseY + Main.screenPosition.Y - realPlayerPos.Y;
             if (player.gravDir == -1f)

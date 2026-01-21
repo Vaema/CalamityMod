@@ -1,10 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
-using CalamityMod.Particles;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -13,8 +12,8 @@ namespace CalamityMod.Projectiles.Ranged
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 12;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 12;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
         public override void SetDefaults()
         {
@@ -26,7 +25,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.penetrate = 1;
             Projectile.timeLeft = 300;
             Projectile.extraUpdates = 2;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
         public override void AI()
         {
@@ -36,7 +34,7 @@ namespace CalamityMod.Projectiles.Ranged
             Vector3 DustLight = new Vector3(0.171f, 0.124f, 0.086f);
             Lighting.AddLight(Projectile.Center, DustLight * 3);
 
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
 
             if (Projectile.timeLeft == 300)
             {
@@ -66,7 +64,7 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor * 2, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor * 2, 1);
             return true;
         }
     }

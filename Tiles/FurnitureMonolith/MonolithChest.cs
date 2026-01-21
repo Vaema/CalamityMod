@@ -1,21 +1,25 @@
 ﻿using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.ObjectInteractions;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.ObjectData;
 
 namespace CalamityMod.Tiles.FurnitureMonolith
 {
     public class MonolithChest : ModTile
     {
+        public Asset<Texture2D> GlowTexture;
+
         public override void SetStaticDefaults()
         {
             this.SetUpChest(ModContent.ItemType<Items.Placeables.FurnitureMonolith.MonolithChest>());
-            AddMapEntry(new Color(191, 142, 111), CalamityUtils.GetItemName<Items.Placeables.FurnitureMonolith.MonolithChest>(), CalamityUtils.GetMapChestName);
+            AddMapEntry(new Color(191, 142, 111), CalamityUtils.GetItemName<Items.Placeables.FurnitureMonolith.MonolithChest>(), FurnitureCommon.GetMapChestName);
         }
 
         public override bool CreateDust(int i, int j, ref int type)
@@ -27,8 +31,8 @@ namespace CalamityMod.Tiles.FurnitureMonolith
         public override void NumDust(int i, int j, bool fail, ref int num) => num = fail ? 1 : 3;
 
         public override LocalizedText DefaultContainerName(int frameX, int frameY) => CalamityUtils.GetItemName<Items.Placeables.FurnitureMonolith.MonolithChest>();
-        public override void MouseOver(int i, int j) => CalamityUtils.ChestMouseOver<Items.Placeables.FurnitureMonolith.MonolithChest>(i, j);
-        public override void MouseOverFar(int i, int j) => CalamityUtils.ChestMouseFar<Items.Placeables.FurnitureMonolith.MonolithChest>(i, j);
+        public override void MouseOver(int i, int j) => FurnitureCommon.ChestMouseOver<Items.Placeables.FurnitureMonolith.MonolithChest>(i, j);
+        public override void MouseOverFar(int i, int j) => FurnitureCommon.ChestMouseFar<Items.Placeables.FurnitureMonolith.MonolithChest>(i, j);
         public override void KillMultiTile(int i, int j, int frameX, int frameY) => Chest.DestroyChest(i, j);
         public override bool RightClick(int i, int j)
         {
@@ -53,36 +57,32 @@ namespace CalamityMod.Tiles.FurnitureMonolith
                 {
                     if (player.chest < 0)
                     {
-                        SoundEngine.PlaySound(SoundID.NPCDeath22 with { Volume = SoundID.NPCDeath22.Volume * 0.5f});
+                        SoundEngine.PlaySound(SoundID.NPCDeath22 with { Volume = SoundID.NPCDeath22.Volume * 0.5f });
                     }
                 }
             }
 
-            return CalamityUtils.ChestRightClick(i, j);
+            return FurnitureCommon.ChestRightClick(i, j);
         }
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            int xPos = Main.tile[i, j].TileFrameX;
-            int yPos = Main.tile[i, j].TileFrameY;
-            Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureMonolith/MonolithChestGlow").Value;
-            Color drawColour = GetDrawColour(i, j, new Color(100, 100, 100, 100));
-            Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
-            Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + zero;
-            Main.spriteBatch.Draw(glowmask, drawOffset, new Rectangle?(new Rectangle(xPos, yPos, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
-        }
+            Tile tile = Main.tile[i, j];
+            if (tile.IsTileActuallyInvisible())
+                return;
 
-        private Color GetDrawColour(int i, int j, Color colour)
-        {
-            int colType = Main.tile[i, j].TileColor;
-            Color paintCol = WorldGen.paintColor(colType);
-            if (colType >= 13 && colType <= 24)
-            {
-                colour.R = (byte)(paintCol.R / 255f * colour.R);
-                colour.G = (byte)(paintCol.G / 255f * colour.G);
-                colour.B = (byte)(paintCol.B / 255f * colour.B);
-            }
-            return colour;
+            int xPos = tile.TileFrameX;
+            int yPos = tile.TileFrameY;
+            int chestIndex = Chest.FindChest(i - (xPos / 18), j - (yPos / 18));
+            if (chestIndex == -1)
+                return;
+
+            int yOffset = TileObjectData.GetTileData(tile).DrawYOffset;
+            GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureMonolith/MonolithChestGlow");
+            Color drawColour = CalamityUtils.ApplyPaint(Main.tile[i, j].TileColor, new Color(100, 100, 100, 100));
+            Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y + yOffset) + (Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange));
+            Rectangle frame = new Rectangle(xPos, yPos + Main.chest[chestIndex].frame * 38, 18, 18);
+            Main.spriteBatch.Draw(GlowTexture.Value, drawOffset, frame, drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
         }
     }
 }

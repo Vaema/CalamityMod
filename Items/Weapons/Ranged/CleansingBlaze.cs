@@ -16,9 +16,9 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
-            Item.width = 108;
-            Item.height = 38;
-            Item.damage = 290;
+            Item.width = 104;
+            Item.height = 62;
+            Item.damage = 275;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 3;
             Item.useAnimation = 24;
@@ -32,14 +32,14 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 11f;
             Item.useAmmo = AmmoID.Gel;
             Item.consumeAmmoOnFirstShotOnly = true;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI) => Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>(Texture + "Glow").Value);
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Vector2 newPos = position + velocity.SafeNormalize(Vector2.UnitX) * 36f;
+            Vector2 newPos = position + new Vector2(0f, 5f) + velocity.SafeNormalize(Vector2.UnitX) * 36f;
             for (int i = 0; i < 3; i++)
             {
                 Vector2 newVel = velocity.RotatedByRandom(MathHelper.ToRadians(5f));

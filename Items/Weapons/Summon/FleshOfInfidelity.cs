@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -11,21 +12,21 @@ namespace CalamityMod.Items.Weapons.Summon
     public class FleshOfInfidelity : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
-
         public override void SetDefaults()
         {
             Item.width = 42;
             Item.height = 42;
-            Item.damage = 15;
+            Item.damage = 20;
             Item.DamageType = DamageClass.Summon;
+            Item.buffType = ModContent.BuffType<FleshBallBuff>();
             Item.shoot = ModContent.ProjectileType<FleshBallMinion>();
             Item.knockBack = 1f;
-            
-            Item.useTime = Item.useAnimation = 10;
+
+            Item.useAnimation = Item.useTime = 36;
             Item.mana = 10;
             Item.noMelee = true;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Zombie24;
@@ -33,18 +34,10 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, Main.MouseWorld, Vector2.UnitY * -1f, type, damage, knockback, player.whoAmI);
+            player.AddBuff(Item.buffType, 2);
+            var minion = Projectile.NewProjectileDirect(source, player.ClampedMouseWorld(), Vector2.UnitY * -1f, type, damage, knockback, player.whoAmI);
+            minion.originalDamage = Item.damage;
             return false;
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.CrimtaneBar, 4).
-                AddIngredient<BloodSample>(12).
-                AddIngredient(ItemID.Vertebrae, 4).
-                AddTile(TileID.DemonAltar).
-                Register();
         }
     }
 }

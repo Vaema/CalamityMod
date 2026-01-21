@@ -1,9 +1,9 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static System.Math;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -15,8 +15,8 @@ namespace CalamityMod.Projectiles.Rogue
         private int Bounces = 5;
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 6;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -28,10 +28,12 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.timeLeft = 300;
             Projectile.penetrate = 2;
             Projectile.DamageType = RogueDamageClass.Instance;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
-            SoundEngine.PlaySound(SoundID.NPCHit19 with { Volume = SoundID.NPCHit19.Volume * 0.7f}, Projectile.Center);
+            SoundEngine.PlaySound(SoundID.NPCHit19 with { Volume = SoundID.NPCHit19.Volume * 0.7f }, Projectile.Center);
             Bounces--;
             if (Bounces <= 0)
             {
@@ -58,7 +60,7 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.NPCHit19 with { Volume = SoundID.NPCHit19.Volume * 0.7f}, Projectile.Center);
+            SoundEngine.PlaySound(SoundID.NPCHit19 with { Volume = SoundID.NPCHit19.Volume * 0.7f }, Projectile.Center);
             int dustCount = Main.rand.Next(8, 16);
             for (int index = 0; index < dustCount; index++)
             {
@@ -68,7 +70,7 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 2);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 2);
             return false;
         }
     }

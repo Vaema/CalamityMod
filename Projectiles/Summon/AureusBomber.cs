@@ -1,24 +1,26 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Summon
 {
     public class AureusBomber : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Summon";
+        public Player Owner => Main.player[Projectile.owner];
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 3;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 1;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            Main.projFrames[Type] = 3;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 1;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -113,7 +115,7 @@ namespace CalamityMod.Projectiles.Summon
             if (targetedNPC != null && targetedNPC.CanBeChasedBy(Projectile, false))
             {
                 float distToEnemy = Vector2.Distance(targetedNPC.Center, Projectile.Center);
-                if (((double) Vector2.Distance(Projectile.Center, objectivePos) > (double) distToEnemy && (double) distToEnemy < (double) minDist || !enemyFound) && Collision.CanHitLine(Projectile.position, Projectile.width, Projectile.height, targetedNPC.position, targetedNPC.width, targetedNPC.height))
+                if (((double)Vector2.Distance(Projectile.Center, objectivePos) > (double)distToEnemy && (double)distToEnemy < (double)minDist || !enemyFound) && Collision.CanHitLine(Projectile.position, Projectile.width, Projectile.height, targetedNPC.position, targetedNPC.width, targetedNPC.height))
                 {
                     minDist = distToEnemy;
                     objectivePos = targetedNPC.Center;
@@ -128,7 +130,7 @@ namespace CalamityMod.Projectiles.Summon
                     if (npc.CanBeChasedBy(Projectile, false))
                     {
                         float distToEnemy = Vector2.Distance(npc.Center, Projectile.Center);
-                        if (((double) Vector2.Distance(Projectile.Center, objectivePos) > (double) distToEnemy && (double) distToEnemy < (double) minDist || !enemyFound) && Collision.CanHitLine(Projectile.position, Projectile.width, Projectile.height, npc.position, npc.width, npc.height))
+                        if (((double)Vector2.Distance(Projectile.Center, objectivePos) > (double)distToEnemy && (double)distToEnemy < (double)minDist || !enemyFound) && Collision.CanHitLine(Projectile.position, Projectile.width, Projectile.height, npc.position, npc.width, npc.height))
                         {
                             minDist = distToEnemy;
                             objectivePos = npc.Center;
@@ -253,7 +255,8 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            var dye = Owner?.cMinion ?? 0;
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1, armorShaderToUse: dye);
             return false;
         }
 

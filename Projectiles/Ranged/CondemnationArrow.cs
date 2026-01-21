@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -13,8 +13,8 @@ namespace CalamityMod.Projectiles.Ranged
         public ref float Time => ref Projectile.ai[0];
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 9;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
+            ProjectileID.Sets.TrailCacheLength[Type] = 9;
         }
 
         public override void SetDefaults()
@@ -26,9 +26,8 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.arrow = true;
-            Projectile.extraUpdates = 1;
+            Projectile.extraUpdates = 2;
             Projectile.timeLeft = 300;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override void AI()
@@ -64,7 +63,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor);
             return false;
         }
 
@@ -76,7 +75,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             for (int i = 0; i < 30; i++)
             {
-                Dust fire = Dust.NewDustPerfect(Projectile.Center, 130);
+                Dust fire = Dust.NewDustPerfect(Projectile.Center, DustID.Firework_Red);
                 fire.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedByRandom(0.8f) * new Vector2(4f, 1.25f) * Main.rand.NextFloat(0.9f, 1f);
                 fire.velocity = fire.velocity.RotatedBy(Projectile.rotation - MathHelper.PiOver2);
                 fire.velocity += Projectile.velocity * 0.7f;
@@ -91,6 +90,6 @@ namespace CalamityMod.Projectiles.Ranged
             }
         }
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Projectile.RotatingHitboxCollision(targetHitbox.TopLeft(), targetHitbox.Size());
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Projectile.RotatingHitboxCollision(targetHitbox);
     }
 }

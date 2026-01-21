@@ -2,19 +2,22 @@
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework;
-using Terraria.GameContent;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class DarkSunRing : ModItem, ILocalizedModType
+    public class DarkSunRing : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Accessories";
+        public bool HasFlavorTooltip => true;
+        public Color? TooltipExtensionColor => new(195, 223, 255);
+
         public override void SetStaticDefaults()
         {
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(6, 7));
@@ -25,17 +28,18 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 42;
             Item.height = 60;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
-            Item.defense = 10;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
+            Item.defense = 4;
             Item.lifeRegen = 1;
             Item.accessory = true;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.darkSunRing = true;
+            player.noKnockback = true;
         }
 
         public override void AddRecipes()

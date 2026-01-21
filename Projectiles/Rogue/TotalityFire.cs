@@ -12,9 +12,9 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 3;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 2;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            Main.projFrames[Type] = 3;
+            ProjectileID.Sets.TrailCacheLength[Type] = 2;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -47,7 +47,7 @@ namespace CalamityMod.Projectiles.Rogue
             if (!initialized)
             {
                 initialized = true;
-                Projectile.frame = Main.rand.Next(Main.projFrames[Projectile.type]);
+                Projectile.frame = Main.rand.Next(Main.projFrames[Type]);
             }
             Projectile.frameCounter++;
             if (Projectile.frameCounter > 6)
@@ -55,7 +55,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.frame = 0;
             }
@@ -100,7 +100,7 @@ namespace CalamityMod.Projectiles.Rogue
             //dust
             if (Main.rand.NextBool(4))
             {
-                int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 6, 0f, 0f, 100, default, 1f);
+                int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 1f);
                 Dust dust = Main.dust[fire];
                 dust.position.X -= 2f;
                 dust.position.Y += 2f;
@@ -110,7 +110,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
             if (Main.rand.NextBool(10))
             {
-                int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 6, 0f, 0f, 100, default, 1f);
+                int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 1f);
                 Dust dust = Main.dust[fire];
                 dust.position.X -= 2f;
                 dust.position.Y += 2f;
@@ -132,7 +132,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

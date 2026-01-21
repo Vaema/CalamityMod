@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -19,10 +19,14 @@ namespace CalamityMod.Projectiles.Magic
         private const float MaxManaConsumptionDelay = 15f;
         private const float MinManaConsumptionDelay = 5f;
 
+        public ref float FrameCounter => ref Projectile.ai[0];
+        public ref float ManaConsumptionFrame => ref Projectile.ai[1];
+        public ref float ManaConsumptionDelay => ref Projectile.localAI[0];
+
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 6;
-            ProjectileID.Sets.NeedsUUID[Projectile.type] = true;
+            Main.projFrames[Type] = 6;
+            ProjectileID.Sets.NeedsUUID[Type] = true;
         }
 
         public override void SetDefaults()
@@ -35,24 +39,20 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.ignoreWater = true;
         }
 
-        // TODO -- Make property wrappers for these variables instead of needing to explain them.
-        // ai[0] is a frame counter. ai[1] is the next frame mana will be consumed.
-        // localAI[0] is the number of frames between mana consumptions.
         public override void AI()
         {
             Player player = Main.player[Projectile.owner];
             Vector2 rrp = player.RotatedRelativePoint(player.MountedCenter, true);
 
             // Update damage based on curent magic damage stat (so Mana Sickness affects it)
-            Projectile.damage = player.ActiveItem() is null ? 0 : player.GetWeaponDamage(player.ActiveItem());
+            Projectile.damage = player.HeldItem is null ? 0 : player.GetWeaponDamage(player.HeldItem);
 
-            // ai[0] is the overall frame counter.
-            Projectile.ai[0] += 1f;
-            float chargeRatio = MathHelper.Clamp(Projectile.ai[0] / MaxCharge, 0f, 1f);
+            FrameCounter += 1f;
+            float chargeRatio = MathHelper.Clamp(FrameCounter / MaxCharge, 0f, 1f);
 
             // Update the crystal's animation, with the animation accelerating as the crystal charges
             Projectile.frameCounter++;
-            int framesPerAnimationUpdate = Projectile.ai[0] >= MaxCharge ? 2 : Projectile.ai[0] >= (MaxCharge * 0.66f) ? 3 : 4;
+            int framesPerAnimationUpdate = FrameCounter >= MaxCharge ? 2 : FrameCounter >= (MaxCharge * 0.66f) ? 3 : 4;
             if (Projectile.frameCounter >= framesPerAnimationUpdate)
             {
                 Projectile.frameCounter = 0;
@@ -65,12 +65,12 @@ namespace CalamityMod.Projectiles.Magic
             {
                 Projectile.soundDelay = SoundInterval;
                 // Don't play the continuous beam sound the first time around
-                if (Projectile.ai[0] > 1f)
-                    SoundEngine.PlaySound(SoundID.Item15, Projectile.position);
+                if (FrameCounter > 1f)
+                    SoundEngine.PlaySound(SoundID.Item15, Projectile.Center);
             }
 
             // Once the crystal reaches a certain charge, start producing dust. More charge = more dust.
-            if (Projectile.ai[0] > DustStart && Main.rand.NextFloat() < chargeRatio)
+            if (FrameCounter > DustStart && Main.rand.NextFloat() < chargeRatio)
                 SpawnEjectionDust(chargeRatio);
 
             UpdatePlayerVisuals(player, rrp);
@@ -79,15 +79,15 @@ namespace CalamityMod.Projectiles.Magic
             if (Projectile.owner == Main.myPlayer)
             {
                 // Scale seemingly never changes, so this just scales with shoot speed (Yharim's Crystal is 30 by default)
-                float speedTimesScale = player.ActiveItem().shootSpeed * Projectile.scale;
+                float speedTimesScale = player.HeldItem.shootSpeed * Projectile.scale;
                 UpdateAim(rrp, speedTimesScale);
 
                 // CheckMana returns true if the mana cost can be paid. If mana isn't consumed this frame, the CheckMana short-circuits out of being evaluated.
-                bool allowContinuedUse = !ShouldConsumeMana() || player.CheckMana(player.ActiveItem(), -1, true, false);
-                bool crystalStillInUse = player.channel && allowContinuedUse && !player.noItems && !player.CCed;
+                bool allowContinuedUse = !ShouldConsumeMana() || player.CheckMana(player.HeldItem, -1, true, false);
+                bool crystalStillInUse = !player.CantUseHoldout() && allowContinuedUse;
 
                 // The beams are only projected once (on frame 1).
-                if (crystalStillInUse && Projectile.ai[0] == 1f)
+                if (crystalStillInUse && FrameCounter == 1f)
                 {
                     Vector2 beamVelocity = Vector2.Normalize(Projectile.velocity);
                     if (beamVelocity.HasNaNs())
@@ -110,16 +110,16 @@ namespace CalamityMod.Projectiles.Magic
         private bool ShouldConsumeMana()
         {
             // If the mana consumption timer hasn't been initialized yet, initialize it and consume mana on frame 1.
-            if (Projectile.localAI[0] == 0f)
+            if (ManaConsumptionDelay == 0f)
             {
-                Projectile.ai[1] = Projectile.localAI[0] = MaxManaConsumptionDelay;
+                ManaConsumptionFrame = ManaConsumptionDelay = MaxManaConsumptionDelay;
                 return true;
             }
-            bool consume = Projectile.ai[0] == Projectile.ai[1];
-            if(consume)
+            bool consume = FrameCounter == ManaConsumptionFrame;
+            if (consume)
             {
-                Projectile.localAI[0] = MathHelper.Clamp(Projectile.localAI[0] - 1f, MinManaConsumptionDelay, MaxManaConsumptionDelay);
-                Projectile.ai[1] += Projectile.localAI[0];
+                ManaConsumptionDelay = MathHelper.Clamp(ManaConsumptionDelay - 1f, MinManaConsumptionDelay, MaxManaConsumptionDelay);
+                ManaConsumptionFrame += ManaConsumptionDelay;
             }
             return consume;
         }
@@ -127,6 +127,7 @@ namespace CalamityMod.Projectiles.Magic
         // Gently adjusts the aim vector of the crystal to point towards the mouse.
         private void UpdateAim(Vector2 source, float speed)
         {
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 aimVector = Vector2.Normalize(Main.MouseWorld - source);
             if (aimVector.HasNaNs())
                 aimVector = -Vector2.UnitY;
@@ -176,8 +177,8 @@ namespace CalamityMod.Projectiles.Magic
         public override bool PreDraw(ref Color lightColor)
         {
             SpriteEffects eff = Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
-            int frameHeight = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int frameHeight = Terraria.GameContent.TextureAssets.Projectile[Type].Value.Height / Main.projFrames[Type];
             int texYOffset = frameHeight * Projectile.frame;
             Vector2 sheetInsertVec = (Projectile.Center + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition).Floor();
             Main.spriteBatch.Draw(tex, sheetInsertVec, new Rectangle?(new Rectangle(0, texYOffset, tex.Width, frameHeight)), Color.White, Projectile.rotation, new Vector2(tex.Width / 2f, frameHeight / 2f), Projectile.scale, eff, 0f);

@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Magic;
+﻿using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -11,11 +12,13 @@ namespace CalamityMod.Items.Weapons.Magic
     public class StarShower : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
+
+        internal const float ShootSpeed = 28f;
         public override void SetDefaults()
         {
             Item.width = 38;
             Item.height = 40;
-            Item.damage = 57;
+            Item.damage = 60;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 15;
             Item.rare = ItemRarityID.Cyan;
@@ -24,11 +27,11 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 3.25f;
-            Item.value = CalamityGlobalItem.Rarity9BuyPrice;
+            Item.value = CalamityGlobalItem.RarityCyanBuyPrice;
             Item.UseSound = SoundID.Item105;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<AstralStarMagic>();
-            Item.shootSpeed = 12f;
+            Item.shootSpeed = ShootSpeed;
         }
 
         // Terraria seems to really dislike high crit values in SetDefaults
@@ -36,29 +39,19 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            float starSpeed = Item.shootSpeed;
-            Vector2 realPlayerPos = player.RotatedRelativePoint(player.MountedCenter, true);
-            float mouseXDist = (float)Main.mouseX + Main.screenPosition.X - realPlayerPos.X;
-            float mouseYDist = (float)Main.mouseY + Main.screenPosition.Y - realPlayerPos.Y;
-            if (player.gravDir == -1f)
+            Vector2 mouse = player.ClampedMouseWorld();
+            Vector2 destination = mouse;
+            position = destination - Vector2.UnitY * (mouse.Y - Main.screenPosition.Y + 80f);
+            Vector2 cachedPosition = position;
+            float maxRandomOffset = 16f;
+            int totalProjectiles = 5;
+            for (int i = 0; i < totalProjectiles; i++)
             {
-                mouseYDist = Main.screenPosition.Y + (float)Main.screenHeight - (float)Main.mouseY - realPlayerPos.Y;
-            }
-            if ((float.IsNaN(mouseXDist) && float.IsNaN(mouseYDist)) || (mouseXDist == 0f && mouseYDist == 0f))
-            {
-                mouseXDist = (float)player.direction;
-                mouseYDist = 0f;
-            }
-            float randXOffset = mouseXDist;
-            float randYOffset = mouseYDist;
-            randXOffset += (float)Main.rand.Next(-1, 2) * 0.5f;
-            randYOffset += (float)Main.rand.Next(-1, 2) * 0.5f;
-            realPlayerPos += new Vector2(randXOffset, randYOffset);
-            for (int i = 0; i < 5; i++)
-            {
-                float speedX4 = 2f + (float)Main.rand.Next(-8, 5);
-                float speedY5 = 15f + (float)Main.rand.Next(1, 6);
-                int star = Projectile.NewProjectile(source, realPlayerPos.X, realPlayerPos.Y, speedX4, speedY5, type, damage, knockback, player.whoAmI, 0f, 0f);
+                position.X += MathHelper.Lerp(-160f, 160f, i / (float)(totalProjectiles - 1));
+                position += Main.rand.NextVector2Circular(maxRandomOffset, maxRandomOffset);
+                velocity = (mouse - position).SafeNormalize(Vector2.UnitY) * ShootSpeed * Main.rand.NextFloat(0.9f, 1.1f);
+                Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
+                position = cachedPosition;
             }
             return false;
         }

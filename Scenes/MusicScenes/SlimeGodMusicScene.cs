@@ -1,5 +1,4 @@
-using CalamityMod.NPCs.SlimeGod;
-using Terraria;
+﻿using CalamityMod.NPCs.SlimeGod;
 using Terraria.ID;
 using Terraria.ModLoader;
 

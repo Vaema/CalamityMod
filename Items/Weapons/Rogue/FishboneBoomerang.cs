@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -19,12 +18,12 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.damage = 27;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.useAnimation = 15;
+            Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 15;
+            Item.useTime = 30;
             Item.knockBack = 5.5f;
             Item.UseSound = null;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.shoot = ModContent.ProjectileType<FishboneBoomerangProjectile>();
             Item.shootSpeed = 3f;
@@ -32,10 +31,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.autoReuse = true;
         }
 
-        public override bool CanUseItem(Player player)
-        {
-            return !Main.projectile.Any(n => n.active && n.owner == player.whoAmI && n.type == ModContent.ProjectileType<FishboneBoomerangProjectile>());
-        }
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] < 3;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

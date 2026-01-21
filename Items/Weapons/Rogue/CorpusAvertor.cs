@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -16,9 +16,8 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.damage = 98;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.useAnimation = 15;
+            Item.useAnimation = Item.useTime = 15;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 15;
             Item.knockBack = 3f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
@@ -26,9 +25,12 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.rare = ItemRarityID.Yellow;
             Item.Calamity().donorItem = true;
             Item.shoot = ModContent.ProjectileType<CorpusAvertorProj>();
-            Item.shootSpeed = 8.5f;
+            Item.shootSpeed = 14f;
             Item.DamageType = RogueDamageClass.Instance;
         }
+
+        public override float StealthDamageMultiplier => 2.5f;
+        public override float StealthKnockbackMultiplier => 2f;
 
         // Gains 10% of missing health as base damage.
         public override void ModifyWeaponDamage(Player player, ref StatModifier damage)
@@ -37,22 +39,20 @@ namespace CalamityMod.Items.Weapons.Rogue
             damage.Base += lifeAmount * 0.1f;
         }
 
-        public override void ModifyStatsExtra(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
-        {
-			if (player.Calamity().StealthStrikeAvailable())
-				type = ModContent.ProjectileType<CorpusAvertorStealth>();
-        }
-
-		public override float StealthDamageMultiplier => 3.5f;
-        public override float StealthKnockbackMultiplier => 2f;
-
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (player.Calamity().StealthStrikeAvailable())
             {
-                int dagger = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
+                int dagger = Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<CorpusAvertorStealth>(), damage, knockback, player.whoAmI);
                 if (dagger.WithinBounds(Main.maxProjectiles))
                     Main.projectile[dagger].Calamity().stealthStrike = true;
+
+                // Take 6 HP every time the stealth strike is used
+                player.statLife -= 6;
+                if (Main.myPlayer == player.whoAmI)
+                    player.HealEffect(-6);
+                if (player.statLife <= 0)
+                    player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.CorpusAvertor").ToNetworkText(player.name)), 1000.0, 0, false);
                 return false;
             }
             return true;

@@ -1,10 +1,9 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System.IO;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.Items.Weapons.Melee;
-using System.IO;
+using CalamityMod.NPCs.NormalNPCs;
 using Terraria;
 using Terraria.GameContent.Bestiary;
-using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
@@ -15,8 +14,8 @@ namespace CalamityMod.NPCs.Abyss
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 6;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            Main.npcFrameCount[Type] = 6;
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Scale = 0.75f,
                 PortraitPositionXOverride = 0f,
@@ -36,7 +35,7 @@ namespace CalamityMod.NPCs.Abyss
             NPC.lifeMax = 360;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 1, 0);
+            NPC.value = Item.buyPrice(silver: 4);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.knockBackResist = 0.75f;
@@ -52,7 +51,7 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Ocean,
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.MorayEel")
@@ -71,7 +70,7 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void AI()
         {
-            CalamityAI.PassiveSwimmingAI(NPC, Mod, 0, Main.player[NPC.target].Calamity().GetAbyssAggro(160f), 0.15f, 0.1f, 6f, 4f, 0.1f);
+            CalamityRegularEnemyAI.PassiveSwimmingAI(NPC, Mod, 0, Main.player[NPC.target].Calamity().GetAbyssAggro(160f), 0.15f, 0.1f, 6f, 4f, 0.1f);
         }
 
         public override bool? CanBeHitByProjectile(Projectile projectile)
@@ -86,7 +85,7 @@ namespace CalamityMod.NPCs.Abyss
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter += NPC.chaseable || NPC.IsABestiaryIconDummy ? 0.15f : 0.075f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
@@ -94,7 +93,7 @@ namespace CalamityMod.NPCs.Abyss
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Venom, 90, true);
+                target.AddBuff(BuffID.Venom, 120);
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
@@ -112,8 +111,7 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(ItemID.Flipper, 20);
-            npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<DepthCrusher>(), 15, 10));
+            npcLoot.Add(ItemID.Flipper, 15);
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -128,7 +126,7 @@ namespace CalamityMod.NPCs.Abyss
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("MorayEel").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("MorayEel2").Type, 1f);

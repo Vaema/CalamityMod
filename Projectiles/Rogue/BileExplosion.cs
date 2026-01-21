@@ -1,5 +1,6 @@
-﻿using CalamityMod.Dusts;
-using CalamityMod.Buffs.StatDebuffs;
+﻿using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Particles;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
@@ -13,46 +14,57 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetDefaults()
         {
+            Projectile.width = 150;
+            Projectile.height = 150;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 60;
+            Projectile.timeLeft = 180;
             Projectile.DamageType = RogueDamageClass.Instance;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 25;
+        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            modifiers.HitDirectionOverride = (Projectile.Center.X < target.Center.X).ToDirectionInt();
         }
 
         public override void AI()
         {
-            // projectile.ai[0] == 1f means spawned by Skyfin Bombers SS
-            Projectile.position = Projectile.Center;
-
-            if (Projectile.Calamity().stealthStrike || Projectile.ai[0] == 1f)
-                Projectile.width = Projectile.height = 120;
-            else
-                Projectile.width = Projectile.height = 70;
-
-            Projectile.position -= Projectile.Size / 2f;
-
-            for (int i = 0; i < 15; i++)
+            Vector2 randVel = new Vector2(8, 8).RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(0.04f, (Main.rand.NextBool(3) ? 0.4f : 0.5f));
+            Particle smoke = new HeavySmokeParticle(Projectile.Center + randVel, randVel, Color.GreenYellow, Main.rand.Next(25, 35 + 1), Main.rand.NextFloat(0.3f, 0.5f), 0.3f);
+            GeneralParticleHandler.SpawnParticle(smoke);
+            if (Main.rand.NextBool(2))
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, (int)CalamityDusts.SulfurousSeaAcid);
-                dust.velocity = Projectile.width / 33.333f * Vector2.One.RotatedByRandom(MathHelper.TwoPi);
-                dust.scale = Projectile.width == 120 ? 3.1f : 2.2f;
-                dust.noGravity = true;
+                Color bubbleColor = Main.rand.NextBool() ? Color.DarkOliveGreen : Color.GreenYellow;
+                Vector2 bubbleSpawnPos = Projectile.Center + Main.rand.NextVector2Circular(70, 70);
+                Vector2 bubbleVelocity = Vector2.UnitY * Main.rand.NextFloat(-3.5f, -5f);
+                Particle bubble = new DirectionalPulseRing(bubbleSpawnPos, bubbleVelocity, bubbleColor, new Vector2(0.6f, 0.8f), 0, 0.1f, 0f, 65);
+                GeneralParticleHandler.SpawnParticle(bubble);
+            }
+            if (Projectile.Calamity().stealthStrike)
+            {
+                if (Main.rand.NextBool(4))
+                {
+                    Projectile bubble = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center + Main.rand.NextVector2Circular(70, 70), Vector2.UnitY * Main.rand.NextFloat(-3.5f, -5f), ModContent.ProjectileType<SulphuricAcidBubbleFriendly>(), (int)(Projectile.damage * 0.5), Projectile.knockBack, Projectile.owner);
+                    if (bubble.whoAmI.WithinBounds(Main.maxProjectiles))
+                    {
+                        //We mark it as a stealth strike to change its dust
+                        bubble.Calamity().stealthStrike = Projectile.Calamity().stealthStrike;
+                        bubble.DamageType = RogueDamageClass.Instance;
+                        bubble.timeLeft = 45;
+                    }
+                }
             }
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (Projectile.ai[0] != 1f)
-                target.immune[Projectile.owner] = 9;
-
-            target.AddBuff(ModContent.BuffType<Irradiated>(), 480);
+            target.AddBuff(ModContent.BuffType<Irradiated>(), 60);
         }
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<Irradiated>(), 60);
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            target.AddBuff(ModContent.BuffType<Irradiated>(), 480);
-        }
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, Projectile.width * 0.5f * Projectile.scale, targetHitbox);
     }
 }

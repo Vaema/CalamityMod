@@ -11,6 +11,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Cryogen
 {
+    [LongDistanceNetSync(SyncWith = typeof(Cryogen))]
     public class CryogenShield : ModNPC
     {
         public static readonly SoundStyle BreakSound = new("CalamityMod/Sounds/NPCKilled/CryogenShieldBreak");
@@ -23,23 +24,16 @@ namespace CalamityMod.NPCs.Cryogen
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 60; // 120
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.canGhostHeal = false;
             NPC.noTileCollide = true;
             NPC.coldDamage = true;
-            NPC.GetNPCDamage();
             NPC.width = 216;
             NPC.height = 216;
             NPC.scale *= (CalamityWorld.death || BossRushEvent.BossRushActive || Main.getGoodWorld) ? 0.8f : 1f;
             NPC.DR_NERD(0.4f);
-            NPC.lifeMax = CalamityWorld.death ? 700 : 1400;
-            if (BossRushEvent.BossRushActive)
-            {
-                NPC.lifeMax = 10000;
-            }
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
+            NPC.LifeMaxNERB(2800, 3360, 33600);
             NPC.Opacity = 0f;
             NPC.HitSound = Cryogen.HitSound;
             NPC.DeathSound = BreakSound;
@@ -62,9 +56,14 @@ namespace CalamityMod.NPCs.Cryogen
             NPC.HitSound = Main.zenithWorld ? SoundID.NPCHit41 : Cryogen.HitSound;
             NPC.DeathSound = Main.zenithWorld ? SoundID.NPCDeath14 : BreakSound;
 
-            NPC.Opacity += 0.012f;
-            if (NPC.Opacity > 1f)
+            NPC.Opacity += 0.01f;
+            if (NPC.Opacity >= 1f)
+            {
+                NPC.damage = NPC.defDamage;
                 NPC.Opacity = 1f;
+            }
+            else
+                NPC.damage = 0;
 
             NPC.rotation += 0.15f;
 
@@ -82,6 +81,7 @@ namespace CalamityMod.NPCs.Cryogen
                     NPC.position.Y = NPC.position.Y - (NPC.height / 2);
                     return;
                 }
+
                 NPC.life = 0;
                 NPC.HitEffect();
                 NPC.active = false;
@@ -107,7 +107,7 @@ namespace CalamityMod.NPCs.Cryogen
             if (hitboxBotRight < minDist)
                 minDist = hitboxBotRight;
 
-            return minDist <= (100f * NPC.scale) && NPC.Opacity == 1f;
+            return minDist <= (100f * NPC.scale) && NPC.Opacity >= 1f;
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
@@ -115,15 +115,9 @@ namespace CalamityMod.NPCs.Cryogen
             if (hurtInfo.Damage > 0)
             {
                 if (Main.zenithWorld)
-                {
-                    target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120, true);
-                    target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 120, true);
-                }
+                    target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 180);
                 else
-                {
-                    target.AddBuff(BuffID.Frostburn, 240, true);
-                    target.AddBuff(BuffID.Chilled, 120, true);
-                }
+                    target.AddBuff(BuffID.Chilled, 120);
             }
         }
 
@@ -133,9 +127,9 @@ namespace CalamityMod.NPCs.Cryogen
 
             NPC.DrawBackglow(Main.zenithWorld ? Color.Red : Cryogen.BackglowColor, 4f, SpriteEffects.None, NPC.frame, screenPos);
 
-            Vector2 origin = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2);
+            Vector2 origin = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2);
             Vector2 drawPos = NPC.Center - screenPos;
-            drawPos -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+            drawPos -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
             drawPos += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             Color overlay = Main.zenithWorld ? Color.Red : drawColor;
             spriteBatch.Draw(texture, drawPos, NPC.frame, NPC.GetAlpha(overlay), NPC.rotation, origin, NPC.scale, SpriteEffects.None, 0f);
@@ -169,7 +163,7 @@ namespace CalamityMod.NPCs.Cryogen
             {
                 for (int i = 0; i < 25; i++)
                 {
-                    int icyDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, dusttype, 0f, 0f, 100, default, 2f);
+                    int icyDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, dusttype, 0f, 0f, 100, default, 2f);
                     Main.dust[icyDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -180,14 +174,14 @@ namespace CalamityMod.NPCs.Cryogen
 
                 for (int j = 0; j < 50; j++)
                 {
-                    int icyDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, dusttype, 0f, 0f, 100, default, 3f);
+                    int icyDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, dusttype, 0f, 0f, 100, default, 3f);
                     Main.dust[icyDust2].noGravity = true;
                     Main.dust[icyDust2].velocity *= 5f;
-                    icyDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, dusttype, 0f, 0f, 100, default, 2f);
+                    icyDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, dusttype, 0f, 0f, 100, default, 2f);
                     Main.dust[icyDust2].velocity *= 2f;
                 }
 
-                if (Main.netMode != NetmodeID.Server && !Main.zenithWorld)
+                if (!Main.dedServ && !Main.zenithWorld)
                 {
                     int totalGores = 16;
                     double radians = MathHelper.TwoPi / totalGores;

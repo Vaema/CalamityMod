@@ -6,14 +6,19 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Accessories
 {
     [LegacyName("SpiritGenerator")]
-    public class SpiritGlyph : ModItem, ILocalizedModType
+    public class SpiritGlyph : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static int RegenBoost = 2;
+        public static int DefenseBoost = 3;
+        public static float SummonDamageBoost = 0.1f;
+
         public override void SetDefaults()
         {
             Item.width = 24;
             Item.height = 30;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.accessory = true;
         }

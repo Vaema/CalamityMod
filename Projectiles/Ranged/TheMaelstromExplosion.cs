@@ -15,8 +15,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 75;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 75;
         }
 
         public override void SetDefaults()
@@ -40,7 +40,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.Opacity = Projectile.scale * Utils.GetLerpValue(0f, 30f, Projectile.timeLeft, true);
 
             // Emit sparks and dust.
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 int sparkLifetime = Main.rand.Next(22, 36);
                 float sparkScale = Main.rand.NextFloat(1f, 1.3f);
@@ -51,7 +51,7 @@ namespace CalamityMod.Projectiles.Ranged
                 GeneralParticleHandler.SpawnParticle(spark);
 
                 Vector2 dustSpawnOffset = Main.rand.NextVector2Circular(Projectile.width, Projectile.height) * Projectile.scale * 0.4f;
-                Dust electricity = Dust.NewDustPerfect(Projectile.Center + dustSpawnOffset, 267);
+                Dust electricity = Dust.NewDustPerfect(Projectile.Center + dustSpawnOffset, DustID.RainbowMk2);
                 electricity.color = Color.Cyan;
                 electricity.color.A = 84;
                 electricity.scale *= Main.rand.NextFloat(0.7f, 1.2f);
@@ -61,13 +61,13 @@ namespace CalamityMod.Projectiles.Ranged
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<CrushDepth>(), 180);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 180);
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<CrushDepth>(), 180);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 180);
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 origin = texture.Size() * 0.5f;
 
             float scale = Projectile.scale * Projectile.width / texture.Width;

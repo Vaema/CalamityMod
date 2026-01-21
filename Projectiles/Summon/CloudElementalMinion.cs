@@ -1,6 +1,6 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -14,9 +14,9 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 8;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 8;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -41,7 +41,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
-            if (!modPlayer.cloudWaifu && !modPlayer.allWaifus && !modPlayer.cloudWaifuVanity && !modPlayer.allWaifusVanity)
+            if (!modPlayer.cloudElemental && !modPlayer.allElementals && !modPlayer.cloudElementalVanity && !modPlayer.allElementalsVanity)
             {
                 Projectile.active = false;
                 return;
@@ -51,9 +51,9 @@ namespace CalamityMod.Projectiles.Summon
             {
                 if (player.dead)
                 {
-                    modPlayer.cWaifu = false;
+                    modPlayer.cloudEleBuff = false;
                 }
-                if (modPlayer.cWaifu)
+                if (modPlayer.cloudEleBuff)
                 {
                     Projectile.timeLeft = 2;
                 }
@@ -64,7 +64,7 @@ namespace CalamityMod.Projectiles.Summon
                 int dustAmt = 50;
                 for (int d = 0; d < dustAmt; d++)
                 {
-                    int index = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, 16, 0f, 0f, 0, default, 1f);
+                    int index = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, DustID.Cloud, 0f, 0f, 0, default, 1f);
                     Main.dust[index].velocity *= 2f;
                     Main.dust[index].scale *= 1.15f;
                 }
@@ -85,7 +85,7 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.frame = 0;
             }
 
-            if (!modPlayer.cloudWaifuVanity && !modPlayer.allWaifusVanity)
+            if (!modPlayer.cloudElementalVanity && !modPlayer.allElementalsVanity)
             {
                 float lightScalar = (float)Main.rand.Next(90, 111) * 0.01f;
                 lightScalar *= Main.essScale;
@@ -146,7 +146,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
-            if (modPlayer.cloudWaifuVanity || modPlayer.allWaifusVanity)
+            if (modPlayer.cloudElementalVanity || modPlayer.allElementalsVanity)
             {
                 return false;
             }

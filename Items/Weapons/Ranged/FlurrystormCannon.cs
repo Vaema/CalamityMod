@@ -1,9 +1,9 @@
-﻿using Terraria.DataStructures;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Ranged;
-using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
@@ -11,6 +11,10 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class FlurrystormCannon : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+
+        public static int AmmoSavedPercent = 50;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
+
         public override void SetDefaults()
         {
             Item.width = 68;
@@ -21,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 1.2f;
 
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.Calamity().donorItem = true;
 
@@ -34,19 +38,14 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ModContent.ProjectileType<FlurrystormCannonShooting>();
             Item.useAmmo = AmmoID.Snowball;
             Item.shootSpeed = 18f;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
 
         // Spawning the holdout cannot consume ammo
-        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.NextBool() && player.ownedProjectileCounts[Item.shoot] > 0;
-        
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, ModContent.ProjectileType<FlurrystormCannonShooting>(), damage, knockback, player.whoAmI, 0f, 0f);
-            return false;
-        }
+        public override bool CanConsumeAmmo(Item ammo, Player player) => player.ownedProjectileCounts[Item.shoot] > 0 && Main.rand.Next(100) >= AmmoSavedPercent;
+
+        public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback) => type = Item.shoot;
 
         public override void AddRecipes()
         {
@@ -54,10 +53,22 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient(ItemID.SnowballCannon).
                 AddIngredient(ItemID.IllegalGunParts).
                 AddIngredient<AerialiteBar>(10).
-                AddIngredient(ItemID.Bone, 50).
-                AddIngredient<PearlShard>(25).
-                AddIngredient(ItemID.WaterBucket, 3).
+                AddIngredient(ItemID.Bone, 10).
+                AddIngredient<PearlShard>(10).
                 AddTile(TileID.Anvils).
+                AddCondition(Condition.NotRemixWorld).
+                Register();
+
+            // CIT 16NOV2024: Due to Snowball Cannon being swapped with Ice Bow in Remix, Flurrystorm Cannon uses Ice Bow in its recipe there.
+            // Yes, this makes no sense. I don't care; I prefer obtainability over making sense.
+            CreateRecipe().
+                AddIngredient(ItemID.IceBow).
+                AddIngredient(ItemID.IllegalGunParts).
+                AddIngredient<AerialiteBar>(10).
+                AddIngredient(ItemID.Bone, 10).
+                AddIngredient<PearlShard>(10).
+                AddTile(TileID.Anvils).
+                AddCondition(Condition.RemixWorld).
                 Register();
         }
     }

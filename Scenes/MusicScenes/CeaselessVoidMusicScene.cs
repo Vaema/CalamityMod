@@ -1,5 +1,4 @@
-using CalamityMod.NPCs.CeaselessVoid;
-using Terraria;
+﻿using CalamityMod.NPCs.CeaselessVoid;
 using Terraria.ID;
 using Terraria.ModLoader;
 

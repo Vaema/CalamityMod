@@ -1,9 +1,8 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.Audio;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -22,11 +21,12 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
             Projectile.timeLeft = 180;
-            CooldownSlot = ImmunityCooldownID.Bosses;
         }
 
         public override void AI()
         {
+            Lighting.AddLight(Projectile.Center, 1f, 1f, 1f);
+
             //ai0 = timer, ai1 = laser size
             if (Projectile.ai[0] < 90f) //Before the laser
             {
@@ -37,7 +37,7 @@ namespace CalamityMod.Projectiles.Boss
                     Projectile.velocity = Vector2.Zero;
                     Projectile.netUpdate = true;
                     Projectile.rotation = (float)Math.Atan2(storedVelocity.Y, storedVelocity.X) - MathHelper.PiOver2;
-                    
+
                     SoundEngine.PlaySound(SANSCharge, Projectile.Center); //Funny Gaster Blaster sounds
                 }
                 else if (Projectile.ai[0] >= 55f)
@@ -66,5 +66,11 @@ namespace CalamityMod.Projectiles.Boss
 
         // Does no contact damage
         public override bool? CanDamage() => false;
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            CalamityUtils.DrawProjectileWithBackglow(Projectile, Color.LightGray, lightColor, 5f);
+            return false;
+        }
     }
 }

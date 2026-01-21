@@ -1,10 +1,6 @@
 ﻿using CalamityMod.Particles;
-using CalamityMod.Projectiles.Pets;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Mono.Cecil;
-using System;
-using System.Reflection.Metadata;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -27,24 +23,24 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.ignoreWater = true;
             Projectile.penetrate = 6;
             Projectile.timeLeft = 900;
-            Projectile.aiStyle = 0;
+            Projectile.extraUpdates = 1;
+            Projectile.scale = 1.2f;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 50;
+            Projectile.tileCollide = false;
         }
 
         public override void AI()
         {
+            if (Collision.SolidCollision(Projectile.Center, 3, 3) && !Projectile.Calamity().stealthStrike)
+                Projectile.Kill();
             framesInAir++;
             if (framesInAir > 90 && !Projectile.Calamity().stealthStrike)
             {
                 Projectile.velocity.X *= 0.998f;
                 Projectile.velocity.Y += 0.3f;
             }
-
-            Projectile.scale = 1.2f;
-            if (!Projectile.Calamity().stealthStrike)
-                Projectile.extraUpdates = 1;
 
             if (Main.rand.NextBool() && !posthit)
             {
@@ -64,19 +60,16 @@ namespace CalamityMod.Projectiles.Rogue
             }
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4;
 
-            bool defaultsonce = true;
+            bool stealthSet = true;
             if (Projectile.Calamity().stealthStrike)
             {
-                Projectile.tileCollide = false;
-                Projectile.aiStyle = 0;
                 Projectile.extraUpdates = 2;
                 if (Projectile.ai[0] == 0f)
                 {
-                    if (defaultsonce)
+                    if (stealthSet)
                     {
-                        Projectile.penetrate = 10;
                         Projectile.localNPCHitCooldown = 60;
-                        defaultsonce = false;
+                        stealthSet = false;
                     }
                 }
                 Projectile.StickyProjAI(10);
@@ -85,7 +78,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
@@ -105,8 +98,10 @@ namespace CalamityMod.Projectiles.Rogue
                 SparkParticle spark = new SparkParticle(Projectile.Center, sparkVelocity, true, sparkLifetime, sparkScale, sparkColor);
                 GeneralParticleHandler.SpawnParticle(spark);
             }
+
             SoundEngine.PlaySound(Hitsound, Projectile.position);
             target.AddBuff(BuffID.Ichor, Projectile.Calamity().stealthStrike ? 900 : 180);
+
             if (Projectile.Calamity().stealthStrike)
             {
                 posthit = true;

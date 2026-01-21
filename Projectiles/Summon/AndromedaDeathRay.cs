@@ -1,12 +1,12 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.IO;
-using Terraria;
-using Terraria.ID;
-using Terraria.Enums;
-using Terraria.ModLoader;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
+using Terraria;
+using Terraria.Enums;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -24,7 +24,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            ProjectileID.Sets.MinionShot[Type] = true;
         }
 
         public override void SetDefaults()
@@ -98,7 +98,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 for (int i = 0; i < 4; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, 133);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.Firework_Yellow);
                     dust.velocity = Projectile.velocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(2f, 3.5f) + Main.player[Projectile.owner].velocity * 1.5f;
                     dust.fadeIn = Main.rand.NextFloat(0.6f, 0.85f);
                     if (player.Calamity().andromedaState == AndromedaPlayerState.SmallRobot)
@@ -136,7 +136,7 @@ namespace CalamityMod.Projectiles.Summon
 
                 for (int i = 0; i < 3; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(beamEndPosiiton + angle.ToRotationVector2() * 8f, 133);
+                    Dust dust = Dust.NewDustPerfect(beamEndPosiiton + angle.ToRotationVector2() * 8f, DustID.Firework_Yellow);
                     dust.velocity = velocity.RotatedBy(MathHelper.TwoPi / 3f * i);
                     dust.scale = (float)Math.Cos(angle) + 1.2f;
                     dust.noGravity = true;

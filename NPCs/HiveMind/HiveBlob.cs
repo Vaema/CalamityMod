@@ -1,9 +1,9 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using CalamityMod.Events;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
@@ -14,16 +14,23 @@ namespace CalamityMod.NPCs.HiveMind
 {
     public class HiveBlob : ModNPC
     {
-        public override void SetStaticDefaults()
-        {
-            this.HideFromBestiary();
-        }
+        private const float NormalShootGate = 240f;
+        private const float FastShootGate = 180f;
+        private const float TelegraphDuration = 120f;
+        private bool FastVariant => NPC.ai[2] > 0f;
+
+        public override void SetStaticDefaults() => NPCID.Sets.NeedsExpertScaling[Type] = true;
+
+        public static int VileClotDamage = 8; // 32
+
+        // Legendary Mode exclusive
+        public static int CursedFlameDamage = 15; // 60
 
         public override void SetDefaults()
         {
             NPC.npcSlots = 0.1f;
             NPC.aiStyle = -1;
-            NPC.damage = 10;
+            NPC.damage = 0; // No contact damage
             NPC.width = 25;
             NPC.height = 25;
 
@@ -33,14 +40,10 @@ namespace CalamityMod.NPCs.HiveMind
             if (Main.getGoodWorld)
                 NPC.lifeMax *= 2;
 
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
-
-            NPC.knockBackResist = 0f;
+            NPC.knockBackResist = 0.9f;
             AIType = -1;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.canGhostHeal = false;
             NPC.chaseable = false;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
@@ -49,11 +52,18 @@ namespace CalamityMod.NPCs.HiveMind
             NPC.Calamity().VulnerableToSickness = true;
         }
 
+        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
+        {
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
+                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheCorruption,
+                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.UndergroundCorruption,
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.HiveBlob")
+            });
+        }
+
         public override void AI()
         {
-            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
-            NPC.damage = 0;
-
             bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
             bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
@@ -69,6 +79,20 @@ namespace CalamityMod.NPCs.HiveMind
                 NPC.netUpdate = true;
                 return;
             }
+
+            // When Hive Mind starts flying around
+            bool phase2 = Main.npc[hiveMind].life / (float)Main.npc[hiveMind].lifeMax < 0.8f;
+
+            if (phase2)
+            {
+                NPC.life = 0;
+                NPC.HitEffect();
+                NPC.active = false;
+                NPC.netUpdate = true;
+                return;
+            }
+
+            NPC.alpha = Main.npc[hiveMind].alpha;
 
             if (NPC.ai[3] > 0f)
                 hiveMind = (int)NPC.ai[3] - 1;
@@ -86,50 +110,50 @@ namespace CalamityMod.NPCs.HiveMind
                 }
             }
 
-            NPC.TargetClosest(true);
-
             float relocateSpeed = getFuckedAI ? 1.2f : death ? 0.8f : revenge ? 0.7f : expertMode ? 0.6f : 0.5f;
-            Vector2 randomLocationVector = new Vector2(NPC.ai[0] * 16f + 8f, NPC.ai[1] * 16f + 8f);
-            float targetX = Main.player[NPC.target].position.X + (Main.player[NPC.target].width / 2) - (NPC.width / 2) - randomLocationVector.X;
-            float targetY = Main.player[NPC.target].position.Y + (Main.player[NPC.target].height / 2) - (NPC.height / 2) - randomLocationVector.Y;
-            float targetDistance = (float)Math.Sqrt(targetX * targetX + targetY * targetY);
-            float hiveMindX = Main.npc[hiveMind].position.X + (Main.npc[hiveMind].width / 2);
-            float hiveMindY = Main.npc[hiveMind].position.Y + (Main.npc[hiveMind].height / 2);
+            float acceleration = 0.8f;
+            float distanceFromMind = FastVariant ? 96f : 128f;
+            if (Main.getGoodWorld)
+                distanceFromMind *= 2;
+
+            float hiveMindX = Main.npc[hiveMind].Center.X;
+            float hiveMindY = Main.npc[hiveMind].Center.Y;
             Vector2 hiveMindPos = new Vector2(hiveMindX, hiveMindY);
             float randomPosX = hiveMindX + NPC.ai[0];
             float randomPosY = hiveMindY + NPC.ai[1];
             float finalRandPosX = randomPosX - hiveMindPos.X;
             float finalRandPosY = randomPosY - hiveMindPos.Y;
             float finalRandDistance = (float)Math.Sqrt(finalRandPosX * finalRandPosX + finalRandPosY * finalRandPosY);
-            finalRandDistance = (Main.getGoodWorld ? 256f : 128f) / finalRandDistance;
+            finalRandDistance = distanceFromMind / finalRandDistance;
             finalRandPosX *= finalRandDistance;
             finalRandPosY *= finalRandDistance;
+
             if (NPC.position.X < hiveMindX + finalRandPosX)
             {
-                NPC.velocity.X = NPC.velocity.X + relocateSpeed;
+                NPC.velocity.X += relocateSpeed;
                 if (NPC.velocity.X < 0f && finalRandPosX > 0f)
-                    NPC.velocity.X = NPC.velocity.X * 0.8f;
+                    NPC.velocity.X *= acceleration;
             }
             else if (NPC.position.X > hiveMindX + finalRandPosX)
             {
-                NPC.velocity.X = NPC.velocity.X - relocateSpeed;
+                NPC.velocity.X -= relocateSpeed;
                 if (NPC.velocity.X > 0f && finalRandPosX < 0f)
-                    NPC.velocity.X = NPC.velocity.X * 0.8f;
+                    NPC.velocity.X *= acceleration;
             }
             if (NPC.position.Y < hiveMindY + finalRandPosY)
             {
-                NPC.velocity.Y = NPC.velocity.Y + relocateSpeed;
+                NPC.velocity.Y += relocateSpeed;
                 if (NPC.velocity.Y < 0f && finalRandPosY > 0f)
-                    NPC.velocity.Y = NPC.velocity.Y * 0.8f;
+                    NPC.velocity.Y *= acceleration;
             }
             else if (NPC.position.Y > hiveMindY + finalRandPosY)
             {
-                NPC.velocity.Y = NPC.velocity.Y - relocateSpeed;
+                NPC.velocity.Y -= relocateSpeed;
                 if (NPC.velocity.Y > 0f && finalRandPosY < 0f)
-                    NPC.velocity.Y = NPC.velocity.Y * 0.8f;
+                    NPC.velocity.Y *= acceleration;
             }
 
-            float velocityLimit = getFuckedAI ? 32f : 8f;
+            float velocityLimit = relocateSpeed * 16f;
             if (NPC.velocity.X > velocityLimit)
                 NPC.velocity.X = velocityLimit;
             if (NPC.velocity.X < -velocityLimit)
@@ -141,33 +165,44 @@ namespace CalamityMod.NPCs.HiveMind
 
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
-                if (!Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height))
-                    NPC.localAI[1] = 180f;
+                float shootGateValue = FastVariant ? FastShootGate : NormalShootGate;
+                if (!Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[Main.npc[hiveMind].target].position, Main.player[Main.npc[hiveMind].target].width, Main.player[Main.npc[hiveMind].target].height))
+                    NPC.localAI[1] = shootGateValue * 0.5f;
 
-                NPC.localAI[1] += Main.rand.Next(2) + 1f;
-                if (NPC.localAI[1] >= 360f && Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > 80f)
+                if (NPC.localAI[1] < shootGateValue)
+                {
+                    NPC.localAI[1] += 1f;
+                    if (NPC.localAI[1] < shootGateValue - TelegraphDuration)
+                        NPC.localAI[1] += Main.rand.Next(2);
+                    if (death)
+                        NPC.localAI[1] += 1f;
+                }
+
+                if (NPC.alpha > 0)
+                    return;
+
+                if (NPC.localAI[1] >= shootGateValue && Vector2.Distance(Main.player[Main.npc[hiveMind].target].Center, NPC.Center) > 80f)
                 {
                     NPC.localAI[1] = 0f;
-                    NPC.TargetClosest(true);
-                    if (Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height))
+                    if (Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[Main.npc[hiveMind].target].position, Main.player[Main.npc[hiveMind].target].width, Main.player[Main.npc[hiveMind].target].height))
                     {
-                        float projSpeed = death ? 5f : revenge ? 4.5f : expertMode ? 4f : 3.5f;
+                        float projSpeed = death ? 8f : revenge ? 7f : expertMode ? 6f : 4f;
                         if (Main.getGoodWorld)
-                            projSpeed *= 2.4f;
+                            projSpeed *= 1.5f;
 
-                        Vector2 projDirection = new Vector2(NPC.position.X + NPC.width * 0.5f, NPC.position.Y + (NPC.height / 2));
-                        float playerX = Main.player[NPC.target].position.X + Main.player[NPC.target].width * 0.5f - projDirection.X;
-                        float playerY = Main.player[NPC.target].position.Y + Main.player[NPC.target].height * 0.5f - projDirection.Y;
+                        Vector2 projDirection = NPC.Center;
+                        float playerX = Main.player[Main.npc[hiveMind].target].Center.X - projDirection.X;
+                        float playerY = Main.player[Main.npc[hiveMind].target].Center.Y - projDirection.Y;
                         float playerDist = (float)Math.Sqrt(playerX * playerX + playerY * playerY);
                         playerDist = projSpeed / playerDist;
                         playerX *= playerDist;
                         playerY *= playerDist;
-                        int type = (CalamityWorld.LegendaryMode && CalamityWorld.revenge && Main.rand.NextBool(5)) ? ProjectileID.CursedFlameHostile : ModContent.ProjectileType<VileClot>();
-                        int damage = type == ProjectileID.CursedFlameHostile ? 30 : NPC.GetProjectileDamage(type);
+                        int type = (Main.getGoodWorld && Main.rand.NextBool(5)) ? ProjectileID.CursedFlameHostile : ModContent.ProjectileType<VileClot>();
+                        int damage = type == ProjectileID.CursedFlameHostile ? CursedFlameDamage : VileClotDamage;
                         Vector2 projectileVelocity = new Vector2(playerX, playerY);
                         if (type == ProjectileID.CursedFlameHostile)
                         {
-                            Vector2 v = Main.player[NPC.target].Center - NPC.Center - Main.player[NPC.target].velocity * 20f;
+                            Vector2 v = Main.player[Main.npc[hiveMind].target].Center - NPC.Center - Main.player[Main.npc[hiveMind].target].velocity * 20f;
                             projectileVelocity = v.SafeNormalize(Vector2.UnitY) * projSpeed;
                         }
                         Projectile.NewProjectile(NPC.GetSource_FromAI(), projDirection, projectileVelocity, type, damage, 0f, Main.myPlayer);
@@ -177,22 +212,25 @@ namespace CalamityMod.NPCs.HiveMind
             }
         }
 
+        public override bool CanHitNPC(NPC target) => NPC.alpha == 0; // Can only be hit while fully visible
+
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
-            Vector2 vector = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / 2);
+            Texture2D texture = TextureAssets.Npc[Type].Value;
+            Vector2 vector = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / 2);
 
             Vector2 vector2 = NPC.Center - screenPos;
             vector2 -= new Vector2(texture.Width, texture.Height) * NPC.scale / 2f;
             vector2 += vector * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             Color color = NPC.GetAlpha(drawColor);
 
-            if (NPC.localAI[1] > 240f)
-                color = Color.Lerp(color, Color.Green, MathHelper.Clamp((NPC.localAI[1] - 240f) / 120f, 0f, 1f));
+            float shootGateValue = FastVariant ? FastShootGate : NormalShootGate;
+            if (NPC.localAI[1] > shootGateValue - TelegraphDuration)
+                color = Color.Lerp(color, Color.LimeGreen * NPC.Opacity, MathHelper.Clamp((NPC.localAI[1] - (shootGateValue - TelegraphDuration)) / TelegraphDuration, 0f, 1f));
 
             spriteBatch.Draw(texture, vector2, NPC.frame, color, NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
 
@@ -211,12 +249,22 @@ namespace CalamityMod.NPCs.HiveMind
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 5; k++)
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 14, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Demonite, hit.HitDirection, -1f, 0, default, 1f);
 
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 10; k++)
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 14, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Demonite, hit.HitDirection, -1f, 0, default, 1f);
+            }
+
+            if (Main.netMode != NetmodeID.MultiplayerClient && FastVariant && Main.zenithWorld)
+            {
+                // Spawn even more blobs on death
+                for (int i = 1; i < 3; i++)
+                {
+                    Vector2 spawnAt = NPC.Center + new Vector2(0f, NPC.height / 2f);
+                    NPC.NewNPC(NPC.GetSource_FromThis(), (int)spawnAt.X, (int)spawnAt.Y, ModContent.NPCType<HiveBlob>());
+                }
             }
         }
     }

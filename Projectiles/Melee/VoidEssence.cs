@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Weapons.Melee;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -17,9 +18,10 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = NumAnimationFrames;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            Main.projFrames[Type] = NumAnimationFrames;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 6;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -88,19 +90,15 @@ namespace CalamityMod.Projectiles.Melee
             int targetIdx = -1;
             float maxHomingRange = 400f;
             bool hasHomingTarget = false;
-            for (int i = 0; i < Main.npc.Length; ++i)
+            foreach (NPC npc in Main.ActiveNPCs)
             {
-                NPC npc = Main.npc[i];
-                if (npc == null || !npc.active)
-                    continue;
-
                 // Won't home in through walls and won't chase invulnerable targets.
                 if (npc.CanBeChasedBy(Projectile, false) && Collision.CanHit(Projectile.Center, 1, 1, npc.Center, 1, 1))
                 {
                     float dist = (Projectile.Center - npc.Center).Length();
                     if (dist < maxHomingRange)
                     {
-                        targetIdx = i;
+                        targetIdx = npc.whoAmI;
                         maxHomingRange = dist;
                         hasHomingTarget = true;
                     }
@@ -129,7 +127,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
@@ -155,6 +153,8 @@ namespace CalamityMod.Projectiles.Melee
                 float scale = Main.rand.NextFloat(1.0f, 1.8f);
                 Main.dust[idx].scale = scale;
             }
+
+            target.AddBuff(ModContent.BuffType<Nightwither>(), 30);
         }
 
         public override void OnKill(int timeLeft)

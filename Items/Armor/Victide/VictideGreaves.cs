@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Victide
@@ -10,10 +11,14 @@ namespace CalamityMod.Items.Armor.Victide
     public class VictideGreaves : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
+
+        public static float MoveSpeedBoost = 0.1f;
+
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MoveSpeedBoost.ToPercent());
+
         public override void SetStaticDefaults()
         {
-           
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 var equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Legs);
                 ArmorIDs.Legs.Sets.HidesBottomSkin[equipSlot] = true;
@@ -24,14 +29,14 @@ namespace CalamityMod.Items.Armor.Victide
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
-            Item.defense = 4; //9
+            Item.defense = 3;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.moveSpeed += Collision.DrownCollision(player.position, player.width, player.height, player.gravDir) ? 0.3f : 0.08f;
+            player.moveSpeed += MoveSpeedBoost;
         }
 
         public override void AddRecipes()

@@ -12,7 +12,7 @@ namespace CalamityMod.Projectiles.VanillaProjectileOverrides
     {
         // Shorter range when the minion has no target yet: 40 tiles
         private const float MinEnemyDistanceDetection = 640f;
-        
+
         // Longer range when a target is already acquired: 75 tiles
         private const float MaxEnemyDistanceDetection = 1200f;
 
@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.VanillaProjectileOverrides
                 {
                     Vector2 toTargetDirection = CalamityUtils.CalculatePredictiveAimToTarget(proj.Center, Target, ProjectileVelocity);
 
-                    Projectile.NewProjectileDirect(proj.GetSource_FromThis(),
+                    Projectile.NewProjectile(proj.GetSource_FromThis(),
                         proj.Center,
                         toTargetDirection,
                         ModContent.ProjectileType<BetterHornetStinger>(),
@@ -62,12 +62,12 @@ namespace CalamityMod.Projectiles.VanillaProjectileOverrides
                             shootDust.noLight = true;
                             shootDust.noLightEmittence = true;
                         }
-                        
+
                         SoundEngine.PlaySound(SoundID.Item17, proj.Center);
                     }
 
                     shootTimer = 0f;
-                    SyncVariables(proj);
+                    proj.ForceNetUpdate(false);
                 }
             }
 
@@ -113,24 +113,16 @@ namespace CalamityMod.Projectiles.VanillaProjectileOverrides
             if (!proj.WithinRange(owner.Center, 160f))
             {
                 proj.velocity = (proj.velocity + proj.SafeDirectionTo(owner.Center)) * 0.9f;
-                SyncVariables(proj);
+                proj.ForceNetUpdate(false);
             }
 
             // The minion will teleport on the owner if they get far enough.
             if (!proj.WithinRange(owner.Center, MaxEnemyDistanceDetection))
             {
                 proj.Center = owner.Center;
-                SyncVariables(proj);
+                proj.ForceNetUpdate(false);
             }
         }
-
-        private static void SyncVariables(Projectile proj)
-        {
-            proj.netUpdate = true;
-            if (proj.netSpam >= 10)
-                proj.netSpam = 9;
-        }
-
         #endregion
     }
 }

@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Magic;
+﻿using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -16,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
@@ -26,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.damage = 6666;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 41;
-            Item.useTime = Item.useAnimation = 43;
+            Item.useAnimation = Item.useTime = 43;
             Item.noUseGraphic = true;
             Item.channel = true;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -37,13 +38,13 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shoot = ModContent.ProjectileType<VehemenceHoldout>();
             Item.shootSpeed = 16.5f;
 
-            Item.rare = ModContent.RarityType<Violet>();
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Item v = player.ActiveItem();
+            Item v = player.HeldItem;
             int chargeTime = 2 * v.useAnimation;
             Projectile.NewProjectile(source, position, Vector2.Zero, type, damage, knockback, player.whoAmI, 0f, chargeTime);
             return false;

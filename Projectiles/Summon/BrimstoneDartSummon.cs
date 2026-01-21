@@ -12,10 +12,10 @@ namespace CalamityMod.Projectiles.Summon
         public override string Texture => "CalamityMod/Projectiles/Boss/BrimstoneBarrage";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 2;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.MinionShot[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 2;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -38,7 +38,7 @@ namespace CalamityMod.Projectiles.Summon
 
             Projectile.frameCounter++;
             if (Projectile.frameCounter % 5 == 4)
-                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Projectile.type];
+                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Type];
 
             Projectile.Opacity = Utils.GetLerpValue(0f, 40f, Projectile.timeLeft, true);
 
@@ -57,7 +57,7 @@ namespace CalamityMod.Projectiles.Summon
 
             for (int i = 0; i < 15; i++)
             {
-                Dust brimstone = Dust.NewDustPerfect(Projectile.Center, 267);
+                Dust brimstone = Dust.NewDustPerfect(Projectile.Center, DustID.RainbowMk2);
                 brimstone.velocity = Projectile.velocity.RotatedByRandom(0.26f) * Main.rand.NextFloat(0.3f, 0.8f);
                 brimstone.scale = Main.rand.NextFloat(1.5f, 1.85f);
                 brimstone.color = Color.DarkRed;
@@ -68,7 +68,7 @@ namespace CalamityMod.Projectiles.Summon
         public override bool PreDraw(ref Color lightColor)
         {
             lightColor.R = (byte)(255 * Projectile.Opacity);
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

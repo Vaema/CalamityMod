@@ -8,8 +8,8 @@ namespace CalamityMod.Projectiles.Summon
         public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
-            Main.projFrames[Projectile.type] = 10;
+            ProjectileID.Sets.MinionShot[Type] = true;
+            Main.projFrames[Type] = 10;
         }
 
         public override void SetDefaults()
@@ -34,7 +34,7 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.Kill();
             }

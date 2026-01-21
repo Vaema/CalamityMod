@@ -1,229 +1,191 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.NPCs;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
-using System;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
+    [PierceResistException]
     public class DevilsSunriseCyclone : ModProjectile, ILocalizedModType
     {
+        public static readonly SoundStyle HitSound = new SoundStyle("CalamityMod/Sounds/Item/MantisSwipe", 2) with { Pitch = 1.25f, PitchVariance = 0.15f };
         public new string LocalizationCategory => "Projectiles.Melee";
-        private int red = 0;
-        private int greenAndBlue = 100;
 
-        public override void SetStaticDefaults()
-        {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-        }
+        public ref float State => ref Projectile.ai[0];
+        public ref float Timer => ref Projectile.ai[1];
+        private int greenAndBlue = 100;
+        private const int MaxHits = 10;
+        private float ReturnVel = 5f;
+        private const float MaxReturnVel = 30f;
+        private NPC targetToSlice;
+        private Vector2 sliceOffset;
 
         public override void SetDefaults()
         {
+            // These shouldn't matter because it's a circle
             Projectile.width = 30;
             Projectile.height = 30;
             Projectile.friendly = true;
             Projectile.penetrate = -1;
-            Projectile.DamageType = DamageClass.Melee;
+            Projectile.DamageType = DamageClass.MeleeNoSpeed;
+            Projectile.scale = 1.75f;
             Projectile.tileCollide = false;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 15;
+            Projectile.localNPCHitCooldown = 7;
         }
 
         public override void AI()
         {
             Player Owner = Main.player[Projectile.owner];
-            if (Projectile.ai[1] < 480f && Projectile.ai[1] != -1f)
-                Projectile.ai[1]++;
+            Timer++;
+            Projectile.rotation += 0.5f;
 
-            if (Main.myPlayer == Projectile.owner)
-            {
-                if (!Owner.channel)
-                    Projectile.ai[1] = -1f;
-            }
-
-            Projectile.damage = (int)(Owner.GetTotalDamage(Projectile.DamageType).ApplyTo(Projectile.originalDamage) * (1f + Utils.GetLerpValue(0f, 300f, Projectile.ai[1], true)));
-
-            red = 30 + (int)(Projectile.ai[1] * 0.75f);
-            if (red > 255)
-                red = 255;
-
-            int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 66, 0f, 0f, 100, new Color(red, greenAndBlue, greenAndBlue), 1f);
+            Lighting.AddLight(Projectile.Center, 0.51f, 0.2f, 0.2f);
+            int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RainbowTorch, 0f, 0f, 100, new Color(255, greenAndBlue, greenAndBlue));
             Main.dust[dust].velocity *= 0.3f;
             Main.dust[dust].noGravity = true;
 
-            Vector2 projDirection = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
-            float x = Owner.position.X + (float)(Owner.width / 2) - projDirection.X;
-            float y = Owner.position.Y + (float)(Owner.height / 2) - projDirection.Y;
-            float distanceFromOwner = (float)Math.Sqrt((double)(x * x + y * y));
-
-            float speed = 25f;
-            if (distanceFromOwner > 300f)
-                speed -= (distanceFromOwner - 300f) * 0.5f; // 350 units is about the max distance before traveling back or stopping
-            if (speed < 2f)
-                speed = 2f;
-
-            if (speed <= 2f || Projectile.ai[1] >= 480f || Projectile.ai[1] == -1f)
+            // What is each State?
+            // 0: Initial launch. Only AI needed here is just slowing down, as initial velocity is handled when the projectile is spawned.
+            // 1: Returning to the player. Effectively functions like your run-of-the-mill boomerang return AI.
+            // 2: Lodged in an enemy. This sticks the projectile near the enemy constantly, complete with visual sparks.
+            switch (State)
             {
-                float returnSpeedMax = 30f;
-                float returnSpeed = 6f;
-                distanceFromOwner = returnSpeedMax / distanceFromOwner;
-                x *= distanceFromOwner;
-                y *= distanceFromOwner;
+                case 0:
+                    Projectile.velocity *= 0.965f;
+                    if (Projectile.velocity.Length() < 0.05f)
+                        Projectile.velocity = Vector2.Zero;
 
-                if (Projectile.velocity.X < x)
-                {
-                    Projectile.velocity.X = Projectile.velocity.X + returnSpeed;
-                    if (Projectile.velocity.X < 0f && x > 0f)
-                        Projectile.velocity.X = Projectile.velocity.X + returnSpeed;
-                }
-                else if (Projectile.velocity.X > x)
-                {
-                    Projectile.velocity.X = Projectile.velocity.X - returnSpeed;
-                    if (Projectile.velocity.X > 0f && x < 0f)
-                        Projectile.velocity.X = Projectile.velocity.X - returnSpeed;
-                }
-                if (Projectile.velocity.Y < y)
-                {
-                    Projectile.velocity.Y = Projectile.velocity.Y + returnSpeed;
-                    if (Projectile.velocity.Y < 0f && y > 0f)
-                        Projectile.velocity.Y = Projectile.velocity.Y + returnSpeed;
-                }
-                else if (Projectile.velocity.Y > y)
-                {
-                    Projectile.velocity.Y = Projectile.velocity.Y - returnSpeed;
-                    if (Projectile.velocity.Y > 0f && y < 0f)
-                        Projectile.velocity.Y = Projectile.velocity.Y - returnSpeed;
-                }
-
-                if (Main.myPlayer == Projectile.owner)
-                {
-                    Rectangle rectangle = new Rectangle((int)Projectile.position.X, (int)Projectile.position.Y, Projectile.width, Projectile.height);
-                    Rectangle playerPos = new Rectangle((int)Owner.position.X, (int)Owner.position.Y, Owner.width, Owner.height);
-                    if (rectangle.Intersects(playerPos))
+                    // After 1 second, start returning
+                    if (Timer == 60f)
+                    {
+                        State = 1f;
+                        Projectile.velocity = Vector2.Normalize(Owner.Center - Projectile.Center) * ReturnVel;
+                    }  
+                    break;
+                case 1:
+                    // Return velocity accelerates over time; the magnitude of acceleration and deceleration are equal
+                    ReturnVel *= 1.035f;
+                    if (ReturnVel > MaxReturnVel)
+                        ReturnVel = MaxReturnVel;
+                    Vector2 ownerDist = Owner.Center - Projectile.Center;
+                    if (ownerDist.Length() > 3000f)
                         Projectile.Kill();
-                }
+                    ownerDist = Vector2.Normalize(ownerDist) * ReturnVel;
+
+                    // Return to me, my devilish sword
+                    if (Projectile.velocity.X < ownerDist.X)
+                        Projectile.velocity.X = ownerDist.X;
+                    else if (Projectile.velocity.X > ownerDist.X)
+                        Projectile.velocity.X = ownerDist.X;
+
+                    if (Projectile.velocity.Y < ownerDist.Y)
+                        Projectile.velocity.Y = ownerDist.Y;
+                    else if (Projectile.velocity.Y > ownerDist.Y)
+                        Projectile.velocity.Y = ownerDist.Y;
+
+                    // Die once you reach the player
+                    if (Main.myPlayer == Projectile.owner)
+                    {
+                        if (Projectile.Hitbox.Intersects(Owner.Hitbox))
+                            Projectile.Kill();
+                    }
+                    break;
+                case 2:
+                    Projectile.velocity = Vector2.Zero;
+                    Projectile.Center = targetToSlice.Center + sliceOffset + targetToSlice.velocity;
+
+                    if (Timer % 2 == 0)
+                    {
+                        if (Timer % 4 == 0)
+                        {
+                            float angle = (Projectile.Center - targetToSlice.Center).ToRotation() + MathHelper.PiOver2;
+                            CustomSpark impact = new(targetToSlice.Center, Vector2.Zero, "CalamityMod/Particles/ThinEndedLine", false, 10, Main.rand.NextFloat(0.6f, 0.8f), Color.Red, new Vector2(0.5f, 1f), extraRotation: angle);
+                            GeneralParticleHandler.SpawnParticle(impact);
+                        }
+                        else
+                        {
+                            for (int i = 0; i < 2; i++)
+                            {
+                                Vector2 sparkVel = Vector2.Normalize(Projectile.Center - targetToSlice.Center).RotatedByRandom(MathHelper.PiOver4) * Main.rand.NextFloat(14f, 18f);
+                                AltLineParticle spark = new(targetToSlice.Center, sparkVel, false, 12, 0.75f, Color.OrangeRed);
+                                GeneralParticleHandler.SpawnParticle(spark);
+                            }
+                        }
+                    }
+                    if (!targetToSlice.CanBeChasedBy(Projectile))
+                    {
+                        State = 1f;
+                        Projectile.velocity = Vector2.Normalize(Owner.Center - Projectile.Center) * ReturnVel;
+                    }
+                    break;
+                default:
+                    break;
             }
-            else if (Main.myPlayer == Projectile.owner && Projectile.ai[0] <= 0f)
-            {
-                if (Owner.channel)
-                {
-                    Vector2 projTravel = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
-                    float mouseDestX = (float)Main.mouseX + Main.screenPosition.X - projTravel.X;
-                    float mouseDestY = (float)Main.mouseY + Main.screenPosition.Y - projTravel.Y;
-
-                    if (Owner.gravDir == -1f)
-                        mouseDestY = Main.screenPosition.Y + (float)Main.screenHeight - (float)Main.mouseY - projTravel.Y;
-
-                    if (Projectile.ai[0] < 0f)
-                        Projectile.ai[0] += 1f;
-
-                    float mouseDistance = (float)Math.Sqrt((double)(mouseDestX * mouseDestX + mouseDestY * mouseDestY));
-                    mouseDistance = (float)Math.Sqrt((double)(mouseDestX * mouseDestX + mouseDestY * mouseDestY));
-                    if (mouseDistance > speed)
-                    {
-                        mouseDistance = speed / mouseDistance;
-                        mouseDestX *= mouseDistance;
-                        mouseDestY *= mouseDistance;
-                        int projMouseSpeedX = (int)(mouseDestX * 1000f);
-                        int projMouseSpeedXVel = (int)(Projectile.velocity.X * 1000f);
-                        int projMouseSpeedY = (int)(mouseDestY * 1000f);
-                        int projMouseSpeedYVel = (int)(Projectile.velocity.Y * 1000f);
-
-                        if (projMouseSpeedX != projMouseSpeedXVel || projMouseSpeedY != projMouseSpeedYVel)
-                            Projectile.netUpdate = true;
-
-                        Projectile.velocity.X = mouseDestX;
-                        Projectile.velocity.Y = mouseDestY;
-                    }
-                    else
-                    {
-                        int projMouseSpeedyX = (int)(mouseDestX * 1000f);
-                        int projMouseSpeedyXVel = (int)(Projectile.velocity.X * 1000f);
-                        int projMouseSpeedyY = (int)(mouseDestY * 1000f);
-                        int projMouseSpeedyYVel = (int)(Projectile.velocity.Y * 1000f);
-
-                        if (projMouseSpeedyX != projMouseSpeedyXVel || projMouseSpeedyY != projMouseSpeedyYVel)
-                            Projectile.netUpdate = true;
-
-                        Projectile.velocity.X = mouseDestX;
-                        Projectile.velocity.Y = mouseDestY;
-                    }
-                }
-                else if (Projectile.ai[0] <= 0f)
-                {
-                    Projectile.netUpdate = true;
-                    Vector2 projDirect = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
-                    float miceX = (float)Main.mouseX + Main.screenPosition.X - projDirect.X;
-                    float miceY = (float)Main.mouseY + Main.screenPosition.Y - projDirect.Y;
-
-                    if (Owner.gravDir == -1f)
-                        miceY = Main.screenPosition.Y + (float)Main.screenHeight - (float)Main.mouseY - projDirect.Y;
-
-                    float miceDistancing = (float)Math.Sqrt((double)(miceX * miceX + miceY * miceY));
-                    if (miceDistancing == 0f || Projectile.ai[0] < 0f)
-                    {
-                        projDirect = new Vector2(Owner.position.X + (float)(Owner.width / 2), Owner.position.Y + (float)(Owner.height / 2));
-                        miceX = Projectile.position.X + (float)Projectile.width * 0.5f - projDirect.X;
-                        miceY = Projectile.position.Y + (float)Projectile.height * 0.5f - projDirect.Y;
-                        miceDistancing = (float)Math.Sqrt((double)(miceX * miceX + miceY * miceY));
-                    }
-
-                    miceDistancing = speed / miceDistancing;
-                    miceX *= miceDistancing;
-                    miceY *= miceDistancing;
-                    Projectile.velocity.X = miceX;
-                    Projectile.velocity.Y = miceY;
-
-                    if (Projectile.velocity.X == 0f && Projectile.velocity.Y == 0f)
-                        Projectile.Kill();
-
-                    Projectile.ai[0] = 1f;
-                }
-            }
-
-            Lighting.AddLight(Projectile.Center, (float)((double)red * 0.001), 0.1f, 0.1f);
-
-            Projectile.rotation += 0.5f;
         }
 
-        public override Color? GetAlpha(Color lightColor)
+        public override Color? GetAlpha(Color lightColor) => null;
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
-            return new Color(red, greenAndBlue, greenAndBlue, Projectile.alpha);
+            float radius = State == 2f ? 60f : 45f;
+            return CalamityUtils.CircularHitboxCollision(Projectile.Center, radius, targetHitbox);
+        }
+        public override bool? CanHitNPC(NPC target) => Projectile.numHits >= MaxHits ? false : null;
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            SoundEngine.PlaySound(HitSound, target.Center);
+            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 180);
+            // Heals on each hit
+            Main.player[Projectile.owner].DoLifestealDirect(target, 1, 0.75f);
+
+            // Start slicing the hit enemy if not doing so already
+            if (State != 2f)
+            {
+                State = 2f;
+                targetToSlice = target;
+                sliceOffset = Projectile.Center - target.Center;
+            }
+            // Return if you've reached the max hits
+            if (Projectile.numHits >= MaxHits - 1)
+            {
+                State = 1f;
+                Projectile.velocity = Vector2.Normalize(Main.player[Projectile.owner].Center - Projectile.Center) * ReturnVel;
+            }
+        }
+        public override void OnKill(int timeLeft)
+        {
+            SoundEngine.PlaySound(SoundID.Item88, Projectile.position);
+            int dustAmt = 24;
+            for (int i = 0; i < dustAmt; i++)
+            {
+                Vector2 dustVel = Vector2.UnitX.RotatedBy(i * MathHelper.TwoPi / dustAmt) * Main.rand.NextFloat(8f, 12f);
+                Dust cycloneDust = Dust.NewDustPerfect(Projectile.Center, DustID.RainbowTorch, dustVel, 100, new Color(255, greenAndBlue, greenAndBlue));
+                cycloneDust.noGravity = true;
+                cycloneDust.noLight = true;
+            }
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            Texture2D cyclone = ModContent.Request<Texture2D>(Texture).Value;
+            Vector2 drawPos = Projectile.Center - Main.screenPosition;
+            SpriteEffects sp = SpriteEffects.None;
+
+            Main.EntitySpriteDraw(cyclone, drawPos, null, new Color(255, 50, 50), Projectile.rotation, cyclone.Size() / 2f, Projectile.scale, sp);
+            Main.EntitySpriteDraw(cyclone, drawPos, null, new Color(255, 75, 75) * 0.7f, -Projectile.rotation, cyclone.Size() / 2f, Projectile.scale * 1.5f, sp);
+            Main.EntitySpriteDraw(cyclone, drawPos, null, new Color(255, greenAndBlue, greenAndBlue) * 0.4f, Projectile.rotation * 0.75f, cyclone.Size() / 2f, Projectile.scale * 2f, sp);
+
+            // Extra slash effect that flickers around everywhere
+            Texture2D flashySlash = ModContent.Request<Texture2D>("CalamityMod/Particles/SlashSmear").Value;
+            Main.spriteBatch.SetBlendState(BlendState.Additive);
+            Main.EntitySpriteDraw(flashySlash, drawPos + Main.rand.NextVector2Circular(30f, 30f), null, new Color(255, greenAndBlue, greenAndBlue), Main.rand.NextFloat(MathHelper.TwoPi), flashySlash.Size() / 2f, 0.275f, sp);
+            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
             return false;
-        }
-
-        public override void OnKill(int timeLeft)
-        {
-            SoundEngine.PlaySound(SoundID.Item88, Projectile.position);
-            Projectile.position = Projectile.Center;
-            Projectile.width = Projectile.height = 64;
-            Projectile.position.X = Projectile.position.X - (float)(Projectile.width / 2);
-            Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
-            int dustAmt = 36;
-            for (int i = 0; i < dustAmt; i++)
-            {
-                Vector2 rotate = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
-                rotate = rotate.RotatedBy((double)((float)(i - (dustAmt / 2 - 1)) * 6.28318548f / (float)dustAmt), default) + Projectile.Center;
-                Vector2 faceDirection = rotate - Projectile.Center;
-                int cycloneDust = Dust.NewDust(rotate + faceDirection, 0, 0, 66, faceDirection.X, faceDirection.Y, 100, new Color(red, greenAndBlue, greenAndBlue), 1f);
-                Main.dust[cycloneDust].noGravity = true;
-                Main.dust[cycloneDust].noLight = true;
-                Main.dust[cycloneDust].velocity = faceDirection;
-            }
-            Projectile.Damage();
-        }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 180);
         }
     }
 }

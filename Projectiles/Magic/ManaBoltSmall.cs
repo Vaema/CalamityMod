@@ -1,14 +1,16 @@
+﻿using System;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Magic
 {
     public class ManaBoltSmall : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
+
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = 10;
@@ -31,16 +33,16 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.velocity *= 0.975f;
 
             if (Projectile.timeLeft % 4 == 0)
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 15, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.MagicMirror, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
         }
 
         public override void OnKill(int timeLeft)
         {
             for (int k = 0; k < 10; k++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 15, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.MagicMirror, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
             }
-            SoundEngine.PlaySound(SoundID.Item10, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item10, Projectile.Center);
         }
     }
 }

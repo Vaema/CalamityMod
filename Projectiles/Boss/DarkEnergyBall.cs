@@ -1,7 +1,6 @@
 ﻿using CalamityMod.Dusts;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.CeaselessVoid;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -17,9 +16,9 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = DarkEnergy.FrameCount;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            Main.projFrames[Type] = DarkEnergy.FrameCount;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -32,7 +31,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.penetrate = -1;
             Projectile.Opacity = 0f;
 
-            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+            if (Main.zenithWorld)
                 Projectile.extraUpdates = 1;
         }
 
@@ -70,14 +69,14 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
         public override void PostDraw(Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-            int height = texture.Height / Main.projFrames[Projectile.type];
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int height = texture.Height / Main.projFrames[Type];
             int drawStart = height * Projectile.frame;
             Vector2 origin = Projectile.Size / 2;
             Main.EntitySpriteDraw(ModContent.Request<Texture2D>($"{Texture}Glow").Value, Projectile.Center - Main.screenPosition, new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, drawStart, texture.Width, height)), Color.White * Projectile.Opacity, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
@@ -94,10 +93,8 @@ namespace CalamityMod.Projectiles.Boss
 
             if (Projectile.Opacity == 1f)
             {
-                int debufftype = Main.zenithWorld ? BuffID.Obstructed : BuffID.VortexDebuff;
-                int duration = Main.zenithWorld ? 30 : 60;
-                if (info.Damage > 0)
-                    target.AddBuff(debufftype, duration, true);
+                if (Main.zenithWorld)
+                    target.AddBuff(BuffID.Obstructed, 30, true);
             }
         }
 
@@ -105,7 +102,7 @@ namespace CalamityMod.Projectiles.Boss
         {
             for (int i = 0; i < 3; i++)
             {
-                int cosmiliteDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 1.2f);
+                int cosmiliteDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 1.2f);
                 Main.dust[cosmiliteDust].velocity *= 3f;
                 Main.dust[cosmiliteDust].noGravity = true;
                 if (Main.rand.NextBool())
@@ -116,10 +113,10 @@ namespace CalamityMod.Projectiles.Boss
             }
             for (int j = 0; j < 5; j++)
             {
-                int cosmiliteDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 1.7f);
+                int cosmiliteDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 1.7f);
                 Main.dust[cosmiliteDust2].noGravity = true;
                 Main.dust[cosmiliteDust2].velocity *= 5f;
-                cosmiliteDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 1f);
+                cosmiliteDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 1f);
                 Main.dust[cosmiliteDust2].noGravity = true;
                 Main.dust[cosmiliteDust2].velocity *= 2f;
             }

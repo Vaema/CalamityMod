@@ -2,7 +2,6 @@
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -12,26 +11,24 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class ReedBlowgun : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
-        public static readonly SoundStyle BubbleBurstSound = new ("CalamityMod/Sounds/Custom/PistolShrimpBubbleBurst") { PitchVariance = 0.15f, Volume = 0.2f};
-
         public override void SetStaticDefaults()
         {
-           
+            ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 22;
             Item.height = 46;
-            Item.damage = 21;
+            Item.damage = 25;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = 25;
-            Item.useAnimation = 25;
+            Item.useTime = 32;
+            Item.useAnimation = 32;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.holdStyle = 16;
             Item.noMelee = true;
             Item.knockBack = 4.5f;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.UseSound = null;
             Item.autoReuse = true;
@@ -67,7 +64,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Vector2 playerMouth = getPlayerMouth(player);
 
             Vector2 playerToCursor = (player.Calamity().mouseWorld - playerMouth).SafeNormalize(Vector2.UnitX);
-            float pointingDirection = (playerToCursor.ToRotation() + MathHelper.PiOver4 / 3f * player.direction * player.gravDir);
+            float pointingDirection = (playerToCursor.ToRotation() + MathHelper.PiOver4 / 3f * player.direction * player.gravDir) - player.fullRotation;
 
             CalamityUtils.CleanHoldStyle(player, pointingDirection, playerMouth, new Vector2(50, 18), new Vector2(-23, 6));
         }

@@ -1,12 +1,12 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
             Item.width = 22;
             Item.height = 28;
-            Item.damage = 950;
+            Item.damage = 860;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.consumable = false;
@@ -36,19 +36,14 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
 
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
+            Item.rare = ModContent.RarityType<CosmicPurple>();
 
             Item.shoot = ModContent.ProjectileType<PlasmaGrenadeProjectile>();
             Item.shootSpeed = 11f;
             Item.DamageType = RogueDamageClass.Instance;
-
-            modItem.UsesCharge = true;
-            modItem.MaxCharge = 250f;
-            modItem.ChargePerUse = 0.25f;
         }
 
-        public override float StealthDamageMultiplier => 0.90f;
         public override float StealthVelocityMultiplier => 1.2f;
         public override float StealthKnockbackMultiplier => 1.5f;
 

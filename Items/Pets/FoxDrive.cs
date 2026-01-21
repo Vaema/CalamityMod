@@ -3,7 +3,6 @@ using CalamityMod.Projectiles.Pets;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Pets
@@ -13,13 +12,10 @@ namespace CalamityMod.Items.Pets
         public new string LocalizationCategory => "Items.Pets";
         public override void SetDefaults()
         {
-            Item.CloneDefaults(ItemID.ZephyrFish);
-            Item.shoot = ModContent.ProjectileType<FoxPet>();
-            Item.buffType = ModContent.BuffType<FoxPetBuff>();
+            Item.DefaultToVanitypet(ModContent.ProjectileType<FoxPet>(), ModContent.BuffType<FoxPetBuff>());
             Item.expert = true;
-
-            Item.value = Item.sellPrice(gold: 30);
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.value = Item.sellPrice(gold: 20);
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.Calamity().devItem = true;
         }
 

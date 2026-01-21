@@ -15,15 +15,17 @@ namespace CalamityMod.Items.Weapons.Magic
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public const int UseTime = 36;
+        public static Color mainColor = Color.Goldenrod;
+        public static Color accentColor = Color.LightGreen;
 
         public override void SetDefaults()
         {
             Item.width = 94;
             Item.height = 54;
-            Item.damage = 285;
+            Item.damage = 355;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 7;
-            Item.useTime = Item.useAnimation = UseTime;
+            Item.useAnimation = Item.useTime = UseTime;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -33,17 +35,19 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shoot = ModContent.ProjectileType<AetherfluxCannonHoldout>();
             Item.shootSpeed = 24f;
 
-            Item.rare = ModContent.RarityType<Violet>();
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
 
+        public override void HoldItem(Player player) => player.Calamity().mouseRotationListener = true;
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Vector2 shootVelocity = velocity;
-            Vector2 shootDirection = shootVelocity.SafeNormalize(Vector2.UnitX * player.direction);
-            Projectile.NewProjectile(source, position, shootDirection, type, damage, knockback, player.whoAmI);
+            Vector2 spawnPosition = player.RotatedRelativePoint(player.MountedCenter, true);
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
+            Projectile.NewProjectile(source, spawnPosition, player.Calamity().mouseWorld - spawnPosition, ModContent.ProjectileType<AetherfluxCannonHoldout>(), damage, knockback, player.whoAmI);
             return false;
         }
 
@@ -51,7 +55,6 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient<NanoPurge>().
-                AddIngredient<PurgeGuzzler>().
                 AddIngredient<AuricBar>(5).
                 AddIngredient<UelibloomBar>(12).
                 AddIngredient<DivineGeode>(8).

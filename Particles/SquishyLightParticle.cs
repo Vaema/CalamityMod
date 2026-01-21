@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -12,7 +12,6 @@ namespace CalamityMod.Particles
         public override bool UseAdditiveBlend => true;
         public override bool UseCustomDraw => true;
         public override bool SetLifetime => true;
-
 
         public float Opacity;
         public float SquishStrenght;

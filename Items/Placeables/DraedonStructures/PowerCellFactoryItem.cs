@@ -1,7 +1,7 @@
-using CalamityMod.Rarities;
+﻿using CalamityMod.Rarities;
 using CalamityMod.Tiles.DraedonStructures;
 using Terraria;
-using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.DraedonStructures
@@ -9,20 +9,15 @@ namespace CalamityMod.Items.Placeables.DraedonStructures
     public class PowerCellFactoryItem : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Placeables";
+
+        // Animation time parameters are more fitting to be in the tile
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs((PowerCellFactory.TotalFrames * PowerCellFactory.AnimationFramerate + PowerCellFactory.BetweenCellDowntime).FramesToSeconds());
+
         public override void SetDefaults()
         {
-            Item.width = 26;
-            Item.height = 26;
-            Item.maxStack = 9999;
-            Item.useTurn = true;
-            Item.autoReuse = true;
-            Item.useAnimation = Item.useTime = 15;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.consumable = true;
-            Item.createTile = ModContent.TileType<PowerCellFactory>();
-
+            Item.DefaultToPlaceableTile(ModContent.TileType<PowerCellFactory>());
+            Item.value = Item.sellPrice(silver: 50);
             Item.rare = ModContent.RarityType<DarkOrange>();
-            Item.value = Item.buyPrice(gold: 50);
         }
     }
 }

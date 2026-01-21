@@ -14,7 +14,7 @@ AstrumDeusBag: {
 	Tooltip: "{$CommonItemTooltip.RightClickToOpen}"
 }
 
-BrimstoneWaifuBag: {
+BrimstoneElementalBag: {
 	DisplayName: Treasure Bag (Brimstone Elemental)
 	Tooltip: "{$CommonItemTooltip.RightClickToOpen}"
 }
@@ -120,7 +120,7 @@ StormWeaverBag: {
 }
 
 YharonBag: {
-	DisplayName: Treasure Bag (Yharon)
+	DisplayName: Treasure Cache (Yharon)
 	Tooltip: "{$CommonItemTooltip.RightClickToOpen}"
 }
 
@@ -128,15 +128,6 @@ YharonBag: {
 AbyssalTreasure: {
 	DisplayName: Abyssal Treasure
 	Tooltip: "{$CommonItemTooltip.RightClickToOpen}"
-}
-
-BleachedAnglingKit: {
-	DisplayName: Bleached Angling Kit
-	Tooltip:
-		'''
-		Has a chance to contain various fishing gear
-		{$CommonItemTooltip.RightClickToOpen}
-		'''
 }
 
 FleshyGeode: {
@@ -147,15 +138,6 @@ FleshyGeode: {
 NecromanticGeode: {
 	DisplayName: Necromantic Geode
 	Tooltip: "{$CommonItemTooltip.RightClickToOpen}"
-}
-
-SandyAnglingKit: {
-	DisplayName: Sandy Angling Kit
-	Tooltip:
-		'''
-		Has a chance to contain various fishing gear
-		{$CommonItemTooltip.RightClickToOpen}
-		'''
 }
 
 StarterBag: {

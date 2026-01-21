@@ -1,6 +1,6 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.IO;
+using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
-using System.IO;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -11,6 +11,8 @@ namespace CalamityMod.Projectiles.Summon
         public new string LocalizationCategory => "Projectiles.Summon";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public int timer = 0;
+
+        public override void SetStaticDefaults() => Main.projPet[Type] = true;
 
         public override void SetDefaults()
         {
@@ -27,6 +29,8 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.timeLeft *= 5;
             Projectile.minion = true;
             Projectile.DamageType = DamageClass.Summon;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -46,6 +50,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public void HandleRightClick()
         {
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 velocity = Main.MouseWorld - Main.player[Projectile.owner].Center;
             velocity.Normalize();
             velocity *= 2f;
@@ -67,7 +72,7 @@ namespace CalamityMod.Projectiles.Summon
                 mp.voidAura = false;
                 Projectile.Kill();
             }
-            if (owner.whoAmI == Main.myPlayer && owner.ownedProjectileCounts[Projectile.type] <= 25 && timer > 0 && timer % 4 == 0)
+            if (owner.whoAmI == Main.myPlayer && owner.ownedProjectileCounts[Type] <= 25 && timer > 0 && timer % 4 == 0)
             {
                 NPC target = CalamityUtils.MinionHoming(Projectile.Center, 1800f, owner);
                 if (target != null)
@@ -86,5 +91,7 @@ namespace CalamityMod.Projectiles.Summon
                 return;
             timer++;
         }
+
+        public override bool MinionContactDamage() => true;
     }
 }

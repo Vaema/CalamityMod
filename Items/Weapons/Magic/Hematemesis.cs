@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Magic;
+﻿using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -12,7 +13,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
@@ -28,20 +29,20 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 3.75f;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.UseSound = SoundID.Item21;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<BloodBlast>();
             Item.shootSpeed = 10f;
         }
 
-        
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            position = Main.MouseWorld;
+            position = player.ClampedMouseWorld();
             for (int x = 0; x < 10; x++)
             {
-                Projectile.NewProjectile(source, position.X + (float)Main.rand.Next(-150, 150), position.Y + 600f, 0f, -10f, type, damage, knockback, player.whoAmI, 0f, 0f);
+                Projectile.NewProjectile(source, position.X + (float)Main.rand.Next(-150, 150), position.Y + 600f, 0f, -10f, type, damage, knockback, player.whoAmI);
             }
             return false;
         }

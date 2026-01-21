@@ -14,9 +14,10 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 4;
+            Main.projPet[Type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -48,7 +49,7 @@ namespace CalamityMod.Projectiles.Summon
                     Vector2 rotate = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
                     rotate = rotate.RotatedBy((double)((float)(dustIndex - (dustAmt / 2 - 1)) * MathHelper.TwoPi / (float)dustAmt), default) + Projectile.Center;
                     Vector2 faceDirection = rotate - Projectile.Center;
-                    int dusty = Dust.NewDust(rotate + faceDirection, 0, 0, 6, faceDirection.X * 1f, faceDirection.Y * 1f, 100, default, 1.1f);
+                    int dusty = Dust.NewDust(rotate + faceDirection, 0, 0, DustID.Torch, faceDirection.X * 1f, faceDirection.Y * 1f, 100, default, 1.1f);
                     Main.dust[dusty].noGravity = true;
                     Main.dust[dusty].noLight = true;
                     Main.dust[dusty].velocity = faceDirection;
@@ -220,7 +221,7 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.frame = 0;
             }
@@ -228,7 +229,7 @@ namespace CalamityMod.Projectiles.Summon
             //Occasionally spawn fiery dust
             if (Main.rand.NextBool(6))
             {
-                int fire = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 6, 0f, 0f, 100, new Color(), 2f);
+                int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, new Color(), 2f);
                 Main.dust[fire].velocity *= 0.3f;
                 Main.dust[fire].noGravity = true;
                 Main.dust[fire].noLight = true;
@@ -243,7 +244,7 @@ namespace CalamityMod.Projectiles.Summon
             //Increment firing cooldown
             if (Projectile.ai[1] > 0f)
             {
-                Projectile.ai[1] += Main.rand.Next(1,4);
+                Projectile.ai[1] += Main.rand.Next(1, 4);
                 if (Main.rand.NextBool(3))
                     ++Projectile.ai[1];
             }
@@ -285,7 +286,5 @@ namespace CalamityMod.Projectiles.Summon
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
-
-        public override bool? CanDamage() => false;
     }
 }

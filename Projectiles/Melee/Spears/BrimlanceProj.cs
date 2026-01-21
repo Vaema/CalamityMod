@@ -3,7 +3,6 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
@@ -30,7 +29,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
 
         public override float InitialSpeed => 3f;
         public override float ReelbackSpeed => 2.4f;
-        public override float ForwardSpeed => 0.95f;
+        public override float ForwardSpeed => 0.7f;
         public override void ExtraBehavior()
         {
             if (Main.rand.NextBool(4))

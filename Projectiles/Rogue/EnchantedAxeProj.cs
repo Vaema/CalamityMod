@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -14,11 +14,12 @@ namespace CalamityMod.Projectiles.Rogue
 
         private bool recall = false;
         private bool summonAxe = true;
+        private int Lifetime = 600;
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
+            ProjectileID.Sets.TrailCacheLength[Type] = 8;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
         }
 
         public override void SetDefaults()
@@ -27,7 +28,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.height = 10;
             Projectile.friendly = true;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 600;
+            Projectile.timeLeft = Lifetime;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 15;
             Projectile.DamageType = RogueDamageClass.Instance;
@@ -37,7 +38,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             if (Projectile.Calamity().stealthStrike)
             {
-                if (Projectile.timeLeft < 585)
+                if (Projectile.timeLeft < Lifetime - 18)
                 {
                     recall = true;
                     Projectile.tileCollide = false;
@@ -45,7 +46,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
             else
             {
-                if (Projectile.timeLeft < 590)
+                if (Projectile.timeLeft < Lifetime - 10)
                 {
                     recall = true;
                     Projectile.tileCollide = false;
@@ -70,52 +71,14 @@ namespace CalamityMod.Projectiles.Rogue
 
                 if (summonAxe)
                 {
-                    float minDist = 999f;
-                    int index = 0;
-                    // Get the closest enemy to the axe
-                    for (int i = 0; i < Main.npc.Length; i++)
-                    {
-                        NPC npc = Main.npc[i];
-                        if (npc.CanBeChasedBy(Projectile, false))
-                        {
-                            float dist = (Projectile.Center - npc.Center).Length();
-                            if (dist < minDist)
-                            {
-                                minDist = dist;
-                                index = i;
-                            }
-                        }
-                    }
-                    Vector2 newAxeVelocity;
-                    if (minDist < 999f)
-                    {
-                        newAxeVelocity = Main.npc[index].Center - Projectile.Center;
-                    }
-                    else
-                    {
-                        newAxeVelocity = -Projectile.velocity;
-                    }
-                    newAxeVelocity.Normalize();
-                    newAxeVelocity *= 20f;
-                    int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.position, newAxeVelocity, ModContent.ProjectileType<EnchantedAxe2>(), (int)(Projectile.damage * 1.2f), 2, Projectile.owner, 0, 0);
-                    Main.projectile[p].Calamity().stealthStrike = Projectile.Calamity().stealthStrike;
-                    summonAxe = false;
+                    SummonAxe(true);
                 }
             }
             else
             {
-                if (Projectile.timeLeft % 7 == 1 && Projectile.Calamity().stealthStrike)
+                if (Projectile.timeLeft % 3 == 1 && Projectile.Calamity().stealthStrike)
                 {
-                    float axeSpeed = 15f;
-                    int axeDamage = Projectile.damage / 2;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.position, new Vector2(1f, 0f) * axeSpeed, ModContent.ProjectileType<EnchantedAxe2>(), axeDamage, 2, Projectile.owner, 0, 0);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.position, new Vector2(0f, 1f) * axeSpeed, ModContent.ProjectileType<EnchantedAxe2>(), axeDamage, 2, Projectile.owner, 0, 0);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.position, new Vector2(-1f, 0f) * axeSpeed, ModContent.ProjectileType<EnchantedAxe2>(), axeDamage, 2, Projectile.owner, 0, 0);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.position, new Vector2(0f, -1f) * axeSpeed, ModContent.ProjectileType<EnchantedAxe2>(), axeDamage, 2, Projectile.owner, 0, 0);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.position, Vector2.Normalize(new Vector2(1f, 1f)) * axeSpeed, ModContent.ProjectileType<EnchantedAxe2>(), axeDamage, 2, Projectile.owner, 0, 0);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.position, Vector2.Normalize(new Vector2(1f, -1f)) * axeSpeed, ModContent.ProjectileType<EnchantedAxe2>(), axeDamage, 2, Projectile.owner, 0, 0);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.position, Vector2.Normalize(new Vector2(-1f, -1f)) * axeSpeed, ModContent.ProjectileType<EnchantedAxe2>(), axeDamage, 2, Projectile.owner, 0, 0);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.position, Vector2.Normalize(new Vector2(-1f, 1f)) * axeSpeed, ModContent.ProjectileType<EnchantedAxe2>(), axeDamage, 2, Projectile.owner, 0, 0);
+                    SummonAxe(false);
                 }
             }
 
@@ -126,11 +89,41 @@ namespace CalamityMod.Projectiles.Rogue
             return;
         }
 
+        public void SummonAxe(bool recall)
+        {
+            float minDist = 999f;
+            int index = 0;
+            // Get the closest enemy to the axe
+            foreach (NPC npc in Main.ActiveNPCs)
+            {
+                if (npc.CanBeChasedBy(Projectile, false))
+                {
+                    float dist = (Projectile.Center - npc.Center).Length();
+                    if (dist < minDist)
+                    {
+                        minDist = dist;
+                        index = npc.whoAmI;
+                    }
+                }
+            }
+            Vector2 newAxeVelocity;
+            if (minDist < 999f)
+                newAxeVelocity = Main.npc[index].Center - Projectile.Center;
+            else
+                newAxeVelocity = -Projectile.velocity;
+
+            newAxeVelocity.Normalize();
+            newAxeVelocity *= 20f;
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.position, newAxeVelocity, ModContent.ProjectileType<EnchantedAxe2>(), Projectile.damage, 2, Projectile.owner, recall ? 0f : 1f);
+            if (recall)
+                summonAxe = false;
+        }
+
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 

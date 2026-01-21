@@ -1,10 +1,10 @@
 ﻿using System;
-using Microsoft.Xna.Framework;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.World;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.ItemDropRules;
@@ -18,7 +18,7 @@ namespace CalamityMod.NPCs.NormalNPCs
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 14;
+            Main.npcFrameCount[Type] = 14;
         }
 
         public override void SetDefaults()
@@ -29,10 +29,9 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 18;
             NPC.height = 40;
             NPC.defense = 18;
-            NPC.DR_NERD(0.15f);
-            NPC.lifeMax = NPC.downedMoonlord ? 1350 : 135;
-            NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 0, 2, 0);
+            NPC.lifeMax = NPC.downedMoonlord ? 3000 : 300;
+            NPC.knockBackResist = 0.3f;
+            NPC.value = Item.buyPrice(silver: 2);
             NPC.HitSound = SoundID.NPCHit2;
             NPC.DeathSound = SoundID.NPCDeath2;
             Banner = NPC.type;
@@ -43,10 +42,10 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Underground,
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.OverloadedSoldier")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.OverloadedSoldier")
             });
         }
 
@@ -98,7 +97,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     if (NPC.frame.Y > frameHeight * 13)
                         NPC.frame.Y = frameHeight;
                 }
-            }            
+            }
         }
 
         public override void AI()
@@ -178,7 +177,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) < 400f)
             {
                 maxVelocity += (CalamityWorld.death ? 8f : CalamityWorld.revenge ? 6f : 4f) - ((Main.player[NPC.target].Center - NPC.Center).Length() * 0.01f);
-             }
+            }
             if (NPC.velocity.X < -maxVelocity || NPC.velocity.X > maxVelocity)
             {
                 if (NPC.velocity.Y == 0f)
@@ -265,7 +264,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 int doorCheckX = (int)((NPC.position.X + (float)(NPC.width / 2) + (float)(15 * NPC.direction)) / 16f);
                 int doorCheckY = (int)((NPC.position.Y + (float)NPC.height - 15f) / 16f);
-                if ((Main.tile[doorCheckX, doorCheckY - 1].HasUnactuatedTile && (Main.tile[doorCheckX, doorCheckY - 1].TileType == 10 || Main.tile[doorCheckX, doorCheckY - 1].TileType == 388)) & unusedFlag)
+                if ((Main.tile[doorCheckX, doorCheckY - 1].HasUnactuatedTile && (Main.tile[doorCheckX, doorCheckY - 1].TileType == TileID.ClosedDoor || Main.tile[doorCheckX, doorCheckY - 1].TileType == TileID.TallGateClosed)) & unusedFlag)
                 {
                     NPC.ai[2] += 1f;
                     NPC.ai[3] = 0f;
@@ -273,7 +272,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     {
                         NPC.velocity.X = 0.5f * (float)-(float)NPC.direction;
                         int doorOpenInc = 5;
-                        if (Main.tile[doorCheckX, doorCheckY - 1].TileType == 388)
+                        if (Main.tile[doorCheckX, doorCheckY - 1].TileType == TileID.TallGateClosed)
                         {
                             doorOpenInc = 2;
                         }
@@ -288,7 +287,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                         WorldGen.KillTile(doorCheckX, doorCheckY - 1, true, false, false);
                         if ((Main.netMode != NetmodeID.MultiplayerClient || !letMeIn) && letMeIn && Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            if (Main.tile[doorCheckX, doorCheckY - 1].TileType == 10)
+                            if (Main.tile[doorCheckX, doorCheckY - 1].TileType == TileID.ClosedDoor)
                             {
                                 bool canOpenDoor = WorldGen.OpenDoor(doorCheckX, doorCheckY - 1, NPC.direction);
                                 if (!canOpenDoor)
@@ -296,12 +295,12 @@ namespace CalamityMod.NPCs.NormalNPCs
                                     NPC.ai[3] = (float)backUpTimer;
                                     NPC.netUpdate = true;
                                 }
-                                if (Main.netMode == NetmodeID.Server & canOpenDoor)
+                                if (Main.dedServ & canOpenDoor)
                                 {
                                     NetMessage.SendData(MessageID.ToggleDoorState, -1, -1, null, 0, (float)doorCheckX, (float)(doorCheckY - 1), (float)NPC.direction, 0, 0, 0);
                                 }
                             }
-                            if (Main.tile[doorCheckX, doorCheckY - 1].TileType == 388)
+                            if (Main.tile[doorCheckX, doorCheckY - 1].TileType == TileID.TallGateClosed)
                             {
                                 bool canOpenTallGate = WorldGen.ShiftTallGate(doorCheckX, doorCheckY - 1, false);
                                 if (!canOpenTallGate)
@@ -309,7 +308,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                                     NPC.ai[3] = (float)backUpTimer;
                                     NPC.netUpdate = true;
                                 }
-                                if (Main.netMode == NetmodeID.Server & canOpenTallGate)
+                                if (Main.dedServ & canOpenTallGate)
                                 {
                                     NetMessage.SendData(MessageID.ToggleDoorState, -1, -1, null, 4, (float)doorCheckX, (float)(doorCheckY - 1), 0f, 0, 0, 0);
                                 }
@@ -383,20 +382,20 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 120);
+                target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 180);
         }
 
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 3; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Polterplasm, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Necroplasm, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 15; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Polterplasm, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Necroplasm, hit.HitDirection, -1f, 0, default, 1f);
                 }
             }
         }
@@ -405,7 +404,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             npcLoot.Add(ModContent.ItemType<AncientBoneDust>());
             LeadingConditionRule postML = npcLoot.DefineConditionalDropSet(DropHelper.PostML());
-            postML.Add(ModContent.ItemType<Polterplasm>());
+            postML.Add(ModContent.ItemType<Necroplasm>());
         }
     }
 }

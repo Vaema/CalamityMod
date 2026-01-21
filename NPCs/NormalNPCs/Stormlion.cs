@@ -1,7 +1,9 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Weapons.Summon;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -10,9 +12,12 @@ namespace CalamityMod.NPCs.NormalNPCs
 {
     public class Stormlion : ModNPC
     {
+        public static readonly SoundStyle IdleSound = new("CalamityMod/Sounds/Custom/StormlionIdle");
+        public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/StormlionHit");
+        public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/StormlionDeath");
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 6;
+            Main.npcFrameCount[Type] = 6;
         }
 
         public override void SetDefaults()
@@ -22,12 +27,12 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 33;
             NPC.height = 31;
             NPC.defense = 8;
-            NPC.lifeMax = 80;
+            NPC.lifeMax = 100;
             NPC.knockBackResist = 0.2f;
             AnimationType = NPCID.WalkingAntlion;
-            NPC.value = Item.buyPrice(0, 0, 2, 0);
-            NPC.HitSound = SoundID.NPCHit31;
-            NPC.DeathSound = SoundID.NPCDeath34;
+            NPC.value = Item.buyPrice(silver: 2);
+            NPC.HitSound = HitSound;
+            NPC.DeathSound = DeathSound;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<StormlionBanner>();
             NPC.Calamity().VulnerableToCold = true;
@@ -38,11 +43,19 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.UndergroundDesert,
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Stormlion")
             });
+        }
+
+        public override void AI()
+        {
+            if (Main.rand.NextBool(800))
+            {
+                SoundEngine.PlaySound(IdleSound, NPC.Center);
+            }
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -57,7 +70,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Stormlion").Type, NPC.scale);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Stormlion2").Type, NPC.scale);
@@ -93,7 +106,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Electrified, 30, true);
+                target.AddBuff(ModContent.BuffType<StaticDischarge>(), 120);
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)

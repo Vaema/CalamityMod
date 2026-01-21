@@ -1,10 +1,10 @@
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Magic
 {
     public class AstralachneaFang : ModProjectile, ILocalizedModType
@@ -12,8 +12,9 @@ namespace CalamityMod.Projectiles.Magic
         public new string LocalizationCategory => "Projectiles.Magic";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 5;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -38,7 +39,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item10, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item10, Projectile.Center);
             for (int k = 0; k < 3; k++)
             {
                 Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, ModContent.DustType<AstralOrange>(), 0f, 0f);
@@ -48,12 +49,15 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 180);
+            //Doze - I gave this long debuff infliction times due to the lack of weapons that inflict debuffs for a decent time
+            //Most common vanilla debuffs have a way to inflict them for 15, 20, or even 30 seconds
+            //Poison and Venom staff in vanilla do 30 seconds, so this should too as it's a spiritual successor to them.
+            target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), CalamityUtils.SecondsToFrames(30));
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

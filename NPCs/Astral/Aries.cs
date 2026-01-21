@@ -18,13 +18,13 @@ namespace CalamityMod.NPCs.Astral
 {
     public class Aries : ModNPC
     {
-        private static Texture2D glowmask;
+        public static Asset<Texture2D> glowmask;
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 8;
+            Main.npcFrameCount[Type] = 8;
             if (!Main.dedServ)
-                glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/Astral/AriesGlow", AssetRequestMode.ImmediateLoad).Value;
+                glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/Astral/AriesGlow", AssetRequestMode.AsyncLoad);
         }
 
         public override void SetDefaults()
@@ -33,31 +33,30 @@ namespace CalamityMod.NPCs.Astral
             NPC.width = 66;
             NPC.height = 64;
             NPC.aiStyle = NPCAIStyleID.Herpling;
-            NPC.defense = 14;
-            NPC.DR_NERD(0.15f);
+            NPC.defense = 22;
             NPC.lifeMax = 300;
             NPC.knockBackResist = 0.6f;
-            NPC.value = Item.buyPrice(0, 0, 10, 0);
+            NPC.value = Item.buyPrice(silver: 3);
             NPC.DeathSound = CommonCalamitySounds.AstralNPCDeathSound;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<AriesBanner>();
             if (DownedBossSystem.downedAstrumAureus)
             {
                 NPC.damage = 85;
-                NPC.defense = 24;
+                NPC.defense = 32;
                 NPC.knockBackResist = 0.5f;
                 NPC.lifeMax = 450;
             }
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<AbovegroundAstralBiome>().Type };
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<AstralInfectionBiome>().Type };
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Aries")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Aries")
             });
         }
 
@@ -100,7 +99,7 @@ namespace CalamityMod.NPCs.Astral
         public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             //draw glowmask
-            spriteBatch.Draw(glowmask, NPC.Center - screenPos, NPC.frame, Color.White * 0.6f, NPC.rotation, new Vector2(33, 31), 1f, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+            spriteBatch.Draw(glowmask.Value, NPC.Center - screenPos, NPC.frame, Color.White * 0.6f, NPC.rotation, new Vector2(33, 31), 1f, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
@@ -119,13 +118,13 @@ namespace CalamityMod.NPCs.Astral
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 75, true);
+                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 180);
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<Stardust>(), 2, 1, 2, 1, 3));
-            npcLoot.AddIf(() => DownedBossSystem.downedAstrumAureus, ModContent.ItemType<StellarKnife>(), 7);
+            npcLoot.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<StarblightSoot>(), 2, 1, 2, 1, 3));
+            npcLoot.AddIf(() => DownedBossSystem.downedAstrumAureus, ModContent.ItemType<StellarKnife>(), 10);
         }
     }
 }

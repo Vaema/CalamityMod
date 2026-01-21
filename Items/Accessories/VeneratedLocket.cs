@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Rarities;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -10,10 +9,10 @@ namespace CalamityMod.Items.Accessories
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
-            Item.width = 34;
-            Item.height = 36;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.width = 50;
+            Item.height = 58;
+            Item.value = Item.buyPrice(platinum: 10); // Sold by Bandit
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.accessory = true;
         }
 

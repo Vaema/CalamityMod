@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Rarities;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Materials
@@ -17,9 +16,9 @@ namespace CalamityMod.Items.Materials
         {
             Item.width = 30;
             Item.height = 24;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
+            Item.value = Item.sellPrice(silver: 3);
             Item.rare = ModContent.RarityType<DarkOrange>();
-            Item.value = Item.sellPrice(silver: 6);
         }
     }
 }

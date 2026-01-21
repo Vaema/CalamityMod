@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -16,7 +16,8 @@ namespace CalamityMod.Projectiles.Melee
         private int lifeTime = 420;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 5;
+            Main.projFrames[Type] = 5;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         }
 
         public override void SetDefaults()
@@ -45,7 +46,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.frame = 0;
             }
@@ -65,8 +66,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D projectileTexture = ModContent.Request<Texture2D>(Texture).Value;
-            int frameHeight = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
+            Texture2D projectileTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int frameHeight = Terraria.GameContent.TextureAssets.Projectile[Type].Value.Height / Main.projFrames[Type];
             int frameY = frameHeight * Projectile.frame;
             Main.spriteBatch.Draw(projectileTexture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, frameY, projectileTexture.Width, frameHeight)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)projectileTexture.Width / 2f, (float)frameHeight / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;
@@ -78,7 +79,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.ExpandHitboxBy(80);
             for (int d = 0; d < 5; d++)
             {
-                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 1f);
+                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 1f);
                 Main.dust[idx].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -88,14 +89,14 @@ namespace CalamityMod.Projectiles.Melee
             }
             for (int d = 0; d < 8; d++)
             {
-                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 2f);
+                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 2f);
                 Main.dust[idx].noGravity = true;
                 Main.dust[idx].velocity *= 5f;
-                idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 1f);
+                idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 1f);
                 Main.dust[idx].velocity *= 2f;
             }
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 Vector2 goreSource = Projectile.Center;
                 int goreAmt = 3;

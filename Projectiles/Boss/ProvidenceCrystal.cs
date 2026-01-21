@@ -1,27 +1,30 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using System.IO;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.Providence;
+using CalamityMod.Particles;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Boss
 {
     public class ProvidenceCrystal : ModProjectile, ILocalizedModType
     {
+        public bool introAnimationDone = false;
+        public float introAnimationProgress = 0f;
         public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetDefaults()
         {
             Projectile.width = 160;
             Projectile.height = 160;
             Projectile.ignoreWater = true;
-            Projectile.timeLeft = BossRushEvent.BossRushActive ? 1500 : CalamityWorld.death ? 2100 : 3600;
+            Projectile.timeLeft = CalamityWorld.death ? 2100 : 3600;
             Projectile.alpha = 255;
             Projectile.tileCollide = false;
             Projectile.penetrate = -1;
@@ -38,8 +41,40 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.localAI[0] = reader.ReadSingle();
         }
 
+        void CrystalExplosion()
+        {
+            Player proviTarget = Main.player[Main.npc[CalamityGlobalNPC.holyBoss].target];
+            for (int i = 0; i < 7; i++)
+            {
+                GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, proviTarget.velocity, Color.Violet, "CalamityMod/Particles/BlastCone", new Vector2(Main.rand.NextFloat(2.5f, 6f), 3f), Main.rand.NextFloat(MathHelper.TwoPi), 1f, 0.5f, 20));
+            }
+            for (int i = 0; i < 4; i++)
+            {
+                GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, proviTarget.velocity, Color.Violet, "CalamityMod/Particles/BloomCircle", Vector2.One, 0f, 3f, 0f, 35));
+            }
+        }
+
         public override void AI()
         {
+            if (introAnimationProgress == 0f)
+            {
+                SoundEngine.PlaySound(SoundID.Item101.WithPitchOffset(-1f), Projectile.Center);
+            }
+
+            introAnimationProgress += 0.025f;
+            introAnimationProgress = MathHelper.Clamp(introAnimationProgress, 0f, 1f);
+
+            if (introAnimationProgress == 1f)
+            {
+                if (!introAnimationDone)
+                {
+                    SoundEngine.PlaySound(SoundID.DD2_WitherBeastCrystalImpact.WithPitchOffset(-0.5f), Projectile.Center);
+                    SoundEngine.PlaySound(SoundID.DD2_CrystalCartImpact, Projectile.Center);
+                    CrystalExplosion();
+                }
+                introAnimationDone = true;
+            }
+
             if (CalamityGlobalNPC.holyBoss < 0 || !Main.npc[CalamityGlobalNPC.holyBoss].active)
             {
                 Projectile.active = false;
@@ -47,9 +82,13 @@ namespace CalamityMod.Projectiles.Boss
                 return;
             }
 
-            Player proviTarget = Main.player[Main.npc[CalamityGlobalNPC.holyBoss].target];
+            if (Projectile.ai[2] > 0f)
+            {
+                if (Projectile.timeLeft > Projectile.ai[2])
+                    Projectile.timeLeft = (int)Projectile.ai[2];
+            }
 
-            Projectile.maxPenetrate = (int)Main.npc[CalamityGlobalNPC.holyBoss].localAI[1];
+            Player proviTarget = Main.player[Main.npc[CalamityGlobalNPC.holyBoss].target];
 
             Projectile.position.X = proviTarget.Center.X - (Projectile.width / 2);
             Projectile.position.Y = proviTarget.Center.Y - (Projectile.height / 2) + proviTarget.gfxOffY - 360f;
@@ -65,16 +104,16 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.position.Y = (int)Projectile.position.Y;
             Projectile.velocity = Vector2.Zero;
 
-            Projectile.alpha -= 5;
+            Projectile.alpha -= 20;
             if (Projectile.alpha < 0)
                 Projectile.alpha = 0;
 
             if (Projectile.alpha == 0 && Main.rand.NextBool(15))
             {
-                Color BaseColor = ProvUtils.GetProjectileColor(Projectile.maxPenetrate, 0);
+                Color BaseColor = ProvUtils.GetProjectileColor(0);
                 float Brightness = 0.8f;
                 Color DustColor = Color.Lerp(BaseColor, Color.White, Brightness);
-                Dust crystalDust = Main.dust[Dust.NewDust(Projectile.Top, 0, 0, 267, 0f, 0f, 100, DustColor, 1f)];
+                Dust crystalDust = Main.dust[Dust.NewDust(Projectile.Top, 0, 0, DustID.RainbowMk2, 0f, 0f, 100, DustColor, 1f)];
                 crystalDust.velocity.X = 0f;
                 crystalDust.noGravity = true;
                 crystalDust.fadeIn = 1f;
@@ -87,30 +126,31 @@ namespace CalamityMod.Projectiles.Boss
             // Increment timer
             Projectile.localAI[0] += 1f;
 
-            // At day, fires every 300 frames but lasts 1500-3600 frames.
-            // At night, fires every 30 framges but lasts 210 frames.
-            // In GFB, fires at night rate for the first 210 frames, then at day rate for the next 1500.
-            bool dayAI = Projectile.maxPenetrate == (int)Providence.BossMode.Day || (Projectile.maxPenetrate >= (int)Providence.BossMode.Red && Projectile.timeLeft < 1500);
+            // Normally, fires every 300 frames but lasts 1500-3600 frames.
+            // When enraged, fires every 30 frames but lasts 210 frames.
+            // In GFB, fires at enraged rate for the first 210 frames, then at standard rate for the next 1500.
+            bool standardAI = ProvUtils.StandardAI() || (Main.zenithWorld && Projectile.timeLeft < 1500);
 
-            if (Projectile.localAI[0] >= (dayAI ? 300f : 30f))
+            if (Projectile.localAI[0] >= (standardAI ? 300f : 30f))
             {
-                // Spawn shards every 30 frames at night or at 300 frames during day
-                if (Projectile.localAI[0] % 30f == 0f || dayAI)
+                // Spawn shards every 30 frames while enraged or at 300 frames normally
+                if (Projectile.localAI[0] % 30f == 0f || standardAI)
                 {
                     SoundEngine.PlaySound(SoundID.Item109, Projectile.Center);
                     Projectile.netUpdate = true;
                     if (Projectile.owner == Main.myPlayer)
                     {
-                        int totalProjectiles = dayAI ? 15 : (Projectile.localAI[0] % 60f == 0f ? 15 : 10);
-                        float speedX = dayAI ? -21f : -15f;
+                        int totalProjectiles = standardAI ? 15 : (Projectile.localAI[0] % 60f == 0f ? 15 : 10);
+                        float speedX = standardAI ? -21f : -15f;
                         float speedAdjustment = Math.Abs(speedX * 2f / (totalProjectiles - 1));
                         float speedY = -3f;
                         for (int i = 0; i < totalProjectiles; i++)
                         {
-                            float x4 = dayAI ? Main.rgbToHsl(new Color(255, 200, Main.DiscoB)).X : Main.rgbToHsl(new Color(Main.DiscoR, 200, 255)).X;
-                            float randomSpread = dayAI ? 0f : Main.rand.Next(-150, 151) * 0.01f * (1f - lifeRatio);
+                            float x4 = standardAI ? Main.rgbToHsl(new Color(255, 200, Main.DiscoB)).X : Main.rgbToHsl(new Color(Main.DiscoR, 200, 255)).X;
+                            float randomSpread = standardAI ? 0f : Main.rand.Next(-150, 151) * 0.01f * (1f - lifeRatio);
                             Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, speedX + speedAdjustment * i + randomSpread, speedY, ModContent.ProjectileType<ProvidenceCrystalShard>(), Projectile.damage, Projectile.knockBack, Main.myPlayer, x4, Projectile.whoAmI);
                         }
+                        CrystalExplosion();
                     }
 
                     // Reset timer
@@ -122,22 +162,36 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool CanHitPlayer(Player target) => false;
 
-        public override Color? GetAlpha(Color lightColor) => new Color(255 - Projectile.alpha, 255 - Projectile.alpha, 255 - Projectile.alpha, 0);
+        public override Color? GetAlpha(Color lightColor) => new Color(255 - Projectile.alpha, 255 - Projectile.alpha, 255 - Projectile.alpha, 255 - Projectile.alpha);
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Color colorArea = Lighting.GetColor((int)(Projectile.position.X + Projectile.width * 0.5) / 16, (int)((Projectile.position.Y + Projectile.height * 0.5) / 16.0));
-            Vector2 drawArea = Projectile.position + new Vector2(Projectile.width, Projectile.height) / 2f + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition;
-            Texture2D texture2D34 = ModContent.Request<Texture2D>(Texture).Value;
-            Rectangle textureRect = texture2D34.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
-            Color colorAlpha = Projectile.GetAlpha(colorArea);
-            Vector2 halfRect = textureRect.Size() / 2f;
-            float scaleFactor = (float)Math.Cos(MathHelper.TwoPi * (Projectile.localAI[0] / 60f)) + 3f + 3f;
-            for (float i = 0f; i < 4f; i += 1f)
+            if (introAnimationDone)
             {
-                double angle = i * MathHelper.PiOver2;
-                Vector2 center = default;
-                Main.spriteBatch.Draw(texture2D34, drawArea + Vector2.UnitY.RotatedBy(angle, center) * scaleFactor, new Microsoft.Xna.Framework.Rectangle?(textureRect), colorAlpha * 0.2f, Projectile.rotation, halfRect, Projectile.scale, SpriteEffects.None, 0);
+                Color colorArea = Lighting.GetColor((int)(Projectile.position.X + Projectile.width * 0.5) / 16, (int)((Projectile.position.Y + Projectile.height * 0.5) / 16.0));
+                Vector2 drawArea = Projectile.position + new Vector2(Projectile.width, Projectile.height) / 2f + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition;
+                Texture2D texture2D34 = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+                Rectangle textureRect = texture2D34.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
+                Color colorAlpha = Projectile.GetAlpha(colorArea);
+                Vector2 halfRect = textureRect.Size() / 2f;
+                float scaleFactor = (float)Math.Cos(MathHelper.TwoPi * (Projectile.localAI[0] / 60f)) + 3f + 3f;
+                for (float i = 0f; i < 4f; i += 0.5f)
+                {
+                    double angle = i * MathHelper.PiOver2;
+                    Vector2 center = default;
+                    Main.spriteBatch.Draw(texture2D34, drawArea + Vector2.UnitY.RotatedBy(angle, center) * scaleFactor, new Microsoft.Xna.Framework.Rectangle?(textureRect), Color.Violet.MultiplyRGBA(new Color(1f, 1f, 1f, 0f)), Projectile.rotation, halfRect, Projectile.scale, SpriteEffects.None, 0);
+                }
+                Main.EntitySpriteDraw(texture2D34, Projectile.Center - Main.screenPosition, texture2D34.Frame(), Color.White, 0f, texture2D34.Frame().Center(), 1f, SpriteEffects.None);
+            }
+            else
+            {
+                Asset<Texture2D> tex = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/ProvidenceCrystal_Halves");
+                for (int i = 0; i < 2; i++)
+                {
+                    float dir = i == 0 ? -1 : 1;
+                    float ii = MathHelper.Lerp(60, 0, CalamityUtils.CircInEasing(introAnimationProgress, 1) - CalamityUtils.SineBumpEasing(introAnimationProgress, 1));
+                    Main.EntitySpriteDraw(tex.Value, Projectile.Center + (new Vector2(dir * ii).RotatedBy(MathHelper.ToRadians(MathHelper.Lerp(0, -90, CalamityUtils.CircInEasing(introAnimationProgress, 1))))) - Main.screenPosition, new Rectangle(i * 50, 0, 50, tex.Height()), Projectile.GetAlpha(lightColor).MultiplyRGBA(new Color(1f, 1f, 1f, 1f)), MathHelper.ToRadians(MathHelper.Lerp(70, 0, introAnimationProgress)), new Vector2(25, tex.Height() / 2), 1f, SpriteEffects.None);
+                }
             }
             return false;
         }

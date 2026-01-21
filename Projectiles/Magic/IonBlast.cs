@@ -1,91 +1,144 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Dusts;
+using CalamityMod.Particles;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
-using System;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Magic
 {
     public class IonBlast : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
-        public override void SetStaticDefaults()
-        {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-        }
-
+        public ref float time => ref Projectile.ai[0];
+        public bool chargeShot => Projectile.ai[2] == 5;
+        public bool onSpawn = true;
         public override void SetDefaults()
         {
-            Projectile.width = 10;
-            Projectile.height = 10;
+            Projectile.width = Projectile.height = 30;
             Projectile.friendly = true;
-            Projectile.alpha = 255;
             Projectile.penetrate = 1;
-            Projectile.extraUpdates = 2;
+            Projectile.extraUpdates = 7;
             Projectile.ignoreWater = false;
-            Projectile.timeLeft = 120;
+            Projectile.timeLeft = 280;
             Projectile.DamageType = DamageClass.Magic;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
+            Projectile.ArmorPenetration = 40;
         }
 
         public override void AI()
         {
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + MathHelper.PiOver2;
-            Projectile.velocity *= 1.015f;
-            if (Projectile.alpha > 0)
+            Projectile.rotation = Projectile.velocity.ToRotation();
+            if (chargeShot)
             {
-                Projectile.alpha -= 3;
-            }
-            if (Projectile.alpha < 0)
-            {
-                Projectile.alpha = 0;
-            }
-            Lighting.AddLight((int)Projectile.Center.X / 16, (int)Projectile.Center.Y / 16, 1f, 0f, 0.2f);
-            float projTimer = 100f;
-            float timerIncr = 3f;
-            if (Projectile.ai[1] == 0f)
-            {
-                Projectile.localAI[0] += timerIncr;
-                if (Projectile.localAI[0] > projTimer)
+                if (onSpawn)
                 {
-                    Projectile.localAI[0] = projTimer;
+                    Projectile.penetrate = -1;
+                    Projectile.extraUpdates = 6;
+                    Projectile.timeLeft = 190;
+                    Projectile.tileCollide = false;
+                    onSpawn = false;
+                }
+                Projectile.velocity *= 0.975f;
+
+                if (Projectile.timeLeft > 45 && time > 3)
+                {
+                    Particle trail = new SparkParticle(Projectile.Center, -Projectile.velocity * 0.01f, false, 15, 1f, Color.Crimson * 0.6f);
+                    GeneralParticleHandler.SpawnParticle(trail);
                 }
             }
             else
             {
-                Projectile.localAI[0] -= timerIncr;
-                if (Projectile.localAI[0] <= 0f)
+                if (Projectile.ai[1] != 0 && time > 18)
+                    Projectile.velocity = Projectile.velocity.RotatedBy(0.003f * -Projectile.ai[1]);
+
+                if (Projectile.velocity.Length() < 17)
+                    Projectile.velocity *= 1.005f;
+
+                Vector2 vel = -Projectile.velocity.SafeNormalize(Vector2.UnitX) * Main.rand.NextFloat(0.5f, 4.5f);
+                
+                if (time % 3 == 0)
                 {
-                    Projectile.Kill();
+                    Particle trail = new CustomSpark(Projectile.Center + Main.rand.NextVector2Circular(6, 6), vel, "CalamityMod/Particles/GlowSquareParticle", false, Main.rand.Next(7, 12), Main.rand.NextFloat(0.5f, 0.8f), Main.rand.NextBool() ? Color.Lerp(Color.Crimson, Color.White, 0.5f) : Color.Crimson, new Vector2(1f, 1f), extraRotation: MathHelper.PiOver4);
+                    GeneralParticleHandler.SpawnParticle(trail);
                 }
             }
-        }
 
+            Lighting.AddLight(Projectile.Center, Color.Crimson.ToVector3() * 0.5f);
+            time++;
+        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            float minMult = 0.25f;
+            int hitsToMinMult = 8;
+            float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+            modifiers.SourceDamage *= damageMult;
+        }
         public override void OnKill(int timeLeft)
         {
-            Projectile.position = Projectile.Center;
-            Projectile.width = Projectile.height = 32;
-            Projectile.position.X = Projectile.position.X - (float)(Projectile.width / 2);
-            Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
-            Projectile.maxPenetrate = -1;
-            Projectile.penetrate = -1;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
-            Projectile.Damage();
-            SoundEngine.PlaySound(SoundID.Item92, Projectile.Center);
-            int randDustAmt = Main.rand.Next(15, 30);
-            for (int i = 0; i < randDustAmt; i++)
+            if (!chargeShot)
             {
-                int reddish = Dust.NewDust(Projectile.Center - Projectile.velocity / 2f, 0, 0, 130, 0f, 0f, 100, default, 1f);
-                Main.dust[reddish].velocity *= 2f;
-                Main.dust[reddish].noGravity = true;
+                SoundEngine.PlaySound(SoundID.Item92 with { Volume = 0.4f }, Projectile.Center);
+
+                Particle blastfx = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Crimson, "CalamityMod/Particles/BloomRingThinLarge", Vector2.One, 0, 0.02f, 0.053f, 17);
+                GeneralParticleHandler.SpawnParticle(blastfx);
+                Particle blastfx2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Lerp(Color.Crimson, Color.White, 0.5f), "CalamityMod/Particles/BloomRingThinLarge", Vector2.One, 0, 0.02f, 0.06f, 15);
+                GeneralParticleHandler.SpawnParticle(blastfx2);
+
+                for (int i = 0; i < 15; i++)
+                {
+                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), Vector2.One.RotatedByRandom(Math.PI) * Main.rand.NextFloat(3, 7));
+                    dust2.scale = Main.rand.NextFloat(0.85f, 1f);
+                    dust2.noGravity = true;
+                    dust2.color = Main.rand.NextBool() ? Color.Lerp(Color.Crimson, Color.White, 0.5f) : Color.Crimson;
+                }
+
+                // Create Blast
+                float blastSize = 60;
+                float minMultiplier = 0.3f;
+                int hitsToMinMult = 7;
+                Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(Projectile.damage * 0.5f), 0, Projectile.owner, blastSize, minMultiplier, hitsToMinMult);
+                blast.timeLeft = 10;
+                blast.DamageType = DamageClass.Magic;
+                blast.ArmorPenetration = 40;
             }
         }
-
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
+        {
+            Player Owner = Main.player[Projectile.owner];
+            if (time <= 1)
+            {
+                float _ = float.NaN;
+                return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, Owner.Center, Projectile.width, ref _);
+            }
+            else
+                return base.Colliding(projHitbox, targetHitbox);
+        }
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            Texture2D tex = TextureAssets.Projectile[Type].Value;
+            Texture2D tex2 = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowSpark").Value;
+            Vector2 drawPosition = Projectile.Center - Main.screenPosition;
+            float drawRotation = Projectile.rotation;
+            float timeleftFade = Utils.GetLerpValue(0, 60, Projectile.timeLeft, true);
+            if (chargeShot)
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    float iMult = (1 - 0.1f * i);
+                    Main.EntitySpriteDraw(tex2, drawPosition, null, Color.Lerp(Color.Crimson, Color.White, i * 0.1f) with { A = 0 } * iMult * timeleftFade, drawRotation, tex2.Size() * 0.5f, new Vector2(0.2f + 2 * iMult, (1.2f - 1f * iMult) * timeleftFade) * iMult * 0.03f, SpriteEffects.None);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < 5; i++)
+                    Main.EntitySpriteDraw(tex, drawPosition, null, Color.Lerp(Color.Crimson, Color.White, i * 0.1f) with { A = 0 } * (1 - 0.1f * i), drawRotation, tex.Size() * 0.5f, (1 - 0.1f * i), SpriteEffects.None);
+            }
             return false;
         }
     }

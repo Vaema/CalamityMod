@@ -1,5 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,8 +13,8 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -34,7 +34,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void AI()
         {
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + MathHelper.PiOver2;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             Projectile.alpha -= 3;
             if (Projectile.alpha < 100)
             {
@@ -45,7 +45,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 for (int i = 0; i < 3; i++)
                 {
-                    int dusty = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 107, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 0.75f);
+                    int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 0.75f);
                     Main.dust[dusty].noGravity = true;
                     Main.dust[dusty].velocity *= 0f;
                 }
@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
@@ -62,6 +62,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(ModContent.BuffType<Plague>(), 120);
             if (Projectile.penetrate <= 1)
             {
                 Projectile.position = Projectile.Center;
@@ -73,7 +74,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.Damage();
                 for (int j = 0; j < 70; j++)
                 {
-                    int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 107, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1.2f);
+                    int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1.2f);
                     Main.dust[dust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -83,10 +84,10 @@ namespace CalamityMod.Projectiles.Rogue
                 }
                 for (int k = 0; k < 40; k++)
                 {
-                    int dust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 107, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1.7f);
+                    int dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1.7f);
                     Main.dust[dust2].noGravity = true;
                     Main.dust[dust2].velocity *= 5f;
-                    dust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 107, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1f);
+                    dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1f);
                     Main.dust[dust2].velocity *= 2f;
                 }
             }
@@ -105,7 +106,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.Damage();
                 for (int j = 0; j < 70; j++)
                 {
-                    int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 107, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1.2f);
+                    int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1.2f);
                     Main.dust[dust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -115,10 +116,10 @@ namespace CalamityMod.Projectiles.Rogue
                 }
                 for (int k = 0; k < 40; k++)
                 {
-                    int dust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 107, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1.7f);
+                    int dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1.7f);
                     Main.dust[dust2].noGravity = true;
                     Main.dust[dust2].velocity *= 5f;
-                    dust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 107, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1f);
+                    dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1f);
                     Main.dust[dust2].velocity *= 2f;
                 }
             }
@@ -132,7 +133,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
             for (int j = 0; j < 7; j++)
             {
-                int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 107, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1.2f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1.2f);
                 Main.dust[dust].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -142,10 +143,10 @@ namespace CalamityMod.Projectiles.Rogue
             }
             for (int k = 0; k < 3; k++)
             {
-                int dust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 107, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1.7f);
+                int dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1.7f);
                 Main.dust[dust2].noGravity = true;
                 Main.dust[dust2].velocity *= 5f;
-                dust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 107, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1f);
+                dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 100, new Color(Main.DiscoR, 203, 103), 1f);
                 Main.dust[dust2].velocity *= 2f;
             }
         }

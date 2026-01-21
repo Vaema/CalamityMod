@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Placeables.Banners;
+﻿using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.NPCs.Other;
 using CalamityMod.World;
@@ -14,16 +15,15 @@ namespace CalamityMod.NPCs.NormalNPCs
     {
         public override void SetDefaults()
         {
-            NPC.Calamity().canBreakPlayerDefense = true;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.damage = 80;
             NPC.width = 40;
             NPC.height = 40;
-            NPC.defense = 18;
-            NPC.lifeMax = 300;
+            NPC.defense = 32;
+            NPC.lifeMax = 600;
             NPC.knockBackResist = 0.95f;
-            NPC.value = Item.buyPrice(0, 0, 10, 0);
+            NPC.value = Item.buyPrice(silver: 10);
             NPC.HitSound = SoundID.NPCHit7;
             NPC.DeathSound = SoundID.NPCDeath35;
             NPC.behindTiles = true;
@@ -35,16 +35,16 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheTemple,
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Bohldohr")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Bohldohr")
             });
         }
 
         public override void AI()
         {
-            CalamityAI.UnicornAI(NPC, Mod, true, CalamityWorld.death ? 8f : CalamityWorld.revenge ? 6f : 4f, 5f, 0.2f);
+            CalamityRegularEnemyAI.UnicornAI(NPC, Mod, true, CalamityWorld.death ? 8f : CalamityWorld.revenge ? 6f : 4f, 5f, 0.2f);
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
@@ -60,15 +60,15 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 155, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Ambient_DarkBrown, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 20; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 155, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Ambient_DarkBrown, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Bohldohr").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Bohldohr2").Type, 1f);
@@ -93,7 +93,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(ItemID.LihzahrdBrick, 1, 10, 26);
+            npcLoot.Add(ModContent.ItemType<Stohne>(), 1, 10, 26);
             npcLoot.Add(ItemID.LunarTabletFragment, 7, 10, 26);
             npcLoot.Add(ItemID.LihzahrdPowerCell, 50);
             npcLoot.AddIf(() => DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs && Main.zenithWorld, ModContent.ItemType<NO>(), 2, ui: false);

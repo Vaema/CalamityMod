@@ -26,7 +26,7 @@ namespace CalamityMod.Projectiles.Turret
         {
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
-                var source = Main.player[Main.myPlayer].GetSource_FromThis();
+                var source = Main.LocalPlayer.GetSource_FromThis();
                 Projectile.NewProjectile(source, Projectile.Center, Projectile.velocity, ModContent.ProjectileType<IceShot>(), Projectile.damage, Projectile.knockBack, Main.myPlayer);
                 Projectile.Kill();
             }

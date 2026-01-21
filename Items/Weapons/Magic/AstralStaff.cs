@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5f;
-            Item.value = CalamityGlobalItem.Rarity9BuyPrice;
+            Item.value = CalamityGlobalItem.RarityCyanBuyPrice;
             Item.rare = ItemRarityID.Cyan;
             Item.UseSound = SoundID.Item105;
             Item.autoReuse = true;
@@ -42,6 +42,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             Vector2 spawnPos = new Vector2(player.MountedCenter.X + Main.rand.Next(-200, 201), player.MountedCenter.Y - 600f);
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 targetPos = Main.MouseWorld + new Vector2(Main.rand.Next(-30, 31), Main.rand.Next(-30, 31));
             Vector2 velocityReal = targetPos - spawnPos;
             velocityReal.Normalize();

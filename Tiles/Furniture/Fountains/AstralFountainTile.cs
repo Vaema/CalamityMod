@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Dusts;
 using CalamityMod.Items.Placeables.Furniture.Fountains;
+using CalamityMod.Waters;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -15,8 +16,8 @@ namespace CalamityMod.Tiles.Furniture.Fountains
 
         public override void NearbyEffects(int i, int j, bool closer)
         {
-            if (Main.tile[i, j].TileFrameX >= 36)
-                Main.SceneMetrics.ActiveFountainColor = ModContent.Find<ModWaterStyle>("CalamityMod/AstralWater").Slot;
+            if (!Main.dedServ && Main.tile[i, j].TileFrameX >= 36)
+                Main.SceneMetrics.ActiveFountainColor = AstralWater.Instance.Slot;
         }
 
         public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings) => true;
@@ -45,12 +46,12 @@ namespace CalamityMod.Tiles.Furniture.Fountains
 
         public override void HitWire(int i, int j)
         {
-            CalamityUtils.LightHitWire(Type, i, j, 2, 4);
+            FurnitureCommon.LightHitWire(Type, i, j, 2, 4);
         }
 
         public override bool RightClick(int i, int j)
         {
-            CalamityUtils.LightHitWire(Type, i, j, 2, 4);
+            FurnitureCommon.LightHitWire(Type, i, j, 2, 4);
             SoundEngine.PlaySound(SoundID.Mech, new Vector2(i * 16, j * 16));
             return true;
         }

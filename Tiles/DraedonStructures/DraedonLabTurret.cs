@@ -1,7 +1,9 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System.Collections.Generic;
+using CalamityMod.Items.Materials;
 using CalamityMod.TileEntities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent.ObjectInteractions;
@@ -9,7 +11,6 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
-using System.Collections.Generic;
 
 namespace CalamityMod.Tiles.DraedonStructures
 {
@@ -20,6 +21,8 @@ namespace CalamityMod.Tiles.DraedonStructures
         public const int OriginOffsetX = 1;
         public const int OriginOffsetY = 1;
         public const int SheetSquare = 18;
+
+        public Asset<Texture2D> GlowTexture;
 
         public override string Texture => "CalamityMod/Tiles/PlayerTurrets/PlayerLabTurret";
         public override void SetStaticDefaults()
@@ -32,6 +35,7 @@ namespace CalamityMod.Tiles.DraedonStructures
 
             // Various data sets to protect this tile from unintentional death
             TileID.Sets.PreventsTileRemovalIfOnTopOfIt[Type] = true;
+            TileID.Sets.PreventsTileHammeringIfOnTopOfIt[Type] = true;
             TileID.Sets.PreventsTileReplaceIfOnTopOfIt[Type] = true;
             TileID.Sets.PreventsSandfall[Type] = true;
 
@@ -55,7 +59,7 @@ namespace CalamityMod.Tiles.DraedonStructures
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 226);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Electric);
             return false;
         }
 
@@ -73,11 +77,13 @@ namespace CalamityMod.Tiles.DraedonStructures
             te?.Kill(left, top);
         }
 
+        // Used to highlight the tile with Dangersense.
+        public override bool IsTileDangerous(int i, int j, Player player) => true;
         // The turret tile draws a pulse turret on top of itself.
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
             Tile t = Main.tile[i, j];
-            if (t.TileFrameX != 36 || t.TileFrameY != 0)
+            if (t.TileFrameX != 36 || t.TileFrameY != 0 || t.IsTileActuallyInvisible())
                 return;
 
             TEHostileLabTurret te = CalamityUtils.FindTileEntity<TEHostileLabTurret>(i, j, Width, Height, SheetSquare);
@@ -85,8 +91,20 @@ namespace CalamityMod.Tiles.DraedonStructures
                 return;
             int drawDirection = te.Direction;
             Color drawColor = Lighting.GetColor(i, j);
+            // Make sure the tile entity is also highlighted by Dangersense.
+            if (Main.LocalPlayer.dangerSense)
+            {
+                if (drawColor.R < 255)
+                    drawColor.R = 255;
+                if (drawColor.G < 50)
+                    drawColor.G = 50;
+                if (drawColor.B < 50)
+                    drawColor.B = 50;
+            }
 
-            Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Projectiles/DraedonsArsenal/PulseTurret").Value;
+            GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/DraedonsArsenal/PulseTurret");
+            Texture2D tex = GlowTexture.Value;
+
             Vector2 screenOffset = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + screenOffset;
             drawOffset.Y -= 2f;

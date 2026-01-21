@@ -2,7 +2,6 @@
 using CalamityMod.Dusts;
 using CalamityMod.Items.Placeables.Banners;
 using Terraria;
-using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -23,10 +22,10 @@ namespace CalamityMod.NPCs.Crags
             NPC.width = 80;
             NPC.height = 80;
             NPC.defense = 10;
-            NPC.lifeMax = 50;
+            NPC.lifeMax = 100;
             NPC.alpha = 100;
             NPC.knockBackResist = 0.9f;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(silver: 5);
             NPC.HitSound = SoundID.NPCHit49;
             NPC.DeathSound = SoundID.NPCDeath51;
             NPC.noGravity = true;
@@ -112,7 +111,7 @@ namespace CalamityMod.NPCs.Crags
                     break;
                 }
             }
-            if (Main.player[NPC.target].npcTypeNoAggro[NPC.type])
+            if (Main.player[NPC.target].npcTypeNoAggro[Type])
             {
                 bool inTileNoAggro = false;
                 for (int loopInc2 = npcTileY; loopInc2 < npcTileY + tileCheckLoopAmt - 2; loopInc2++)
@@ -250,18 +249,7 @@ namespace CalamityMod.NPCs.Crags
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 60, true);
-		}
-
-		public override void OnKill()
-		{
-			// Increase the kill count of Scryllars for the Bestiary
-			if (NPC.GetWereThereAnyInteractions())
-			{
-				NPC nPC = new NPC();
-				nPC.SetDefaults(ModContent.NPCType<Scryllar>());
-				Main.BestiaryTracker.Kills.RegisterKill(nPC);
-			}
+                target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 180);
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -276,7 +264,7 @@ namespace CalamityMod.NPCs.Crags
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ScryllarRage").Type, NPC.scale);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ScryllarRage2").Type, NPC.scale);

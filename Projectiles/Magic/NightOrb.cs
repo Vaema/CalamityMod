@@ -1,4 +1,4 @@
-using Terraria.ModLoader;
+﻿using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Magic
 {
     public class NightOrb : ModProjectile, ILocalizedModType
@@ -16,6 +16,8 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.timeLeft = 30;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.ignoreWater = true;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()

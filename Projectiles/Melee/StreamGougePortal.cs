@@ -1,13 +1,13 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Graphics.Metaballs;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -59,6 +59,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
+            
             Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/StreamGouge").Value;
             Vector2 spearDrawPosition = SpearCenter - Main.screenPosition;
             Vector2 spearOrigin = texture.Size() * 0.5f;
@@ -76,19 +77,17 @@ namespace CalamityMod.Projectiles.Melee
 
             // Black portal.
             Color color = Color.Lerp(baseColor, Color.Black, 0.55f).MultiplyRGB(Color.DarkGray) * Projectile.Opacity;
-            Main.EntitySpriteDraw(portalTexture, drawPosition, null, color, rotation, origin, Projectile.scale * 1.2f, SpriteEffects.None, 0);
-            Main.EntitySpriteDraw(portalTexture, drawPosition, null, color, -rotation, origin, Projectile.scale * 1.2f, SpriteEffects.None, 0);
-
-            Main.spriteBatch.SetBlendState(BlendState.Additive);
+            Main.EntitySpriteDraw(portalTexture, drawPosition, null, color with { A = 0 }, rotation, origin, Projectile.scale * 1.2f, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(portalTexture, drawPosition, null, color with { A = 0 }, -rotation, origin, Projectile.scale * 1.2f, SpriteEffects.None, 0);
 
             // Cyan portal.
             color = Color.Lerp(baseColor, Color.Cyan, 0.55f) * Projectile.Opacity * 1.4f;
-            Main.EntitySpriteDraw(portalTexture, drawPosition, null, color, rotation * 0.6f, origin, Projectile.scale * 1.2f, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(portalTexture, drawPosition, null, color with { A = 0 }, rotation * 0.6f, origin, Projectile.scale * 1.2f, SpriteEffects.None, 0);
 
             // Magenta portal.
             color = Color.Lerp(baseColor, Color.Fuchsia, 0.55f) * Projectile.Opacity * 1.4f;
-            Main.EntitySpriteDraw(portalTexture, drawPosition, null, color, rotation * -0.7f, origin, Projectile.scale * 1.2f, SpriteEffects.None, 0);
-            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+            Main.EntitySpriteDraw(portalTexture, drawPosition, null, color with { A = 0 }, rotation * -0.7f, origin, Projectile.scale * 1.2f, SpriteEffects.None, 0);
+            
             return false;
         }
 
@@ -97,7 +96,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 300);
             SoundEngine.PlaySound(SoundID.Item74, target.Center);
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             Color impactColor = Color.Lerp(Color.Cyan, Color.White, Main.rand.NextFloat(0.3f, 0.64f));

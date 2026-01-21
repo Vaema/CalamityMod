@@ -1,66 +1,97 @@
-﻿using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Terraria.Audio;
+﻿using System.Collections.Generic;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
+using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
     public class GalaxySmasherMini : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
-        public override string Texture => "CalamityMod/Projectiles/Melee/GalaxySmasherMini";
-        public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/Item/WulfrumKnifeTileHit2") { Volume = 0.5f, PitchVariance = 0.7f };
-        public float rotatehammer = 20f;
+        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+        public float radius = 50f;
+        public int time = 0;
+        public bool homing = false;
+        public NPC targeted;
 
         public override void SetDefaults()
         {
-            Projectile.width = 86;
-            Projectile.height = 72;
+            Projectile.width = 90;
+            Projectile.height = 90;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.DamageType = DamageClass.Melee;
-            Projectile.alpha = 80;
+            Projectile.tileCollide = false;
+            Projectile.DamageType = DamageClass.MeleeNoSpeed;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 30;
-            Projectile.scale = 0.7f;
+            Projectile.timeLeft = 500;
+            Projectile.extraUpdates = 3;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 60;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override void AI()
         {
-            Projectile.direction = Projectile.spriteDirection = Projectile.velocity.X > 0f ? 1 : -1;
-            Projectile.rotation += MathHelper.ToRadians(rotatehammer) * Projectile.direction;
+            List<Color> eColors = new List<Color>()
+            {
+                Color.Aqua,
+                Color.Magenta,
+            };
+            float rate = (Main.GlobalTimeWrappedHourly * 20);
+            int colorIndex = (int)(rate / 2 % eColors.Count);
+            Color currentColor = eColors[colorIndex];
+            Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
+            Color usedColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+
+            if (time % 2 == 0)
+            {
+                Particle spark = new CustomSpark(Projectile.Center, -Projectile.velocity * 0.05f, "CalamityMod/Particles/SmallBloom", false, 6, 0.2f, usedColor, new Vector2(Utils.Remap(Projectile.velocity.Length(), 0, 5, 1, 0.6f, true), 1f), true, false, 0, false, false, Utils.Remap(Projectile.velocity.Length(), 0, 5, 0, 0.9f, true));
+                GeneralParticleHandler.SpawnParticle(spark);
+            }
+            GalaxyMetaball.SpawnParticle(Projectile.Center, -Projectile.velocity.RotatedByRandom(0.25f) * Main.rand.NextFloat(0.2f, 0.7f), 30f * Main.rand.NextFloat(0.9f, 1f));
+            
+            if (time > 45 || homing)
+            {
+                homing = true;
+                if (Projectile.ai[2] != -5)
+                    targeted = Main.npc[(int)Projectile.ai[2]];
+                if (targeted == null || !targeted.CanBeChasedBy(Projectile, false) || !targeted.active)
+                {
+                    targeted = Projectile.Center.ClosestNPCAt(1000);
+                    Projectile.ai[2] = -5;
+                }
+
+                if (targeted != null)
+                {
+                    CalamityUtils.HomeInOnSelectedNPC(Projectile, targeted, true, 0.18f, 25, 0.99f, accelerate: true);
+                    Projectile.extraUpdates = 3;
+                }
+            }
+            else
+            {
+                Projectile.velocity += Projectile.velocity.RotatedBy(0.24f * Projectile.ai[1]) * 0.04f;
+                Projectile.extraUpdates = 2;
+            }
+
+            time += (homing ? -1 : 1);
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            SoundEngine.PlaySound(HitSound, Projectile.Center);
-            float damageInterpolant = Utils.GetLerpValue(950f, 2000f, hit.Damage, true);
-            float impactAngularVelocity = MathHelper.Lerp(0.08f, 0.2f, damageInterpolant);
-            float impactParticleScale = MathHelper.Lerp(0.6f, 1f, damageInterpolant);
-            impactAngularVelocity *= Main.rand.NextBool().ToDirectionInt() * Main.rand.NextFloat(0.75f, 1.25f);
-
-            Color impactColor = Color.Lerp(Color.Fuchsia, Color.Aqua, Main.rand.NextFloat(0.5f));
-            Vector2 impactPoint = Vector2.Lerp(Projectile.Center, target.Center, 0.65f);
-            Vector2 bloodSpawnPosition = target.Center + Main.rand.NextVector2Circular(target.width, target.height) * 0.04f;
-            Vector2 splatterDirection = (Projectile.Center - bloodSpawnPosition).SafeNormalize(Vector2.UnitY);
-            for (int i = 0; i < 3; i++)
+            target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 60);
+            for (int i = 0; i < 4; i++)
             {
-                int sparkLifetime = Main.rand.Next(9, 12);
-                float sparkScale = Main.rand.NextFloat(0.8f, 1f) + damageInterpolant * 0.85f;
-                Color sparkColor = Color.Lerp(Color.Fuchsia, Color.Aqua, Main.rand.NextFloat(0.7f));
-                sparkColor = Color.Lerp(sparkColor, Color.Fuchsia, Main.rand.NextFloat());
-                Vector2 sparkVelocity = splatterDirection.RotatedByRandom(0.6f) * Main.rand.NextFloat(12f, 25f);
-                sparkVelocity.Y -= 6f;
-                SparkParticle spark = new SparkParticle(impactPoint, sparkVelocity, true, sparkLifetime, sparkScale, sparkColor);
-                GeneralParticleHandler.SpawnParticle(spark);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), (Projectile.velocity * 3) * Main.rand.NextFloat(0.3f, 1f), 0, default, Main.rand.NextFloat(0.65f, 1f));
+                dust.noGravity = true;
+                dust.color = Main.rand.NextBool() ? Color.Magenta : Color.Aqua;
             }
-            //Create an impact point particle.
-            ImpactParticle impactParticle = new ImpactParticle(impactPoint, impactAngularVelocity, 20, impactParticleScale, impactColor);
-            GeneralParticleHandler.SpawnParticle(impactParticle);
+
+            if (target == targeted)
+                Projectile.Kill();
         }
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => homing ? CalamityUtils.CircularHitboxCollision(Projectile.Center, radius, targetHitbox) : false;
     }
 }

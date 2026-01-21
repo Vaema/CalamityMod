@@ -1,6 +1,7 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -12,6 +13,7 @@ namespace CalamityMod.Projectiles.Magic
         public new string LocalizationCategory => "Projectiles.Magic";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = 8;
@@ -24,6 +26,8 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.timeLeft = 20;
             Projectile.penetrate = 5;
             Projectile.tileCollide = true;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
 
@@ -105,7 +109,7 @@ namespace CalamityMod.Projectiles.Magic
 
             for (int i = 0; i < 20; i++)
             {
-                int dust = Dust.NewDust(current, Projectile.width, Projectile.height, 20, 0, 0);
+                int dust = Dust.NewDust(current, Projectile.width, Projectile.height, DustID.PurificationPowder, 0, 0);
                 Main.dust[dust].velocity = new Vector2(0);
                 current += move / 20f;
             }
@@ -157,7 +161,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(BuffID.Electrified, 120);
+            target.AddBuff(ModContent.BuffType<StaticDischarge>(), 120);
         }
     }
 }

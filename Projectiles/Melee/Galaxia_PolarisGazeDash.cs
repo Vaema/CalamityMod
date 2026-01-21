@@ -1,8 +1,7 @@
-﻿using CalamityMod.Particles;
-using CalamityMod.Items.Weapons.Melee;
+﻿using System;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
@@ -19,9 +18,6 @@ namespace CalamityMod.Projectiles.Melee
         public Vector2 DashStart;
         public Vector2 DashEnd;
 
-        public override void SetStaticDefaults()
-        {
-        }
         public override void SetDefaults()
         {
             Projectile.DamageType = DamageClass.Melee;
@@ -52,23 +48,10 @@ namespace CalamityMod.Projectiles.Melee
                 Particle Spark = new CritSpark(target.Center, sparkSpeed, Color.White, Color.CornflowerBlue, 1f + Main.rand.NextFloat(0, 1f), 30, 0.4f, 0.6f);
                 GeneralParticleHandler.SpawnParticle(Spark);
             }
-
-            //Explode into cosmic bolts
-            int blastDamage = Owner.CalcIntDamage<MeleeDamageClass>(FourSeasonsGalaxia.PolarisAttunement_SlashBoltsDamage);
-            for (int i = 0; i < 3; i++)
-            {
-                Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center, Owner.SafeDirectionTo(target.Center, Vector2.Zero).RotatedByRandom(MathHelper.PiOver4) * 30f, ProjectileType<GalaxiaBolt>(), blastDamage, 0f, Owner.whoAmI, 0.55f, MathHelper.Pi * 0.01f);
-                {
-                    blast.timeLeft = 100;
-                }
-            }
         }
 
-
-
-        public override bool PreDraw(ref Color lightColor) //OMw to reuse way too much code from the entangling vines
+        public override bool PreDraw(ref Color lightColor) // omw to reuse way too much code from the entangling vines
         {
-
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 
@@ -86,7 +69,7 @@ namespace CalamityMod.Projectiles.Melee
 
             Texture2D sparkTexture = Request<Texture2D>("CalamityMod/Particles/ThinSparkle").Value;
             Texture2D bloomTexture = Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
-            //Ajust the bloom's texture to be the same size as the star's
+            // Adjust the bloom's texture to be the same size as the star's
             float properBloomSize = (float)sparkTexture.Width / (float)bloomTexture.Height;
 
 
@@ -95,7 +78,7 @@ namespace CalamityMod.Projectiles.Melee
             Main.EntitySpriteDraw(bloomTexture, DashEnd - Main.screenPosition, null, Color.CornflowerBlue * bump * 0.5f, 0, bloomTexture.Size() / 2f, bump * 6f * properBloomSize, SpriteEffects.None, 0);
             Main.EntitySpriteDraw(sparkTexture, DashEnd - Main.screenPosition, frame, Color.Lerp(Color.White, Color.CornflowerBlue, raise) * bump, raise * MathHelper.TwoPi, frame.Size() / 2f, bump * 3f, SpriteEffects.None, 0);
 
-            //Back to normal
+            // Back to normal
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
             return false;

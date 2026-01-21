@@ -1,14 +1,15 @@
-﻿using CalamityMod.Schematics;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.Schematics;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Astral;
+using CalamityMod.Tiles.FurnitureMonolith;
 using CalamityMod.Tiles.AstralDesert;
 using CalamityMod.Tiles.AstralSnow;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.Walls;
+using CalamityMod.Walls.UnsafeWalls;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -75,7 +76,7 @@ namespace CalamityMod.World
 
         public static void PlaceAstralMeteor()
         {
-            Mod ancientsAwakened = CalamityMod.Instance.ancientsAwakened;
+            Mod ancientsAwakened = ExternalMods.ancientsAwakened;
 
             // This flag is also used to determine whether players are nearby.
             bool meteorDropped = true;
@@ -83,13 +84,10 @@ namespace CalamityMod.World
             // Clients in multiplayer don't drop meteors.
             if (Main.netMode == NetmodeID.MultiplayerClient)
                 return;
-            for (int i = 0; i < 255; i++)
+            foreach (Player _ in Main.ActivePlayers)
             {
-                if (Main.player[i].active)
-                {
-                    meteorDropped = false;
-                    break;
-                }
+                meteorDropped = false;
+                break;
             }
 
             // Check whether there is already too much ore.
@@ -119,7 +117,11 @@ namespace CalamityMod.World
                     "Depthice",
                 };
                 foreach (string tileName in aaTileNames)
-                    aaTilesToAvoid.Add(ancientsAwakened.Find<ModTile>(tileName).Type);
+                {
+                    //Defensive coding
+                    if (ancientsAwakened.TryFind(tileName, out ModTile value))
+                        aaTilesToAvoid.Add(value.Type);
+                }
             }
 
             while (!meteorDropped)
@@ -137,7 +139,7 @@ namespace CalamityMod.World
                 while (y < Main.maxTilesY)
                 {
                     //check to place the astral meteor on valid tiles, place automatically on ebonstone walls, and avoid platforms
-                    if (((Main.tile[x, y].HasTile && Main.tileSolid[(int)Main.tile[x, y].TileType]) || Main.tile[x, y].WallType == 3) && !TileID.Sets.Platforms[Main.tile[x, y].TileType])
+                    if (((Main.tile[x, y].HasTile && Main.tileSolid[(int)Main.tile[x, y].TileType]) || Main.tile[x, y].WallType == WallID.EbonstoneUnsafe) && !TileID.Sets.Platforms[Main.tile[x, y].TileType])
                     {
                         int suitableTiles = 0;
                         int checkRadius = 15;
@@ -197,7 +199,7 @@ namespace CalamityMod.World
                             string key = "Mods.CalamityMod.Status.Progression.AstralText";
                             Color messageColor = Color.Gold;
 
-                            CalamityUtils.DisplayLocalizedText(key, messageColor);
+                            CalamityUtils.BroadcastLocalizedText(key, messageColor);
                             break;
                         }
                         break;
@@ -221,15 +223,27 @@ namespace CalamityMod.World
             // Pre-cache a list of Magic Storage tiles to avoid, for performance reasons
             // It is plausible that only StorageComponent and StorageConnector are needed, but I aint gonna risk corrupting worlds
             // or crashes as containers can do some serious shit as seen with the Abyss chests - Shade
-            Mod magicStorage = CalamityMod.Instance.magicStorage;
+            Mod magicStorage = ExternalMods.magicStorage;
             IList<ushort> MSTilesToAvoid = new List<ushort>(16);
             if (magicStorage is not null)
             {
+                //yes I added the combined stations and fake altars due to them having tiles (despite no one actually placing em since MS Crafting UI exists)
+                //also thank fuck MS makes all Storage Units the same tile cuz otherwise the list would be massive
+                //decrafter may or may not exist by the time I added the new tiles, saw it while snooping around the MS github repo
+                //Idk what the TE tiles are for and they dont seem to have a tile
                 string[] MSTileNames = new string[]
                 {
+                    "CombinedFurnitureStations1Tile",
+                    "CombinedFurnitureStations2Tile",
+                    "CombinedStations1Tile",
+                    "CombinedStations2Tile",
+                    "CombinedStations3Tile",
+                    "CombinedStations4Tile",
                     "CraftingAccess",
                     "CreativeStorageUnit",
+                    "DecraftingAccess",
                     "EnvironmentAccess",
+                    "EvilAltarTile",
                     "RemoteAccess",
                     "StorageAccess",
                     "StorageComponent",
@@ -238,7 +252,11 @@ namespace CalamityMod.World
                     "StorageUnit",
                 };
                 foreach (string tileName in MSTileNames)
-                    MSTilesToAvoid.Add(magicStorage.Find<ModTile>(tileName).Type);
+                {
+                    //Defensive coding
+                    if (magicStorage.TryFind(tileName, out ModTile value))
+                        MSTilesToAvoid.Add(value.Type);
+                }
             }
 
             UnifiedRandom rand = WorldGen.genRand;
@@ -257,11 +275,11 @@ namespace CalamityMod.World
             }
             int avoidRectangleSize = 35;
             Rectangle rectangle = new Rectangle((i - avoidRectangleSize) * 16, (j - avoidRectangleSize) * 16, avoidRectangleSize * 2 * 16, avoidRectangleSize * 2 * 16);
-            for (int k = 0; k < Main.maxPlayers; k++)
+            foreach (Player player in Main.ActivePlayers)
             {
-                if (Main.player[k].active)
+                if (player.active)
                 {
-                    Rectangle value = new Rectangle((int)(Main.player[k].position.X + (float)(Main.player[k].width / 2) - (float)(NPC.sWidth / 2) - (float)NPC.safeRangeX), (int)(Main.player[k].position.Y + (float)(Main.player[k].height / 2) - (float)(NPC.sHeight / 2) - (float)NPC.safeRangeY), NPC.sWidth + NPC.safeRangeX * 2, NPC.sHeight + NPC.safeRangeY * 2);
+                    Rectangle value = new Rectangle((int)(player.position.X + (float)(player.width / 2) - (float)(NPC.sWidth / 2) - (float)NPC.safeRangeX), (int)(player.position.Y + (float)(player.height / 2) - (float)(NPC.sHeight / 2) - (float)NPC.safeRangeY), NPC.sWidth + NPC.safeRangeX * 2, NPC.sHeight + NPC.safeRangeY * 2);
                     if (rectangle.Intersects(value))
                     {
                         return false;
@@ -283,7 +301,7 @@ namespace CalamityMod.World
             {
                 for (int n = j - avoidRectangleSize; n < j + avoidRectangleSize; n++)
                 {
-                    if (Main.tile[m, n].HasTile && Main.tile[m, n].TileType == 21)
+                    if (Main.tile[m, n].HasTile && Main.tile[m, n].TileType == TileID.Containers)
                     {
                         return false;
                     }
@@ -343,7 +361,7 @@ namespace CalamityMod.World
                     {
                         if ((double)tileDistance3 < (double)avoidRectangleSize * 0.7)
                         {
-                            if (Main.tile[inc3, doubleinc3].TileType == 5 || Main.tile[inc3, doubleinc3].TileType == 32 || Main.tile[inc3, doubleinc3].TileType == 352)
+                            if (Main.tile[inc3, doubleinc3].TileType == TileID.Trees || Main.tile[inc3, doubleinc3].TileType == TileID.CorruptThorns || Main.tile[inc3, doubleinc3].TileType == TileID.CrimsonThorns)
                             {
                                 try
                                 { WorldGen.KillTile(inc3, doubleinc3, false, false, true); }
@@ -382,7 +400,7 @@ namespace CalamityMod.World
                         {
                             if (Main.tile[inc4, doubleinc4] != null)
                             {
-                                if (Main.tile[inc4, doubleinc4].TileType == 5 || Main.tile[inc4, doubleinc4].TileType == 32 || Main.tile[inc4, doubleinc4].TileType == 352)
+                                if (Main.tile[inc4, doubleinc4].TileType == TileID.Trees || Main.tile[inc4, doubleinc4].TileType == TileID.CorruptThorns || Main.tile[inc4, doubleinc4].TileType == TileID.CrimsonThorns)
                                 {
                                     WorldGen.KillTile(inc4, doubleinc4, false, false, false);
                                 }
@@ -407,7 +425,7 @@ namespace CalamityMod.World
                         {
                             if (Main.tile[inc5, doubleinc5] != null)
                             {
-                                if (Main.tile[inc5, doubleinc5].TileType == 5 || Main.tile[inc5, doubleinc5].TileType == 32 || Main.tile[inc5, doubleinc5].TileType == 352)
+                                if (Main.tile[inc5, doubleinc5].TileType == TileID.Trees || Main.tile[inc5, doubleinc5].TileType == TileID.CorruptThorns || Main.tile[inc5, doubleinc5].TileType == TileID.CrimsonThorns)
                                 {
                                     WorldGen.KillTile(inc5, doubleinc5, false, false, false);
                                 }
@@ -426,8 +444,8 @@ namespace CalamityMod.World
                 NetMessage.SendTileSquare(-1, i, j, 40, TileChangeType.None);
                 if (CanAstralBiomeSpawn())
                 {
-                    if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active)
-                        SoundEngine.PlaySound(MeteorSound, Main.player[Main.myPlayer].position);
+                    if (!Main.LocalPlayer.dead && Main.LocalPlayer.active)
+                        SoundEngine.PlaySound(MeteorSound, Main.LocalPlayer.position);
 
                     // Immediately prior to mass-converting blocks to Astral, write down the Y position of this event.
                     YStart = j;
@@ -438,31 +456,249 @@ namespace CalamityMod.World
                     if (j < 181)
                         j = 181;
 
-                    int xOffset = GenVars.dungeonX < Main.maxTilesX / 2 ? WorldGen.genRand.Next(-80, -40) : WorldGen.genRand.Next(40, 80);
+                    IList<ushort> AstralTilesToCheckFor = new List<ushort>(16);
+                    int[] AstralTiles = new int[]
+                    {
+                        ModContent.TileType<AstralSand>(),
+                        ModContent.TileType<AstralSandstone>(),
+                        ModContent.TileType<HardenedAstralSand>(),
+                        ModContent.TileType<CelestialRemains>(),
+                        ModContent.TileType<AstralIce>(),
+                        ModContent.TileType<AstralSnow>(),
+                        ModContent.TileType<AstralDirt>(),
+                        ModContent.TileType<AstralStone>(),
+                        ModContent.TileType<AstralGrass>(),
+                        ModContent.TileType<AstralOre>(),
+                        ModContent.TileType<NovaeSlag>(),
+                        ModContent.TileType<AstralClay>(),
+                    };
+                    foreach (int modTile in AstralTiles)
+                        AstralTilesToCheckFor.Add((ushort)modTile);
 
                     bool altarPlaced = false;
+                    int altarX = i + (GenVars.dungeonX < Main.maxTilesX / 2 ? -50 : 50);
+                    int altarY = j - 5;
+
+                    // Variables used for checking both the bottom and top of the potential altar location
+                    int distanceToCheckForAstralTilesX = 40;
+                    int distanceToCheckForAstralTilesY = 10;
+                    int startCheckingX = altarX - 20;
+                    int startCheckingY = altarY + 10;
+                    int startCheckingY2 = altarY - 25;
+
+                    // Variables used for checking the bottom of the potential altar location
+                    int astralTilesRequired = 200;
+                    int emptyTilesRequiredToMove = 200;
+
+                    // Variables used for checking the top of the potential altar location
+                    int emptyTilesRequired = 200;
+
+                    // Whether Magic Storage tiles need to be looked for
+                    bool needsToCheckForMSTiles = magicStorage is not null;
+
+                    // Variables used for checking the entire potential altar location for critical tiles like chests, torches, etc.
+                    int distanceToCheckForCriticalTilesX = 40;
+                    int distanceToCheckForCriticalTilesY = 50;
+
+                    int attempts = 0;
+                    int maxAttempts = 100000;
                     while (!altarPlaced)
                     {
                         WorldGen.gen = true;
 
-                        int x = i + xOffset;
-                        int y = j - 100;
-
-                        while (!WorldGen.SolidTile(x, y) && y <= Main.worldSurface)
+                        // Check if there are enough Astral tiles on the bottom of the altar's gen location
+                        // 400 tiles checked in total
+                        int astralTileCount = 0;
+                        bool enoughAstralTilesOnBottom = false;
+                        for (int astralTileCheckIndexX = startCheckingX; astralTileCheckIndexX < startCheckingX + distanceToCheckForAstralTilesX; astralTileCheckIndexX++)
                         {
-                            y += 5;
+                            if (enoughAstralTilesOnBottom)
+                                break;
+
+                            for (int astralTileCheckIndexY = startCheckingY; astralTileCheckIndexY < startCheckingY + distanceToCheckForAstralTilesY; astralTileCheckIndexY++)
+                            {
+                                if (Main.tile[astralTileCheckIndexX, astralTileCheckIndexY] != null)
+                                {
+                                    if (Main.tile[astralTileCheckIndexX, astralTileCheckIndexY].HasTile)
+                                    {
+                                        if (AstralTilesToCheckFor.Contains(Main.tile[astralTileCheckIndexX, astralTileCheckIndexY].TileType))
+                                        {
+                                            astralTileCount++;
+                                            if (astralTileCount >= astralTilesRequired)
+                                            {
+                                                enoughAstralTilesOnBottom = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
 
-                        if (Main.tile[x, y].HasTile || Main.tile[x, y].WallType > 0 && (!CalamityUtils.TileActiveAndOfType(x, y, TileID.Torches) ||
-                            !CalamityUtils.TileActiveAndOfType(x, y, TileID.Containers) || !CalamityUtils.TileActiveAndOfType(x, y, TileID.Containers2)
-                            || (magicStorage is not null && MSTilesToAvoid.Contains(Main.tile[x, y].TileType)))) //AVOID HOUSES
+                        // Check if there are too many empty tiles on the bottom of the altar's gen location
+                        // 400 tiles checked in total
+                        int emptyTileCount = 0;
+                        bool tooManyEmptyTilesOnBottom = false;
+                        for (int astralTileCheckIndexX = startCheckingX; astralTileCheckIndexX < startCheckingX + distanceToCheckForAstralTilesX; astralTileCheckIndexX++)
                         {
-                            bool place = true;
-                            SchematicManager.PlaceSchematic<Action<Chest>>(SchematicManager.AstralBeaconKey, new Point(x, y - 5), SchematicAnchor.Center, ref place);
+                            if (tooManyEmptyTilesOnBottom)
+                                break;
+
+                            for (int astralTileCheckIndexY = startCheckingY; astralTileCheckIndexY < startCheckingY + distanceToCheckForAstralTilesY; astralTileCheckIndexY++)
+                            {
+                                if (Main.tile[astralTileCheckIndexX, astralTileCheckIndexY] == null || !Main.tile[astralTileCheckIndexX, astralTileCheckIndexY].HasTile)
+                                {
+                                    emptyTileCount++;
+                                    if (emptyTileCount >= emptyTilesRequiredToMove)
+                                    {
+                                        tooManyEmptyTilesOnBottom = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        // Check for the number of empty tiles on the top of the altar's gen location
+                        // 800 tiles checked in total
+                        int emptyTileCount2 = 0;
+                        bool enoughEmptyTilesOnTop = false;
+                        for (int emptyTileCheckIndexX = startCheckingX; emptyTileCheckIndexX < startCheckingX + distanceToCheckForAstralTilesX; emptyTileCheckIndexX++)
+                        {
+                            if (enoughEmptyTilesOnTop)
+                                break;
+
+                            for (int emptyTileCheckIndexY = startCheckingY2; emptyTileCheckIndexY < startCheckingY2 + distanceToCheckForAstralTilesY; emptyTileCheckIndexY++)
+                            {
+                                if (Main.tile[emptyTileCheckIndexX, emptyTileCheckIndexY] == null || !Main.tile[emptyTileCheckIndexX, emptyTileCheckIndexY].HasTile)
+                                {
+                                    emptyTileCount2++;
+                                    if (emptyTileCount2 >= emptyTilesRequired)
+                                    {
+                                        enoughEmptyTilesOnTop = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        // Check for houses and other critical bullshit
+                        // 2000 tiles checked in total
+                        bool criticalTileDetected = false;
+                        for (int criticalTileCheckIndexX = startCheckingX; criticalTileCheckIndexX < startCheckingX + distanceToCheckForCriticalTilesX; criticalTileCheckIndexX++)
+                        {
+                            if (criticalTileDetected)
+                                break;
+
+                            for (int criticalTileCheckIndexY = startCheckingY2; criticalTileCheckIndexY < startCheckingY2 + distanceToCheckForCriticalTilesY; criticalTileCheckIndexY++)
+                            {
+                                if (Main.tile[criticalTileCheckIndexX, criticalTileCheckIndexY] != null)
+                                {
+                                    if (Main.tile[criticalTileCheckIndexX, criticalTileCheckIndexY].HasTile)
+                                    {
+                                        if (needsToCheckForMSTiles)
+                                        {
+                                            if (TileID.Sets.Clock[Main.tile[criticalTileCheckIndexX, criticalTileCheckIndexY].TileType] ||
+                                                TileID.Sets.Paintings[Main.tile[criticalTileCheckIndexX, criticalTileCheckIndexY].TileType] ||
+                                                TileID.Sets.InteractibleByNPCs[Main.tile[criticalTileCheckIndexX, criticalTileCheckIndexY].TileType] ||
+                                                TileID.Sets.CanBeSleptIn[Main.tile[criticalTileCheckIndexX, criticalTileCheckIndexY].TileType] ||
+                                                TileID.Sets.AvoidedByNPCs[Main.tile[criticalTileCheckIndexX, criticalTileCheckIndexY].TileType] ||
+                                                TileID.Sets.IsAContainer[Main.tile[criticalTileCheckIndexX, criticalTileCheckIndexY].TileType] ||
+                                                MSTilesToAvoid.Contains(Main.tile[criticalTileCheckIndexX, criticalTileCheckIndexY].TileType))
+                                            {
+                                                criticalTileDetected = true;
+                                                break;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (TileID.Sets.Clock[Main.tile[criticalTileCheckIndexX, criticalTileCheckIndexY].TileType] ||
+                                                TileID.Sets.Paintings[Main.tile[criticalTileCheckIndexX, criticalTileCheckIndexY].TileType] ||
+                                                TileID.Sets.InteractibleByNPCs[Main.tile[criticalTileCheckIndexX, criticalTileCheckIndexY].TileType] ||
+                                                TileID.Sets.CanBeSleptIn[Main.tile[criticalTileCheckIndexX, criticalTileCheckIndexY].TileType] ||
+                                                TileID.Sets.AvoidedByNPCs[Main.tile[criticalTileCheckIndexX, criticalTileCheckIndexY].TileType] ||
+                                                TileID.Sets.IsAContainer[Main.tile[criticalTileCheckIndexX, criticalTileCheckIndexY].TileType])
+                                            {
+                                                criticalTileDetected = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        bool canPlaceAltar = enoughAstralTilesOnBottom && !tooManyEmptyTilesOnBottom && enoughEmptyTilesOnTop && !criticalTileDetected;
+
+                        if (canPlaceAltar)
+                        {
+                            SchematicManager.PlaceSchematic<Action<Chest>>(SchematicManager.AstralBeaconKey, new Point(altarX, altarY), SchematicAnchor.Center, ref canPlaceAltar);
 
                             WorldGen.gen = false;
 
                             altarPlaced = true;
+                        }
+
+                        // Move the location if the requirements are not met and check again
+                        else
+                        {
+                            altarX += 5;
+                            if (altarX >= i + 150)
+                                altarX -= 300;
+
+                            if (!enoughEmptyTilesOnTop)
+                                altarY -= 5;
+                            else if (tooManyEmptyTilesOnBottom)
+                                altarY += 5;
+
+                            if (altarY <= Main.worldSurface - 150)
+                                altarY += 150;
+                            else if (altarY >= Main.worldSurface + 150)
+                                altarY -= 150;
+
+                            attempts++;
+                            if (attempts >= maxAttempts)
+                            {
+                                // If all else fails, place the fucking thing anyway, by using the original code :^)
+                                int altarX2 = i;
+                                int altarY2 = j - 50;
+                                bool forcedPlacedAltar = false;
+                                while (!forcedPlacedAltar)
+                                {
+                                    while (!WorldGen.SolidTile(altarX2, altarY2 + 15) && altarY2 + 15 <= Main.worldSurface)
+                                        altarY2 += 5;
+
+                                    bool canPlaceAltar2 = false;
+                                    if (needsToCheckForMSTiles)
+                                    {
+                                        canPlaceAltar2 = !TileID.Sets.Clock[Main.tile[altarX2, altarY2].TileType] &&
+                                            !TileID.Sets.Paintings[Main.tile[altarX2, altarY2].TileType] &&
+                                            !TileID.Sets.InteractibleByNPCs[Main.tile[altarX2, altarY2].TileType] &&
+                                            !TileID.Sets.CanBeSleptIn[Main.tile[altarX2, altarY2].TileType] &&
+                                            !TileID.Sets.AvoidedByNPCs[Main.tile[altarX2, altarY2].TileType] &&
+                                            !TileID.Sets.IsAContainer[Main.tile[altarX2, altarY2].TileType] &&
+                                            !MSTilesToAvoid.Contains(Main.tile[altarX2, altarY2].TileType);
+                                    }
+                                    else
+                                    {
+                                        canPlaceAltar2 = !TileID.Sets.Clock[Main.tile[altarX2, altarY2].TileType] &&
+                                            !TileID.Sets.Paintings[Main.tile[altarX2, altarY2].TileType] &&
+                                            !TileID.Sets.InteractibleByNPCs[Main.tile[altarX2, altarY2].TileType] &&
+                                            !TileID.Sets.CanBeSleptIn[Main.tile[altarX2, altarY2].TileType] &&
+                                            !TileID.Sets.AvoidedByNPCs[Main.tile[altarX2, altarY2].TileType] &&
+                                            !TileID.Sets.IsAContainer[Main.tile[altarX2, altarY2].TileType];
+                                    }
+
+                                    if (canPlaceAltar2)
+                                    {
+                                        SchematicManager.PlaceSchematic<Action<Chest>>(SchematicManager.AstralBeaconKey, new Point(altarX2, altarY2), SchematicAnchor.Center, ref canPlaceAltar2);
+
+                                        WorldGen.gen = false;
+
+                                        forcedPlacedAltar = true;
+                                        altarPlaced = true;
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -538,33 +774,33 @@ namespace CalamityMod.World
 
                 if (Main.tile[x, y] != null)
                 {
-                    if (wallType != WallID.None && wallType != ModContent.WallType<AstralGrassWall>() && wallType != ModContent.WallType<HardenedAstralSandWall>() &&
-                    wallType != ModContent.WallType<AstralSandstoneWall>() && wallType != ModContent.WallType<AstralStoneWall>() &&
-                    wallType != ModContent.WallType<AstralDirtWall>() && wallType != ModContent.WallType<AstralSnowWall>() &&
-                    wallType != ModContent.WallType<CelestialRemainsWall>() && wallType != ModContent.WallType<AstralIceWall>() &&
+                    if (wallType != WallID.None && wallType != ModContent.WallType<UnsafeAstralGrassWall>() && wallType != ModContent.WallType<UnsafeHardenedAstralSandWall>() &&
+                    wallType != ModContent.WallType<UnsafeAstralSandstoneWall>() && wallType != ModContent.WallType<UnsafeAstralStoneWall>() &&
+                    wallType != ModContent.WallType<UnsafeAstralDirtWall>() && wallType != ModContent.WallType<UnsafeAstralSnowWall>() &&
+                    wallType != ModContent.WallType<CelestialRemainsWall>() && wallType != ModContent.WallType<UnsafeAstralIceWall>() &&
                     wallType != ModContent.WallType<AstralMonolithWall>())
                     {
                         if (WallID.Sets.Conversion.Grass[wallType])
                         {
-                            Main.tile[x, y].WallType = (ushort)ModContent.WallType<AstralGrassWall>();
+                            Main.tile[x, y].WallType = (ushort)ModContent.WallType<UnsafeAstralGrassWall>();
                             WorldGen.SquareWallFrame(x, y, true);
                             NetMessage.SendTileSquare(-1, x, y, 1);
                         }
                         else if (WallID.Sets.Conversion.HardenedSand[wallType])
                         {
-                            Main.tile[x, y].WallType = (ushort)ModContent.WallType<HardenedAstralSandWall>();
+                            Main.tile[x, y].WallType = (ushort)ModContent.WallType<UnsafeHardenedAstralSandWall>();
                             WorldGen.SquareWallFrame(x, y, true);
                             NetMessage.SendTileSquare(-1, x, y, 1);
                         }
                         else if (WallID.Sets.Conversion.Sandstone[wallType])
                         {
-                            Main.tile[x, y].WallType = (ushort)ModContent.WallType<AstralSandstoneWall>();
+                            Main.tile[x, y].WallType = (ushort)ModContent.WallType<UnsafeAstralSandstoneWall>();
                             WorldGen.SquareWallFrame(x, y, true);
                             NetMessage.SendTileSquare(-1, x, y, 1);
                         }
                         else if (WallID.Sets.Conversion.Stone[wallType])
                         {
-                            Main.tile[x, y].WallType = (ushort)ModContent.WallType<AstralStoneWall>();
+                            Main.tile[x, y].WallType = (ushort)ModContent.WallType<UnsafeAstralStoneWall>();
                             WorldGen.SquareWallFrame(x, y, true);
                             NetMessage.SendTileSquare(-1, x, y, 1);
                         }
@@ -579,12 +815,12 @@ namespace CalamityMod.World
                                 case WallID.DirtUnsafe4:
                                 case WallID.Cave6Unsafe:
                                 case WallID.Dirt:
-                                    Main.tile[x, y].WallType = (ushort)ModContent.WallType<AstralDirtWall>();
+                                    Main.tile[x, y].WallType = (ushort)ModContent.WallType<UnsafeAstralDirtWall>();
                                     WorldGen.SquareWallFrame(x, y, true);
                                     NetMessage.SendTileSquare(-1, x, y, 1);
                                     break;
                                 case WallID.SnowWallUnsafe:
-                                    Main.tile[x, y].WallType = (ushort)ModContent.WallType<AstralSnowWall>();
+                                    Main.tile[x, y].WallType = (ushort)ModContent.WallType<UnsafeAstralSnowWall>();
                                     WorldGen.SquareWallFrame(x, y, true);
                                     NetMessage.SendTileSquare(-1, x, y, 1);
                                     break;
@@ -594,7 +830,7 @@ namespace CalamityMod.World
                                     NetMessage.SendTileSquare(-1, x, y, 1);
                                     break;
                                 case WallID.IceUnsafe:
-                                    Main.tile[x, y].WallType = (ushort)ModContent.WallType<AstralIceWall>();
+                                    Main.tile[x, y].WallType = (ushort)ModContent.WallType<UnsafeAstralIceWall>();
                                     WorldGen.SquareWallFrame(x, y, true);
                                     NetMessage.SendTileSquare(-1, x, y, 1);
                                     break;
@@ -615,12 +851,14 @@ namespace CalamityMod.World
                     type != ModContent.TileType<AstralClay>() && type != ModContent.TileType<AstralVines>() &&
                     type != ModContent.TileType<AstralMonolith>() && type != ModContent.TileType<AstralOre>() &&
                     type != ModContent.TileType<AstralNormalLargePiles>() && type != ModContent.TileType<AstralIceLargePiles>() &&
-                    type != ModContent.TileType<AstralDesertLargePiles>() && type != ModContent.TileType<AstralDesertMediumPiles>() &&
-                    type != ModContent.TileType<AstralNormalMediumPiles>() && type != ModContent.TileType<AstralIceMediumPiles>() &&
+                    type != ModContent.TileType<AstralDesertLargePiles>() && type != ModContent.TileType<AstralStoneLargePiles>() && 
+                    type != ModContent.TileType<AstralDesertMediumPiles>() && type != ModContent.TileType<AstralNormalMediumPiles>() && 
+                    type != ModContent.TileType<AstralIceMediumPiles>() && type != ModContent.TileType<AstralStoneMediumPiles>() &&
                     type != ModContent.TileType<AstralDesertSmallPiles>() && type != ModContent.TileType<AstralNormalSmallPiles>() &&
-                    type != ModContent.TileType<AstralIceSmallPiles>() && type != ModContent.TileType<AstralDesertStalactite>() &&
-                    type != ModContent.TileType<AstralNormalStalactite>() && type != ModContent.TileType<AstralIceStalactite>() &&
-                    type != ModContent.TileType<AstralDesertStalactite>())
+                    type != ModContent.TileType<AstralIceSmallPiles>() && type != ModContent.TileType<AstralStoneSmallPiles>() &&
+                    type != ModContent.TileType<AstralDesertStalactite>() && type != ModContent.TileType<AstralNormalStalactite>() && 
+                    type != ModContent.TileType<AstralIceStalactite>() && type != ModContent.TileType<AstralDesertStalactite>() && 
+                    type != ModContent.TileType<AstralStoneStalactite>())
                     {
                         if (TileID.Sets.Conversion.Grass[type] && !TileID.Sets.GrassSpecial[type])
                         {
@@ -707,6 +945,7 @@ namespace CalamityMod.World
                                 case TileID.Lead:
                                 case TileID.Tungsten:
                                 case TileID.Platinum:
+                                case TileID.Meteorite:
                                     if (convertOre)
                                     {
                                         Main.tile[x, y].TileType = (ushort)ModContent.TileType<AstralOre>();
@@ -725,8 +964,9 @@ namespace CalamityMod.World
                                 case TileID.LargePiles:
                                     if (tile.TileFrameX <= 1170)
                                     {
-                                        RecursiveReplaceToAstral(TileID.LargePiles, (ushort)ModContent.TileType<AstralNormalLargePiles>(), x, y, 324, 0, 1170, 0, 18);
+                                        RecursiveReplaceToAstral(TileID.LargePiles, (ushort)ModContent.TileType<AstralStoneLargePiles>(), x, y, 324, 0, 1170, 0, 18);
                                     }
+                                    // TODO: Mushroom, replace when Astral Undergrowth is being worked on again
                                     if (tile.TileFrameX >= 1728)
                                     {
                                         RecursiveReplaceToAstral(TileID.LargePiles, (ushort)ModContent.TileType<AstralNormalLargePiles>(), x, y, 324, 1728, 1872, 0, 18);
@@ -754,9 +994,13 @@ namespace CalamityMod.World
                                         {
                                             newType = (ushort)ModContent.TileType<AstralDesertMediumPiles>();
                                         }
-                                        else if (tile.TileFrameX <= 558 || (tile.TileFrameX >= 1368 && tile.TileFrameX <= 1458))
+                                        else if (tile.TileFrameX >= 1368 && tile.TileFrameX <= 1458)
                                         {
                                             newType = (ushort)ModContent.TileType<AstralNormalMediumPiles>();
+                                        }
+                                        else if (tile.TileFrameX <= 558)
+                                        {
+                                            newType = (ushort)ModContent.TileType<AstralStoneMediumPiles>();
                                         }
                                         else if (tile.TileFrameX >= 900 && tile.TileFrameX <= 1098)
                                         {
@@ -798,9 +1042,14 @@ namespace CalamityMod.World
                                         {
                                             newType3 = (ushort)ModContent.TileType<AstralDesertSmallPiles>();
                                         }
-                                        else if (tile.TileFrameX <= 486)
+                                        else if (tile.TileFrameX >= 110 && tile.TileFrameX <= 198)
                                         {
                                             newType3 = (ushort)ModContent.TileType<AstralNormalSmallPiles>();
+                                        }
+                                        // Intentionally encapsulates everything EXCEPT the above range
+                                        else if (tile.TileFrameX <= 486)
+                                        {
+                                            newType3 = (ushort)ModContent.TileType<AstralStoneSmallPiles>();
                                         }
                                         else if (tile.TileFrameX >= 648 && tile.TileFrameX <= 846)
                                         {
@@ -830,7 +1079,7 @@ namespace CalamityMod.World
                                     }
                                     else if ((tile.TileFrameX >= 54 && tile.TileFrameX <= 90) || (tile.TileFrameX >= 216 && tile.TileFrameX <= 360))
                                     {
-                                        newType2 = (ushort)ModContent.TileType<AstralNormalStalactite>();
+                                        newType2 = (ushort)ModContent.TileType<AstralStoneStalactite>();
                                     }
                                     else if (tile.TileFrameX <= 36)
                                     {
@@ -902,281 +1151,6 @@ namespace CalamityMod.World
             }
         }
 
-        public static void ConvertFromAstral(int startX, int endX, int startY, int endY, ConvertType convert)
-        {
-            for (int x = startX; x <= endX; x++)
-            {
-                for (int y = startY; y <= endY; y++)
-                {
-                    ConvertFromAstral(x, y, convert);
-                }
-            }
-        }
-
-        public static void ConvertFromAstral(int x, int y, ConvertType convert, bool tileframe = true)
-        {
-            Tile tile = Main.tile[x, y];
-            int type = tile.TileType;
-            int wallType = tile.WallType;
-
-            if (WorldGen.InWorld(x, y, 1))
-            {
-                #region WALL
-                if (Main.tile[x, y] != null)
-                {
-                    if (wallType == ModContent.WallType<AstralDirtWall>())
-                    {
-                        Main.tile[x, y].WallType = WallID.DirtUnsafe;
-                    }
-                    else if (wallType == ModContent.WallType<AstralSnowWall>() || wallType == ModContent.WallType<AstralSnowWallSafe>())
-                    {
-                        Main.tile[x, y].WallType = WallID.SnowWallUnsafe;
-                    }
-                    else if (wallType == ModContent.WallType<CelestialRemainsWall>())
-                    {
-                        Main.tile[x, y].WallType = WallID.DesertFossil;
-                    }
-                    else if (wallType == ModContent.WallType<AstralGrassWall>())
-                    {
-                        switch (convert)
-                        {
-                            case ConvertType.Corrupt:
-                                Main.tile[x, y].WallType = WallID.CorruptGrassUnsafe;
-                                break;
-                            case ConvertType.Crimson:
-                                Main.tile[x, y].WallType = WallID.CrimsonGrassUnsafe;
-                                break;
-                            case ConvertType.Hallow:
-                                Main.tile[x, y].WallType = WallID.HallowedGrassUnsafe;
-                                break;
-                            case ConvertType.Pure:
-                                Main.tile[x, y].WallType = WallID.GrassUnsafe;
-                                break;
-                        }
-                    }
-                    else if (wallType == ModContent.WallType<AstralIceWall>())
-                    {
-                        Main.tile[x, y].WallType = WallID.IceUnsafe;
-                    }
-                    else if (wallType == ModContent.WallType<AstralMonolithWall>())
-                    {
-                        Main.tile[x, y].WallType = WallID.LivingWood;
-                    }
-                    else if (wallType == ModContent.WallType<AstralStoneWall>())
-                    {
-                        switch (convert)
-                        {
-                            case ConvertType.Corrupt:
-                                Main.tile[x, y].WallType = WallID.EbonstoneUnsafe;
-                                break;
-                            case ConvertType.Crimson:
-                                Main.tile[x, y].WallType = WallID.CrimstoneUnsafe;
-                                break;
-                            case ConvertType.Hallow:
-                                Main.tile[x, y].WallType = WallID.PearlstoneBrickUnsafe;
-                                break;
-                            case ConvertType.Pure:
-                                Main.tile[x, y].WallType = WallID.Stone;
-                                break;
-                        }
-                    }
-                }
-                #endregion
-
-                #region TILE
-                if (Main.tile[x, y] != null)
-                {
-                    if (type == ModContent.TileType<AstralDirt>())
-                    {
-                        tile.TileType = TileID.Dirt;
-                    }
-                    else if (type == ModContent.TileType<AstralSnow>())
-                    {
-                        tile.TileType = TileID.SnowBlock;
-                    }
-                    else if (type == ModContent.TileType<NovaeSlag>())
-                    {
-                        tile.TileType = TileID.Silt;
-                    }
-                    else if (type == ModContent.TileType<CelestialRemains>())
-                    {
-                        tile.TileType = TileID.DesertFossil;
-                    }
-                    else if (type == ModContent.TileType<AstralClay>())
-                    {
-                        tile.TileType = TileID.ClayBlock;
-                    }
-                    else if (type == ModContent.TileType<AstralGrass>())
-                    {
-                        SetTileFromConvert(x, y, convert, TileID.CorruptGrass, TileID.CrimsonGrass, TileID.HallowedGrass, TileID.Grass);
-                    }
-                    else if (type == ModContent.TileType<AstralStone>())
-                    {
-                        SetTileFromConvert(x, y, convert, TileID.Ebonstone, TileID.Crimstone, TileID.Pearlstone, TileID.Stone);
-                    }
-                    else if (type == ModContent.TileType<AstralMonolith>())
-                    {
-                        tile.TileType = TileID.LivingWood;
-                    }
-                    else if (type == ModContent.TileType<AstralSand>())
-                    {
-                        SetTileFromConvert(x, y, convert, TileID.Ebonsand, TileID.Crimsand, TileID.Pearlsand, TileID.Sand);
-                    }
-                    else if (type == ModContent.TileType<AstralSandstone>())
-                    {
-                        SetTileFromConvert(x, y, convert, TileID.CorruptSandstone, TileID.CrimsonSandstone, TileID.HallowSandstone, TileID.Sandstone);
-                    }
-                    else if (type == ModContent.TileType<HardenedAstralSand>())
-                    {
-                        SetTileFromConvert(x, y, convert, TileID.CorruptHardenedSand, TileID.CrimsonHardenedSand, TileID.HallowHardenedSand, TileID.HardenedSand);
-                    }
-                    else if (type == ModContent.TileType<AstralIce>())
-                    {
-                        SetTileFromConvert(x, y, convert, TileID.CorruptIce, TileID.FleshIce, TileID.HallowedIce, TileID.IceBlock);
-                    }
-                    else if (type == ModContent.TileType<AstralVines>())
-                    {
-                        SetTileFromConvert(x, y, convert, ushort.MaxValue, TileID.CrimsonVines, TileID.HallowedVines, TileID.Vines);
-                    }
-                    else if (type == ModContent.TileType<AstralShortPlants>())
-                    {
-                        SetTileFromConvert(x, y, convert, TileID.CorruptPlants, ushort.MaxValue, TileID.HallowedPlants, TileID.Plants);
-                    }
-                    else if (type == ModContent.TileType<AstralTallPlants>())
-                    {
-                        SetTileFromConvert(x, y, convert, ushort.MaxValue, ushort.MaxValue, TileID.HallowedPlants2, TileID.Plants2);
-                    }
-                    else if (type == ModContent.TileType<AstralNormalLargePiles>())
-                    {
-                        RecursiveReplaceFromAstral((ushort)type, TileID.LargePiles, x, y, 378, 0);
-                    }
-                    else if (type == ModContent.TileType<AstralNormalMediumPiles>())
-                    {
-                        RecursiveReplaceFromAstral((ushort)type, TileID.SmallPiles, x, y, 0, 18);
-                    }
-                    else if (type == ModContent.TileType<AstralNormalSmallPiles>())
-                    {
-                        RecursiveReplaceFromAstral((ushort)type, TileID.SmallPiles, x, y, 0, 0);
-                    }
-                    else if (type == ModContent.TileType<AstralDesertLargePiles>())
-                    {
-                        RecursiveReplaceFromAstral((ushort)type, TileID.LargePiles2, x, y, 1566, 0);
-                    }
-                    else if (type == ModContent.TileType<AstralDesertMediumPiles>())
-                    {
-                        RecursiveReplaceFromAstral((ushort)type, TileID.SmallPiles, x, y, 1476, 18);
-                    }
-                    else if (type == ModContent.TileType<AstralDesertSmallPiles>())
-                    {
-                        RecursiveReplaceFromAstral((ushort)type, TileID.SmallPiles, x, y, 972, 0);
-                    }
-                    else if (type == ModContent.TileType<AstralIceLargePiles>())
-                    {
-                        RecursiveReplaceFromAstral((ushort)type, TileID.LargePiles, x, y, 1404, 0);
-                    }
-                    else if (type == ModContent.TileType<AstralIceMediumPiles>())
-                    {
-                        RecursiveReplaceFromAstral((ushort)type, TileID.SmallPiles, x, y, 900, 18);
-                    }
-                    else if (type == ModContent.TileType<AstralIceSmallPiles>())
-                    {
-                        RecursiveReplaceFromAstral((ushort)type, TileID.SmallPiles, x, y, 648, 0);
-                    }
-                    else if (type == ModContent.TileType<AstralNormalStalactite>())
-                    {
-                        ushort originType = TileID.Stone;
-                        switch (convert)
-                        {
-                            case ConvertType.Corrupt:
-                                originType = TileID.Ebonstone;
-                                break;
-                            case ConvertType.Crimson:
-                                originType = TileID.Crimstone;
-                                break;
-                            case ConvertType.Hallow:
-                                originType = TileID.Pearlstone;
-                                break;
-                        }
-                        ReplaceAstralStalactite(TileID.Stalactite, originType, x, y);
-                    }
-                    else if (type == ModContent.TileType<AstralDesertStalactite>())
-                    {
-                        ushort originType = TileID.Sandstone;
-                        switch (convert)
-                        {
-                            case ConvertType.Corrupt:
-                                originType = TileID.CorruptSandstone;
-                                break;
-                            case ConvertType.Crimson:
-                                originType = TileID.CrimsonSandstone;
-                                break;
-                            case ConvertType.Hallow:
-                                originType = TileID.HallowSandstone;
-                                break;
-                        }
-                        ReplaceAstralStalactite(TileID.Stalactite, originType, x, y);
-                    }
-                    else if (type == ModContent.TileType<AstralIceStalactite>())
-                    {
-                        ReplaceAstralStalactite(TileID.Stalactite, TileID.IceBlock, x, y);
-                    }
-
-                    if (TileID.Sets.Conversion.Grass[type] || type == TileID.Dirt)
-                    {
-                        WorldGen.SquareTileFrame(x, y);
-                    }
-                }
-                #endregion
-
-                if (tileframe)
-                {
-                    if (Main.netMode == NetmodeID.SinglePlayer)
-                    {
-                        WorldGen.SquareTileFrame(x, y, true);
-                    }
-                    else if (Main.netMode == NetmodeID.Server)
-                    {
-                        NetMessage.SendTileSquare(-1, x, y, 1);
-                    }
-                }
-            }
-        }
-
-        public static void SetTileFromConvert(int x, int y, ConvertType convert, ushort corrupt, ushort crimson, ushort hallow, ushort pure)
-        {
-            switch (convert)
-            {
-                case ConvertType.Corrupt:
-                    if (corrupt != ushort.MaxValue)
-                    {
-                        Main.tile[x, y].TileType = corrupt;
-                        WorldGen.SquareTileFrame(x, y);
-                    }
-                    break;
-                case ConvertType.Crimson:
-                    if (crimson != ushort.MaxValue)
-                    {
-                        Main.tile[x, y].TileType = crimson;
-                        WorldGen.SquareTileFrame(x, y);
-                    }
-                    break;
-                case ConvertType.Hallow:
-                    if (hallow != ushort.MaxValue)
-                    {
-                        Main.tile[x, y].TileType = hallow;
-                        WorldGen.SquareTileFrame(x, y);
-                    }
-                    break;
-                case ConvertType.Pure:
-                    if (pure != ushort.MaxValue)
-                    {
-                        Main.tile[x, y].TileType = pure;
-                        WorldGen.SquareTileFrame(x, y);
-                    }
-                    break;
-            }
-        }
-
         public static void RecursiveReplaceToAstral(ushort checkType, ushort replaceType, int x, int y, int replaceTextureWidth, int minFrameX = 0, int maxFrameX = int.MaxValue, int minFrameY = 0, int maxFrameY = int.MaxValue)
         {
             Tile tile = Main.tile[x, y];
@@ -1197,26 +1171,6 @@ namespace CalamityMod.World
                 RecursiveReplaceToAstral(checkType, replaceType, x, y - 1, replaceTextureWidth, minFrameX, maxFrameX, minFrameY, maxFrameY);
             if (Main.tile[x, y + 1] != null)
                 RecursiveReplaceToAstral(checkType, replaceType, x, y + 1, replaceTextureWidth, minFrameX, maxFrameX, minFrameY, maxFrameY);
-        }
-
-        public static void RecursiveReplaceFromAstral(ushort checkType, ushort replaceType, int x, int y, int addFrameX, int addFrameY)
-        {
-            Tile tile = Main.tile[x, y];
-            if (tile == null || !tile.HasTile || tile.TileType != checkType)
-                return;
-
-            Main.tile[x, y].TileType = replaceType;
-            Main.tile[x, y].TileFrameX += (short)addFrameX;
-            Main.tile[x, y].TileFrameY += (short)addFrameY;
-
-            if (Main.tile[x - 1, y] != null)
-                RecursiveReplaceFromAstral(checkType, replaceType, x - 1, y, addFrameX, addFrameY);
-            if (Main.tile[x + 1, y] != null)
-                RecursiveReplaceFromAstral(checkType, replaceType, x + 1, y, addFrameX, addFrameY);
-            if (Main.tile[x, y - 1] != null)
-                RecursiveReplaceFromAstral(checkType, replaceType, x, y - 1, addFrameX, addFrameY);
-            if (Main.tile[x, y + 1] != null)
-                RecursiveReplaceFromAstral(checkType, replaceType, x, y + 1, addFrameX, addFrameY);
         }
 
         public static void ReplaceAstralStalactite(ushort replaceType, ushort replaceOriginTile, int x, int y)

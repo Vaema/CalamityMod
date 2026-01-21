@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
@@ -15,10 +16,11 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
     public class WulfrumToilet : ModTile
     {
         public const int NextStyleHeight = 40;
+
+        public Asset<Texture2D> GlowTexture;
+
         public override void SetStaticDefaults()
         {
-            RegisterItemDrop(ModContent.ItemType<Items.Placeables.FurnitureWulfrum.WulfrumToilet>());
-
             Main.tileFrameImportant[Type] = true;
             Main.tileLavaDeath[Type] = false;
             Main.tileWaterDeath[Type] = false;
@@ -29,6 +31,7 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
             TileObjectData.newTile.CoordinatePadding = 2;
             TileObjectData.newTile.Direction = TileObjectDirection.PlaceLeft;
             TileObjectData.newTile.StyleHorizontal = true;
+            TileObjectData.newTile.StyleMultiplier = 2;
             TileObjectData.newTile.Origin = new Point16(1, 1);
             TileObjectData.newTile.UsesCustomCanPlace = true;
             TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop, 2, 0);
@@ -51,7 +54,7 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 107, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.TerraBlade, 0f, 0f, 1, new Color(255, 255, 255), 1f);
             return false;
         }
 
@@ -62,9 +65,15 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
+            if (Main.tile[i, j].IsTileActuallyInvisible())
+                return;
+
             int xFrameOffset = Main.tile[i, j].TileFrameX;
             int yFrameOffset = Main.tile[i, j].TileFrameY;
-            Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureWulfrum/WulfrumToiletGlow").Value;
+
+            GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureWulfrum/WulfrumToiletGlow");
+            Texture2D glowmask = GlowTexture.Value;
+
             Vector2 drawOffest = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawPosition = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + drawOffest;
             Color drawColour = Color.White;
@@ -75,11 +84,11 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
                 spriteBatch.Draw(glowmask, drawPosition + new Vector2(0f, 8f), new Rectangle(xFrameOffset, yFrameOffset, 18, 8), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
         }
 
-        public override void ModifySittingTargetInfo(int i, int j, ref TileRestingInfo info) => CalamityUtils.ChairSitInfo(i, j, ref info, NextStyleHeight, true, shitter: true);
+        public override void ModifySittingTargetInfo(int i, int j, ref TileRestingInfo info) => FurnitureCommon.ChairSitInfo(i, j, ref info, NextStyleHeight, true, shitter: true);
 
-        public override bool RightClick(int i, int j) => CalamityUtils.ChairRightClick(i, j);
+        public override bool RightClick(int i, int j) => FurnitureCommon.ChairRightClick(i, j);
 
-        public override void MouseOver(int i, int j) => CalamityUtils.ChairMouseOver(i, j, ModContent.ItemType<Items.Placeables.FurnitureWulfrum.WulfrumToilet>(), true);
+        public override void MouseOver(int i, int j) => FurnitureCommon.ChairMouseOver(i, j, ModContent.ItemType<Items.Placeables.FurnitureWulfrum.WulfrumToilet>(), true);
 
         public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings)
         {

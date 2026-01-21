@@ -1,21 +1,21 @@
-﻿using CalamityMod.CalPlayer;
+﻿using CalamityMod.Buffs.StatBuffs;
+using CalamityMod.CalPlayer;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
-using CalamityMod.Buffs.StatBuffs;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
     public class TrinketofChi : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
-        internal const int ChiBuffTimerMax = 300;
+        internal const int ChiBuffTimerMax = 600;
 
         public override void SetDefaults()
         {
             Item.width = 34;
             Item.height = 32;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.accessory = true;
         }

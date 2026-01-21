@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Rogue
 {
     public class EGloveSpark : ModProjectile, ILocalizedModType
@@ -50,7 +52,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.velocity.Y = Projectile.velocity.Y + 0.2f;
             }
             Projectile.rotation += Projectile.velocity.X * 0.1f;
-            int sparky = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 206, 0f, 0f, 100, new Color(Main.rand.Next(20, 100), 204, 250), 1f);
+            int sparky = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedWhiteBluePurple, 0f, 0f, 100, new Color(Main.rand.Next(20, 100), 204, 250), 1f);
             Dust expr_8976_cp_0 = Main.dust[sparky];
             expr_8976_cp_0.position.X -= 2f;
             Dust expr_8994_cp_0 = Main.dust[sparky];
@@ -61,7 +63,7 @@ namespace CalamityMod.Projectiles.Rogue
             expr_89E7_cp_0.velocity.Y -= 2f;
             if (Main.rand.NextBool())
             {
-                int sparky2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 206, 0f, 0f, 100, new Color(Main.rand.Next(20, 100), 204, 250), 1f);
+                int sparky2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedWhiteBluePurple, 0f, 0f, 100, new Color(Main.rand.Next(20, 100), 204, 250), 1f);
                 Dust expr_8A4E_cp_0 = Main.dust[sparky2];
                 expr_8A4E_cp_0.position.X -= 2f;
                 Dust expr_8A6C_cp_0 = Main.dust[sparky2];

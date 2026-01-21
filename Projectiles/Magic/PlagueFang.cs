@@ -1,10 +1,9 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -26,7 +25,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void AI()
         {
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             if (Projectile.alpha > 0)
             {
                 Projectile.alpha -= 50;
@@ -37,12 +36,12 @@ namespace CalamityMod.Projectiles.Magic
             }
             if (Projectile.alpha == 0)
             {
-                int plagued = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 163, Projectile.velocity.X, Projectile.velocity.Y, 100, default, 1f);
+                int plagued = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.PoisonStaff, Projectile.velocity.X, Projectile.velocity.Y, 100, default, 1f);
                 Main.dust[plagued].noGravity = true;
                 Main.dust[plagued].velocity *= 0.6f;
                 Main.dust[plagued].velocity -= Projectile.velocity * 0.4f;
 
-                int venomed = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 205, Projectile.velocity.X, Projectile.velocity.Y, 100, default, 1f);
+                int venomed = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.VenomStaff, Projectile.velocity.X, Projectile.velocity.Y, 100, default, 1f);
                 Main.dust[venomed].noGravity = true;
                 Main.dust[venomed].velocity *= 0.2f;
                 Main.dust[venomed].velocity -= Projectile.velocity * 0.4f;
@@ -60,15 +59,15 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Dig, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Dig, Projectile.Center);
             for (int i = 0; i < 7; i++)
             {
-                int killPlague = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 163, 0f, 0f, 100, default, 1f);
+                int killPlague = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.PoisonStaff, 0f, 0f, 100, default, 1f);
                 Main.dust[killPlague].noGravity = true;
                 Main.dust[killPlague].velocity *= 1.2f;
                 Main.dust[killPlague].velocity -= Projectile.oldVelocity * 0.3f;
 
-                int killVenom = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 205, 0f, 0f, 100, default, 1f);
+                int killVenom = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.VenomStaff, 0f, 0f, 100, default, 1f);
                 Dust dust = Main.dust[killVenom];
                 dust.noGravity = true;
                 dust.velocity *= 1.2f;
@@ -78,7 +77,10 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<Plague>(), 180);
+            //Doze - I gave this long debuff infliction times due to the lack of weapons that inflict debuffs for a decent time
+            //Most common vanilla debuffs have a way to inflict them for 15, 20, or even 30 seconds
+            //Poison and Venom staff in vanilla do 30 seconds, so this should too as it's a spiritual successor to them.
+            target.AddBuff(ModContent.BuffType<Plague>(), CalamityUtils.SecondsToFrames(30));
         }
     }
 }

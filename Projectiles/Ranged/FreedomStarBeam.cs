@@ -1,7 +1,7 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.IO;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Enums;
@@ -130,7 +130,7 @@ namespace CalamityMod.Projectiles.Ranged
             ProduceBeamDust(beamColor);
 
             // If the game is rendering (i.e. isn't a dedicated server), make the beam disturb water.
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 WaterShaderData wsd = (WaterShaderData)Filters.Scene["WaterDistortion"].GetShader();
 
@@ -203,7 +203,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (Projectile.velocity == Vector2.Zero)
                 return false;
 
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             float beamLength = Projectile.ai[0];
             Vector2 centerFloored = Projectile.Center.Floor() + Projectile.velocity * Projectile.scale * BeamRenderTileOffset;
             Vector2 scaleVec = new Vector2(Projectile.scale);

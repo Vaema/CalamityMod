@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.DataStructures;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -17,6 +18,7 @@ namespace CalamityMod.Buffs.DamageOverTime
             Main.pvpBuff[Type] = true;
             Main.buffNoSave[Type] = true;
             BuffID.Sets.LongerExpertDebuff[Type] = true;
+            BuffDatasets.DebuffDataset[Type] = DebuffData.Shadowflame;
         }
 
         public override void Update(Player player, ref int buffIndex)
@@ -30,15 +32,15 @@ namespace CalamityMod.Buffs.DamageOverTime
 
             if (Main.rand.Next(5) < 4)
             {
-                int dust = Dust.NewDust(drawInfo.Position - new Vector2(2f), Player.width + 4, Player.height + 4, 27, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 1.1f);
-                Main.dust[dust].noGravity = true;
-                Main.dust[dust].velocity *= 0.75f;
-                Main.dust[dust].velocity.X = Main.dust[dust].velocity.X * 0.75f;
-                Main.dust[dust].velocity.Y = Main.dust[dust].velocity.Y - 3f;
+                Dust flame = Dust.NewDustDirect(drawInfo.Position - new Vector2(2f), Player.width + 4, Player.height + 4, DustID.Shadowflame, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 1.1f);
+                flame.noGravity = true;
+                flame.velocity *= 0.75f;
+                flame.velocity.X *= 0.75f;
+                flame.velocity.Y -= 3f;
                 if (Main.rand.NextBool(4))
                 {
-                    Main.dust[dust].noGravity = false;
-                    Main.dust[dust].scale *= 0.3f;
+                    flame.noGravity = false;
+                    flame.scale *= 0.3f;
                 }
             }
         }

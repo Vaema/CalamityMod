@@ -1,13 +1,9 @@
-﻿using CalamityMod.CustomRecipes;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
-using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Rarities;
+using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -19,8 +15,6 @@ namespace CalamityMod.Items.Weapons.Rogue
     {
         public override void SetDefaults()
         {
-            CalamityGlobalItem modItem = Item.Calamity();
-
             Item.width = 30;
             Item.height = 34;
             Item.damage = 2850;
@@ -31,9 +25,10 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useTurn = false;
             Item.knockBack = 3f;
 
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
 
+            Item.noMelee = true;
             Item.noUseGraphic = true;
 
             Item.UseSound = SoundID.Item1;
@@ -41,13 +36,9 @@ namespace CalamityMod.Items.Weapons.Rogue
 
             Item.shoot = ModContent.ProjectileType<DynamicPursuerProjectile>();
             Item.shootSpeed = 17f;
-
-            modItem.UsesCharge = true;
-            modItem.MaxCharge = 300f; // Tesla Cannon = 250f
-            modItem.ChargePerUse = 0.4f; // Tesla Cannon = 0.9f
         }
         public static float StealthDmgMult = 0.3f; //So I can edit it directly via DragonLens instead of having to do math with CalTestHelpers
-		public override float StealthDamageMultiplier => StealthDmgMult;
+        public override float StealthDamageMultiplier => StealthDmgMult;
         public override float StealthVelocityMultiplier => 0.8f;
 
         //Stuff to be used on the projectile, but here for ease of access ingame via DragonLens
@@ -71,8 +62,8 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<Eradicator>().
-                AddIngredient<TrackingDisk>().
+                AddIngredient<DimensionTearingDisk>().
+                AddIngredient<AerialTracker>().
                 AddIngredient<AuricBar>(5).
                 AddTile<CosmicAnvil>().
                 Register();

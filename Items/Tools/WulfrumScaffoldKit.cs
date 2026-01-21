@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 
@@ -20,12 +21,13 @@ namespace CalamityMod.Items.Tools
         public static int TileTime = 6 * 60;
         public static int TileReach = 40;
         public static int PlacedTileType => ModContent.TileType<WulfrumPipes>();
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(TilesPerScrap);
 
         public override void SetDefaults()
         {
             Item.width = 52;
             Item.height = 42;
-            Item.useTime = Item.useAnimation = 25;
+            Item.useAnimation = Item.useTime = 25;
             Item.autoReuse = false;
             Item.noUseGraphic = true;
             Item.useStyle = ItemUseStyleID.HiddenAnimation;
@@ -33,16 +35,16 @@ namespace CalamityMod.Items.Tools
             Item.noMelee = true;
             Item.channel = true;
             Item.rare = ItemRarityID.Blue;
-            Item.value = Item.buyPrice(silver: 50);
+            Item.value = Item.sellPrice(silver: 10);
             storedScrap = 0;
             Item.shoot = ModContent.ProjectileType<WulfrumScaffoldKitHoldout>();
             TileTime = 6 * 60;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ToolsOther;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ToolsOther;
+        }
 
         public override void HoldItem(Player player)
         {

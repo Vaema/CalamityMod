@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
@@ -12,7 +13,9 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class Onyxia : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
-        const int NotConsumeAmmo = 50;
+
+        public static int AmmoSavedPercent = 50;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
 
         public override void SetDefaults()
         {
@@ -20,24 +23,20 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.height = 34;
             Item.damage = 90;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = Item.useAnimation = 10;
+            Item.useAnimation = Item.useTime = 10;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 4.5f;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.UseSound = SoundID.Item36;
             Item.autoReuse = true;
             Item.shoot = ProjectileID.BlackBolt;
             Item.shootSpeed = 28f;
             Item.useAmmo = AmmoID.Bullet;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
-        public override Vector2? HoldoutOffset()
-        {
-            return new Vector2(-11, 3);
-        }
+        public override Vector2? HoldoutOffset() => new Vector2(-11, 3);
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
@@ -45,7 +44,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             // The shard deals 145% damage and double knockback
             int shardDamage = (int)(1.45f * damage);
             float shardKB = 2f * knockback;
-            Projectile shard = Projectile.NewProjectileDirect(source, position, velocity, ProjectileID.BlackBolt, shardDamage, shardKB, player.whoAmI, 0f, 0f);
+            Projectile shard = Projectile.NewProjectileDirect(source, position, velocity, ProjectileID.BlackBolt, shardDamage, shardKB, player.whoAmI);
             shard.timeLeft = (int)(shard.timeLeft * 1.4f);
 
             // Fire three symmetric pairs of bullets alongside it
@@ -55,18 +54,13 @@ namespace CalamityMod.Items.Weapons.Ranged
                 float randVelMultiplier = Main.rand.NextFloat(0.92f, 1.08f);
                 Vector2 ccwVelocity = velocity.RotatedBy(-randAngle) * randVelMultiplier;
                 Vector2 cwVelocity = velocity.RotatedBy(randAngle) * randVelMultiplier;
-                Projectile.NewProjectile(source, position, ccwVelocity, type, damage, knockback, player.whoAmI, 0f, 0f);
-                Projectile.NewProjectile(source, position, cwVelocity, type, damage, knockback, player.whoAmI, 0f, 0f);
+                Projectile.NewProjectile(source, position, ccwVelocity, type, damage, knockback, player.whoAmI);
+                Projectile.NewProjectile(source, position, cwVelocity, type, damage, knockback, player.whoAmI);
             }
             return false;
         }
 
-        public override bool CanConsumeAmmo(Item ammo, Player player)
-        {
-            if (Main.rand.Next(0, 100) < NotConsumeAmmo)
-                return false;
-            return true;
-        }
+        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.Next(100) >= AmmoSavedPercent;
 
         public override void AddRecipes()
         {

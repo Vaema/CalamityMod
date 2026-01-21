@@ -1,7 +1,8 @@
+﻿using System;
 using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
@@ -11,6 +12,7 @@ namespace CalamityMod.Projectiles.Magic
         public new string LocalizationCategory => "Projectiles.Magic";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = 2;
@@ -35,13 +37,13 @@ namespace CalamityMod.Projectiles.Magic
             float radius = 4f;
             Vector2 offset = angle.ToRotationVector2() * pulse * radius;
 
-            Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, 264, Vector2.Zero);
+            Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, DustID.PortalBoltTrail, Vector2.Zero);
             dust.color = Eternity.BlueColor;
             dust.scale = 1.4f;
             dust.noLight = true;
             dust.noGravity = true;
 
-            dust = Dust.NewDustPerfect(Projectile.Center - offset, 264, Vector2.Zero);
+            dust = Dust.NewDustPerfect(Projectile.Center - offset, DustID.PortalBoltTrail, Vector2.Zero);
             dust.color = Eternity.PinkColor;
             dust.scale = 1.4f;
             dust.noLight = true;

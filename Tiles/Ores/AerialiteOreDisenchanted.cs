@@ -1,5 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using CalamityMod.Systems;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -9,11 +9,6 @@ namespace CalamityMod.Tiles.Ores
     public class AerialiteOreDisenchanted : ModTile
     {
         private const int AnimationFrameWidth = 234;
-
-        public byte[,] tileAdjacency;
-        public byte[,] secondTileAdjacency;
-        public byte[,] thirdTileAdjacency;
-        public byte[,] fourthTileAdjacency;
 
         public override void SetStaticDefaults()
         {
@@ -35,16 +30,16 @@ namespace CalamityMod.Tiles.Ores
             Main.tileShine2[Type] = false;
 
             TileID.Sets.ChecksForMerge[Type] = true;
-            DustType = 33;
+            DustType = DustID.Water;
             AddMapEntry(new Color(204, 170, 81), CreateMapEntryName());
             MinPick = 110;
             HitSound = SoundID.Tink;
             Main.tileSpelunker[Type] = true;
 
-            TileFraming.SetUpUniversalMerge(Type, TileID.Cloud, out tileAdjacency);
-            TileFraming.SetUpUniversalMerge(Type, TileID.RainCloud, out secondTileAdjacency);
-            TileFraming.SetUpUniversalMerge(Type, TileID.SnowCloud, out thirdTileAdjacency);
-            TileFraming.SetUpUniversalMerge(Type, TileID.Dirt, out fourthTileAdjacency);
+            this.RegisterBlendMergeWith(TileID.Cloud);
+            this.RegisterBlendMergeWith(TileID.RainCloud);
+            this.RegisterBlendMergeWith(TileID.SnowCloud);
+            this.RegisterBlendMergeWith(TileID.Dirt);
         }
         public override void PostSetDefaults()
         {
@@ -61,110 +56,9 @@ namespace CalamityMod.Tiles.Ores
             return false;
         }
 
-        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
-        {
-            TileFraming.GetAdjacencyData(i, j, TileID.Cloud, out tileAdjacency[i, j]);
-            TileFraming.GetAdjacencyData(i, j, TileID.RainCloud, out secondTileAdjacency[i, j]);
-            TileFraming.GetAdjacencyData(i, j, TileID.SnowCloud, out thirdTileAdjacency[i, j]);
-            TileFraming.GetAdjacencyData(i, j, TileID.Dirt, out fourthTileAdjacency[i, j]);
-            return true;
-        }
         public override void AnimateIndividualTile(int type, int i, int j, ref int frameXOffset, ref int frameYOffset)
         {
-            int uniqueAnimationFrameX = 0;
-            int xPos = i % 4;
-            int yPos = j % 4;
-            switch (xPos)
-            {
-                case 0:
-                    switch (yPos)
-                    {
-                        case 0:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 1:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        case 2:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        case 3:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        default:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                    }
-                    break;
-                case 1:
-                    switch (yPos)
-                    {
-                        case 0:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        case 1:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 2:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        case 3:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        default:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                    }
-                    break;
-                case 2:
-                    switch (yPos)
-                    {
-                        case 0:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        case 1:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 2:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        case 3:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        default:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                    }
-                    break;
-                case 3:
-                    switch (yPos)
-                    {
-                        case 0:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        case 1:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        case 2:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 3:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        default:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                    }
-                    break;
-            }
-            frameXOffset = uniqueAnimationFrameX * AnimationFrameWidth;
-        }
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
-        {
-            TileFraming.DrawUniversalMergeFrames(i, j, tileAdjacency, "CalamityMod/Tiles/Merges/CloudMerge");
-            TileFraming.DrawUniversalMergeFrames(i, j, secondTileAdjacency, "CalamityMod/Tiles/Merges/RainCloudMerge");
-            TileFraming.DrawUniversalMergeFrames(i, j, thirdTileAdjacency, "CalamityMod/Tiles/Merges/SnowCloudMerge");
-            TileFraming.DrawUniversalMergeFrames(i, j, fourthTileAdjacency, "CalamityMod/Tiles/Merges/DirtMerge");
+            frameXOffset = AnimationFrameWidth * TileFramingSystem.GetVariation4x4_012_Low0(i, j);
         }
     }
 }

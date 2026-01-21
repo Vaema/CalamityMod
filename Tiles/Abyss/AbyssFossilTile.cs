@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -17,7 +18,7 @@ namespace CalamityMod.Tiles.Abyss
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x2);
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(29, 37, 58), CalamityUtils.GetItemName<AbyssShellFossil>());
-            DustType = 33;
+            DustType = DustID.Water;
             RegisterItemDrop(ModContent.ItemType<AbyssShellFossil>());
             FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<AbyssShellFossil>(), Type, 0);
         }

@@ -1,30 +1,30 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using CalamityMod.Graphics.Primitives;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
     public class ScarletDevilProjectile : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
-        internal PrimitiveTrail TrailDrawer;
         public ref float ShootTimer => ref Projectile.ai[0];
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/ScarletDevil";
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 45;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 45;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 45;
+            ProjectileID.Sets.TrailCacheLength[Type] = 45;
             Projectile.width = 108;
             Projectile.height = 108;
             Projectile.friendly = true;
@@ -44,7 +44,7 @@ namespace CalamityMod.Projectiles.Rogue
             if (!Main.dedServ)
             {
                 for (int i = 0; i < (Projectile.Calamity().stealthStrike && Main.rand.NextBool() ? 2 : 1); i++)
-                    Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 130, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f, 0, new Color(255, 255, 255), 0.85f);
+                    Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Firework_Red, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f, 0, new Color(255, 255, 255), 0.85f);
             }
 
             ShootTimer++;
@@ -126,15 +126,11 @@ namespace CalamityMod.Projectiles.Rogue
             if (!Projectile.Calamity().stealthStrike)
                 return;
 
-            if (!Main.player[Projectile.owner].moonLeech)
-            {
-                // Give on-heal effects from stealth strikes.
-                Main.player[Projectile.owner].statLife += 90;
-                Main.player[Projectile.owner].HealEffect(90);
-            }
-
-            // And spawn a bloom of bullets.
+            // Spawn a bloom of bullets.
             SpawnOnStealthStrikeBullets();
+
+            // Give on-heal effects from stealth strikes.
+            Main.player[Projectile.owner].SpawnLifeStealProjectile(target, Projectile, ProjectileID.VampireHeal, (int)Math.Round(hit.Damage * 0.005), 0.5f);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
@@ -144,25 +140,24 @@ namespace CalamityMod.Projectiles.Rogue
             if (!Projectile.Calamity().stealthStrike)
                 return;
 
-            // Give on-heal effects from stealth strikes.
-            Main.player[Projectile.owner].statLife += 120;
-            Main.player[Projectile.owner].HealEffect(120);
-
-            // And spawn a bloom of bullets.
+            // Spawn a bloom of bullets.
             SpawnOnStealthStrikeBullets();
         }
 
-        internal float WidthFunction(float completionRatio)
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos)
         {
             float widthRatio = Utils.GetLerpValue(0f, 0.1f, completionRatio, true);
             float baseWidth = MathHelper.Lerp(0f, 110f, widthRatio) * MathHelper.Clamp(1f - (float)Math.Pow(completionRatio, 0.4D), 0.37f, 1f);
             return baseWidth;
         }
 
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
+            float colorIncrement = (float)Math.Pow(completionRatio, 1f / 2f);
+            if (colorIncrement is float.NaN)
+                return Color.DarkRed;
             float colorFade = 1f - Utils.GetLerpValue(0.6f, 0.98f, completionRatio, true);
-            Color baseColor = CalamityUtils.MulticolorLerp((float)Math.Pow(completionRatio, 1D / 2D), Color.White, Color.DarkRed, Color.Wheat, Color.IndianRed) * MathHelper.Lerp(0f, 1.4f, colorFade);
+            Color baseColor = CalamityUtils.MulticolorLerp(colorIncrement, Color.White, Color.DarkRed, Color.Wheat, Color.IndianRed) * MathHelper.Lerp(0f, 1.4f, colorFade);
             return Color.Lerp(baseColor, Color.DarkRed, (float)Math.Pow(completionRatio, 3D));
         }
 
@@ -170,18 +165,16 @@ namespace CalamityMod.Projectiles.Rogue
         {
             if (!Projectile.Calamity().stealthStrike)
             {
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], new Color(100, 100, 100));
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], new Color(100, 100, 100));
                 return true;
             }
             else
             {
-                if (TrailDrawer is null)
-                    TrailDrawer = new PrimitiveTrail(WidthFunction, ColorFunction, PrimitiveTrail.RigidPointRetreivalFunction, GameShaders.Misc["CalamityMod:OverpoweredTouhouSpearShader"]);
-
                 GameShaders.Misc["CalamityMod:OverpoweredTouhouSpearShader"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
-                TrailDrawer.Draw(Projectile.oldPos, Projectile.Size * 0.5f - Main.screenPosition + Projectile.velocity.SafeNormalize(Vector2.Zero) * 86f, 60);
+                PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_,_) => Projectile.Size * 0.5f + Projectile.velocity.SafeNormalize(Vector2.Zero) * 86f, false,
+                    shader: GameShaders.Misc["CalamityMod:OverpoweredTouhouSpearShader"]), 60);
 
-                Texture2D spearTexture = ModContent.Request<Texture2D>(Texture).Value;
+                Texture2D spearTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
 
                 for (int i = 0; i < 7; i++)
                 {

@@ -1,5 +1,4 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Dusts;
+﻿using CalamityMod.Dusts;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -11,7 +10,7 @@ namespace CalamityMod.Projectiles.Rogue
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 8;
+            Main.projFrames[Type] = 8;
         }
 
         public override void SetDefaults()
@@ -40,7 +39,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff (BuffID.Poisoned, 120);
+            target.AddBuff(BuffID.Poisoned, 120);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
@@ -52,7 +51,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             for (int i = 0; i < 8; i++)
             {
-                Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.SulfurousSeaAcid);
+                Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid);
             }
         }
     }

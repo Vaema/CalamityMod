@@ -5,7 +5,6 @@ using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Projectiles.Enemy;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -25,9 +24,9 @@ namespace CalamityMod.NPCs.AcidRain
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 8;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
-            NPCID.Sets.TrailCacheLength[NPC.type] = 5;
+            Main.npcFrameCount[Type] = 8;
+            NPCID.Sets.TrailingMode[Type] = 1;
+            NPCID.Sets.TrailCacheLength[Type] = 5;
         }
 
         public override void SetDefaults()
@@ -39,7 +38,6 @@ namespace CalamityMod.NPCs.AcidRain
             NPC.damage = 45;
             NPC.lifeMax = 300;
             NPC.defense = 15;
-            NPC.DR_NERD(0.25f);
 
             if (DownedBossSystem.downedPolterghast)
             {
@@ -49,7 +47,7 @@ namespace CalamityMod.NPCs.AcidRain
             }
 
             NPC.knockBackResist = 0.2f;
-            NPC.value = Item.buyPrice(0, 0, 4, 0);
+            NPC.value = Item.buyPrice(silver: 4);
             NPC.lavaImmune = false;
             NPC.noGravity = true;
             NPC.noTileCollide = false;
@@ -66,9 +64,9 @@ namespace CalamityMod.NPCs.AcidRain
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Trilobite")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Trilobite")
             });
         }
 
@@ -163,9 +161,7 @@ namespace CalamityMod.NPCs.AcidRain
             if (SpikeShootCountdown <= 0f)
             {
                 SoundEngine.PlaySound(SoundID.NPCDeath11, NPC.Center);
-                int projDamage = DownedBossSystem.downedPolterghast ? 35 : DownedBossSystem.downedAquaticScourge ? 29 : 21;
-                if (Main.expertMode)
-                    projDamage = (int)Math.Round(projDamage * 0.8);
+                int projDamage = DownedBossSystem.downedPolterghast ? (Main.masterMode ? 23 : Main.expertMode ? 28 : 35) : DownedBossSystem.downedAquaticScourge ? (Main.masterMode ? 19 : Main.expertMode ? 23 : 29) : (Main.masterMode ? 14 : Main.expertMode ? 17 : 21);
 
                 Vector2 spikeVelocity = -NPC.velocity.RotatedByRandom(0.18f);
                 if (Main.zenithWorld) // more true to the original concept art.
@@ -187,7 +183,7 @@ namespace CalamityMod.NPCs.AcidRain
             {
                 NPC.frameCounter = 0;
                 NPC.frame.Y += frameHeight;
-                if (NPC.frame.Y >= Main.npcFrameCount[NPC.type] * frameHeight)
+                if (NPC.frame.Y >= Main.npcFrameCount[Type] * frameHeight)
                     NPC.frame.Y = 0;
             }
         }
@@ -196,11 +192,11 @@ namespace CalamityMod.NPCs.AcidRain
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("TrilobiteGore").Type, NPC.scale);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("TrilobiteGore2").Type, NPC.scale);
@@ -208,7 +204,7 @@ namespace CalamityMod.NPCs.AcidRain
                 }
                 for (int k = 0; k < 30; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
                 }
             }
         }

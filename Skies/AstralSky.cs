@@ -2,10 +2,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.GameContent;
 using Terraria.Graphics.Effects;
-using Terraria.ID;
 
 namespace CalamityMod.Skies
 {
@@ -16,7 +14,7 @@ namespace CalamityMod.Skies
 
         public override void Deactivate(params object[] args)
         {
-            skyActive = Main.LocalPlayer.Calamity().ZoneAstral && !Main.LocalPlayer.ZoneDungeon && BiomeTileCounterSystem.AstralTiles > 950;
+            skyActive = (Main.LocalPlayer.Calamity().ZoneAstral && !Main.LocalPlayer.ZoneDungeon && BiomeTileCounterSystem.AstralTiles > 950) || Main.LocalPlayer.Calamity().monolithAstralShader > 0;
         }
 
         public override void Reset()
@@ -55,10 +53,10 @@ namespace CalamityMod.Skies
             float whateverTheFuckThisVariableIsSupposedToBe = 3.40282347E+38f;
             if (maxDepth >= whateverTheFuckThisVariableIsSupposedToBe && minDepth < whateverTheFuckThisVariableIsSupposedToBe)
             {
-                spriteBatch.Draw(CalamityMod.AstralSky, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.White * opacity);
+                spriteBatch.Draw(SkyTextureRefs.AstralSky.Value, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.White * opacity);
 
                 // Terraria's conditions.
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     int bgTop = (int)((-Main.screenPosition.Y) / (Main.worldSurface * 16.0 - 600.0) * 200.0);
                     float colorMult = 0.952f * opacity;
@@ -110,13 +108,15 @@ namespace CalamityMod.Skies
 
         public override void Update(GameTime gameTime)
         {
-            if (!Main.LocalPlayer.Calamity().ZoneAstral || Main.gameMenu)
+            if ((!Main.LocalPlayer.Calamity().ZoneAstral && Main.LocalPlayer.Calamity().monolithAstralShader <= 0) || Main.gameMenu)
                 skyActive = false;
 
             if (skyActive && opacity < 1f)
                 opacity += 0.02f;
             else if (!skyActive && opacity > 0f)
                 opacity -= 0.02f;
+
+            Opacity = opacity;
         }
 
         public override float GetCloudAlpha()

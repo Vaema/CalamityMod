@@ -1,17 +1,10 @@
 ﻿using System;
-using System.IO;
-using CalamityMod.DataStructures;
 using CalamityMod.Events;
-using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.Items.Placeables.Ores;
-using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.Utilities;
 
 namespace CalamityMod.NPCs.NormalNPCs
 {
@@ -21,22 +14,20 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
-            NPCID.Sets.NPCBestiaryDrawModifiers bestiaryData = new NPCID.Sets.NPCBestiaryDrawModifiers(0) { Hide = true };
+            Main.npcFrameCount[Type] = 4;
+            NPCID.Sets.NPCBestiaryDrawModifiers bestiaryData = new NPCID.Sets.NPCBestiaryDrawModifiers() { Hide = true };
             NPCID.Sets.NPCBestiaryDrawOffset.Add(Type, bestiaryData);
         }
 
         public override void SetDefaults()
         {
-            NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 60;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.GetNPCDamage();
-            NPC.DR_NERD(0.1f);
             NPC.width = 24;
             NPC.height = 24;
             NPC.defense = 20;
-            NPC.lifeMax = 1000;
+            NPC.lifeMax = 500;
             NPC.knockBackResist = 0.4f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
@@ -55,21 +46,23 @@ namespace CalamityMod.NPCs.NormalNPCs
                 NPC.frame.Y += frameHeight;
                 NPC.frameCounter = 0.0;
             }
-            if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[NPC.type])
+            if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[Type])
                 NPC.frame.Y = 0;
         }
 
         public override void AI()
         {
-            NPC.TargetClosest();
+            // Get a target
+            if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
+                CalamityUtils.CalamityTargeting(NPC, default);
 
             // Emit light
-            Lighting.AddLight((int)((NPC.position.X + (NPC.width / 2)) / 16f), (int)((NPC.position.Y + (NPC.height / 2)) / 16f), 0.2f, 0.4f, 0.1f);
+            Lighting.AddLight(NPC.Center, 0.2f, 0.4f, 0.1f);
 
             // Spore dust
             if (Main.rand.NextBool(10))
             {
-                Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, 44, 0f, 0f, 250, default, 0.4f);
+                Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.JungleSpore, 0f, 0f, 250, default, 0.4f);
                 dust.fadeIn = 0.7f;
             }
 
@@ -92,63 +85,50 @@ namespace CalamityMod.NPCs.NormalNPCs
                 return;
             }
 
+            // If vomited out during Master Mode, maintain velocity until a certain time has passed
+            if (NPC.ai[0] > 0f)
+            {
+                NPC.knockBackResist = 0f;
+
+                NPC.ai[0] -= 1f;
+
+                if (NPC.velocity.Length() < NPC.ai[1])
+                {
+                    NPC.velocity *= 1.01f;
+                    if (NPC.velocity.Length() > NPC.ai[1])
+                    {
+                        NPC.velocity.Normalize();
+                        NPC.velocity *= NPC.ai[1];
+                    }
+                }
+
+                if (NPC.velocity.X > 0f)
+                {
+                    NPC.spriteDirection = 1;
+                    NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X);
+                }
+                if (NPC.velocity.X < 0f)
+                {
+                    NPC.spriteDirection = -1;
+                    NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) + MathHelper.Pi;
+                }
+
+                return;
+            }
+
+            NPC.knockBackResist = 0.4f;
+
             // Velocity and acceleration
-            Vector2 idealVelocity = new Vector2(death ? 12f : 9f, death ? 5f : 3.5f);
-            float accelerationX = death ? 0.2f : 0.15f;
-            float accelerationY = death ? 0.15f : 0.12f;
+            Vector2 idealVelocity = NPC.SafeDirectionTo(Main.player[NPC.target].Center) * (death ? 7f : 5.5f);
+            float acceleration = death ? 0.14f : 0.105f;
 
             if (Main.getGoodWorld)
             {
                 idealVelocity *= 1.2f;
-                accelerationX *= 1.4f;
-                accelerationY *= 1.4f;
+                acceleration *= 1.4f;
             }
 
-            if (NPC.direction == -1 && NPC.velocity.X > -idealVelocity.X)
-            {
-                NPC.velocity.X -= accelerationX;
-                if (NPC.velocity.X > idealVelocity.X)
-                    NPC.velocity.X -= accelerationX;
-                else if (NPC.velocity.X > 0f)
-                    NPC.velocity.X -= accelerationX * 2f;
-
-                if (NPC.velocity.X < -idealVelocity.X)
-                    NPC.velocity.X = -idealVelocity.X;
-            }
-            else if (NPC.direction == 1 && NPC.velocity.X < idealVelocity.X)
-            {
-                NPC.velocity.X += accelerationX;
-                if (NPC.velocity.X < -idealVelocity.X)
-                    NPC.velocity.X += accelerationX;
-                else if (NPC.velocity.X < 0f)
-                    NPC.velocity.X += accelerationX * 2f;
-
-                if (NPC.velocity.X > idealVelocity.X)
-                    NPC.velocity.X = idealVelocity.X;
-            }
-
-            if (NPC.directionY == -1 && (double)NPC.velocity.Y > -idealVelocity.Y)
-            {
-                NPC.velocity.Y -= accelerationY - 0.02f;
-                if ((double)NPC.velocity.Y > idealVelocity.Y)
-                    NPC.velocity.Y -= accelerationY;
-                else if (NPC.velocity.Y > 0f)
-                    NPC.velocity.Y -= accelerationY * 2.5f;
-
-                if ((double)NPC.velocity.Y < -idealVelocity.Y)
-                    NPC.velocity.Y = -idealVelocity.Y;
-            }
-            else if (NPC.directionY == 1 && (double)NPC.velocity.Y < idealVelocity.Y * 0.6f)
-            {
-                NPC.velocity.Y += accelerationY - 0.02f;
-                if ((double)NPC.velocity.Y < -idealVelocity.Y)
-                    NPC.velocity.Y += accelerationY;
-                else if (NPC.velocity.Y < 0f)
-                    NPC.velocity.Y += accelerationY * 2.5f;
-
-                if ((double)NPC.velocity.Y > idealVelocity.Y)
-                    NPC.velocity.Y = idealVelocity.Y;
-            }
+            NPC.SimpleFlyMovement(idealVelocity, acceleration);
 
             if (NPC.wet)
             {
@@ -163,24 +143,21 @@ namespace CalamityMod.NPCs.NormalNPCs
             }
 
             float pushVelocity = 0.5f;
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (var n in Main.ActiveNPCs)
             {
-                if (Main.npc[i].active)
+                if (n.whoAmI != NPC.whoAmI && n.type == NPC.type)
                 {
-                    if (i != NPC.whoAmI && Main.npc[i].type == NPC.type)
+                    if (Vector2.Distance(NPC.Center, n.Center) < 40f * NPC.scale)
                     {
-                        if (Vector2.Distance(NPC.Center, Main.npc[i].Center) < 40f * NPC.scale)
-                        {
-                            if (NPC.position.X < Main.npc[i].position.X)
-                                NPC.velocity.X -= pushVelocity;
-                            else
-                                NPC.velocity.X += pushVelocity;
+                        if (NPC.position.X < n.position.X)
+                            NPC.velocity.X -= pushVelocity;
+                        else
+                            NPC.velocity.X += pushVelocity;
 
-                            if (NPC.position.Y < Main.npc[i].position.Y)
-                                NPC.velocity.Y -= pushVelocity;
-                            else
-                                NPC.velocity.Y += pushVelocity;
-                        }
+                        if (NPC.position.Y < n.position.Y)
+                            NPC.velocity.Y -= pushVelocity;
+                        else
+                            NPC.velocity.Y += pushVelocity;
                     }
                 }
             }
@@ -199,13 +176,8 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Poisoned, 300);
+            NPC.lifeMax = (int)(NPC.lifeMax * balance);
+            NPC.damage = (int)(NPC.damage * 1.15f);
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -213,15 +185,15 @@ namespace CalamityMod.NPCs.NormalNPCs
             if (NPC.life > 0)
             {
                 for (int i = 0; (double)i < hit.Damage / (double)NPC.lifeMax * 100.0; i++)
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 167, hit.HitDirection, -1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Plantera_Green, hit.HitDirection, -1f);
 
                 return;
             }
 
             for (int i = 0; i < 150; i++)
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 167, 2 * hit.HitDirection, -2f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Plantera_Green, 2 * hit.HitDirection, -2f);
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 Gore.NewGore(NPC.GetSource_Death(), new Vector2(NPC.position.X + (float)Main.rand.Next(NPC.width), NPC.position.Y + (float)Main.rand.Next(NPC.height)), NPC.velocity, 388, NPC.scale);
                 Gore.NewGore(NPC.GetSource_Death(), new Vector2(NPC.position.X + (float)Main.rand.Next(NPC.width), NPC.position.Y + (float)Main.rand.Next(NPC.height)), NPC.velocity, 389, NPC.scale);

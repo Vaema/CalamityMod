@@ -15,11 +15,12 @@ namespace CalamityMod.Projectiles.Summon
         public CalamityPlayer moddedOwner => Owner.Calamity();
 
         public ref float CheckForSpawning => ref Projectile.localAI[0];
-        
+
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projPet[Type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -57,7 +58,7 @@ namespace CalamityMod.Projectiles.Summon
                     float angle = MathHelper.TwoPi / 45f * i;
                     Vector2 direction = angle.ToRotationVector2() * 10f;
 
-                    Dust spawnDust = Dust.NewDustPerfect(Projectile.Center, 33, direction);
+                    Dust spawnDust = Dust.NewDustPerfect(Projectile.Center, DustID.Water, direction);
                     spawnDust.noGravity = true;
                 }
                 CheckForSpawning++;
@@ -68,6 +69,14 @@ namespace CalamityMod.Projectiles.Summon
             // Make the minion spin depending on how fast it is.
 
             Projectile.ChargingMinionAI(1200f, 1500f, 2200f, 150f, 0, 24f, 15f, 4f, new Vector2(0f, -60f), 12f, 12f, false, false, 1);
+        }
+
+        public override bool MinionContactDamage() => true;
+
+        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
+        {
+            fallThrough = true; // Should always be able to fly through platforms
+            return base.TileCollideStyle(ref width, ref height, ref fallThrough, ref hitboxCenterFrac);
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity) => false;

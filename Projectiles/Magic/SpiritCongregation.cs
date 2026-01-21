@@ -1,16 +1,18 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using CalamityMod.Graphics.Metaballs;
+using CalamityMod.NPCs;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using System.Collections.Generic;
-using CalamityMod.Graphics.Metaballs;
 
 namespace CalamityMod.Projectiles.Magic
 {
+    [PierceResistException]
     public class SpiritCongregation : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
@@ -30,13 +32,13 @@ namespace CalamityMod.Projectiles.Magic
         {
             get
             {
-                float movementSpeed = 9f;
+                float movementSpeed = 10f;
 
                 // Make speed gradually build up over time, with growths at certain points.
                 movementSpeed += MathHelper.SmoothStep(0f, 2.2f, Utils.GetLerpValue(0.18f, 0.3f, CurrentPower, true));
                 movementSpeed += MathHelper.SmoothStep(0f, 4f, Utils.GetLerpValue(0.4f, 0.52f, CurrentPower, true));
                 movementSpeed += MathHelper.SmoothStep(0f, 5f, Utils.GetLerpValue(0.6f, 0.72f, CurrentPower, true));
-                movementSpeed += MathHelper.SmoothStep(0f, 6f, Utils.GetLerpValue(0.8f, 0.92f, CurrentPower, true));
+                movementSpeed += MathHelper.SmoothStep(0f, 6f, Utils.GetLerpValue(0.8f, 1.2f, CurrentPower, true));
 
                 return movementSpeed;
             }
@@ -45,8 +47,9 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 8;
         }
 
         public override void SetDefaults()
@@ -58,7 +61,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 12;
+            Projectile.localNPCHitCooldown = 11;
             Projectile.timeLeft = 90000;
             Projectile.hide = true;
         }
@@ -102,7 +105,8 @@ namespace CalamityMod.Projectiles.Magic
                 Vector2 previousVelocity = Projectile.velocity;
 
                 // If not sufficiently close to the mouse, move towards it.
-                if (!Projectile.WithinRange(Main.MouseWorld, 80f))
+                Vector2 mouse = Owner.ClampedMouseWorld();
+                if (!Projectile.WithinRange(mouse, 80f))
                     MoveTowardsMouse();
 
                 // Otherwise slow down to a point.
@@ -111,10 +115,7 @@ namespace CalamityMod.Projectiles.Magic
 
                 // Sync velocity if it changed from what it was before.
                 if (previousVelocity != Projectile.velocity)
-                {
-                    Projectile.netSpam = 0;
-                    Projectile.netUpdate = true;
-                }
+                    Projectile.ForceNetUpdate();
             }
 
             Projectile.rotation = Projectile.velocity.ToRotation();
@@ -140,11 +141,6 @@ namespace CalamityMod.Projectiles.Magic
                     HoverOffset = Vector2.Zero;
             }
 
-            // Previously, Gruesome Eminence stopped being able to hurt you when fully charged.
-            // This has been changed so that its threat is everpresent.
-            Projectile.hostile = Time > 75f;
-            // Projectile.hostile = !tame && Time > 75f;
-
             // Explode into a burst of spirit dust and gas clouds when a bigger face appears.
             if (!WasStrongBefore && CurrentPower > LargeMouthPowerLowerBound)
             {
@@ -155,7 +151,7 @@ namespace CalamityMod.Projectiles.Magic
                     burstDirectionVariance += j * 2;
                     for (int k = 0; k < 40; k++)
                     {
-                        Dust burstDust = Dust.NewDustPerfect(Projectile.Center, 267);
+                        Dust burstDust = Dust.NewDustPerfect(Projectile.Center, DustID.RainbowMk2);
                         burstDust.scale = Main.rand.NextFloat(1.74f, 2.5f);
                         burstDust.position += Main.rand.NextVector2Circular(10f, 10f);
                         burstDust.velocity = Main.rand.NextVector2Square(-burstDirectionVariance, burstDirectionVariance).SafeNormalize(Vector2.UnitY) * burstSpeed;
@@ -199,7 +195,7 @@ namespace CalamityMod.Projectiles.Magic
             // Make inertia become more significant the more power the congregation has, due to growing size.
             float inertia = MathHelper.Lerp(18f, 40f, CurrentPower);
 
-            Vector2 directionToMouseOffset = Projectile.SafeDirectionTo(Main.MouseWorld + HoverOffset);
+            Vector2 directionToMouseOffset = Projectile.SafeDirectionTo(Owner.ClampedMouseWorld() + HoverOffset);
             Vector2 directionToOwner = Projectile.SafeDirectionTo(Owner.Center);
             Vector2 idealVelocity = Vector2.Lerp(directionToMouseOffset, directionToOwner, 0.25f) * MovementSpeed;
 
@@ -273,7 +269,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             if (CurrentPower > LargeMouthPowerLowerBound)
                 texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/SpiritCongregationBig").Value;
 
@@ -302,22 +298,6 @@ namespace CalamityMod.Projectiles.Magic
                 backTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/SpiritCongregationBackBig").Value;
 
             DrawHead(backTexture, 1.04f);
-        }
-
-        // Damage scales up over time as it grows.
-        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
-        {
-            float damageFactor = 0.25f + 0.75f * CurrentPower;
-            int fullPowerDamage;
-            if (Main.masterMode)
-                fullPowerDamage = 540;
-            else if (Main.expertMode)
-                fullPowerDamage = 450;
-            else
-                fullPowerDamage = 360;
-
-            modifiers.SourceDamage *= 0f;
-            modifiers.SourceDamage.Flat += (int)(damageFactor * fullPowerDamage);
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)

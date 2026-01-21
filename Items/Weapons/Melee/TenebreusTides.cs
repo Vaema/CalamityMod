@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Projectiles.Melee.Spears;
 using Terraria;
@@ -13,7 +12,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.Spears[Item.type] = true;
+            ItemID.Sets.Spears[Type] = true;
         }
 
         public override void SetDefaults()
@@ -27,8 +26,8 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shoot = ModContent.ProjectileType<TenebreusTidesProjectile>();
             Item.shootSpeed = 12f;
 
-            Item.value = CalamityGlobalItem.Rarity9BuyPrice;
-            Item.rare = ItemRarityID.Cyan;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
+            Item.rare = ItemRarityID.Red;
             Item.Calamity().donorItem = true;
 
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -46,8 +45,6 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient<AmidiasTrident>().
                 AddIngredient<Atlantis>().
                 AddIngredient(ItemID.InfluxWaver).
-                AddIngredient<SeaPrism>(20).
-                AddIngredient<PlantyMush>(25).
                 AddIngredient<Lumenyl>(50).
                 AddTile(TileID.LunarCraftingStation).
                 Register();

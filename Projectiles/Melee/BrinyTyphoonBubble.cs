@@ -1,18 +1,20 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
     public class BrinyTyphoonBubble : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
+        public override string Texture => "Terraria/Images/Projectile_385";
+
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 3;
+            Main.projFrames[Type] = 3;
         }
 
         public override void SetDefaults()
@@ -24,6 +26,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.alpha = 255;
             Projectile.penetrate = -1;
             Projectile.timeLeft = 5;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -42,7 +46,7 @@ namespace CalamityMod.Projectiles.Melee
                             Vector2 dustRotate = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
                             dustRotate = dustRotate.RotatedBy((double)(i - (dustAmt / 2 - 1)) * 3.1415926535897931 / (double)(float)dustAmt, default) + Projectile.Center;
                             Vector2 faceDirection = ((float)(Main.rand.NextDouble() * 3.1415927410125732) - 1.57079637f).ToRotationVector2() * (float)Main.rand.Next(3, 8);
-                            int bluishDust = Dust.NewDust(dustRotate + faceDirection, 0, 0, 187, faceDirection.X * 2f, faceDirection.Y * 2f, 100, new Color(53, Main.DiscoG, 255), 1.4f);
+                            int bluishDust = Dust.NewDust(dustRotate + faceDirection, 0, 0, DustID.Flare_Blue, faceDirection.X * 2f, faceDirection.Y * 2f, 100, new Color(53, Main.DiscoG, 255), 1.4f);
                             Main.dust[bluishDust].noGravity = true;
                             Main.dust[bluishDust].noLight = true;
                             Main.dust[bluishDust].velocity /= 4f;
@@ -103,7 +107,7 @@ namespace CalamityMod.Projectiles.Melee
                 Vector2 rotate = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
                 rotate = rotate.RotatedBy((double)((float)(j - (moreDustAmt / 2 - 1)) * 6.28318548f / (float)moreDustAmt), default) + Projectile.Center;
                 Vector2 facingDirection = rotate - Projectile.Center;
-                int killDust = Dust.NewDust(rotate + facingDirection, 0, 0, 187, facingDirection.X * 2f, facingDirection.Y * 2f, 100, new Color(53, Main.DiscoG, 255), 1.4f);
+                int killDust = Dust.NewDust(rotate + facingDirection, 0, 0, DustID.Flare_Blue, facingDirection.X * 2f, facingDirection.Y * 2f, 100, new Color(53, Main.DiscoG, 255), 1.4f);
                 Main.dust[killDust].noGravity = true;
                 Main.dust[killDust].noLight = true;
                 Main.dust[killDust].velocity = facingDirection;
@@ -138,7 +142,7 @@ namespace CalamityMod.Projectiles.Melee
                         break;
                     }
                 }
-                int SPOUT = Projectile.NewProjectile(Projectile.GetSource_FromThis(), (float)(projTileY * 16 + 8), (float)(projTileX * 16 - 24), 0f, 0f, ModContent.ProjectileType<BrinySpout>(), Projectile.damage, 6f, Main.myPlayer, 8f, 25f);
+                int SPOUT = Projectile.NewProjectile(Projectile.GetSource_FromThis(), (float)(projTileY * 16 + 8), (float)(projTileX * 16 - 32), 0f, 0f, ModContent.ProjectileType<BrinySpout>(), Projectile.damage, 6f, Main.myPlayer, 3f, 7f); //First overload seems to deal with timing, second is segment amount
                 Main.projectile[SPOUT].netUpdate = true;
             }
         }

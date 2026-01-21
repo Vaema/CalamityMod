@@ -1,14 +1,10 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
-using CalamityMod.Projectiles.Pets;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Mono.Cecil;
-using System;
-using System.Reflection.Metadata;
 using Terraria;
 using Terraria.Audio;
-using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -16,7 +12,7 @@ namespace CalamityMod.Projectiles.Rogue
 {
     public class SpearofDestinyStealth : ModProjectile, ILocalizedModType
     {
-        public static readonly SoundStyle Hitsound = new("CalamityMod/Sounds/Item/BlazingCoreParry") { Volume = 0.7f, PitchVariance = 0.3f};
+        public static readonly SoundStyle Hitsound = new("CalamityMod/Sounds/Item/BlazingCoreParry") { Volume = 0.7f, PitchVariance = 0.3f };
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Projectiles/Rogue/LanceofDestiny";
         public bool posthit = false;
@@ -74,12 +70,12 @@ namespace CalamityMod.Projectiles.Rogue
                 float rot = MathHelper.ToRadians(i * rotFactor);
                 Vector2 offset = new Vector2(18f, 0).RotatedBy(rot);
                 Vector2 velOffset = new Vector2(9f, 0).RotatedBy(rot);
-                SparkParticle spark = new SparkParticle(Projectile.position + offset, new Vector2(velOffset.X, velOffset.Y) * Main.rand.NextFloat( 1.5f, 2.3f), false, Main.rand.Next(23, 28), 1.9f, Main.rand.NextBool(5) ? Color.Gold : Color.PaleGoldenrod);
+                SparkParticle spark = new SparkParticle(Projectile.position + offset, new Vector2(velOffset.X, velOffset.Y) * Main.rand.NextFloat(1.5f, 2.3f), false, Main.rand.Next(23, 28), 1.9f, Main.rand.NextBool(5) ? Color.Gold : Color.PaleGoldenrod);
                 GeneralParticleHandler.SpawnParticle(spark);
             }
             for (int i = 0; i <= 17; i++)
             {
-                Dust dust2 = Main.dust[Dust.NewDust(target.position, Projectile.width, Projectile.height, 130, 0, 0, 0, default, 1.5f)];
+                Dust dust2 = Main.dust[Dust.NewDust(target.position, Projectile.width, Projectile.height, DustID.Firework_Red, 0, 0, 0, default, 1.5f)];
                 dust2.velocity.Y -= Main.rand.NextFloat(2.5f, 10.5f);
                 dust2.velocity.X += Main.rand.NextFloat(-3f, 3f);
             }
@@ -87,9 +83,9 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
 
-            int frameHeight = texture.Height / Main.projFrames[Projectile.type];
+            int frameHeight = texture.Height / Main.projFrames[Type];
             int frameY = frameHeight * Projectile.frame;
             float scale = Projectile.scale;
             float rotation = Projectile.rotation;

@@ -1,8 +1,6 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Events;
-using CalamityMod.World;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -15,9 +13,9 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.TrailCacheLength[Type] = 5;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -37,11 +35,10 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.ai[0] == 1f)
             {
                 Projectile.extraUpdates = 2;
-                bool bossRush = BossRushEvent.BossRushActive;
-                float maxVelocity = bossRush ? 3.75f : 3f;
+                float maxVelocity = 3f;
                 if (Projectile.velocity.Length() < maxVelocity)
                 {
-                    Projectile.velocity *= bossRush ? 1.02f : 1.015f;
+                    Projectile.velocity *= 1.015f;
                     if (Projectile.velocity.Length() > maxVelocity)
                     {
                         Projectile.velocity.Normalize();
@@ -78,7 +75,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 45);
+            target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 60);
         }
 
         public override Color? GetAlpha(Color lightColor)
@@ -88,7 +85,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

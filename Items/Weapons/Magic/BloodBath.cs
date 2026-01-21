@@ -1,7 +1,7 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System;
+using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -14,14 +14,14 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 52;
             Item.height = 50;
-            Item.damage = 25;
+            Item.damage = 24;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 10;
             Item.useTime = 15;
@@ -29,14 +29,14 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5.75f;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.UseSound = SoundID.Item21;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<BloodBeam>();
             Item.shootSpeed = 9f;
         }
-               
+
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
@@ -89,16 +89,6 @@ namespace CalamityMod.Items.Weapons.Magic
                 Projectile.NewProjectile(source, realPlayerPos.X, realPlayerPos.Y, speedX4, speedY5, type, damage, knockback, player.whoAmI, 0f, (float)Main.rand.Next(15));
             }
             return false;
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.CrimtaneBar, 3).
-                AddIngredient<BloodSample>(9).
-                AddIngredient(ItemID.Vertebrae, 3).
-                AddTile(TileID.DemonAltar).
-                Register();
         }
     }
 }

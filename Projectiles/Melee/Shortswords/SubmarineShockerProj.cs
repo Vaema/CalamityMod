@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.BaseProjectiles;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -8,7 +9,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee.Shortswords
 {
-    public class SubmarineShockerProj: BaseShortswordProjectile
+    public class SubmarineShockerProj : BaseShortswordProjectile
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<SubmarineShocker>();
         public override string Texture => "CalamityMod/Items/Weapons/Melee/SubmarineShocker";
@@ -26,7 +27,7 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
             Projectile.hide = true;
             Projectile.ownerHitCheck = true;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 8;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override void SetVisualOffsets()
@@ -48,16 +49,15 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
                 Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Electric);
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            var source = Projectile.GetSource_FromThis();
-            Projectile.NewProjectile(source, target.Center, Vector2.Zero, ModContent.ProjectileType<Spark>(), (int)(Projectile.damage * 0.7f), Projectile.knockBack, Main.myPlayer);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => SpawnSparks(target);
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => SpawnSparks(target);
+
+        public void SpawnSparks(Entity target)
         {
             var source = Projectile.GetSource_FromThis();
-            Projectile.NewProjectile(source, target.Center, Vector2.Zero, ModContent.ProjectileType<Spark>(), (int)(Projectile.damage * 0.7f), Projectile.knockBack, Main.myPlayer);
+            Projectile spark = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ModContent.ProjectileType<GenericElectricSpark>(), (int)(Projectile.damage * 0.7f), Projectile.knockBack, Main.myPlayer);
+            spark.DamageType = DamageClass.Melee;
         }
     }
 }

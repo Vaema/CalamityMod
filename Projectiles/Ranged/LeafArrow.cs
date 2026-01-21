@@ -1,9 +1,8 @@
-using Microsoft.Xna.Framework;
-using System;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -12,8 +11,8 @@ namespace CalamityMod.Projectiles.Ranged
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
         }
 
         public override void SetDefaults()
@@ -26,7 +25,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.extraUpdates = 1;
             Projectile.timeLeft = 300;
             Projectile.DamageType = DamageClass.Ranged;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override void AI()
@@ -50,7 +48,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Projectile.localAI[0] = 0f;
                 }
             }
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 3.14f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Pi;
             if (Projectile.localAI[1] <= 30f)
             {
                 Projectile.localAI[1] += 1f;
@@ -76,7 +74,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 2);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 2);
             return false;
         }
 
@@ -86,7 +84,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.localAI[1] += 1f;
             for (int i = 0; i < 5; i++)
             {
-                int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 157, 0f, 0f, 0, new Color(Main.DiscoR, 203, 103), 1f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ChlorophyteWeapon, 0f, 0f, 0, new Color(Main.DiscoR, 203, 103), 1f);
                 Main.dust[dust].noGravity = true;
                 Main.dust[dust].velocity *= 3f;
                 Main.dust[dust].scale = 1.5f;

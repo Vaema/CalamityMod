@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Summon.Umbrella;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
@@ -14,6 +15,9 @@ namespace CalamityMod.Items.Weapons.Summon
     public class TemporalUmbrella : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
+
+        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 5f;
+
         public override void SetDefaults()
         {
             Item.width = 74;
@@ -21,15 +25,15 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.damage = 193;
             Item.knockBack = 1f;
             Item.mana = 99;
-            Item.useTime = Item.useAnimation = 10;
+            Item.useAnimation = Item.useTime = 24;
             Item.DamageType = DamageClass.Summon;
-            Item.shootSpeed = 0f;
+            Item.buffType = ModContent.BuffType<MagicHatBuff>();
             Item.shoot = ModContent.ProjectileType<MagicHat>();
 
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.UseSound = SoundID.Item68;
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
         }
@@ -38,10 +42,10 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            player.AddBuff(Item.buffType, 2);
             CalamityUtils.KillShootProjectileMany(player, type, ModContent.ProjectileType<MagicArrow>(), ModContent.ProjectileType<MagicHammer>(), ModContent.ProjectileType<MagicAxe>(), ModContent.ProjectileType<MagicUmbrella>(), ModContent.ProjectileType<MagicRifle>());
-            int p = Projectile.NewProjectile(source, position, Vector2.Zero, type, damage, knockback, player.whoAmI);
-            if (Main.projectile.IndexInRange(p))
-                Main.projectile[p].originalDamage = Item.damage;
+            var minion = Projectile.NewProjectileDirect(source, position, Vector2.Zero, type, damage, knockback, player.whoAmI);
+            minion.originalDamage = Item.damage;
             return false;
         }
 

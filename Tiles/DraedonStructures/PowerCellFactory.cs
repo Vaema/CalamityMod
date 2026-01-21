@@ -5,14 +5,14 @@ using CalamityMod.TileEntities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.GameContent;
 using Terraria.GameContent.ObjectInteractions;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
-using Terraria.Audio;
 
 namespace CalamityMod.Tiles.DraedonStructures
 {
@@ -44,6 +44,7 @@ namespace CalamityMod.Tiles.DraedonStructures
             Main.tileNoAttach[Type] = true;
             Main.tileLavaDeath[Type] = false;
             Main.tileWaterDeath[Type] = false;
+            TileID.Sets.HasOutlines[Type] = true;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x2);
             TileObjectData.newTile.Width = Width;
             TileObjectData.newTile.Height = Height;
@@ -65,7 +66,7 @@ namespace CalamityMod.Tiles.DraedonStructures
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 226);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Electric);
             return false;
         }
 
@@ -121,6 +122,8 @@ namespace CalamityMod.Tiles.DraedonStructures
         {
             // These offsets start as the tile offsets, i.e. which sub-tile of the FrameImportant structure this specific location is.
             Tile t = Main.tile[i, j];
+            if (t.IsTileActuallyInvisible())
+                return false;
             int frameXPos = t.TileFrameX;
             int frameYPos = t.TileFrameY;
 
@@ -130,15 +133,35 @@ namespace CalamityMod.Tiles.DraedonStructures
             frameXPos += frameIndex / FramesPerColumn * (Width * SheetSquare);
             frameYPos += frameIndex % FramesPerColumn * (Height * SheetSquare);
 
-            Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Tiles/DraedonStructures/PowerCellFactory").Value;
+
+            Texture2D tex = TextureAssets.Tile[Type].Value;
             Vector2 offset = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + offset;
             Color drawColor = Lighting.GetColor(i, j);
+
 
             if (!t.IsHalfBlock && t.Slope == 0)
                 spriteBatch.Draw(tex, drawOffset, new Rectangle(frameXPos, frameYPos, 16, 16), drawColor, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
             else if (t.IsHalfBlock)
                 spriteBatch.Draw(tex, drawOffset + Vector2.UnitY * 8f, new Rectangle(frameXPos, frameYPos, 16, 16), drawColor, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+
+            // Draws the Smart Cursor Highlight. Not 100% accurate, but its close enough
+            Color highlightColor;
+            if (TileID.Sets.HasOutlines[Type] && Main.InSmartCursorHighlightArea(i, j, out var actuallySelected))
+            {
+                if (actuallySelected)
+                {
+                    highlightColor = new Color(252, 252, 84);
+                }
+                else
+                {
+                    highlightColor = new Color(125, 125, 125);
+                }
+                spriteBatch.Draw(TextureAssets.HighlightMask[Type].Value, drawOffset, new Rectangle(frameXPos, frameYPos, 16, 16), highlightColor, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+            }
+
+
+
             return false;
         }
     }

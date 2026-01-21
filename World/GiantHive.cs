@@ -1,36 +1,35 @@
-﻿using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Potions;
-using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Tiles;
-using CalamityMod.Tiles.Abyss;
-using CalamityMod.Tiles.Astral;
-using CalamityMod.Tiles.Crags;
-using CalamityMod.Tiles.FurnitureAncient;
-using CalamityMod.Tiles.Ores;
-using CalamityMod.Walls;
-using CalamityMod.DataStructures;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Linq;
-using System.Reflection;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Items.Potions;
+using CalamityMod.Walls;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.GameContent.Generation;
 using Terraria.ID;
-using Terraria.IO;
 using Terraria.ModLoader;
 using Terraria.Utilities;
 using Terraria.WorldBuilding;
-using Terraria.DataStructures;
-using Terraria.GameContent.Generation;
 
 namespace CalamityMod.World
 {
     public class GiantHive
     {
-        public static bool GrowLivingJungleTree(Point origin)
+        public static bool GrowLivingJungleTree(Point origin, StructureMap structures)
         {
+            if (!structures.CanPlace(new Rectangle(origin.X - 50, origin.Y - 50, 100, 100)))
+                return false;
+
+            if (TooCloseToImportantLocations(origin))
+                return false;
+
+            Ref<int> ref1 = new Ref<int>(0);
+            Ref<int> ref2 = new Ref<int>(0);
+            Ref<int> ref3 = new Ref<int>(0);
+            WorldUtils.Gen(origin, new Shapes.Circle(15), Actions.Chain(new Modifiers.IsSolid(), new Actions.Scanner(ref1), new Modifiers.OnlyTiles(TileID.JungleGrass, TileID.Mud), new Actions.Scanner(ref2), new Modifiers.OnlyTiles(TileID.JungleGrass), new Actions.Scanner(ref3)));
+            if ((ref2.Value / (float)ref1.Value < 0.75f || ref3.Value < 2) && !WorldGen.drunkWorldGen)
+                return false;
+
             int treeHeight = (int)Main.worldSurface - (Main.maxTilesY / 10); //start here to not touch floating islands
             bool validHeightFound = false;
             int attempts = 0;
@@ -38,26 +37,26 @@ namespace CalamityMod.World
             while (!validHeightFound && attempts++ < 100000)
             {
                 while (!WorldGen.SolidTile(origin.X, treeHeight))
-				{
-					treeHeight++;
-				}
+                {
+                    treeHeight++;
+                }
 
-                if (Main.tile[origin.X, treeHeight].HasTile || Main.tile[origin.X, treeHeight].WallType > 0)
-				{
+                if (Main.tile[origin.X, treeHeight].HasTile || Main.tile[origin.X, treeHeight].WallType > WallID.None)
+                {
                     validHeightFound = true;
-				}
+                }
             }
 
             int extraWidth = 0;
-            
+
             while (validHeightFound)
             {
                 //place the roots first so the bottom of the hole doesnt look strange
                 for (int k = 0; k < 6; k++)
                 {
                     double angle = (double)k / 3.0 * 2.0 + 0.57075;
-                    WorldUtils.Gen(new Point(origin.X + 2, origin.Y - 30), new ShapeRoot((int)angle, WorldGen.genRand.Next(80, 120)), 
-                    Actions.Chain(new Modifiers.SkipTiles(21, 467, 226, 237), new Modifiers.SkipWalls(87), 
+                    WorldUtils.Gen(new Point(origin.X + 2, origin.Y - 30), new ShapeRoot((int)angle, WorldGen.genRand.Next(80, 120)),
+                    Actions.Chain(new Modifiers.SkipTiles(21, 467, 226, 237), new Modifiers.SkipWalls(87),
                     new Actions.SetTile(TileID.LivingMahogany, setSelfFrames: true)));
                 }
 
@@ -75,28 +74,28 @@ namespace CalamityMod.World
                         //create a list of points for the ends of each branch
                         List<Point> list = new List<Point>();
 
-                        WorldUtils.Gen(new Point(origin.X + WorldGen.genRand.Next(-3, 3), y), new ShapeBranch(-0.6853981852531433, 
-                        WorldGen.genRand.Next(5, 25)).OutputEndpoints(list), Actions.Chain(new Modifiers.SkipTiles(21, 467, 226, 237), 
+                        WorldUtils.Gen(new Point(origin.X + WorldGen.genRand.Next(-3, 3), y), new ShapeBranch(-0.6853981852531433,
+                        WorldGen.genRand.Next(5, 25)).OutputEndpoints(list), Actions.Chain(new Modifiers.SkipTiles(21, 467, 226, 237),
                         new Modifiers.SkipWalls(87), new Actions.SetTile(TileID.LivingMahogany), new Actions.SetFrames(frameNeighbors: true)));
 
-                        WorldUtils.Gen(new Point(origin.X + WorldGen.genRand.Next(-3, 3), y), new ShapeBranch(-2.45619455575943, 
-                        WorldGen.genRand.Next(5, 25)).OutputEndpoints(list), Actions.Chain(new Modifiers.SkipTiles(21, 467, 226, 237), 
+                        WorldUtils.Gen(new Point(origin.X + WorldGen.genRand.Next(-3, 3), y), new ShapeBranch(-2.45619455575943,
+                        WorldGen.genRand.Next(5, 25)).OutputEndpoints(list), Actions.Chain(new Modifiers.SkipTiles(21, 467, 226, 237),
                         new Modifiers.SkipWalls(87), new Actions.SetTile(TileID.LivingMahogany), new Actions.SetFrames(frameNeighbors: true)));
 
                         //place living mahogany leaves at the end of each branch
                         foreach (Point item in list)
                         {
-                            WorldUtils.Gen(item, new Shapes.Circle(WorldGen.genRand.Next(5, 12)), Actions.Chain(new Modifiers.Blotches(WorldGen.genRand.Next(3, 5), WorldGen.genRand.Next(3, 5)), 
+                            WorldUtils.Gen(item, new Shapes.Circle(WorldGen.genRand.Next(5, 12)), Actions.Chain(new Modifiers.Blotches(WorldGen.genRand.Next(2, 5), WorldGen.genRand.Next(3, 5)),
                             new Modifiers.SkipTiles(383, 21, 467, 226, 237), new Modifiers.SkipWalls(78, 87), new Actions.SetTile(TileID.LivingMahoganyLeaves), new Actions.SetFrames(frameNeighbors: true)));
                         }
                     }
 
                     //place the tree itself
-                    WorldUtils.Gen(new Point(origin.X + WorldGen.genRand.Next(-1 - extraWidth, 1), y), new Shapes.Rectangle(6 + extraWidth, 3 + extraWidth), 
+                    WorldUtils.Gen(new Point(origin.X + WorldGen.genRand.Next(-1 - extraWidth, 1), y), new Shapes.Rectangle(6 + extraWidth, 3 + extraWidth),
                     Actions.Chain(new Modifiers.SkipTiles(21, 467, 226, 237), new Modifiers.SkipWalls(87), new Actions.RemoveWall(),
                     new Actions.SetTile(TileID.LivingMahogany), new Actions.SetFrames()));
 
-                    WorldUtils.Gen(new Point(origin.X + WorldGen.genRand.Next(-1, 1), y), new Shapes.Rectangle(6 + extraWidth, 3 + extraWidth), 
+                    WorldUtils.Gen(new Point(origin.X + WorldGen.genRand.Next(-1, 1), y), new Shapes.Rectangle(6 + extraWidth, 3 + extraWidth),
                     Actions.Chain(new Modifiers.SkipTiles(21, 467, 226, 237), new Modifiers.SkipWalls(87), new Actions.RemoveWall(),
                     new Actions.SetTile(TileID.LivingMahogany), new Actions.SetFrames()));
 
@@ -124,7 +123,7 @@ namespace CalamityMod.World
                     }));
 
                     //chance to place blocks inside the tree for randomness
-                    if (WorldGen.genRand.Next(20) == 0)
+                    if (WorldGen.genRand.NextBool(20))
                     {
                         WorldUtils.Gen(new Point(origin.X + WorldGen.genRand.Next(-2, 2), y), new ModShapes.All(circle), Actions.Chain(new GenAction[]
                         {
@@ -145,7 +144,7 @@ namespace CalamityMod.World
 
             return false;
         }
-        
+
         public static bool CanPlaceGiantHive(Point origin, StructureMap structures)
         {
             if (!structures.CanPlace(new Rectangle(origin.X - 50, origin.Y - 50, 100, 100)))
@@ -172,13 +171,20 @@ namespace CalamityMod.World
                 Vector2 movingLarvaLocation = larvaLocation;
                 int hiveTunnelTries = WorldGen.genRand.Next(2, 5);
                 for (int j = 0; j < hiveTunnelTries; j++)
-                    movingLarvaLocation = CreateHiveTunnel((int)larvaLocation.X, (int)larvaLocation.Y, WorldGen.genRand);
+                    movingLarvaLocation = MakeCell((int)larvaLocation.X, (int)larvaLocation.Y, WorldGen.genRand);
 
                 larvaLocation = movingLarvaLocation;
                 array[arrayInc] = (int)larvaLocation.X;
                 array2[arrayInc] = (int)larvaLocation.Y;
                 arrayInc++;
             }
+            for (int i = 0; i < numHiveTunnels; i++)
+            {
+                int hiveTunnelTries = WorldGen.genRand.Next(1, 2);
+                MakeCellHoney((int)larvaLocation.X, (int)larvaLocation.Y, WorldGen.genRand);
+            }
+            MakeOuterCell((int)larvaLocation.X, (int)larvaLocation.Y, WorldGen.genRand);
+
 
             FrameOutAllHiveContents(origin, 50);
 
@@ -206,13 +212,10 @@ namespace CalamityMod.World
                     x += treeIndentDirection;
                     if (!SpotActuallyNotInHive(x, y))
                     {
-                        CreateBlockedHoneyCube(x, y);
                         CreateDentForHoneyFall(x, y, treeIndentDirection);
                     }
                 }
             }
-
-            GrowLivingJungleTree(new Point(origin.X, origin.Y));
 
             CreateStandForLarva(larvaLocation);
 
@@ -233,35 +236,52 @@ namespace CalamityMod.World
             }
 
             // Honey chests
-            Vector2 honeyChestLocation = default;
-            for (int l = 0; l < maxAttempts; l++)
-            {
-                Vector2 newStructureLocation = larvaLocation;
-                newStructureLocation.X += WorldGen.genRand.Next(-100, 101);
-                newStructureLocation.Y += WorldGen.genRand.Next(-100, 101);
-                if (WorldGen.InWorld((int)newStructureLocation.X, (int)newStructureLocation.Y) && Vector2.Distance(larvaLocation, newStructureLocation) > 10f && Vector2.Distance(secondLarvaLocation, newStructureLocation) > 10f && !Main.tile[(int)newStructureLocation.X, (int)newStructureLocation.Y].HasTile && Main.tile[(int)newStructureLocation.X, (int)newStructureLocation.Y].WallType == WallID.HiveUnsafe)
-                {
-                    honeyChestLocation = newStructureLocation;
-                    CreateStandAndPlaceHoneyChest(newStructureLocation);
-                    break;
-                }
-            }
-            for (int l = 0; l < maxAttempts; l++)
-            {
-                Vector2 newStructureLocation = larvaLocation;
-                newStructureLocation.X += WorldGen.genRand.Next(-100, 101);
-                newStructureLocation.Y += WorldGen.genRand.Next(-100, 101);
-                if (WorldGen.InWorld((int)newStructureLocation.X, (int)newStructureLocation.Y) && Vector2.Distance(larvaLocation, newStructureLocation) > 10f && Vector2.Distance(secondLarvaLocation, newStructureLocation) > 10f && Vector2.Distance(honeyChestLocation, newStructureLocation) > 10f && !Main.tile[(int)newStructureLocation.X, (int)newStructureLocation.Y].HasTile && Main.tile[(int)newStructureLocation.X, (int)newStructureLocation.Y].WallType == WallID.HiveUnsafe)
-                {
-                    CreateStandAndPlaceHoneyChest(newStructureLocation);
-                    break;
-                }
-            }
+            //Vector2 honeyChestLocation = default;
+            //for (int l = 0; l < maxAttempts; l++)
+            //{
+            //    Vector2 newStructureLocation = larvaLocation;
+            //    newStructureLocation.X += WorldGen.genRand.Next(-100, 101);
+            //    newStructureLocation.Y += WorldGen.genRand.Next(-100, 101);
+            //    if (WorldGen.InWorld((int)newStructureLocation.X, (int)newStructureLocation.Y) && Vector2.Distance(larvaLocation, newStructureLocation) > 10f && Vector2.Distance(secondLarvaLocation, newStructureLocation) > 10f && !Main.tile[(int)newStructureLocation.X, (int)newStructureLocation.Y].HasTile && Main.tile[(int)newStructureLocation.X, (int)newStructureLocation.Y].WallType == WallID.HiveUnsafe)
+            //    {
+            //        honeyChestLocation = newStructureLocation;
+            //        CreateStandAndPlaceHoneyChest(newStructureLocation);
+            //        break;
+            //    }
+            //}
+            //for (int l = 0; l < maxAttempts; l++)
+            //{
+            //    Vector2 newStructureLocation = larvaLocation;
+            //    newStructureLocation.X += WorldGen.genRand.Next(-100, 101);
+            //    newStructureLocation.Y += WorldGen.genRand.Next(-100, 101);
+            //    if (WorldGen.InWorld((int)newStructureLocation.X, (int)newStructureLocation.Y) && Vector2.Distance(larvaLocation, newStructureLocation) > 10f && Vector2.Distance(secondLarvaLocation, newStructureLocation) > 10f && Vector2.Distance(honeyChestLocation, newStructureLocation) > 10f && !Main.tile[(int)newStructureLocation.X, (int)newStructureLocation.Y].HasTile && Main.tile[(int)newStructureLocation.X, (int)newStructureLocation.Y].WallType == WallID.HiveUnsafe)
+            //    {
+            //        CreateStandAndPlaceHoneyChest(newStructureLocation);
+            //        break;
+            //    }
+            //}
 
             CalamityUtils.AddProtectedStructure(new Rectangle(origin.X - 50, origin.Y - 50, 100, 100), 5);
             return true;
         }
 
+        public static bool PlaceLayer(int X, int Y, int height, int tileType)
+        {
+            for (int j = Y; j <= Y + height; j++)
+            {
+                if (Main.tile[X, j].HasTile && Main.tile[X, j + 1].HasTile && Main.tile[X, j + 2].HasTile && Main.tile[X, j + 3].HasTile &&
+                Main.tile[X - 1, j + 3].HasTile && Main.tile[X + 1, j + 3].HasTile)
+                {
+                    Main.tile[X, j].TileType = (ushort)tileType;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
         private static void FrameOutAllHiveContents(Point origin, int squareHalfWidth)
         {
             int maxXsize = Math.Max(10, origin.X - squareHalfWidth);
@@ -272,125 +292,257 @@ namespace CalamityMod.World
             {
                 for (int j = maxYSize; j < minYSize; j++)
                 {
-                    Tile tile = Main.tile[i, j];
-                    if (tile.HasTile && tile.TileType == TileID.Hive)
-                        WorldGen.SquareTileFrame(i, j);
+                    //Tile tile = Main.tile[i, j];
+                    //if (tile.HasTile && tile.TileType == TileID.Hive)
+                    //    WorldGen.SquareTileFrame(i, j);
 
-                    if (tile.WallType == WallID.HiveUnsafe)
-                        WorldGen.SquareWallFrame(i, j);
+                    //if (tile.WallType == WallID.HiveUnsafe)
+                    //    WorldGen.SquareWallFrame(i, j);
+                    bool canPlaceSand = false;
+
+                    if (Main.tile[i, j].TileType == TileID.Hive && !Main.tile[i, j - 1].HasTile && !Main.tile[i, j - 2].HasTile && !Main.tile[i, j - 3].HasTile)
+                    {
+                        canPlaceSand = true;
+                    }
+
+                    if (canPlaceSand)
+                    {
+                        PlaceLayer(i, j, WorldGen.genRand.Next(2, 3), TileID.HoneyBlock);
+                    }
                 }
             }
         }
-
-        private static Vector2 CreateHiveTunnel(int i, int j, UnifiedRandom random)
+        public static void CreateHexagon(int centerX, int centerY, int hexagonSize, int tileType, bool doWalls = false)
         {
-            double randOffset = random.Next(20, 26);
-            float tunnelPlacementAttempts = random.Next(30, 41);
-            float miniMaxXTiles = Main.maxTilesX / 4200;
-            miniMaxXTiles = (miniMaxXTiles + 1f) / 2f;
-            randOffset *= (double)miniMaxXTiles;
-            tunnelPlacementAttempts *= miniMaxXTiles;
+            int halfHexagonSize = hexagonSize / 2;
 
-            double randOffsetCopy = randOffset;
-            Vector2 result = default;
-            result.X = i;
-            result.Y = j;
-            Vector2 defaultTunnelPos = default;
-            defaultTunnelPos.X = random.Next(-10, 11) * 0.2f;
-            defaultTunnelPos.Y = random.Next(-10, 11) * 0.2f;
-            while (randOffset > 0.0 && tunnelPlacementAttempts > 0f)
+            for (int x = -halfHexagonSize; x <= halfHexagonSize; x++)
             {
-                if (result.Y > (Main.maxTilesY - 250))
-                    tunnelPlacementAttempts = 0f;
+                int y1 = Math.Abs(x) / 2;
+                int y2 = hexagonSize - Math.Abs(x) / 2;
 
-                randOffset = randOffsetCopy * (double)(1f + random.Next(-20, 20) * 0.01f);
-                tunnelPlacementAttempts -= 1f;
-                int mainXOffset = (int)(result.X - randOffset);
-                int maxXOffset = (int)(result.X + randOffset);
-                int minYOffset = (int)(result.Y - randOffset);
-                int maxYOffset = (int)(result.Y + randOffset);
-                if (mainXOffset < 1)
-                    mainXOffset = 1;
-
-                if (maxXOffset > Main.maxTilesX - 1)
-                    maxXOffset = Main.maxTilesX - 1;
-
-                if (minYOffset < 1)
-                    minYOffset = 1;
-
-                if (maxYOffset > Main.maxTilesY - 1)
-                    maxYOffset = Main.maxTilesY - 1;
-
-                for (int k = mainXOffset; k < maxXOffset; k++)
+                for (int y = y1; y < y2; y++)
                 {
-                    for (int l = minYOffset; l < maxYOffset; l++)
+                    int tileX = centerX + x;
+                    int tileY = centerY + y;
+
+                    if (WorldGen.InWorld(tileX, tileY))
                     {
-                        if (!WorldGen.InWorld(k, l, 50))
+                        Tile tTile = Main.tile[tileX, tileY];
+                        if (!doWalls)
                         {
-                            tunnelPlacementAttempts = 0f;
+                            tTile.HasTile = true;
+                            tTile.TileType = (ushort)tileType;
+                            WorldGen.SquareTileFrame(tileX, tileY);
                         }
                         else
                         {
-                            if (Main.tile[k - 10, l].WallType == WallID.LihzahrdBrickUnsafe)
-                                tunnelPlacementAttempts = 0f;
-
-                            if (Main.tile[k + 10, l].WallType == WallID.LihzahrdBrickUnsafe)
-                                tunnelPlacementAttempts = 0f;
-
-                            if (Main.tile[k, l - 10].WallType == WallID.LihzahrdBrickUnsafe)
-                                tunnelPlacementAttempts = 0f;
-
-                            if (Main.tile[k, l + 10].WallType == WallID.LihzahrdBrickUnsafe)
-                                tunnelPlacementAttempts = 0f;
-                        }
-
-                        if (l < Main.worldSurface && Main.tile[k, l - 5].WallType == WallID.None)
-                            tunnelPlacementAttempts = 0f;
-
-                        float tileXDist = Math.Abs(k - result.X);
-                        float tileYDist = Math.Abs(l - result.Y);
-                        double tileDistance = Math.Sqrt(tileXDist * tileXDist + tileYDist * tileYDist);
-                        if (tileDistance < randOffsetCopy * 0.4 * (1.0 + random.Next(-10, 11) * 0.005))
-                        {
-                            Main.tile[k, l].LiquidAmount = byte.MaxValue;
-                            Main.tile[k, l].Get<LiquidData>().LiquidType = LiquidID.Honey;
-                            Main.tile[k, l].WallType = WallID.HiveUnsafe;
-                            Main.tile[k, l].Get<TileWallWireStateData>().HasTile = false;
-                            Main.tile[k, l].Get<TileWallWireStateData>().IsHalfBlock = false;
-                            Main.tile[k, l].Get<TileWallWireStateData>().Slope = SlopeType.Solid;
-                        }
-                        else if (tileDistance < randOffsetCopy * 0.75 * (1.0 + random.Next(-10, 11) * 0.005))
-                        {
-                            Main.tile[k, l].LiquidAmount = 0;
-                            if (Main.tile[k, l].WallType != WallID.HiveUnsafe)
-                            {
-                                Main.tile[k, l].Get<TileWallWireStateData>().HasTile = true;
-                                Main.tile[k, l].Get<TileWallWireStateData>().IsHalfBlock = false;
-                                Main.tile[k, l].Get<TileWallWireStateData>().Slope = SlopeType.Solid;
-                                Main.tile[k, l].TileType = TileID.Hive;
-                            }
-                        }
-
-                        if (tileDistance < randOffsetCopy * 0.6 * (1.0 + random.Next(-10, 11) * 0.005))
-                        {
-                            Main.tile[k, l].WallType = WallID.HiveUnsafe;
-                            if (random.NextBool())
-                            {
-                                Main.tile[k, l].LiquidAmount = byte.MaxValue;
-                                Main.tile[k, l].Get<LiquidData>().LiquidType = LiquidID.Honey;
-                            }
+                            tTile.WallType = WallID.HiveUnsafe;
+                            WorldGen.SquareWallFrame(tileX, tileY);
                         }
                     }
                 }
+            }
+        }
+        public static void CreateGiantHiveHexagon(int centerX, int centerY, int hexagonSize, int tileType, bool doWalls = false)
+        {
+            int halfHexagonSize = hexagonSize / 2;
 
-                result += defaultTunnelPos;
-                tunnelPlacementAttempts -= 1f;
-                defaultTunnelPos.Y += random.Next(-10, 11) * 0.05f;
-                defaultTunnelPos.X += random.Next(-10, 11) * 0.05f;
+            for (int x = -halfHexagonSize; x <= halfHexagonSize; x++)
+            {
+                int y1 = Math.Abs(x) / 2;
+                int y2 = hexagonSize - Math.Abs(x) / 2;
+
+                for (int y = y1; y < y2; y++)
+                {
+                    int tileX = centerX + x;
+                    int tileY = centerY + y;
+
+                    if (WorldGen.InWorld(tileX, tileY))
+                    {
+                        Tile tTile = Main.tile[tileX, tileY];
+                        if (!doWalls)
+                        {
+                            tTile.HasTile = true;
+                            tTile.TileType = (ushort)tileType;
+                            WorldGen.SquareTileFrame(tileX, tileY);
+                        }
+                        else
+                        {
+                            tTile.WallType = (ushort)ModContent.WallType<GiantHiveWall>();
+                            WorldGen.SquareWallFrame(tileX, tileY);
+                        }
+                    }
+                }
+            }
+        }
+        public static void ClearHexagon(int centerX, int centerY, int hexagonSize)
+        {
+            int halfHexagonSize = hexagonSize / 2;
+
+            for (int x = -halfHexagonSize; x <= halfHexagonSize; x++)
+            {
+                int y1 = Math.Abs(x) / 2;
+                int y2 = hexagonSize - Math.Abs(x) / 2;
+
+                for (int y = y1; y < y2; y++)
+                {
+                    int tileX = centerX + x;
+                    int tileY = centerY + y;
+
+                    if (WorldGen.InWorld(tileX, tileY))
+                    {
+                        Tile tTile = Main.tile[tileX, tileY];
+                        tTile.HasTile = false;
+                        tTile.WallType = WallID.HiveUnsafe;
+                        tTile.LiquidAmount = 0;
+                        WorldGen.SquareWallFrame(tileX, tileY);
+                        if (WorldGen.genRand.NextBool(15))
+                        {
+                            tTile.LiquidAmount = 100;
+                            tTile.LiquidType = LiquidID.Honey;
+                            WorldGen.SquareTileFrame(tileX, tileY);
+                        }
+                    }
+                }
+            }
+        }
+        public static void GiantHiveWallHexagon(int centerX, int centerY, int hexagonSize)
+        {
+            int halfHexagonSize = hexagonSize / 2;
+
+            for (int x = -halfHexagonSize; x <= halfHexagonSize; x++)
+            {
+                int y1 = Math.Abs(x) / 2;
+                int y2 = hexagonSize - Math.Abs(x) / 2;
+
+                for (int y = y1; y < y2; y++)
+                {
+                    int tileX = centerX + x;
+                    int tileY = centerY + y;
+
+                    if (WorldGen.InWorld(tileX, tileY))
+                    {
+                        Tile tTile = Main.tile[tileX, tileY];
+                        tTile.HasTile = false;
+                        tTile.WallType = (ushort)ModContent.WallType<GiantHiveWall>();
+                        tTile.LiquidAmount = 0;
+                        WorldGen.SquareWallFrame(tileX, tileY);
+                        if (WorldGen.genRand.NextBool(15))
+                        {
+                            tTile.LiquidAmount = 100;
+                            tTile.LiquidType = LiquidID.Honey;
+                            WorldGen.SquareTileFrame(tileX, tileY);
+                        }
+                    }
+                }
+            }
+        }
+        public static Vector2 MakeCell(int x, int y, UnifiedRandom random)
+        {
+         CreateHexagon(x, y - 30, 110, TileID.Hive);
+         CreateGiantHiveHexagon(x, y - 30, 108, TileID.Hive, true);
+         GiantHiveWallHexagon(x, y - 22, 90);
+
+    
+
+          return new Vector2(x, y);
+        }
+        public static Vector2 MakeCellHoney(int x, int y, UnifiedRandom random)
+        {
+            int attempts = 0;
+            int hexagonsToPlace = WorldGen.genRand.Next(1, 3); // number of honey hexagons to place
+
+            while (attempts < 100 && hexagonsToPlace > 0)
+            {
+                attempts++;
+
+                int offsetX = WorldGen.genRand.Next(-60, 60);
+                int offsetY = WorldGen.genRand.Next(-50, 50);
+
+                int targetX = x + offsetX;
+                int targetY = y + offsetY;
+
+                // Check a 3x3 area for mostly Hive tiles to confirm it's inside the hive
+                bool valid = true;
+                for (int i = -1; i <= 1 && valid; i++)
+                {
+                    for (int j = -1; j <= 1 && valid; j++)
+                    {
+                        int checkX = targetX + i;
+                        int checkY = targetY + j;
+
+                        if (!WorldGen.InWorld(checkX, checkY))
+                            valid = false;
+                        else if (!Main.tile[checkX, checkY].HasTile || Main.tile[checkX, checkY].TileType != TileID.Hive)
+                            valid = false;
+                    }
+                }
+
+                if (valid)
+                {
+                    int radius = WorldGen.genRand.Next(7, 10);
+                    CreateHexagon(targetX, targetY, radius, TileID.HoneyBlock);
+                    hexagonsToPlace--;
+                }
             }
 
-            return result;
+            return new Vector2(x, y);
         }
+        public static Vector2 MakeOuterCell(int x, int y, UnifiedRandom random)
+        {
+            int numConnections = WorldGen.genRand.Next(3, 6);
+            List<Vector2> placedHexes = new List<Vector2>();
+            int chestsPlaced = 0;
+            int chestMax = 4; // Number of chests to spawn in outer cells
+
+            for (int i = 0; i < numConnections; i++)
+            {
+                bool placed = false;
+                int attempts = 0;
+
+                while (!placed && attempts < 10)
+                {
+                    attempts++;
+
+                    float angle = MathHelper.ToRadians(WorldGen.genRand.Next(0, 180));
+                    float distance = WorldGen.genRand.Next(80, 120);
+
+                    int newX = x + (int)(Math.Cos(angle) * distance);
+                    int newY = y + (int)(Math.Sin(angle) * distance);
+                    Vector2 newPos = new Vector2(newX, newY);
+
+                    bool overlaps = placedHexes.Any(pos => Vector2.Distance(pos, newPos) < 60);
+
+                    if (!overlaps)
+                    {
+                        int hexRadius = WorldGen.genRand.Next(30, 45);
+                        CreateGiantHiveHexagon(newX, newY - 15, hexRadius - 1, TileID.Hive, true);
+                        CreateHexagon(newX, newY - 15, hexRadius, TileID.Hive);
+                        MiscWorldgenRoutines.ClearTunnel(x, y + 30, newX, newY, 5, 0, 2, true, true);
+                        MiscWorldgenRoutines.CreateTunnel(x, y + 30, newX, newY, 6, TileID.Hive);
+                        MiscWorldgenRoutines.ClearTunnel(x, y + 30, newX, newY, 3, (ushort)ModContent.WallType<GiantHiveWall>(), 2, true, true);
+                        GiantHiveWallHexagon(newX, newY - 10, WorldGen.genRand.Next(19, 26));
+
+                        // Place honey chest in this cell with a small chance
+                        if (chestsPlaced < chestMax)
+                        {
+                            CreateStandAndPlaceHoneyChest(new Vector2(newX, newY));
+                            chestsPlaced++;
+                        }
+
+                        placedHexes.Add(newPos);
+                        placed = true;
+                    }
+                }
+            }
+
+            GiantHiveWallHexagon(x, y - 22, 90);
+            ClearHexagon(x, y - 18, 80);
+
+            return new Vector2(x, y);
+        }
+
 
         private static bool TooCloseToImportantLocations(Point origin)
         {
@@ -411,7 +563,7 @@ namespace CalamityMod.World
 
                         if (Main.tile[i, j].WallType == WallID.CrimstoneUnsafe || Main.tile[i, j].WallType == WallID.EbonstoneUnsafe || Main.tile[i, j].WallType == WallID.LihzahrdBrickUnsafe)
                             return true;
-                        if (Main.tile[i,j].LiquidAmount != 0 && Main.tile[i, j].LiquidType == LiquidID.Shimmer)
+                        if (Main.tile[i, j].LiquidAmount != 0 && Main.tile[i, j].LiquidType == LiquidID.Shimmer)
                             return true;
                     }
                 }
@@ -441,26 +593,26 @@ namespace CalamityMod.World
             }
         }
 
-        private static void CreateBlockedHoneyCube(int x, int y)
-        {
-            for (int i = x - 1; i <= x + 2; i++)
-            {
-                for (int j = y - 1; j <= y + 2; j++)
-                {
-                    if (i >= x && i <= x + 1 && j >= y && j <= y + 1)
-                    {
-                        Main.tile[i, j].Get<TileWallWireStateData>().HasTile = false;
-                        Main.tile[i, j].LiquidAmount = byte.MaxValue;
-                        Main.tile[i, j].Get<LiquidData>().LiquidType = LiquidID.Honey;
-                    }
-                    else
-                    {
-                        Main.tile[i, j].Get<TileWallWireStateData>().HasTile = true;
-                        Main.tile[i, j].TileType = TileID.Hive;
-                    }
-                }
-            }
-        }
+        //private static void CreateBlockedHoneyCube(int x, int y)
+        //{
+        //    for (int i = x - 1; i <= x + 2; i++)
+        //    {
+        //        for (int j = y - 1; j <= y + 2; j++)
+        //        {
+        //            if (i >= x && i <= x + 1 && j >= y && j <= y + 1)
+        //            {
+        //                Main.tile[i, j].Get<TileWallWireStateData>().HasTile = false;
+        //                Main.tile[i, j].LiquidAmount = byte.MaxValue;
+        //                Main.tile[i, j].Get<LiquidData>().LiquidType = LiquidID.Honey;
+        //            }
+        //            else
+        //            {
+        //                Main.tile[i, j].Get<TileWallWireStateData>().HasTile = true;
+        //                Main.tile[i, j].TileType = TileID.Hive;
+        //            }
+        //        }
+        //    }
+        //}
 
         private static bool SpotActuallyNotInHive(int x, int y)
         {
@@ -598,12 +750,13 @@ namespace CalamityMod.World
 
             int index = 0;
 
-            chest.item[index++].SetDefaults(random.Next(FocusLootHoney));
+            chest.item[index].SetDefaults(random.Next(FocusLootHoney));
+            chest.item[index++].Prefix(-1);
 
             if (random.Next(3) <= 1)
             {
                 chest.item[index].SetDefaults(random.Next(BarLootHoney));
-                chest.item[index].SetDefaults(random.Next(7, 15));
+                chest.item[index++].stack = random.Next(7, 15);
             }
             else
             {

@@ -1,23 +1,25 @@
-﻿
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
+﻿using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
+    [PierceResistException]
     public class MetalShard : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
+        public bool Stuck = false;
         public override void SetDefaults()
         {
             Projectile.friendly = true;
             Projectile.width = 12;
             Projectile.height = 12;
             Projectile.DamageType = RogueDamageClass.Instance;
-            Projectile.penetrate = 10;
+            Projectile.penetrate = 2;
             Projectile.extraUpdates = 1;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 60;
@@ -25,16 +27,21 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void AI()
         {
-            //Rotation
-            if (Projectile.ai[0] == 0f)
-                Projectile.rotation += 0.1f;
-            //Gravity
-            Projectile.velocity.Y += 0.1f;
-            if (Projectile.velocity.Y > 16f)
-                Projectile.velocity.Y = 16f;
+            // Rotation and gravity if not stuck
+            if (!Stuck)
+            {
+                if (Projectile.ai[0] == 0f)
+                    Projectile.rotation += 0.1f;
+
+                Projectile.velocity.Y += 0.1f;
+                if (Projectile.velocity.Y > 16f)
+                    Projectile.velocity.Y = 16f;
+            }
             //Sticky Behaviour
             Projectile.StickyProjAI(15);
         }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => Stuck = true;
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => Projectile.ModifyHitNPCSticky(8);
 
@@ -55,12 +62,15 @@ namespace CalamityMod.Projectiles.Rogue
             switch (Projectile.localAI[1])
             {
 
-                case 2f: texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/MetalShard2").Value;
-                         break;
-                case 3f: texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/MetalShard3").Value;
-                         break;
-                default: texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/MetalShard").Value;
-                         break;
+                case 2f:
+                    texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/MetalShard2").Value;
+                    break;
+                case 3f:
+                    texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/MetalShard3").Value;
+                    break;
+                default:
+                    texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/MetalShard").Value;
+                    break;
             }
             Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, new Rectangle?(new Rectangle(0, 0, texture.Width, texture.Height)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2(texture.Width / 2f, texture.Height / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;

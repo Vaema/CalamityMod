@@ -14,8 +14,9 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 8;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
         }
 
         public override void SetDefaults()
@@ -37,16 +38,15 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 float minDist = 999f;
                 int index = 0;
-                for (int i = 0; i < Main.npc.Length; i++)
+                foreach (NPC npc in Main.ActiveNPCs)
                 {
-                    NPC npc = Main.npc[i];
                     if (npc.CanBeChasedBy(Projectile, false))
                     {
                         float dist = (Projectile.Center - npc.Center).Length();
                         if (dist < minDist)
                         {
                             minDist = dist;
-                            index = i;
+                            index = npc.whoAmI;
                         }
                     }
                 }
@@ -72,13 +72,13 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (Projectile.ai[0] == 0f)
             {
-                Texture2D knife1 = ModContent.Request<Texture2D>(Texture).Value;
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 3, knife1);
+                Texture2D knife1 = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 3, knife1);
             }
             else if (Projectile.ai[0] == 1f)
             {
                 Texture2D knife2 = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/VeneratedKnife2").Value;
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 3, knife2);
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 3, knife2);
             }
             return false;
         }

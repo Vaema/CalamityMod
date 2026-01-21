@@ -21,10 +21,13 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
-            if (Projectile.velocity.Y <= 0f)
-                Projectile.velocity.Y = 0.1f;
+            if (Projectile.ai[1] != 1f)
+            {
+                if (Projectile.velocity.Y <= -2f)
+                    Projectile.velocity.Y = -2f;
+            }
+            Projectile.velocity.Y += 0.025f;
             Projectile.rotation += Projectile.velocity.Y;
-            Projectile.velocity.Y *= 1.05f;
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
@@ -36,7 +39,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             for (int i = 0; i <= 2; i++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 32, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Sand, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
             }
         }
     }

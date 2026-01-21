@@ -1,13 +1,13 @@
-﻿using Terraria.DataStructures;
+﻿using System;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
+using Terraria.Graphics.Effects;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using Microsoft.Xna.Framework.Graphics;
-using CalamityMod.Particles;
-using Terraria.Graphics.Effects;
-using System;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -23,8 +23,9 @@ namespace CalamityMod.Projectiles.Ranged
 
         public Player Owner => Main.player[Projectile.owner];
 
+        // 15NOV2024: Ozzatron: clamped mouse position unnecessary. All uses are direction only.
         public Vector2 MousePosition => Owner.Calamity().mouseWorld - Owner.MountedCenter;
-        public const float WeaponLength = 52f;
+        public const float WeaponLength = 62f;
         public const float MaxSightAngle = MathHelper.Pi * (2f / 3f);
 
         public Color ScopeColor => Color.White;
@@ -73,7 +74,7 @@ namespace CalamityMod.Projectiles.Ranged
                 // Play a sound to let the player know they're at max charge
                 if (Charge == MaxChargeOrTargetRotation)
                     SoundEngine.PlaySound(SoundID.Item82 with { Volume = SoundID.Item82.Volume * 0.7f }, Owner.MountedCenter);
-                
+
                 // Idly emit particles every other frame while at max charge
                 if (ChargePercent == 1f && Charge % 2 == 0)
                 {
@@ -106,7 +107,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                     // Apply some recoil to the player
                     Owner.velocity += direction * (ChargePercent * -5f);
-                    Owner.Calamity().GeneralScreenShakePower = 4f * ChargePercent;
+                    Owner.SetScreenshake(4f * ChargePercent);
 
                     // Spawn the laser
                     int shotDamage = (int)(Projectile.damage * ChargePercent);
@@ -151,7 +152,7 @@ namespace CalamityMod.Projectiles.Ranged
                 float newRotation = UpdateAimPostShotRecoil(MaxChargeOrTargetRotation.ToRotationVector2());
                 Owner.heldProj = Projectile.whoAmI;
                 Owner.itemRotation = newRotation;
-            }    
+            }
         }
 
         // Gently adjusts the aim vector of the cannon to point towards the mouse.
@@ -169,7 +170,7 @@ namespace CalamityMod.Projectiles.Ranged
             // Converge the sights
             float spread = (1f - ChargePercent) * MaxSightAngle;
             float halfAngle = spread / 2f;
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
 
             Color sightsColor = Color.Lerp(Color.LightBlue, Color.Crimson, ChargePercent);
 

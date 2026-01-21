@@ -1,6 +1,9 @@
+﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Rogue
 {
     public class CraniumSmasherProj : ModProjectile, ILocalizedModType
@@ -25,21 +28,23 @@ namespace CalamityMod.Projectiles.Rogue
         public override void AI()
         {
             Projectile.ai[0] += 1f;
-            if (Projectile.ai[0] >= 3f)
-            {
+            if (Projectile.ai[0] >= 5f)
                 Projectile.tileCollide = true;
-            }
+
             Projectile.rotation += Projectile.velocity.X * 0.02f;
-            Projectile.velocity.Y = Projectile.velocity.Y + 0.085f;
-            Projectile.velocity.X = Projectile.velocity.X * 0.99f;
+            Projectile.velocity.X *= 0.99f;
+            Projectile.velocity.Y += 0.085f;
         }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
 
         public override void OnKill(int timeLeft)
         {
             for (int i = 0; i < 5; i++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 5, Projectile.oldVelocity.X / 2, Projectile.oldVelocity.Y / 2, 0, default, 2f);
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 6, Projectile.oldVelocity.X / 2, Projectile.oldVelocity.Y / 2, 0, default, 1f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Blood, Projectile.oldVelocity.X / 2, Projectile.oldVelocity.Y / 2, 0, default, 2f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Torch, Projectile.oldVelocity.X / 2, Projectile.oldVelocity.Y / 2, 0, default, 1f);
             }
         }
 

@@ -17,7 +17,7 @@ namespace CalamityMod.NPCs.Astral
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 2;
+            Main.npcFrameCount[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -26,10 +26,10 @@ namespace CalamityMod.NPCs.Astral
             NPC.width = 36;
             NPC.height = 31;
             NPC.aiStyle = NPCAIStyleID.Slime;
-            NPC.defense = 8;
-            NPC.lifeMax = 200;
-            NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 0, 10, 0);
+            NPC.defense = 18;
+            NPC.lifeMax = 240;
+            NPC.knockBackResist = 0.6f;
+            NPC.value = Item.buyPrice(silver: 2);
             NPC.alpha = 60;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
@@ -39,20 +39,25 @@ namespace CalamityMod.NPCs.Astral
             if (DownedBossSystem.downedAstrumAureus)
             {
                 NPC.damage = 65;
-                NPC.defense = 18;
-                NPC.lifeMax = 300;
+                NPC.defense = 28;
+                NPC.lifeMax = 360;
             }
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<AbovegroundAstralBiome>().Type };
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<AstralInfectionBiome>().Type };
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.AstralSlime")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.AstralSlime")
             });
+        }
+
+        public override void AI()
+        {
+            NPC.damage = (NPC.velocity.Y == 0f || NPC.velocity.Length() < 3f) ? 0 : NPC.defDamage;
         }
 
         public override void FindFrame(int frameHeight)
@@ -86,13 +91,13 @@ namespace CalamityMod.NPCs.Astral
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 75, true);
+                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 180);
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<Stardust>(), 2, 1, 2, 1, 3));
-            npcLoot.AddIf(() => DownedBossSystem.downedAstrumAureus, ModContent.ItemType<AbandonedSlimeStaff>(), 7);
+            npcLoot.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<StarblightSoot>(), 2, 1, 2, 1, 3));
+            npcLoot.AddIf(() => DownedBossSystem.downedAstrumAureus, ModContent.ItemType<AbandonedSlimeStaff>(), 10);
 
             var postDeus = npcLoot.DefineConditionalDropSet(() => DownedBossSystem.downedAstrumDeus);
             postDeus.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<AstralOre>(), 1, 8, 12, 11, 16));

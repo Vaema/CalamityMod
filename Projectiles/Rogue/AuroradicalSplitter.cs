@@ -1,11 +1,11 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Rogue
 {
     public class AuroradicalSplitter : ModProjectile, ILocalizedModType
@@ -21,8 +21,8 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -75,7 +75,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
@@ -115,11 +115,11 @@ namespace CalamityMod.Projectiles.Rogue
                 int astral = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, Main.rand.Next(dustTypes), 0f, 0f, 0, default, 1.5f);
                 Main.dust[astral].noGravity = true;
                 Main.dust[astral].velocity *= 3f;
-                astral = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 173, 0f, 0f, 50, default, 1f);
+                astral = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 50, default, 1f);
                 Main.dust[astral].velocity *= 2f;
                 Main.dust[astral].noGravity = true;
             }
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 for (int g = 0; g < 3; g++)
                 {

@@ -1,5 +1,4 @@
-using CalamityMod.NPCs.Cryogen;
-using Terraria;
+﻿using CalamityMod.NPCs.Cryogen;
 using Terraria.ID;
 using Terraria.ModLoader;
 

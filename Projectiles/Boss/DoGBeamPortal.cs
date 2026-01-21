@@ -1,14 +1,14 @@
-﻿using CalamityMod.Dusts;
+﻿using System;
+using System.IO;
+using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.NPCs;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -19,7 +19,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 6;
+            Main.projFrames[Type] = 6;
         }
 
         public override void SetDefaults()
@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Boss
 
                 for (int i = 0; i < 15; i++)
                 {
-                    int ectoDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 1.2f);
+                    int ectoDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 1.2f);
                     Main.dust[ectoDust].velocity *= 3f;
                     Main.dust[ectoDust].noGravity = true;
                     if (Main.rand.NextBool())
@@ -71,10 +71,10 @@ namespace CalamityMod.Projectiles.Boss
                 }
                 for (int j = 0; j < 30; j++)
                 {
-                    int ectoDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 1.7f);
+                    int ectoDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 1.7f);
                     Main.dust[ectoDust2].noGravity = true;
                     Main.dust[ectoDust2].velocity *= 5f;
-                    ectoDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 1f);
+                    ectoDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.Ectoplasm, 0f, 0f, 100, default, 1f);
                     Main.dust[ectoDust2].noGravity = true;
                     Main.dust[ectoDust2].velocity *= 2f;
                 }
@@ -84,10 +84,9 @@ namespace CalamityMod.Projectiles.Boss
             }
 
             // Difficulty modes
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             Lighting.AddLight(Projectile.Center, 0f, 0.95f, 1.15f);
 
@@ -102,7 +101,7 @@ namespace CalamityMod.Projectiles.Boss
 
             double deg = Projectile.ai[1];
             double rad = deg * (Math.PI / 180);
-            double dist = bossRush ? 360D : death ? 400D : revenge ? 420D : expertMode ? 440D : 480D;
+            double dist = death ? 400D : revenge ? 420D : expertMode ? 440D : 480D;
             Projectile.position.X = player.Center.X - (int)(Math.Cos(rad) * dist) - Projectile.width / 2;
             Projectile.position.Y = player.Center.Y - (int)(Math.Sin(rad) * dist) - Projectile.height / 2;
             Projectile.ai[1] += 1f;
@@ -118,7 +117,6 @@ namespace CalamityMod.Projectiles.Boss
                     {
                         SoundEngine.PlaySound(SoundID.Item33, Projectile.Center);
                         float speed = death ? 5f : revenge ? 4.5f : expertMode ? 4f : 3f;
-                        speed *= Main.npc[CalamityGlobalNPC.voidBoss].ai[1];
                         int totalProjectiles = 3;
                         float radians = MathHelper.TwoPi / totalProjectiles;
                         for (int i = 0; i < totalProjectiles; i++)

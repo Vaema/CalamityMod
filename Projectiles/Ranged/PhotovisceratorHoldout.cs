@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using static CalamityMod.Items.Weapons.Ranged.Photoviscerator;
@@ -20,6 +23,7 @@ namespace CalamityMod.Projectiles.Ranged
         public ref float ShootTimer => ref Projectile.ai[0];
         public ref float ForcedLifespan => ref Projectile.ai[1];
         public Color sparkColor;
+        public Color sparkColorSmooth;
         public int Time = 0;
         public ref int PhotoTimer => ref Main.player[Projectile.owner].Calamity().PhotoTimer;
         public SlotId PhotoUseSound;
@@ -52,6 +56,19 @@ namespace CalamityMod.Projectiles.Ranged
                 2 => Color.Orange,
                 _ => Color.LawnGreen,
             };
+
+            List<Color> eColors = new List<Color>()
+            {
+                Color.OrangeRed,
+                Color.MediumTurquoise,
+                Color.Orange,
+                Color.LawnGreen
+            };
+            float rate = (Main.GlobalTimeWrappedHourly * 8);
+            int colorIndex = (int)(rate / 2 % eColors.Count);
+            Color currentColor = eColors[colorIndex];
+            Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
+            sparkColorSmooth = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
 
             if (Owner.Calamity().mouseRight)
             {
@@ -101,7 +118,7 @@ namespace CalamityMod.Projectiles.Ranged
                 return;
 
             // Immediately killed if ammo is out            
-            if (!Owner.HasAmmo(Owner.ActiveItem()))
+            if (!Owner.HasAmmo(Owner.HeldItem))
             {
                 Projectile.Kill();
                 return;
@@ -134,12 +151,12 @@ namespace CalamityMod.Projectiles.Ranged
                 Sound3.Pitch = 0 - (PhotoTimer * 0.002f);
 
             // Consume ammo and retrieve projectile stats; has a chance to not consume ammo
-            Owner.PickAmmo(Owner.ActiveItem(), out _, out float shootSpeed, out int damage, out float knockback, out _, Main.rand.NextFloat() <= AmmoNotConsumeChance);
+            Owner.PickAmmo(Owner.HeldItem, out _, out float shootSpeed, out int damage, out float knockback, out _, Main.rand.Next(100) < AmmoSavedPercent);
 
             var source = Projectile.GetSource_FromThis();
             Vector2 position = armPosition + Projectile.velocity * 55f - verticalOffset * 10f;
             Vector2 velocity = Projectile.velocity * shootSpeed;
-            
+
             if (PhotoTimer == 1)
             {
                 for (int i = 0; i < 30; i++)
@@ -151,25 +168,25 @@ namespace CalamityMod.Projectiles.Ranged
                         2 => Color.Orange,
                         _ => Color.LawnGreen,
                     };
-                    SquishyLightParticle exoEnergy = new(position, (Projectile.velocity * 3).RotatedByRandom(0.4f) * Main.rand.NextFloat(0.3f, 1.6f), 0.9f, sparkColor, 60);
+                    SquishyLightParticle exoEnergy = new(position, (Projectile.velocity * 3).RotatedByRandom(0.4f) * Main.rand.NextFloat(0.3f, 1.6f), 0.9f, sparkColorSmooth, 60);
                     GeneralParticleHandler.SpawnParticle(exoEnergy);
                 }
-                SoundEngine.PlaySound(DeadSunsWind.Shoot with { Volume = 1.9f}, Owner.MountedCenter);
+                SoundEngine.PlaySound(DeadSunsWind.ShootSound with { Volume = 1.9f }, Owner.MountedCenter);
             }
 
-            Dust dust = Dust.NewDustPerfect(position, 263, (Projectile.velocity * 10).RotatedByRandom(0.6f) * Main.rand.NextFloat(0.3f, 1.6f));
+            Dust dust = Dust.NewDustPerfect(position, DustID.PortalBolt, (Projectile.velocity * 10).RotatedByRandom(0.6f) * Main.rand.NextFloat(0.3f, 1.6f));
             dust.noGravity = true;
             dust.scale = Main.rand.NextFloat(1.3f, 1.8f) - PhotoTimer * 0.02f;
-            dust.color = sparkColor;
-            Dust dust2 = Dust.NewDustPerfect(position, 263, (Projectile.velocity * 15).RotatedByRandom(0.25f) * Main.rand.NextFloat(0.3f, 1.6f));
+            dust.color = sparkColorSmooth;
+            Dust dust2 = Dust.NewDustPerfect(position, DustID.PortalBolt, (Projectile.velocity * 15).RotatedByRandom(0.25f) * Main.rand.NextFloat(0.3f, 1.6f));
             dust2.noGravity = true;
             dust2.scale = Main.rand.NextFloat(1.3f, 1.8f) - PhotoTimer * 0.02f;
-            dust2.color = sparkColor;
+            dust2.color = sparkColorSmooth;
             if (Main.rand.NextBool())
             {
-                MediumMistParticle smoke = new MediumMistParticle(position + Main.rand.NextVector2Circular(5, 5), (Projectile.velocity * 15).RotatedByRandom(0.15f) * Main.rand.NextFloat(0.5f, 2.1f), sparkColor, Color.White, Main.rand.NextFloat(1.8f, 2.9f) - PhotoTimer * 0.026f, 160, Main.rand.NextFloat(-3f, 3f));
+                MediumMistParticle smoke = new MediumMistParticle(position + Main.rand.NextVector2Circular(5, 5), (Projectile.velocity * 15).RotatedByRandom(0.15f) * Main.rand.NextFloat(0.5f, 2.1f), sparkColorSmooth, Color.White, Main.rand.NextFloat(1.8f, 2.9f) - PhotoTimer * 0.026f, 160, Main.rand.NextFloat(-3f, 3f));
                 GeneralParticleHandler.SpawnParticle(smoke);
-                MediumMistParticle smoke2 = new MediumMistParticle(position + Main.rand.NextVector2Circular(5, 5), (Projectile.velocity * 18).RotatedByRandom(0.05f) * Main.rand.NextFloat(1.8f, 3.1f), sparkColor, Color.White, Main.rand.NextFloat(0.8f, 1.9f) - PhotoTimer * 0.02f, 160, Main.rand.NextFloat(-3f, 3f));
+                MediumMistParticle smoke2 = new MediumMistParticle(position + Main.rand.NextVector2Circular(5, 5), (Projectile.velocity * 18).RotatedByRandom(0.05f) * Main.rand.NextFloat(1.8f, 3.1f), sparkColorSmooth, Color.White, Main.rand.NextFloat(0.8f, 1.9f) - PhotoTimer * 0.02f, 160, Main.rand.NextFloat(-3f, 3f));
                 GeneralParticleHandler.SpawnParticle(smoke2);
             }
 
@@ -177,7 +194,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.NewProjectile(source, position, velocity.RotatedByRandom(0.005f), ProjectileType<ExoFire>(), (int)(damage * (1 - PhotoTimer / 59.9f)), knockback, Projectile.owner, Main.rand.NextFloat(0f, 3f));
 
             // Shoots light bombs every once in a while, rate of which equals to the item's use time
-            if (ShootTimer >= Owner.ActiveItem().useTime * 10 && PhotoTimer == 0)
+            if (ShootTimer >= Owner.HeldItem.useTime * 10 && PhotoTimer == 0)
             {
                 ShootTimer = 0f;
 
@@ -196,11 +213,11 @@ namespace CalamityMod.Projectiles.Ranged
         public void RightClickAttack(Vector2 armPosition, Vector2 verticalOffset)
         {
             // Multiplied by the ratio of attack speed gained from modifiers
-            ShootTimer = (RightClickCooldown * Owner.ActiveItem().useTime / (float)LightBombCooldown) - 1f;
+            ShootTimer = (RightClickCooldown * Owner.HeldItem.useTime / (float)LightBombCooldown) - 1f;
             ForcedLifespan = ShootTimer;
 
             // Consume ammo and retrieve projectile stats
-            Owner.PickAmmo(Owner.ActiveItem(), out _, out float shootSpeed, out int damage, out float knockback, out _);
+            Owner.PickAmmo(Owner.HeldItem, out _, out float shootSpeed, out int damage, out float knockback, out _);
 
             var source = Projectile.GetSource_FromThis();
             Vector2 position = armPosition + Projectile.velocity * 55f - verticalOffset * 10f;
@@ -218,14 +235,14 @@ namespace CalamityMod.Projectiles.Ranged
                 GeneralParticleHandler.SpawnParticle(pulse);
                 DirectionalPulseRing pulse2 = new DirectionalPulseRing(position, (Projectile.velocity * 10).RotatedByRandom(0.1f) * Main.rand.NextFloat(0.8f, 3.1f), sparkColor, new Vector2(1, 1), 0, Main.rand.NextFloat(0.2f, 0.35f), 0f, 40);
                 GeneralParticleHandler.SpawnParticle(pulse2);
-                Dust dust = Dust.NewDustPerfect(position, 263, (Projectile.velocity * 10).RotatedByRandom(0.6f) * Main.rand.NextFloat(0.3f, 1.6f));
+                Dust dust = Dust.NewDustPerfect(position, DustID.PortalBolt, (Projectile.velocity * 10).RotatedByRandom(0.6f) * Main.rand.NextFloat(0.3f, 1.6f));
                 dust.noGravity = true;
                 dust.scale = Main.rand.NextFloat(1.3f, 1.8f);
                 dust.color = sparkColor;
             }
-            SoundEngine.PlaySound(HalleysInferno.Shoot with { Volume = 0.4f } , Owner.MountedCenter);
+            SoundEngine.PlaySound(HalleysInferno.ShootSound with { Volume = 0.4f }, Owner.MountedCenter);
 
-            int rightClickDamage = (int)(0.5f * damage);
+            int rightClickDamage = (int)(0.70f * damage);
             Projectile.NewProjectile(source, position, velocity, ProjectileType<ExoFlareCluster>(), rightClickDamage, knockback, Projectile.owner);
         }
 
@@ -233,14 +250,13 @@ namespace CalamityMod.Projectiles.Ranged
         {
             if (Main.myPlayer == Projectile.owner)
             {
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, this is only used to aim the Photoviscerator itself
+
                 float interpolant = Utils.GetLerpValue(5f, 90f, Projectile.Distance(Main.MouseWorld), true);
                 Vector2 oldVelocity = Projectile.velocity;
                 Projectile.velocity = Vector2.Lerp(Projectile.velocity, Projectile.SafeDirectionTo(Main.MouseWorld), interpolant);
                 if (Projectile.velocity != oldVelocity)
-                {
-                    Projectile.netSpam = 0;
-                    Projectile.netUpdate = true;
-                }
+                    Projectile.ForceNetUpdate();
             }
 
             Projectile.position = armPosition - Projectile.Size * 0.5f + Projectile.velocity.SafeNormalize(Vector2.UnitY) * 28f;
@@ -268,6 +284,17 @@ namespace CalamityMod.Projectiles.Ranged
             if (SoundEngine.TryGetActiveSound(PhotoUseSound, out var Sound))
                 Sound?.Stop();
             PhotoTimer = 90;
+        }
+
+        public override void PostDraw(Color lightColor)
+        {
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            Vector2 origin = new Vector2(85f, 33f);
+            SpriteEffects spriteEffects = SpriteEffects.None;
+            if (Projectile.spriteDirection == -1)
+                spriteEffects = SpriteEffects.FlipHorizontally;
+
+            Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/PhotovisceratorHoldoutGlow").Value, Projectile.Center - Main.screenPosition, new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, 0, texture.Width, texture.Height)), Color.White, Projectile.rotation, origin, Projectile.scale, spriteEffects, 0);
         }
     }
 }

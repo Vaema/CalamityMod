@@ -1,13 +1,14 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
+using CalamityMod.Graphics.Primitives;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -16,17 +17,17 @@ namespace CalamityMod.Projectiles.Ranged
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
-        public PrimitiveTrail TrailDrawer = null;
         private const int Lifetime = 180;
-        private static Color ShaderColorOne = new Color(237, 194, 66);
-        private static Color ShaderColorTwo = new Color(235, 227, 117);
-        private static Color ShaderEndColor = new Color(199, 153, 26);
+
+        public int time = 0;
+        public int fadeTime = 22;
+        public bool colorAlt = false;
 
         public override void SetStaticDefaults()
         {
             // While this projectile doesn't have afterimages, it keeps track of old positions for its primitive drawcode.
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 21;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 21;
         }
 
         public override void SetDefaults()
@@ -39,15 +40,67 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.ignoreWater = true;
             Projectile.timeLeft = Lifetime;
             Projectile.MaxUpdates = 3;
-            Projectile.penetrate = 2; // Can hit up to two enemies. Will explode extremely soon after hitting the first, though.
+            Projectile.penetrate = -1; // Can hit many enemies. Will explode extremely soon after hitting the first, though.
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
-        public override bool? CanDamage() => Projectile.timeLeft < Lifetime - 4 ? null : false;
+        public override bool? CanDamage() => (Projectile.timeLeft < Lifetime - 4) ? null : false;
 
-        public override void AI() => Lighting.AddLight(Projectile.Center, ShaderColorOne.ToVector3());
+        public override void AI()
+        {
+            Lighting.AddLight(Projectile.Center, Color.Gold.ToVector3());
+            if (time % 8 == 0 && time > 6)
+            {
+                bool isSpark = Main.rand.NextBool(3);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, isSpark ? 278 : ModContent.DustType<LightDust>(), (Projectile.velocity * 2).RotatedByRandom(0.2f) * Main.rand.NextFloat(0.2f, 1f));
+                dust.noGravity = true;
+                dust.velocity *= (isSpark ? 0.5f : 1);
+                dust.scale = Main.rand.NextFloat(0.95f, 1.25f) * (isSpark ? 0.9f : 1);
+                dust.color = Main.rand.NextBool(5) ? Color.Khaki : Color.Goldenrod;
+                if (isSpark)
+                    dust.noGravity = false;
+                else
+                    dust.noLightEmittence = true;
+            }
+            if (time == 4)
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    if (i < 3)
+                    {
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), (Projectile.velocity).RotatedByRandom(0.8f) * Main.rand.NextFloat(0.2f, 1f));
+                        dust.noGravity = true;
+                        dust.scale = Main.rand.NextFloat(0.85f, 1.15f);
+                        dust.color = Main.rand.NextBool(5) ? Color.Khaki : Color.Goldenrod;
+                        dust.noLightEmittence = true;
+                    }
+                    else
+                    {
+                        Particle spark = new CustomSpark(Projectile.Center, (Projectile.velocity).RotatedByRandom(0.8f) * Main.rand.NextFloat(0.2f, 1f), "CalamityMod/Particles/ProvidenceMarkParticle", false, 17, Main.rand.NextFloat(1.15f, 1.3f), Color.Lerp(Color.Orchid, Color.White, Main.rand.NextFloat(0, 0.7f)), new Vector2(1.3f, 0.5f), true, false, 0, false, false, Main.rand.NextFloat(0.3f, 0.4f));
+                        GeneralParticleHandler.SpawnParticle(spark);
+                    }
+
+                    Particle spark2 = new GlowSparkParticle(Projectile.Center, (Projectile.velocity).RotatedByRandom(0.8f) * Main.rand.NextFloat(0.2f, 1f), false, 9, 0.017f, Color.Goldenrod, new Vector2(1.5f, 0.7f), true, false, 1.3f);
+                    GeneralParticleHandler.SpawnParticle(spark2);
+                }
+            }
+            if (time == 0)
+                colorAlt = Main.rand.NextBool();
+            if (Projectile.timeLeft < 8 && fadeTime > 0)
+            {
+                Projectile.velocity *= 0.92f;
+                Projectile.scale -= 0.023f;
+                fadeTime--;
+                Projectile.timeLeft++;
+                if (fadeTime == 6)
+                {
+                    Particle spark2 = new GlowSparkParticle(Projectile.Center, Projectile.velocity, false, 7, 0.012f, Color.Goldenrod, new Vector2(1.5f, 0.7f), true, false, 2);
+                    GeneralParticleHandler.SpawnParticle(spark2);
+                }
+            }
+            time++;
+        }
 
         private void RestrictLifetime()
         {
@@ -68,12 +121,25 @@ namespace CalamityMod.Projectiles.Ranged
         {
             RestrictLifetime();
             target.AddBuff(ModContent.BuffType<HolyFlames>(), 180);
-        }
 
-        private float PrimitiveWidthFunction(float completionRatio)
+            // Explode into a bunch of holy fire.
+            for (int i = 0; i < 3; i++)
+            {
+                LineParticle spark2 = new LineParticle(Projectile.Center + Main.rand.NextVector2Circular(13, 13), Projectile.velocity * Main.rand.NextFloat(0.5f, 2.1f), false, 12, 1.1f, colorAlt ? (Main.rand.NextBool(5) ? Color.Khaki : Color.Goldenrod) : (Main.rand.NextBool(5) ? Color.Goldenrod : Color.DarkGoldenrod));
+                GeneralParticleHandler.SpawnParticle(spark2);
+            }
+        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            if (Projectile.numHits > 0)
+                Projectile.damage = (int)(Projectile.damage * 0.8f);
+            if (Projectile.damage < 1)
+                Projectile.damage = 1;
+        }
+        private float PrimitiveWidthFunction(float completionRatio, Vector2 vertexPos)
         {
             float arrowheadCutoff = 0.36f;
-            float width = 39f;
+            float width = 29f * Projectile.scale;
             float minHeadWidth = 0.02f;
             float maxHeadWidth = width;
             if (completionRatio <= arrowheadCutoff)
@@ -81,7 +147,7 @@ namespace CalamityMod.Projectiles.Ranged
             return width;
         }
 
-        private Color PrimitiveColorFunction(float completionRatio)
+        private Color PrimitiveColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float endFadeRatio = 0.41f;
 
@@ -92,49 +158,20 @@ namespace CalamityMod.Projectiles.Ranged
             float cosArgument = completionRatio * completionRatioFactor - Main.GlobalTimeWrappedHourly * globalTimeFactor + endFadeTerm;
             float startingInterpolant = (float)Math.Cos(cosArgument) * 0.5f + 0.5f;
 
-            float colorLerpFactor = 0.6f;
-            Color startingColor = Color.Lerp(ShaderColorOne, ShaderColorTwo, startingInterpolant * colorLerpFactor);
+            float colorLerpFactor = 0.8f;
+            Color startingColor = Color.Lerp(colorAlt ? Color.DarkGoldenrod : Color.Goldenrod, Color.Khaki, startingInterpolant * colorLerpFactor);
 
-            return Color.Lerp(startingColor, ShaderEndColor, MathHelper.SmoothStep(0f, 1f, Utils.GetLerpValue(0f, endFadeRatio, completionRatio, true)));
+            return Color.Lerp(startingColor, colorAlt ? (Color.DarkGoldenrod with { A = 0 } * 0.8f) : (Color.Goldenrod * 0.8f), MathHelper.SmoothStep(0f, 1f, Utils.GetLerpValue(0f, endFadeRatio, completionRatio, true)));
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (TrailDrawer is null)
-                TrailDrawer = new PrimitiveTrail(PrimitiveWidthFunction, PrimitiveColorFunction, specialShader: GameShaders.Misc["CalamityMod:TrailStreak"]);
-
-            GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/FabstaffStreak"));
-            Vector2 overallOffset = Projectile.Size * 0.5f - Main.screenPosition;
+            GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
+            Vector2 overallOffset = Projectile.Size * 0.5f;
             overallOffset += Projectile.velocity * 1.4f;
-            TrailDrawer.Draw(Projectile.oldPos, overallOffset, 92); // 58
+            int numPoints = 92;
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_,_) => overallOffset, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), numPoints);
             return false;
-        }
-
-        public override void OnKill(int timeLeft)
-        {
-            SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
-
-            // Explode into a bunch of holy fire on death.
-            for (int i = 0; i < 10; i++)
-            {
-                Dust holyFire = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.ProfanedFire, 0f, 0f, 100, default, 2f);
-                holyFire.velocity *= 3f;
-
-                if (Main.rand.NextBool())
-                {
-                    holyFire.scale = 0.5f;
-                    holyFire.fadeIn = Main.rand.NextFloat(1f, 2f);
-                }
-            }
-            for (int i = 0; i < 20; i++)
-            {
-                Dust holyFire = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, 246, 0f, 0f, 100, default, 3f);
-                holyFire.noGravity = true;
-                holyFire.velocity *= 5f;
-
-                holyFire = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, 246, 0f, 0f, 100, default, 2f);
-                holyFire.velocity *= 2f;
-            }
         }
     }
 }

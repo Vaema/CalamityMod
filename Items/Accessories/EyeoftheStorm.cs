@@ -1,11 +1,10 @@
 ﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using CalamityMod.Projectiles.Summon;
-using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Microsoft.Xna.Framework;
-using CalamityMod.Items.Potions.Alcohol;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -16,7 +15,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 20;
             Item.height = 26;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.accessory = true;
         }
@@ -34,23 +33,20 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.cloudWaifu = true;
+            modPlayer.cloudElemental = true;
             if (player.whoAmI == Main.myPlayer)
             {
-                if (player.FindBuffIndex(ModContent.BuffType<CloudyWaifu>()) == -1)
+                if (player.FindBuffIndex(ModContent.BuffType<CloudElemental>()) == -1)
                 {
-                    player.AddBuff(ModContent.BuffType<CloudyWaifu>(), 3600, true);
+                    player.AddBuff(ModContent.BuffType<CloudElemental>(), 3600, true);
                 }
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<CloudElementalMinion>()] < 1)
                 {
                     var source = player.GetSource_Accessory(Item);
-
-                    // 08DEC2023: Ozzatron: Cloud Elementals spawned with Old Fashioned active will retain their bonus damage indefinitely. Oops. Don't care.
-                    int baseDamage = player.ApplyArmorAccDamageBonusesTo(45);
-                    int damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(baseDamage);
+                    int damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(45);
 
                     var p = Projectile.NewProjectileDirect(source, player.Center, -Vector2.UnitY, ModContent.ProjectileType<CloudElementalMinion>(), damage, 2f, Main.myPlayer, 0f, 0f);
-                    p.originalDamage = baseDamage;
+                    p.originalDamage = 45;
                 }
             }
         }
@@ -58,12 +54,12 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateVanity(Player player)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.cloudWaifuVanity = true;
+            modPlayer.cloudElementalVanity = true;
             if (player.whoAmI == Main.myPlayer)
             {
-                if (player.FindBuffIndex(ModContent.BuffType<CloudyWaifu>()) == -1)
+                if (player.FindBuffIndex(ModContent.BuffType<CloudElemental>()) == -1)
                 {
-                    player.AddBuff(ModContent.BuffType<CloudyWaifu>(), 3600, true);
+                    player.AddBuff(ModContent.BuffType<CloudElemental>(), 3600, true);
                 }
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<CloudElementalMinion>()] < 1)
                 {

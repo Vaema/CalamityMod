@@ -1,8 +1,8 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+﻿using System;
+using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -19,21 +19,20 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 72;
             Item.height = 32;
-            Item.damage = 30;
+            Item.damage = 29;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 6;
             Item.useAnimation = 6;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2.5f;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.UseSound = SoundID.Item11;
             Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<ArcherfishShot>();
+            Item.shoot = ModContent.ProjectileType<MegalodonShot>();
             Item.shootSpeed = 16f;
             Item.useAmmo = AmmoID.Bullet;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-5, 0);
@@ -42,7 +41,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             // Reposition to the gun's tip + add some inaccuracy
             Vector2 newPos = position + new Vector2(64f, player.direction * (Math.Abs(velocity.SafeNormalize(Vector2.Zero).X) < 0.02f ? -2f : -8f)).RotatedBy(velocity.ToRotation());
-            Vector2 newVel = velocity.RotatedByRandom(MathHelper.ToRadians(5f));
+            Vector2 newVel = velocity.RotatedByRandom(MathHelper.ToRadians(3f));
 
             // Fire either the bullet or the water jet, depending on cadence.
             int projectileToFire = fireWater ? Item.shoot : type;

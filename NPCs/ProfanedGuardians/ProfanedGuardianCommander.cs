@@ -1,28 +1,32 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
+using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
+using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.Furniture.BossRelics;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
+using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.Weapons.Typeless;
+using CalamityMod.NPCs.Providence;
 using CalamityMod.Projectiles.Boss;
+using CalamityMod.UI.VanillaBossBars;
+using CalamityMod.Utilities.Daybreak;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
-using Terraria.Graphics.Effects;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Items.Placeables.Furniture.BossRelics;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
-using CalamityMod.Items.Placeables.Furniture.Trophies;
-using CalamityMod.Events;
-using Terraria.Audio;
-using CalamityMod.Items.Materials;
 using Filters = Terraria.Graphics.Effects.Filters;
 
 namespace CalamityMod.NPCs.ProfanedGuardians
@@ -32,18 +36,20 @@ namespace CalamityMod.NPCs.ProfanedGuardians
     {
         private int spearType = 0;
         private int healTimer = 0;
-        private int biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
         private const float TimeForShieldDespawn = 120f;
         public static readonly SoundStyle HolyRaySound = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianRay") { Volume = 1.25f };
         public static readonly SoundStyle DashSound = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianDash");
         public static readonly SoundStyle ShieldDeathSound = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianShieldDeactivate");
 
+        public static Asset<Texture2D> Texture_Glow;
+        public static Asset<Texture2D> TextureNight_Glow;
+
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 10;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            Main.npcFrameCount[Type] = 10;
+            NPCID.Sets.TrailingMode[Type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 PortraitPositionXOverride = 0,
                 PortraitScale = 0.75f,
@@ -52,28 +58,37 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             value.Position.X += 25;
             value.Position.Y += 15;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
-			NPCID.Sets.MPAllowedEnemies[Type] = true;
+            NPCID.Sets.MPAllowedEnemies[Type] = true;
+            if (!Main.dedServ)
+            {
+                Texture_Glow = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+                TextureNight_Glow = ModContent.Request<Texture2D>(Texture + "GlowNight", AssetRequestMode.AsyncLoad);
+            }
         }
+
+        public static int FireDamage = 36; // 144; HolyFire, HolyFire2
+        public static int SpearDamage = 42; // 168; HolySpear, ProfanedSpear
+        public static int HolyBlastDamage = 60; // 240
+        public static int RayDamage = 80; // 320
 
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 120; // 240
             NPC.npcSlots = 20f;
             NPC.aiStyle = -1;
-            NPC.GetNPCDamage();
             NPC.width = 228;
             NPC.height = 186;
             NPC.defense = 40;
             NPC.DR_NERD(0.3f);
-            NPC.LifeMaxNERB(100000, 120000, 200000);
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
+            NPC.LifeMaxNERB(80000, 120000, 200000);
             NPC.knockBackResist = 0f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             AIType = -1;
             NPC.boss = true;
-            NPC.value = Item.buyPrice(1, 0, 0, 0);
+            NPC.BossBar = ModContent.GetInstance<ProfanedGuardianBossBar>();
+            NPC.value = Item.buyPrice(gold: 50);
             NPC.HitSound = SoundID.NPCHit52;
             NPC.DeathSound = SoundID.NPCDeath55;
             NPC.Calamity().VulnerableToHeat = false;
@@ -84,11 +99,11 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheHallow,
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheUnderworld,
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.ProfanedGuardianCommander")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.ProfanedGuardianCommander")
             });
         }
 
@@ -96,7 +111,6 @@ namespace CalamityMod.NPCs.ProfanedGuardians
         {
             writer.Write(spearType);
             writer.Write(healTimer);
-            writer.Write(biomeEnrageTimer);
             writer.Write(NPC.chaseable);
             writer.Write(NPC.localAI[0]);
             writer.Write(NPC.localAI[1]);
@@ -110,7 +124,6 @@ namespace CalamityMod.NPCs.ProfanedGuardians
         {
             spearType = reader.ReadInt32();
             healTimer = reader.ReadInt32();
-            biomeEnrageTimer = reader.ReadInt32();
             NPC.chaseable = reader.ReadBoolean();
             NPC.localAI[0] = reader.ReadSingle();
             NPC.localAI[1] = reader.ReadSingle();
@@ -123,7 +136,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter += 0.12f + NPC.velocity.Length() / 120f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
@@ -143,10 +156,9 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             // Rotation
             NPC.rotation = NPC.velocity.X * 0.005f;
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Percent life remaining
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
@@ -235,7 +247,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                                 currentDustPos = Vector2.Lerp(dustLineStart, dustLineEnd, i / (float)maxHealDustIterations);
                                 Color dustColor = Main.hslToRgb(Main.rgbToHsl(new Color(255, 200, Math.Abs(Main.DiscoB - (int)(dustSpawned * 2.55f)))).X, 1f, 0.5f);
                                 dustColor.A = 255;
-                                int dust = Dust.NewDust(currentDustPos, 0, 0, 267, 0f, 0f, 0, dustColor, 1f);
+                                int dust = Dust.NewDust(currentDustPos, 0, 0, DustID.RainbowMk2, 0f, 0f, 0, dustColor, 1f);
                                 Main.dust[dust].position = currentDustPos;
                                 Main.dust[dust].velocity = spinningpoint.RotatedBy(MathHelper.TwoPi * i / maxHealDustIterations) * dustVelocityMult * (0.8f + Main.rand.NextFloat() * 0.4f) + NPC.velocity;
                                 Main.dust[dust].noGravity = true;
@@ -288,11 +300,11 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
             Player player = Main.player[NPC.target];
 
-            if ((!Main.dayTime && !Main.remixWorld) || !player.active || player.dead || Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > CalamityGlobalNPC.CatchUpDistance200Tiles)
+            if (!player.active || player.dead || Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > CalamityGlobalNPC.CatchUpDistance200Tiles)
             {
                 NPC.TargetClosest(false);
                 player = Main.player[NPC.target];
-                if ((!Main.dayTime && !Main.remixWorld) || !player.active || player.dead || Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > CalamityGlobalNPC.CatchUpDistance200Tiles)
+                if (!player.active || player.dead || Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > CalamityGlobalNPC.CatchUpDistance200Tiles)
                 {
                     if (NPC.velocity.Y > 3f)
                         NPC.velocity.Y = 3f;
@@ -325,21 +337,6 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             if (NPC.ai[3] < 0f)
                 NPC.ai[3] = 0f;
 
-            // Become immune over time if target isn't in hell or hallow
-            bool isHoly = player.ZoneHallow;
-            bool isHell = player.ZoneUnderworldHeight;
-            if (!isHoly && !isHell && !bossRush)
-            {
-                if (biomeEnrageTimer > 0)
-                    biomeEnrageTimer--;
-                else
-                    NPC.Calamity().CurrentlyEnraged = true;
-            }
-            else
-                biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
-
-            bool biomeEnraged = biomeEnrageTimer <= 0;
-
             bool phase1 = healerAlive || defenderAlive;
 
             NPC.chaseable = !phase1;
@@ -364,7 +361,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             float goLowOrHighDistance = 540f;
 
             // Side swap variables for Phase 2
-            float defenderCommanderGuardPhase2Duration = (bossRush || biomeEnraged) ? 420f : death ? 480f : revenge ? 510f : expertMode ? 540f : 600f;
+            float defenderCommanderGuardPhase2Duration = death ? 480f : revenge ? 510f : expertMode ? 540f : 600f;
             float moveToOtherSideInPhase2GateValue = defenderCommanderGuardPhase2Duration - 120f;
             float timeBeforeMoveToOtherSideInPhase2Reset = moveToOtherSideInPhase2GateValue * 2f;
             float totalGoLowDurationPhase2 = 210f;
@@ -372,13 +369,11 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
             // Charge variables
             float chargeVelocityMult = 0.25f;
-            float maxChargeVelocity = (bossRush || biomeEnraged) ? 32f : death ? 28f : revenge ? 26f : expertMode ? 24f : 20f;
+            float maxChargeVelocity = death ? 28f : revenge ? 26f : expertMode ? 24f : 20f;
             if (Main.getGoodWorld)
-                maxChargeVelocity *= 1.15f;
-            if (CalamityWorld.LegendaryMode && revenge)
                 maxChargeVelocity *= 2f;
 
-            float inertia = (bossRush || biomeEnraged) ? 40f : death ? 45f : revenge ? 47f : expertMode ? 50f : 55f;
+            float inertia = death ? 45f : revenge ? 47f : expertMode ? 50f : 55f;
             if (lifeRatio < 0.5f)
                 inertia *= 0.8f;
             if (!phase1)
@@ -392,6 +387,9 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
             if (NPC.ai[0] == 0f)
             {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
                 // Face the target
                 if (Math.Abs(NPC.Center.X - player.Center.X) > 10f)
                 {
@@ -458,7 +456,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 if (!goLow && !goLowPhase2 && !goHigh)
                     calamityGlobalNPC.newAI[0] = -NPC.direction;
 
-                float velocity = (bossRush || biomeEnraged) ? 18f : death ? 16f : revenge ? 15f : expertMode ? 14f : 12f;
+                float velocity = death ? 16f : revenge ? 15f : expertMode ? 14f : 12f;
                 if (Main.getGoodWorld)
                     velocity *= 1.25f;
                 if (healerAlive)
@@ -495,7 +493,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
                 Vector2 targetVector = destination - NPC.Center;
                 Vector2 desiredVelocity = targetVector.SafeNormalize(new Vector2(NPC.direction, 0f)) * velocity;
-                float phaseGateValue = (bossRush || biomeEnraged) ? 50f : death ? 66f : revenge ? 75f : expertMode ? 83f : 100f;
+                float phaseGateValue = death ? 66f : revenge ? 75f : expertMode ? 83f : 100f;
                 bool continueShootingProjectiles = phase1 || (NPC.ai[2] < (phaseGateValue * 5f));
 
                 if (continueShootingProjectiles)
@@ -509,7 +507,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                     // Alternate between firing profaned spears and holy fire
                     // Shoot holy blasts in final phase
                     NPC.ai[2] += 1f;
-                    float projectileShootGateValue = (bossRush || biomeEnraged) ? 40f : death ? 60f : revenge ? 90f : expertMode ? 100f : 150f;
+                    float projectileShootGateValue = death ? 60f : revenge ? 90f : expertMode ? 100f : 150f;
                     if (NPC.ai[2] % projectileShootGateValue == 0f)
                     {
                         if (phase1)
@@ -523,10 +521,10 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                             }
 
                             bool shootSpear = NPC.ai[2] % (projectileShootGateValue * 2f) == 0f;
-                            float projectileVelocity = (bossRush || biomeEnraged) ? 18f : death ? 16f : revenge ? 15f : expertMode ? 14f : 12f;
+                            float projectileVelocity = death ? 16f : revenge ? 15f : expertMode ? 14f : 12f;
                             Vector2 finalProjectileVelocity = Vector2.Normalize(player.Center - shootFrom) * projectileVelocity;
                             int type = shootSpear ? ModContent.ProjectileType<ProfanedSpear>() : ModContent.ProjectileType<HolyFire2>();
-                            int damage = NPC.GetProjectileDamage(type);
+                            int damage = shootSpear ? SpearDamage : FireDamage;
 
                             if (type == ModContent.ProjectileType<HolyFire2>())
                                 finalProjectileVelocity *= 0.5f;
@@ -536,8 +534,8 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
                             if (fireExtraProjectiles && shootSpear)
                             {
-                                int baseProjectileAmt = (bossRush || biomeEnraged) ? 4 : 2;
-                                int spread = (bossRush || biomeEnraged) ? 18 : 10;
+                                int baseProjectileAmt = 2;
+                                int spread = 10;
                                 float rotation = MathHelper.ToRadians(spread);
                                 for (int i = 0; i < baseProjectileAmt; i++)
                                 {
@@ -556,18 +554,13 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                         else
                         {
                             // Shoot holy blasts
-                            float holyBlastVelocity = (bossRush || biomeEnraged) ? 20f : death ? 18f : revenge ? 17f : expertMode ? 16f : 14f;
+                            float holyBlastVelocity = death ? 18f : revenge ? 17f : expertMode ? 16f : 14f;
                             int projTimeLeft = (int)(2000f / holyBlastVelocity);
                             Vector2 finalHolyBlastVelocity = Vector2.Normalize(player.Center - shootFrom) * holyBlastVelocity;
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                int type = ModContent.ProjectileType<HolyBlast>();
-                                int damage = NPC.GetProjectileDamage(type);
-                                if (Main.netMode != NetmodeID.MultiplayerClient)
-                                {
-                                    int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, finalHolyBlastVelocity, type, damage, 0f, Main.myPlayer, player.position.X, player.position.Y);
-                                    Main.projectile[proj].timeLeft = projTimeLeft;
-                                }
+                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, finalHolyBlastVelocity, ModContent.ProjectileType<HolyBlast>(), HolyBlastDamage, 0f, Main.myPlayer, player.position.X, player.position.Y, 1f);
+                                Main.projectile[proj].timeLeft = projTimeLeft;
                             }
 
                             // Dust for blasting out the holy blasts
@@ -623,6 +616,9 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             }
             else if (NPC.ai[0] == 1f)
             {
+                // Set damage
+                NPC.damage = NPC.defDamage;
+
                 // Face the target
                 if (Math.Abs(NPC.Center.X - player.Center.X) > 10f)
                 {
@@ -657,13 +653,16 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             }
             else if (NPC.ai[0] == 2f)
             {
+                // Set damage
+                NPC.damage = NPC.defDamage;
+
                 // Face the direction of the charge
                 if (Math.Sign(NPC.velocity.X) != 0)
                     NPC.spriteDirection = -Math.Sign(NPC.velocity.X);
                 NPC.spriteDirection = Math.Sign(NPC.velocity.X);
 
                 NPC.ai[1] += 1f;
-                float phaseGateValue = (bossRush || biomeEnraged) ? 90f : death ? 100f : revenge ? 110f : expertMode ? 120f : 135f;
+                float phaseGateValue = death ? 100f : revenge ? 110f : expertMode ? 120f : 135f;
                 if (NPC.ai[1] >= phaseGateValue)
                 {
                     NPC.ai[0] = 3f;
@@ -684,7 +683,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                         // Accelerate
                         if (NPC.velocity.Length() < maxChargeVelocity)
                         {
-                            float velocityMult = (bossRush || biomeEnraged) ? 1.053333f : death ? 1.05037f : revenge ? 1.047407f : expertMode ? 1.044444f : 1.04f;
+                            float velocityMult = death ? 1.05037f : revenge ? 1.047407f : expertMode ? 1.044444f : 1.04f;
                             NPC.velocity = targetVector * (NPC.velocity.Length() * velocityMult);
                             if (NPC.velocity.Length() > maxChargeVelocity)
                             {
@@ -693,10 +692,25 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                             }
                         }
                     }
-                    else
+                    else if (NPC.localAI[2] == 1f)
                     {
                         inertia *= 1.5f;
                         NPC.velocity = (NPC.velocity * (inertia - 1f) + targetVector * (NPC.velocity.Length() + (0.111111117f * inertia))) / inertia;
+
+                        // Stop charging towards the player when within a certain distance
+                        if (NPC.Distance(player.Center) < 160f * NPC.scale)
+                            NPC.localAI[2] = 2f;
+                    }
+                    else
+                    {
+                        // Slow down
+                        if (NPC.Distance(player.Center) >= 240f * NPC.scale || NPC.localAI[2] == 3f)
+                        {
+                            if (NPC.localAI[2] != 3f)
+                                NPC.localAI[2] = 3f;
+
+                            NPC.velocity *= 0.98f;
+                        }
                     }
 
                     // Throw down holy fire while charging
@@ -713,15 +727,16 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                         for (int k = 0; k < totalDustPerProjectile; k++)
                             Dust.NewDust(shootFrom, 30, 30, (int)CalamityDusts.ProfanedFire, projectileVelocity.X, projectileVelocity.Y, 0, default, 1f);
 
-                        int type = ModContent.ProjectileType<HolyFire>();
-                        int damage = NPC.GetProjectileDamage(type);
                         if (Main.netMode != NetmodeID.MultiplayerClient)
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, projectileVelocity, type, damage, 0f, Main.myPlayer);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, projectileVelocity, ModContent.ProjectileType<HolyFire>(), FireDamage, 0f, Main.myPlayer);
                     }
                 }
             }
             else if (NPC.ai[0] == 3f)
             {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
                 // Face the direction of the charge
                 if (Math.Sign(NPC.velocity.X) != 0)
                     NPC.spriteDirection = -Math.Sign(NPC.velocity.X);
@@ -751,6 +766,9 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             }
             else if (NPC.ai[0] == 4f)
             {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
                 // Face the target
                 if (Math.Abs(NPC.Center.X - player.Center.X) > 10f)
                 {
@@ -766,7 +784,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
                 bool targetRanAwayAndWillNowBeFucked = NPC.ai[2] == 1f;
                 bool boostVelocityToCatchUp = NPC.ai[1] == 0f || targetRanAwayAndWillNowBeFucked;
-                float velocity = (bossRush || biomeEnraged) ? 18f : death ? 16f : revenge ? 15f : expertMode ? 14f : 12f;
+                float velocity = death ? 16f : revenge ? 15f : expertMode ? 14f : 12f;
                 if (Main.getGoodWorld)
                     velocity *= 1.25f;
                 if (boostVelocityToCatchUp)
@@ -778,7 +796,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 Vector2 desiredVelocity = targetVector.SafeNormalize(new Vector2(NPC.direction, 0f)) * velocity;
 
                 float totalSpears = 12f;
-                float shootDuration = (bossRush || biomeEnraged) ? 240f : death ? 280f : revenge ? 300f : expertMode ? 320f : 360f;
+                float shootDuration = death ? 280f : revenge ? 300f : expertMode ? 320f : 360f;
                 float dontShootTime = shootDuration * 0.3f;
                 float phaseGateValue = dontShootTime + shootDuration;
 
@@ -823,7 +841,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                     }
                     else if (NPC.ai[1] % spearShootDivisor == 0f)
                     {
-                        float spearVelocity = (bossRush || biomeEnraged) ? 18f : death ? 16f : revenge ? 15f : expertMode ? 14f : 12f;
+                        float spearVelocity = death ? 16f : revenge ? 15f : expertMode ? 14f : 12f;
                         if (Main.getGoodWorld)
                             spearVelocity *= 1.25f;
                         if (boostVelocityToCatchUp)
@@ -831,8 +849,6 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
                         Vector2 velocity2 = Vector2.Normalize(player.Center - shootFrom) * spearVelocity;
                         Vector2 knockbackVelocity = velocity2 * 0.1f;
-                        int type = ModContent.ProjectileType<HolySpear>();
-                        int damage = NPC.GetProjectileDamage(type);
 
                         SoundEngine.PlaySound(SoundID.DD2_BetsyFireballShot, shootFrom);
                         for (int k = 0; k < totalDustPerProjectile; k++)
@@ -841,8 +857,8 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                         if (NPC.ai[1] % (spearShootDivisor * 3) == 0f || targetRanAwayAndWillNowBeFucked)
                         {
                             knockbackVelocity *= 2f;
-                            int baseProjectileAmt = (bossRush || biomeEnraged) ? 8 : expertMode ? 6 : 4;
-                            int spread = (bossRush || biomeEnraged) ? 60 : expertMode ? 50 : 40;
+                            int baseProjectileAmt = expertMode ? 6 : 4;
+                            int spread = expertMode ? 50 : 40;
                             float rotation = MathHelper.ToRadians(spread);
                             for (int i = 0; i < baseProjectileAmt; i++)
                             {
@@ -852,12 +868,12 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                                     Dust.NewDust(shootFrom, 30, 30, (int)CalamityDusts.ProfanedFire, perturbedSpeed.X, perturbedSpeed.Y, 0, default, 1f);
 
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, perturbedSpeed, type, damage, 0f, Main.myPlayer, targetRanAwayAndWillNowBeFucked ? -2f : -1f, -30f);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, perturbedSpeed, ModContent.ProjectileType<HolySpear>(), SpearDamage, 0f, Main.myPlayer, targetRanAwayAndWillNowBeFucked ? -2f : -1f, -30f);
                             }
                         }
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, velocity2 * 0.85f, type, damage, 0f, Main.myPlayer, 1f, 0f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, velocity2 * 0.85f, ModContent.ProjectileType<HolySpear>(), SpearDamage, 0f, Main.myPlayer, 1f, 0f);
 
                         if (!targetRanAwayAndWillNowBeFucked)
                             NPC.velocity = -knockbackVelocity;
@@ -866,6 +882,9 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             }
             else if (NPC.ai[0] == 5f)
             {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
                 // Face the target
                 if (Math.Abs(NPC.Center.X - player.Center.X) > 10f)
                 {
@@ -875,7 +894,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 }
 
                 float laserGateValue = 120f;
-                float velocity = (bossRush || biomeEnraged) ? 4.5f : death ? 4f : revenge ? 3.75f : expertMode ? 3.5f : 3f;
+                float velocity = death ? 4f : revenge ? 3.75f : expertMode ? 3.5f : 3f;
                 if (NPC.ai[1] < laserGateValue)
                     velocity *= 6f;
                 if (Main.getGoodWorld)
@@ -931,9 +950,9 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 {
                     if (NPC.ai[2] == laserGateValue)
                     {
-                        float rotation = (bossRush || biomeEnraged) ? 435f : death ? 445f : revenge ? 450f : expertMode ? 455f : 465f;
+                        float rotation = death ? 445f : revenge ? 450f : expertMode ? 455f : 465f;
 
-                        if (Main.player[Main.myPlayer].active && !Main.player[Main.myPlayer].dead && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < 2800f)
+                        if (Main.LocalPlayer.active && !Main.LocalPlayer.dead && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < 2800f)
                             SoundEngine.PlaySound(HolyRaySound, Main.LocalPlayer.Center);
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -945,23 +964,20 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                             if (laserVelocity.X < 0f)
                                 beamDirection = 1f;
 
-                            int type = ModContent.ProjectileType<ProvidenceHolyRay>();
-                            int damage = NPC.GetProjectileDamage(type);
-
                             // 60 degrees offset
                             laserVelocity = laserVelocity.RotatedBy(-(double)beamDirection * MathHelper.TwoPi / 6f);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, laserVelocity, type, damage, 0f, Main.myPlayer, beamDirection * MathHelper.TwoPi / rotation, NPC.whoAmI);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, laserVelocity, ModContent.ProjectileType<ProvidenceHolyRay>(), RayDamage, 0f, Main.myPlayer, beamDirection * MathHelper.TwoPi / rotation, NPC.whoAmI);
 
                             // -60 degrees offset
                             if (revenge)
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, -laserVelocity, type, damage, 0f, Main.myPlayer, -beamDirection * MathHelper.TwoPi / rotation, NPC.whoAmI);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, -laserVelocity, ModContent.ProjectileType<ProvidenceHolyRay>(), RayDamage, 0f, Main.myPlayer, -beamDirection * MathHelper.TwoPi / rotation, NPC.whoAmI);
 
-                            if (CalamityWorld.LegendaryMode && revenge)
+                            if (CalamityWorld.death)
                             {
                                 rotation *= 0.33f;
                                 laserVelocity = laserVelocity.RotatedBy(-(double)beamDirection * MathHelper.TwoPi / 2f);
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, laserVelocity, ModContent.ProjectileType<ProvidenceHolyRay>(), damage, 0f, Main.myPlayer, beamDirection * MathHelper.TwoPi / rotation, NPC.whoAmI);
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, -laserVelocity, ModContent.ProjectileType<ProvidenceHolyRay>(), damage, 0f, Main.myPlayer, -beamDirection * MathHelper.TwoPi / rotation, NPC.whoAmI);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, laserVelocity, ModContent.ProjectileType<ProvidenceHolyRay>(), RayDamage, 0f, Main.myPlayer, beamDirection * MathHelper.TwoPi / rotation, NPC.whoAmI);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, -laserVelocity, ModContent.ProjectileType<ProvidenceHolyRay>(), RayDamage, 0f, Main.myPlayer, -beamDirection * MathHelper.TwoPi / rotation, NPC.whoAmI);
                             }
 
                             NPC.netUpdate = true;
@@ -989,14 +1005,14 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 if (NPC.spriteDirection == 1)
                     spriteEffects = SpriteEffects.FlipHorizontally;
 
-                Texture2D texture2D15 = TextureAssets.Npc[NPC.type].Value;
+                Texture2D texture2D15 = TextureAssets.Npc[Type].Value;
                 Vector2 drawPos = NPC.Center - screenPos;
-                Vector2 halfSizeTexture = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2);
+                Vector2 halfSizeTexture = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2);
                 int afterimageAmt = 5;
                 if (NPC.ai[0] == 2f)
                     afterimageAmt = 10;
 
-                if (CalamityConfig.Instance.Afterimages)
+                if (CalamityClientConfig.Instance.Afterimages)
                 {
                     for (int i = 1; i < afterimageAmt; i += 2)
                     {
@@ -1008,28 +1024,28 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                             afterimageColor = colorOverride.Value;
 
                         Vector2 afterimagePos = NPC.oldPos[i] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                        afterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                        afterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                         afterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY) + drawOffset;
                         spriteBatch.Draw(texture2D15, afterimagePos, NPC.frame, afterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
                     }
                 }
 
                 Vector2 drawLocation = drawPos;
-                drawLocation -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                drawLocation -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                 drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY) + drawOffset;
                 spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, colorOverride ?? NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-                texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/ProfanedGuardians/ProfanedGuardianCommanderGlow").Value;
+                texture2D15 = Texture_Glow.Value;
                 Color timeBasedColorLerp = Color.Lerp(Color.White, Color.Yellow, 0.5f);
-                if (Main.remixWorld)
+                if (Main.zenithWorld)
                 {
-                    texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/ProfanedGuardians/ProfanedGuardianCommanderGlowNight").Value;
-                    timeBasedColorLerp = Color.Cyan;
+                    texture2D15 = TextureNight_Glow.Value;
+                    timeBasedColorLerp = Main.DiscoColor;
                 }
                 if (colorOverride != null)
                     timeBasedColorLerp = colorOverride.Value;
 
-                if (CalamityConfig.Instance.Afterimages)
+                if (CalamityClientConfig.Instance.Afterimages)
                 {
                     for (int j = 1; j < afterimageAmt; j++)
                     {
@@ -1041,13 +1057,15 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                             timeBasedAfterimageColor = colorOverride.Value;
 
                         Vector2 timeBasedAfterimagePos = NPC.oldPos[j] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                        timeBasedAfterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                        timeBasedAfterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                         timeBasedAfterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY) + drawOffset;
                         spriteBatch.Draw(texture2D15, timeBasedAfterimagePos, NPC.frame, timeBasedAfterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
                     }
                 }
 
-                spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, timeBasedColorLerp, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+                NPC.DrawBackglow(Main.zenithWorld ? Main.DiscoColor : new Color(255, 64, 0, 0), 4f, spriteEffects, NPC.frame, Main.screenPosition, texture2D15);
+
+                spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, ProvUtils.GetColorBasedOnEnrage(false, 0), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
             }
 
             // Draw laser effects
@@ -1135,7 +1153,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 color *= 0.6f;
                 color2 *= 0.6f;
                 float scaleMult = 1.2f + scaleDuringShieldDespawn;
-                
+
                 // The scale used for the noise overlay polygons also grows and shrinks
                 // This is intentionally out of sync with the shield, and intentionally desynced per player
                 // Don't put this anywhere less than 0.25f or higher than 1f. The higher it is, the denser / more zoomed out the noise overlay is.
@@ -1147,47 +1165,55 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 shieldEffect.Parameters["blowUpPower"].SetValue(2.8f);
                 shieldEffect.Parameters["blowUpSize"].SetValue(0.4f);
                 shieldEffect.Parameters["noiseScale"].SetValue(noiseScale);
-                
+
                 shieldEffect.Parameters["shieldOpacity"].SetValue(opacityScaleDuringShieldDespawn);
                 shieldEffect.Parameters["shieldEdgeBlendStrenght"].SetValue(4f);
-                
+
                 Color edgeColor = CalamityUtils.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.2f, color, color2);
-                
+
                 // Define shader parameters for shield color
                 shieldEffect.Parameters["shieldColor"].SetValue(color.ToVector3());
                 shieldEffect.Parameters["shieldEdgeColor"].SetValue(edgeColor.ToVector3());
-                
+
+                // The shield for the border MUST be drawn before the main shield, it becomes incredibly visually obnoxious otherwise.
                 spriteBatch.Draw(shieldTexture, shieldDrawPos, shieldFrame, color, NPC.rotation, origin, shieldScale2 * scaleMult, SpriteEffects.None, 0f);
                 spriteBatch.Draw(shieldTexture, shieldDrawPos, shieldFrame, color2, NPC.rotation, origin, shieldScale2 * scaleMult * 0.95f, SpriteEffects.None, 0f);
                 spriteBatch.Draw(shieldTexture, shieldDrawPos, shieldFrame, color, NPC.rotation, origin, shieldScale * scaleMult, SpriteEffects.None, 0f);
                 spriteBatch.Draw(shieldTexture, shieldDrawPos, shieldFrame, color2, NPC.rotation, origin, shieldScale * scaleMult * 0.95f, SpriteEffects.None, 0f);
-                
-                // The shield for the border MUST be drawn before the main shield, it becomes incredibly visually obnoxious otherwise.
 
-                Main.spriteBatch.End();
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, shieldEffect, Main.GameViewMatrix.TransformationMatrix);
-                
-                // Fetch shield heat overlay texture (this is the neutrons fed to the shader)
-                Texture2D heatTex = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons2").Value;
-                Vector2 pos = NPC.Center + NPC.gfxOffY * Vector2.UnitY - Main.screenPosition;
-                Main.spriteBatch.Draw(heatTex, shieldDrawPos, null, Color.White, 0, heatTex.Size() / 2f, shieldScale * scaleMult * 0.5f, 0, 0);
+                var matrix = Main.GameViewMatrix.TransformationMatrix;
+                using (Main.spriteBatch.Scope())
+                {
+                    Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, shieldEffect, matrix);
+                    // Fetch shield heat overlay texture (this is the neutrons fed to the shader)
+                    Texture2D heatTex = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons2").Value;
+                    Vector2 pos = NPC.Center + NPC.gfxOffY * Vector2.UnitY - Main.screenPosition;
+                    Main.spriteBatch.Draw(heatTex, shieldDrawPos, null, Color.White, 0, heatTex.Size() / 2f, shieldScale * scaleMult * 0.5f, 0, 0);
+                    Main.spriteBatch.End();
+                }
             }
 
             return false;
         }
 
-        public override void BossLoot(ref string name, ref int potionType) => potionType = ItemID.SuperHealingPotion;
+        public override void BossLoot(ref int potionType) => potionType = ItemID.SuperHealingPotion;
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ModContent.ItemType<RelicOfDeliverance>(), 4);
             npcLoot.Add(ModContent.ItemType<ProfanedGuardianMask>(), 7);
-            npcLoot.Add(ModContent.ItemType<WarbanneroftheSun>(), 10);
+
+            // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+            // npcLoot.Add(ModContent.ItemType<WarbanneroftheRighteous>(), 1);
+            LeadingConditionRule expert = new LeadingConditionRule(new Conditions.IsExpert());
+            expert.OnSuccess(ItemDropRule.Common(ModContent.ItemType<WarbanneroftheRighteous>(), 1));
+            npcLoot.Add(expert);
+
             npcLoot.Add(ModContent.ItemType<ProfanedGuardianTrophy>(), 10);
             npcLoot.Add(ModContent.ItemType<ProfanedCore>());
-            npcLoot.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<UnholyEssence>(), 1, 10, 15, 15, 20));
+            npcLoot.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<UnholyEssence>(), 1, 15, 20, 20, 25));
 
-			// Furniture
+            // Furniture
             npcLoot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
             // Relic
@@ -1196,8 +1222,8 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             // GFB Chicken Nugget and Divine Geode drops
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
-                GFBOnly.Add(ItemID.ChickenNugget, 1, 1, 9999, true);
-                GFBOnly.Add(ModContent.ItemType<DivineGeode>(), 1, 25, 30, true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.ChickenNugget, 1, 1, 9999), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<DivineGeode>(), 1, 25, 30), true);
             }
 
             // Lore
@@ -1206,6 +1232,10 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
         public override void OnKill()
         {
+            // Don't bother running any of this in Boss Rush.
+            if (BossRushEvent.BossRushActive)
+                return;
+
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
             // Mark the Profaned Guardians as dead
@@ -1239,13 +1269,12 @@ namespace CalamityMod.NPCs.ProfanedGuardians
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<HolyFlames>(), 200, true);
+                target.AddBuff(ModContent.BuffType<HolyFlames>(), 180);
         }
 
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
-            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
+            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -1255,7 +1284,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ProfanedGuardianBossA").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ProfanedGuardianBossA2").Type, 1f);

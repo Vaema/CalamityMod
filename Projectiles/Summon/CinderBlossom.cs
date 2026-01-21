@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using CalamityMod.Buffs.Summon;
+﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -20,8 +19,9 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projPet[Type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -45,7 +45,7 @@ namespace CalamityMod.Projectiles.Summon
             CheckMinionExistince(); // Checks if the minion can still exist.
             ShootTarget(Target); // Shoots at the target if there's one.
 
-            Projectile.Center = Owner.Center - Vector2.UnitY * 60f;
+            Projectile.Center = Owner.Center - Vector2.UnitY * (60f - Owner.gfxOffY);
             Projectile.rotation += MathHelper.ToRadians(5f * Owner.direction); // The projectile normally will spin in the direction of the player.
             Lighting.AddLight(Projectile.Center, Color.Orange.ToVector3());
         }
@@ -66,7 +66,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             for (int i = 0; i < 36; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 6);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.Torch);
                 dust.noGravity = true;
                 dust.velocity = Vector2.UnitY.RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(2f, 6f);
             }
@@ -89,7 +89,5 @@ namespace CalamityMod.Projectiles.Summon
                     DelayBetweenShooting++;
             }
         }
-
-        public override bool? CanDamage() => false;
     }
 }

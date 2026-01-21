@@ -1,10 +1,11 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Items.Weapons.Magic;
+﻿using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Magic
 {
     public class VolatileStarcore : ModProjectile, ILocalizedModType
@@ -12,36 +13,38 @@ namespace CalamityMod.Projectiles.Magic
         public new string LocalizationCategory => "Projectiles.Magic";
         private static int Lifetime = 240;
         private static int NumAnimationFrames = 6;
-        private static int AnimationFrameTime = 2;
+        private static int AnimationFrameTime = 1;
+        public bool explode = true;
+        public int time = 0;
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = NumAnimationFrames;
+            Main.projFrames[Type] = NumAnimationFrames;
         }
         public override void SetDefaults()
         {
-            Projectile.width = 26;
-            Projectile.height = 26;
+            // Actual hitbox is different
+            Projectile.width = 1;
+            Projectile.height = 1;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.extraUpdates = 2;
+            Projectile.extraUpdates = 6;
             Projectile.timeLeft = Lifetime;
-            Projectile.alpha = 48;
         }
 
         public override void AI()
         {
-            // Draw offsets
-            DrawOffsetX = -10;
-            DrawOriginOffsetY = -10;
-            DrawOriginOffsetX = 0;
+            Player Owner = Main.player[Projectile.owner];
+            float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
 
-            // Play sound and set rotation on frame 1
+            if (Projectile.timeLeft == 1) // if it doesnt hit a tile or enemy, then don't explode
+                explode = false;
+
+            // Set rotation on frame 1
             if (Projectile.localAI[0] == 0f)
             {
                 Projectile.localAI[0] = 1f;
-                SoundEngine.PlaySound(SoundID.NPCDeath56, Projectile.Center);
                 Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4;
             }
 
@@ -51,7 +54,6 @@ namespace CalamityMod.Projectiles.Magic
 
             // Lighting and spin
             Lighting.AddLight(Projectile.Center, 1.8f, 1.6f, 0.5f);
-            Projectile.rotation += 0.11f;
 
             // Increment frame counter
             Projectile.localAI[0] += 1f;
@@ -65,31 +67,35 @@ namespace CalamityMod.Projectiles.Magic
             }
             if (Projectile.frame >= NumAnimationFrames)
                 Projectile.frame = 0;
+            if (targetDist < 1400)
+            {
+                if (time > 8 && time % 2 == 0)
+                {
+                    SparkParticle spark = new SparkParticle(Projectile.Center + Main.rand.NextVector2Circular(15, 15) - Projectile.velocity.SafeNormalize(Vector2.UnitX) * 10, -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.8f), false, 35, 0.9f, Color.Lerp(Color.Orange, Color.OrangeRed, Main.rand.NextFloat(0, 1)));
+                    GeneralParticleHandler.SpawnParticle(spark);
+                }
+                if (time > 6 && time % 2 == 0)
+                {
+                    for (int i = 0; i < 2; i++)
+                    {
+                        Particle spark = new GlowSparkParticle(Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.UnitX) * 10, -Projectile.velocity, false, 8, 0.13f * (i == 0 ? 0.5f : 1), Color.Lerp(Color.Red, Color.OrangeRed, 0.25f) * 0.5f, new Vector2(0.3f, 1f), false, false, 0.8f);
+                        GeneralParticleHandler.SpawnParticle(spark);
+                    }
+                }
+            }
+            time++;
         }
-
         private void SpawnDust()
         {
-            int coreDustCount = 2; //3
-            int coreDustType = 262;
-            for (int i = 0; i < coreDustCount; ++i)
+            int trailDustCount = 3;
+            int trailDustType = 303;
+            for (int i = 0; i < trailDustCount; i++)
             {
-                float scale = Main.rand.NextFloat(1.0f, 1.4f);
-                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, coreDustType);
-                Main.dust[idx].velocity *= 0.7f;
-                Main.dust[idx].velocity += Projectile.velocity * 1.4f;
-                Main.dust[idx].scale = scale;
-                Main.dust[idx].noGravity = true;
-            }
-
-            int trailDustCount = 4; //5
-            int trailDustType = 264;
-            for (int i = 0; i < trailDustCount; ++i)
-            {
-                float scale = Main.rand.NextFloat(1.0f, 1.4f);
-                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, trailDustType, 0f, 0f);
-                Main.dust[idx].velocity = Projectile.velocity * 0.8f;
-                Main.dust[idx].scale = scale;
-                Main.dust[idx].noGravity = true;
+                float scale = Main.rand.NextFloat(0.7f, 1.1f);
+                Dust b = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(25, 25), trailDustType, Vector2.Zero, 120);
+                b.velocity = -Projectile.velocity * Main.rand.NextFloat(0.4f, 0.8f);
+                b.scale = scale;
+                b.noGravity = true;
             }
         }
 
@@ -112,7 +118,32 @@ namespace CalamityMod.Projectiles.Magic
             int type = ModContent.ProjectileType<HeliumFlashBlast>();
             int damage = (int)(HeliumFlash.ExplosionDamageMultiplier * Projectile.damage);
             float kb = 9.5f;
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, type, damage, kb, Projectile.owner, 0f, 0f);
+            if (explode)
+            {
+                SoundStyle fire = new("CalamityMod/Sounds/Item/HeliumFlashCoreImpact");
+                SoundEngine.PlaySound(fire with { Volume = 1f, Pitch = 0f }, Projectile.Center);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, type, damage, kb, Projectile.owner, 0f, 0f);
+            }
         }
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Texture2D orbTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/VolatileStarcore").Value;
+            Rectangle frame = orbTexture.Frame(1, NumAnimationFrames, 0, Projectile.frame);
+            Vector2 origin = frame.Size() * 0.5f;
+
+            Texture2D rechargeTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
+
+            // Glow Orb
+            float randSize = Main.rand.NextFloat(0.8f, 1.2f);
+            Main.EntitySpriteDraw(rechargeTexture, Projectile.Center - Main.screenPosition, null, Color.OrangeRed with { A = 0 }, Projectile.rotation, rechargeTexture.Size() * 0.5f, 0.6f * randSize, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(rechargeTexture, Projectile.Center - Main.screenPosition, null, Color.White with { A = 0 } * 0.75f, Projectile.rotation, rechargeTexture.Size() * 0.5f, 0.35f * randSize, SpriteEffects.None, 0);
+
+
+
+            // Starcore
+            Main.EntitySpriteDraw(orbTexture, Projectile.Center - Main.screenPosition, frame, Color.White, 0, origin, Projectile.scale, SpriteEffects.None, 0);
+            return false;
+        }
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 40, targetHitbox);
     }
 }

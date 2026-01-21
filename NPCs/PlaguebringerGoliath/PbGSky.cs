@@ -16,10 +16,10 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
 
         public override void Update(GameTime gameTime)
         {
-            if (PbGIndex == -1 || BossRushEvent.BossRushActive)
+            if ((PbGIndex == -1 && Main.LocalPlayer.Calamity().monolithPlagueShader <= 0) || BossRushEvent.BossRushActive)
             {
                 UpdatePbGIndex();
-                if (PbGIndex == -1 || BossRushEvent.BossRushActive)
+                if ((PbGIndex == -1 && Main.LocalPlayer.Calamity().monolithPlagueShader <= 0) || BossRushEvent.BossRushActive)
                     isActive = false;
             }
         }
@@ -31,7 +31,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                 float x = 0f;
                 if (this.PbGIndex != -1)
                 {
-                    x = Vector2.Distance(Main.player[Main.myPlayer].Center, Main.npc[this.PbGIndex].Center);
+                    x = Vector2.Distance(Main.LocalPlayer.Center, Main.npc[this.PbGIndex].Center);
                 }
                 return (1f - Utils.SmoothStep(3000f, 6000f, x));
             }
@@ -51,15 +51,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             {
                 return true;
             }
-            PbGIndex = -1;
-            for (int i = 0; i < Main.npc.Length; i++)
-            {
-                if (Main.npc[i].active && Main.npc[i].type == PbGType)
-                {
-                    PbGIndex = i;
-                    break;
-                }
-            }
+            PbGIndex = NPC.FindFirstNPC(PbGType);
             //this.DoGIndex = DoGIndex;
             return PbGIndex != -1;
         }

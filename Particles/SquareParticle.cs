@@ -1,9 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ModLoader;
-using System.Collections.Generic;
 
 namespace CalamityMod.Particles
 {
@@ -11,13 +10,14 @@ namespace CalamityMod.Particles
     {
         public Color InitialColor;
         public bool AffectedByGravity;
+        public float ExtraRotation;
         public override bool SetLifetime => true;
         public override bool UseCustomDraw => true;
         public override bool UseAdditiveBlend => true;
 
         public override string Texture => "CalamityMod/Particles/Square";
 
-        public SquareParticle(Vector2 relativePosition, Vector2 velocity, bool affectedByGravity, int lifetime, float scale, Color color)
+        public SquareParticle(Vector2 relativePosition, Vector2 velocity, bool affectedByGravity, int lifetime, float scale, Color color, float extraRotation = 0f)
         {
             Position = relativePosition;
             Velocity = velocity;
@@ -25,6 +25,7 @@ namespace CalamityMod.Particles
             Scale = scale;
             Lifetime = lifetime;
             Color = InitialColor = color;
+            ExtraRotation = extraRotation;
         }
 
         public override void Update()
@@ -37,15 +38,14 @@ namespace CalamityMod.Particles
                 Velocity.X *= 0.94f;
                 Velocity.Y += 0.25f;
             }
-            Rotation = Velocity.ToRotation() + MathHelper.PiOver2;
+            Rotation = Velocity.ToRotation() + MathHelper.PiOver2 + ExtraRotation;
         }
 
         public override void CustomDraw(SpriteBatch spriteBatch)
         {
-            Vector2 scale = new Vector2(0.8f, 1.2f) * Scale;
             Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
 
-            spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color, Rotation, texture.Size() * 0.5f, scale, 0, 0f);
+            spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color, Rotation, texture.Size() * 0.5f, Scale, 0, 0f);
         }
     }
 }

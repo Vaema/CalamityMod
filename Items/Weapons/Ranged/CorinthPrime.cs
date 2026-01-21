@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
         public override void SetDefaults()
@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 8f;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.Calamity().donorItem = true;
             Item.UseSound = SoundID.Item38;
@@ -37,7 +37,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 12f;
             Item.useAmmo = AmmoID.Bullet;
             Item.shoot = ModContent.ProjectileType<RealmRavagerBullet>();
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-20, 5);
@@ -90,8 +89,8 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient<RealmRavager>().
                 AddIngredient(ItemID.VortexBeater).
                 AddIngredient(ItemID.IllegalGunParts).
-                AddIngredient<ArmoredShell>(2).
-                AddTile(TileID.LunarCraftingStation).
+                AddIngredient<ArmoredShell>(3).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

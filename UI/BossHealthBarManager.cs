@@ -1,4 +1,7 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Events;
 using CalamityMod.NPCs.AquaticScourge;
 using CalamityMod.NPCs.AstrumDeus;
 using CalamityMod.NPCs.CalClone;
@@ -22,11 +25,9 @@ using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.NPCs.SupremeCalamitas;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoMod.Utils;
 using ReLogic.Content;
 using ReLogic.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.Events;
@@ -34,7 +35,6 @@ using Terraria.GameContent.UI.BigProgressBar;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.UI
@@ -94,7 +94,15 @@ namespace CalamityMod.UI
         public delegate bool NPCSpecialHPGetRequirement(NPC npc);
         public delegate long NPCSpecialHPGetFunction(NPC npc, bool checkingForMaxLife);
 
-        internal static void Load(Mod mod)
+        public override void Load()
+        {
+            BossExclusionList = [];
+            MinibossHPBarList = [];
+            EntityExtensionHandler = [];
+            SpecialHPRequirements = [];
+        }
+
+        public override void SetStaticDefaults()
         {
             Bars = new List<BossHPUI>();
 
@@ -103,12 +111,7 @@ namespace CalamityMod.UI
                 BossMainHPBar = Request<Texture2D>("CalamityMod/UI/MiscTextures/BossHPMainBar", AssetRequestMode.ImmediateLoad).Value;
                 BossComboHPBar = Request<Texture2D>("CalamityMod/UI/MiscTextures/BossHPComboBar", AssetRequestMode.ImmediateLoad).Value;
                 BossSeperatorBar = Request<Texture2D>("CalamityMod/UI/MiscTextures/BossHPSeperatorBar", AssetRequestMode.ImmediateLoad).Value;
-
-                PlatformID id = Environment.OSVersion.Platform;
-                if (id == PlatformID.Win32NT)
-                    HPBarFont = Request<DynamicSpriteFont>("CalamityMod/Fonts/HPBarFont", AssetRequestMode.ImmediateLoad).Value;
-                else
-                    HPBarFont = FontAssets.MouseText.Value;
+                HPBarFont = Request<DynamicSpriteFont>("CalamityMod/Fonts/HPBarFont", AssetRequestMode.ImmediateLoad).Value;
             }
 
             OneToMany = new Dictionary<int, int[]>();
@@ -133,12 +136,11 @@ namespace CalamityMod.UI
             OneToMany[NPCID.PrimeCannon] = SkelePrime;
             OneToMany[NPCID.PrimeLaser] = SkelePrime;
 
-            int[] Golem = new int[] { NPCID.Golem, NPCID.GolemFistLeft, NPCID.GolemFistRight, NPCID.GolemHead, NPCID.GolemHeadFree };
+            int[] Golem = new int[] { NPCID.Golem, NPCID.GolemFistLeft, NPCID.GolemFistRight, NPCID.GolemHead };
             OneToMany[NPCID.Golem] = Golem;
             OneToMany[NPCID.GolemFistLeft] = Golem;
             OneToMany[NPCID.GolemFistRight] = Golem;
             OneToMany[NPCID.GolemHead] = Golem;
-            OneToMany[NPCID.GolemHeadFree] = Golem;
 
             int[] Saucer = new int[] { NPCID.MartianSaucerCore, NPCID.MartianSaucerTurret, NPCID.MartianSaucerCannon };
             OneToMany[NPCID.MartianSaucerCore] = Saucer;
@@ -176,10 +178,23 @@ namespace CalamityMod.UI
             SetupRequirementsList();
         }
 
+        public override void Unload()
+        {
+            BossMainHPBar = null;
+            BossComboHPBar = null;
+            BossSeperatorBar = null;
+            HPBarFont = null;
+            Bars = null;
+            BossExclusionList = null;
+            MinibossHPBarList = null;
+            OneToMany = null;
+            EntityExtensionHandler = null;
+            SpecialHPRequirements = null;
+        }
+
         public static void SetupBossExclusionList()
         {
-            BossExclusionList = new List<int>
-            {
+            BossExclusionList.AddRange([
                 NPCID.None,
                 NPCID.MoonLordFreeEye,
                 NPCID.MoonLordHead,
@@ -207,14 +222,13 @@ namespace CalamityMod.UI
                 NPCType<AresGaussNuke>(),
                 NPCType<AresLaserCannon>(),
                 NPCType<AresPlasmaFlamethrower>(),
-                NPCType<AresTeslaCannon>(),
-            };
+                NPCType<AresTeslaCannon>()
+            ]);
         }
 
         public static void SetupMinibossHPBarList()
         {
-            MinibossHPBarList = new List<int>
-            {
+            MinibossHPBarList.AddRange([
                 // DD2 Event.
                 NPCID.DD2Betsy,
                 NPCID.DD2OgreT2,
@@ -256,11 +270,10 @@ namespace CalamityMod.UI
                 NPCType<PerforatorHeadLarge>(),
 
                 // Hardmode Modded.
-                NPCType<ThiccWaifu>(),
-                NPCType<Horse>(),
+                NPCType<CloudElemental>(),
+                NPCType<EarthElemental>(),
                 NPCType<GreatSandShark>(),
                 NPCType<PlaguebringerMiniboss>(),
-                NPCType<ArmoredDiggerHead>(),
                 NPCType<Cataclysm>(), //Clone's brothers
                 NPCType<Catastrophe>(),
 
@@ -272,12 +285,12 @@ namespace CalamityMod.UI
                 NPCType<ProvSpawnHealer>(),
                 NPCType<ProfanedGuardianDefender>(),
                 NPCType<ProfanedGuardianHealer>()
-            };
+            ]);
         }
 
         public static void SetupExtensionHandlerList()
         {
-            EntityExtensionHandler = new Dictionary<int, BossEntityExtension>()
+            EntityExtensionHandler.AddRange(new Dictionary<int, BossEntityExtension>()
             {
                 [NPCID.EaterofWorldsHead] = new BossEntityExtension(CalamityUtils.GetText("UI.ExtensionName.Segments"), NPCID.EaterofWorldsHead, NPCID.EaterofWorldsBody, NPCID.EaterofWorldsTail),
                 [NPCID.BrainofCthulhu] = new BossEntityExtension(CalamityUtils.GetText("UI.ExtensionName.Creepers"), NPCID.Creeper),
@@ -287,7 +300,7 @@ namespace CalamityMod.UI
                 [NPCID.PirateShip] = new BossEntityExtension(CalamityUtils.GetText("UI.ExtensionName.Cannons"), NPCID.PirateShipCannon),
                 [NPCType<CeaselessVoid>()] = new BossEntityExtension(CalamityUtils.GetText("UI.ExtensionName.DarkEnergy"), NPCType<DarkEnergy>()),
                 [NPCType<RavagerBody>()] = new BossEntityExtension(CalamityUtils.GetText("UI.ExtensionName.BodyParts"), NPCType<RavagerClawLeft>(), NPCType<RavagerClawRight>(), NPCType<RavagerLegLeft>(), NPCType<RavagerLegRight>()),
-            };
+            });
         }
 
         // Collection simplification looks horrendous in the context of delegate creation.
@@ -295,7 +308,6 @@ namespace CalamityMod.UI
 #pragma warning disable IDE0028 // Simplify collection initialization
         public static void SetupRequirementsList()
         {
-            SpecialHPRequirements = new Dictionary<NPCSpecialHPGetRequirement, NPCSpecialHPGetFunction>();
             SpecialHPRequirements.Add(npc => npc.Calamity().SplittingWorm, (npc, checkingForMaxLife) =>
             {
                 // Go across the entire worm and accumulate life. The expectation is that the boss follows the linked-list-esque standard
@@ -331,17 +343,17 @@ namespace CalamityMod.UI
                 if (npc.ai[0] == 2f)
                     life = 0L;
 
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC n in Main.ActiveNPCs)
                 {
-                    bool isMoonLordPiece = Main.npc[i].type == NPCID.MoonLordHand || Main.npc[i].type == NPCID.MoonLordHead;
-                    if (!Main.npc[i].active || !isMoonLordPiece || Main.npc[i].ai[3] != npc.whoAmI)
+                    bool isMoonLordPiece = n.type == NPCID.MoonLordHand || n.type == NPCID.MoonLordHead;
+                    if (!isMoonLordPiece || n.ai[3] != npc.whoAmI)
                         continue;
 
                     // Don't count HP towards the total if the NPC is in its dead state.
-                    if (Main.npc[i].Calamity().newAI[0] == 1f)
+                    if (n.Calamity().newAI[0] == 1f)
                         continue;
 
-                    life += checkingForMaxLife ? Main.npc[i].lifeMax : Main.npc[i].life;
+                    life += checkingForMaxLife ? n.lifeMax : n.life;
                 }
 
                 return life;
@@ -349,31 +361,17 @@ namespace CalamityMod.UI
         }
 #pragma warning restore IDE0028 // Simplify collection initialization
 
-        public override void Unload()
-        {
-            BossMainHPBar = null;
-            BossComboHPBar = null;
-            BossSeperatorBar = null;
-            HPBarFont = null;
-            Bars = null;
-            BossExclusionList = null;
-            MinibossHPBarList = null;
-            OneToMany = null;
-            EntityExtensionHandler = null;
-            SpecialHPRequirements = null;
-        }
-
         public override void Update(IBigProgressBar currentBar, ref BigProgressBarInfo info)
         {
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (NPC n in Main.ActiveNPCs)
             {
-                // Ignore inactive NPCs and NPCs that should not be given a bar, even if it meets other criteria.
-                if (!Main.npc[i].active || BossExclusionList.Contains(Main.npc[i].type))
+                // Ignore NPCs that should not be given a bar, even if it meets other criteria.
+                if (BossExclusionList.Contains(n.type))
                     continue;
 
-                bool isEoWSegment = Main.npc[i].type == NPCID.EaterofWorldsBody || Main.npc[i].type == NPCID.EaterofWorldsTail;
-                if ((Main.npc[i].IsABoss() && !isEoWSegment) || MinibossHPBarList.Contains(Main.npc[i].type) || Main.npc[i].Calamity().CanHaveBossHealthBar)
-                    AttemptToAddBar(i);
+                bool isEoWSegment = n.type == NPCID.EaterofWorldsBody || n.type == NPCID.EaterofWorldsTail;
+                if ((n.IsABoss() && !isEoWSegment) || MinibossHPBarList.Contains(n.type) || n.Calamity().CanHaveBossHealthBar)
+                    AttemptToAddBar(n.whoAmI);
             }
 
             for (int i = 0; i < Bars.Count; i++)
@@ -467,12 +465,12 @@ namespace CalamityMod.UI
                         return life;
 
                     // Otherwise, check if any of said relationship NPCs are enraged.
-                    for (int i = 0; i < Main.maxNPCs; i++)
+                    foreach (NPC n in Main.ActiveNPCs)
                     {
-                        if (!Main.npc[i].active || Main.npc[i].life <= 0 || !OneToMany[NPCType].Contains(Main.npc[i].type))
+                        if (n.life <= 0 || !OneToMany[NPCType].Contains(n.type))
                             continue;
 
-                        life += Main.npc[i].life;
+                        life += n.life;
                     }
 
                     return life;
@@ -499,12 +497,12 @@ namespace CalamityMod.UI
                         return maxLife;
 
                     // Otherwise, check if any of said relationship NPCs are enraged.
-                    for (int i = 0; i < Main.maxNPCs; i++)
+                    foreach (NPC n in Main.ActiveNPCs)
                     {
-                        if (!Main.npc[i].active || Main.npc[i].life <= 0 || !OneToMany[NPCType].Contains(Main.npc[i].type))
+                        if (n.life <= 0 || !OneToMany[NPCType].Contains(n.type))
                             continue;
 
-                        maxLife += Main.npc[i].lifeMax;
+                        maxLife += n.lifeMax;
                     }
 
                     return maxLife;
@@ -525,12 +523,12 @@ namespace CalamityMod.UI
                         return false;
 
                     // Otherwise, check if any of said relationship NPCs are enraged.
-                    for (int i = 0; i < Main.maxNPCs; i++)
+                    foreach (NPC n in Main.ActiveNPCs)
                     {
-                        if (!Main.npc[i].active || Main.npc[i].life <= 0 || !OneToMany[NPCType].Contains(Main.npc[i].type))
+                        if (n.life <= 0 || !OneToMany[NPCType].Contains(n.type))
                             continue;
 
-                        if (Main.npc[i].Calamity().CurrentlyEnraged)
+                        if (n.Calamity().CurrentlyEnraged)
                             return true;
                     }
                     return false;
@@ -551,12 +549,12 @@ namespace CalamityMod.UI
                         return false;
 
                     // Otherwise, check if any of said relationship NPCs are increasing their defense or DR.
-                    for (int i = 0; i < Main.maxNPCs; i++)
+                    foreach (NPC n in Main.ActiveNPCs)
                     {
-                        if (!Main.npc[i].active || Main.npc[i].life <= 0 || !OneToMany[NPCType].Contains(Main.npc[i].type))
+                        if (n.life <= 0 || !OneToMany[NPCType].Contains(n.type))
                             continue;
 
-                        if (Main.npc[i].Calamity().CurrentlyIncreasingDefenseOrDR)
+                        if (n.Calamity().CurrentlyIncreasingDefenseOrDR)
                             return true;
                     }
                     return false;

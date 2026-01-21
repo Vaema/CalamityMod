@@ -1,4 +1,6 @@
-﻿using CalamityMod.Projectiles.Magic;
+﻿using System;
+using CalamityMod.Projectiles.Magic;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -12,28 +14,52 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 34;
             Item.height = 38;
-            Item.damage = 36;
+            Item.damage = 40;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 12;
-            Item.useTime = 30;
-            Item.useAnimation = 30;
+            Item.mana = 22;
+            Item.useTime = 80;
+            Item.useAnimation = 80;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
-            Item.knockBack = 5.5f;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.knockBack = 5f;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
-            Item.UseSound = SoundID.Item20;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<FlareBoltProjectile>();
-            Item.shootSpeed = 7.5f;
+            Item.shootSpeed = 6.5f;
         }
+        public override void HoldItem(Player player)
+        {
+            player.Calamity().mouseWorldListener = true;
+        }
+        public override void UseStyle(Player player, Rectangle heldItemFrame)
+        {
+            player.ChangeDir(Math.Sign((player.Calamity().mouseWorld - player.Center).X));
+            float itemRotation = player.compositeFrontArm.rotation + MathHelper.PiOver2 * player.gravDir;
 
+            Vector2 itemPosition = player.MountedCenter + itemRotation.ToRotationVector2() * 4f;
+            Vector2 itemSize = new Vector2(34, 38);
+            Vector2 itemOrigin = new Vector2(-24, 4);
+
+            CalamityUtils.CleanHoldStyle(player, itemRotation, itemPosition, itemSize, itemOrigin);
+
+            base.UseStyle(player, heldItemFrame);
+        }
+        public override void UseItemFrame(Player player)
+        {
+            player.ChangeDir(Math.Sign((player.Calamity().mouseWorld - player.Center).X));
+
+            float animProgress = 0.5f - player.itemTime / (float)player.itemTimeMax;
+            float rotation = (player.Center - player.Calamity().mouseWorld).ToRotation() * player.gravDir + MathHelper.PiOver2;
+
+            player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, rotation);
+        }
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.HellstoneBar, 6).
-                AddIngredient(ItemID.Obsidian, 9).
-                AddIngredient(ItemID.Fireblossom, 2).
+                AddIngredient(ItemID.HellstoneBar, 10).
+                AddIngredient(ItemID.Fireblossom, 5).
+                AddIngredient(ItemID.Ruby).
                 AddTile(TileID.Bookcases).
                 Register();
         }

@@ -1,6 +1,7 @@
-﻿using CalamityMod.Dusts;
-using CalamityMod.Buffs.StatDebuffs;
+﻿using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -10,6 +11,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
+    [PierceResistException]
     public class AcidicSaxBubble : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
@@ -19,7 +21,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 7;
+            Main.projFrames[Type] = 7;
         }
 
         public override void SetDefaults()
@@ -31,6 +33,8 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.DamageType = DamageClass.Magic;
             Projectile.penetrate = -1;
             Projectile.alpha = 255;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -127,8 +131,8 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture2D13 = ModContent.Request<Texture2D>(Texture).Value;
-            int framing = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
+            Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int framing = Terraria.GameContent.TextureAssets.Projectile[Type].Value.Height / Main.projFrames[Type];
             int y6 = framing * Projectile.frame;
             Main.spriteBatch.Draw(texture2D13, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture2D13.Width, framing)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture2D13.Width / 2f, (float)framing / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;
@@ -137,11 +141,15 @@ namespace CalamityMod.Projectiles.Magic
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<Irradiated>(), 180);
+            if (Projectile.ai[2] == 1f) // For GFB Animosity
+                target.AddBuff(BuffID.Poisoned, 180);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(ModContent.BuffType<Irradiated>(), 180);
+            if (Projectile.ai[2] == 1f) // For GFB Animosity
+                target.AddBuff(BuffID.Poisoned, 180);
         }
 
         public override void OnKill(int timeLeft)
@@ -154,7 +162,7 @@ namespace CalamityMod.Projectiles.Magic
             int inc;
             for (int i = 0; i < 25; i = inc + 1)
             {
-                int toxicDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.SulfurousSeaAcid, 0f, 0f, 0, default, 1f);
+                int toxicDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid, 0f, 0f, 0, default, 1f);
                 Main.dust[toxicDust].position = (Main.dust[toxicDust].position + Projectile.position) / 2f;
                 Main.dust[toxicDust].velocity = new Vector2((float)Main.rand.Next(-100, 101), (float)Main.rand.Next(-100, 101));
                 Main.dust[toxicDust].velocity.Normalize();

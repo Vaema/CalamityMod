@@ -1,34 +1,12 @@
-using CalamityMod.CalPlayer;
 using CalamityMod.Projectiles.Summon;
-using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.Summon
 {
-    public class PerditionBuff : ModBuff
+    public class PerditionBuff : BaseSummonBuff
     {
-        public override void SetStaticDefaults()
-        {
-            Main.buffNoTimeDisplay[Type] = true;
-            Main.buffNoSave[Type] = true;
-            //Main.persistentBuff[Type] = true;
-        }
+        protected override int MinionProjectileType => ModContent.ProjectileType<PerditionBeacon>();
 
-        public override void Update(Player player, ref int buffIndex)
-        {
-            CalamityPlayer modPlayer = player.Calamity();
-            if (player.ownedProjectileCounts[ModContent.ProjectileType<PerditionBeacon>()] > 0)
-                modPlayer.perditionBeacon = true;
-
-            if (!modPlayer.perditionBeacon)
-            {
-                player.DelBuff(buffIndex);
-                buffIndex--;
-            }
-            else
-            {
-                player.buffTime[buffIndex] = 18000;
-            }
-        }
+        protected override ref bool MinionBool => ref BuffModdedOwner.perditionBeacon;
     }
 }

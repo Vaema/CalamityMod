@@ -1,7 +1,7 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
@@ -24,7 +24,7 @@ namespace CalamityMod.Projectiles.Melee
         public override void SetDefaults()
         {
             Projectile.DamageType = DamageClass.Melee;
-            Projectile.width = Projectile.height = 8;
+            Projectile.width = Projectile.height = 80;
             Projectile.tileCollide = false;
             Projectile.friendly = true;
             Projectile.penetrate = -1;

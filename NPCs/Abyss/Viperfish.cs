@@ -1,13 +1,16 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System.IO;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.NPCs.NormalNPCs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
-using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
@@ -16,15 +19,20 @@ namespace CalamityMod.NPCs.Abyss
 {
     public class Viperfish : ModNPC
     {
+        public static Asset<Texture2D> GlowTexture;
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            Main.npcFrameCount[Type] = 4;
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 PortraitPositionXOverride = 0
             };
             value.Position.X += 15;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -34,10 +42,10 @@ namespace CalamityMod.NPCs.Abyss
             NPC.width = 76;
             NPC.height = 36;
             NPC.defense = 10;
-            NPC.lifeMax = 320;
+            NPC.lifeMax = 400;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(silver: 4);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.knockBackResist = 0.85f;
@@ -53,9 +61,9 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Viperfish")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Viperfish")
             });
         }
 
@@ -71,7 +79,7 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void AI()
         {
-            CalamityAI.PassiveSwimmingAI(NPC, Mod, 0, Main.player[NPC.target].Calamity().GetAbyssAggro(160f), 0.25f, 0.15f, 6f, 6f, 0.1f);
+            CalamityRegularEnemyAI.PassiveSwimmingAI(NPC, Mod, 0, Main.player[NPC.target].Calamity().GetAbyssAggro(160f), 0.25f, 0.15f, 6f, 6f, 0.1f);
         }
 
         public override bool? CanBeHitByProjectile(Projectile projectile)
@@ -106,7 +114,7 @@ namespace CalamityMod.NPCs.Abyss
             else
             {
                 NPC.frameCounter += NPC.chaseable ? 0.15f : 0.075f;
-                NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+                NPC.frameCounter %= Main.npcFrameCount[Type];
                 int frame = (int)NPC.frameCounter;
                 NPC.frame.Y = frame * frameHeight;
             }
@@ -116,11 +124,9 @@ namespace CalamityMod.NPCs.Abyss
         {
             if (!NPC.IsABestiaryIconDummy)
             {
-                Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/NPCs/Abyss/ViperfishGlow").Value;
-
                 var effects = NPC.direction == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
-                Main.EntitySpriteDraw(tex, NPC.Center - Main.screenPosition + new Vector2(0, NPC.gfxOffY + 4), 
+                Main.EntitySpriteDraw(GlowTexture.Value, NPC.Center - Main.screenPosition + new Vector2(0, NPC.gfxOffY + 4),
                 NPC.frame, Color.White * 0.5f, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, effects, 0);
             }
         }
@@ -128,7 +134,7 @@ namespace CalamityMod.NPCs.Abyss
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<CrushDepth>(), 120, true);
+                target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 120, true);
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
@@ -146,9 +152,9 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            var postClone = npcLoot.DefineConditionalDropSet(DropHelper.PostCal());
-            postClone.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 1, 2, 2, 3));
-            postClone.Add(ModContent.ItemType<Lumenyl>(), 4);
+            var postLevi = npcLoot.DefineConditionalDropSet(DropHelper.PostLevi());
+            postLevi.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 1, 2, 2, 3));
+            npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<DepthCrusher>(), 10, 6));
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -163,7 +169,7 @@ namespace CalamityMod.NPCs.Abyss
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ViperFish").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ViperFish2").Type, 1f);

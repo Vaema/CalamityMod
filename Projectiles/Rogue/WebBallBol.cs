@@ -18,13 +18,15 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.timeLeft = 300;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.aiStyle = ProjAIStyleID.GroundProjectile;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
         {
             if (Main.rand.NextBool(12))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 30, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Web, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
         }
 

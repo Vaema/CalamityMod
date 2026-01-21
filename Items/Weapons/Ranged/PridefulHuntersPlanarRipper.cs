@@ -1,8 +1,8 @@
 ﻿using CalamityMod.Projectiles.Ranged;
-using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
@@ -13,11 +13,14 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         private int counter = 0;
 
+        public static int AmmoSavedPercent = 50;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
+
         public override void SetDefaults()
         {
             Item.width = 68;
             Item.height = 32;
-            Item.damage = 74;
+            Item.damage = 79;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 5;
             Item.useAnimation = 5;
@@ -31,15 +34,14 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useAmmo = AmmoID.Bullet;
             Item.shootSpeed = 15f;
 
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.Calamity().donorItem = true;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-12, -6);
 
-        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.Next(0, 100) >= 33;
+        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.Next(100) >= AmmoSavedPercent;
 
         public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
@@ -61,13 +63,9 @@ namespace CalamityMod.Items.Weapons.Ranged
             CreateRecipe().
                 AddIngredient<P90>().
                 AddIngredient(ItemID.Uzi).
-                AddIngredient<PearlGod>(). //This should be removed
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient(ItemID.FragmentVortex, 10).
-                AddIngredient<GalacticaSingularity>(6). //This should be removed
-                AddIngredient<CoreofCalamity>(). // This should be removed
-                AddIngredient<Stardust>(25). // This should be removed
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

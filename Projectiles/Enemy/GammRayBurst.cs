@@ -1,12 +1,12 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Graphics.Primitives;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System;
-using System.IO;
-using System.Linq;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
@@ -17,11 +17,6 @@ namespace CalamityMod.Projectiles.Enemy
     public class GammaRayBurst : BaseLaserbeamProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Enemy";
-        public PrimitiveTrail LaserDrawer
-        {
-            get;
-            set;
-        } = null;
 
         public int OwnerIndex
         {
@@ -34,15 +29,15 @@ namespace CalamityMod.Projectiles.Enemy
         public override float Lifetime => 300;
         public override Color LaserOverlayColor => new Color(0, 200, 50, 100);
         public override Color LightCastColor => Color.White;
-        public override Texture2D LaserBeginTexture => ModContent.Request<Texture2D>(Texture).Value;
+        public override Texture2D LaserBeginTexture => Terraria.GameContent.TextureAssets.Projectile[Type].Value;
         public override Texture2D LaserMiddleTexture => ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/AresLaserBeamMiddle", AssetRequestMode.ImmediateLoad).Value;
         public override Texture2D LaserEndTexture => ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/AresLaserBeamEnd", AssetRequestMode.ImmediateLoad).Value;
         public override string Texture => "CalamityMod/Projectiles/Boss/AresLaserBeamStart";
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 5;
-            ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
+            Main.projFrames[Type] = 5;
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
         }
 
         public override void SetDefaults()
@@ -96,12 +91,12 @@ namespace CalamityMod.Projectiles.Enemy
             // Determine frames.
             Projectile.frameCounter++;
             if (Projectile.frameCounter % 5f == 0f)
-                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Projectile.type];
+                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Type];
         }
 
-        public float LaserWidthFunction(float _) => Projectile.scale * Projectile.width + 180;
+        public float LaserWidthFunction(float _, Vector2 vertexPos) => Projectile.scale * Projectile.width + 180;
 
-        public static Color LaserColorFunction(float completionRatio)
+        public static Color LaserColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float colorInterpolant = (float)Math.Sin(Main.GlobalTimeWrappedHourly * -3.2f + completionRatio * 23f) * 0.5f + 0.5f;
             return Color.Lerp(Color.LightGreen, Color.Lime, colorInterpolant * 0.67f);
@@ -112,7 +107,6 @@ namespace CalamityMod.Projectiles.Enemy
             // This should never happen, but just in case.
             if (Projectile.velocity == Vector2.Zero)
                 return false;
-            LaserDrawer ??= new(LaserWidthFunction, LaserColorFunction, null, GameShaders.Misc["CalamityMod:ArtemisLaser"]);
 
             Vector2 laserEnd = Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.UnitY) * LaserLength;
             Vector2[] baseDrawPoints = new Vector2[8];
@@ -124,7 +118,7 @@ namespace CalamityMod.Projectiles.Enemy
             GameShaders.Misc["CalamityMod:ArtemisLaser"].UseImage1("Images/Extra_189");
             GameShaders.Misc["CalamityMod:ArtemisLaser"].UseImage2("Images/Misc/Perlin");
 
-            LaserDrawer.Draw(baseDrawPoints, -Main.screenPosition, 64);
+            PrimitiveRenderer.RenderTrail(baseDrawPoints, new(LaserWidthFunction, LaserColorFunction, shader: GameShaders.Misc["CalamityMod:ArtemisLaser"]), 64);
             return false;
         }
 

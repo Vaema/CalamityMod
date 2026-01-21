@@ -1,16 +1,18 @@
 ﻿using CalamityMod.DataStructures;
-using CalamityMod.NPCs;
+using CalamityMod.Items.Accessories;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Typeless
 {
     public class SandCloakVeil : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
-        private const float radius = 272f;
-        private const int duration = 900;
+        private const float Radius = 360f;
+        private const int Duration = 900;
 
         public override void SetDefaults()
         {
@@ -20,87 +22,86 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = duration;
+            Projectile.timeLeft = Duration;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 10;
-			Projectile.scale = 1.2f;
+            Projectile.scale = 1.5f;
         }
 
         public override void AI()
         {
-            Projectile.rotation += 0.01f;
+            Projectile.rotation += 0.025f;
+            Player Owner = Main.player[Projectile.owner];
+            Player BuffedPlayer = Main.LocalPlayer;
 
-            Player player = Main.player[Main.myPlayer];
-            Vector2 posDiff = player.Center - Projectile.Center;
-            if (posDiff.Length() <= radius)
+            Vector2 posDiff = BuffedPlayer.Center - Projectile.Center;
+            if (posDiff.Length() <= Radius)
             {
-                player.statDefense += 6;
-                player.lifeRegen += 2;
+                BuffedPlayer.Calamity().getSandCloakAccelBoost = true;
+                BuffedPlayer.statDefense += SandCloak.SandVeilDefenseBoost;
+            }
+            else
+                BuffedPlayer.Calamity().getSandCloakAccelBoost = false;
+            // Ensure the acceleration boost is removed if the player is still inside the sand veil when it dies
+            if (Projectile.timeLeft == 1)
+                BuffedPlayer.Calamity().getSandCloakAccelBoost = false;
+
+            // Make the sand veil slowly follow its owner
+            float ownerDist = Vector2.Distance(Projectile.Center, Owner.Center);
+            if (ownerDist > Radius * 0.2f)
+                Projectile.Center += Vector2.Normalize(Owner.Center - Projectile.Center) * (ownerDist > Radius * 0.5f ? 2.5f : 1.25f);
+
+            // Kill the sand veil early if the owner dashes
+            if (Owner.dashDelay == -1 && Projectile.timeLeft < Duration - 45)
+            {
+                if (Projectile.timeLeft > 25)
+                    Projectile.timeLeft = 25;
+            }
+
+            // Dust
+            Circle dustCircle = new Circle(Projectile.Center, Radius);
+            for (int i = 0; i < 2; i++)
+            {
+                Vector2 dustPos = dustCircle.RandomPointInCircle();
+                if ((dustPos - Projectile.Center).Length() > 48)
+                {
+                    Vector2 dustVel = Projectile.SafeDirectionTo(dustPos).RotatedBy(-MathHelper.PiOver4) * Vector2.Distance(Projectile.Center, dustPos) * 0.04f;
+                    Dust sand = Dust.NewDustPerfect(dustPos, DustID.Sand, dustVel, Scale: 0.5f);
+                    sand.noGravity = true;
+                    sand.fadeIn = 1f;
+                }
             }
         }
+
+        // Add Sand Cloak cooldown after the sand veil dies
+        public override void OnKill(int timeLeft) => Main.player[Projectile.owner].AddCooldown(Cooldowns.SandCloak.ID, CalamityUtils.SecondsToFrames(15));
 
         public override bool PreDraw(ref Color lightColor)
         {
             // Sprite Circle
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
-            float scaleStep = 0.03f;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            float scaleStep = 0.05f;
             float rotationOffset = 0.03f;
-            Color drawCol = Projectile.GetAlpha(lightColor);
+            Color drawCol = Projectile.GetAlpha(Color.Lerp(lightColor, Color.White, 0.5f));
             float drawTransparency = 0.1f;
 
-            if (Projectile.timeLeft > duration - 10)
-            {
-                drawTransparency = (duration - Projectile.timeLeft) * 0.01f;
-            }
+            if (Projectile.timeLeft > Duration - 10)
+                drawTransparency = (Duration - Projectile.timeLeft) * 0.01f;
             else if (Projectile.timeLeft < 25)
-            {
                 drawTransparency = Projectile.timeLeft * 0.004f;
-            }
-
-            // Dust effects
-            Circle dustCircle = new Circle(Projectile.Center, radius);
 
             for (int i = 0; i < 20; i++)
             {
                 // Sprite
-                Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, drawCol * drawTransparency, Projectile.rotation + (rotationOffset * i * i), tex.Size() / 2f, Projectile.scale - (i * scaleStep), SpriteEffects.None, 0);
-
-                // Dust
-                Vector2 dustPos = dustCircle.RandomPointInCircle();
-                if ((dustPos - Projectile.Center).Length() > 48)
-                {
-                    int dustIndex = Dust.NewDust(dustPos, 1, 1, 32);
-                    Main.dust[dustIndex].noGravity = true;
-                    Main.dust[dustIndex].fadeIn = 1f;
-                    Vector2 dustVelocity = Projectile.Center - Main.dust[dustIndex].position;
-                    float distToCenter = dustVelocity.Length();
-                    dustVelocity.Normalize();
-                    dustVelocity = dustVelocity.RotatedBy(MathHelper.ToRadians(-90f));
-                    dustVelocity *= distToCenter * 0.04f;
-                    Main.dust[dustIndex].velocity = dustVelocity;
-                }
+                float rotation = (Projectile.rotation + rotationOffset * i * i) * (i % 2 == 0).ToDirectionInt();
+                Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, drawCol * drawTransparency, rotation, tex.Size() / 2f, (Radius * 0.0044f) - (i * scaleStep), SpriteEffects.None, 0);
             }
-
             return false;
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            // Knockback has to be done manually to ensure the enemies are repelled from the aura as opposed to thrown to one side of it
-
-            if (target.knockBackResist <= 0f)
-                return;
-
-            // 12AUG2023: Ozzatron: TML was giving NaN knockback, probably due to 0 base knockback. Do not use hit.Knockback
-            if (CalamityGlobalNPC.ShouldAffectNPC(target))
-            {
-                float knockbackMultiplier = MathHelper.Clamp(1f - target.knockBackResist, 0f, 1f);
-                Vector2 trueKnockback = target.Center - Projectile.Center;
-                trueKnockback.Normalize();
-                target.velocity = trueKnockback * knockbackMultiplier;
-            }
-        }
-
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, radius, targetHitbox);
+        // CIT 14FEB2025: Replaced old manual knockback code with setting HitDirectionOverride
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.HitDirectionOverride = (target.Center.X > Projectile.Center.X).ToDirectionInt();
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, Radius, targetHitbox);
+        public override bool? CanCutTiles() => false;
     }
 }

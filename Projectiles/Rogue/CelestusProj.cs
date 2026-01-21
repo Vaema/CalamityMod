@@ -1,11 +1,10 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
-using System;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -17,8 +16,8 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 8;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -152,15 +151,10 @@ namespace CalamityMod.Projectiles.Rogue
         {
             if (Projectile.owner == Main.myPlayer)
             {
-                float spread = 45f * 0.0174f;
-                double startAngle = Math.Atan2(Projectile.velocity.X, Projectile.velocity.Y) - spread / 2;
-                double deltaAngle = spread / 8f;
-                double offsetAngle;
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < 8; i++)
                 {
-                    offsetAngle = startAngle + deltaAngle * (i + i * i) / 2f + 32f * i;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, (float)(Math.Sin(offsetAngle) * 2f), (float)(Math.Cos(offsetAngle) * 2f), ModContent.ProjectileType<CelestusMiniScythe>(), (int)(Projectile.damage * 0.7), Projectile.knockBack, Projectile.owner);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, (float)(-Math.Sin(offsetAngle) * 2f), (float)(-Math.Cos(offsetAngle) * 2f), ModContent.ProjectileType<CelestusMiniScythe>(), (int)(Projectile.damage * 0.7), Projectile.knockBack, Projectile.owner);
+                    Vector2 velocity = ((MathHelper.TwoPi * i / 8f) - (MathHelper.ToRadians(67.5f) - Projectile.velocity.ToRotation())).ToRotationVector2() * 2.5f;
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<CelestusMiniScythe>(), (int)(Projectile.damage * 0.7), Projectile.knockBack, Projectile.owner);
                 }
             }
             SoundEngine.PlaySound(SoundID.Item122, Projectile.Center);
@@ -168,7 +162,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 

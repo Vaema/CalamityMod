@@ -1,5 +1,4 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
@@ -11,13 +10,18 @@ namespace CalamityMod.Items.Armor.Demonshade
     public class DemonshadeGreaves : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PostMoonLord";
+
+        // Shadow Speed... (elusive)
+        public static float MoveSpeedBoost = 0.3f;
+        public static float AccelerationBoost = 0.5f;
+
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
             Item.defense = 50;
 
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
         }
@@ -26,7 +30,7 @@ namespace CalamityMod.Items.Armor.Demonshade
         {
             var modPlayer = player.Calamity();
             modPlayer.shadowSpeed = true;
-            player.moveSpeed += 0.3f;
+            player.moveSpeed += MoveSpeedBoost;
         }
 
         public override void AddRecipes()

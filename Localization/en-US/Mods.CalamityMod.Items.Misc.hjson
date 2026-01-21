@@ -1,6 +1,16 @@
 // Critters
+AlphaSeaMinnowItem: {
+	DisplayName: "{$NPCs.AlphaSeaMinnow.DisplayName}"
+	Tooltip: ""
+}
+
+AlphaSeaMinnowGoldItem: {
+	DisplayName: "{$NPCs.AlphaSeaMinnowGold.DisplayName}"
+	Tooltip: ""
+}
+
 AndroombaItem: {
-	DisplayName: "{$Mods.CalamityMod.NPCs.Androomba.DisplayName}"
+	DisplayName: "{$NPCs.Androomba.DisplayName}"
 	Tooltip:
 		'''
 		Press <right> on the roomba with a solution to insert it
@@ -9,17 +19,42 @@ AndroombaItem: {
 }
 
 BabyCannonballJellyfishItem: {
-	DisplayName: "{$Mods.CalamityMod.NPCs.BabyCannonballJellyfish.DisplayName}"
-	Tooltip: ""
+	DisplayName: "{$NPCs.BabyCannonballJellyfish.DisplayName}"
+	Tooltip: Can be fired out of cannons
 }
 
 BabyFlakCrabItem: {
-	DisplayName: "{$Mods.CalamityMod.NPCs.BabyFlakCrab.DisplayName}"
+	DisplayName: "{$NPCs.BabyFlakCrab.DisplayName}"
 	Tooltip: ""
 }
 
 BabyGhostBellItem: {
-	DisplayName: "{$Mods.CalamityMod.NPCs.BabyGhostBell.DisplayName}"
+	DisplayName: Blue Baby Ghost Bell
+	Tooltip: ""
+}
+
+BabyGhostBellGoldItem: {
+	DisplayName: "{$NPCs.GoldBabyGhostBell}"
+	Tooltip: ""
+}
+
+BabyGhostBellGreenItem: {
+	DisplayName: Green Baby Ghost Bell
+	Tooltip: ""
+}
+
+BabyGhostBellRadiantItem: {
+	DisplayName: "{$NPCs.RadiantBabyGhostBell}"
+	Tooltip: ""
+}
+
+BabyGhostBellPinkItem: {
+	DisplayName: Pink Baby Ghost Bell
+	Tooltip: ""
+}
+
+GildedAxolotlItem: {
+	DisplayName: Gilded Axolotl
 	Tooltip: ""
 }
 
@@ -29,7 +64,7 @@ NanodroidDysfunctionalItem: {
 }
 
 NanodroidItem: {
-	DisplayName: "{$Mods.CalamityMod.NPCs.Nanodroid.DisplayName}"
+	DisplayName: "{$NPCs.Nanodroid.DisplayName}"
 	Tooltip: ""
 }
 
@@ -43,43 +78,161 @@ NanodroidPlagueRedItem: {
 	Tooltip: ""
 }
 
+PearlpodBlackItem: {
+	DisplayName: Black Pearlpod
+	Tooltip: ""
+}
+
+PearlpodItem: {
+	DisplayName: White Pearlpod
+	Tooltip: ""
+}
+
+PearlpodPinkItem: {
+	DisplayName: Pink Pearlpod
+	Tooltip: ""
+}
+
+PolypPanaseaGoldItem: {
+	DisplayName: "{$NPCs.GoldPolypPanasea}"
+	Tooltip: ""
+}
+
+PolypPanaseaGreenItem: {
+	DisplayName: Green Polyp Panasea
+	Tooltip: ""
+}
+
+PolypPanaseaItem: {
+	DisplayName: Red Polyp Panasea
+	Tooltip: ""
+}
+
+PolypPanaseaPurpleItem: {
+	DisplayName: Purple Polyp Panasea
+	Tooltip: ""
+}
+
+PolypPanaseaRadiantItem: {
+	DisplayName: "{$NPCs.RadiantPolypPanasea}"
+	Tooltip: ""
+}
+
+PolypPanaseaTurquoiseItem: {
+	DisplayName: Turquoise Polyp Panasea
+	Tooltip: ""
+}
+
 PiggyItem: {
-	DisplayName: "{$Mods.CalamityMod.NPCs.Piggy.DisplayName}"
+	DisplayName: "{$NPCs.Piggy.DisplayName}"
+	Tooltip: ""
+}
+
+PrismaticGuppyBlueItem: {
+	DisplayName: Blue Prismatic Guppy
+	Tooltip: ""
+}
+
+PrismaticGuppyGoldItem: {
+	DisplayName: "{$NPCs.GoldPrismaticGuppy}"
+	Tooltip: ""
+}
+
+PrismaticGuppyGreenItem: {
+	DisplayName: Green Prismatic Guppy
+	Tooltip: ""
+}
+
+PrismaticGuppyPinkItem: {
+	DisplayName: Pink Prismatic Guppy
+	Tooltip: ""
+}
+
+PrismaticGuppyRadiantItem: {
+	DisplayName: "{$NPCs.RadiantPrismaticGuppy}"
+	Tooltip: ""
+}
+
+ProbesnoutGoldItem: {
+	DisplayName: "{$NPCs.ProbesnoutGold.DisplayName}"
+	Tooltip: ""
+}
+
+ProbesnoutItem: {
+	DisplayName: "{$NPCs.Probesnout.DisplayName}"
 	Tooltip: ""
 }
 
 RepairUnitItem: {
-	DisplayName: "{$Mods.CalamityMod.NPCs.RepairUnitCritter.DisplayName}"
+	DisplayName: "{$NPCs.RepairUnitCritter.DisplayName}"
+	Tooltip: ""
+}
+
+SeaFloatyItem: {
+	DisplayName: "{$NPCs.SeaFloaty.DisplayName}"
 	Tooltip: ""
 }
 
 SeaMinnowItem: {
-	DisplayName: "{$Mods.CalamityMod.NPCs.SeaMinnow.DisplayName}"
+	DisplayName: "{$NPCs.SeaMinnow.DisplayName}"
+	Tooltip: ""
+}
+
+SeaMinnowGoldItem: {
+	DisplayName: "{$NPCs.SeaMinnowGold.DisplayName}"
+	Tooltip: ""
+}
+
+SearslugItem: {
+	DisplayName: "{$NPCs.Searslug.DisplayName}"
+	Tooltip: ""
+}
+
+ShoreskipperItem: {
+	DisplayName: "{$NPCs.Shoreskipper.DisplayName}"
+	Tooltip: ""
+}
+
+ShroombleItem: {
+	DisplayName: "{$NPCs.Shroomble.DisplayName}"
+	Tooltip: ""
+}
+
+SlugbunBurrowsItem: {
+	DisplayName: Burrows Slugbun
+	Tooltip: ""
+}
+
+SlugbunItem: {
+	DisplayName: Reef Slugbun
+	Tooltip: ""
+}
+
+SlugbunPolypItem: {
+	DisplayName: Polyp Slugbun
+	Tooltip: ""
+}
+
+SlugbunRadiantItem: {
+	DisplayName: "{$NPCs.RadiantSlugbun}"
 	Tooltip: ""
 }
 
 TwinklerItem: {
-	DisplayName: "{$Mods.CalamityMod.NPCs.Twinkler.DisplayName}"
+	DisplayName: "{$NPCs.Twinkler.DisplayName}"
 	Tooltip: ""
 }
 
 // Permanent Boosters
-BloodOrange: {
-	DisplayName: Blood Orange
-	Tooltip:
-		'''
-		Permanently increases maximum life by {0}
-		Can only be used once and requires the max amount of Life Fruits consumed
-		It has a distinctly sweet flavor and a strong aroma
-		'''
-}
+AdrenalineBoosterTooltip: Permanently increases {$Buffs.AdrenalineMode.DisplayName} damage by {0}% and damage reduction by {1}%
+RageBoosterTooltip: Permanently increases the duration of {$Buffs.RageMode.DisplayName} by {0} second
 
 CelestialOnion: {
 	DisplayName: Celestial Onion
 	Tooltip:
 		'''
 		Permanently increases the number of accessory slots
-		This item does nothing in Master Mode
+		Enables Demon Heart's accessory slot instead in Master Mode
 		Alien power pulses inside its layers
 		'''
 }
@@ -93,43 +246,8 @@ CometShard: {
 		'''
 }
 
-Dragonfruit: {
-	DisplayName: Dragonfruit
-	Tooltip:
-		'''
-		Permanently increases maximum life by {0}
-		Can only be used once and requires the max amount of Life Fruits consumed
-		Though somewhat bland, what taste can be described is unlike any other experienced
-		'''
-}
-
-Ectoheart: {
-	DisplayName: Ectoheart
-	Tooltip:
-		'''
-		Permanently increases Adrenaline Mode damage by 15% and damage reduction by 5%
-		Revengeance drop
-		'''
-}
-
-Elderberry: {
-	DisplayName: Elderberry
-	Tooltip:
-		'''
-		Permanently increases maximum life by {0}
-		Can only be used once and requires the max amount of Life Fruits consumed
-		A tangy, tart flavor with a somewhat earthen touch
-		'''
-}
-
-ElectrolyteGelPack: {
-	DisplayName: Electrolyte Gel Pack
-	Tooltip:
-		'''
-		Permanently increases Adrenaline Mode damage by 15% and damage reduction by 5%
-		Revengeance drop
-		'''
-}
+Ectoheart.DisplayName: Ectoheart
+ElectrolyteGelPack.DisplayName: Electrolyte Gel Pack
 
 EtherealCore: {
 	DisplayName: Ethereal Core
@@ -140,14 +258,7 @@ EtherealCore: {
 		'''
 }
 
-InfernalBlood: {
-	DisplayName: Infernal Blood
-	Tooltip:
-		'''
-		Permanently increases the duration of Rage Mode by 1 second
-		Revengeance drop
-		'''
-}
+InfernalBlood.DisplayName: Infernal Blood
 
 MiracleFruit: {
 	DisplayName: Miracle Fruit
@@ -159,14 +270,7 @@ MiracleFruit: {
 		'''
 }
 
-MushroomPlasmaRoot: {
-	DisplayName: Mushroom Plasma Root
-	Tooltip:
-		'''
-		Permanently increases the duration of Rage Mode by 1 second
-		Revengeance drop
-		'''
-}
+MushroomPlasmaRoot.DisplayName: Mushroom Plasma Root
 
 PhantomHeart: {
 	DisplayName: Phantom Heart
@@ -177,140 +281,51 @@ PhantomHeart: {
 		'''
 }
 
-RedLightningContainer: {
-	DisplayName: Red Lightning Container
+RedLightningContainer.DisplayName: Red Lightning Container
+
+SacredStrawberry: {
+	DisplayName: Sacred Strawberry
 	Tooltip:
 		'''
-		Permanently increases the duration of Rage Mode by 1 second
-		Revengeance drop
+		Permanently increases maximum life by {0}
+		Can only be used once and requires the max amount of Life Fruits consumed
+		Though somewhat bland, what taste can be described is unlike any other experienced
 		'''
 }
 
-StarlightFuelCell: {
-	DisplayName: Starlight Fuel Cell
+SanguineTangerine: {
+	DisplayName: Sanguine Tangerine
 	Tooltip:
 		'''
-		Permanently increases Adrenaline Mode damage by 15% and damage reduction by 5%
-		Revengeance drop
+		Permanently increases maximum life by {0}
+		Can only be used once and requires the max amount of Life Fruits consumed
+		It has a distinctly sweet flavor and a strong aroma
+		'''
+}
+
+StarlightFuelCell.DisplayName: Starlight Fuel Cell
+
+TaintedCloudberry: {
+	DisplayName: Tainted Cloudberry
+	Tooltip:
+		'''
+		Permanently increases maximum life by {0}
+		Can only be used once and requires the max amount of Life Fruits consumed
+		A tangy, tart flavor with a somewhat earthen touch
 		'''
 }
 
 // Spawn Blockers
-AntiCystOintment: {
-	DisplayName: Anti-Cyst Ointment
-	Tooltip: Favorite this item to prevent perforator cysts from spawning near you
-}
-
-AntiTumorOintment: {
-	DisplayName: Anti-Tumor Ointment
-	Tooltip: Favorite this item to prevent hive tumors from spawning near you
-}
-
-BleachBall: {
-	DisplayName: Bleach Ball
-	Tooltip: Favorite this item to prevent the Aquatic Scourge from naturally spawning near you
-}
-
-BrokenWaterFilter: {
-	DisplayName: Broken Water Filter
-	Tooltip: Favorite this item to disable natural Acid Rain spawns
-}
-
-SirenproofEarMuffs: {
-	DisplayName: Sirenproof Earmuffs
-	Tooltip: Favorite this item to prevent Anahita from spawning near you
-}
-
-VoodooDemonVoodooDoll: {
-	DisplayName: Voodoo Demon Voodoo Doll
-	Tooltip: Favorite this item to prevent voodoo demons from spawning near you
-}
-
+SpawnBlockersOn: Spawns are currently disabled
+SpawnBlockersOff: Spawns are currently enabled
 // Uncategorized
-AlicornonaStick: {
-	DisplayName: Alicorn on a Stick
-	Tooltip: "'Congratulations, you're winner! Here's my head on a stick.'"
-}
-
-BallAndChain: {
-	DisplayName: Ball and Chain
-	Tooltip:
-		'''
-		Favorite this item to disable any dashes granted by equipment
-		'So heavy...'
-		'''
-}
-
-BrimstoneLocus: {
-	DisplayName: Brimstone Locus
-	Tooltip:
-		'''
-		[c/C61B40:'Not only can I enhance your equipment with potent magic,]
-		[c/C61B40:I can also transcend some of your weaponry to entirely new forms.]
-		[c/C61B40:Such items are revealed while this item is in your inventory.']
-		'''
-}
-
-MomentumCapacitor: {
-	DisplayName: Momentum Capacitor
-	Tooltip:
-		'''
-		While using the Momentum Capacitor,
-		your top speed will continuously and uncontrollably increase
-		This effect only works if there are no bosses alive
-		'''
-}
-
-NormalityRelocator: {
-	DisplayName: Normality Relocator
-	Tooltip:
-		'''
-		Press [KEY] to teleport to the position of the mouse
-		Fall speed is doubled for 30 frames after teleporting
-		Teleportation is disabled while Chaos State is active
-		Works while in the inventory
-		'I'll be there in the blink of an eye'
-		'''
-}
-
-RelicOfConvergence: {
-	DisplayName: Relic of Convergence
-	Tooltip:
-		'''
-		Creates a profaned crystal that charges power
-		Holding out the crystal slows the player down
-		At the end of its life, the crystal heals the player for 70 HP
-		'''
-}
-
-Rock: {
-	DisplayName: Rock
-	Tooltip:
-		'''
-		When the battle was finally over, the dust having just began to settle
-		Where even the stone refused the course of time, there sat a monk
-		Who dared to question history and stare into fate
-		'What is the true price of the past being ever eternal?
-		Why must our future forever haunt us?'
-		'''
-}
-
-SulphurousSeaWorldSideChanger: {
-	DisplayName: Sulphurous Sea World Side Changer
-	Tooltip:
-		'''
-		Spawn and use this if your regular ocean counts as a Sulphurous Sea
-		This will also fix the Abyss if it is broken
-		'''
-}
-
-SuperDummy: {
-	DisplayName: Super Dummy
-	Tooltip:
-		'''
-		Creates a super dummy
-		Regenerates 1 million life per second
-		Will not die when taking damage over time from debuffs
-		Right click to kill all super dummies
-		'''
-}
+ExhumeShortTooltip:
+	'''
+	[c/C61B40:'Ah, are you curious what I saw within this item?']
+	[c/BABABA:Hold Shift to listen]
+	'''
+LegendaryShortTooltip:
+	'''
+	[c/FF6F00:Tales of legends past radiate around you...]
+	[c/BABABA:Hold Shift to listen closer]
+	'''

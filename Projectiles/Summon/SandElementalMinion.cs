@@ -1,6 +1,6 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -14,9 +14,9 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 12;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 12;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -41,7 +41,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
-            if (!modPlayer.sandWaifu && !modPlayer.allWaifus && !modPlayer.sandWaifuVanity && !modPlayer.allWaifusVanity)
+            if (!modPlayer.sandElemental && !modPlayer.allElementals && !modPlayer.sandElementalVanity && !modPlayer.allElementalsVanity)
             {
                 Projectile.active = false;
                 return;
@@ -51,9 +51,9 @@ namespace CalamityMod.Projectiles.Summon
             {
                 if (player.dead)
                 {
-                    modPlayer.sWaifu = false;
+                    modPlayer.sandEleBuff = false;
                 }
-                if (modPlayer.sWaifu)
+                if (modPlayer.sandEleBuff)
                 {
                     Projectile.timeLeft = 2;
                 }
@@ -63,12 +63,12 @@ namespace CalamityMod.Projectiles.Summon
             {
                 for (int i = 0; i < 50; i++)
                 {
-                    int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, 32, 0f, 0f, 0, default, 1f);
+                    int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, DustID.Sand, 0f, 0f, 0, default, 1f);
                     Main.dust[dust].velocity *= 2f;
                     Main.dust[dust].scale *= 1.15f;
                 }
             }
-            bool passive = modPlayer.sandWaifuVanity || modPlayer.allWaifusVanity;
+            bool passive = modPlayer.sandElementalVanity || modPlayer.allElementalsVanity;
             if (Math.Abs(Projectile.velocity.X) > 0.2f)
             {
                 Projectile.spriteDirection = -Projectile.direction;
@@ -106,9 +106,8 @@ namespace CalamityMod.Projectiles.Summon
             }
             if (!canAttack && !passive)
             {
-                for (int j = 0; j < Main.maxNPCs; j++)
+                foreach (NPC nPC2 in Main.ActiveNPCs)
                 {
-                    NPC nPC2 = Main.npc[j];
                     if (nPC2.CanBeChasedBy(Projectile, false))
                     {
                         float targetDist = Vector2.Distance(nPC2.Center, Projectile.Center);

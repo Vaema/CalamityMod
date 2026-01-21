@@ -1,13 +1,13 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
-using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -34,7 +34,7 @@ namespace CalamityMod.Projectiles.Rogue
                 ModContent.DustType<AstralOrange>(),
                 ModContent.DustType<AstralBlue>()
             });
-            int astral = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, randomDust, 0f, 0f, 100, CalamityUtils.ColorSwap(LeonidProgenitor.blueColor, LeonidProgenitor.purpleColor, 1f), 0.8f);
+            int astral = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDust, 0f, 0f, 100, CalamityUtils.ColorSwap(LeonidProgenitor.blueColor, LeonidProgenitor.purpleColor, 1f), 0.8f);
             Main.dust[astral].noGravity = true;
             Main.dust[astral].velocity *= 0f;
 
@@ -51,14 +51,14 @@ namespace CalamityMod.Projectiles.Rogue
                         Projectile.netUpdate = true;
                     }
                 }
-                Projectile.velocity.Y += 0.2f;
+                Projectile.velocity.Y += 0.2f / (float)Projectile.MaxUpdates;
             }
             Projectile.rotation += Projectile.velocity.X * 0.1f;
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, tex.Size() / 2, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
@@ -76,47 +76,35 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 int flash = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<Flash>(), Projectile.damage, 0f, Projectile.owner, 0f, 1f);
                 if (flash.WithinBounds(Main.maxProjectiles))
-                {
                     Main.projectile[flash].DamageType = RogueDamageClass.Instance;
-                    Main.projectile[flash].usesLocalNPCImmunity = true;
-                    Main.projectile[flash].localNPCHitCooldown = 10;
-                }
-
-                Vector2 pos = new Vector2(Projectile.Center.X + Projectile.width * 0.5f + Main.rand.Next(-201, 201), Main.screenPosition.Y - 600f - Main.rand.Next(50));
-                Vector2 velocity = (Projectile.Center - pos) / 40f;
-                int dmg = Projectile.damage / 2;
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), pos, velocity, ModContent.ProjectileType<LeonidCometBig>(), dmg, Projectile.knockBack, Projectile.owner, 0f, 0.5f + (float)Main.rand.NextDouble() * 0.3f);
             }
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 240);
-            StealthStrikeEffect();
+            SpawnExtraProjectiles(target);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 240);
-            StealthStrikeEffect();
+            SpawnExtraProjectiles(target);
         }
 
-        private void StealthStrikeEffect()
+        private void SpawnExtraProjectiles(Entity target)
         {
-            if (!Projectile.Calamity().stealthStrike || Main.myPlayer != Projectile.owner)
-                return;
-
-            Vector2 spinningpoint = new Vector2(0f, 6f);
-            float radian45 = MathHelper.ToRadians(45f);
-            int cometAmt = 5;
-            float cometSpread = -(radian45 * 2f) / (cometAmt - 1f);
-            for (int projIndex = 0; projIndex < cometAmt; ++projIndex)
+            Vector2 pos = new Vector2(target.Center.X + Main.rand.Next(-201, 201), Main.screenPosition.Y - 600f - Main.rand.Next(50));
+            Vector2 meteorVel = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(pos, target, 20f, 3);
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), pos, meteorVel, ModContent.ProjectileType<LeonidCometBig>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner, 0f, 0.5f + Main.rand.NextFloat() * 0.3f);
+        
+            if (Projectile.Calamity().stealthStrike)
             {
-                int index2 = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, spinningpoint.RotatedBy((double)radian45 + (double)cometSpread * (double)projIndex, new Vector2()), ModContent.ProjectileType<LeonidCometSmall>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, -1f);
-                Projectile proj = Main.projectile[index2];
-                for (int index3 = 0; index3 < Projectile.localNPCImmunity.Length; ++index3)
+                for (int i = 0; i < 5; i++)
                 {
-                    proj.localNPCImmunity[index3] = Projectile.localNPCImmunity[index3];
+                    Vector2 cometPos = new Vector2(target.Center.X + Main.rand.Next(-100, 101), target.Center.Y - 150f - Main.rand.Next(30));
+                    Vector2 cometVel = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(pos, target, 18f, 2);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), cometPos, cometVel, ModContent.ProjectileType<LeonidCometSmall>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, -1f);
                 }
             }
         }

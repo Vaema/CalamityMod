@@ -1,10 +1,10 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -19,8 +19,6 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
         public override void SetDefaults()
         {
-            CalamityGlobalItem modItem = Item.Calamity();
-
             Item.width = 42;
             Item.height = 36;
             Item.damage = 45;
@@ -32,16 +30,12 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.autoReuse = true;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 4f;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.UseSound = SoundID.Item1;
 
             Item.shootSpeed = 16f;
             Item.shoot = ModContent.ProjectileType<SystemBaneProjectile>();
-
-            modItem.UsesCharge = true;
-            modItem.MaxCharge = 135f;
-            modItem.ChargePerUse = 0.085f;
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] < MaxDeployedProjectiles;
@@ -61,8 +55,8 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             CreateRecipe().
                 AddIngredient<MysteriousCircuitry>(20).
                 AddIngredient<DubiousPlating>(10).
-                AddIngredient<InfectedArmorPlating>(10).
                 AddIngredient<LifeAlloy>(5).
+                AddIngredient<InfectedArmorPlating>(10).
                 AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(3, out Func<bool> condition), condition).
                 AddTile(TileID.MythrilAnvil).
                 Register();

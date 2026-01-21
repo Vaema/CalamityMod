@@ -5,9 +5,9 @@ using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.GameContent;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -19,18 +19,10 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 42;
             Item.height = 36;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.Calamity().donorItem = true;
             Item.accessory = true;
-        }
-
-        public override bool CanEquipAccessory(Player player, int slot, bool modded)
-        {
-            if (player.Calamity().voidField)
-                return false;
-
-            return true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -40,32 +32,31 @@ namespace CalamityMod.Items.Accessories
             modPlayer.voidField = true;
             if (player.whoAmI == Main.myPlayer)
             {
+                if (player.ownedProjectileCounts[ModContent.ProjectileType<VoidFieldGenerator>()] >= 4)
+                    return;
+
                 var source = player.GetSource_Accessory(Item);
-                if (player.ownedProjectileCounts[ModContent.ProjectileType<VoidFieldGenerator>()] < 4)
+                int count = player.ownedProjectileCounts[ModContent.ProjectileType<VoidFieldGenerator>()];
+                do
                 {
-                    for (int v = 0; v < 4; v++)
-                    {
-                        Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, ModContent.ProjectileType<VoidFieldGenerator>(), 0, 0f, Main.myPlayer, v);
-                    }
+                    Projectile.NewProjectile(source, player.Center, Vector2.Zero, ModContent.ProjectileType<VoidFieldGenerator>(), 0, 0f, Main.myPlayer, count);
+                    count++;
                 }
+                while (count < 4);
             }
         }
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddRecipeGroup("AnyQuiver").
-                AddIngredient<DarkPlasma>(3).
                 AddIngredient<GalacticaSingularity>(5).
-                AddTile(TileID.LunarCraftingStation).
+                AddIngredient<DarkPlasma>(3).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
 
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
-            // This item doesn't follow many of the guidelines
-            // for this method.
-            // But I (nalyddd) saw the sprite in-game and felt extremely 
-            // sad about how EXTREMELY squished it was.
             CalamityUtils.DrawInventoryCustomScale(
                 spriteBatch,
                 texture: TextureAssets.Item[Type].Value,

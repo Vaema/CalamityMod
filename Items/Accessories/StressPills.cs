@@ -12,15 +12,16 @@ namespace CalamityMod.Items.Accessories
         {
             ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Laudanum>();
         }
-        
+
         public override void SetDefaults()
         {
             Item.width = 26;
             Item.height = 26;
             Item.defense = 4;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.accessory = true;
+            Item.SetRevExclusive();
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)

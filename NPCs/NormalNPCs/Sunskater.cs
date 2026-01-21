@@ -4,7 +4,6 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.NPCs.ExoMechs.Ares;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -17,13 +16,13 @@ namespace CalamityMod.NPCs.NormalNPCs
 {
     public class Sunskater : ModNPC
     {
-        public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/Sunskater") { Volume = 0.9f};
+        public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/Sunskater") { Volume = 0.9f };
 
         private bool hasBeenHit = false;
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
+            Main.npcFrameCount[Type] = 4;
         }
 
         public override void SetDefaults()
@@ -34,10 +33,10 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 58;
             NPC.height = 22;
             NPC.defense = 4;
-            NPC.lifeMax = 100;
+            NPC.lifeMax = 160;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(silver: 3);
             NPC.HitSound = SoundID.NPCHit50;
             NPC.DeathSound = Main.zenithWorld ? AresGaussNuke.NukeExplosionSound : DeathSound;
             NPC.knockBackResist = 0.7f;
@@ -51,10 +50,10 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Sky,
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Sunskater")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Sunskater")
             });
         }
 
@@ -207,7 +206,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter += hasBeenHit ? 0.15f : 0.075f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
@@ -224,7 +223,41 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<HolyFlames>(), 80, true);
+            {
+                if (Main.zenithWorld)
+                {
+                    target.AddBuff(ModContent.BuffType<HolyInferno>(), 150);
+
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(BuffID.OnFire, 180);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(BuffID.OnFire3, 120);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(BuffID.CursedInferno, 120);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(BuffID.Frostburn, 180);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(BuffID.Frostburn2, 120);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(BuffID.Burning, 60);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(ModContent.BuffType<Shadowflame>(), 120);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(ModContent.BuffType<Daybroken>(), 120);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(ModContent.BuffType<HolyFlames>(), 120);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 90);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(ModContent.BuffType<Dragonfire>(), 90);
+                    if (Main.rand.NextBool(3))
+                        target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 90);
+                }
+                else
+                    target.AddBuff(BuffID.OnFire, 180);
+            }
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot) => npcLoot.AddIf(() => Main.hardMode, ModContent.ItemType<EssenceofSunlight>(), 2);
@@ -233,19 +266,18 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 64, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.YellowTorch, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 25; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 64, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.YellowTorch, hit.HitDirection, -1f, 0, default, 1f);
                 }
                 if (Main.zenithWorld)
                 {
                     float screenShakePower = 16 * Utils.GetLerpValue(1300f, 0f, NPC.Distance(Main.LocalPlayer.Center), true);
-                    if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < screenShakePower)
-                        Main.LocalPlayer.Calamity().GeneralScreenShakePower = screenShakePower;
+                    Main.LocalPlayer.SetScreenshake(screenShakePower);
                 }
             }
         }

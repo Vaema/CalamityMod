@@ -1,33 +1,32 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using ReLogic.Content;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.NPCs.Astral
 {
     public class SightseerCollider : ModNPC
     {
-        private static Texture2D glowmask;
+        public static Asset<Texture2D> glowmask;
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
+            Main.npcFrameCount[Type] = 4;
 
             if (!Main.dedServ)
-                glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/Astral/SightseerColliderGlow", AssetRequestMode.ImmediateLoad).Value;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+                glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/Astral/SightseerColliderGlow", AssetRequestMode.AsyncLoad);
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 PortraitPositionXOverride = 0
             };
@@ -40,33 +39,32 @@ namespace CalamityMod.NPCs.Astral
             NPC.width = 48;
             NPC.height = 40;
             NPC.damage = 38;
-            NPC.defense = 16;
-            NPC.DR_NERD(0.15f);
-            NPC.lifeMax = 310;
+            NPC.defense = 28;
+            NPC.lifeMax = 320;
             NPC.DeathSound = CommonCalamitySounds.AstralNPCDeathSound;
             NPC.noGravity = true;
             NPC.knockBackResist = 0.58f;
-            NPC.value = Item.buyPrice(0, 0, 10, 0);
+            NPC.value = Item.buyPrice(silver: 5);
             NPC.aiStyle = -1;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<SightseerColliderBanner>();
             if (DownedBossSystem.downedAstrumAureus)
             {
                 NPC.damage = 58;
-                NPC.defense = 26;
+                NPC.defense = 38;
                 NPC.knockBackResist = 0.48f;
-                NPC.lifeMax = 460;
+                NPC.lifeMax = 480;
             }
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<AbovegroundAstralBiome>().Type };
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<BiomeManagers.AstralInfectionBiome>().Type };
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.SightseerCollider")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.SightseerCollider")
             });
         }
 
@@ -116,7 +114,7 @@ namespace CalamityMod.NPCs.Astral
             //if dead do gores
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     for (int i = 0; i < 5; i++)
                     {
@@ -129,7 +127,7 @@ namespace CalamityMod.NPCs.Astral
 
         public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            spriteBatch.Draw(glowmask, NPC.Center - screenPos + new Vector2(0, 4f), new Rectangle(0, NPC.frame.Y, 80, NPC.frame.Height), Color.White * 0.75f, NPC.rotation, new Vector2(40f, 20f), NPC.scale, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
+            spriteBatch.Draw(glowmask.Value, NPC.Center - screenPos + new Vector2(0, 4f), new Rectangle(0, NPC.frame.Y, 80, NPC.frame.Height), Color.White * 0.75f, NPC.rotation, new Vector2(40f, 20f), NPC.scale, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
@@ -148,12 +146,12 @@ namespace CalamityMod.NPCs.Astral
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 25, true);
+                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 180);
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<Stardust>(), 1, 1, 2, 1, 3));
+            npcLoot.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<StarblightSoot>(), 1, 1, 2, 1, 3));
         }
     }
 }

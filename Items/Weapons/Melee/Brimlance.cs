@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Melee.Spears;
+﻿using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Projectiles.Melee.Spears;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -10,9 +11,8 @@ namespace CalamityMod.Items.Weapons.Melee
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.Spears[Item.type] = true;
+            ItemID.Sets.Spears[Type] = true;
         }
-
         public override void SetDefaults()
         {
             Item.width = 56;
@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 7.5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.shoot = ModContent.ProjectileType<BrimlanceProj>();
             Item.shootSpeed = 12f;

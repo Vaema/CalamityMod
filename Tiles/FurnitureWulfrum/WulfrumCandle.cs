@@ -1,19 +1,23 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.FurnitureWulfrum
 {
     public class WulfrumCandle : ModTile
     {
+        public Asset<Texture2D> FlameTexture;
+
         public override void SetStaticDefaults() => this.SetUpCandle(ModContent.ItemType<Items.Placeables.FurnitureWulfrum.WulfrumCandle>());
 
         public override bool CanExplode(int i, int j) => false;
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 7, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.WoodFurniture, 0f, 0f, 1, new Color(255, 255, 255), 1f);
             return false;
         }
 
@@ -40,7 +44,7 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
 
         public override void HitWire(int i, int j)
         {
-            CalamityUtils.LightHitWire(Type, i, j, 1, 1);
+            FurnitureCommon.LightHitWire(Type, i, j, 1, 1);
         }
 
         public override void MouseOver(int i, int j)
@@ -53,13 +57,14 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
 
         public override bool RightClick(int i, int j)
         {
-            CalamityUtils.RightClickBreak(i, j);
+            FurnitureCommon.RightClickBreak(i, j);
             return true;
         }
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            CalamityUtils.DrawFlameEffect(ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureWulfrum/WulfrumCandleFlame").Value, i, j);
+            FlameTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureWulfrum/WulfrumCandleFlame");
+            CalamityUtils.DrawFlameEffect(FlameTexture.Value, i, j);
         }
     }
 }

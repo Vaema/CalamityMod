@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.ObjectInteractions;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.FurnitureAcidwood
@@ -12,7 +13,7 @@ namespace CalamityMod.Tiles.FurnitureAcidwood
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 7, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.WoodFurniture, 0f, 0f, 1, new Color(255, 255, 255), 1f);
             return false;
         }
 
@@ -23,8 +24,8 @@ namespace CalamityMod.Tiles.FurnitureAcidwood
 
         public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings) => true;
 
-        public override bool RightClick(int i, int j) => CalamityUtils.BedRightClick(i, j);
+        public override bool RightClick(int i, int j) => FurnitureCommon.BedRightClick(i, j);
 
-        public override void MouseOver(int i, int j) => CalamityUtils.MouseOver(i, j, ModContent.ItemType<AcidwoodBed>());
+        public override void MouseOver(int i, int j) => FurnitureCommon.MouseOver(i, j, ModContent.ItemType<AcidwoodBed>());
     }
 }

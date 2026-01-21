@@ -1,8 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
-using System.Text;
 using Terraria;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace CalamityMod.Items.VanillaArmorChanges
 {
@@ -16,29 +14,17 @@ namespace CalamityMod.Items.VanillaArmorChanges
 
         public override string ArmorSetName => "Silver";
 
-        public const float HeadCrit = 5f;
-        public const int ChestLifeRegen = 2;
-        public const float LegsMoveSpeed = 0.08f;
-        public const int SetBonusLifeRegen = 1;
-
         public const double SetBonusMinimumDamageToHeal = 20.0;
         public const int SetBonusHealTime = 120;
         public const int SetBonusHealAmount = 10;
 
-        public override void ApplyHeadPieceEffect(Player player) => player.GetCritChance<GenericDamageClass>() += HeadCrit;
-
-        public override void ApplyBodyPieceEffect(Player player) => player.lifeRegen += ChestLifeRegen;
-
-        public override void ApplyLegPieceEffect(Player player) => player.moveSpeed += LegsMoveSpeed;
-
         public override void UpdateSetBonusText(ref string setBonusText)
         {
-            setBonusText += $"\n{CalamityUtils.GetTextValue($"Vanilla.Armor.SetBonus.{ArmorSetName}")}";
+            setBonusText += $"\n{CalamityUtils.GetText($"Vanilla.Armor.SetBonus.{ArmorSetName}").Format(SetBonusHealTime.FramesToSeconds(), SetBonusMinimumDamageToHeal.ToString("N0"), SetBonusHealAmount)}";
         }
 
         public override void ApplyArmorSetBonus(Player player)
         {
-            player.lifeRegen += SetBonusLifeRegen;
             player.Calamity().silverMedkit = true;
         }
 

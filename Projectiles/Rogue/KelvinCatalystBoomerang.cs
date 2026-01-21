@@ -1,11 +1,10 @@
-﻿using CalamityMod.Projectiles.Typeless;
+﻿using System.IO;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -17,8 +16,8 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 12;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
+            ProjectileID.Sets.TrailCacheLength[Type] = 12;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
         }
 
         public override void SetDefaults()
@@ -134,7 +133,7 @@ namespace CalamityMod.Projectiles.Rogue
                 SoundEngine.PlaySound(SoundID.Item7, Projectile.Center);
             }
 
-            int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 67, 0f, 0f, 100, default, 1f);
+            int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.IceRod, 0f, 0f, 100, default, 1f);
             Main.dust[dust].noGravity = true;
             Main.dust[dust].velocity *= 0f;
 
@@ -176,7 +175,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             int maxSpawns = Projectile.Calamity().stealthStrike ? 3 : 1;
             if (Projectile.owner == Main.myPlayer && Projectile.numHits < maxSpawns)
-            {            
+            {
                 for (int i = 0; i < 5; i++)
                 {
                     Vector2 velocity = (MathHelper.TwoPi * i / 5f).ToRotationVector2() * 4f;
@@ -188,7 +187,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 2);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 2);
             return false;
         }
     }

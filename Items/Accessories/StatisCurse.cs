@@ -4,9 +4,9 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.GameContent;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 28;
             Item.height = 32;
-            Item.value = CalamityGlobalItem.Rarity10BuyPrice;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
             Item.rare = ItemRarityID.Red;
             Item.accessory = true;
         }
@@ -35,7 +35,7 @@ namespace CalamityMod.Items.Accessories
             modPlayer.shadowMinions = true;
             modPlayer.holyMinions = true;
             player.GetKnockback<SummonDamageClass>() += 2.75f;
-            player.GetDamage<SummonDamageClass>() += 0.1f;
+            player.GetDamage<SummonDamageClass>() += 0.12f;
             player.buffImmune[ModContent.BuffType<Shadowflame>()] = true;
         }
 
@@ -44,7 +44,7 @@ namespace CalamityMod.Items.Accessories
             CreateRecipe().
                 AddIngredient<StatisBlessing>().
                 AddIngredient<TheFirstShadowflame>().
-                AddIngredient(ItemID.FragmentStardust, 10).
+                AddIngredient(ItemID.FragmentStardust, 6).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

@@ -1,12 +1,12 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using System.IO;
+using CalamityMod.Events;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -16,9 +16,9 @@ namespace CalamityMod.Projectiles.Boss
         public static readonly SoundStyle FlareSound = new("CalamityMod/Sounds/Custom/Yharon/YharonInfernado");
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.TrailCacheLength[Type] = 5;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -87,7 +87,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
@@ -101,7 +101,7 @@ namespace CalamityMod.Projectiles.Boss
                 Vector2 dustRotate = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
                 dustRotate = dustRotate.RotatedBy((double)((float)(i - (dustAmt / 2 - 1)) * 6.28318548f / (float)dustAmt), default) + Projectile.Center;
                 Vector2 dustDirection = dustRotate - Projectile.Center;
-                int flareDust = Dust.NewDust(dustRotate + dustDirection, 0, 0, 244, dustDirection.X * 2f, dustDirection.Y * 2f, 100, default, 1.4f);
+                int flareDust = Dust.NewDust(dustRotate + dustDirection, 0, 0, DustID.CopperCoin, dustDirection.X * 2f, dustDirection.Y * 2f, 100, default, 1.4f);
                 Main.dust[flareDust].noGravity = true;
                 Main.dust[flareDust].noLight = true;
                 Main.dust[flareDust].velocity = dustDirection;

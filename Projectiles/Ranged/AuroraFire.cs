@@ -1,14 +1,15 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
+    [PierceResistException(onlyForSingleHitbox: true)]
     public class AuroraFire : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
@@ -26,6 +27,7 @@ namespace CalamityMod.Projectiles.Ranged
         public Color BlueFogColor = new Color(150, 120, 255);
         public float BlueFogRot = 0f;
         public float BlueFogScale = 1f;
+        public float damageMult = 1;
 
         public override void SetDefaults()
         {
@@ -58,7 +60,10 @@ namespace CalamityMod.Projectiles.Ranged
             // Turns around every once in a while
             int TurnRate = Lifetime / 5;
             if (Time % TurnRate == TurnRate - 1)
+            {
                 Projectile.velocity = Projectile.velocity.RotatedBy(MathHelper.ToRadians(-216f));
+                damageMult = 1;
+            }
             Projectile.rotation = Projectile.velocity.ToRotation();
 
             // Determines particle size as well as hitbox
@@ -94,7 +99,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.Opacity = Utils.GetLerpValue(0f, 15f, Time, true) * Utils.GetLerpValue(450f, 360f, Time, true);
 
             // 08DEC2023: Ozzatron: All below code does not run on dedicated servers as it requires clientside lighting information.
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             // Calculate light power. This checks below the position of the fog to check if this fog is underground.
@@ -104,7 +109,11 @@ namespace CalamityMod.Projectiles.Ranged
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 240);
-
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            modifiers.SourceDamage *= damageMult;
+            damageMult *= 0.8f;
+        }
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 240);
 
         // Circular hitbox adjusted for the size of the smoke particles (rough estimate minimally accounting for fog)
@@ -113,7 +122,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override bool PreDraw(ref Color lightColor)
         {
             Main.spriteBatch.SetBlendState(BlendState.Additive);
-            Texture2D fog = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D fog = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             float opacity = Utils.GetLerpValue(0f, 0.08f, LightPower, true) * Projectile.Opacity * 0.3f;
             Main.EntitySpriteDraw(fog, drawPosition, null, OrangeFogColor * opacity, Projectile.rotation + OrangeFogRot, fog.Size() * 0.5f, Projectile.scale * OrangeFogScale, SpriteEffects.None);

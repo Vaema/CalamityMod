@@ -13,19 +13,19 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 34;
             Item.height = 22;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.accessory = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.statLifeMax2 += 50;
+            player.statLifeMax2 += 25;
+            if (!player.HasBuff(BuffID.Honey))
+                player.AddBuff(BuffID.Honey, 2);
 
             // Inherits all effects of Honey Dew
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.alwaysHoneyRegen = true;
-            modPlayer.honeyTurboRegen = true;
             modPlayer.honeyDewHalveDebuffs = true;
             modPlayer.livingDewHalveDebuffs = true;
         }
@@ -34,7 +34,6 @@ namespace CalamityMod.Items.Accessories
         {
             CreateRecipe().
                 AddIngredient<HoneyDew>().
-                AddIngredient<TrapperBulb>(3).
                 AddIngredient<LivingShard>(6).
                 // TODO -- Replace with Water Essence
                 AddIngredient<EssenceofSunlight>(5).

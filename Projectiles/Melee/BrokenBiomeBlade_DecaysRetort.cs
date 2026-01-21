@@ -1,13 +1,13 @@
-﻿using CalamityMod.Items.Weapons.Melee;
+﻿using System;
+using System.IO;
+using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
-using Terraria.Audio;
 
 
 namespace CalamityMod.Projectiles.Melee
@@ -25,9 +25,6 @@ namespace CalamityMod.Projectiles.Melee
         public const float LungeSpeed = 16;
         public ref float CanBounce => ref Projectile.localAI[0];
 
-        public override void SetStaticDefaults()
-        {
-        }
         public override void SetDefaults()
         {
             Projectile.DamageType = DamageClass.Melee;
@@ -37,13 +34,15 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.friendly = true;
             Projectile.penetrate = -1;
             Projectile.extraUpdates = 1;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             float collisionPoint = 0f;
             float bladeLength = 120f * Projectile.scale;
-            Vector2 displace = direction * ((float)Math.Sin(Timer / MaxTime * 3.14f) * 60);
+            Vector2 displace = direction * ((float)Math.Sin(Timer / MaxTime * MathHelper.Pi) * 60);
 
             return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Owner.Center + displace, Owner.Center + displace + (direction * bladeLength), 24, ref collisionPoint);
         }
@@ -54,6 +53,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 CanBounce = 1f;
                 Projectile.timeLeft = (int)MaxTime;
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 direction = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
                 direction.Normalize();
                 Projectile.rotation = direction.ToRotation();
@@ -61,8 +61,7 @@ namespace CalamityMod.Projectiles.Melee
                     Lunge();
                 SoundEngine.PlaySound(SoundID.Item103, Projectile.Center);
                 initialized = true;
-                Projectile.netUpdate = true;
-                Projectile.netSpam = 0;
+                Projectile.ForceNetUpdate();
             }
 
             //Manage position and rotation
@@ -89,31 +88,24 @@ namespace CalamityMod.Projectiles.Melee
             Owner.velocity = direction.SafeNormalize(Vector2.UnitX * Owner.direction) * LungeSpeed;
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => OnHitEffects(!target.canGhostHeal || Main.player[Projectile.owner].moonLeech);
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => OnHitEffects(Main.player[Projectile.owner].moonLeech);
-
-        private void OnHitEffects(bool cannotLifesteal)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            Projectile.netUpdate = true;
-            Projectile.netSpam = 0;
-
+            Projectile.ForceNetUpdate();
 
             if (Main.myPlayer != Owner.whoAmI || CanBounce == 0f)
                 return;
 
-
-            if (!cannotLifesteal) //trolled
-            {
-                Owner.statLife += BrokenBiomeBlade.EvilAttunement_Lifesteal;
-                Owner.HealEffect(BrokenBiomeBlade.EvilAttunement_Lifesteal); //Idk if its too much or what but at the same time its close range as fuck
-            }
+            Owner.DoLifestealDirect(target, BrokenBiomeBlade.EvilAttunement_Lifesteal, 1.25f); //Idk if its too much or what but at the same time its close range as fuck
 
             // Bounce off
-            float bounceStrength = Math.Max((LungeSpeed / 2f), Owner.velocity.Length());
+            float bounceStrength = LungeSpeed / 2f;
             bounceStrength *= Owner.velocity.Y == 0 ? 0.2f : 1f; //Reduce the bounce if the player is on the ground
             Owner.velocity = -direction.SafeNormalize(Vector2.Zero) * MathHelper.Clamp(bounceStrength, 0f, 22f);
             CanBounce = 0f;
-            Owner.GiveIFrames(BrokenBiomeBlade.EvilAttunement_BounceIFrames); // i frames for free!
+
+            // 17APR2024: Ozzatron: Broken Biome Blade's lunge gives iframes when striking enemies in a similar manner to a bonk dash.
+            // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
+            Owner.GiveUniversalIFrames(BrokenBiomeBlade.EvilAttunement_BounceIFrames);
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -124,7 +116,7 @@ namespace CalamityMod.Projectiles.Melee
             float drawAngle = direction.ToRotation();
             float drawRotation = drawAngle + MathHelper.PiOver4;
 
-            Vector2 displace = direction * ((float)Math.Sin(Timer / MaxTime * 3.14f) * 60);
+            Vector2 displace = direction * ((float)Math.Sin(Timer / MaxTime * MathHelper.Pi) * 60);
             Vector2 drawOrigin = new Vector2(0f, handle.Height);
             Vector2 drawOffset = Owner.Center + direction * 10f - Main.screenPosition;
 

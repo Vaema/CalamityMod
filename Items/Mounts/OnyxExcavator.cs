@@ -1,14 +1,14 @@
-﻿using CalamityMod.Buffs.Mounts;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.Buffs.Mounts;
 using CalamityMod.Tiles.Abyss;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 //using Terraria.GameContent.Achievements;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace CalamityMod.Items.Mounts
 {
@@ -19,27 +19,31 @@ namespace CalamityMod.Items.Mounts
             MountData.spawnDust = 109;
             MountData.spawnDustNoGravity = true;
             MountData.buff = ModContent.BuffType<OnyxExcavatorBuff>();
-            MountData.heightBoost = 10;
-            MountData.fallDamage = 0f;
-            MountData.runSpeed = 8f;
-            MountData.flightTimeMax = 0;
-            MountData.jumpHeight = 5;
-            MountData.acceleration = 0.2f;
-            MountData.jumpSpeed = 3f;
+
+            // Horizontal movement
+            MountData.runSpeed = 4.5f;
             MountData.swimSpeed = 0.5f;
+            MountData.acceleration = 0.1f;
+
+            // Vertical movement
+            MountData.fallDamage = 0f;
+            MountData.jumpHeight = 5;
+            MountData.jumpSpeed = 3f;
+
+            // Frames and offsets
             MountData.totalFrames = 6;
+            MountData.heightBoost = 10;
             int[] array = new int[MountData.totalFrames];
             for (int l = 0; l < array.Length; l++)
-            {
                 array[l] = 6;
-            }
+
             array[1] = 4;
             array[5] = 4;
             MountData.playerYOffsets = array;
-            MountData.xOffset = 10;
-            MountData.bodyFrame = 3;
-            MountData.yOffset = -1; //done
             MountData.playerHeadOffset = 10;
+            MountData.bodyFrame = 3;
+            MountData.xOffset = 10;
+            MountData.yOffset = -1; //done
             MountData.standingFrameCount = 1;
             MountData.standingFrameDelay = 12;
             MountData.standingFrameStart = 0;
@@ -56,7 +60,7 @@ namespace CalamityMod.Items.Mounts
             MountData.swimFrameCount = MountData.inAirFrameCount;
             MountData.swimFrameDelay = MountData.inAirFrameDelay;
             MountData.swimFrameStart = MountData.inAirFrameStart;
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 MountData.backTextureExtra = ModContent.Request<Texture2D>("CalamityMod/Items/Mounts/OnyxExcavatorExtra");
                 MountData.frontTextureExtra = ModContent.Request<Texture2D>("CalamityMod/Items/Mounts/OnyxExcavatorExtra2");
@@ -74,7 +78,7 @@ namespace CalamityMod.Items.Mounts
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    Dust dust = Dust.NewDustDirect(mountedPlayer.BottomLeft, mountedPlayer.width, 6, 192, 0f, 0f, 0, default, 1f);
+                    Dust dust = Dust.NewDustDirect(mountedPlayer.BottomLeft, mountedPlayer.width, 6, DustID.Ghost, 0f, 0f, 0, default, 1f);
                     dust.velocity = new Vector2(velocity.X * 0.15f, Main.rand.NextFloat() * -2f);
                     dust.noLight = true;
                     dust.scale = 0.2f + Main.rand.NextFloat() * 0.8f;

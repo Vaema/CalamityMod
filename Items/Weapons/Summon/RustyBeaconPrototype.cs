@@ -1,8 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -23,35 +22,27 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.height = 20;
             Item.mana = 10;
             Item.damage = 8;
-            Item.useTime = Item.useAnimation = 34;
+            Item.useAnimation = Item.useTime = 30;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noMelee = true;
             Item.knockBack = 0.5f;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.UseSound = SoundID.Item15; // Phaseblade sound effect
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<RustyDrone>();
             Item.shootSpeed = 10f;
             Item.DamageType = DamageClass.Summon;
+            Item.sentry = true;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            int p = Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, type, damage, knockback, player.whoAmI, 16f);
+            int p = Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI, 16f);
             if (Main.projectile.IndexInRange(p))
                 Main.projectile[p].originalDamage = Item.damage;
             player.UpdateMaxTurrets();
             return false;
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<SulphuricScale>(20).
-                AddRecipeGroup("AnySilverBar", 10).
-                AddTile(TileID.Anvils).
-                Register();
         }
     }
 }

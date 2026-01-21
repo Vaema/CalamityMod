@@ -15,12 +15,12 @@ namespace CalamityMod.Items.VanillaArmorChanges
 
         public override string ArmorSetName => "Frost";
 
-        public const float ProximityBoost = 0.15f;
+        public const float ProximityBoost = 0.2f;
         public const float MinDistance = 160f;
         public const float MaxDistance = 800f;
 
         public override void UpdateSetBonusText(ref string setBonusText)
-        {   
+        {
             int PercentBoost = (int)Math.Round(ProximityBoost * 100);
             setBonusText = $"{CalamityUtils.GetText($"Vanilla.Armor.SetBonus.{ArmorSetName}").Format(PercentBoost)}";
         }

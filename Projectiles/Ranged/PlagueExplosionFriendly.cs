@@ -1,8 +1,9 @@
+﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
-using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Ranged
 {
     public class PlagueExplosionFriendly : ModProjectile, ILocalizedModType
@@ -20,6 +21,8 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.penetrate = -1;
             Projectile.timeLeft = 60;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -69,7 +72,7 @@ namespace CalamityMod.Projectiles.Ranged
                 randAdjust = rand3 / randAdjust;
                 rand1 *= randAdjust;
                 rand2 *= randAdjust;
-                int greenDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 89, 0f, 0f, 100, default, 0.5f);
+                int greenDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GemEmerald, 0f, 0f, 100, default, 0.5f);
                 Dust dust = Main.dust[greenDust];
                 dust.noGravity = true;
                 dust.position.X = Projectile.Center.X;

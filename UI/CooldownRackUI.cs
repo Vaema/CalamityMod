@@ -1,8 +1,9 @@
-﻿using CalamityMod.Cooldowns;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.Cooldowns;
+using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
 using Terraria;
 
 namespace CalamityMod.UI
@@ -19,7 +20,7 @@ namespace CalamityMod.UI
             get
             {
                 // Option 1: Always use compact icons if configured to do so.
-                if (CalamityConfig.Instance.CooldownDisplay == 1)
+                if (CalamityClientConfig.Instance.CooldownDisplay == CooldownDisplayOptions.Compact)
                     return true;
 
                 // Option 2: If there are too many cooldowns, auto switch to compact mode.
@@ -43,7 +44,7 @@ namespace CalamityMod.UI
             // 1 - The game isn't even on the game screen yet.
             // 2 - The player's inventory is open.
             // 3 - Cooldown display is completely disabled.
-            if (Main.gameMenu || Main.playerInventory || CalamityConfig.Instance.CooldownDisplay < 1)
+            if (Main.gameMenu || Main.playerInventory || CalamityClientConfig.Instance.CooldownDisplay == CooldownDisplayOptions.Hidden)
                 return;
 
             IList<CooldownInstance> cooldownsToDraw = Main.LocalPlayer.GetDisplayedCooldowns();

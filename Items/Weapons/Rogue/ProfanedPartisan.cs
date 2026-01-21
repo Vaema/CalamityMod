@@ -13,9 +13,9 @@ namespace CalamityMod.Items.Weapons.Rogue
     {
         public override void SetDefaults()
         {
-            Item.width = 56;
-            Item.height = 56;
-            Item.damage = 322;
+            Item.width = 68;
+            Item.height = 68;
+            Item.damage = 222;
             Item.knockBack = 8f;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useTime = 18;
             Item.useAnimation = 18;
             Item.UseSound = SoundID.Item1;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.DamageType = RogueDamageClass.Instance;
 
@@ -51,10 +51,9 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<CrystalPiercer>(500).
-                AddIngredient<DivineGeode>(4).
+                AddIngredient<SpearofPaleolith>().
                 AddIngredient<UnholyEssence>(25).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

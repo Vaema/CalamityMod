@@ -28,14 +28,14 @@ namespace CalamityMod.NPCs.AcidRain
             get => NPC.ai[3] == 1f;
             set
             {
-                if (Main.netMode == NetmodeID.Server && value != PerformingJump)
+                if (Main.dedServ && value != PerformingJump)
                     NPC.netUpdate = true;
                 NPC.ai[3] = value.ToInt();
             }
         }
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 5;
+            Main.npcFrameCount[Type] = 5;
         }
 
         public override void SetDefaults()
@@ -47,18 +47,16 @@ namespace CalamityMod.NPCs.AcidRain
             NPC.damage = 45;
             NPC.lifeMax = 280;
             NPC.defense = 15;
-            NPC.DR_NERD(0.075f);
 
             if (DownedBossSystem.downedPolterghast)
             {
                 NPC.damage = 120;
                 NPC.lifeMax = 3850;
                 NPC.defense = 35;
-                NPC.DR_NERD(0.15f);
             }
 
             NPC.knockBackResist = 0.6f;
-            NPC.value = Item.buyPrice(0, 0, 4, 20);
+            NPC.value = Item.buyPrice(silver: 4);
             NPC.lavaImmune = false;
             NPC.noGravity = true;
             NPC.noTileCollide = false;
@@ -184,9 +182,9 @@ namespace CalamityMod.NPCs.AcidRain
                     if (NPC.spriteDirection == -1)
                         spitDirection += MathHelper.PiOver2;
 
-                    int damage = DownedBossSystem.downedPolterghast ? 40 : DownedBossSystem.downedAquaticScourge ? 26 : 18;
-                    if (Main.expertMode)
-                        damage = (int)Math.Round(damage * 0.8);
+                    int damage = DownedBossSystem.downedPolterghast ? (Main.masterMode ? 27 : Main.expertMode ? 32 : 40) :
+                        DownedBossSystem.downedAquaticScourge ? (Main.masterMode ? 17 : Main.expertMode ? 21 : 26) :
+                        (Main.masterMode ? 11 : Main.expertMode ? 14 : 18);
 
                     // Spit two extra streams of acid at the target post-Polterghast.
                     if (DownedBossSystem.downedPolterghast)
@@ -240,7 +238,7 @@ namespace CalamityMod.NPCs.AcidRain
             {
                 NPC.frameCounter = 0;
                 NPC.frame.Y += frameHeight;
-                if (NPC.frame.Y >= Main.npcFrameCount[NPC.type] * frameHeight)
+                if (NPC.frame.Y >= Main.npcFrameCount[Type] * frameHeight)
                     NPC.frame.Y = 0;
             }
         }
@@ -248,10 +246,10 @@ namespace CalamityMod.NPCs.AcidRain
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 5; k++)
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("OrthoceraGore").Type, NPC.scale);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("OrthoceraGore2").Type, NPC.scale);

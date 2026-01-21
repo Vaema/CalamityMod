@@ -14,21 +14,22 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 10;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<FleshyGeode>();
         }
 
         public override void SetDefaults()
         {
             Item.width = 24;
             Item.height = 24;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
             Item.rare = ModContent.RarityType<Turquoise>();
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.GoodieBags;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.GoodieBags;
+        }
 
         public override bool CanRightClick() => true;
 
@@ -36,7 +37,7 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
         {
             // Different drop rates on Normal and Expert, so define normal first, then expert
             // 5-10 bars on Normal, 7-12 bars on Expert
-            // 1-3 cores on Normal, 2-4 cores on Expert
+            // 1-3 essences on Normal, 2-4 essences on Expert
             // 50% chance of life alloy on Normal, 100% on Expert
             // 33% chance of core of calamity on Normal, 50% on Expert
             // 100-120 bloodstone on Normal, 120-140 bloodstone on Expert
@@ -44,9 +45,9 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
             normalOnly.Add(ModContent.ItemType<CryonicBar>(), 1, 5, 10);
             normalOnly.Add(ModContent.ItemType<PerennialBar>(), 1, 5, 10);
             normalOnly.Add(ModContent.ItemType<ScoriaBar>(), 1, 5, 10);
-            normalOnly.Add(ModContent.ItemType<CoreofEleum>(), 1, 1, 3);
-            normalOnly.Add(ModContent.ItemType<CoreofSunlight>(), 1, 1, 3);
-            normalOnly.Add(ModContent.ItemType<CoreofHavoc>(), 1, 1, 3);
+            normalOnly.Add(ModContent.ItemType<EssenceofEleum>(), 1, 1, 3);
+            normalOnly.Add(ModContent.ItemType<EssenceofSunlight>(), 1, 1, 3);
+            normalOnly.Add(ModContent.ItemType<EssenceofHavoc>(), 1, 1, 3);
             normalOnly.Add(ModContent.ItemType<LifeAlloy>(), 2);
             normalOnly.Add(ModContent.ItemType<CoreofCalamity>(), 3);
             normalOnly.Add(ModContent.ItemType<Bloodstone>(), 1, 100, 120);
@@ -55,9 +56,9 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
             expertPlus.Add(ModContent.ItemType<CryonicBar>(), 1, 7, 12);
             expertPlus.Add(ModContent.ItemType<PerennialBar>(), 1, 7, 12);
             expertPlus.Add(ModContent.ItemType<ScoriaBar>(), 1, 7, 12);
-            expertPlus.Add(ModContent.ItemType<CoreofEleum>(), 1, 2, 4);
-            expertPlus.Add(ModContent.ItemType<CoreofSunlight>(), 1, 2, 4);
-            expertPlus.Add(ModContent.ItemType<CoreofHavoc>(), 1, 2, 4);
+            expertPlus.Add(ModContent.ItemType<EssenceofEleum>(), 1, 2, 4);
+            expertPlus.Add(ModContent.ItemType<EssenceofSunlight>(), 1, 2, 4);
+            expertPlus.Add(ModContent.ItemType<EssenceofHavoc>(), 1, 2, 4);
             expertPlus.Add(ModContent.ItemType<LifeAlloy>());
             expertPlus.Add(ModContent.ItemType<CoreofCalamity>(), 2);
             expertPlus.Add(ModContent.ItemType<Bloodstone>(), 1, 120, 140);

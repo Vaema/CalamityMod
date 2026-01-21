@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shootSpeed = 30f;
             Item.DamageType = RogueDamageClass.Instance;
 
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
         }
@@ -49,9 +49,9 @@ namespace CalamityMod.Items.Weapons.Rogue
             CreateRecipe().
                 AddIngredient<Wrathwing>().
                 AddIngredient<RealityRupture>().
+                AddIngredient<ShadowspecBar>(5).
                 AddIngredient<BloodstoneCore>(15).
                 AddIngredient(ItemID.SoulofNight, 15).
-                AddIngredient<ShadowspecBar>(5).
                 AddTile<DraedonsForge>().
                 Register();
         }

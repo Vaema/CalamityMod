@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Typeless
 {
@@ -27,7 +27,7 @@ namespace CalamityMod.Projectiles.Typeless
         {
             int cap = 3;
             float capDamageFactor = 0.05f;
-            int excessCount = Main.player[Projectile.owner].ownedProjectileCounts[Projectile.type] - cap;
+            int excessCount = Main.player[Projectile.owner].ownedProjectileCounts[Type] - cap;
             modifiers.SourceDamage *= MathHelper.Clamp(1f - (capDamageFactor * excessCount), 0f, 1f);
         }
 
@@ -66,7 +66,7 @@ namespace CalamityMod.Projectiles.Typeless
                 SoundEngine.PlaySound(SoundID.Item20, Projectile.position);
             }
             Projectile.rotation += Projectile.velocity.X * 0.1f;
-            int flareDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 127, 0f, 0f, 100, default, 1f);
+            int flareDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare, 0f, 0f, 100, default, 1f);
             Dust dust = Main.dust[flareDust];
             dust.position.X -= 2f;
             dust.position.Y += 2f;
@@ -75,7 +75,7 @@ namespace CalamityMod.Projectiles.Typeless
             dust.velocity.Y -= 16f;
             if (Main.rand.NextBool())
             {
-                int flareDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 127, 0f, 0f, 100, default, 1f);
+                int flareDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare, 0f, 0f, 100, default, 1f);
                 Dust dust2 = Main.dust[flareDust2];
                 dust2.position.X -= 2f;
                 dust2.position.Y += 2f;

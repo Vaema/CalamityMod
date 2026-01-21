@@ -1,4 +1,4 @@
-﻿using CalamityMod.Dusts;
+﻿using CalamityMod.DataStructures;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -10,12 +10,17 @@ namespace CalamityMod.Buffs.DamageOverTime
 {
     public class ElementalMix : ModBuff
     {
+        public static DebuffData debuffData = new DebuffData()
+        {
+            EnemyLostRegen = 400
+        };
         public override void SetStaticDefaults()
         {
             Main.debuff[Type] = true;
             Main.pvpBuff[Type] = true;
             Main.buffNoSave[Type] = true;
             BuffID.Sets.LongerExpertDebuff[Type] = true;
+            BuffDatasets.DebuffDataset[Type] = debuffData;
         }
 
         public override void Update(Player player, ref int buffIndex)
@@ -25,10 +30,7 @@ namespace CalamityMod.Buffs.DamageOverTime
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            if (npc.Calamity().elementalMix < npc.buffTime[buffIndex])
-                npc.Calamity().elementalMix = npc.buffTime[buffIndex];
-            npc.DelBuff(buffIndex);
-            buffIndex--;
+            npc.Calamity().elementalMix = true;
         }
 
         internal static void DrawEffects(PlayerDrawSet drawInfo)
@@ -68,9 +70,9 @@ namespace CalamityMod.Buffs.DamageOverTime
                 };
                 Vector2 npcSize = npc.Center + new Vector2(Main.rand.NextFloat(-npc.width / 2, npc.width / 2), Main.rand.NextFloat(-npc.height / 2, npc.height / 2));
                 Vector2 speed = new Vector2(Main.rand.NextFloat(-3f, 3f), Main.rand.NextFloat(-2.5f, -8.3f));
-                
+
                 GeneralParticleHandler.SpawnParticle(new TechyHoloysquareParticle(npcSize, speed, Main.rand.NextFloat(1.2f, 3.1f), effectcolor, Main.rand.Next(8, 14)));
-                
+
                 int dustType = Main.rand.NextBool() ? 66 : 247;
                 Dust dust = Dust.NewDustPerfect(npcSize, dustType);
                 dust.scale = (dustType == 66 ? 1.4f : 1.2f);

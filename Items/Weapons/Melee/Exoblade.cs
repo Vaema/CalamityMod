@@ -1,9 +1,10 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System.Linq;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
-using System.Linq;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -24,10 +25,9 @@ namespace CalamityMod.Items.Weapons.Melee
         public static readonly SoundStyle DashSound = new("CalamityMod/Sounds/Item/ExobladeDash") { Volume = 0.6f };
         public static readonly SoundStyle DashHitSound = new("CalamityMod/Sounds/Item/ExobladeDashImpact") { Volume = 0.85f };
 
-
         public static int BeamNoHomeTime = 24;
 
-        public static float NotTrueMeleeDamagePenalty = 0.46f;
+        public static float NotTrueMeleeDamagePenalty = 0.35f;
 
         public static float ExplosionDamageFactor = 1.8f;
 
@@ -50,7 +50,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public static int DashTime = 49;
 
         public static int BaseUseTime = 49;
-        public static int BeamsPerSwing = 3;
+        public static int BeamsPerSwing = 4;
 
         public override void SetDefaults()
         {
@@ -66,10 +66,10 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.autoReuse = true;
             Item.noUseGraphic = true;
             Item.channel = true;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.shoot = ProjectileType<ExobladeProj>();
             Item.shootSpeed = 9f;
-            Item.rare = RarityType<Violet>();
+            Item.rare = RarityType<BurnishedAuric>();
         }
 
         public override bool CanShoot(Player player)
@@ -79,7 +79,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 return !Main.projectile.Any(n => n.active && n.owner == player.whoAmI && n.type == ProjectileType<ExobladeProj>());
 
 
-            return !Main.projectile.Any(n => n.active && n.owner == player.whoAmI && n.type == ProjectileType<ExobladeProj>() &&         
+            return !Main.projectile.Any(n => n.active && n.owner == player.whoAmI && n.type == ProjectileType<ExobladeProj>() &&
             !(n.ai[0] == 1 && n.ai[1] == 1)); //Ignores exoblades in post bonk stasis.
         }
 
@@ -100,20 +100,28 @@ namespace CalamityMod.Items.Weapons.Melee
             float state = 0;
 
             //If there are any exoblades in "stasis" after a bonk, the attack should be an empowered slash instead
-            if (Main.projectile.Any(n => n.active && n.owner == player.whoAmI && n.type == ProjectileType<ExobladeProj>() && n.ai[0] == 1 && n.ai[1] == 1 && n.timeLeft > LungeCooldown))
+            bool empoweredSlash = false;
+            foreach (Projectile p in Main.ActiveProjectiles)
+            {
+                if (p.owner == player.whoAmI && p.type == Item.shoot && p.ai[0] == 1 && p.ai[1] == 1 && p.timeLeft > LungeCooldown)
+                {
+                    empoweredSlash = true;
+                    break;
+                }
+            }
+
+            if (empoweredSlash)
             {
                 state = 2;
 
                 //Put all the "post bonk" stasised exoblades into regular cooldown for the right click ljunge
-                for (int i = 0; i < Main.maxProjectiles; ++i)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    Projectile p = Main.projectile[i];
-                    if (!p.active || p.owner != player.whoAmI || p.type != Item.shoot || p.ai[0] != 1 || p.ai[1] != 1)
+                    if (p.owner != player.whoAmI || p.type != Item.shoot || p.ai[0] != 1 || p.ai[1] != 1)
                         continue;
 
                     p.timeLeft = LungeCooldown;
-                    p.netUpdate = true;
-                    p.netSpam = 0;
+                    p.ForceNetUpdate();
                 }
             }
 
@@ -127,12 +135,17 @@ namespace CalamityMod.Items.Weapons.Melee
             return false;
         }
 
+        public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
+        {
+            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, Request<Texture2D>("CalamityMod/Items/Weapons/Melee/ExobladeGlow").Value);
+        }
+
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient<Terratomere>().
+                AddIngredient<Lightspeed>().
                 AddIngredient<EntropicClaymore>().
-                AddIngredient<AnarchyBlade>().
                 AddIngredient<FlarefrostBlade>().
                 AddIngredient<MiracleMatter>().
                 AddTile(TileType<DraedonsForge>()).

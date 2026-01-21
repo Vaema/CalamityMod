@@ -1,10 +1,9 @@
 ﻿using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Ranged
 {
     public class PiercingBullet : ModProjectile, ILocalizedModType
@@ -27,7 +26,6 @@ namespace CalamityMod.Projectiles.Ranged
             AIType = ProjectileID.BulletHighVelocity;
             Projectile.penetrate = 1;
             Projectile.timeLeft = 600;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)

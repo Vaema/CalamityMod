@@ -1,12 +1,10 @@
-﻿using CalamityMod.Particles;
-using CalamityMod.Items.Weapons.Ranged;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.WorldBuilding;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -17,8 +15,9 @@ namespace CalamityMod.Projectiles.Ranged
         public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/Item/AuricBulletHit") { Volume = 0.7f };
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 9;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 9;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -30,7 +29,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.penetrate = 1;
             Projectile.timeLeft = 600;
             Projectile.extraUpdates = 15;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
             Projectile.tileCollide = false;
             Projectile.ArmorPenetration = 50;
             Projectile.alpha = 255;
@@ -75,8 +73,8 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(BuffID.Electrified, 300);
-            SoundEngine.PlaySound(HitSound with { PitchVariance = 0.15f}, Projectile.Center);
+            target.AddBuff(ModContent.BuffType<AuricRebuke>(), 240);
+            SoundEngine.PlaySound(HitSound with { PitchVariance = 0.15f }, Projectile.Center);
             GenericSparkle sparker = new GenericSparkle(Projectile.Center, Vector2.Zero, Color.Gold, Color.Cyan, Main.rand.NextFloat(1.8f, 2.5f), 5, Main.rand.NextFloat(-0.01f, 0.01f), 1.68f);
             GeneralParticleHandler.SpawnParticle(sparker);
 
@@ -96,10 +94,11 @@ namespace CalamityMod.Projectiles.Ranged
 
             for (int i = 0; i <= 6; i++)
             {
-                Dust dust2 = Dust.NewDustPerfect(Projectile.Center, 226, new Vector2(2, 2).RotatedByRandom(100f) * Main.rand.NextFloat(0.1f, 2.9f));
+                Dust dust2 = Dust.NewDustPerfect(Projectile.Center, DustID.Electric, new Vector2(2, 2).RotatedByRandom(100f) * Main.rand.NextFloat(0.1f, 2.9f));
                 dust2.noGravity = false;
                 dust2.scale = Main.rand.NextFloat(0.3f, 0.9f);
             }
         }
+        public override bool? CanHitNPC(NPC target) => target.CanBeChasedBy() ? null : false;
     }
 }

@@ -1,11 +1,11 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Dusts;
-using System;
+﻿using System;
 using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Boss
 {
     public class HellfireExplosion : ModProjectile, ILocalizedModType

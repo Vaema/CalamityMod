@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Effects;
-using CalamityMod.Rarities;
+using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -47,8 +47,8 @@ namespace CalamityMod.Graphics.Metaballs
             }
         }
 
-        public override MetaballDrawLayer DrawContext => MetaballDrawLayer.AfterProjectiles;
-        
+        public override GeneralDrawLayer DrawLayer => GeneralDrawLayer.AfterProjectiles;
+
         public Color sparkColor;
         public int Time = 0;
         public override Color EdgeColor => sparkColor;
@@ -62,16 +62,18 @@ namespace CalamityMod.Graphics.Metaballs
                 Particles[i].Update();
             Particles.RemoveAll(p => p.Size <= 2f);
 
-            if (Time % 10 == 0)
+            List<Color> eColors = new List<Color>()
             {
-                sparkColor = Main.rand.Next(4) switch
-                {
-                    0 => Color.Red,
-                    1 => Color.MediumTurquoise,
-                    2 => Color.Orange,
-                    _ => Color.LawnGreen,
-                };
-            }
+                Color.OrangeRed,
+                Color.MediumTurquoise,
+                Color.Orange,
+                Color.LawnGreen
+            };
+            float rate = (Main.GlobalTimeWrappedHourly * 8);
+            int colorIndex = (int)(rate / 2 % eColors.Count);
+            Color currentColor = eColors[colorIndex];
+            Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
+            sparkColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
         }
 
         // Copied from Rancor Lava metaballs, since these need to be additive metaballs.
@@ -85,12 +87,12 @@ namespace CalamityMod.Graphics.Metaballs
             Vector2 screenSize = new(Main.screenWidth, Main.screenHeight);
 
             // Supply shader parameter values.
-            metaballShader.Parameters["screenArea"]?.SetValue(screenSize);
-            metaballShader.Parameters["layerOffset"]?.SetValue(Vector2.Zero);
-            metaballShader.Parameters["singleFrameScreenOffset"]?.SetValue(Vector2.Zero);
+            metaballShader.Value.Parameters["screenArea"]?.SetValue(screenSize);
+            metaballShader.Value.Parameters["layerOffset"]?.SetValue(Vector2.Zero);
+            metaballShader.Value.Parameters["singleFrameScreenOffset"]?.SetValue(Vector2.Zero);
 
             // Apply the metaball shader.
-            metaballShader.CurrentTechnique.Passes[0].Apply();
+            metaballShader.Value.CurrentTechnique.Passes[0].Apply();
         }
 
         public static void SpawnParticle(Vector2 position, float size) => Particles.Add(new(position, size));

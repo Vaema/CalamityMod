@@ -22,6 +22,8 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.timeLeft = 300;
             AIType = ProjectileID.WoodenBoomerang;
             Projectile.DamageType = RogueDamageClass.Instance;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -29,25 +31,21 @@ namespace CalamityMod.Projectiles.Rogue
             Lighting.AddLight(Projectile.Center, (255 - Projectile.alpha) * 0f / 255f, (255 - Projectile.alpha) * 0.35f / 255f, (255 - Projectile.alpha) * 0.5f / 255f);
             if (Main.rand.NextBool(5))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 56, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.BlueFairy, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
             if (Projectile.Calamity().stealthStrike)
             {
                 if (Projectile.timeLeft % 15 == 0 && Projectile.owner == Main.myPlayer)
                 {
-                    Vector2 vector62 = Main.player[Projectile.owner].Center - Projectile.Center;
-                    Vector2 vector63 = vector62 * -1f;
-                    vector63.Normalize();
-                    vector63 *= (float)Main.rand.Next(45, 65) * 0.1f;
-                    vector63 = vector63.RotatedBy((Main.rand.NextDouble() - 0.5) * 1.5707963705062866, default);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, vector63.X, vector63.Y, ModContent.ProjectileType<ShroomerangSpore>(), (int)(Projectile.damage * 0.1), Projectile.knockBack * 0.2f, Projectile.owner, -10f, 0f);
+                    Vector2 sporeVel = Utils.DirectionFrom(Projectile.Center, Main.player[Projectile.owner].Center).RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(4.5f, 6.5f);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, sporeVel, ModContent.ProjectileType<ShroomerangSpore>(), (int)(Projectile.damage * 0.3f), 1f, Projectile.owner, -10f, 1f);
                 }
             }
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }

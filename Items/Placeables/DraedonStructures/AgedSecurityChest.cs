@@ -1,6 +1,5 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Rarities;
-using CalamityMod.Tiles.DraedonStructures;
+﻿using CalamityMod.Tiles.DraedonStructures;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -11,18 +10,8 @@ namespace CalamityMod.Items.Placeables.DraedonStructures
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.width = 32;
-            Item.height = 26;
-            Item.maxStack = 9999;
-            Item.useTurn = true;
-            Item.autoReuse = true;
-            Item.useAnimation = 15;
-            Item.useTime = 14;
-            Item.rare = ModContent.RarityType<DarkOrange>();
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.consumable = true;
-            Item.value = 500;
-            Item.createTile = ModContent.TileType<AgedSecurityChestTile>();
+            Item.DefaultToPlaceableTile(ModContent.TileType<AgedSecurityChestTile>());
+            Item.value = Item.sellPrice(silver: 1); // Non-standard Draedon's furniture: uses Chest prices
         }
 
         public override void AddRecipes()

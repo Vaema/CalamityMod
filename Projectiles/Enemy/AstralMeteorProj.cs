@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Dusts;
 
 namespace CalamityMod.Projectiles.Enemy
 {
@@ -13,8 +13,8 @@ namespace CalamityMod.Projectiles.Enemy
         public new string LocalizationCategory => "Projectiles.Enemy";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
         }
 
         public override void SetDefaults()
@@ -42,13 +42,13 @@ namespace CalamityMod.Projectiles.Enemy
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor);
             return false;
         }
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.NPCDeath14, Projectile.position);
+            SoundEngine.PlaySound(SoundID.NPCDeath14, Projectile.Center);
             Projectile.ExpandHitboxBy(60);
 
             for (int i = 0; i < 15; i++)
@@ -63,7 +63,7 @@ namespace CalamityMod.Projectiles.Enemy
                 }
             }
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 int goreCount = 3;
                 Vector2 goreSource = Projectile.Center;
@@ -111,6 +111,6 @@ namespace CalamityMod.Projectiles.Enemy
                 return;
 
             target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 45);
-		}
+        }
     }
 }

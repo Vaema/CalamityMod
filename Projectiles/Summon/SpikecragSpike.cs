@@ -1,8 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -11,7 +11,7 @@ namespace CalamityMod.Projectiles.Summon
         public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.SentryShot[Projectile.type] = true;
+            ProjectileID.Sets.SentryShot[Type] = true;
         }
 
         public override void SetDefaults()
@@ -31,6 +31,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 120);
             if (Main.zenithWorld)
             {
                 target.AddBuff(ModContent.BuffType<HolyFlames>(), 180);

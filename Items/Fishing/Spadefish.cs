@@ -1,5 +1,4 @@
-﻿using Terraria;
-using Terraria.ID;
+﻿using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Fishing
@@ -20,7 +19,7 @@ namespace CalamityMod.Items.Fishing
             Item.DamageType = DamageClass.Melee;
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;

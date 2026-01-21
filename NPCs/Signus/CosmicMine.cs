@@ -1,15 +1,16 @@
-﻿using CalamityMod.Dusts;
+﻿using System;
+using System.IO;
+using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
+using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.NPCs.Signus
 {
@@ -17,28 +18,35 @@ namespace CalamityMod.NPCs.Signus
     {
         public override void SetStaticDefaults()
         {
-            this.HideFromBestiary();
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            NPCID.Sets.TrailingMode[Type] = 1;
         }
 
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 140; // 280
             NPC.width = 30;
             NPC.height = 30;
             NPC.lifeMax = 4800;
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.knockBackResist = 0f;
+            NPC.knockBackResist = 0.5f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.dontTakeDamage = true;
+            NPC.chaseable = false;
             NPC.HitSound = SoundID.NPCHit53;
             NPC.DeathSound = SoundID.NPCDeath44;
             NPC.Calamity().VulnerableToSickness = false;
+        }
+
+        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
+        {
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
+                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheUnderworld,
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.CosmicMine")
+            });
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -170,11 +178,11 @@ namespace CalamityMod.NPCs.Signus
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture2D15 = TextureAssets.Npc[NPC.type].Value;
-            Vector2 halfSizeTexture = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / 2);
+            Texture2D texture2D15 = TextureAssets.Npc[Type].Value;
+            Vector2 halfSizeTexture = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / 2);
             int afterimageAmt = 5;
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 1; i < afterimageAmt; i += 2)
                 {
@@ -208,7 +216,7 @@ namespace CalamityMod.NPCs.Signus
             NPC.position.Y = NPC.position.Y - (NPC.height / 2);
             for (int i = 0; i < 10; i++)
             {
-                int cosmiliteDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
+                int cosmiliteDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
                 Main.dust[cosmiliteDust].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -219,10 +227,10 @@ namespace CalamityMod.NPCs.Signus
             }
             for (int j = 0; j < 20; j++)
             {
-                int cosmiliteDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 3f);
+                int cosmiliteDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 3f);
                 Main.dust[cosmiliteDust2].noGravity = true;
                 Main.dust[cosmiliteDust2].velocity *= 5f;
-                cosmiliteDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
+                cosmiliteDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
                 Main.dust[cosmiliteDust2].velocity *= 2f;
                 Main.dust[cosmiliteDust2].noGravity = true;
             }

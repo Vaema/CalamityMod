@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Magic;
+﻿using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -11,43 +12,37 @@ namespace CalamityMod.Items.Weapons.Magic
     public class VitriolicViper : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
-        public override void SetStaticDefaults()
-        {
-            Item.staff[Item.type] = true;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 60;
             Item.height = 62;
-            Item.damage = 93;
+            Item.damage = 2893;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 15;
-            Item.useTime = Item.useAnimation = 16;
+            Item.mana = 45;
+            Item.useAnimation = Item.useTime = 16;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
-            Item.knockBack = 4f;
-            Item.UseSound = SoundID.Item46;
+            Item.noUseGraphic = true;
+            Item.channel = true;
+            Item.knockBack = 6.5f;
+            Item.UseSound = null;
             Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<VitriolicViperSpit>();
+            Item.shoot = ModContent.ProjectileType<VitriolicViperHoldout>();
             Item.shootSpeed = 20f;
 
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
+
+        public override void HoldItem(Player player) => player.Calamity().mouseRotationListener = true;
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            for (int i = -4; i <= 4; i += 1)
-            {
-                Vector2 perturbedSpeed = velocity.RotatedBy(MathHelper.ToRadians(i));
-                Projectile.NewProjectile(source, position.X, position.Y, perturbedSpeed.X * 1.65f, perturbedSpeed.Y * 1.65f, type, (int)(damage * 0.7f), knockback * 0.7f, player.whoAmI, 0f, 0f);
-            }
-            for (int j = -2; j <= 2; j += 1)
-            {
-                Vector2 perturbedSpeed2 = velocity.RotatedBy(MathHelper.ToRadians(j));
-                Projectile.NewProjectile(source, position.X, position.Y, perturbedSpeed2.X, perturbedSpeed2.Y, ModContent.ProjectileType<VitriolicViperFang>(), damage, knockback, player.whoAmI, 0f, 0f);
-            }
+            Vector2 spawnPosition = player.RotatedRelativePoint(player.MountedCenter, true);
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
+            Projectile.NewProjectile(source, spawnPosition, player.Calamity().mouseWorld - spawnPosition, type, damage, knockback, player.whoAmI);
             return false;
         }
     }

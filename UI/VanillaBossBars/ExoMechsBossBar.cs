@@ -4,8 +4,6 @@ using CalamityMod.NPCs.ExoMechs.Thanatos;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.UI.BigProgressBar;
@@ -51,7 +49,7 @@ namespace CalamityMod.UI.VanillaBossBars
             ValidateAllMechs(ref info);
             NPC target = Main.npc[info.npcIndexToAimAt];
 
-			if (!target.active && !FindMechsAgain(ref info))
+            if (!target.active && !FindMechsAgain(ref info))
             {
                 // Reset the spawning bool for refights
                 AllBossesSpawned = false;
@@ -79,16 +77,15 @@ namespace CalamityMod.UI.VanillaBossBars
                 lifeMax += FalseNPCSegment.lifeMax;
 
                 // Find the others
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC ecco in Main.ActiveNPCs)
                 {
-                    NPC ecco = Main.npc[i];
-                    if (ecco.active && ecco.type == NPCType<AresBody>() && target.type != NPCType<AresBody>())
+                    if (ecco.type == NPCType<AresBody>() && target.type != NPCType<AresBody>())
                         life += ecco.life;
 
-                    if (ecco.active && ecco.type == NPCType<Artemis>() && target.type != NPCType<Artemis>())
+                    if (ecco.type == NPCType<Artemis>() && target.type != NPCType<Artemis>())
                         life += ecco.life;
 
-                    if (ecco.active && ecco.type == NPCType<ThanatosHead>() && target.type != NPCType<ThanatosHead>())
+                    if (ecco.type == NPCType<ThanatosHead>() && target.type != NPCType<ThanatosHead>())
                         life += ecco.life;
                 }
             }
@@ -97,9 +94,8 @@ namespace CalamityMod.UI.VanillaBossBars
 
         public void ValidateAllMechs(ref BigProgressBarInfo info)
         {
-            for (int i = 0; i < Main.maxNPCs; i++)
-			{
-				NPC target = Main.npc[i];
+            foreach (NPC target in Main.ActiveNPCs)
+            {
                 // Find out first whether or not each of the mechs are in hiding
                 if (target.type == NPCType<AresBody>())
                     HideAres = target.Opacity < 0.5f;
@@ -107,7 +103,7 @@ namespace CalamityMod.UI.VanillaBossBars
                     HideArtemis = target.Opacity < 0.5f;
                 if (target.type == NPCType<ThanatosHead>())
                     HideThanatos = target.Opacity < 0.5f;
-			}
+            }
 
             // Manually re-hide bosses once they commit die
             if (!NPC.AnyNPCs(NPCType<AresBody>()))
@@ -121,8 +117,8 @@ namespace CalamityMod.UI.VanillaBossBars
         public bool FindMechsAgain(ref BigProgressBarInfo info)
         {
             for (int i = 0; i < Main.maxNPCs; i++)
-			{
-				NPC target = Main.npc[i];
+            {
+                NPC target = Main.npc[i];
                 if (target.active)
                 {
                     // Get the index of the mech that's not hiding
@@ -148,7 +144,7 @@ namespace CalamityMod.UI.VanillaBossBars
                         return true;
                     }
                 }
-			}
+            }
             return false;
         }
     }

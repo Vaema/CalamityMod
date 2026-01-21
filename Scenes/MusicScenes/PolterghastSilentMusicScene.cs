@@ -1,6 +1,6 @@
-using CalamityMod.NPCs.Polterghast;
+﻿using CalamityMod.NPCs.Polterghast;
+using CalamityMod.Projectiles.Summon;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Systems
@@ -15,6 +15,7 @@ namespace CalamityMod.Systems
         public override int? MusicModMusic => SilentMusicSlot;
         public override int VanillaMusic => SilentMusicSlot;
         public override int OtherworldMusic => SilentMusicSlot;
+        public override int? ProjType => ModContent.ProjectileType<OldDukeHeadCorpse>();
 
         public override bool AdditionalCheck() => Main.zenithWorld;
     }

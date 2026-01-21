@@ -12,9 +12,9 @@ namespace CalamityMod.Items.Armor.Vanity
         {
             Item.width = 28;
             Item.height = 20;
-            Item.rare = ModContent.RarityType<DarkBlue>();
-            Item.value = Item.buyPrice(0, 45, 0, 0);
             Item.vanity = true;
+            Item.value = Item.sellPrice(gold: 9);
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
     }
 }

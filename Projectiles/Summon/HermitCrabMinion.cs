@@ -15,9 +15,10 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 9;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 9;
+            Main.projPet[Type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -50,7 +51,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 for (int i = 0; i < 20; i++)
                 {
-                    int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, 33, 0f, 0f, 0, default, 1f);
+                    int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, DustID.Water, 0f, 0f, 0, default, 1f);
                     Main.dust[dust].velocity *= 2f;
                     Main.dust[dust].scale *= 1.15f;
                 }
@@ -117,9 +118,8 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 if (!chaseNPC)
                 {
-                    for (int j = 0; j < Main.maxNPCs; j++)
+                    foreach (NPC npcTarget in Main.ActiveNPCs)
                     {
-                        NPC npcTarget = Main.npc[j];
                         if (npcTarget.CanBeChasedBy(Projectile, false))
                         {
                             float targetDist = Vector2.Distance(npcTarget.Center, Projectile.Center);
@@ -359,6 +359,8 @@ namespace CalamityMod.Projectiles.Summon
             }
             return true;
         }
+
+        public override bool MinionContactDamage() => true;
 
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
     }

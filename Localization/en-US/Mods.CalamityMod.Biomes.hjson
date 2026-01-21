@@ -1,29 +1,28 @@
 // For general uses
 Abyss: Abyss
 AstralInfection: Astral Infection
-AstralDesert: Astral Desert
 AstralSnow: Astral Snow
 BrimstoneCrags: Brimstone Crags
 SulphurousSea: Sulphurous Sea
 SunkenSea: Sunken Sea
 
-AbovegroundAstralBiome: {
-	DisplayName: Astral Infection
-	TownNPCDialogueName: Astral Infection
-}
-
-AbovegroundAstralBiomeSurface: {
-	DisplayName: Astral Surface
-	TownNPCDialogueName: Astral Infection
-}
-
-AbovegroundAstralDesertBiome: {
+AstralDesert: {
 	DisplayName: Astral Desert Surface
 	TownNPCDialogueName: Astral Desert
 }
 
-AbovegroundAstralSnowBiome: {
-	DisplayName: Astral Snow Surface
+AstralBiome: {
+	DisplayName: Astral Infection
+	TownNPCDialogueName: Astral Infection
+}
+
+AstralInfectionBiome: {
+	DisplayName: Astral Infection
+	TownNPCDialogueName: Astral Infection
+}
+
+AstralIce: {
+	DisplayName: Astral Ice
 	TownNPCDialogueName: Astral Snow
 }
 
@@ -72,7 +71,47 @@ SunkenSeaBiome: {
 	TownNPCDialogueName: Sunken Sea
 }
 
-UndergroundAstralBiome: {
-	DisplayName: Astral Underground
+AstralUnderground: {
+	DisplayName: Underground Astral
 	TownNPCDialogueName: Underground Astral Infection
+}
+
+AstralCaveDesert: {
+	DisplayName: Astral Cave Desert
+	TownNPCDialogueName: the Astral Cave Desert
+}
+
+FloralParadiseBiome: {
+	DisplayName: Floral Paradise
+	TownNPCDialogueName: the Floral Paradise
+}
+
+BasaltGullyBiome: {
+	DisplayName: Basalt Gully
+	TownNPCDialogueName: the Basalt Gully
+}
+
+GleamingBurrowsBiome: {
+	DisplayName: Gleaming Burrows
+	TownNPCDialogueName: the Gleaming Burrows
+}
+
+PolypForestBiome: {
+	DisplayName: Polyp Forest
+	TownNPCDialogueName: the Polyp Forest
+}
+
+RadiantReefsBiome: {
+	DisplayName: Radiant Reefs
+	TownNPCDialogueName: the Radiant Reefs
+}
+
+TimelessShoresBiome: {
+	DisplayName: Timeless Shores
+	TownNPCDialogueName: the Timeless Shores
+}
+
+ClamDenBiome: {
+	DisplayName: Clam Den
+	TownNPCDialogueName: the Clam Den
 }

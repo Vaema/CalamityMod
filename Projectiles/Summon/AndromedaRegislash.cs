@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Summon
 {
     public class AndromedaRegislash : ModProjectile, ILocalizedModType
@@ -12,7 +12,7 @@ namespace CalamityMod.Projectiles.Summon
         public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 6;
+            Main.projFrames[Type] = 6;
         }
 
         public override void SetDefaults()
@@ -36,12 +36,14 @@ namespace CalamityMod.Projectiles.Summon
             Player player = Main.player[Projectile.owner];
             if (Projectile.localAI[0] == 0f)
             {
-                if (CalamityUtils.CountProjectiles(Projectile.type) > 1)
+                if (player.ownedProjectileCounts[Projectile.type] > 1)
                 {
                     Projectile.Kill();
                     return;
                 }
                 SoundEngine.PlaySound(SoundID.DD2_DrakinShot, Projectile.Center);
+
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Projectile.rotation = Projectile.AngleTo(Main.MouseWorld);
                 Projectile.localAI[0] = 1f;
             }
@@ -56,7 +58,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 Projectile.frame++;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.Kill();
             }
@@ -66,9 +68,9 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 startPos = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
-            int frameHeight = texture.Height / Main.projFrames[Projectile.type];
+            int frameHeight = texture.Height / Main.projFrames[Type];
             int frameY = frameHeight * Projectile.frame;
             Rectangle rectangle = new Rectangle(0, frameY, texture.Width, frameHeight);
             Vector2 origin = rectangle.Size() / 2f;

@@ -1,11 +1,15 @@
+﻿using CalamityMod.Items.Armor.Tarragon;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.StatBuffs
 {
     public class TarragonCloak : ModBuff
     {
+        public override LocalizedText Description => base.Description.WithFormatArgs(TarragonHeadMelee.CloakContactDamageReduction.ToPercent());
+
         public override void SetStaticDefaults()
         {
             Main.debuff[Type] = true;

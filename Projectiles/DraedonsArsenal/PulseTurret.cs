@@ -1,11 +1,11 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using CalamityMod.Items.Weapons.DraedonsArsenal;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
@@ -14,7 +14,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public new string LocalizationCategory => "Projectiles.Misc";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -94,7 +94,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                         if (!Main.dedServ)
                         {
                             for (int i = 0; i < 12; i++)
-                                Dust.NewDustPerfect(shootPosition, 173).scale = Main.rand.NextFloat(1.4f, 1.8f);
+                                Dust.NewDustPerfect(shootPosition, DustID.ShadowbeamStaff).scale = Main.rand.NextFloat(1.4f, 1.8f);
                         }
 
                         Projectile.ai[1] = 15f;
@@ -106,14 +106,12 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             {
                 Projectile.rotation = Projectile.rotation.AngleLerp(0f, MathHelper.TwoPi / 50f);
             }
-
-            Projectile.StickToTiles(false, false);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D standTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/DraedonsArsenal/PulseTurretStand").Value;
-            Main.EntitySpriteDraw(ModContent.Request<Texture2D>(Texture).Value,
+            Main.EntitySpriteDraw(Terraria.GameContent.TextureAssets.Projectile[Type].Value,
                              Projectile.Center - ((standTexture.Height / 2 + 6f) * Vector2.UnitY) - Main.screenPosition,
                              null,
                              lightColor,
@@ -136,5 +134,11 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override bool? CanDamage() => false;
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
+
+        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
+        {
+            fallThrough = false;
+            return true;
+        }
     }
 }

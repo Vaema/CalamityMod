@@ -1,5 +1,6 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -11,10 +12,14 @@ namespace CalamityMod.Projectiles.Rogue
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/CorpusAvertor";
 
+        public const int MaxClones = 3;
+        private ref float CloneNum => ref Projectile.ai[0];
+
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -33,26 +38,8 @@ namespace CalamityMod.Projectiles.Rogue
         {
             Projectile.rotation += (Math.Abs(Projectile.velocity.X) + Math.Abs(Projectile.velocity.Y)) * 0.04f;
 
-            Projectile.velocity.X *= 1.005f;
-            Projectile.velocity.Y *= 1.005f;
-
-            switch ((int)Projectile.ai[0])
-            {
-                case 20:
-                    Projectile.scale = 0.7f;
-                    break;
-                case 40:
-                    Projectile.scale = 0.8f;
-                    break;
-                case 60:
-                    Projectile.scale = 0.9f;
-                    break;
-                default:
-                    break;
-            }
-            Projectile.width = Projectile.height = (int)(24f * Projectile.scale);
-
-            CalamityUtils.HomeInOnNPC(Projectile, true, 150f, 12f, 20f);
+            if (Projectile.timeLeft < 165)
+                CalamityUtils.HomeInOnNPC(Projectile, true, 480f, 14f, 20f);
         }
 
         public override Color? GetAlpha(Color lightColor)
@@ -64,38 +51,18 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
+        public override bool? CanDamage() => Projectile.timeLeft > 165 ? false : null;
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            float heal = hit.Damage * 0.05f;
-            if ((int)heal == 0)
-                return;
+            target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
 
-            if (Main.player[Main.myPlayer].lifeSteal <= 0f)
-                return;
-
-            if (heal > CalamityMod.lifeStealCap)
-                heal = CalamityMod.lifeStealCap;
-
-            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ProjectileID.VampireHeal, 1200f, 3f);
+            if (CloneNum < MaxClones && Main.myPlayer == Projectile.owner)
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, -Projectile.velocity.RotatedByRandom(MathHelper.Pi / 8f), ModContent.ProjectileType<CorpusAvertorClone>(), Projectile.damage, Projectile.knockBack, Projectile.owner, CloneNum + 1);
         }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            float heal = info.Damage * 0.05f;
-            if ((int)heal == 0)
-                return;
-
-            if (Main.player[Main.myPlayer].lifeSteal <= 0f)
-                return;
-
-            if (heal > CalamityMod.lifeStealCap)
-                heal = CalamityMod.lifeStealCap;
-
-            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ProjectileID.VampireHeal, 1200f, 3f);
-        }
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
     }
 }

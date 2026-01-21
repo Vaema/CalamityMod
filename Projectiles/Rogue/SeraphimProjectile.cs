@@ -1,8 +1,9 @@
-﻿using CalamityMod.Items.Weapons.Rogue;
+﻿using System;
+using CalamityMod.Items.Weapons.Rogue;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
@@ -48,7 +49,7 @@ namespace CalamityMod.Projectiles.Rogue
                 for (int i = 0; i < lightDustCount; i++)
                 {
                     Vector2 dustSpawnPosition = Projectile.Center + Main.rand.NextVector2Unit() * (1f - Projectile.Opacity) * 45f;
-                    Dust light = Dust.NewDustPerfect(dustSpawnPosition, 267);
+                    Dust light = Dust.NewDustPerfect(dustSpawnPosition, DustID.RainbowMk2);
                     light.color = Color.Lerp(Color.Gold, Color.White, Main.rand.NextFloat(0.5f, 1f));
                     light.velocity = Main.rand.NextVector2Circular(10f, 10f);
                     light.scale = MathHelper.Lerp(1.3f, 0.8f, Projectile.Opacity) * Main.rand.NextFloat(0.8f, 1.2f);
@@ -91,7 +92,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 origin = texture.Size() * 0.5f;
             Vector2 baseDrawPosition = Projectile.Center - Main.screenPosition;
 

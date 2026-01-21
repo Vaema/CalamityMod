@@ -1,167 +1,93 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Cooldowns;
+using CalamityMod.Dusts;
+using CalamityMod.Items.Materials;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class DevilsDevastation : ModItem, ILocalizedModType
+    public class DevilsDevastation : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
-
+        public int throwCount = 0;
         public override void SetDefaults()
         {
             Item.width = 118;
             Item.height = 118;
-            Item.damage = 166;
-            Item.DamageType = DamageClass.Melee;
-            Item.useAnimation = 20;
-            Item.useTime = 20;
+
+            Item.damage = 333;
+            Item.crit = 41;
+            Item.useAnimation = Item.useTime = 45;
+
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.shoot = ModContent.ProjectileType<DevilsDevastationThrownBlade>();
             Item.useTurn = true;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.knockBack = 6.75f;
-            Item.UseSound = SoundID.Item1;
+            Item.knockBack = 7.5f;
+            Item.noMelee = true;
+            Item.noUseGraphic = true;
+            Item.DamageType = DamageClass.Melee;
+            Item.UseSound = null;
             Item.autoReuse = true;
+            Item.channel = true;
+
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.shoot = ModContent.ProjectileType<Oathblade>();
-            Item.shootSpeed = 28f;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
-
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source2, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        public override bool MeleePrefix() => true;
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[ModContent.ProjectileType<DevilsDevastationHoldout>()] <= 0 && !player.Calamity().mouseRight;
+        public override void HoldItem(Player player)
         {
-            //Shoot 3 oathblades in a spread
-            int index = 8;
-            for (int j = -index; j <= index; j += index)
+            player.Calamity().mouseWorldListener = true;
+            if (player.Calamity().mouseRight && !player.mouseInterface && player.Calamity().killModeCooldown == 0 && !Main.mapFullscreen && !Main.blockMouse)
             {
-                Vector2 perturbedSpeed = new Vector2(velocity.X, velocity.Y).RotatedBy(MathHelper.ToRadians(j));
-                Projectile.NewProjectile(source2, position, perturbedSpeed, type, damage, knockback, player.whoAmI);
-            }
+                SoundStyle buff = new("CalamityMod/Sounds/Item/DemonSwordKillMode");
+                SoundEngine.PlaySound(buff with { Volume = 0.95f }, player.Center);
 
-            //Not actually sure what this middle code does
-            float speed = Item.shootSpeed;
-            Vector2 source = player.RotatedRelativePoint(player.MountedCenter, true);
-            float directionX = (float)Main.mouseX + Main.screenPosition.X - source.X;
-            float directionY = (float)Main.mouseY + Main.screenPosition.Y - source.Y;
-            if (player.gravDir == -1f)
-            {
-                directionY = Main.screenPosition.Y + (float)Main.screenHeight - (float)Main.mouseY - source.Y;
-            }
-            Vector2 direction = new Vector2(directionX, directionY);
-            float aimDist = direction.Length();
-            if ((float.IsNaN(direction.X) && float.IsNaN(direction.Y)) || (direction.X == 0f && direction.Y == 0f))
-            {
-                direction.X = (float)player.direction;
-                direction.Y = 0f;
-                aimDist = speed;
-            }
-            else
-            {
-                aimDist = speed / aimDist;
-            }
+                for (int i = 0; i < 10; i++)
+                {
+                    Vector2 vel = (MathHelper.TwoPi * i / 10f).ToRotationVector2() * 6.5f;
+                    Particle spark2 = new CustomSpark(player.Center + vel * 14, -vel * 0.1f, "CalamityMod/Particles/DemonSigilParticle", false, 22, 0.6f, (i % 2 == 0 ? Color.MediumOrchid : Color.BlueViolet) * 0.7f, new Vector2(1, 1), true, false, 0, false, false, -0.23f);
+                    GeneralParticleHandler.SpawnParticle(spark2);
 
-            //Shoot 9 tridents from below
-            int projAmt = 3; //Since the method spawns 3 projectiles, it spawns 9 total
-            for (int projIndex = 0; projIndex < projAmt; projIndex++)
-            {
-                source = new Vector2(player.Center.X + (float)(Main.rand.Next(201) * -(float)player.direction) + ((float)Main.mouseX + Main.screenPosition.X - player.position.X), player.MountedCenter.Y + 600f);
-                source.X = (source.X + player.Center.X) / 2f + (float)Main.rand.Next(-200, 201);
-                source.Y += (float)(100 * projIndex);
-                direction.X = (float)Main.mouseX + Main.screenPosition.X - source.X;
-                direction.Y = (float)Main.mouseY + Main.screenPosition.Y - source.Y;
-                if (direction.Y < 0f)
-                {
-                    direction.Y *= -1f;
+                    Dust c = Dust.NewDustPerfect(player.Center, ModContent.DustType<LightDust>());
+                    c.velocity = vel;
+                    c.scale = 1.7f;
+                    c.noGravity = true;
+                    c.color = (i % 2 != 0 ? Color.MediumOrchid : Color.BlueViolet);
+                    c.noLightEmittence = true;
                 }
-                if (direction.Y < 20f)
-                {
-                    direction.Y = 20f;
-                }
-                aimDist = direction.Length();
-                aimDist = speed / aimDist;
-                direction.X *= aimDist;
-                direction.Y *= aimDist;
-                direction.X += Main.rand.NextFloat(-40f, 40f) * 0.02f;
-                direction.Y += Main.rand.NextFloat(-40f, 40f) * 0.02f;
-                direction.Y *= -1;
-                Projectile.NewProjectile(source2, source, direction, ModContent.ProjectileType<DemonBlast>(), damage, knockback, player.whoAmI, 0f, Main.rand.Next(5));
-                Projectile.NewProjectile(source2, source, direction, ModContent.ProjectileType<DemonBlast>(), damage, knockback, player.whoAmI, 0f, Main.rand.Next(3));
-                Projectile.NewProjectile(source2, source, direction, ModContent.ProjectileType<DemonBlast>(), damage, knockback, player.whoAmI, 0f, 1f);
+
+                player.Calamity().demonSwordKillMode = true;
+
+                int cooldownTime = KillMode.cooldownMax + KillMode.buffMax;
+                player.Calamity().killModeCooldown = cooldownTime;
+                player.AddCooldown(KillMode.ID, cooldownTime);
             }
+            if (player.Calamity().demonSwordKillMode && player.ownedProjectileCounts[ModContent.ProjectileType<DevilsDevastationHoldout>()] <= 0 && player.Calamity().killModeCooldown == KillMode.cooldownMax + KillMode.buffMax)
+            {
+                Projectile.NewProjectile(player.GetSource_ItemUse(Item), player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<DevilsDevastationHoldout>(), Item.damage * 15, Item.knockBack, player.whoAmI, 0, throwCount); //This used to be 30x damage.
+            }
+        }
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        {
+            throwCount++;
+            int useSpeed = (int)MathHelper.Clamp((Item.useTime / 2.8f), 1, 100);
+            Projectile blade = Projectile.NewProjectileDirect(source, player.MountedCenter, velocity, type, damage, knockback, player.whoAmI, 0, throwCount);
+            blade.localAI[2] = useSpeed;
+            blade.timeLeft += useSpeed;
             return false;
         }
-
-        public override void MeleeEffects(Player player, Rectangle hitbox)
-        {
-            if (Main.rand.NextBool(3))
-                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 173);
-        }
-
-        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.AddBuff(BuffID.ShadowFlame, 150);
-            target.AddBuff(BuffID.OnFire, 300);
-            if (hit.Crit)
-            {
-                target.AddBuff(BuffID.ShadowFlame, 450);
-                target.AddBuff(BuffID.OnFire, 900);
-                player.ApplyDamageToNPC(target, Item.damage * 4, 0f, 0, false);
-                float firstDustScale = 1.7f;
-                float secondDustScale = 0.8f;
-                float thirdDustScale = 2f;
-                Vector2 dustRotation = (target.rotation - MathHelper.PiOver2).ToRotationVector2();
-                Vector2 dustVelocity = dustRotation * target.velocity.Length();
-                SoundEngine.PlaySound(SoundID.Item14, target.Center);
-                for (int i = 0; i < 40; i++)
-                {
-                    int dustInt = Dust.NewDust(target.position, target.width, target.height, 173, 0f, 0f, 200, default, firstDustScale);
-                    Dust dust = Main.dust[dustInt];
-                    dust.position = target.Center + Vector2.UnitY.RotatedByRandom(Math.PI) * Main.rand.NextFloat() * target.width / 2f;
-                    dust.noGravity = true;
-                    dust.velocity.Y -= 4.5f;
-                    dust.velocity *= 3f;
-                    dust.velocity += dustVelocity * Main.rand.NextFloat();
-                    dustInt = Dust.NewDust(target.position, target.width, target.height, 173, 0f, 0f, 100, default, secondDustScale);
-                    dust.position = target.Center + Vector2.UnitY.RotatedByRandom(Math.PI) * Main.rand.NextFloat() * target.width / 2f;
-                    dust.velocity.Y -= 3f;
-                    dust.velocity *= 2f;
-                    dust.noGravity = true;
-                    dust.fadeIn = 1f;
-                    dust.color = Color.Crimson * 0.5f;
-                    dust.velocity += dustVelocity * Main.rand.NextFloat();
-                }
-                for (int j = 0; j < 20; j++)
-                {
-                    int dustInt = Dust.NewDust(target.position, target.width, target.height, 173, 0f, 0f, 0, default, thirdDustScale);
-                    Dust dust = Main.dust[dustInt];
-                    dust.position = target.Center + Vector2.UnitX.RotatedByRandom(Math.PI).RotatedBy((double)target.velocity.ToRotation(), default) * target.width / 3f;
-                    dust.noGravity = true;
-                    dust.velocity.Y -= 1.5f;
-                    dust.velocity *= 0.5f;
-                    dust.velocity += dustVelocity * (0.6f + 0.6f * Main.rand.NextFloat());
-                }
-            }
-        }
-
-        public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
-        {
-            target.AddBuff(ModContent.BuffType<Shadowflame>(), 450);
-            target.AddBuff(BuffID.OnFire, 900);
-            SoundEngine.PlaySound(SoundID.Item14, target.Center);
-        }
-
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<Devastation>().
                 AddIngredient<ExaltedOathblade>().
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<NightmareFuel>(20).

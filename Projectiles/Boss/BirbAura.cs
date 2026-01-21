@@ -20,18 +20,19 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 80;
-            Projectile.height = 80;
+            Projectile.width = 32;
+            Projectile.height = 32;
             Projectile.hostile = true;
             Projectile.alpha = 255;
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
             Projectile.timeLeft = 1200;
+            Projectile.Calamity().DealsDefenseDamage = true;
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -76,6 +77,8 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.Kill();
                 return;
             }
+            if (Projectile.localAI[0] % 4 == 0)
+                Projectile.frameCounter++;
 
             Projectile.scale = (float)Math.Sin(Projectile.localAI[0] * Math.PI / timeBeforeVanish) * 10f * projScale;
             if (Projectile.scale > projScale)
@@ -129,43 +132,47 @@ namespace CalamityMod.Projectiles.Boss
         public override bool PreDraw(ref Color lightColor)
         {
             if (Projectile.velocity == Vector2.Zero)
-            {
                 return false;
-            }
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-            Texture2D texture2 = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/BirbAuraStart", AssetRequestMode.ImmediateLoad).Value;
-            Texture2D texture3 = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/BirbAuraEnd", AssetRequestMode.ImmediateLoad).Value;
-            float auraDrawLength = Projectile.localAI[1]; //length of laser
+
+            Texture2D middleTex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            Texture2D endpointTex = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/BirbAuraEndpoints", AssetRequestMode.ImmediateLoad).Value;
+
+            // Used to track the animation of the segments
+            int middleFrame = Projectile.frameCounter % 12;
+            int endpointFrame = Projectile.frameCounter % 3;
+            float auraDrawLength = Projectile.localAI[1]; // Length of the laser
             Color grayColor = new Color(128, 128, 128, 0);
-            Vector2 vector = Projectile.Center - Main.screenPosition;
-            Rectangle? sourceRectangle2 = null;
-            Main.EntitySpriteDraw(texture2, vector, sourceRectangle2, grayColor, Projectile.rotation, texture2.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
-            auraDrawLength -= (texture2.Height / 2 + texture3.Height) * Projectile.scale;
+
+            // Draw the bottom endpoint segment
+            Rectangle? sourceRectangle2 = endpointTex.Frame(1, 3, 0, endpointFrame);
+            Vector2 endPosition = Projectile.Center - Main.screenPosition - new Vector2(0f, 22f); // Of course it's 22, this stupid fucking accursed number
+            Main.EntitySpriteDraw(endpointTex, endPosition, sourceRectangle2, grayColor, Projectile.rotation, endpointTex.Frame(1, 1, 0, 0).Top(), Projectile.scale, SpriteEffects.None, 0);
+
+            // Draw the middle segments
+            auraDrawLength -= (endpointTex.Height / 2 + endpointTex.Height) * Projectile.scale;
             Vector2 projCenter = Projectile.Center;
-            projCenter += Projectile.velocity * Projectile.scale * texture2.Height / 2f;
-            if (auraDrawLength > 0f)
+            projCenter += Projectile.velocity * Projectile.scale * endpointTex.Height / 2f;
+            if (auraDrawLength > 0f) // Only draw a middle segment if there's enough height for one
             {
                 float auraSegment = 0f;
-                Rectangle drawRectangle = new Rectangle(0, 0, texture.Width, texture.Height);
+                Rectangle drawRectangle = middleTex.Frame(12, 1, middleFrame, 0);
                 while (auraSegment + 1f < auraDrawLength)
                 {
                     if (auraDrawLength - auraSegment < drawRectangle.Height)
                     {
                         drawRectangle.Height = (int)(auraDrawLength - auraSegment);
                     }
-                    Main.EntitySpriteDraw(texture, projCenter - Main.screenPosition, new Rectangle?(drawRectangle), grayColor, Projectile.rotation, new Vector2(drawRectangle.Width / 2, 0f), Projectile.scale, SpriteEffects.None, 0);
+                    Main.EntitySpriteDraw(middleTex, projCenter - Main.screenPosition, new Rectangle?(drawRectangle), grayColor, Projectile.rotation, new Vector2(drawRectangle.Width / 2, 0f), Projectile.scale, SpriteEffects.None, 0);
                     auraSegment += drawRectangle.Height * Projectile.scale;
                     projCenter += Projectile.velocity * drawRectangle.Height * Projectile.scale;
-                    drawRectangle.Y += texture.Height;
-                    if (drawRectangle.Y + drawRectangle.Height > texture.Height)
+                    drawRectangle.Y += middleTex.Height;
+                    if (drawRectangle.Y + drawRectangle.Height > middleTex.Height)
                     {
                         drawRectangle.Y = 0;
                     }
                 }
             }
-            Vector2 vector2 = projCenter - Main.screenPosition;
-            sourceRectangle2 = null;
-            Main.EntitySpriteDraw(texture3, vector2, sourceRectangle2, grayColor, Projectile.rotation, texture3.Frame(1, 1, 0, 0).Top(), Projectile.scale, SpriteEffects.None, 0);
+            // There is intentionally no top endpoint segment drawn
             return false;
         }
 

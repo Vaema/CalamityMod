@@ -2,6 +2,7 @@
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
+using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -26,13 +27,13 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.noMelee = true;
             Item.UseSound = CastSound;
 
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.Calamity().donorItem = true;
 
             Item.damage = 2250;
             Item.knockBack = 6f;
-            Item.useTime = Item.useAnimation = 300;
+            Item.useAnimation = Item.useTime = 300;
             Item.reuseDelay = 60;
             Item.useLimitPerAnimation = 1;
             Item.shoot = ModContent.ProjectileType<IceBarrageMain>();
@@ -49,7 +50,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Vector2 realPlayerPos = player.RotatedRelativePoint(player.MountedCenter, true);
             realPlayerPos.X = Main.mouseX + Main.screenPosition.X;
             realPlayerPos.Y = Main.mouseY + Main.screenPosition.Y;
-            Projectile.NewProjectile(source, realPlayerPos, Vector2.Zero, type, damage, knockback, player.whoAmI, 0f, 0f);
+            Projectile.NewProjectile(source, realPlayerPos, Vector2.Zero, type, damage, knockback, player.whoAmI);
 
             CalamityGlobalItem.ConsumeAdditionalAmmo(player, Item, 2);
 
@@ -70,8 +71,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient<IcicleStaff>().
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<EndothermicEnergy>(40).
-                AddIngredient<CryonicBar>(18).
-                AddTile(TileID.IceMachine).
+                AddTile<CosmicAnvil>().
                 Register();
         }
     }

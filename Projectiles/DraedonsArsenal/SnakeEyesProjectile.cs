@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -31,6 +32,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.MinionShot[Type] = true;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
 
             // While this projectile doesn't have afterimages, it keeps track of old positions for its primitive drawcode.
             ProjectileID.Sets.TrailingMode[Type] = 2;
@@ -134,7 +136,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
             for (int i = 0; i < 20; i++)
             {
-                Dust boomDust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, 261, Scale: 2f);
+                Dust boomDust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.AncientLight, Scale: 2f);
                 boomDust.noGravity = true;
             }
 
@@ -146,7 +148,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         #region Shader Trail Methods
 
-        private float PrimitiveWidthFunction(float completionRatio)
+        private float PrimitiveWidthFunction(float completionRatio, Vector2 vertexPos)
         {
             float arrowheadCutoff = 0.36f;
             float width = 39f;
@@ -157,7 +159,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             return width;
         }
 
-        private Color PrimitiveColorFunction(float completionRatio)
+        private Color PrimitiveColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float endFadeRatio = 0.41f;
 
@@ -178,16 +180,14 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;
             Main.EntitySpriteDraw(texture, drawPosition, frame, Projectile.GetAlpha(lightColor), Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
 
-            PrimitiveTrail trail = new PrimitiveTrail(PrimitiveWidthFunction, PrimitiveColorFunction, specialShader: GameShaders.Misc["CalamityMod:TrailStreak"]);
-            GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/FabstaffStreak"));
-            trail.Draw(Projectile.oldPos, Projectile.Size * 0.5f - Main.screenPosition, 92);
-
+            GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_,_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 92);
             return false;
         }
     }

@@ -24,7 +24,7 @@ namespace CalamityMod.Particles
             ColorFade = colorFade;
             Scale = scale;
             Opacity = opacity;
-            BaseOpacity = opacity;  
+            BaseOpacity = opacity;
             Rotation = Main.rand.NextFloat(MathHelper.PiOver4 * 0.5f) - MathHelper.PiOver4 * 0.25f;
         }
 

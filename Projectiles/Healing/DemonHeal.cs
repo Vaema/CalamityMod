@@ -1,4 +1,5 @@
 ﻿using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Healing
@@ -16,14 +17,14 @@ namespace CalamityMod.Projectiles.Healing
             Projectile.friendly = true;
             Projectile.penetrate = 1;
             Projectile.timeLeft = 640;
-			Projectile.tileCollide = false;
+            Projectile.tileCollide = false;
         }
 
         public override void AI()
         {
             Projectile.HealingProjectile(10, Projectile.owner, 20f, 20f, true, 640);
 
-            Dust fire = Dust.NewDustPerfect(Projectile.Center, 130);
+            Dust fire = Dust.NewDustPerfect(Projectile.Center, DustID.Firework_Red);
             fire.velocity = Microsoft.Xna.Framework.Vector2.Zero;
             fire.scale = Main.rand.NextFloat(1f, 1.15f);
             fire.fadeIn = 0.45f;

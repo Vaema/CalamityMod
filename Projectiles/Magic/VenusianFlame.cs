@@ -12,9 +12,9 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 3;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 2;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            Main.projFrames[Type] = 3;
+            ProjectileID.Sets.TrailCacheLength[Type] = 2;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -23,10 +23,11 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.height = 14;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Magic;
-            Projectile.penetrate = 3;
+            Projectile.penetrate = -1;
+            Projectile.extraUpdates = 1;
             Projectile.timeLeft = 120;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override void AI()
@@ -46,7 +47,7 @@ namespace CalamityMod.Projectiles.Magic
             if (!initialized)
             {
                 initialized = true;
-                Projectile.frame = Main.rand.Next(Main.projFrames[Projectile.type]);
+                Projectile.frame = Main.rand.Next(Main.projFrames[Type]);
             }
             Projectile.frameCounter++;
             if (Projectile.frameCounter > 4)
@@ -54,7 +55,7 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.frame = 0;
             }
@@ -105,25 +106,27 @@ namespace CalamityMod.Projectiles.Magic
             }
 
             //Dust
-            if (Main.rand.NextBool(4))
+            if (Main.rand.NextBool(6))
             {
-                int venusDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 55, 0f, 0f, 100, default, 1f);
+                int venusDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Pixie, 0f, 0f, 100, default, 1f);
                 Dust dust = Main.dust[venusDust];
                 dust.position.X -= 2f;
                 dust.position.Y += 2f;
                 dust.scale += (float)Main.rand.Next(50) * 0.01f;
                 dust.noGravity = true;
                 dust.velocity.Y -= 2f;
+                dust.velocity += Projectile.velocity * 0.5f;
             }
-            if (Main.rand.NextBool(10))
+            if (Main.rand.NextBool(14))
             {
-                int venusDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 55, 0f, 0f, 100, default, 1f);
+                int venusDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.FireworksRGB, 0f, 0f, 0, default, Main.rand.NextFloat(0.3f, 0.5f));
                 Dust dust2 = Main.dust[venusDust2];
                 dust2.position.X -= 2f;
                 dust2.position.Y += 2f;
-                dust2.scale += 0.3f + (float)Main.rand.Next(50) * 0.01f;
                 dust2.noGravity = true;
                 dust2.velocity *= 0.1f;
+                dust2.velocity += Projectile.velocity * 0.5f;
+                dust2.color = Color.Lerp(Color.White, Main.rand.NextBool(4) ? Color.Orange : Color.Coral, 0.7f);
             }
         }
 
@@ -140,7 +143,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

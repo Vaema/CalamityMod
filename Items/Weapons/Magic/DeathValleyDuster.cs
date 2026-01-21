@@ -1,6 +1,9 @@
 ﻿using CalamityMod.Projectiles.Magic;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Audio;
+using Microsoft.Xna.Framework;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
@@ -13,29 +16,36 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 36;
             Item.height = 40;
-            Item.damage = 123;
+            Item.damage = 130;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 9;
-            Item.useTime = 25;
-            Item.useAnimation = 25;
+            Item.mana = 38;
+            Item.useTime = 50;
+            Item.useAnimation = 50;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
-            Item.knockBack = 5f;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
-            Item.rare = ItemRarityID.Pink;
-            Item.UseSound = SoundID.Item20;
+            Item.knockBack = 8f;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
+            Item.rare = ItemRarityID.LightRed;
+            Item.UseSound = new SoundStyle("CalamityMod/Sounds/Item/MagicRockSound") with { Volume = 0.4f, Pitch = -0.1f };
             Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<DustProjectile>();
-            Item.shootSpeed = 5f;
+            Item.shoot = ModContent.ProjectileType<DeathValleyDusterProjectile>();
+            Item.shootSpeed = 6.5f;
         }
-
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        {
+            if (player.velocity.Length() <= 12)
+                player.velocity += -velocity.SafeNormalize(Vector2.UnitX) * 5f;
+            bool MaxMana = player.statMana >= (player.statManaMax2 - ((int)(Item.mana * player.manaCost))) && !player.HasBuff(BuffID.ManaSickness);
+            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 0f, MaxMana ? 1f : 0f);
+            
+            return false;
+        }
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient(ItemID.SpellTome).
-                AddRecipeGroup("AnyAdamantiteBar", 5).
-                AddIngredient(ItemID.AncientBattleArmorMaterial).
                 AddIngredient(ItemID.FossilOre, 25).
+                AddIngredient(ItemID.AncientCloth, 2).
                 AddTile(TileID.Bookcases).
                 Register();
         }

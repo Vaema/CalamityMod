@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Tools
             Item.DamageType = DamageClass.Melee;
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
@@ -35,7 +35,7 @@ namespace CalamityMod.Items.Tools
             CreateRecipe().
                 AddIngredient<AerialiteBar>(6).
                 AddIngredient(ItemID.SunplateBlock, 5).
-                AddTile(TileID.SkyMill).
+                AddTile(TileID.Anvils).
                 Register();
         }
 
@@ -43,7 +43,7 @@ namespace CalamityMod.Items.Tools
         {
             if (Main.rand.NextBool(3))
             {
-                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 59);
+                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.BlueTorch);
             }
         }
     }

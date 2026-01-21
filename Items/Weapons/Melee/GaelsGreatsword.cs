@@ -1,7 +1,7 @@
-﻿using CalamityMod.Projectiles.Melee;
+﻿using System;
+using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -14,8 +14,8 @@ namespace CalamityMod.Items.Weapons.Melee
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
         // Weapon attribute constants
-        public static readonly int BaseDamage = 670;
-        public static readonly float GiantSkullDamageMultiplier = 1.5f;
+        public static readonly int BaseDamage = 690;
+        public static readonly float GiantSkullDamageMultiplier = 1.7f;
 
         // Weapon projectile attribute constants
         public static readonly int SearchDistance = 1450;
@@ -31,8 +31,8 @@ namespace CalamityMod.Items.Weapons.Melee
         //NOTE: GetWeaponDamage is in the CalamityPlayer file
         public override void SetDefaults()
         {
-            Item.width = 112;
-            Item.height = 102;
+            Item.width = 108;
+            Item.height = 100;
             Item.damage = BaseDamage;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = Item.useTime = 13;
@@ -41,8 +41,8 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
 
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.Calamity().devItem = true;
 
             Item.shoot = ModContent.ProjectileType<GaelSkull>();
@@ -55,7 +55,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void MeleeEffects(Player player, Rectangle hitbox)
         {
             var source = player.GetSource_ItemUse(Item);
-            if (CalamityUtils.CountProjectiles(ModContent.ProjectileType<LightningThing>()) < 3 &&
+            if (player.ownedProjectileCounts[ModContent.ProjectileType<LightningThing>()] < 3 &&
                 player.statLife <= player.statLifeMax2 * 0.5f &&
                 Main.myPlayer == player.whoAmI)
             {
@@ -73,14 +73,14 @@ namespace CalamityMod.Items.Weapons.Melee
                 player.Calamity().gaelSwipes++;
                 if (player.statLife <= player.statLifeMax2 * 0.5f)
                 {
-                    for (int i = 0; i < 170; i++)
+                    for (int i = 0; i < 120; i++)
                     {
                         float r = (float)Math.Sqrt(Main.rand.NextDouble());
                         float t = Main.rand.NextFloat() * MathHelper.TwoPi;
                         Vector2 dustSpawn = t.ToRotationVector2() * r * Item.Size;
                         if (dustSpawn.X > Item.width / 2)
                         {
-                            Dust.NewDustPerfect(player.MountedCenter + dustSpawn.RotatedBy(player.itemRotation) * player.direction, 218, Vector2.Zero).noGravity = true;
+                            Dust.NewDustPerfect(player.MountedCenter + dustSpawn.RotatedBy(player.itemRotation) * player.direction, DustID.Rain_BloodMoon, Vector2.Zero).noGravity = true;
                         }
                         else
                         {
@@ -126,8 +126,8 @@ namespace CalamityMod.Items.Weapons.Melee
                 //Giant, slow, fading skull
                 case 1:
                     int largeSkullDmg = (int)(damage * GiantSkullDamageMultiplier);
-                    int projectileIndex = Projectile.NewProjectile(source, position, velocity * 0.6f, type, largeSkullDmg, knockback, player.whoAmI, ai1:1f);
-                    Main.projectile[projectileIndex].scale = 1.75f;
+                    int projectileIndex = Projectile.NewProjectile(source, position, velocity * 0.6f, type, largeSkullDmg, knockback, player.whoAmI, ai1: 1f);
+                    Main.projectile[projectileIndex].scale = 2f;
                     break;
             }
             return false;

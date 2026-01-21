@@ -1,8 +1,7 @@
-﻿using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.ModLoader;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Terraria;
 
 namespace CalamityMod.Particles
 {
@@ -80,6 +79,7 @@ namespace CalamityMod.Particles
         {
             Rotation = MathHelper.Lerp(RotationOffset, 0f, (float)Math.Pow(LifetimeCompletionAdjusted, 0.8f));
 
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             //The gun
             if (TimeOffset == 0.6f)
                 Rotation = (Owner.Calamity().mouseWorld - Owner.Center).ToRotation() + (Owner.direction < 0 ? MathHelper.Pi : 0f);
@@ -112,9 +112,9 @@ namespace CalamityMod.Particles
                 spriteEffect = SpriteEffects.FlipHorizontally;
                 origin.X = Frame.Width - Origin.X;
             }
-                
 
-            float opacity = Math.Clamp(LifetimeCompletionAdjusted * 4f ,0f, 1f);
+
+            float opacity = Math.Clamp(LifetimeCompletionAdjusted * 4f, 0f, 1f);
 
             spriteBatch.Draw(baseTex, center + realDestinationOffset + realCurrentOffset - Main.screenPosition, Frame, lightColor * opacity, Rotation, origin, Scale, spriteEffect, 0);
         }

@@ -1,9 +1,10 @@
-﻿using CalamityMod.Projectiles.Ranged;
+﻿using System;
+using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
@@ -11,6 +12,10 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class Archerfish : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+
+        public static int AmmoSavedPercent = 33;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
+
         public override void SetDefaults()
         {
             Item.width = 78;
@@ -22,14 +27,13 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2f;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.UseSound = SoundID.Item85;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<ArcherfishShot>();
             Item.shootSpeed = 11f;
             Item.useAmmo = AmmoID.Bullet;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-10, -5);
@@ -61,5 +65,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
             return false;
         }
+
+        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.Next(100) >= AmmoSavedPercent;
     }
 }

@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 3.5f;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.UseSound = SoundID.Item39;
             Item.autoReuse = true;
@@ -36,7 +36,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shootSpeed = 24f;
         }
 
-        
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             int projAmt = 2 + Main.rand.Next(3);
@@ -60,9 +60,9 @@ namespace CalamityMod.Items.Weapons.Magic
             CreateRecipe().
                 AddIngredient(ItemID.Razorpine).
                 AddIngredient(ItemID.LeafBlower).
-                AddIngredient<UelibloomBar>(7).
-                AddIngredient<DarkPlasma>().
-                AddTile(TileID.LunarCraftingStation).
+                AddIngredient<UelibloomBar>(5).
+                AddIngredient<DarkPlasma>(3).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

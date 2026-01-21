@@ -1,9 +1,9 @@
-﻿using CalamityMod.Items.Accessories;
+﻿using System;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Projectiles.Enemy;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -15,8 +15,9 @@ namespace CalamityMod.NPCs.NormalNPCs
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 10;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
+            Main.npcFrameCount[Type] = 10;
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Scale = 0.8f,
             };
@@ -28,17 +29,16 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             NPC.npcSlots = 3f;
             NPC.aiStyle = -1;
-            NPC.damage = 20;
+            NPC.damage = 0; // 0 contact damage, projectile damage is handled separately
             NPC.width = 160;
             NPC.height = 80;
             NPC.defense = 6;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.DR_NERD(0.05f);
             NPC.lifeMax = 280;
             NPC.knockBackResist = 0.05f;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 25, 0);
+            NPC.value = Item.buyPrice(silver: 25);
             NPC.HitSound = SoundID.NPCHit12;
             NPC.DeathSound = SoundID.NPCDeath18;
             NPC.rarity = 2;
@@ -51,7 +51,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Desert,
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Cnidrion")
@@ -85,7 +85,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter += 0.1f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
@@ -93,13 +93,13 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void AI()
         {
             Player player = Main.player[NPC.target];
-            bool expertMode = Main.expertMode;
+
             NPC.spriteDirection = (NPC.direction > 0) ? 1 : -1;
             float movementSpeed = 1f;
             NPC.TargetClosest(true);
             bool stopMoving = false;
             int offsetX = 80;
-            int projectileDamage = expertMode ? 9 : 12;
+            int projectileDamage = Main.masterMode ? 8 : Main.expertMode ? 9 : 12;
             if (NPC.life < NPC.lifeMax * 0.33 && CalamityWorld.death)
             {
                 movementSpeed = 2f;
@@ -311,14 +311,14 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 for (int k = 0; k < 40; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 5, hit.HitDirection, -1f, 0, default, 2f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 2f);
                 }
             }
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(ModContent.ItemType<AmidiasSpark>(), 4);
+            npcLoot.Add(ModContent.ItemType<IlmerisSpark>(), 4);
             npcLoot.Add(ItemID.FossilOre, 1, 4, 5);
         }
     }

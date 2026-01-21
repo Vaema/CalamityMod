@@ -1,35 +1,12 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.Projectiles.DraedonsArsenal;
-using Terraria;
+﻿using CalamityMod.Projectiles.DraedonsArsenal;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.Summon
 {
-    public class SnakeEyesBuff : ModBuff
+    public class SnakeEyesBuff : BaseSummonBuff
     {
-        public override void SetStaticDefaults()
-        {
-            Main.buffNoTimeDisplay[Type] = true;
-            Main.buffNoSave[Type] = true;
-            //Main.persistentBuff[Type] = true;
-        }
+        protected override int MinionProjectileType => ModContent.ProjectileType<SnakeEyesSummon>();
 
-        public override void Update(Player player, ref int buffIndex)
-        {
-            CalamityPlayer modPlayer = player.Calamity();
-            if (player.ownedProjectileCounts[ModContent.ProjectileType<SnakeEyesSummon>()] > 0)
-            {
-                modPlayer.snakeEyes = true;
-            }
-            if (!modPlayer.snakeEyes)
-            {
-                player.DelBuff(buffIndex);
-                buffIndex--;
-            }
-            else
-            {
-                player.buffTime[buffIndex] = 18000;
-            }
-        }
+        protected override ref bool MinionBool => ref BuffModdedOwner.snakeEyes;
     }
 }

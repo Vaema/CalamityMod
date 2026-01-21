@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Items.Materials;
 using CalamityMod.NPCs.GreatSandShark;
-using CalamityMod.World;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -15,7 +13,7 @@ namespace CalamityMod.Items.SummonItems
         public new string LocalizationCategory => "Items.SummonItems";
         public override void SetStaticDefaults()
         {
-           	ItemID.Sets.SortingPriorityBossSpawns[Type] = 12; // Frost Legion
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 13; // Frost Legion
         }
 
         public override void SetDefaults()
@@ -29,10 +27,10 @@ namespace CalamityMod.Items.SummonItems
             Item.consumable = false;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
+        }
 
         public override bool CanUseItem(Player player)
         {
@@ -41,22 +39,17 @@ namespace CalamityMod.Items.SummonItems
 
         public override bool? UseItem(Player player)
         {
-            SoundEngine.PlaySound(SoundID.Roar, player.Center);
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-                NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<GreatSandShark>());
-            else
-                NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, player.whoAmI, ModContent.NPCType<GreatSandShark>());
-
+            CalamityUtils.SpawnBossUsingItem<GreatSandShark>(player, SoundID.Roar);
             return true;
         }
 
-        public override void ModifyTooltips(List<TooltipLine> list) => list.FindAndReplace("[BIOME]", Main.zenithWorld ? CalamityUtils.GetTextValue("Biomes.AstralDesert") : Language.GetTextValue("Bestiary_Biomes.Desert"));
+        public override void ModifyTooltips(List<TooltipLine> list) => list.FindAndReplace("[BIOME]", Main.zenithWorld ? CalamityUtils.GetTextValue("Biomes.AstralDesert.TownNPCDialogueName") : Language.GetTextValue("Bestiary_Biomes.Desert"));
 
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient(ItemID.AncientBattleArmorMaterial, 3).
-                AddIngredient<CoreofSunlight>().
+                AddIngredient<CoreofCalamity>().
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

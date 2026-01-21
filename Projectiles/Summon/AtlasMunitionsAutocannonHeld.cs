@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Summon
                     return false;
 
                 // Drop the cannon if the player is not holding the appropriate item.
-                if (Owner.ActiveItem().type != ModContent.ItemType<AtlasMunitionsBeacon>())
+                if (Owner.HeldItem.type != ModContent.ItemType<AtlasMunitionsBeacon>())
                     return false;
 
                 return true;
@@ -77,11 +77,10 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
             Projectile.netImportant = true;
-            Projectile.sentry = true;
-            Projectile.penetrate = -1;
-            Projectile.timeLeft = 90000;
+            Projectile.timeLeft = Projectile.SentryLifeTime;
             Projectile.DamageType = DamageClass.Summon;
             Projectile.Opacity = 1f;
+            Projectile.ContinuouslyUpdateDamageStats = true;
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -126,7 +125,7 @@ namespace CalamityMod.Projectiles.Summon
 
                     return;
                 }
-                
+
                 // Reset opacity and the dropped timer. This is done to undo any potential fadeout effects from the dropped state.
                 CannonDroppedTimer = 0f;
                 Projectile.Opacity = 1f;
@@ -172,11 +171,11 @@ namespace CalamityMod.Projectiles.Summon
                     int podID = ModContent.ProjectileType<AtlasMunitionsDropPod>();
                     int podUpperID = ModContent.ProjectileType<AtlasMunitionsDropPodUpper>();
                     int cannonID = ModContent.ProjectileType<AtlasMunitionsAutocannon>();
-                    for (int i = 0; i < Main.maxProjectiles; i++)
+                    foreach (Projectile p in Main.ActiveProjectiles)
                     {
-                        bool validID = Main.projectile[i].type == podID || Main.projectile[i].type == podUpperID || Main.projectile[i].type == cannonID;
-                        if (Main.projectile[i].active && validID && Main.projectile[i].owner == Projectile.owner)
-                            Main.projectile[i].Kill();
+                        bool validID = p.type == podID || p.type == podUpperID || p.type == cannonID;
+                        if (validID && p.owner == Projectile.owner)
+                            p.Kill();
                     }
 
                     Projectile.Kill();
@@ -186,13 +185,18 @@ namespace CalamityMod.Projectiles.Summon
 
             // Be picked up by nearby players if they right click and are holding the appropriate item.
             bool rightClick = Main.mouseRight && Main.mouseRightRelease;
-            bool correctItem = Main.LocalPlayer.ActiveItem().type == ModContent.ItemType<AtlasMunitionsBeacon>();
+            bool correctItem = Main.LocalPlayer.HeldItem.type == ModContent.ItemType<AtlasMunitionsBeacon>();
             if (Main.LocalPlayer.WithinRange(Projectile.Center, AtlasMunitionsBeacon.PickupRange) && rightClick && correctItem && HeatInterpolant < 0.5f)
             {
                 BeingHeld = true;
                 Projectile.owner = Main.myPlayer;
                 Projectile.netUpdate = true;
             }
+
+            // Destroy the cannon if the pod (base sentry) got replaced by other sentries
+            Projectile parent = Main.projectile[(int)Projectile.ai[2]];
+            if (parent.type != ModContent.ProjectileType<AtlasMunitionsDropPod>() || !parent.active)
+                Projectile.Kill();
         }
 
         public void DetermineFrames()
@@ -239,10 +243,7 @@ namespace CalamityMod.Projectiles.Summon
 
             // Notify other clients and the server if the cannon's firing state has changed. This sync cannot be blocked by the net spam threshold.
             if (wasFiring != IsFiring)
-            {
-                Projectile.netSpam = 0;
-                Projectile.netUpdate = true;
-            }
+                Projectile.ForceNetUpdate();
         }
 
         public void ShootProjectiles()
@@ -278,6 +279,7 @@ namespace CalamityMod.Projectiles.Summon
             // Update the cannon direction.
             if (Main.myPlayer == Projectile.owner)
             {
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, this is only used to aim the Atlas cannon
                 float interpolant = Utils.GetLerpValue(16f, 56f, Projectile.Distance(Main.MouseWorld), true) * Utils.GetLerpValue(3f, 10f, MathHelper.Distance(Main.MouseWorld.X, Owner.Center.X), true);
                 Vector2 oldVelocity = Projectile.velocity;
                 Projectile.velocity = Vector2.Lerp(Projectile.velocity, Projectile.SafeDirectionTo(Main.MouseWorld), interpolant).SafeNormalize(Vector2.UnitX * Owner.direction);
@@ -285,10 +287,7 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.direction = (Projectile.velocity.X > 0f).ToDirectionInt();
                 Projectile.spriteDirection = Projectile.direction;
                 if (Projectile.velocity != oldVelocity)
-                {
-                    Projectile.netSpam = 0;
-                    Projectile.netUpdate = true;
-                }
+                    Projectile.ForceNetUpdate();
             }
 
             Vector2 cannonEndOffset = Projectile.velocity * 26f + Projectile.velocity.RotatedBy(MathHelper.PiOver2 * Projectile.spriteDirection) * 2f;
@@ -328,6 +327,12 @@ namespace CalamityMod.Projectiles.Summon
 
         // The cannon does not get destroyed by tile collisions. This only applies when in the dropped state.
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
+
+        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
+        {
+            fallThrough = false;
+            return true;
+        }
 
         // The cannon itself does not do damage, but it does store damage for the lasers that it fires.
         public override bool? CanDamage() => false;

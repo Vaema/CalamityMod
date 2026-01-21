@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
-
 
 namespace CalamityMod.Tiles.FurniturePlaguedPlate
 {
@@ -11,7 +11,7 @@ namespace CalamityMod.Tiles.FurniturePlaguedPlate
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 178, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.BubbleBurst_Green, 0f, 0f, 1, new Color(255, 255, 255), 1f);
             return false;
         }
 
@@ -38,7 +38,7 @@ namespace CalamityMod.Tiles.FurniturePlaguedPlate
 
         public override void HitWire(int i, int j)
         {
-            CalamityUtils.LightHitWire(Type, i, j, 2, 2);
+            FurnitureCommon.LightHitWire(Type, i, j, 2, 2);
         }
     }
 }

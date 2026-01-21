@@ -12,15 +12,14 @@ namespace CalamityMod.Items.Mounts
         {
             Item.width = 20;
             Item.height = 20;
-            Item.useTime = 20;
-            Item.useAnimation = 20;
+            Item.useAnimation = Item.useTime = 20;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item3;
             Item.noMelee = true;
             Item.mountType = ModContent.MountType<SquishyBean>();
 
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
-            Item.rare = ItemRarityID.Lime;
+            Item.value = Item.sellPrice(gold: 5);
+            Item.rare = ItemRarityID.Yellow;
             Item.Calamity().devItem = true;
         }
     }

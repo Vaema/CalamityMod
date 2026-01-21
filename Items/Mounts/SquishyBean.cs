@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Buffs.Mounts;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Mounts
@@ -10,39 +9,45 @@ namespace CalamityMod.Items.Mounts
         public override void SetStaticDefaults()
         {
             MountData.buff = ModContent.BuffType<SquishyBeanBuff>();
-            MountData.heightBoost = 58;
-            MountData.fallDamage = -1;
+
+            // Horizontal movement
             MountData.runSpeed = 5f;
             MountData.dashSpeed = 8f;
-            MountData.jumpHeight = 20;
             MountData.acceleration = 0.1f;
+
+            // Vertical movement
+            MountData.fallDamage = 0f;
+            MountData.jumpHeight = 20;
             MountData.jumpSpeed = 15f;
+            MountData.constantJump = true;
+
+            // Frames and offsets
             MountData.totalFrames = 4;
-            MountData.blockExtraJumps = true;
+            MountData.heightBoost = 42;
             int[] array = new int[MountData.totalFrames];
             for (int l = 0; l < array.Length; l++)
             {
                 switch (l)
                 {
                     case 0:
-                        array[l] = 44;
-                        break;
-                    case 1:
                         array[l] = 46;
                         break;
-                    case 2:
+                    case 1:
                         array[l] = 48;
                         break;
+                    case 2:
+                        array[l] = 50;
+                        break;
                     case 3:
-                        array[l] = 48;
+                        array[l] = 50;
                         break;
                 }
             }
             MountData.playerYOffsets = array;
-            MountData.xOffset = 0;
-            MountData.bodyFrame = 3;
-            MountData.yOffset = 19;
             MountData.playerHeadOffset = 30;
+            MountData.bodyFrame = 3;
+            MountData.xOffset = 0;
+            MountData.yOffset = 11;
             MountData.standingFrameCount = 1;
             MountData.standingFrameDelay = 12;
             MountData.standingFrameStart = 0;
@@ -65,7 +70,7 @@ namespace CalamityMod.Items.Mounts
             MountData.swimFrameCount = MountData.inAirFrameCount;
             MountData.swimFrameDelay = MountData.inAirFrameDelay;
             MountData.swimFrameStart = MountData.inAirFrameStart;
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 MountData.textureWidth = MountData.backTexture.Width();
                 MountData.textureHeight = MountData.backTexture.Height();
@@ -77,9 +82,8 @@ namespace CalamityMod.Items.Mounts
             if (player.velocity.Y > 0f || player.controlDown)
             {
                 player.gravity = 1f;
-                player.maxFallSpeed = 15f;
+                player.maxFallSpeed = 20f;
             }
-            player.noFallDmg = true;
         }
     }
 }

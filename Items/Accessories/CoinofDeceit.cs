@@ -11,14 +11,14 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 20;
             Item.height = 22;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.accessory = true;
             Item.rare = ItemRarityID.Blue;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.Calamity().stealthStrike85Cost = true;
+            player.Calamity().stealthStrike90Cost = true;
             player.GetCritChance<ThrowingDamageClass>() += 6;
         }
 

@@ -1,15 +1,14 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System.IO;
-using Terraria;
-using Terraria.ID;
-using Terraria.Enums;
-using Terraria.ModLoader;
-using CalamityMod.Buffs.DamageOverTime;
-using Terraria.GameContent.Events;
-using Terraria.Audio;
-using ReLogic.Content;
+﻿using System.IO;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
+using Terraria;
+using Terraria.Audio;
+using Terraria.Enums;
+using Terraria.GameContent.Events;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -26,7 +25,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.DrawScreenCheckFluff[Type] = 12000;
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            ProjectileID.Sets.MinionShot[Type] = true;
         }
 
         public override void SetDefaults()
@@ -102,13 +101,13 @@ namespace CalamityMod.Projectiles.Summon
                     SoundEngine.PlaySound(TeslaCannon.FireSound, Projectile.Center);
                 for (int i = 0; i < 75; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(beamEndPosition, 269);
+                    Dust dust = Dust.NewDustPerfect(beamEndPosition, DustID.Sandnado);
                     dust.velocity = Main.rand.NextVector2Circular(16f, 11f);
                     dust.velocity = dust.velocity.SafeNormalize(Vector2.UnitY) * new Vector2(5f, 3.5f);
                     dust.scale = Main.rand.NextFloat(1.2f, 1.5f);
                     dust.noGravity = true;
 
-                    dust = Dust.NewDustPerfect(beamEndPosition, 269);
+                    dust = Dust.NewDustPerfect(beamEndPosition, DustID.Sandnado);
                     dust.velocity = (i / 75f * MathHelper.TwoPi).ToRotationVector2().RotatedByRandom(0.2f) * new Vector2(16f, 11f) * 1.3f;
                     dust.scale = Main.rand.NextFloat(1.4f, 1.75f);
                     dust.noGravity = true;

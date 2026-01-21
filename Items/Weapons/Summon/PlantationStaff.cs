@@ -1,6 +1,8 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -32,19 +34,22 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public static float TentacleSpeed = 25f;
 
+        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 3f;
+
         public override void SetDefaults()
         {
-            Item.width = 46;
-            Item.height = 48;
+            Item.width = 50;
+            Item.height = 50;
             Item.damage = 58;
             Item.DamageType = DamageClass.Summon;
+            Item.buffType = ModContent.BuffType<PlantationStaffBuff>();
             Item.shoot = ModContent.ProjectileType<PlantationStaffSummon>();
             Item.knockBack = 1f;
 
             Item.mana = 10;
-            Item.useTime = Item.useAnimation = 20;
+            Item.useAnimation = Item.useTime = 36;
             Item.noMelee = true;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item76;
@@ -54,15 +59,21 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, Main.MouseWorld, Main.rand.NextVector2Circular(2f, 2f), type, damage, knockback, player.whoAmI);
+            player.AddBuff(Item.buffType, 2);
+            var minion = Projectile.NewProjectileDirect(source, player.ClampedMouseWorld(), Main.rand.NextVector2Circular(2f, 2f), type, damage, knockback, player.whoAmI);
+            minion.originalDamage = Item.damage;
             return false;
+        }
+
+        public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
+        {
+            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Summon/PlantationStaffGlow").Value);
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient<EyeOfNight>().
-                AddIngredient(ItemID.Smolstar). // Blade Staff.
                 AddIngredient<LivingShard>(12).
                 AddTile(TileID.MythrilAnvil).
                 Register();

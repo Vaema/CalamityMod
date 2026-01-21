@@ -1,4 +1,7 @@
-﻿using CalamityMod.Items.Accessories;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
@@ -6,9 +9,6 @@ using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs.Other;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -16,8 +16,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.UI.CalamitasEnchants
 {
-    // TODO -- This can be made into a ModSystem with simple OnModLoad and Unload hooks.
-    public static class EnchantmentManager
+    public sealed class EnchantmentManager : ModSystem
     {
         internal const int ClearEnchantmentID = -18591774;
         internal const string ExhumedNamePath = "UI.Exhumed.DisplayName";
@@ -145,7 +144,7 @@ namespace CalamityMod.UI.CalamitasEnchants
             EnchantmentList.Add(new Enchantment(name, description, id, iconTexturePathElement, creationEffect, holdEffect, requirement));
         }
 
-        internal static void LoadAllEnchantments()
+        public override void OnModLoad()
         {
             EnchantmentList = new List<Enchantment>
             {
@@ -186,14 +185,14 @@ namespace CalamityMod.UI.CalamitasEnchants
                     "CalamityMod/UI/CalamitasEnchantments/CurseIcon_Resentful",
                     null,
                     player => player.Calamity().farProximityRewardEnchant = true,
-                    item => item.IsEnchantable() && item.damage > 0 && item.shoot > ProjectileID.None && !item.IsTrueMelee() && item.type != ModContent.ItemType<FinalDawn>()),
+                    item => item.IsEnchantable() && item.damage > 0 && item.shoot > ProjectileID.None && !item.IsTrueMelee() && item.type != ModContent.ItemType<TheFinalDawn>()),
 
                 new Enchantment(CalamityUtils.GetText("UI.Bloodthirsty.DisplayName"), CalamityUtils.GetText("UI.Bloodthirsty.Description"),
                     500,
                     "CalamityMod/UI/CalamitasEnchantments/CurseIcon_Bloodthirsty",
                     null,
                     player => player.Calamity().closeProximityRewardEnchant = true,
-                    item => item.IsEnchantable() && item.damage > 0 && item.shoot > ProjectileID.None && !item.IsTrueMelee() && item.type != ModContent.ItemType<FinalDawn>()),
+                    item => item.IsEnchantable() && item.damage > 0 && item.shoot > ProjectileID.None && !item.IsTrueMelee() && item.type != ModContent.ItemType<TheFinalDawn>()),
 
                 new Enchantment(CalamityUtils.GetText("UI.Ephemeral.DisplayName"), CalamityUtils.GetText("UI.Ephemeral.Description"),
                     600,
@@ -213,7 +212,7 @@ namespace CalamityMod.UI.CalamitasEnchants
                 new Enchantment(CalamityUtils.GetText("UI.Tainted.DisplayName"), CalamityUtils.GetText("UI.Tainted.Description"),
                     800,
                     "CalamityMod/UI/CalamitasEnchantments/CurseIcon_Tainted",
-                    item => item.useTime = item.useAnimation = 25,
+                    item => item.useAnimation = item.useTime = 25,
                     (Player player) =>
                     {
                         if (Main.gameMenu)
@@ -222,9 +221,9 @@ namespace CalamityMod.UI.CalamitasEnchants
                         player.Calamity().bladeArmEnchant = true;
                         bool armsArePresent = false;
                         int armType = ModContent.ProjectileType<TaintedBladeSlasher>();
-                        for (int i = 0; i < Main.maxProjectiles; i++)
+                        foreach (Projectile p in Main.ActiveProjectiles)
                         {
-                            if (Main.projectile[i].type != armType || Main.projectile[i].owner != player.whoAmI || !Main.projectile[i].active)
+                            if (p.type != armType || p.owner != player.whoAmI)
                                 continue;
 
                             armsArePresent = true;
@@ -234,16 +233,20 @@ namespace CalamityMod.UI.CalamitasEnchants
                         if (Main.myPlayer == player.whoAmI && !armsArePresent)
                         {
                             // Yes, this is a LOT of damage but given the limited range of this thing it needs to be extremely powerful when it does actually hit.
-                            var source = player.GetSource_ItemUse(player.ActiveItem());
+                            var source = player.GetSource_ItemUse(player.HeldItem);
                             float taintedRatio = 5f;
-                            int damage = (int)player.GetTotalDamage<MeleeDamageClass>().ApplyTo(player.ActiveItem().damage * taintedRatio);
-                            int blade = Projectile.NewProjectile(source, player.Center, Vector2.Zero, ModContent.ProjectileType<TaintedBladeSlasher>(), damage, 0f, player.whoAmI, 0f, player.ActiveItem().type);
-                            if (Main.projectile.IndexInRange(blade))
-                                Main.projectile[blade].localAI[0] = 0f;
+                            int damage = (int)(player.HeldItem.damage * taintedRatio);
+                            Projectile blade = Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, ModContent.ProjectileType<TaintedBladeSlasher>(), damage, 0f, player.whoAmI, 0f, player.HeldItem.type);
+                            blade.localAI[0] = 0f;
+                            blade.originalDamage = damage;
+                            blade.OriginalArmorPenetration = player.HeldItem.ArmorPenetration;
+                            blade.OriginalCritChance = player.HeldItem.crit;
 
-                            blade = Projectile.NewProjectile(source, player.Center, Vector2.Zero, ModContent.ProjectileType<TaintedBladeSlasher>(), damage, 0f, player.whoAmI, 1f, player.ActiveItem().type);
-                            if (Main.projectile.IndexInRange(blade))
-                                Main.projectile[blade].localAI[0] = -80f;
+                            blade = Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, ModContent.ProjectileType<TaintedBladeSlasher>(), damage, 0f, player.whoAmI, 1f, player.HeldItem.type);
+                            blade.localAI[0] = -80f;
+                            blade.originalDamage = damage;
+                            blade.OriginalArmorPenetration = player.HeldItem.ArmorPenetration;
+                            blade.OriginalCritChance = player.HeldItem.crit;
                         }
                     },
                     item => item.IsEnchantable() && item.damage > 0 && item.CountsAsClass<MeleeDamageClass>() && !item.noUseGraphic && item.shoot > ProjectileID.None),
@@ -282,9 +285,9 @@ namespace CalamityMod.UI.CalamitasEnchants
 
                         bool orbIsPresent = false;
                         int orbType = ModContent.NPCType<LecherousOrb>();
-                        for (int i = 0; i < Main.maxNPCs; i++)
+                        foreach (NPC n in Main.ActiveNPCs)
                         {
-                            if (Main.npc[i].type != orbType || Main.npc[i].target != player.whoAmI || !Main.npc[i].active)
+                            if (n.type != orbType || n.target != player.whoAmI)
                                 continue;
 
                             orbIsPresent = true;
@@ -316,13 +319,13 @@ namespace CalamityMod.UI.CalamitasEnchants
             {
                 [ModContent.ItemType<TheCommunity>()] = ModContent.ItemType<ShatteredCommunity>(),
                 [ModContent.ItemType<EntropysVigil>()] = ModContent.ItemType<CindersOfLament>(),
-                [ModContent.ItemType<StaffoftheMechworm>()] = ModContent.ItemType<Metastasis>(),
+                [ModContent.ItemType<VoidEaterMarionette>()] = ModContent.ItemType<Metastasis>(),
                 [ModContent.ItemType<GhastlyVisage>()] = ModContent.ItemType<GruesomeEminence>(),
                 [ModContent.ItemType<BurningSea>()] = ModContent.ItemType<Rancor>()
             };
         }
 
-        internal static void UnloadAllEnchantments()
+        public override void Unload()
         {
             EnchantmentList = null;
             ItemUpgradeRelationship = null;

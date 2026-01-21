@@ -18,10 +18,11 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 26;
             Item.height = 26;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
-            Item.rare = ItemRarityID.Lime;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+            Item.rare = ItemRarityID.Yellow;
             Item.accessory = true;
             Item.defense = 10;
+            Item.expert = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -46,7 +47,7 @@ namespace CalamityMod.Items.Accessories
                         player.buffTime[l] = 80;
                 }
             }
-            
+
             Lighting.AddLight(player.Center, 0.825f, 0.66f, 0f);
             if (Main.myPlayer == player.whoAmI)
             {
@@ -58,23 +59,22 @@ namespace CalamityMod.Items.Accessories
                     if (auraCounter == 9)
                     {
                         auraCounter = 0;
-                        for (int i = 0; i < Main.maxNPCs; i++)
+                        foreach (NPC npc in Main.ActiveNPCs)
                         {
-                            NPC npc = Main.npc[i];
                             if (npc.IsAnEnemy() && !npc.dontTakeDamage && Vector2.Distance(player.Center, npc.Center) <= range)
                             {
-                                int campingFireDamage = (int)player.GetBestClassDamage().ApplyTo(Main.rand.Next(20, 41));
-                                Projectile.NewProjectileDirect(source, npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), campingFireDamage, 0f, player.whoAmI, i);
+                                int campingFireDamage = (int)player.GetBestClassDamage().ApplyTo(Main.rand.Next(100, 121));
+                                Projectile.NewProjectile(source, npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), campingFireDamage, 0f, player.whoAmI, npc.whoAmI);
                             }
                         }
                     }
-                    if (player.ActiveItem() != null && !player.ActiveItem().IsAir && player.ActiveItem().stack > 0)
+                    if (player.HeldItem != null && !player.HeldItem.IsAir && player.HeldItem.stack > 0)
                     {
-                        bool summon = player.ActiveItem().CountsAsClass<SummonDamageClass>();
-                        bool rogue = player.ActiveItem().CountsAsClass<ThrowingDamageClass>();
-                        bool melee = player.ActiveItem().CountsAsClass<MeleeDamageClass>();
-                        bool ranged = player.ActiveItem().CountsAsClass<RangedDamageClass>();
-                        bool magic = player.ActiveItem().CountsAsClass<MagicDamageClass>();
+                        bool summon = player.HeldItem.CountsAsClass<SummonDamageClass>();
+                        bool rogue = player.HeldItem.CountsAsClass<ThrowingDamageClass>();
+                        bool melee = player.HeldItem.CountsAsClass<MeleeDamageClass>();
+                        bool ranged = player.HeldItem.CountsAsClass<RangedDamageClass>();
+                        bool magic = player.HeldItem.CountsAsClass<MagicDamageClass>();
                         if (summon)
                         {
                             player.GetKnockback<SummonDamageClass>() += 0.1f;

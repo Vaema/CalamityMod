@@ -12,7 +12,7 @@ namespace CalamityMod.Projectiles.Summon
         public Color ProjectileColor => Main.hslToRgb(Projectile.localAI[0], 1f, 0.5f);
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            ProjectileID.Sets.MinionShot[Type] = true;
         }
 
         public override void SetDefaults()
@@ -32,7 +32,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 for (int i = 0; i < 4; i++)
                 {
-                    Dust rainbowDust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(5f, 5f), 261);
+                    Dust rainbowDust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(5f, 5f), DustID.AncientLight);
                     rainbowDust.color = ProjectileColor;
                     rainbowDust.velocity += Projectile.velocity;
                     rainbowDust.noGravity = true;
@@ -46,7 +46,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 for (int i = 0; i < 15; i++)
                 {
-                    Dust rainbowDust = Dust.NewDustDirect(Projectile.Center + Main.rand.NextVector2Circular(5f, 5f), 40, 40, 261);
+                    Dust rainbowDust = Dust.NewDustDirect(Projectile.Center + Main.rand.NextVector2Circular(5f, 5f), 40, 40, DustID.AncientLight);
                     rainbowDust.color = ProjectileColor;
                     rainbowDust.noGravity = true;
                 }

@@ -1,10 +1,10 @@
-﻿using CalamityMod.Items.Weapons.Magic;
+﻿using System;
+using CalamityMod.Graphics.Primitives;
+using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
-using Terraria.GameContent.Drawing;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -16,7 +16,6 @@ namespace CalamityMod.Projectiles.Magic
         public new string LocalizationCategory => "Projectiles.Magic";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
-        internal PrimitiveTrail LemniscateDrawer = null;
         public int TargetNPCIndex
         {
             get => (int)Projectile.ai[0];
@@ -42,8 +41,8 @@ namespace CalamityMod.Projectiles.Magic
         public const float NormalEnemyLifeMaxDamageMult = 1f / 100f;
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 63;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 63;
         }
 
         public override void SetDefaults()
@@ -77,7 +76,8 @@ namespace CalamityMod.Projectiles.Magic
 
             if (!target.active)
             {
-                NPC potentialTarget = Main.MouseWorld.ClosestNPCAt(4400f, true, true);
+                // 14NOV2024: Ozzatron: Eternity's range is so absurdly high (more than two 1080p screens wide) that it doesn't really matter whether this is capped.
+                NPC potentialTarget = player.ClampedMouseWorld().ClosestNPCAt(4400f, true, true);
                 if (potentialTarget != null)
                 {
                     // If something happens to the original NPC, such as death, attempt to locate a new target and attack to them.
@@ -138,7 +138,7 @@ namespace CalamityMod.Projectiles.Magic
 
             // Release bursts of homing dark magic bolts periodically. The amount of bolts that can be summoned has a hard limit.
             // This is where most of the damage comes from. Be careful when messing with this.
-            if ((int)Time % 30 == 0 && CalamityUtils.CountProjectiles(ModContent.ProjectileType<EternityHoming>()) < Eternity.MaxHomers)
+            if ((int)Time % 30 == 0 && player.ownedProjectileCounts[ModContent.ProjectileType<EternityHoming>()] < Eternity.MaxHomers)
             {
                 int homerCount = 6;
                 int damage = (int)player.GetTotalDamage<MagicDamageClass>().ApplyTo(0.8f * Eternity.BaseDamage);
@@ -177,11 +177,8 @@ namespace CalamityMod.Projectiles.Magic
             TargetNPCIndex = newTarget.whoAmI;
 
             // Adjust the target index for the other components of the projectile.
-            for (int i = 0; i < Main.projectile.Length; i++)
+            foreach (Projectile proj in Main.ActiveProjectiles)
             {
-                Projectile proj = Main.projectile[i];
-                if (!proj.active)
-                    continue;
                 if (proj.owner != Projectile.owner)
                     continue;
                 if (proj.type != ModContent.ProjectileType<EternityCrystal>() && proj.type != ModContent.ProjectileType<EternityCircle>())
@@ -200,14 +197,14 @@ namespace CalamityMod.Projectiles.Magic
                 float outwardnessFactor = Main.rand.NextFloat();
                 Vector2 spawnPosition = target.Center + randomAngle.ToRotationVector2() * MathHelper.Lerp(70f, EternityCircle.TargetOffsetRadius - 60f, outwardnessFactor);
                 Vector2 velocity = (randomAngle - 3f * MathHelper.Pi / 8f).ToRotationVector2() * (10f + 9f * Main.rand.NextFloat() + 4f * outwardnessFactor);
-                Dust swirlingDust = Dust.NewDustPerfect(spawnPosition, 267, new Vector2?(velocity), 0, Main.rand.NextBool(3) ? Eternity.BlueColor : Eternity.PinkColor, 1.4f);
+                Dust swirlingDust = Dust.NewDustPerfect(spawnPosition, DustID.RainbowMk2, new Vector2?(velocity), 0, Main.rand.NextBool(3) ? Eternity.BlueColor : Eternity.PinkColor, 1.4f);
                 swirlingDust.scale = 1.2f;
                 swirlingDust.fadeIn = 0.25f + outwardnessFactor * 0.1f;
                 swirlingDust.noGravity = true;
             }
         }
 
-        public Color PrimitiveColorFunction(float completionRatio)
+        public Color PrimitiveColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float leftoverTimeScale = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 4f) * 0.5f + 0.5f;
             leftoverTimeScale *= 0.5f;
@@ -220,7 +217,7 @@ namespace CalamityMod.Projectiles.Magic
             return Color.Lerp(headColor, tailColor, fadeToMagenta) * opacity;
         }
 
-        public static float PrimitiveWidthFunction(float completionRatio)
+        public static float PrimitiveWidthFunction(float completionRatio, Vector2 vertexPos)
         {
             float widthInterpolant = Utils.GetLerpValue(0f, 0.12f, completionRatio, true);
             return MathHelper.SmoothStep(1f, 10f, widthInterpolant);
@@ -228,11 +225,8 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (LemniscateDrawer is null)
-                LemniscateDrawer = new PrimitiveTrail(PrimitiveWidthFunction, PrimitiveColorFunction, null, GameShaders.Misc["CalamityMod:TrailStreak"]);
-
             GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/EternityStreak"));
-            LemniscateDrawer.Draw(Projectile.oldPos, Projectile.Size * 0.5f - Main.screenPosition, 84);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_,_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 84);
             return false;
         }
     }

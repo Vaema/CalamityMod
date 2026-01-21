@@ -1,7 +1,8 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.IO;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
@@ -12,7 +13,7 @@ namespace CalamityMod.Projectiles.Rogue
         // Atom splitting is cool and all, but actual thermonuclear meltdown levels of DPS is unacceptable.
         // DO NOT increase this unless you are ABSOLUTELY SURE you know what will happen.
         public static float NormalSplitMultiplier = 0.7f;
-        public static float StealthSplitMultiplier = 0.23f;
+        public static float StealthSplitMultiplier = 0.3f;
 
         public ref float HitTargetIndex => ref Projectile.ai[0];
         public ref float Time => ref Projectile.ai[1];
@@ -92,7 +93,7 @@ namespace CalamityMod.Projectiles.Rogue
 
             for (float direction = -1f; direction <= 1f; direction += 2f)
             {
-                Dust prismaticEnergy = Dust.NewDustPerfect(tipPosition, 267);
+                Dust prismaticEnergy = Dust.NewDustPerfect(tipPosition, DustID.RainbowMk2);
                 prismaticEnergy.velocity = currentDirection.RotatedBy(direction * dustVelocityArcOffset) * -7f + Projectile.velocity;
                 prismaticEnergy.scale = 1.2f;
                 prismaticEnergy.color = dustColor;
@@ -123,7 +124,8 @@ namespace CalamityMod.Projectiles.Rogue
             spawnPosition.X += Main.rand.NextFloatDirection() * target.width * 0.45f;
             int damage = (int)(Projectile.damage * StealthSplitMultiplier);
             Vector2 shootVelocity = Vector2.UnitY * (target.Center.Y - spawnPosition.Y > 0f).ToDirectionInt() * Main.rand.NextFloat(14f, 16.5f);
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnPosition, shootVelocity, ModContent.ProjectileType<TheAtomSplitterDuplicate>(), damage, Projectile.knockBack, Projectile.owner, 0f, 24f);
+            int extra = Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnPosition, shootVelocity, ModContent.ProjectileType<TheAtomSplitterDuplicate>(), damage, Projectile.knockBack, Projectile.owner, 0f, 24f);
+            Main.projectile[extra].extraUpdates = 2;
         }
 
         public void ReleaseHitDust(Vector2 spawnPosition)
@@ -138,7 +140,7 @@ namespace CalamityMod.Projectiles.Rogue
             for (float i = 0f; i < dustCount; i++)
             {
                 Color dustColor = CalamityUtils.MulticolorLerp(Main.rand.NextFloat(), CalamityUtils.ExoPalette);
-                Dust explosionDust = Dust.NewDustDirect(spawnPosition, 0, 0, 267, 0f, 0f, 0, dustColor, 1f);
+                Dust explosionDust = Dust.NewDustDirect(spawnPosition, 0, 0, DustID.RainbowMk2, 0f, 0f, 0, dustColor, 1f);
                 explosionDust.position = spawnPosition;
                 explosionDust.velocity = baseDustVelocity.RotatedBy(MathHelper.TwoPi * i / dustCount) * outwardFireSpeedFactor * Main.rand.NextFloat(0.8f, 1.2f);
                 explosionDust.velocity += Projectile.velocity * Main.rand.NextFloat(0.6f, 0.85f);
@@ -173,7 +175,7 @@ namespace CalamityMod.Projectiles.Rogue
             if (!Main.npc.IndexInRange((int)HitTargetIndex))
             {
                 HitTargetIndex = target.whoAmI;
-                Projectile.timeLeft = Projectile.Calamity().stealthStrike ? 100 : 60;
+                Projectile.timeLeft = 60;
                 Projectile.netUpdate = true;
             }
         }

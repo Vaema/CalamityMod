@@ -1,6 +1,7 @@
-﻿using CalamityMod.Projectiles.Typeless;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+﻿using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.Astral;
+using CalamityMod.Projectiles.Typeless;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -12,7 +13,7 @@ namespace CalamityMod.Items.Weapons.Typeless
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 99;
-			ItemID.Sets.SortingPriorityTerraforming[Type] = 92; // Blood Water
+            ItemID.Sets.SortingPriorityTerraforming[Type] = 88; // Blood Water
         }
 
         public override void SetDefaults()
@@ -24,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Typeless
             Item.rare = ItemRarityID.Orange;
             Item.damage = 20;
             Item.shoot = ModContent.ProjectileType<StarStruckWaterBottle>();
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
             Item.knockBack = 3f;
             Item.UseSound = SoundID.Item1;
@@ -32,14 +33,14 @@ namespace CalamityMod.Items.Weapons.Typeless
             Item.useTime = 15;
             Item.noUseGraphic = true;
             Item.noMelee = true;
-            Item.value = 200;
+            Item.value = Item.sellPrice(copper: 40); // Identical to Holy Water
         }
 
         public override void AddRecipes()
         {
             CreateRecipe(10).
                 AddIngredient(ItemID.BottledWater, 10).
-                AddIngredient<Stardust>(2).
+                AddIngredient<StarblightSoot>(2).
                 AddIngredient<AstralGrassSeeds>().
                 Register();
         }

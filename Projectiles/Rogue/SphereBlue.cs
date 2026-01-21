@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Rogue
 {
     public class SphereBlue : ModProjectile, ILocalizedModType
@@ -10,8 +10,9 @@ namespace CalamityMod.Projectiles.Rogue
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -32,7 +33,7 @@ namespace CalamityMod.Projectiles.Rogue
             Lighting.AddLight(Projectile.Center, 0f, 0f, 1f);
             if (Main.rand.NextBool(5))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 229, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 100);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Vortex, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 100);
             }
             Projectile.ai[0] += 1f;
             if (Projectile.ai[0] >= 5f)
@@ -58,7 +59,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.damage /= 2;
             Projectile.Damage();
             SoundEngine.PlaySound(SoundID.NPCDeath37, Projectile.position);
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 for (int i = 0; i < 3; i++)
                 {
@@ -83,7 +84,7 @@ namespace CalamityMod.Projectiles.Rogue
                     226,
                     229
                 });
-                int dusty = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 1f);
+                int dusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 1f);
                 Main.dust[dusty].noGravity = true;
                 Main.dust[dusty].velocity *= 0f;
             }
@@ -91,7 +92,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

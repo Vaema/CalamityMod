@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Magic;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -21,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 7f;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<ForbiddenSunProjectile>();

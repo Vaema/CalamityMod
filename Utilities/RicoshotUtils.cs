@@ -24,20 +24,20 @@ namespace CalamityMod
 
         public bool IsValid => type != RicoshotTargetType.None;
     }
-    
+
     public static partial class CalamityUtils
     {
         public static int GetActiveRicoshotCoinCount(this Player player)
         {
             int count = 0;
-            int id = ModContent.ProjectileType<RicoshotCoin>();
+            int coinID = ModContent.ProjectileType<RicoshotCoin>();
+            int clipID = ModContent.ProjectileType<M1GarandEmptyClip>(); 
 
-            for (int i = 0; i < Main.maxProjectiles; ++i)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                Projectile p = Main.projectile[i];
-                if (p is null || !p.active || p.owner != player.whoAmI)
+                if (p.owner != player.whoAmI)
                     continue;
-                if (p.type == id)
+                if (p.type == coinID || p.type == clipID) 
                     ++count;
             }
             return count;
@@ -46,9 +46,17 @@ namespace CalamityMod
         // Intentionally not an extension so it doesn't clog the Visual Studio recommendation lists. This is not generally useful.
         public static bool CanRicoshotCoinForceCrit(Projectile p)
         {
-            int id = ModContent.ProjectileType<RicoshotCoin>();
-            if (!p.active || p.type != id)
+            int coinID = ModContent.ProjectileType<RicoshotCoin>();
+            int clipID = ModContent.ProjectileType<M1GarandEmptyClip>();
+
+            if (!p.active || (p.type != coinID && p.type != clipID))
                 return false;
+
+            if (p.type == clipID)
+            {
+                int clipUpdateCount = M1GarandEmptyClip.ClipLifetime - p.timeLeft;
+                return clipUpdateCount >= M1GarandEmptyClip.CritDelayTime;
+            }
 
             int coinUpdateCount = RicoshotCoin.CoinLifetime - p.timeLeft;
             return coinUpdateCount >= RicoshotCoin.CritDelayTime;
@@ -63,6 +71,8 @@ namespace CalamityMod
         {
             // As 0,0 in world coordinates is the top left of the world (+Y = down instead of up),
             // we have to flip the Y here to do valid trigonometry.
+            //
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 vectorToMouse = player.Calamity().mouseWorld - player.MountedCenter;
             vectorToMouse.Y *= -1f;
 
@@ -95,22 +105,28 @@ namespace CalamityMod
         {
             IList<Projectile> coins = new List<Projectile>();
 
-            // Search for all nearby coins.
-            // Coins do not necessarily have to be owned by the same player as the searching projectile!
+            // Search for all nearby coins/clips.
+            // Coins/clips do not necessarily have to be owned by the same player as the searching projectile!
             int coinID = ModContent.ProjectileType<RicoshotCoin>();
-            for (int i = 0; i < Main.maxProjectiles; ++i)
+            int clipID = ModContent.ProjectileType<M1GarandEmptyClip>();
+
+            foreach (Projectile proj in Main.ActiveProjectiles)
             {
-                Projectile proj = Main.projectile[i];
-                if (!proj.active || proj.ModProjectile is null || proj.type != coinID)
+                if (proj.ModProjectile is null)
+                    continue;
+
+                // Check if the projectile is either a coin or clip
+                if (proj.type != coinID && proj.type != clipID)
                     continue;
 
                 // Coins that have already been struck are ignored.
                 if (proj.localAI[0] > 0f)
                     continue;
 
-                // Finally, do a distance check
+                // Use the appropriate distance check based on the projectile type
+                float maxDistance = proj.type == clipID ? M1GarandEmptyClip.MaxIntraClipRicoshotDistance : RicoshotCoin.MaxIntraCoinRicoshotDistance;
                 float dist = searchingShot.DistanceSQ(proj.Center);
-                if (dist <= RicoshotCoin.MaxIntraCoinRicoshotDistance * RicoshotCoin.MaxIntraCoinRicoshotDistance)
+                if (dist <= maxDistance * maxDistance)
                     coins.Add(proj);
             }
 
@@ -143,6 +159,11 @@ namespace CalamityMod
             float closestCoinDistance = RicoshotCoin.MaxIntraCoinRicoshotDistance;
             foreach (Projectile coin in availableCoins)
             {
+                // Determine the max ricochet distance based on the target type
+                float maxDistance = coin.type == ModContent.ProjectileType<M1GarandEmptyClip>() ? M1GarandEmptyClip.MaxIntraClipRicoshotDistance : RicoshotCoin.MaxIntraCoinRicoshotDistance; // New line. Use different distance based on proj type.
+                if (coin.Distance(startPos) > maxDistance)
+                    continue;
+
                 // Skip coins which are already frozen (part of an ongoing ricoshot), unless considering them
                 if (!considerFrozenCoins && coin.ai[1] > 0f)
                     continue;
@@ -173,10 +194,9 @@ namespace CalamityMod
             bool foundAnyBullseye = false;
             float closestBullseyeDistance = DaawnlightSpiritOrigin.RicoshotSearchDistance;
             int bullseyeID = ModContent.ProjectileType<SpiritOriginBullseye>();
-            for (int i = 0; i < Main.maxProjectiles; ++i)
+            foreach (Projectile proj in Main.ActiveProjectiles)
             {
-                Projectile proj = Main.projectile[i];
-                if (proj is null || !proj.active || proj.ModProjectile is null || proj.type != bullseyeID || proj.owner != theShot.owner)
+                if (proj.ModProjectile is null || proj.type != bullseyeID || proj.owner != theShot.owner)
                     continue;
 
                 // Do a distance check.

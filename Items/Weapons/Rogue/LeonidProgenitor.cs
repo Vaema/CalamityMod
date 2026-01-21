@@ -1,8 +1,8 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -15,17 +15,17 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void SetStaticDefaults()
         {
-                       ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 32;
             Item.height = 48;
-            Item.damage = 64;
+            Item.damage = 57;
             Item.DamageType = RogueDamageClass.Instance;
             Item.knockBack = 3f;
-            Item.useTime = Item.useAnimation = 15;
+            Item.useAnimation = Item.useTime = 15;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<LeonidProgenitorBombshell>();
             Item.shootSpeed = 12f;
@@ -35,12 +35,12 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.noUseGraphic = true;
             Item.UseSound = SoundID.Item61;
 
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
         }
+        public override float StealthDamageMultiplier => 1.25f;
 
         public override bool AltFunctionUse(Player player) => true;
-
         public override bool CanUseItem(Player player)
         {
             if (player.Calamity().StealthStrikeAvailable() || player.altFunctionUse != 2)
@@ -56,35 +56,23 @@ namespace CalamityMod.Items.Weapons.Rogue
             return base.CanUseItem(player);
         }
 
-        public override float UseSpeedMultiplier(Player player)
-        {
-            if (player.Calamity().StealthStrikeAvailable() || player.altFunctionUse != 2)
-                return 1f;
-            return 0.8f;
-        }
-
-		public override float StealthDamageMultiplier => 1.25f;
-
-        public override void ModifyStatsExtra(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
-		{
-            if (!player.Calamity().StealthStrikeAvailable() && player.altFunctionUse == 2)
-				damage = (int)(damage * 0.5f);
-		}
-
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (player.Calamity().StealthStrikeAvailable() || player.altFunctionUse != 2)
             {
                 int bomb = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
-                if (bomb.WithinBounds(Main.maxProjectiles))
-                    Main.projectile[bomb].Calamity().stealthStrike = player.Calamity().StealthStrikeAvailable();
+                if (bomb.WithinBounds(Main.maxProjectiles) && player.Calamity().StealthStrikeAvailable())
+                {
+                    Main.projectile[bomb].Calamity().stealthStrike = true;
+                    Main.projectile[bomb].extraUpdates = 1;
+                }
                 return false;
             }
             else
             {
-                for (float i = -2.5f; i < 3f; ++i)
+                for (int i = 0; i < 2; i++)
                 {
-                    Vector2 perturbedSpeed = velocity.RotatedBy(MathHelper.ToRadians(i));
+                    Vector2 perturbedSpeed = velocity.RotatedBy(MathHelper.ToRadians((i - 0.5f) * 2));
                     Projectile.NewProjectile(source, position, perturbedSpeed, type, damage, knockback, player.whoAmI);
                 }
             }

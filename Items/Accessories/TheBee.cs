@@ -1,18 +1,19 @@
 ﻿using CalamityMod.CalPlayer;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
     public class TheBee : ModItem, ILocalizedModType
     {
+        public static int CooldownLength = 360;
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
             Item.width = 24;
             Item.height = 28;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.accessory = true;
         }

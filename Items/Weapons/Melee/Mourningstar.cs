@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 2.5f;
             Item.UseSound = SoundID.Item116;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.shootSpeed = 24f;
             Item.shoot = ModContent.ProjectileType<MourningstarFlail>();
@@ -37,8 +37,8 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             float ai3 = (Main.rand.NextFloat() - 0.75f) * 0.7853982f; //0.5
             float ai3X = (Main.rand.NextFloat() - 0.25f) * 0.7853982f; //0.5
-            Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, type, damage, knockback, player.whoAmI, 0f, ai3);
-            Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, type, damage, knockback, player.whoAmI, 0f, ai3X);
+            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, ai3);
+            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, ai3X);
             return false;
         }
 
@@ -46,10 +46,10 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CreateRecipe().
                 AddIngredient(ItemID.SolarEruption).
-                AddIngredient<CoreofHavoc>(6).
-                AddIngredient<CoreofSunlight>(6).
                 AddIngredient<DivineGeode>(6).
-                AddTile(TileID.LunarCraftingStation).
+                AddIngredient<EssenceofSunlight>(6).
+                AddIngredient<EssenceofHavoc>(6).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

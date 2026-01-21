@@ -1,16 +1,15 @@
 ﻿using System;
+using System.IO;
+using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.NPCs.CalClone;
-using CalamityMod.Projectiles.Magic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System.IO;
 
 namespace CalamityMod.Projectiles.Ranged
 {
+    [PierceResistException]
     public class StarmageddonBinaryStarCenter : ModProjectile, ILocalizedModType
     {
         private const float TimeBeforeHoming = 30f;
@@ -34,8 +33,9 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
-            ProjectileID.Sets.NeedsUUID[Projectile.type] = true;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
+            ProjectileID.Sets.NeedsUUID[Type] = true;
         }
 
         public override void SetDefaults()

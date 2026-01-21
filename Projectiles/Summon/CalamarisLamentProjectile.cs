@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Weapons.Summon;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Summon;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -19,6 +20,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Main.projFrames[Type] = 5;
             ProjectileID.Sets.MinionShot[Type] = true;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             ProjectileID.Sets.TrailingMode[Type] = 2;
             ProjectileID.Sets.TrailCacheLength[Type] = 4;
             ProjectileID.Sets.DrawScreenCheckFluff[Type] = (int)CalamarisLament.EnemyDistanceDetection;
@@ -36,7 +38,10 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
         }
-
+        public override bool? CanHitNPC(NPC target)
+        {
+            return target.CanBeChasedBy() ? null : false;
+        }
         public override void AI()
         {
             if (TargetShot is not null && TargetShot.active)
@@ -45,8 +50,7 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.velocity = (Projectile.velocity * inertia + Projectile.SafeDirectionTo(TargetShot.Center) * CalamarisLament.ShootingProjectileSpeed) / (inertia + 1f);
                 Projectile.extraUpdates = 1;
 
-                Projectile.netUpdate = true;
-                Projectile.netSpam = 0;
+                Projectile.ForceNetUpdate();
             }
             else
                 Projectile.extraUpdates = 0;
@@ -54,7 +58,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
             Projectile.alpha = (int)Utils.Remap(Projectile.timeLeft, 30f, 0f, 0f, 255f);
 
-            Dust trailDust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, 109, Scale: Main.rand.NextFloat(0.5f, 0.8f), Alpha: 127);
+            Dust trailDust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.Asphalt, Scale: Main.rand.NextFloat(0.5f, 0.8f), Alpha: 127);
             trailDust.noGravity = true;
             trailDust.noLight = true;
             trailDust.alpha = (int)Utils.Remap(Projectile.timeLeft, 30f, 0f, 127f, 0f);
@@ -71,11 +75,13 @@ namespace CalamityMod.Projectiles.Summon
         // and hit DoG's head and/or tail reliably and without penetration.
         public override bool? CanDamage() => Projectile.getRect().Intersects(TargetShot.getRect()) ? null : false;
 
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 120);
+
         public override void OnKill(int timeLeft)
         {
             for (int i = 0; i < 15; i++)
             {
-                Dust deathDust = Dust.NewDustPerfect(Projectile.Center, 109, Projectile.velocity.SafeNormalize(Vector2.Zero).RotatedByRandom(MathHelper.PiOver4) * Main.rand.NextFloat(3f, 7f), Scale: Main.rand.NextFloat(0.5f, 1.5f), Alpha: 127);
+                Dust deathDust = Dust.NewDustPerfect(Projectile.Center, DustID.Asphalt, Projectile.velocity.SafeNormalize(Vector2.Zero).RotatedByRandom(MathHelper.PiOver4) * Main.rand.NextFloat(3f, 7f), Scale: Main.rand.NextFloat(0.5f, 1.5f), Alpha: 127);
                 deathDust.noGravity = true;
                 deathDust.noLight = true;
             }
@@ -85,7 +91,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;

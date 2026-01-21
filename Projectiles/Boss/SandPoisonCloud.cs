@@ -1,9 +1,8 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -12,9 +11,9 @@ namespace CalamityMod.Projectiles.Boss
         public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 10;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 2;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            Main.projFrames[Type] = 10;
+            ProjectileID.Sets.TrailCacheLength[Type] = 2;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -52,7 +51,7 @@ namespace CalamityMod.Projectiles.Boss
             {
                 Projectile.damage = 0;
             }
-            else if (Projectile.frame >= Main.projFrames[Projectile.type])
+            else if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.Kill();
             }
@@ -70,7 +69,8 @@ namespace CalamityMod.Projectiles.Boss
             lightColor.R = (byte)(255 * Projectile.Opacity);
             lightColor.G = (byte)(255 * Projectile.Opacity);
             lightColor.B = (byte)(255 * Projectile.Opacity);
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawProjectileWithBackglow(Projectile, new Color(255, 102, 56), lightColor, 3.75f);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
@@ -83,7 +83,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<Irradiated>(), 240, true);
+            target.AddBuff(BuffID.Venom, 180);
         }
     }
 }

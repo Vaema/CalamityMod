@@ -1,7 +1,6 @@
 ﻿using CalamityMod.NPCs.DraedonLabThings;
 using CalamityMod.Rarities;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Critters
@@ -16,18 +15,8 @@ namespace CalamityMod.Items.Critters
 
         public override void SetDefaults()
         {
-            Item.width = 16;
-            Item.height = 10;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.autoReuse = true;
-            Item.useTurn = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.maxStack = 9999;
-            Item.consumable = true;
-            Item.noUseGraphic = true;
-            Item.value = Item.buyPrice(0, 0, 30);
-            Item.makeNPC = (short)ModContent.NPCType<NanodroidPlagueRed>();
+            Item.DefaultToCapturedCritter(ModContent.NPCType<NanodroidPlagueRed>());
+            Item.value = Item.sellPrice(silver: 10);
             Item.rare = ModContent.RarityType<DarkOrange>();
         }
     }

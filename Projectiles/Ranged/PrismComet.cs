@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -10,13 +10,13 @@ namespace CalamityMod.Projectiles.Ranged
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
         public ref float Time => ref Projectile.ai[0];
-        public override string Texture => "CalamityMod/Projectiles/Melee/Exocomet";
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 5;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            Main.projFrames[Type] = 5;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Ranged
             Lighting.AddLight(Projectile.Center, Color.LightSeaGreen.ToVector3());
             Projectile.frameCounter++;
             if (Projectile.frameCounter % 6 == 5)
-                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Projectile.type];
+                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Type];
 
             Projectile.alpha = Utils.Clamp(Projectile.alpha - 25, 30, 255);
 
@@ -62,11 +62,11 @@ namespace CalamityMod.Projectiles.Ranged
             if (Main.dedServ)
                 return;
 
-            Dust prismEnergy = Dust.NewDustDirect(Projectile.position - Projectile.velocity * 4f, 8, 8, 107, Projectile.oldVelocity.X, Projectile.oldVelocity.Y, 100, new Color(0, 255, 255), 0.5f);
+            Dust prismEnergy = Dust.NewDustDirect(Projectile.position - Projectile.velocity * 4f, 8, 8, DustID.TerraBlade, Projectile.oldVelocity.X, Projectile.oldVelocity.Y, 100, new Color(0, 255, 255), 0.5f);
             prismEnergy.velocity *= -0.25f;
             prismEnergy.velocity -= Projectile.velocity * 0.3f;
 
-            prismEnergy = Dust.NewDustDirect(Projectile.position - Projectile.velocity * 4f, 8, 8, 107, Projectile.oldVelocity.X, Projectile.oldVelocity.Y, 100, new Color(0, 255, 255), 0.5f);
+            prismEnergy = Dust.NewDustDirect(Projectile.position - Projectile.velocity * 4f, 8, 8, DustID.TerraBlade, Projectile.oldVelocity.X, Projectile.oldVelocity.Y, 100, new Color(0, 255, 255), 0.5f);
             prismEnergy.velocity *= -0.25f;
             prismEnergy.position -= Projectile.velocity * 0.5f;
             prismEnergy.velocity -= Projectile.velocity * 0.3f;
@@ -76,7 +76,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor);
             return false;
         }
 

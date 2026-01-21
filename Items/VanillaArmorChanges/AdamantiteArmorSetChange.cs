@@ -18,7 +18,7 @@ namespace CalamityMod.Items.VanillaArmorChanges
         public override string ArmorSetName => "Adamantite";
 
         public const int MaxManaBoost = 20;
-        public const int DefenseBoostMax = 15;
+        public const int DefenseBoostMax = 10;
         public const int TimeUntilDecayBeginsAfterAttacking = 60;
         public const int TimeUntilBoostCompletelyDecays = 210;
 
@@ -35,7 +35,7 @@ namespace CalamityMod.Items.VanillaArmorChanges
             {
                 setBonusText = CalamityUtils.GetTextValue($"Vanilla.Armor.SetBonus.{ArmorSetName}.Melee");
             }
-            
+
             setBonusText += $"\n{CalamityUtils.GetText($"Vanilla.Armor.SetBonus.{ArmorSetName}").Format(DefenseBoostMax)}";
         }
 

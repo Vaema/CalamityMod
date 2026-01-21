@@ -1,3 +1,4 @@
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -7,7 +8,11 @@ namespace CalamityMod.Projectiles.Typeless
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+        public bool invalidTarget => (Projectile.ai[0] < 0f || Projectile.ai[0] > 199f);
+        public Vector2 pushVelocity => new Vector2(Projectile.ai[1], Projectile.ai[2]);
+        // You can set projectile.ai 1 & 2 to the x and y velocity that you would like to launch the target, even if the direct strike deals no damage
 
+        public bool hasStongDisplacement = false; // If you set Knockback to anything below zero, the custom knockback will be able to effect enemies that normally ignore knockback
         public override void SetDefaults()
         {
             Projectile.width = 2;
@@ -20,13 +25,39 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.alpha = 255;
             Projectile.timeLeft = 2;
         }
+        public override void AI()
+        {
+            if (Projectile.knockBack < 0)
+            {
+                hasStongDisplacement = true;
+                Projectile.knockBack = 0;
+            }
+
+            // If the target is moving VERY fast, direct strikes spawned on top of them can actually miss
+            // Setting a target will guarantee hits on said target by teleporting the projectile onto them every frame
+            if (!invalidTarget)
+                Projectile.Center = Main.npc[(int)Projectile.ai[0]].Center;
+        }
 
         // If the AI parameter isn't a valid NPC slot, it can hit anything. Otherwise it can only hit one NPC.
         public override bool? CanHitNPC(NPC target)
         {
-            if (Projectile.ai[0] < 0f || Projectile.ai[0] > 199f || Projectile.ai[0] == target.whoAmI)
+            if (invalidTarget || Projectile.ai[0] == target.whoAmI)
                 return null;
             return (bool?)false;
+        }
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
+        {
+            if (projHitbox.Intersects(targetHitbox))
+            {
+                NPC target = Main.npc[(int)Projectile.ai[0]];
+                if (pushVelocity != Vector2.Zero && pushVelocity.X < 255f && !invalidTarget && target.CanBeMoved(hasStongDisplacement))
+                {
+                    target.velocity = (pushVelocity * (target.knockBackResist == 0 ? 0.5f : 1));
+                }
+                return true;
+            }
+            return false;
         }
     }
 }

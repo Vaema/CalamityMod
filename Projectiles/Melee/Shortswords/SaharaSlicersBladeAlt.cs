@@ -1,17 +1,14 @@
 ﻿using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.BaseProjectiles;
-using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using static Humanizer.In;
 
 namespace CalamityMod.Projectiles.Melee.Shortswords
 {
-    public class SaharaSlicersBladeAlt: BaseShortswordProjectile
+    public class SaharaSlicersBladeAlt : BaseShortswordProjectile
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<SaharaSlicers>();
         public override string Texture => "CalamityMod/Projectiles/Melee/SaharaSlicersBladeAlt";
@@ -52,12 +49,13 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
         {
             if (Main.rand.NextBool(2))
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(12, 12), 288);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(12, 12), DustID.DesertWater2);
                 dust.scale = Main.rand.NextFloat(0.15f, 0.6f);
                 dust.noGravity = true;
                 dust.velocity = -Projectile.velocity * 0.5f;
             }
 
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             float armPointingDirection = (Owner.Calamity().mouseWorld - Owner.MountedCenter).ToRotation();
             Owner.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Full, armPointingDirection - MathHelper.PiOver2);
             Owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, 0);
@@ -69,14 +67,13 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             // Add to bolt counter, spawn 2 quiver bolts, and on hit visual
-            if (Bolts < 10)
+            for (int i = 0; i < 2; i++)
             {
-                Bolts++;
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, Vector2.Zero, ModContent.ProjectileType<SaharaSlicersBolt>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, Bolts);
                 if (Bolts < 10)
                 {
                     Bolts++;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, Vector2.Zero, ModContent.ProjectileType<SaharaSlicersBolt>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, Bolts);
+                    Projectile quiverBolt = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center, Vector2.Zero, ModContent.ProjectileType<SaharaSlicersBolt>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, Bolts);
+                    quiverBolt.tileCollide = false;
                 }
             }
             float numberOfDusts = 5f;

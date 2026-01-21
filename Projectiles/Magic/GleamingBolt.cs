@@ -1,8 +1,9 @@
 ﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Magic
 {
     public class GleamingBolt : ModProjectile, ILocalizedModType
@@ -44,20 +45,15 @@ namespace CalamityMod.Projectiles.Magic
                 });
                 Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, randomDust, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
             }
-            float spread = 90f * 0.0174f;
-            double startAngle = Math.Atan2(Projectile.velocity.X, Projectile.velocity.Y) - spread / 2;
-            double deltaAngle = spread / 8f;
-            double offsetAngle;
             if (Projectile.owner == Main.myPlayer)
             {
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < 6; i++)
                 {
-                    offsetAngle = startAngle + deltaAngle * (i + i * i) / 2f + 32f * i;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, (float)(Math.Sin(offsetAngle) * 5f), (float)(Math.Cos(offsetAngle) * 5f), ModContent.ProjectileType<GleamingBolt2>(), (int)(Projectile.damage * 0.75), Projectile.knockBack, Projectile.owner, 0f, 0f);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, (float)(-Math.Sin(offsetAngle) * 5f), (float)(-Math.Cos(offsetAngle) * 5f), ModContent.ProjectileType<GleamingBolt2>(), (int)(Projectile.damage * 0.75), Projectile.knockBack, Projectile.owner, 0f, 0f);
+                    Vector2 velocity = ((MathHelper.TwoPi * i / 6f) - (MathHelper.Pi / 3f - Projectile.velocity.ToRotation())).ToRotationVector2() * 3.5f;
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<GleamingBolt2>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner);
                 }
             }
-            SoundEngine.PlaySound(SoundID.Item105, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item105, Projectile.Center);
         }
     }
 }

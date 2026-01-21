@@ -1,7 +1,7 @@
-﻿using CalamityMod.CalPlayer;
+﻿using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.CalPlayer;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.AcidRain;
-using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -9,6 +9,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
+    [PierceResistException]
     public class CryonicShield : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
@@ -17,7 +18,7 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
         }
 
         public override void SetDefaults()
@@ -56,36 +57,20 @@ namespace CalamityMod.Projectiles.Typeless
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Player player = Main.player[Projectile.owner];
-            CalamityPlayer modPlayer = player.Calamity();
-
-            if (!modPlayer.CryoStoneVanity)
+            if (!player.Calamity().CryoStoneVanity)
             {
                 target.AddBuff(BuffID.Frostburn2, 180);
                 target.AddBuff(ModContent.BuffType<GlacialState>(), 30);
-
-                if (target.knockBackResist <= 0f)
-                    return;
-
-                // 12AUG2023: Ozzatron: TML was giving NaN knockback, probably due to 0 base knockback. Do not use hit.Knockback
-                if (CalamityGlobalNPC.ShouldAffectNPC(target))
-                {
-                    float knockbackMultiplier = MathHelper.Clamp(1f - target.knockBackResist, 0f, 1f);
-                    Vector2 trueKnockback = target.Center - Projectile.Center;
-                    trueKnockback.Normalize();
-                    target.velocity = trueKnockback * knockbackMultiplier;
-                }
             }
         }
-
+        // CIT 2MAY2025: Replaced old manual knockback code with setting HitDirectionOverride
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.HitDirectionOverride = (target.Center.X > Projectile.Center.X).ToDirectionInt();
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
             if (!modPlayer.CryoStoneVanity)
-            {
                 target.AddBuff(BuffID.Frostburn2, 180);
-                target.AddBuff(ModContent.BuffType<GlacialState>(), 30);
-            }
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, Projectile.Size.Length() * 0.5f, targetHitbox);

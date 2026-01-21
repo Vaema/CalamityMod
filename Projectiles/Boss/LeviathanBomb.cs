@@ -1,11 +1,10 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Boss
 {
     public class LeviathanBomb : ModProjectile, ILocalizedModType
@@ -53,27 +52,19 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 80f, targetHitbox);
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (info.Damage <= 0)
-                return;
-
-            target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 300);
-        }
-
         public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
             for (int i = 0; i < 10; i++)
             {
-                int meteorDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 2f);
+                int meteorDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 2f);
                 Main.dust[meteorDust].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -83,10 +74,10 @@ namespace CalamityMod.Projectiles.Boss
             }
             for (int j = 0; j < 15; j++)
             {
-                int meteorDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 3f);
+                int meteorDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 3f);
                 Main.dust[meteorDust2].noGravity = true;
                 Main.dust[meteorDust2].velocity *= 5f;
-                meteorDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 2f);
+                meteorDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 2f);
                 Main.dust[meteorDust2].velocity *= 2f;
             }
         }

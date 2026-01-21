@@ -1,17 +1,17 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Graphics;
+using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ID;
 
 namespace CalamityMod.FluidSimulation
 {
     // Calculations for these are done primarily on the GPU in shaders for performance-sake.
     public class FluidFieldState
     {
-        public ManagedRenderTarget PreviousState;
+        public RenderTargetLease PreviousState;
 
-        public ManagedRenderTarget NextState;
+        public RenderTargetLease NextState;
 
         public Queue<PixelQueueValue> PendingChanges = new();
 
@@ -21,19 +21,17 @@ namespace CalamityMod.FluidSimulation
 
         public void SwapState() => Utils.Swap(ref PreviousState, ref NextState);
 
-        public RenderTarget2D FieldColorCreateCondition(int screen, int height) =>
-            new(Main.instance.GraphicsDevice, Size, Size, true, FieldContents, DepthFormat.Depth24, 0, RenderTargetUsage.PreserveContents);
-
         public FluidFieldState(int size, SurfaceFormat fieldContents = SurfaceFormat.Color)
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             Size = size;
             FieldContents = fieldContents;
 
-            PreviousState = new(false, FieldColorCreateCondition, false);
-            NextState = new(false, FieldColorCreateCondition, false);
+            var descriptor = new RenderTargetDescriptor(FieldContents, DepthFormat.Depth24, 0, RenderTargetUsage.PreserveContents, true);
+            PreviousState = RenderTargetPool.Shared.Rent(Main.instance.GraphicsDevice, Size, Size, descriptor);
+            NextState = RenderTargetPool.Shared.Rent(Main.instance.GraphicsDevice, Size, Size, descriptor);
         }
     }
 }

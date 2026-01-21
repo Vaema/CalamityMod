@@ -3,6 +3,7 @@ using System.IO;
 using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
 using CalamityMod.Systems;
+using CalamityMod.Systems.Mechanic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -29,22 +30,22 @@ namespace CalamityMod.Items.Tools
         {
             Item.width = 52;
             Item.height = 42;
-            Item.useTime = Item.useAnimation = 25;
+            Item.useAnimation = Item.useTime = 25;
             Item.autoReuse = false;
             Item.holdStyle = 16; //Custom hold style
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = null;
             Item.noMelee = true;
             Item.rare = ItemRarityID.Blue;
-            Item.value = Item.buyPrice(silver: 50);
+            Item.value = Item.sellPrice(silver: 10);
             usesLeft = maxUses;
             timeBeforeBlast = breakTime;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ToolsOther;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ToolsOther;
+        }
 
         public override void HoldItem(Player player)
         {
@@ -102,7 +103,7 @@ namespace CalamityMod.Items.Tools
                     GeneralParticleHandler.SpawnParticle(smoke);
                 }
 
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     for (int i = 0; i < shrapnelCount; i++)
                     {
@@ -115,19 +116,19 @@ namespace CalamityMod.Items.Tools
 
                 for (int i = 0; i < sparkCount; i++)
                 {
-                    Dust.NewDustPerfect(centerPosition, 226, Main.rand.NextVector2Circular(18f, 18f), Scale: Main.rand.NextFloat(0.4f, 1f));
+                    Dust.NewDustPerfect(centerPosition, DustID.Electric, Main.rand.NextVector2Circular(18f, 18f), Scale: Main.rand.NextFloat(0.4f, 1f));
                 }
             }
         }
 
         public override bool CanUseItem(Player player)
         {
-            return !(TilePingerSystem.tileEffects["WulfrumPing"].Active);
+            return !WulfrumPingTileEffect.Instance.Active;
         }
 
         public override bool? UseItem(Player player)
         {
-            if (TilePingerSystem.AddPing("WulfrumPing", player.Center, player))
+            if (!Main.dedServ && TilePingerSystem.AddPing(WulfrumPingTileEffect.Instance, player.Center, player))
             {
                 if (player.name != "John Wulfrum")
                     usesLeft--;
@@ -281,11 +282,11 @@ namespace CalamityMod.Items.Tools
         {
             //Intentionally craftable anywhere.
             CreateRecipe().
-                AddIngredient<WulfrumMetalScrap>(6).
+                AddIngredient<WulfrumMetalScrap>(5).
                 Register()
                 .DisableDecraft();
         }
     }
 
-    
+
 }

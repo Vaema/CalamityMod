@@ -5,7 +5,7 @@ namespace CalamityMod.BiomeManagers
     public class ArsenalLabBiome : ModBiome
     {
         public override string BestiaryIcon => "CalamityMod/BiomeManagers/LaboratoryIcon";
-		// Could use its own unique background if someone even bothers
+        // Could use its own unique background if someone even bothers
         public override string BackgroundPath => "Terraria/Images/MapBG32";
 
         //Does this even need proper detection, this file solely exists for a few critter entries and the detection code is done elsewhere

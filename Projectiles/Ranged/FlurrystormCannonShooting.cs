@@ -1,6 +1,6 @@
-﻿using CalamityMod.Items.Weapons.Ranged;
+﻿using System;
+using CalamityMod.Items.Weapons.Ranged;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -14,7 +14,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<FlurrystormCannon>();
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 2;
+            Main.projFrames[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -77,7 +77,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.ai[1] = (float)(initialRate - fireRateMult * fireRate);
                 shouldShoot = true;
             }
-            bool canShoot = player.channel && player.HasAmmo(player.ActiveItem()) && !player.noItems && !player.CCed;
+            bool canShoot = !player.CantUseHoldout() && player.HasAmmo(player.HeldItem);
             if (Projectile.localAI[0] > 0f)
             {
                 Projectile.localAI[0] -= 1f;
@@ -95,13 +95,13 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 int projType = ProjectileID.SnowBallFriendly;
                 float speedMult2 = 14f;
-                int dmg = player.GetWeaponDamage(player.ActiveItem());
-                float kBack = player.ActiveItem().knockBack;
+                int dmg = player.GetWeaponDamage(player.HeldItem);
+                float kBack = player.HeldItem.knockBack;
                 if (canShoot)
                 {
-                    player.PickAmmo(player.ActiveItem(), out projType, out speedMult2, out dmg, out kBack, out _);
-                    kBack = player.GetWeaponKnockback(player.ActiveItem(), kBack);
-                    float shootSpeed = player.ActiveItem().shootSpeed * Projectile.scale;
+                    player.PickAmmo(player.HeldItem, out projType, out speedMult2, out dmg, out kBack, out _);
+                    kBack = player.GetWeaponKnockback(player.HeldItem, kBack);
+                    float shootSpeed = player.HeldItem.shootSpeed * Projectile.scale;
                     Vector2 source = player.RotatedRelativePoint(player.MountedCenter, true);
                     Vector2 direction = Main.screenPosition + new Vector2((float)Main.mouseX, (float)Main.mouseY) - source;
                     if (player.gravDir == -1f)
@@ -133,7 +133,7 @@ namespace CalamityMod.Projectiles.Ranged
                     {
                         Main.projectile[snowball].noDropItem = true;
                         Main.projectile[snowball].DamageType = DamageClass.Ranged;
-                        Main.projectile[snowball].extraUpdates += Main.rand.Next(0,2);
+                        Main.projectile[snowball].extraUpdates += Main.rand.Next(0, 2);
                     }
 
                     if (Main.rand.NextBool(5)) //ice chunk

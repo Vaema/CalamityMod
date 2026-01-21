@@ -1,7 +1,7 @@
-﻿using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.Particles;
+﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
@@ -34,7 +34,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 for (int i = 0; i <= 10; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center,313, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(35f)) * Main.rand.NextFloat(0.2f, 1.2f), 0, default, Main.rand.NextFloat(1.3f, 1.7f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.DirtSpray, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(35f)) * Main.rand.NextFloat(0.2f, 1.2f), 0, default, Main.rand.NextFloat(1.3f, 1.7f));
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(1.7f, 2.3f);
                 }
@@ -48,13 +48,23 @@ namespace CalamityMod.Projectiles.Magic
                     dust.velocity = new Vector2(0.5f, 0.5f).RotatedByRandom(100);
                     dust.scale = Main.rand.NextFloat(0.3f, 1.3f);
                 }
-                Dust dust2 = Dust.NewDustPerfect(Projectile.Center, 313);
+                Dust dust2 = Dust.NewDustPerfect(Projectile.Center, DustID.DirtSpray);
                 dust2.noGravity = true;
                 dust2.velocity = -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.5f);
                 dust2.scale = Main.rand.NextFloat(0.3f, 1.3f);
                 Projectile.penetrate = 1;
-                Projectile.velocity.Y += 0.1f;
-                Projectile.velocity.X *= 0.97f;
+
+                //Projectile.velocity.Y += 0.1f;
+                //Projectile.velocity.X *= 0.97f;
+
+                int falloffTime = 13 + 2;
+                if (Time > falloffTime)
+                    Projectile.velocity.X *= 0.9711f;
+                if (Projectile.velocity.Y < 15 && Time > falloffTime)
+                    Projectile.velocity.Y += 0.16f;
+                if (Projectile.velocity.Y < 5)
+                    Projectile.velocity.Y *= 0.98f;
+
                 Projectile.extraUpdates = 3;
             }
             else
@@ -86,6 +96,8 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            if (PostHit == false)
+                Time = 2;
             PostHit = true;
             Projectile.timeLeft = 300;
             float numberOfDusts = 6f;

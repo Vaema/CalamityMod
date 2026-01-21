@@ -1,12 +1,14 @@
+﻿using CalamityMod.Items.Weapons.Melee;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.StatDebuffs
 {
     public class WitherDebuff : ModBuff
     {
-        public static int DefenseReduction = 20;
+        public override LocalizedText Description => base.Description.WithFormatArgs(RemsRevenge.WitherDefenseReduction);
 
         public override void SetStaticDefaults()
         {
@@ -18,10 +20,7 @@ namespace CalamityMod.Buffs.StatDebuffs
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            if (npc.Calamity().wither < npc.buffTime[buffIndex])
-                npc.Calamity().wither = npc.buffTime[buffIndex];
-            npc.DelBuff(buffIndex);
-            buffIndex--;
+            npc.Calamity().wither = true;
         }
 
         public override void Update(Player player, ref int buffIndex)

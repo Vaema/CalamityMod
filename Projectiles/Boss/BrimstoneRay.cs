@@ -20,7 +20,7 @@ namespace CalamityMod.Projectiles.Boss
         public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
         }
 
         public override void SetDefaults()
@@ -114,17 +114,17 @@ namespace CalamityMod.Projectiles.Boss
             Vector2 dustSpawnPos = Projectile.Center + Projectile.velocity * (Projectile.localAI[1] - 14f);
 
             // Fire brimstone darts along the laser
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
             if (Main.npc[(int)Projectile.ai[1]].ai[1] == 210f && Projectile.owner == Main.myPlayer && Main.npc[(int)Projectile.ai[1]].ai[0] == 5)
             {
                 Vector2 velocity = Projectile.velocity;
                 velocity.Normalize();
-                float distanceBetweenProjectiles = Main.zenithWorld ? 360 : bossRush ? 72f : 144f;
+                float distanceBetweenProjectiles = Main.zenithWorld ? 360 : 144f;
                 Vector2 fireFrom = new Vector2(Main.npc[(int)Projectile.ai[1]].Center.X + (Main.npc[(int)Projectile.ai[1]].spriteDirection > 0 ? 34f : -34f), Main.npc[(int)Projectile.ai[1]].Center.Y - 74f) + velocity * distanceBetweenProjectiles;
                 int projectileAmt = (int)(Projectile.localAI[1] / distanceBetweenProjectiles);
                 int type = ModContent.ProjectileType<BrimstoneBarrage>();
-                int damage = Projectile.GetProjectileDamage(ModContent.NPCType<BrimstoneElemental>());
+                float projectileVelocityToPass = 12f;
+
                 for (int i = 0; i < projectileAmt; i++)
                 {
                     int totalProjectiles = 2;
@@ -132,10 +132,8 @@ namespace CalamityMod.Projectiles.Boss
                     for (int j = 0; j < totalProjectiles; j++)
                     {
                         Vector2 projVelocity = Projectile.velocity.RotatedBy(radians * j + MathHelper.PiOver2);
-                        int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), fireFrom, projVelocity, type, damage, 0f, Main.myPlayer, death ? 2f : 1f, 0f);
+                        int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), fireFrom, projVelocity, type, BrimstoneElemental.DartDamage, 0f, Main.myPlayer, death ? 2f : 1f, 0f, projectileVelocityToPass);
                         Main.projectile[proj].tileCollide = true;
-                        if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
-                            Main.projectile[proj].extraUpdates += 1;
                     }
                     fireFrom += velocity * distanceBetweenProjectiles;
                 }
@@ -143,7 +141,7 @@ namespace CalamityMod.Projectiles.Boss
 
             for (int j = 0; j < 2; j++)
             {
-                float dustRotation = Projectile.velocity.ToRotation() + ((Main.rand.Next(2) == 1) ? -1f : 1f) * MathHelper.PiOver2;
+                float dustRotation = Projectile.velocity.ToRotation() + ((Main.rand.NextBool(2)) ? -1f : 1f) * MathHelper.PiOver2;
                 float randomFloatOffset = (float)Main.rand.NextDouble() * 2f + 2f;
                 Vector2 dustDirection = new Vector2((float)Math.Cos(dustRotation) * randomFloatOffset, (float)Math.Sin(dustRotation) * randomFloatOffset);
                 int brimDust = Dust.NewDust(dustSpawnPos, 0, 0, (int)CalamityDusts.Brimstone, dustDirection.X, dustDirection.Y, 0, default, 1f);
@@ -170,7 +168,7 @@ namespace CalamityMod.Projectiles.Boss
             {
                 return false;
             }
-            Texture2D texture2D19 = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture2D19 = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D texture2D20 = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/BrimstoneRayMid", AssetRequestMode.ImmediateLoad).Value;
             Texture2D texture2D21 = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/BrimstoneRayEnd", AssetRequestMode.ImmediateLoad).Value;
             float rayDrawLength = Projectile.localAI[1]; //length of laser
@@ -220,7 +218,7 @@ namespace CalamityMod.Projectiles.Boss
             {
                 return true;
             }
-	        float useless = 0f;
+            float useless = 0f;
             if (Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, Projectile.Center + Projectile.velocity * Projectile.localAI[1], 22f * Projectile.scale, ref useless))
             {
                 return true;
@@ -233,7 +231,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 150);
+            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 240);
         }
 
         public override bool CanHitPlayer(Player target) => Projectile.scale >= 0.5f;

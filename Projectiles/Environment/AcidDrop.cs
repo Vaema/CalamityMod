@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatDebuffs;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.StatDebuffs;
 
 namespace CalamityMod.Projectiles.Environment
 {
@@ -12,8 +12,8 @@ namespace CalamityMod.Projectiles.Environment
         public new string LocalizationCategory => "Projectiles.Misc";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 5;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -34,7 +34,7 @@ namespace CalamityMod.Projectiles.Environment
             // Water drip
             for (int i = 0; i < 4; i++)
             {
-                int idx = Dust.NewDust(Projectile.position - Projectile.velocity, 2, 2, 154, 0f, 0f, 0, new Color(112, 150, 42, 127), 1f);
+                int idx = Dust.NewDust(Projectile.position - Projectile.velocity, 2, 2, DustID.Rain, 0f, 0f, 0, new Color(112, 150, 42, 127), 1f);
                 Dust dust = Main.dust[idx];
                 dust.position.X -= 2f;
                 Main.dust[idx].alpha = 38;
@@ -70,7 +70,7 @@ namespace CalamityMod.Projectiles.Environment
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], new Color(255, 255, 255, 127), 2);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], new Color(255, 255, 255, 127), 2);
             return false;
         }
     }

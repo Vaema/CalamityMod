@@ -10,7 +10,7 @@ namespace CalamityMod.Projectiles.Summon
         public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.SentryShot[Projectile.type] = true;
+            ProjectileID.Sets.SentryShot[Type] = true;
         }
 
         public override void SetDefaults()
@@ -39,7 +39,7 @@ namespace CalamityMod.Projectiles.Summon
             int splash = 0;
             while (splash < 4)
             {
-                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 225, -Projectile.velocity.X * 0.15f, -Projectile.velocity.Y * 0.10f, 150, default, 0.7f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Coralstone, -Projectile.velocity.X * 0.15f, -Projectile.velocity.Y * 0.10f, 150, default, 0.7f);
                 splash += 1;
             }
         }
@@ -47,7 +47,7 @@ namespace CalamityMod.Projectiles.Summon
         public override bool PreDraw(ref Color lightColor)
         {
             //Changes the texture of the projectile
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             if (Projectile.ai[0] == 1f)
             {
                 texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/PolypLauncherShrapnel2").Value;

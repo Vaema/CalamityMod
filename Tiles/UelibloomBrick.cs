@@ -1,8 +1,11 @@
 ﻿using CalamityMod.Dusts.Furniture;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent.Metadata;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -10,18 +13,19 @@ namespace CalamityMod.Tiles
 {
     public class UelibloomBrick : ModTile
     {
+        public Asset<Texture2D> LeavesTexture;
+
         private int extraFrameHeight = 36;
         private int extraFrameWidth = 90;
 
-        public byte[,] tileAdjacency;
-        public byte[,] secondTileAdjacency;
-        public byte[,] thirdTileAdjacency;
-
         public override void SetStaticDefaults()
         {
+            LeavesTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/UelibloomBrick_Leaves");
+
             Main.tileSolid[Type] = true;
             Main.tileMergeDirt[Type] = false;
             Main.tileBlockLight[Type] = true;
+            TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Organic"]);
 
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeDecorativeTiles(Type);
@@ -30,9 +34,9 @@ namespace CalamityMod.Tiles
             HitSound = SoundID.Tink;
             AddMapEntry(new Color(174, 108, 46));
 
-            TileFraming.SetUpUniversalMerge(Type, TileID.Dirt, out tileAdjacency);
-            TileFraming.SetUpUniversalMerge(Type, TileID.Stone, out secondTileAdjacency);
-            TileFraming.SetUpUniversalMerge(Type, TileID.Mud, out thirdTileAdjacency);
+            this.RegisterBlendMergeWith(TileID.Dirt);
+            this.RegisterBlendMergeWith(TileID.Stone);
+            this.RegisterBlendMergeWith(TileID.Mud);
         }
 
         public override bool CreateDust(int i, int j, ref int type)
@@ -42,44 +46,45 @@ namespace CalamityMod.Tiles
             return false;
         }
 
-        public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)
+        public override void PostTileFrame(int i, int j, int up, int down, int left, int right, int upLeft, int upRight, int downLeft, int downRight)
         {
             if (Main.tile[i - 1, j - 1].TileType != Type || Main.tile[i, j - 1].TileType != Type || Main.tile[i + 1, j - 1].TileType != Type ||
                 Main.tile[i - 1, j - 2].TileType != Type || Main.tile[i, j - 2].TileType != Type || Main.tile[i + 1, j - 2].TileType != Type)
             {
-                try
-                {
-                    Main.instance.TilesRenderer.AddSpecialLegacyPoint(i, j);
-                }
-                catch {}
+                Main.tile[i, j].Get<TileSpecialDrawData>().HasSpecialPoint = true;
+            }
+            else
+            {
+                Main.tile[i, j].Get<TileSpecialDrawData>().HasSpecialPoint = false;
+            }
+        }
+
+        public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)
+        {
+            if (Main.tile[i, j].Get<TileSpecialDrawData>().HasSpecialPoint)
+            {
+                Main.instance.TilesRenderer.AddSpecialLegacyPoint(i, j);
             }
         }
 
         public override void SpecialDraw(int i, int j, SpriteBatch spriteBatch)
         {
+            if (Main.tile[i, j].IsTileActuallyInvisible())
+                return;
+
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + zero;
-            Color drawColour = GetDrawColour(i, j);
-            Texture2D leaves = ModContent.Request<Texture2D>("CalamityMod/Tiles/UelibloomBrick_Leaves").Value;
+            Color drawColour = CalamityUtils.ApplyPaint(Main.tile[i, j].TileColor, Lighting.GetColor(i, j), false);
+            Texture2D leaves = LeavesTexture.Value;
 
             DrawExtraTop(i, j, leaves, drawOffset, drawColour);
             DrawExtraWallEnds(i, j, leaves, drawOffset, drawColour);
             DrawExtraDrapes(i, j, leaves, drawOffset, drawColour);
         }
 
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
-        {
-            TileFraming.DrawUniversalMergeFrames(i, j, thirdTileAdjacency, "CalamityMod/Tiles/Merges/MudMerge");
-            TileFraming.DrawUniversalMergeFrames(i, j, secondTileAdjacency, "CalamityMod/Tiles/Merges/StoneMerge");
-            TileFraming.DrawUniversalMergeFrames(i, j, tileAdjacency, "CalamityMod/Tiles/Merges/DirtMerge");
-        }
-
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
         {
-            TileFraming.GetAdjacencyData(i, j, TileID.Dirt, out tileAdjacency[i, j]);
-            TileFraming.GetAdjacencyData(i, j, TileID.Stone, out secondTileAdjacency[i, j]);
-            TileFraming.GetAdjacencyData(i, j, TileID.Mud, out thirdTileAdjacency[i, j]);
-            return TileFraming.BrimstoneFraming(i, j, resetFrame);
+            return TileFramingSystem.BrimstoneFraming(i, j, resetFrame);
         }
 
         #region 'Extra Drapes' Drawing
@@ -202,27 +207,6 @@ namespace CalamityMod.Tiles
         {
             //Subtract y so that y is vertical for ease of readability
             return Main.tile[i + x, j - y].TileType == type == equal;
-        }
-
-        private Color GetDrawColour(int i, int j)
-        {
-            int colType = Main.tile[i, j].TileColor;
-            Color paintCol = WorldGen.paintColor(colType);
-            if (colType < 13)
-            {
-                paintCol.R = (byte)((paintCol.R / 2f) + 128);
-                paintCol.G = (byte)((paintCol.G / 2f) + 128);
-                paintCol.B = (byte)((paintCol.B / 2f) + 128);
-            }
-            if (colType == 29)
-            {
-                paintCol = Color.Black;
-            }
-            Color col = Lighting.GetColor(i, j);
-            col.R = (byte)(paintCol.R / 255f * col.R);
-            col.G = (byte)(paintCol.G / 255f * col.G);
-            col.B = (byte)(paintCol.B / 255f * col.B);
-            return col;
         }
 
         private int GetExtraState(string type)

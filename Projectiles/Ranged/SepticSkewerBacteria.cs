@@ -1,5 +1,8 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -10,146 +13,57 @@ namespace CalamityMod.Projectiles.Ranged
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
+        public bool setStats = true;
+        public int rotDirection = 1;
+        public int time = 0;
         public override void SetDefaults()
         {
-            Projectile.width = 6;
-            Projectile.height = 6;
+            Projectile.width = 45;
+            Projectile.height = 45;
             Projectile.friendly = true;
-            Projectile.alpha = 255;
-            Projectile.penetrate = 1;
+            Projectile.penetrate = -1;
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
-            Projectile.timeLeft = 300;
+            Projectile.timeLeft = 80;
+            Projectile.extraUpdates = 2;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
             Projectile.DamageType = DamageClass.Ranged;
         }
 
         public override void AI()
         {
-            int dustType = 171;
-            if (Main.rand.Next(3) == 0)
+            if (setStats)
             {
-                dustType = 46;
+                Projectile.timeLeft += Main.rand.Next(0, 25 + 1);
+                rotDirection = (Main.rand.NextBool() ? -1 : 1);
+                Projectile.rotation = Main.rand.NextFloat(-20, 20);
+                Projectile.scale = Main.rand.NextFloat(0.55f, 0.8f);
+                setStats = false;
             }
-            int toxicDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, dustType, 0f, 0f, 100, default, 2f);
-            Main.dust[toxicDust].noGravity = true;
-            float scaleAlpha = 1f - (float)Projectile.alpha / 255f;
-            scaleAlpha *= Projectile.scale;
-            Projectile.localAI[0] += 1f;
-            if (Projectile.localAI[0] >= 90f)
+            if (time % 8 == 0 && time > 40)
             {
-                Projectile.localAI[0] *= -1f;
+                Particle spark = new CustomSpark(Projectile.Center - Projectile.velocity + Main.rand.NextVector2Circular(20, 20), -Projectile.velocity * Main.rand.NextFloat(0.1f, 0.4f), "CalamityMod/Projectiles/Boss/OldDukeGore", false, Main.rand.Next(9, 20 + 1), Main.rand.NextFloat(0.4f, 0.6f), Color.Lerp(Color.White, Color.Chartreuse, 0.5f) * Main.rand.NextFloat(0.55f, 0.7f) * Utils.GetLerpValue(255, 0, Projectile.alpha), new Vector2(1, 1), false, false, Main.rand.NextFloat(-1f, 1f));
+                GeneralParticleHandler.SpawnParticle(spark);
             }
-            if (Projectile.localAI[0] >= 0f)
+            if (Main.rand.NextBool(15))
             {
-                Projectile.scale += 0.003f;
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(13, 13), (int)CalamityDusts.SulphurousSeaAcid);
+                dust.noGravity = true;
+                dust.scale = Main.rand.NextFloat(0.9f, 1.3f) * Utils.GetLerpValue(255, 0, Projectile.alpha);
+                dust.velocity = -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.7f);
             }
-            else
+            if (Main.rand.NextBool(3))
             {
-                Projectile.scale -= 0.003f;
+                Dust dust = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.UnitX) * 3 + Main.rand.NextVector2Circular(6, 6), DustID.Blood, (-Projectile.velocity.SafeNormalize(Vector2.UnitX) * 4).RotatedByRandom(0.3f) * Main.rand.NextFloat(0.1f, 0.8f), 100, default, Main.rand.NextFloat(0.8f, 1.4f));
+                dust.noGravity = true;
+                dust.alpha = (int)MathHelper.Clamp(Projectile.alpha, 0, 255);
             }
-            Projectile.rotation += 0.0025f * Projectile.scale;
-            float yVelControl = 1f;
-            float xVelControl = 1f;
-            if (Projectile.identity % 6 == 0)
-            {
-                xVelControl *= -1f;
-            }
-            if (Projectile.identity % 6 == 1)
-            {
-                yVelControl *= -1f;
-            }
-            if (Projectile.identity % 6 == 2)
-            {
-                xVelControl *= -1f;
-                yVelControl *= -1f;
-            }
-            if (Projectile.identity % 6 == 3)
-            {
-                xVelControl = 0f;
-            }
-            if (Projectile.identity % 6 == 4)
-            {
-                yVelControl = 0f;
-            }
-            Projectile.localAI[1] += 1f;
-            if (Projectile.localAI[1] > 60f)
-            {
-                Projectile.localAI[1] = -180f;
-            }
-            if (Projectile.localAI[1] >= -60f)
-            {
-                Projectile.velocity.X = Projectile.velocity.X + 0.002f * xVelControl;
-                Projectile.velocity.Y = Projectile.velocity.Y + 0.002f * yVelControl;
-            }
-            else
-            {
-                Projectile.velocity.X = Projectile.velocity.X - 0.002f * xVelControl;
-                Projectile.velocity.Y = Projectile.velocity.Y - 0.002f * yVelControl;
-            }
-            Projectile.ai[0] += 1f;
-            if (Projectile.ai[0] > 5400f)
-            {
-                Projectile.damage = 0;
-                Projectile.ai[1] = 1f;
-                if (Projectile.alpha < 255)
-                {
-                    Projectile.alpha += 5;
-                    if (Projectile.alpha > 255)
-                    {
-                        Projectile.alpha = 255;
-                    }
-                }
-                else if (Projectile.owner == Main.myPlayer)
-                {
-                    Projectile.Kill();
-                }
-            }
-            else
-            {
-                float playerDist = (Projectile.Center - Main.player[Projectile.owner].Center).Length() / 100f;
-                if (playerDist > 4f)
-                {
-                    playerDist *= 1.1f;
-                }
-                if (playerDist > 5f)
-                {
-                    playerDist *= 1.2f;
-                }
-                if (playerDist > 6f)
-                {
-                    playerDist *= 1.3f;
-                }
-                if (playerDist > 7f)
-                {
-                    playerDist *= 1.4f;
-                }
-                if (playerDist > 8f)
-                {
-                    playerDist *= 1.5f;
-                }
-                if (playerDist > 9f)
-                {
-                    playerDist *= 1.6f;
-                }
-                if (playerDist > 10f)
-                {
-                    playerDist *= 1.7f;
-                }
-                Projectile.ai[0] += playerDist;
-                if (Projectile.alpha > 50)
-                {
-                    Projectile.alpha -= 10;
-                    if (Projectile.alpha < 50)
-                    {
-                        Projectile.alpha = 50;
-                    }
-                }
-            }
-            if ((double)Projectile.velocity.Length() > 0.2)
-            {
-                Projectile.velocity *= 0.98f;
-            }
+            Projectile.rotation += 0.035f * rotDirection * Utils.GetLerpValue(0, 100, Projectile.timeLeft, true);
+            Projectile.velocity *= 0.965f;
+            if (Projectile.timeLeft < 60)
+                Projectile.alpha += 5;
+            time++;
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
@@ -159,21 +73,20 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnKill(int timeLeft)
         {
-            Projectile.position = Projectile.Center;
-            Projectile.width = Projectile.height = 56;
-            Projectile.position.X = Projectile.position.X - (float)(Projectile.width / 2);
-            Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
-            int constant = 36;
-            for (int i = 0; i < constant; i++)
-            {
-                Vector2 rotate = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
-                rotate = rotate.RotatedBy((double)((float)(i - (constant / 2 - 1)) * 6.28318548f / (float)constant), default) + Projectile.Center;
-                Vector2 faceDirection = rotate - Projectile.Center;
-                int dust = Dust.NewDust(rotate + faceDirection, 0, 0, 171, faceDirection.X, faceDirection.Y, 100, default, 0.5f);
-                Main.dust[dust].noGravity = true;
-                Main.dust[dust].noLight = true;
-                Main.dust[dust].velocity = faceDirection;
-            }
+            
+        }
+        public override bool PreDraw(ref Color lightColor)
+        {
+
+            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/OldDukeGore").Value;
+            Vector2 drawPosition = Projectile.Center - Main.screenPosition;
+            Color drawColor = Projectile.GetAlpha(lightColor);
+            float drawRotation = Projectile.rotation;
+            Vector2 rotationPoint = texture.Size() * 0.5f;
+
+
+            Main.EntitySpriteDraw(texture, drawPosition, null, drawColor, drawRotation, rotationPoint, Projectile.scale, SpriteEffects.None);
+            return false;
         }
     }
 }

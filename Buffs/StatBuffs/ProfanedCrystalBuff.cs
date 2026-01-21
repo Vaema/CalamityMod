@@ -28,7 +28,7 @@ namespace CalamityMod.Buffs.StatBuffs
 
         public override void ModifyBuffText(ref string buffName, ref string tip, ref int rare)
         {
-            Player player = Main.player[Main.myPlayer];
+            Player player = Main.LocalPlayer;
             if (player.Calamity().profanedCrystalBuffs)
             {
                 bool empowered = player.Calamity().pscState == (int)ProfanedSoulCrystal.ProfanedSoulCrystalState.Empowered;

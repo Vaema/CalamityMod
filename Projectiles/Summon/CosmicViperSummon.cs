@@ -5,9 +5,9 @@ using CalamityMod.Items.Weapons.Summon;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Summon
 {
     public class CosmicViperSummon : ModProjectile, ILocalizedModType
@@ -18,9 +18,10 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
-            Main.projFrames[Projectile.type] = 3;
+            Main.projFrames[Type] = 3;
+            Main.projPet[Type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -69,12 +70,11 @@ namespace CalamityMod.Projectiles.Summon
                 for (int dustIndex = 0; dustIndex < dustAmt; dustIndex++)
                 {
                     int dustType = Main.rand.NextBool(3) ? 56 : 242;
-                    Vector2 rotate = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
-                    rotate = rotate.RotatedBy((double)((float)(dustIndex - (dustAmt / 2 - 1)) * MathHelper.TwoPi / (float)dustAmt), default) + Projectile.Center;
+                    Vector2 rotate = Vector2.Normalize(Projectile.velocity) * new Vector2(Projectile.width / 2f, Projectile.height) * 0.75f;
+                    rotate = rotate.RotatedBy(dustIndex * MathHelper.TwoPi / (float)dustAmt) + Projectile.Center;
                     Vector2 faceDirection = rotate - Projectile.Center;
-                    int dusty = Dust.NewDust(rotate + faceDirection, 0, 0, dustType, faceDirection.X * 1.75f, faceDirection.Y * 1.75f, 100, default, 1.1f);
-                    Main.dust[dusty].noGravity = true;
-                    Main.dust[dusty].velocity = faceDirection;
+                    Dust dusty = Dust.NewDustPerfect(Projectile.Center, dustType, faceDirection, 100, default, 1.1f);
+                    dusty.noGravity = true;
                 }
 
                 // Construct a fake item to use with vanilla code for the sake of firing bullets.
@@ -307,12 +307,10 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
-        public override bool? CanDamage() => false;
-
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-            int frameHeight = texture.Height / Main.projFrames[Projectile.type];
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int frameHeight = texture.Height / Main.projFrames[Type];
             int y6 = frameHeight * Projectile.frame;
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (Projectile.spriteDirection == -1)
@@ -326,7 +324,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void PostDraw(Color lightColor)
         {
             Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/CosmicViperGlow").Value;
-            int frameHeight = texture.Height / Main.projFrames[Projectile.type];
+            int frameHeight = texture.Height / Main.projFrames[Type];
             int y6 = frameHeight * Projectile.frame;
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (Projectile.spriteDirection == -1)

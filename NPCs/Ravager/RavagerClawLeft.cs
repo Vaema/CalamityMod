@@ -1,9 +1,9 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Events;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -12,6 +12,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Ravager
 {
+    [HasPierceResist]
     public class RavagerClawLeft : ModNPC
     {
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.RavagerBody.DisplayName");
@@ -23,9 +24,9 @@ namespace CalamityMod.NPCs.Ravager
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 75; // 150
             NPC.lavaImmune = true;
             NPC.aiStyle = -1;
-            NPC.GetNPCDamage();
             NPC.width = 80;
             NPC.height = 40;
             NPC.defense = 40;
@@ -34,7 +35,6 @@ namespace CalamityMod.NPCs.Ravager
             NPC.knockBackResist = 0f;
             AIType = -1;
             NPC.noGravity = true;
-            NPC.canGhostHeal = false;
             NPC.alpha = 255;
             NPC.netAlways = true;
             NPC.HitSound = RavagerBody.HitSound;
@@ -49,8 +49,6 @@ namespace CalamityMod.NPCs.Ravager
             {
                 NPC.lifeMax = 26000;
             }
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
         }
@@ -64,7 +62,6 @@ namespace CalamityMod.NPCs.Ravager
 
                 return;
             }
-            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
             if (NPC.timeLeft < 1800)
             {
                 NPC.timeLeft = 1800;
@@ -80,6 +77,9 @@ namespace CalamityMod.NPCs.Ravager
             }
             if (NPC.ai[0] == 0f)
             {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
                 NPC.noTileCollide = true;
                 Vector2 npcCenter = new Vector2(NPC.Center.X, NPC.Center.Y);
                 float ravBodyXDist = Main.npc[CalamityGlobalNPC.scavenger].Center.X - npcCenter.X;
@@ -92,17 +92,17 @@ namespace CalamityMod.NPCs.Ravager
                     NPC.rotation = 0f;
                     NPC.Center = Main.npc[CalamityGlobalNPC.scavenger].Center + new Vector2(-120f, 50f);
                     NPC.ai[1] += 1f;
-                    if (NPC.life < NPC.lifeMax / 2 || death)
+                    if (NPC.life < NPC.lifeMax / 2)
                     {
                         NPC.ai[1] += 1f;
                     }
-                    if (NPC.life < NPC.lifeMax / 3 || death)
+                    if (NPC.life < NPC.lifeMax / 3)
                     {
                         NPC.ai[1] += 1f;
                     }
-                    if (NPC.life < NPC.lifeMax / 5 || death)
+                    if (NPC.life < NPC.lifeMax / 5)
                     {
-                        NPC.ai[1] += 5f;
+                        NPC.ai[1] += 2f;
                     }
                     if (NPC.ai[1] >= 60f)
                     {
@@ -134,22 +134,25 @@ namespace CalamityMod.NPCs.Ravager
             }
             else if (NPC.ai[0] == 1f)
             {
+                // Set damage
+                NPC.damage = NPC.defDamage;
+
                 SoundEngine.PlaySound(RavagerBody.FistSound, NPC.Center);
                 NPC.noTileCollide = true;
                 NPC.collideX = false;
                 NPC.collideY = false;
                 float clawSpeed = 12f;
-                if (NPC.life < NPC.lifeMax / 2 || death)
+                if (NPC.life < NPC.lifeMax / 2)
                 {
                     clawSpeed += 2f;
                 }
-                if (NPC.life < NPC.lifeMax / 3 || death)
+                if (NPC.life < NPC.lifeMax / 3)
                 {
                     clawSpeed += 2f;
                 }
-                if (NPC.life < NPC.lifeMax / 5 || death)
+                if (NPC.life < NPC.lifeMax / 5)
                 {
-                    clawSpeed += 5f;
+                    clawSpeed += 4f;
                 }
                 Vector2 npcCenterAttack = new Vector2(NPC.Center.X, NPC.Center.Y);
                 float targetX = Main.player[NPC.target].Center.X - npcCenterAttack.X;
@@ -163,6 +166,9 @@ namespace CalamityMod.NPCs.Ravager
             }
             else if (NPC.ai[0] == 2f)
             {
+                // Set damage
+                NPC.damage = NPC.defDamage;
+
                 if (Math.Abs(NPC.velocity.X) > Math.Abs(NPC.velocity.Y))
                 {
                     if (NPC.velocity.X > 0f && NPC.Center.X > Main.player[NPC.target].Center.X)
@@ -193,14 +199,20 @@ namespace CalamityMod.NPCs.Ravager
                 bodyReturnYDist += 40f;
                 bodyReturnXDist -= 110f;
                 float bodyReturnDistance = (float)Math.Sqrt(bodyReturnXDist * bodyReturnXDist + bodyReturnYDist * bodyReturnYDist);
-                if ((bodyReturnDistance > (death ? 900f : 700f) || NPC.collideX || NPC.collideY) | NPC.justHit)
+                if ((bodyReturnDistance > 700f || NPC.collideX || NPC.collideY) | NPC.justHit)
                 {
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
+
                     NPC.noTileCollide = true;
                     NPC.ai[0] = 0f;
                 }
             }
             else if (NPC.ai[0] == 3f)
             {
+                // Set damage
+                NPC.damage = NPC.defDamage;
+
                 NPC.noTileCollide = true;
                 float velocityMult = 0.4f;
                 Vector2 clawCenter = new Vector2(NPC.Center.X, NPC.Center.Y);
@@ -277,9 +289,9 @@ namespace CalamityMod.NPCs.Ravager
                     drawPositionY += 12f;
                     drawPositionX -= 28f;
                     Color color = Lighting.GetColor((int)center.X / 16, (int)(center.Y / 16f));
-                    spriteBatch.Draw(ModContent.Request<Texture2D>("CalamityMod/NPCs/Ravager/RavagerChain").Value, new Vector2(center.X - screenPos.X, center.Y - screenPos.Y),
-                        new Rectangle?(new Rectangle(0, 0, ModContent.Request<Texture2D>("CalamityMod/NPCs/Ravager/RavagerChain").Value.Width, ModContent.Request<Texture2D>("CalamityMod/NPCs/Ravager/RavagerChain").Value.Height)), color, rotation,
-                        new Vector2(ModContent.Request<Texture2D>("CalamityMod/NPCs/Ravager/RavagerChain").Value.Width * 0.5f, ModContent.Request<Texture2D>("CalamityMod/NPCs/Ravager/RavagerChain").Value.Height * 0.5f), 1f, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(RavagerBody.ChainTexture.Value, new Vector2(center.X - screenPos.X, center.Y - screenPos.Y),
+                        new Rectangle?(new Rectangle(0, 0, RavagerBody.ChainTexture.Value.Width, RavagerBody.ChainTexture.Value.Height)), color, rotation,
+                        new Vector2(RavagerBody.ChainTexture.Value.Width * 0.5f, RavagerBody.ChainTexture.Value.Height * 0.5f), 1f, SpriteEffects.None, 0f);
                 }
             }
             return true;
@@ -293,7 +305,16 @@ namespace CalamityMod.NPCs.Ravager
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 240, true);
+            {
+                if (DownedBossSystem.downedProvidence)
+                {
+                    target.AddBuff(ModContent.BuffType<Laceration>(), 240);
+                }
+                else
+                {
+                    target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 240);
+                }
+            }
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -309,7 +330,7 @@ namespace CalamityMod.NPCs.Ravager
             }
             else
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ScavengerClawLeft").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ScavengerClawLeft2").Type, 1f);

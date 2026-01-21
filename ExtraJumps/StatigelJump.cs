@@ -1,5 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using CalamityMod.Particles;
+﻿using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -7,7 +7,7 @@ namespace CalamityMod.ExtraJumps
 {
     public class StatigelJump : ExtraJump
     {
-        public override Position GetDefaultPosition() => BeforeBottleJumps;
+        public override Position GetDefaultPosition() => new Before(BlizzardInABottle);
         public override float GetDurationMultiplier(Player player) => 1.25f;
 
         // Values equivalent to the Fart in a Jar
@@ -47,7 +47,7 @@ namespace CalamityMod.ExtraJumps
                 Dust dust = Dust.NewDustPerfect(pulsePosition, Main.rand.NextBool() ? 243 : 56, pulseVelocity, 100, default, Main.rand.NextFloat(0.6f, 0.9f));
                 dust.noGravity = false;
                 dust.alpha = 190;
-                Dust dust2 = Dust.NewDustPerfect(pulsePosition, Main.rand.NextBool() ? 242 : 135, pulseVelocity * 0.9f , 100, default, Main.rand.NextFloat(1.2f, 1.9f));
+                Dust dust2 = Dust.NewDustPerfect(pulsePosition, Main.rand.NextBool() ? 242 : 135, pulseVelocity * 0.9f, 100, default, Main.rand.NextFloat(1.2f, 1.9f));
                 dust2.noGravity = true;
             }
         }

@@ -1,9 +1,9 @@
-﻿using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -26,7 +26,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.spriteDirection = Projectile.direction = (Projectile.velocity.X > 0).ToDirectionInt();
             Projectile.rotation = Projectile.velocity.ToRotation() + (Projectile.spriteDirection == 1 ? 0f : MathHelper.Pi) + (MathHelper.Pi * 0.5f * Projectile.direction);
             Projectile.velocity.Y += 0.25f;
-            if(Projectile.velocity.Y > 16f)
+            if (Projectile.velocity.Y > 16f)
             {
                 Projectile.velocity.Y = 16f;
             }

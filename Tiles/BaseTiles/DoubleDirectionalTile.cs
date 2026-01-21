@@ -1,6 +1,6 @@
-﻿using Terraria;
+﻿using System.Linq;
+using Terraria;
 using Terraria.ModLoader;
-using System.Linq;
 
 namespace CalamityMod.Tiles.BaseTiles
 {

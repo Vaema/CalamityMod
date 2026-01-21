@@ -1,12 +1,12 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Potions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
+using ReLogic.Content;
 using Terraria;
-using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
@@ -17,9 +17,14 @@ namespace CalamityMod.NPCs.Abyss
 {
     public class Cuttlefish : ModNPC
     {
+        public static Asset<Texture2D> GlowTexture;
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 5;
+            Main.npcFrameCount[Type] = 5;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -30,11 +35,11 @@ namespace CalamityMod.NPCs.Abyss
             NPC.width = 58;
             NPC.height = 30;
             NPC.defense = 8;
-            NPC.lifeMax = 110;
+            NPC.lifeMax = 160;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.alpha = 150;
-            NPC.value = Item.buyPrice(0, 0, 1, 0);
+            NPC.value = Item.buyPrice(silver: 2);
             NPC.HitSound = SoundID.NPCHit33;
             NPC.DeathSound = SoundID.NPCDeath28;
             NPC.knockBackResist = 0.3f;
@@ -49,9 +54,9 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Cuttlefish")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Cuttlefish")
             });
         }
 
@@ -335,7 +340,7 @@ namespace CalamityMod.NPCs.Abyss
                 return;
             }
             NPC.frameCounter += 0.15f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
@@ -344,11 +349,9 @@ namespace CalamityMod.NPCs.Abyss
         {
             if (!NPC.IsABestiaryIconDummy)
             {
-                Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/NPCs/Abyss/CuttlefishGlow").Value;
-
                 var effects = NPC.direction == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
-                Main.EntitySpriteDraw(tex, NPC.Center - Main.screenPosition + new Vector2(0, NPC.gfxOffY + 4), 
+                Main.EntitySpriteDraw(GlowTexture.Value, NPC.Center - Main.screenPosition + new Vector2(0, NPC.gfxOffY + 4),
                 NPC.frame, Color.White * 0.5f, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, effects, 0);
             }
         }
@@ -356,7 +359,7 @@ namespace CalamityMod.NPCs.Abyss
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Darkness, 120, true);
+                target.AddBuff(BuffID.Darkness, 300);
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
@@ -371,7 +374,8 @@ namespace CalamityMod.NPCs.Abyss
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ModContent.ItemType<AnechoicCoating>(), 2);
-            npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<InkBomb>(), 20, 10));
+            npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Blindfold, 100, 50));
+            npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<InkBomb>(), 10, 5));
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -386,7 +390,7 @@ namespace CalamityMod.NPCs.Abyss
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Cuttlefish").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Cuttlefish2").Type, 1f);

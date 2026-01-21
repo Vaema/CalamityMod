@@ -1,5 +1,7 @@
-﻿using CalamityMod.Buffs.Pets;
+﻿using System;
+using CalamityMod.Buffs.Pets;
 using CalamityMod.CalPlayer;
+using CalamityMod.Cooldowns;
 using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -8,21 +10,46 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class DaawnlightSpiritOrigin : ModItem, ILocalizedModType
+    public class DaawnlightSpiritOrigin : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public bool HidesNormalTooltip => true;
+        public bool HasFlavorTooltip => true;
+        public Color? FlavorTooltipColor => new(149, 28, 235); // #951CEB
+
         // "Despite the seemingly insane numbers here, I think this item might actually be underpowered"
         // hindsight: the item was not underpowered. Ozzatron 05NOV2021
-        //
-        // Regular crits are intentionally weak, especially because they rarely happen (your crit chance gets murdered).
-        // Bullseyes should be doing all the work.
-        private const float OriginBullseyeCritRatio = 3.5f; // Bullseye crits deal x3.5 damage instead of x2.
-        private const float RicoshotBullseyeCritRatio = 2.4f; // If you use Ricoshot mechanics to "force" a bullseye, you get less of a reward.
+        // 03SEP2024: Old comments kept for record.
 
-        private const float StoredCritConversionRatio = 0.01f; // Add +1% more damage to crits for every 1% critical chance the player would have had.
-        private const float MinUseTimeForSlowBonus = 11f;
-        private const float MaxSlowBonusUseTime = 72f;
-        private const float MaxSlowWeaponBonus = 0.33f; // Up to +33% more damage to crits for slower weapons.
+        #region Balancing Variables
+
+        /// <summary>
+        /// The bullseye's total lifespan while it is not hit.
+        /// </summary>
+        public const int BullseyeIdleLifetime = 600;
+
+        /// <summary>
+        /// The bullseye's lifespan when hit.
+        /// </summary>
+        public const int BullseyeHitLifetime = 90;
+
+        /// <summary>
+        /// The amount of critical strike chance bonus where crit starts decaying faster.<br/>
+        /// When the crit bonus reaches this value, the decay rate increases by one tier.
+        /// </summary>
+        public static readonly int CritDecayThreshold = 60;
+
+        /// <summary>
+        /// When the critical strike chance bonus has exceeded <see cref="CritDecayThreshold"/>, it continues to decay faster for every <see cref="CritDecayEchelon"/> more.
+        /// </summary>
+        public static readonly int CritDecayEchelon = 10;
+
+        /// <summary>
+        /// By default, critical strike chance is lost at 15% per second (1% every 4 frames). This is the first value to which decay echelons are applied.<br/>
+        /// Once this value reaches 1, the player instead starts losing multiple % of crit every frame.
+        /// </summary>
+        public static readonly int CritDecayBaseRate = 4;
 
         // These were very carefully calculated, please don't change them.
         internal const float RegularEnemyBullseyeRadius = 8f;
@@ -31,25 +58,12 @@ namespace CalamityMod.Items.Accessories
         // Special search radius for coin ricoshots that only applies to DSO targets.
         public static readonly float RicoshotSearchDistance = 2800f;
 
-        internal static float GetDamageMultiplier(Player p, CalamityPlayer mp, bool hitBullseye, bool wasForcedCrit)
-        {
-            float baseCritMult = 2f; // In vanilla Terraria, crits do +100% damage.
+        /// <summary>
+        /// The maximum amount of extra critical strike chance you can get from this accessory.
+        /// </summary>
+        public static readonly int CritHardCap = 100;
 
-            // If a bullseye was struck, replace a "regular crit" with a "bullseye crit".
-            if (hitBullseye)
-            {
-                // Bullseye crits are weaker if the projectile was already a forced crit.
-                // This currently only occurs due to ULTRAKILL-style ricoshots.
-                baseCritMult = wasForcedCrit ? RicoshotBullseyeCritRatio : OriginBullseyeCritRatio;
-            }
-
-            // Factor in the critical strike chance the player isn't getting to use.
-            float convertedCritBonus = StoredCritConversionRatio * mp.spiritOriginConvertedCrit;
-
-            float useTimeInterpolant = Utils.GetLerpValue(MinUseTimeForSlowBonus, MaxSlowBonusUseTime, p.ActiveItem().useTime, true);
-            float slowWeaponBonus = MathHelper.Lerp(0f, MaxSlowWeaponBonus, useTimeInterpolant);
-            return baseCritMult * (1f + convertedCritBonus + slowWeaponBonus);
-        }
+        #endregion
 
         public override void SetDefaults()
         {
@@ -57,14 +71,15 @@ namespace CalamityMod.Items.Accessories
             Item.height = 38;
             Item.accessory = true;
             Item.rare = ItemRarityID.Purple;
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.Calamity().donorItem = true;
         }
 
         // The pet is purely visual and does not affect the functionality of the item.
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.Calamity().spiritOrigin = true;
+            CalamityPlayer modPlayer = player.Calamity();
+            modPlayer.spiritOrigin = true;
 
             // If visibility is disabled, despawn the pet.
             if (hideVisual)
@@ -72,12 +87,49 @@ namespace CalamityMod.Items.Accessories
                 if (player.FindBuffIndex(ModContent.BuffType<ArcherofLunamoon>()) != -1)
                     player.ClearBuff(ModContent.BuffType<ArcherofLunamoon>());
             }
+
             // If visibility is enabled, spawn the pet.
             else if (player.whoAmI == Main.myPlayer)
             {
                 if (player.FindBuffIndex(ModContent.BuffType<ArcherofLunamoon>()) == -1)
                     player.AddBuff(ModContent.BuffType<ArcherofLunamoon>(), 18000, true);
             }
+
+            // Update the current crit boost.
+            int currentCritBoost = modPlayer.spiritOriginCritBoost;
+
+            // Calculate how many tiers / echelons of decay are currently affecting the crit boost.
+            int decayRateEchelons = 0;
+            if (currentCritBoost >= CritDecayThreshold)
+                decayRateEchelons = 1 + ((currentCritBoost - CritDecayThreshold) / CritDecayEchelon);
+
+            // This is the current decay rate. Crit is lost once every this many frames.
+            int decayRate = Math.Max(1, CritDecayBaseRate - decayRateEchelons);
+            int percentToDecay = 1;
+
+            // If enough echelons have been reached that crit is already draining once per frame,
+            // then start removing multiple percent crit per frame as well.
+            if (decayRateEchelons >= CritDecayBaseRate)
+                percentToDecay += decayRateEchelons - CritDecayBaseRate;
+
+            // Actually decay the crit chance boost.
+            if (player.miscCounter % decayRate == 0 && currentCritBoost > 0)
+                currentCritBoost -= percentToDecay;
+
+            // Write out the new value to the tracked stat on the player.
+            modPlayer.spiritOriginCritBoost = currentCritBoost;
+
+            // Actually give the crit boost as a direct increase to ranged critical strike chance.
+            player.GetCritChance<RangedDamageClass>() += Math.Min(modPlayer.spiritOriginCritBoost, CritHardCap);
+
+            // Display the current crit boost on a cooldown.
+            if (modPlayer.cooldowns.TryGetValue(DaawnlightSpiritOriginExtraCrit.ID, out var cooldown))
+            {
+                int displayedCritOnCooldown = Math.Max(0, CritDecayThreshold - currentCritBoost);
+                cooldown.timeLeft = displayedCritOnCooldown;
+            }
+            else
+                player.AddCooldown(DaawnlightSpiritOriginExtraCrit.ID, CritDecayThreshold);
         }
 
         public override void UpdateVanity(Player player)
@@ -100,7 +152,7 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<DubiousPlating>(15).
                 AddIngredient(ItemID.LunarBar, 10).
                 AddIngredient<GalacticaSingularity>(4).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

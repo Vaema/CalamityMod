@@ -4,14 +4,14 @@ using CalamityMod.Items.Placeables.DraedonStructures;
 using CalamityMod.TileEntities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent.ObjectInteractions;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
-using Terraria.Audio;
 
 namespace CalamityMod.Tiles.DraedonStructures
 {
@@ -27,6 +27,8 @@ namespace CalamityMod.Tiles.DraedonStructures
         // One cell of charge is placed into the weapon on a timer of this many frames.
         public const int FramesPerChargeAction = 8;
 
+        public Asset<Texture2D> GlowTexture;
+
         public override void SetStaticDefaults()
         {
             Main.tileLighted[Type] = true;
@@ -34,6 +36,7 @@ namespace CalamityMod.Tiles.DraedonStructures
             Main.tileNoAttach[Type] = true;
             Main.tileLavaDeath[Type] = false;
             Main.tileWaterDeath[Type] = false;
+            TileID.Sets.HasOutlines[Type] = true;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x2);
             // No need to set width, height, origin, etc. here, Style3x2 is exactly what we want.
             TileObjectData.newTile.LavaDeath = false;
@@ -50,7 +53,7 @@ namespace CalamityMod.Tiles.DraedonStructures
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 226);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Electric);
             return false;
         }
 
@@ -111,6 +114,9 @@ namespace CalamityMod.Tiles.DraedonStructures
         // Draws the charger's glowing light on top of it.
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
+            if (Main.tile[i, j].IsTileActuallyInvisible())
+                return;
+
             Tile t = Main.tile[i, j];
             int xFrame = t.TileFrameX;
             int yFrame = t.TileFrameY;
@@ -118,15 +124,15 @@ namespace CalamityMod.Tiles.DraedonStructures
             // Grab the tile entity because its glowmask depends on whether it's currently charging.
             TEChargingStation charger = CalamityUtils.FindTileEntity<TEChargingStation>(i, j, Width, Height, SheetSquare);
 
-            Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/Tiles/DraedonStructures/ChargingStation_Glow").Value;
+            GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/DraedonStructures/ChargingStation_Glow");
             Vector2 screenOffset = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + screenOffset;
             Color drawColor = charger?.LightColor ?? Color.Red;
 
             if (!t.IsHalfBlock && t.Slope == 0)
-                Main.spriteBatch.Draw(glowmask, drawOffset, new Rectangle?(new Rectangle(xFrame, yFrame, 18, 18)), drawColor, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                Main.spriteBatch.Draw(GlowTexture.Value, drawOffset, new Rectangle?(new Rectangle(xFrame, yFrame, 18, 18)), drawColor, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
             else if (t.IsHalfBlock)
-                Main.spriteBatch.Draw(glowmask, drawOffset + new Vector2(0f, 8f), new Rectangle?(new Rectangle(xFrame, yFrame, 18, 8)), drawColor, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                Main.spriteBatch.Draw(GlowTexture.Value, drawOffset + new Vector2(0f, 8f), new Rectangle?(new Rectangle(xFrame, yFrame, 18, 8)), drawColor, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
         }
     }
 }

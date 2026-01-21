@@ -1,9 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Typeless
 {
@@ -12,9 +11,9 @@ namespace CalamityMod.Projectiles.Typeless
         public new string LocalizationCategory => "Projectiles.Typeless";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 2;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            Main.projFrames[Projectile.type] = 3;
+            ProjectileID.Sets.TrailCacheLength[Type] = 2;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
+            Main.projFrames[Type] = 3;
         }
 
         public override void SetDefaults()
@@ -40,14 +39,14 @@ namespace CalamityMod.Projectiles.Typeless
                 Projectile.frame = 0;
             }
 
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
 
             Lighting.AddLight(Projectile.Center, 0.7f, 0.3f, 0f);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
@@ -61,7 +60,7 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
             for (int i = 0; i < 4; i++)
             {
-                int skyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 2f);
+                int skyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 2f);
                 Main.dust[skyDust].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -71,14 +70,14 @@ namespace CalamityMod.Projectiles.Typeless
             }
             for (int j = 0; j < 12; j++)
             {
-                int skyDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 3f);
+                int skyDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 3f);
                 Main.dust[skyDust2].noGravity = true;
                 Main.dust[skyDust2].velocity *= 5f;
-                skyDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 2f);
+                skyDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 2f);
                 Main.dust[skyDust2].velocity *= 2f;
             }
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 Vector2 goreSource = Projectile.Center;
                 int goreAmt = 3;

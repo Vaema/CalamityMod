@@ -1,9 +1,10 @@
-﻿using CalamityMod.Items.Weapons.Melee;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.Graphics.Primitives;
+using CalamityMod.Items.Weapons.Melee;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
@@ -15,15 +16,14 @@ namespace CalamityMod.Projectiles.Melee
     public class ViolenceSlashProjectile : ModProjectile
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<Violence>();
-        internal PrimitiveTrail SliceAfterimageDrawer = null;
         internal Player Owner => Main.player[Projectile.owner];
         internal ref float Time => ref Projectile.ai[0];
         internal float SwingSine => (float)Math.Sin(MathHelper.TwoPi * Time / 50f);
         public override string Texture => "CalamityMod/Items/Weapons/Melee/Violence";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 36;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 36;
         }
 
         public override void SetDefaults()
@@ -65,11 +65,11 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.Center = Owner.RotatedRelativePoint(Owner.MountedCenter) + (Projectile.rotation - MathHelper.PiOver4).ToRotationVector2() * Projectile.height * 0.45f;
             Projectile.rotation = SwingSine * MathHelper.ToRadians(87f);
 
-            if (Main.myPlayer == Projectile.owner && !Projectile.WithinRange(Main.MouseWorld, Projectile.height + 15f))
+            Vector2 mouse = Owner.ClampedMouseWorld();
+            if (Main.myPlayer == Projectile.owner && !Projectile.WithinRange(mouse, Projectile.height + 15f))
             {
-                Projectile.velocity = Projectile.SafeDirectionTo(Main.MouseWorld);
-                Projectile.netSpam = 0;
-                Projectile.netUpdate = true;
+                Projectile.velocity = Projectile.SafeDirectionTo(mouse);
+                Projectile.ForceNetUpdate();
             }
 
             Projectile.rotation += Projectile.velocity.ToRotation() + MathHelper.PiOver4;
@@ -82,7 +82,7 @@ namespace CalamityMod.Projectiles.Melee
             Owner.ChangeDir((Math.Cos(Projectile.rotation - MathHelper.PiOver4) > 0f).ToDirectionInt());
         }
 
-        internal Color PrimitiveColorFunction(float completionRatio)
+        internal Color PrimitiveColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float averageRotation = Projectile.oldRot.Average(angle => MathHelper.WrapAngle(angle) + MathHelper.Pi);
             float opacity = Projectile.Opacity * Utils.GetLerpValue(0.75f, 0.45f, completionRatio, true) * 0.5f;
@@ -94,29 +94,26 @@ namespace CalamityMod.Projectiles.Melee
             return Color.Lerp(Color.Red * 1.1f, Color.DarkRed, Utils.GetLerpValue(0f, 0.5f, completionRatio, true)) * opacity;
         }
 
-        internal float PrimitiveWidthFunction(float completionRatio) => Projectile.height * 0.48f;
+        internal float PrimitiveWidthFunction(float completionRatio, Vector2 vertexPos) => Projectile.height * 0.48f;
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (SliceAfterimageDrawer is null)
-                SliceAfterimageDrawer = new PrimitiveTrail(PrimitiveWidthFunction, PrimitiveColorFunction, specialShader: GameShaders.Misc["CalamityMod:PhaseslayerRipEffect"]);
-
             GameShaders.Misc["CalamityMod:PhaseslayerRipEffect"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SwordSlashTexture"));
 
-            Texture2D spearProjectile = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D spearProjectile = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
 
             Player player = Main.player[Projectile.owner];
             List<Vector2> positions = new List<Vector2>();
 
             for (int i = 0; i < 16; i++)
             {
-                Vector2 position = Projectile.position + (Projectile.rotation - MathHelper.PiOver4).ToRotationVector2() * (PrimitiveWidthFunction(0f) - 30f) * Projectile.scale * 0.5f;
+                Vector2 position = Projectile.position + (Projectile.rotation - MathHelper.PiOver4).ToRotationVector2() * (PrimitiveWidthFunction(0f,Vector2.Zero) - 30f) * Projectile.scale * 0.5f;
                 float angleOffset = MathHelper.Pi * 0.25f * -Math.Sign(SwingSine) * i / 16f;
                 position += (Projectile.rotation - MathHelper.PiOver4 + MathHelper.PiOver2).ToRotationVector2().RotatedBy(angleOffset) * -SwingSine * i * 12f;
                 positions.Add(position);
             }
 
-            SliceAfterimageDrawer.Draw(positions, Projectile.Size * 0.5f - Main.screenPosition, 50);
+            PrimitiveRenderer.RenderTrail(positions, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_, _) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:PhaseslayerRipEffect"]), 50);
             return true;
         }
     }

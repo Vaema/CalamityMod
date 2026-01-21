@@ -1,7 +1,7 @@
 ﻿using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
@@ -23,14 +23,14 @@ namespace CalamityMod.Items.TreasureBags
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 3;
-            ItemID.Sets.BossBag[Item.type] = true;
+            ItemID.Sets.BossBag[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 24;
             Item.height = 24;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
             Item.rare = ItemRarityID.Cyan;
             Item.expert = true;
@@ -72,8 +72,8 @@ namespace CalamityMod.Items.TreasureBags
 
             // Equipment
             itemLoot.Add(ModContent.ItemType<ChaosStone>(), DropHelper.BagWeaponDropRateFraction);
+            itemLoot.Add(ModContent.ItemType<Regenerator>(), DropHelper.BagWeaponDropRateFraction);
             itemLoot.Add(ModContent.ItemType<VoidofCalamity>());
-            itemLoot.Add(ModContent.ItemType<Regenator>(), 10);
             itemLoot.AddRevBagAccessories();
 
             // Vanity

@@ -18,23 +18,16 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 36;
             Item.height = 32;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
-            Item.defense = 8;
+            Item.defense = 2;
             Item.accessory = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            // Ornate Shield ram dash
             player.Calamity().DashID = OrnateShieldDash.ID;
             player.dashType = 0;
-
-            // Cold debuff immunities (Do not fear, this accessory is post Cryogen!)
-            player.buffImmune[BuffID.Chilled] = true;
-            player.buffImmune[BuffID.Frozen] = true;
-            player.buffImmune[BuffID.Frostburn] = true;
-            player.buffImmune[BuffID.Frostburn2] = true;
         }
 
         public override void AddRecipes()

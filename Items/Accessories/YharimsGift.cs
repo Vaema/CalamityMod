@@ -3,9 +3,6 @@ using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
-using Terraria.ID;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Potions.Alcohol;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -18,10 +15,11 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 20;
             Item.height = 22;
-            Item.defense = 30;
+            Item.defense = 12;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
+            Item.expert = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -29,6 +27,7 @@ namespace CalamityMod.Items.Accessories
             var source = player.GetSource_Accessory(Item);
             player.moveSpeed += 0.15f;
             player.GetDamage<GenericDamageClass>() += 0.15f;
+            player.noKnockback = true;
             if (!player.StandingStill())
             {
                 dragonTimer--;
@@ -37,7 +36,6 @@ namespace CalamityMod.Items.Accessories
                     if (player.whoAmI == Main.myPlayer)
                     {
                         int damage = (int)player.GetBestClassDamage().ApplyTo(175);
-                        damage = player.ApplyArmorAccDamageBonusesTo(damage);
 
                         int projectile1 = Projectile.NewProjectile(source, player.Center, Vector2.Zero, ModContent.ProjectileType<DragonDust>(), damage, 5f, player.whoAmI, 0f, 0f);
                         Main.projectile[projectile1].timeLeft = 60;
@@ -56,7 +54,6 @@ namespace CalamityMod.Items.Accessories
                     if (player.whoAmI == Main.myPlayer)
                     {
                         int damage = (int)player.GetBestClassDamage().ApplyTo(375);
-                        damage = player.ApplyArmorAccDamageBonusesTo(damage);
 
                         CalamityUtils.ProjectileRain(source, player.Center, 400f, 100f, 500f, 800f, 22f, ModContent.ProjectileType<SkyFlareFriendly>(), damage, 9f, player.whoAmI);
                     }

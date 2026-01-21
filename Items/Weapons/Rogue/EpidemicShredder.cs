@@ -1,10 +1,10 @@
-﻿using Terraria.DataStructures;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Rogue
 {
@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 4.5f;
             Item.UseSound = SoundID.Item1;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.shoot = ModContent.ProjectileType<EpidemicShredderProjectile>();
             Item.shootSpeed = 18f;

@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 16;
             Item.height = 16;
-            Item.damage = 380;
+            Item.damage = 1000;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.channel = true;
@@ -28,26 +28,31 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 4f;
             Item.UseSound = SoundID.Item82;
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
             Item.shootSpeed = 24f;
             Item.shoot = ModContent.ProjectileType<CrescentMoonFlail>();
         }
 
+        public override void HoldItem(Player player)
+        {
+            player.Calamity().StratusStarburstResetTimer = (int)MathHelper.Max(player.Calamity().StratusStarburstResetTimer, 600);
+        }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             float ai3 = (Main.rand.NextFloat() - 0.5f) * 0.7853982f; //0.5
-            Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, type, damage, knockback, player.whoAmI, 0f, ai3);
+            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, ai3);
             return false;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
+                AddIngredient<Nebulash>().
                 AddIngredient<Lumenyl>(8).
                 AddIngredient<RuinousSoul>(3).
                 AddIngredient<ExodiumCluster>(16).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

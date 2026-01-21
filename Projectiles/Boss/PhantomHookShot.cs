@@ -1,11 +1,10 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.IO;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -50,7 +49,7 @@ namespace CalamityMod.Projectiles.Boss
             {
                 for (int i = 0; i < 40; i++)
                 {
-                    int redDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 180, 0f, 0f, 100, default, 1f);
+                    int redDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.DungeonSpirit, 0f, 0f, 100, default, 1f);
                     Main.dust[redDust].velocity *= 3f;
                     Main.dust[redDust].velocity += Projectile.velocity * 0.75f;
                     Main.dust[redDust].scale *= 1.2f;
@@ -64,14 +63,6 @@ namespace CalamityMod.Projectiles.Boss
                 if (Projectile.alpha < 30)
                     Projectile.alpha = 30;
             }
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (info.Damage <= 0)
-                return;
-
-            target.AddBuff(ModContent.BuffType<Nightwither>(), 80);
         }
 
         public override Color? GetAlpha(Color lightColor)

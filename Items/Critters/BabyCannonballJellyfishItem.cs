@@ -1,7 +1,7 @@
 ﻿using CalamityMod.NPCs.Abyss;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Critters
 {
@@ -15,19 +15,10 @@ namespace CalamityMod.Items.Critters
         //Intentionally NOT bait due to bestiary entry on them being used as ammunition, although dynamite fishing in terraria does sound pretty fun
         public override void SetDefaults()
         {
-            Item.width = 26;
-            Item.height = 24;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.autoReuse = true;
-            Item.useTurn = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.maxStack = 9999;
-            Item.consumable = true;
-            Item.noUseGraphic = true;
-            Item.value = Item.buyPrice(0, 0, 30, 0);
-            Item.makeNPC = (short)ModContent.NPCType<BabyCannonballJellyfish>();
+            Item.DefaultToCapturedCritter(ModContent.NPCType<BabyCannonballJellyfish>());
+            Item.value = Item.sellPrice(silver: 10);
             Item.rare = ItemRarityID.Green;
+            Item.damage = 400;
         }
     }
 }

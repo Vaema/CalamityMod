@@ -1,12 +1,13 @@
-﻿using CalamityMod.DataStructures;
-using CalamityMod.Items.Weapons.Ranged;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CalamityMod.DataStructures;
+using CalamityMod.Items.Weapons.Ranged;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
@@ -60,7 +61,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
-            if (Owner.dead || !Owner.active || Owner.ActiveItem().type != ModContent.ItemType<Hydra>())
+            if (Owner.dead || !Owner.active || Owner.HeldItem.type != ModContent.ItemType<Hydra>())
                 Projectile.Kill();
             else
                 Projectile.timeLeft = 2; //Infinite lifespan
@@ -73,6 +74,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.localAI[0] = 1f;
             }
 
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 aimDestination = Owner.Calamity().mouseWorld;
             float idealRotation = Projectile.AngleTo(aimDestination);
             if (Time < 0f)
@@ -89,7 +91,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public void PerformInitializationEffects()
         {
-            int totalHeads = Owner.ownedProjectileCounts[Projectile.type];
+            int totalHeads = Owner.ownedProjectileCounts[Type];
             CurrentPositionOffset = IdealPositionOffset = new Vector2(Main.rand.NextFloat(-72f - 8f * totalHeads, 72f + 8f * totalHeads), -Main.rand.NextFloat(8f, 84f + 4f * totalHeads));
             Projectile.netUpdate = true;
         }
@@ -103,7 +105,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.velocity = (Projectile.velocity * 9f + Projectile.SafeDirectionTo(returnPosition) * flySpeed) / 10f;
             }
 
-            int totalHeads = Owner.ownedProjectileCounts[Projectile.type];
+            int totalHeads = Owner.ownedProjectileCounts[Type];
             int moveRate = 40 + totalHeads * 4;
 
             // Reset the ideal offset from time to time.
@@ -136,8 +138,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public void PerformAttacks(Vector2 aimDestination)
         {
-            Item heldItem = Owner.ActiveItem();
-            
+            Item heldItem = Owner.HeldItem;
+
             Vector2 shootDirection = Projectile.SafeDirectionTo(aimDestination);
 
             //Normal shot
@@ -146,7 +148,7 @@ namespace CalamityMod.Projectiles.Ranged
                 //Calculation for damage and co
                 Owner.PickAmmo(heldItem, out _, out float itemVelocity, out int itemDamage, out float itemKB, out _);
                 int type = ModContent.ProjectileType<HydrasBlood>();
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < Hydra.BulletsPerShot - 1; i++)
                 {
                     Vector2 spreadDirection = shootDirection.RotatedByRandom(MathHelper.ToRadians(Hydra.ShotSpread / 2f));
                     float spreadVelocity = itemVelocity * Main.rand.NextFloat(1f, 1.4f);
@@ -182,7 +184,7 @@ namespace CalamityMod.Projectiles.Ranged
                 return;
 
             for (int i = 0; i < 10; i++)
-                Dust.NewDustPerfect(Projectile.Center, 171, Main.rand.NextVector2CircularEdge(4f, 4f)).noGravity = true;
+                Dust.NewDustPerfect(Projectile.Center, DustID.Venom, Main.rand.NextVector2CircularEdge(4f, 4f)).noGravity = true;
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -229,7 +231,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
 
             bool shouldFlip = Math.Abs(Projectile.rotation) > MathHelper.PiOver2;
-            Texture2D headTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D headTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Main.EntitySpriteDraw(headTexture,
                              Projectile.Center - Main.screenPosition + Vector2.UnitY * Projectile.gfxOffY,
                              null,

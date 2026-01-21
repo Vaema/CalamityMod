@@ -10,10 +10,11 @@ namespace CalamityMod.Projectiles.Summon.Umbrella
         public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 7;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            Main.projFrames[Type] = 7;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 5;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
+            ProjectileID.Sets.MinionShot[Type] = true;
         }
 
         public override void SetDefaults()
@@ -46,8 +47,8 @@ namespace CalamityMod.Projectiles.Summon.Umbrella
 
             if (Projectile.ai[0]++ % 20f == 0f)
             {
-                Vector2 dspeed = Projectile.velocity * Main.rand.NextFloat(0.3f,0.6f);
-                int dust = Dust.NewDust(Projectile.Center, 1, 1, 67, dspeed.X, dspeed.Y, 50, default, 1.2f);
+                Vector2 dspeed = Projectile.velocity * Main.rand.NextFloat(0.3f, 0.6f);
+                int dust = Dust.NewDust(Projectile.Center, 1, 1, DustID.IceRod, dspeed.X, dspeed.Y, 50, default, 1.2f);
                 Main.dust[dust].noGravity = true;
             }
 
@@ -88,18 +89,14 @@ namespace CalamityMod.Projectiles.Summon.Umbrella
             }
             if (!hasHomingTarget)
             {
-                for (int i = 0; i < Main.npc.Length; ++i)
+                foreach (NPC npc in Main.ActiveNPCs)
                 {
-                    NPC npc = Main.npc[i];
-                    if (npc is null || !npc.active)
-                        continue;
-
                     if (npc.CanBeChasedBy(Projectile, false))
                     {
                         float dist = (Projectile.Center - npc.Center).Length();
                         if (dist < maxHomingRange)
                         {
-                            targetIdx = i;
+                            targetIdx = npc.whoAmI;
                             maxHomingRange = dist;
                             hasHomingTarget = true;
                         }
@@ -122,7 +119,7 @@ namespace CalamityMod.Projectiles.Summon.Umbrella
             for (int i = 0; i < 10; i++)
             {
                 Vector2 dspeed = new Vector2(Main.rand.NextFloat(-7f, 7f), Main.rand.NextFloat(-7f, 7f));
-                int dust = Dust.NewDust(Projectile.Center, 1, 1, 67, dspeed.X, dspeed.Y, 50, default, 1.2f);
+                int dust = Dust.NewDust(Projectile.Center, 1, 1, DustID.IceRod, dspeed.X, dspeed.Y, 50, default, 1.2f);
                 Main.dust[dust].noGravity = true;
             }
         }
@@ -131,7 +128,7 @@ namespace CalamityMod.Projectiles.Summon.Umbrella
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

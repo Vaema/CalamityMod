@@ -1,11 +1,11 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -19,8 +19,9 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 6;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -49,11 +50,6 @@ namespace CalamityMod.Projectiles.Melee
                 }
             }
 
-            if (Projectile.timeLeft < MaxTime - 5)
-            {
-                Projectile.tileCollide = true;
-            }
-
             if (Timer / MaxTime > 0.25f)
             {
                 Projectile.velocity *= 0.95f;
@@ -72,7 +68,7 @@ namespace CalamityMod.Projectiles.Melee
                 }
             }
 
-            if (Main.rand.NextBool(48) && Main.netMode != NetmodeID.Server)
+            if (Main.rand.NextBool(48) && !Main.dedServ)
             {
                 int starGore = Gore.NewGore(Projectile.GetSource_FromAI(), Projectile.Center, new Vector2(Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f), 16, 1f);
                 Main.gore[starGore].velocity *= 0.66f;
@@ -87,12 +83,12 @@ namespace CalamityMod.Projectiles.Melee
 
             Projectile.rotation += (Math.Abs(Projectile.velocity.X) + Math.Abs(Projectile.velocity.Y)) * 0.01f * (float)Projectile.direction;
 
-            CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 200f, 12f, 20f);
+            CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 256f, 12f, 20f);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
 
             if (Shine == 1f)
             {
@@ -130,7 +126,7 @@ namespace CalamityMod.Projectiles.Melee
                 GeneralParticleHandler.SpawnParticle(spark);
             }
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 for (int i = 0; i < 3; i++)
                 {

@@ -16,18 +16,18 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 40;
             Item.height = 46;
-            Item.damage = 200;
+            Item.damage = 70;
             Item.knockBack = 3.5f;
             Item.noMelee = true;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 12;
 
-            Item.useTime = Item.useAnimation = 32;
+            Item.useAnimation = Item.useTime = 32;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.autoReuse = true;
 
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
+            Item.rare = ModContent.RarityType<Turquoise>();
 
             Item.UseSound = SoundID.Item84;
             Item.shoot = ModContent.ProjectileType<EventHorizonStar>();
@@ -50,8 +50,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient<StarShower>().
                 AddIngredient<NuclearFury>().
                 AddIngredient<RelicofRuin>().
-                AddIngredient<CosmiliteBar>(8).
-                AddIngredient<DarksunFragment>(8).
+                AddIngredient<DarkPlasma>(3).
                 AddTile(TileID.Bookcases).
                 Register();
         }

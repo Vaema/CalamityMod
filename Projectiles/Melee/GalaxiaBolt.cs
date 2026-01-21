@@ -1,6 +1,6 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -15,14 +15,17 @@ namespace CalamityMod.Projectiles.Melee
         public Player Owner => Main.player[Projectile.owner];
 
         public ref float Hue => ref Projectile.ai[0];
-        public ref float HomingStrenght => ref Projectile.ai[1];
+        public ref float HomingStrength => ref Projectile.ai[1];
+        public ref float ShouldDelayHoming => ref Projectile.ai[2];
+        public bool StrongerHoming = false;
 
         Particle Head;
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 2;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 2;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -55,22 +58,22 @@ namespace CalamityMod.Projectiles.Melee
             if (target == null)
                 target = Projectile.Center.ClosestNPCAt(812f, true);
 
-            else if (CalamityUtils.AngleBetween(Projectile.velocity, target.Center - Projectile.Center) < MathHelper.PiOver2) //Home in
+            else if ((CalamityUtils.AngleBetween(Projectile.velocity, target.Center - Projectile.Center) < MathHelper.PiOver2 || StrongerHoming) && (ShouldDelayHoming != 1f || Projectile.timeLeft < 60)) //Home in
             {
                 float idealDirection = Projectile.AngleTo(target.Center);
-                float updatedDirection = Projectile.velocity.ToRotation().AngleTowards(idealDirection, HomingStrenght);
+                float updatedDirection = Projectile.velocity.ToRotation().AngleTowards(idealDirection, HomingStrength);
                 Projectile.velocity = updatedDirection.ToRotationVector2() * Projectile.velocity.Length() * 0.995f;
             }
 
 
             Lighting.AddLight(Projectile.Center, 0.75f, 1f, 0.24f);
 
-            if (Main.rand.Next(2) == 0)
+            if (Main.rand.NextBool(2))
             {
                 Particle smoke = new HeavySmokeParticle(Projectile.Center, Projectile.velocity * 0.5f, Color.Lerp(Color.MidnightBlue, Color.Indigo, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 6f)), 30, Main.rand.NextFloat(0.6f, 1.2f) * Projectile.scale, 0.8f, 0, false, 0, true);
                 GeneralParticleHandler.SpawnParticle(smoke);
 
-                if (Main.rand.Next(3) == 0)
+                if (Main.rand.NextBool(3))
                 {
                     Particle smokeGlow = new HeavySmokeParticle(Projectile.Center, Projectile.velocity * 0.5f, Main.hslToRgb(Hue, 1, 0.7f), 20, Main.rand.NextFloat(0.4f, 0.7f) * Projectile.scale, 0.8f, 0, true, 0.005f, true);
                     GeneralParticleHandler.SpawnParticle(smokeGlow);
@@ -80,7 +83,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

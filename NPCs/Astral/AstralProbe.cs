@@ -1,36 +1,45 @@
-﻿using CalamityMod.BiomeManagers;
-using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.NPCs.Astral
 {
     public class AstralProbe : ModNPC
     {
+        public static Asset<Texture2D> GlowTexture;
+
+        public override void SetStaticDefaults()
+        {
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
+        }
+
         public override void SetDefaults()
         {
-            NPC.damage = 20;
+            NPC.damage = 0; // 0 contact damage, laser damage is handled separately
             NPC.width = 30; //324
             NPC.height = 30; //216
-            NPC.defense = 10;
-            NPC.DR_NERD(0.15f);
-            NPC.lifeMax = 50;
+            NPC.defense = 20;
+            NPC.lifeMax = 120;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0.95f;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(silver: 1);
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.DeathSound = SoundID.NPCDeath14;
@@ -39,28 +48,25 @@ namespace CalamityMod.NPCs.Astral
             if (DownedBossSystem.downedAstrumAureus)
             {
                 NPC.damage = 30;
-                NPC.defense = 20;
+                NPC.defense = 30;
                 NPC.knockBackResist = 0.85f;
-                NPC.lifeMax = 70;
+                NPC.lifeMax = 180;
             }
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<AbovegroundAstralBiome>().Type };
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<BiomeManagers.AstralInfectionBiome>().Type };
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.AstralProbe")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.AstralProbe")
             });
         }
 
         public override void AI()
         {
-            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
-            NPC.damage = 0;
-
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead)
             {
                 NPC.TargetClosest(true);
@@ -149,6 +155,7 @@ namespace CalamityMod.NPCs.Astral
                 NPC.localAI[0] = 0f;
                 if (Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height))
                 {
+                    // These are already nerfed in Master Mode via the global scaling code
                     int projDamage = Main.expertMode ? 14 : 18;
                     if (DownedBossSystem.downedAstrumAureus)
                         projDamage += 6;
@@ -227,15 +234,15 @@ namespace CalamityMod.NPCs.Astral
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture2D15 = TextureAssets.Npc[NPC.type].Value;
-            Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[NPC.type].Value.Width / 2), (float)(TextureAssets.Npc[NPC.type].Value.Height / 2));
+            Texture2D texture2D15 = TextureAssets.Npc[Type].Value;
+            Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[Type].Value.Width / 2), (float)(TextureAssets.Npc[Type].Value.Height / 2));
             Vector2 drawPosition = NPC.Center - screenPos;
             drawPosition -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height)) * NPC.scale / 2f;
             drawPosition += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
 
             spriteBatch.Draw(texture2D15, drawPosition, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-            texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/Astral/AstralProbeGlow").Value;
+            texture2D15 = GlowTexture.Value;
 
             spriteBatch.Draw(texture2D15, drawPosition, NPC.frame, Color.White * 0.6f, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
@@ -274,7 +281,7 @@ namespace CalamityMod.NPCs.Astral
                     Main.dust[cosmos].velocity *= 2f;
                 }
 
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Vector2 goreSource = NPC.Center;
                     int goreAmt = 3;
@@ -322,7 +329,7 @@ namespace CalamityMod.NPCs.Astral
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<Stardust>(), 2, 1, 2, 1, 3));
+            npcLoot.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<StarblightSoot>(), 2, 1, 2, 1, 3));
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
@@ -336,12 +343,6 @@ namespace CalamityMod.NPCs.Astral
                 return 0.1f;
             }
             return 0f;
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 75, true);
         }
     }
 }

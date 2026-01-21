@@ -1,6 +1,4 @@
-﻿using CalamityMod.World;
-using Microsoft.Xna.Framework;
-using System;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -11,7 +9,7 @@ namespace CalamityMod.Projectiles.Boss
         public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 2;
+            Main.projFrames[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -25,7 +23,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.penetrate = 1;
             Projectile.timeLeft = 960;
 
-            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+            if (Main.zenithWorld)
                 Projectile.extraUpdates = 1;
         }
 
@@ -42,7 +40,7 @@ namespace CalamityMod.Projectiles.Boss
 
             Lighting.AddLight(Projectile.Center, 0f, 0.2f, 0.3f);
 
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + MathHelper.PiOver2;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
 
             int playerTracker = Player.FindClosest(Projectile.Center, 1, 1);
             Projectile.ai[1] += 1f;

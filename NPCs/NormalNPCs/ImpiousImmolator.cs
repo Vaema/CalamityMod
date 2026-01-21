@@ -1,13 +1,13 @@
-﻿using CalamityMod.Dusts;
+﻿using System;
+using System.IO;
+using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.Items.Potions;
+using CalamityMod.Items.Potions.Food;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Projectiles.Enemy;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
-using System.IO;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -21,21 +21,22 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
+            Main.npcFrameCount[Type] = 4;
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
         }
 
         public override void SetDefaults()
         {
             NPC.noGravity = true;
             NPC.lavaImmune = true;
-            NPC.damage = 50;
+            NPC.damage = 0; // 0 contact damage, projectile damage is handled separately
             NPC.width = 60;
             NPC.height = 60;
             NPC.defense = 30;
             NPC.lifeMax = 3000;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 50, 0);
+            NPC.value = Item.buyPrice(silver: 50);
             NPC.HitSound = SoundID.NPCHit5;
             NPC.DeathSound = SoundID.NPCDeath7;
             NPC.knockBackResist = 0.2f;
@@ -49,11 +50,11 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheHallow,
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheUnderworld,
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.ImpiousImmolator")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.ImpiousImmolator")
             });
         }
 
@@ -71,9 +72,6 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void AI()
         {
-            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
-            NPC.damage = 0;
-
             NPC.spriteDirection = (NPC.direction > 0) ? 1 : -1;
             NPC.noGravity = true;
             if (NPC.direction == 0)
@@ -158,11 +156,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                             targetDistance = speed / targetDistance;
                             targetXDist *= targetDistance;
                             targetYDist *= targetDistance;
-                            int damage = 55;
-                            if (Main.expertMode)
-                            {
-                                damage = 42;
-                            }
+                            int damage = Main.masterMode ? 35 : Main.expertMode ? 42 : 55;
                             int beam = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center.X, NPC.Center.Y, targetXDist, targetYDist, ModContent.ProjectileType<FlameBurstHostile>(), damage, 0f, Main.myPlayer, 0f, 0f);
                             Main.projectile[beam].tileCollide = true;
                         }
@@ -250,14 +244,14 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter += hasBeenHit ? 0.25f : 0.125f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (spawnInfo.PlayerSafe || !NPC.downedMoonlord || spawnInfo.Player.Calamity().ZoneCalamity)
+            if (spawnInfo.PlayerSafe || !NPC.downedMoonlord || spawnInfo.Player.Calamity().ZoneCalamity || Main.pumpkinMoon || Main.snowMoon || Main.eclipse)
             {
                 return 0f;
             }
@@ -287,7 +281,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.ProfanedFire, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ImpiousImmolator").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ImpiousImmolator2").Type, 1f);

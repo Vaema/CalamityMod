@@ -1,9 +1,9 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+﻿using System;
+using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -31,14 +31,13 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2.5f;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.UseSound = SoundID.Item11;
             Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<ArcherfishShot>();
+            Item.shoot = ModContent.ProjectileType<MegalodonShot>();
             Item.shootSpeed = 16f;
             Item.useAmmo = AmmoID.Bullet;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-10, 0);
@@ -71,7 +70,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 Projectile.NewProjectile(source, newPos, newVel * 1.2f, ModContent.ProjectileType<SeaDragonRocket>(), rocketDamage, knockback, player.whoAmI);
                 SoundEngine.PlaySound(SoundID.Item109, player.Center);
             }
-            
+
             // Muzzle blasts are always directly in line with the gun's muzzle.
             if (muzzleBlast)
             {
@@ -97,10 +96,10 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddIngredient<Megalodon>().
-                AddIngredient<Polterplasm>(9).
-                AddIngredient<ArmoredShell>(3).
+                AddIngredient<Necroplasm>(9).
                 AddIngredient<SeaPrism>(10).
-                AddTile(TileID.LunarCraftingStation).
+                AddIngredient<ArmoredShell>(3).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

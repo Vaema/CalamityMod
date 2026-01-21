@@ -16,9 +16,9 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.YoyosLifeTimeMultiplier[Projectile.type] = -1f;
-            ProjectileID.Sets.YoyosMaximumRange[Projectile.type] = 400f;
-            ProjectileID.Sets.YoyosTopSpeed[Projectile.type] = 32f / MaxUpdates;
+            ProjectileID.Sets.YoyosLifeTimeMultiplier[Type] = -1f;
+            ProjectileID.Sets.YoyosMaximumRange[Type] = TheGodsGambit.Reach;
+            ProjectileID.Sets.YoyosTopSpeed[Type] = TheGodsGambit.Speed / MaxUpdates;
         }
 
         public override void SetDefaults()
@@ -30,12 +30,12 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             Projectile.penetrate = -1;
             Projectile.MaxUpdates = MaxUpdates;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 12 * MaxUpdates;
+            Projectile.localNPCHitCooldown = 15 * MaxUpdates;
         }
 
         public override void AI()
         {
-            CalamityUtils.MagnetSphereHitscan(Projectile, 300f, 6f, 30f, 5, ModContent.ProjectileType<SlimeStream>(), 0.75);
+            CalamityUtils.MagnetSphereHitscan(Projectile, 300f, 6f, 30f, 5, ModContent.ProjectileType<SlimeStream>(), 0.75, damageType: Projectile.DamageType);
             if ((Projectile.position - Main.player[Projectile.owner].position).Length() > 3200f) //200 blocks
                 Projectile.Kill();
         }
@@ -44,7 +44,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }

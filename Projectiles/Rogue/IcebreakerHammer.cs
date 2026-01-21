@@ -28,19 +28,21 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.timeLeft = 600;
             AIType = ProjectileID.WoodenBoomerang;
             Projectile.coldDamage = true;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
         {
             if (Main.rand.NextBool(3))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 67, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.IceRod, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
@@ -55,7 +57,7 @@ namespace CalamityMod.Projectiles.Rogue
                 {
                     if (explosionCount < 3) //max amount of explosions to prevent worm memes
                     {
-                        int ice = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<CosmicIceBurst>(), (int)(Projectile.damage * 1.5), Projectile.knockBack, Projectile.owner, 0f, 0.85f + Main.rand.NextFloat() * 1.15f);
+                        int ice = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<CosmicIceBurst>(), (int)(Projectile.damage * 1.5), Projectile.knockBack, Projectile.owner, 0f, 0.85f + Main.rand.NextFloat() * 1.15f, 1f);
                         if (ice.WithinBounds(Main.maxProjectiles))
                             Main.projectile[ice].DamageType = RogueDamageClass.Instance;
                         explosionCount++;
@@ -64,10 +66,9 @@ namespace CalamityMod.Projectiles.Rogue
                     int buffType = ModContent.BuffType<GlacialState>();
                     float radius = 112f; // 7 blocks
 
-                    for (int i = 0; i < Main.maxNPCs; i++)
+                    foreach (NPC nPC in Main.ActiveNPCs)
                     {
-                        NPC nPC = Main.npc[i];
-                        if (nPC.active && !nPC.dontTakeDamage && !nPC.buffImmune[buffType] && Vector2.Distance(Projectile.Center, nPC.Center) <= radius)
+                        if (!nPC.dontTakeDamage && !nPC.buffImmune[buffType] && Vector2.Distance(Projectile.Center, nPC.Center) <= radius)
                         {
                             if (nPC.FindBuffIndex(buffType) == -1)
                                 nPC.AddBuff(buffType, 60, false);
@@ -86,23 +87,9 @@ namespace CalamityMod.Projectiles.Rogue
                 if (Projectile.Calamity().stealthStrike)
                 {
                     //no explosion count cap in pvp
-                    int ice = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<CosmicIceBurst>(), (int)(Projectile.damage * 1.5), Projectile.knockBack, Projectile.owner, 0f, 0.85f + Main.rand.NextFloat() * 1.15f);
+                    int ice = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<CosmicIceBurst>(), (int)(Projectile.damage * 1.5), Projectile.knockBack, Projectile.owner, 0f, 0.85f + Main.rand.NextFloat() * 1.15f, 1f);
                     if (ice.WithinBounds(Main.maxProjectiles))
                         Main.projectile[ice].DamageType = RogueDamageClass.Instance;
-
-                    int buffType = ModContent.BuffType<GlacialState>();
-                    float radius = 112f; // 7 blocks
-
-                    for (int i = 0; i < Main.maxPlayers; i++)
-                    {
-                        Player owner = Main.player[Projectile.owner];
-                        Player player = Main.player[i];
-                        if ((owner.team != player.team || player.team == 0)  && player.hostile && owner.hostile && !player.dead && !player.buffImmune[buffType] && Vector2.Distance(Projectile.Center, player.Center) <= radius)
-                        {
-                            if (player.FindBuffIndex(buffType) == -1)
-                                player.AddBuff(buffType, 60, false);
-                        }
-                    }
                 }
             }
         }

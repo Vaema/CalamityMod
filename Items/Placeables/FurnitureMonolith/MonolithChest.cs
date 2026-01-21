@@ -1,6 +1,6 @@
-﻿using CalamityMod.Tiles.Furniture.CraftingStations;
-using Terraria.ModLoader;
+﻿using Terraria;
 using Terraria.ID;
+using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurnitureMonolith
 {
     public class MonolithChest : ModItem, ILocalizedModType
@@ -8,16 +8,8 @@ namespace CalamityMod.Items.Placeables.FurnitureMonolith
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.width = 28;
-            Item.height = 20;
-            Item.maxStack = 9999;
-            Item.useTurn = true;
-            Item.autoReuse = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.consumable = true;
-            Item.createTile = ModContent.TileType<Tiles.FurnitureMonolith.MonolithChest>();
+            Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.FurnitureMonolith.MonolithChest>());
+            Item.value = Item.sellPrice(silver: 1);
         }
 
         public override void AddRecipes()
@@ -25,7 +17,7 @@ namespace CalamityMod.Items.Placeables.FurnitureMonolith
             CreateRecipe().
                 AddIngredient<AstralMonolith>(8).
                 AddRecipeGroup("IronBar", 2).
-                AddTile<MonolithAmalgam>().
+                AddTile(TileID.WorkBenches).
                 Register();
         }
     }

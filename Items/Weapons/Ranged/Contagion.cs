@@ -31,10 +31,9 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 20f;
             Item.useAmmo = AmmoID.Arrow;
 
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
@@ -42,16 +41,16 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<Phangasm>().
-                AddIngredient<PlagueCellCanister>(20).
+                AddIngredient<Riftburst>().
                 AddIngredient<ShadowspecBar>(5).
+                AddIngredient<PlagueCellCanister>(20).
                 AddTile<DraedonsForge>().
                 Register();
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, ModContent.ProjectileType<ContagionBow>(), damage, knockback, player.whoAmI);
+            Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<ContagionBow>(), damage, knockback, player.whoAmI);
             return false;
         }
     }

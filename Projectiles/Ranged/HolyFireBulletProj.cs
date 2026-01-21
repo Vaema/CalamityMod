@@ -1,8 +1,14 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
 using CalamityMod.Items.Ammo;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -11,90 +17,163 @@ namespace CalamityMod.Projectiles.Ranged
     public class HolyFireBulletProj : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
-        private const int Lifetime = 600;
-        private static readonly Color Alpha = new Color(1f, 1f, 1f, 0f);
-
-        public override void SetStaticDefaults()
-        {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
-        }
+        public Color col = Color.White;
+        private float SizeVariance;
+        public ref float time => ref Projectile.ai[2];
+        public ref float sizeBonus => ref Projectile.ai[1];
 
         public override void SetDefaults()
         {
-            Projectile.width = 4;
-            Projectile.height = 4;
+            Projectile.width = 8;
+            Projectile.height = 8;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Ranged;
-            Projectile.MaxUpdates = 5;
-            Projectile.timeLeft = Lifetime;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
+            Projectile.penetrate = 1;
+            Projectile.extraUpdates = 7;
+            Projectile.timeLeft = 600;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override void AI()
         {
+            if (time == 0)
+            {
+                Projectile.damage = (int)(Projectile.damage * 1.15f);
+                col = Main.rand.NextBool() ? Color.Orange : Color.Goldenrod;
+                SizeVariance = Main.rand.NextFloat(0.95f, 1.05f);
+                Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * 14;
+            }
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.ToRadians(90f);
             Projectile.spriteDirection = Projectile.direction;
 
-            // Flaking dust
-            Projectile.localAI[0] += 1f;
-            if (Projectile.localAI[0] > 4f)
+            sizeBonus = MathHelper.Lerp(1, 2, (float)Math.Pow(Utils.GetLerpValue(50, 15, time, true), 2));
+            if (time > 4)
             {
-                if (Main.rand.NextBool())
+                float sine = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 15f / MathHelper.Pi);
+                if (Main.rand.NextBool(3))
                 {
-                    float scale = Main.rand.NextFloat(0.6f, 1.6f);
-                    int dustID = Dust.NewDust(Projectile.Center, 1, 1, 244);
-                    Main.dust[dustID].position = Projectile.Center;
-                    Main.dust[dustID].noGravity = true;
-                    Main.dust[dustID].scale = scale;
-                    float angleDeviation = 0.17f;
-                    float angle = Main.rand.NextFloat(-angleDeviation, angleDeviation);
-                    Vector2 sprayVelocity = Projectile.velocity.RotatedBy(angle) * 0.6f;
-                    Main.dust[dustID].velocity = sprayVelocity;
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(5, 5), ModContent.DustType<SquashDust>(), -Projectile.velocity.RotatedBy(Main.rand.NextFloat(0.15f, 0.3f) * (Main.rand.NextBool() ? -1 : 1)) * Main.rand.NextFloat(0.2f, 1f));
+                    dust.noGravity = true;
+                    dust.scale = Main.rand.NextFloat(0.5f, 0.85f);
+                    dust.noLightEmittence = true;
+                    dust.color = col;
+                }
+
+                Player Owner = Main.player[Projectile.owner];
+                float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
+                if (time > 2 && targetDist < 1400)
+                {
+                    Particle trail = new CustomSpark(Projectile.Center, -Projectile.velocity.SafeNormalize(Vector2.UnitX) * 0.5f, "CalamityMod/Particles/DualTrail", false, 4, 0.03f, col * 0.9f, new Vector2(1f, 3), true, true, shrinkSpeed: 0.8f, glowOpacity: 0.6f);
+                    GeneralParticleHandler.SpawnParticle(trail);
                 }
             }
+            time++;
         }
-
-        public override Color? GetAlpha(Color lightColor) => Alpha;
-
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesFromEdge(Projectile, 0, lightColor);
+            if (time <= 0)
+                return false;
+            Asset<Texture2D> tip = ModContent.Request<Texture2D>("CalamityMod/Particles/SquareRotated");
+
+            for (int i = 0; i < 2; i++)
+                Main.EntitySpriteDraw(tip.Value, Projectile.Center - Main.screenPosition, null, Color.Lerp(col, Color.White, i) with { A = 0 } * 0.7f, Projectile.rotation, tip.Size() / 2f, new Vector2(0.2f, 1.4f) * Projectile.scale * (0.28f - 0.1f * i), SpriteEffects.None, 0);
             return false;
         }
 
         public override void OnKill(int timeLeft)
         {
-            // Spawn an on-hit explosion which deals 75% of the projectile's damage.
-            if (Projectile.owner == Main.myPlayer)
+            // Spawn an on-hit explosion which deals part of the projectile's damage to enemies around the target
+            if (Projectile.numHits == 0)
             {
-                int blastDamage = (int)(Projectile.damage * HolyFireBullet.ExplosionMultiplier);
-                float scale = 0.85f + Main.rand.NextFloat() * 1.15f;
-                int boom = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<FuckYou>(), blastDamage, Projectile.knockBack, Projectile.owner, 0f, scale);
-
-                // Explosions match the bullet's damage type (e.g. ranged or summon)
-                if (boom.WithinBounds(Main.maxProjectiles))
-                    Main.projectile[boom].DamageType = Projectile.DamageType;
-            }
-
-            // Spawn four shrapnel dust. This deals no damage.
-            for (int k = 0; k < 4; k++)
-            {
-                float scale = Main.rand.NextFloat(1.4f, 1.8f);
-                int dustID = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 244);
-                Main.dust[dustID].noGravity = false;
-                Main.dust[dustID].scale = scale;
-                float angleDeviation = 0.25f;
-                float angle = Main.rand.NextFloat(-angleDeviation, angleDeviation);
-                float velMult = Main.rand.NextFloat(0.08f, 0.14f);
-                Vector2 shrapnelVelocity = Projectile.oldVelocity.RotatedBy(angle) * velMult;
-                Main.dust[dustID].velocity = shrapnelVelocity;
+                MakeBlast(0, false);
             }
         }
+        public void MakeBlast(int target, bool hitTarget)
+        {
+            float blastSize = 50 * sizeBonus;
+            float minMultiplier = 0.35f;
+            int hitsToMinMult = 8;
+            int blastDamage = (int)(Projectile.damage * 0.33f);
+            int knockback = -10;
+            int debuff = ModContent.BuffType<HolyFlames>();
+            int debuffTime = 180;
+            if (hitTarget)
+            {
+                Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurstExclusive>(), blastDamage, knockback, Projectile.owner, blastSize, minMultiplier, hitsToMinMult);
+                blast.timeLeft = 3;
+                blast.DamageType = Projectile.DamageType;
+                blast.localAI[0] = target;
+                blast.localAI[1] = debuff;
+                blast.localAI[2] = debuffTime;
+            }
+            else
+            {
+                Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), blastDamage, knockback, Projectile.owner, blastSize, minMultiplier, hitsToMinMult);
+                blast.timeLeft = 3;
+                blast.DamageType = Projectile.DamageType;
+                blast.localAI[0] = debuff;
+                blast.localAI[1] = debuffTime;
+            }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+            SoundEngine.PlaySound(HolyFireBullet.Explosion with { Pitch = -0.2f + 0.3f * sizeBonus, Volume = 0.3f + 0.1f * sizeBonus, MaxInstances = 10 }, Projectile.Center);
+
+            float fxScale = MathHelper.Lerp(sizeBonus, 1, 0.25f);
+            Vector2 Offset = Main.rand.NextVector2Circular(15, 15);
+
+            Particle blastvfx = new CustomPulse(Projectile.Center + Offset, Vector2.Zero, Color.Lerp(Color.SlateGray, col, 0.8f) * 0.9f, "CalamityMod/Particles/SmokeExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0.05f * fxScale, 0.1f * fxScale, Main.rand.Next(8, 10 + 1), true);
+            GeneralParticleHandler.SpawnParticle(blastvfx);
+
+            float rot = Main.rand.NextFloat(-5, 5);
+            for (int i = -1; i <= 1; i += 2)
+            {
+                Particle centerShine = new CustomSpark(Projectile.Center + Offset, Vector2.UnitY.RotatedBy(rot + MathHelper.PiOver4 * i) * 0.01f, "CalamityMod/Particles/BloomCircle", false, 5, 0.3f * fxScale, Color.White, new Vector2(1f, 1f), true, false, shrinkSpeed: 2f);
+                GeneralParticleHandler.SpawnParticle(centerShine);
+            }
+
+            for (int k = 0; k < 7; k++)
+            {
+                if (Main.rand.NextBool())
+                {
+                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center + Offset, ModContent.DustType<DiamondDust>(), new Vector2(4, 4).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1.5f) * fxScale);
+                    dust2.noGravity = true;
+                    dust2.scale = Main.rand.NextFloat(0.4f, 0.6f) * fxScale;
+                    dust2.alpha = Main.rand.Next(90, 180 + 1);
+                    dust2.color = col;
+                    dust2.fadeIn = 10f;
+                    dust2.noLight = true;
+                    dust2.noLightEmittence = true;
+                }
+                else
+                {
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Offset, ModContent.DustType<LightDust>(), new Vector2(5, 5).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1.5f) * fxScale);
+                    dust.noGravity = true;
+                    dust.scale = Main.rand.NextFloat(0.5f, 1f) * fxScale;
+                    dust.alpha = Main.rand.Next(160, 230 + 1); ;
+                    dust.color = Color.White;
+                    dust.noLight = true;
+                    dust.noLightEmittence = true;
+                }
+            }
+            for (int k = 0; k < 2; k++)
+            {
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Offset, ModContent.DustType<SquashDust>(), new Vector2(6, 6).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1.5f) * fxScale + new Vector2(0, -5));
+                dust.noGravity = false;
+                dust.scale = Main.rand.NextFloat(0.75f, 0.95f) * fxScale;
+                dust.color = Main.rand.NextBool() ? Color.Orange : Color.Goldenrod;
+                dust.fadeIn = 1;
+            }
+        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             target.AddBuff(ModContent.BuffType<HolyFlames>(), 300);
+            MakeBlast(target.whoAmI, true);
+            if (sizeBonus == 2) // If you're at max damage get extra damage
+            {
+                SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode with { Pitch = 0.3f, Volume = 0.4f, MaxInstances = 10 }, Projectile.Center);
+            }
+            // This used to be 25% was I fucking insane???
+            modifiers.SourceDamage *= MathHelper.Lerp(1, 1.15f, sizeBonus - 1); // Up to 15% damage bonus
         }
     }
 }

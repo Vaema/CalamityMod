@@ -12,8 +12,9 @@ namespace CalamityMod.Projectiles.Melee
         public new string LocalizationCategory => "Projectiles.Melee";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
         }
 
         public override void SetDefaults()
@@ -21,16 +22,16 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.width = 100;
             Projectile.height = 78;
             Projectile.aiStyle = ProjAIStyleID.Sickle;
+            AIType = ProjectileID.DeathSickle;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Melee;
             Projectile.tileCollide = false;
-            Projectile.alpha = 55;
-            Projectile.penetrate = 10;
-            Projectile.timeLeft = 300;
             Projectile.ignoreWater = true;
-            AIType = ProjectileID.DeathSickle;
+            Projectile.alpha = 55;
+            Projectile.penetrate = 5;
+            Projectile.timeLeft = 300;
             Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 2;
+            Projectile.idStaticNPCHitCooldown = 3;
         }
 
         public override void AI()
@@ -39,15 +40,15 @@ namespace CalamityMod.Projectiles.Melee
 
             if (Main.rand.NextBool(3))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 173, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
 
-            CalamityUtils.HomeInOnNPC(Projectile, true, 300f, 12f, 20f);
+            CalamityUtils.HomeInOnNPC(Projectile, true, 512f, 12f, 20f);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 2);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 2);
             return false;
         }
 
@@ -65,7 +66,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Projectile.spriteDirection == -1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Main.EntitySpriteDraw(ModContent.Request<Texture2D>(Texture).Value, Projectile.Center - Main.screenPosition, null, color, Projectile.rotation, origin, 1f, spriteEffects, 0);
+            Main.EntitySpriteDraw(Terraria.GameContent.TextureAssets.Projectile[Type].Value, Projectile.Center - Main.screenPosition, null, color, Projectile.rotation, origin, 1f, spriteEffects, 0);
         }
 
         public override Color? GetAlpha(Color lightColor)
@@ -77,10 +78,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 180);
             if (target.life <= 0)
-            {
-                if (Projectile.owner == Main.myPlayer)
-                    CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], 8, ModContent.ProjectileType<EssenceFlame>(), 1200f, 0f);
-            }
+                Main.player[Projectile.owner].SpawnLifeStealProjectile(target, Projectile, ModContent.ProjectileType<EssenceFlame>(), 8, 0f);
         }
     }
 }

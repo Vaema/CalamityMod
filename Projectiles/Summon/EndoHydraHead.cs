@@ -1,10 +1,10 @@
-﻿using CalamityMod.DataStructures;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CalamityMod.DataStructures;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -25,11 +25,12 @@ namespace CalamityMod.Projectiles.Summon
         }
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 5;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 20;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 5;
+            Main.projPet[Type] = true;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 20;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -73,7 +74,7 @@ namespace CalamityMod.Projectiles.Summon
                 return;
             }
 
-            int totalHeads = CalamityUtils.CountProjectiles(Projectile.type);
+            int totalHeads = player.ownedProjectileCounts[Projectile.type];
             if (Projectile.localAI[0] == 0f)
             {
                 DeltaPosition = DeltaPositionMoving = new Vector2(Main.rand.NextFloat(-72f - 8f * totalHeads, 72f + 8f * totalHeads), -Main.rand.NextFloat(8f, 84f + 4f * totalHeads));
@@ -83,7 +84,7 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     for (int i = 0; i < 18; i++)
                     {
-                        Dust dust = Dust.NewDustPerfect(Projectile.Center, 113);
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.MushroomSpray);
                         dust.velocity = new Vector2(0f, -5f).RotatedBy(i / 18f * MathHelper.TwoPi);
                         dust.noGravity = true;
                         dust.scale = 1.2f;
@@ -110,17 +111,17 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     if (Time % 40f == 24f)
                     {
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.SafeDirectionTo(target.Center) * 6f, ModContent.ProjectileType<EndoRay>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.SafeDirectionTo(target.Center) * 6f, ModContent.ProjectileType<EndoHydraRay>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                     }
 
                     if (Time % 40f >= 33f)
-                        Projectile.frame = Main.projFrames[Projectile.type] - 1;
+                        Projectile.frame = Main.projFrames[Type] - 1;
                     else if (Time % 40f >= 27f)
-                        Projectile.frame = Main.projFrames[Projectile.type] - 2;
+                        Projectile.frame = Main.projFrames[Type] - 2;
                     else if (Time % 40f >= 22f)
-                        Projectile.frame = Main.projFrames[Projectile.type] - 3;
+                        Projectile.frame = Main.projFrames[Type] - 3;
                     else if (Time % 40f >= 17f)
-                        Projectile.frame = Main.projFrames[Projectile.type] - 4;
+                        Projectile.frame = Main.projFrames[Type] - 4;
 
                     Projectile.direction = Projectile.spriteDirection = (player.Center.X - Projectile.Center.X > 0).ToDirectionInt();
                     if (Math.Abs(player.Center.X - Projectile.Center.X) < 80f)
@@ -173,7 +174,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             for (int i = 0; i < 10; i++)
             {
-                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 67);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.IceRod);
             }
         }
         public override bool PreDraw(ref Color lightColor)
@@ -229,10 +230,10 @@ namespace CalamityMod.Projectiles.Summon
 
             // PreDraw is used instead of PostDraw because of draw order. Drawing the chains after the head
             // would cause them to be drawn on top of the head, which we do not want.
-            Texture2D headTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D headTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Main.EntitySpriteDraw(headTexture,
                              Projectile.Center - Main.screenPosition + Vector2.UnitY * Projectile.gfxOffY,
-                             headTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame),
+                             headTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame),
                              lightColor,
                              Projectile.rotation,
                              Projectile.Size * 0.5f,
@@ -241,6 +242,5 @@ namespace CalamityMod.Projectiles.Summon
                              0);
             return false;
         }
-        public override bool? CanDamage() => false;
     }
 }

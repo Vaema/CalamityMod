@@ -1,14 +1,9 @@
 ﻿using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Typeless;
-using CalamityMod.Rarities;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+using CalamityMod.Items.Placeables.Crags;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.GameContent;
-using CalamityMod.Items.Placeables;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -16,12 +11,12 @@ namespace CalamityMod.Items.Accessories
     public class SlagsplitterPauldron : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
-
+        public static int PauldronSlamDamage = 330;
         public override void SetDefaults()
         {
             Item.width = 54;
             Item.height = 56;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.accessory = true;
         }
@@ -29,14 +24,15 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.Pauldron = true;
+            modPlayer.sPauldron = true;
+            modPlayer.sPauldronVisual = !hideVisual;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
             AddIngredient<ScorchedBone>(12).
-            AddIngredient<DemonicBoneAsh>(3).
+            AddIngredient<AncientBoneDust>(4).
             AddIngredient<EssenceofHavoc>(8).
             AddTile(TileID.Anvils).
             Register();

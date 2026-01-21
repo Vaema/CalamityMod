@@ -1,10 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -14,10 +13,11 @@ namespace CalamityMod.Projectiles.Summon
         public Player Owner => Main.player[Projectile.owner];
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 1;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 1;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -89,7 +89,7 @@ namespace CalamityMod.Projectiles.Summon
                 for (int i = 0; i < 20; i++)
                 {
                     Vector2 spawnOffset = Main.rand.NextVector2Unit() * Main.rand.NextFloat(4f, 36f);
-                    Dust slime = Dust.NewDustPerfect(Projectile.Center + spawnOffset, 243);
+                    Dust slime = Dust.NewDustPerfect(Projectile.Center + spawnOffset, DustID.PinkSlime);
                     slime.velocity = spawnOffset.RotatedBy(MathHelper.PiOver2 * Main.rand.NextBool().ToDirectionInt()) * 0.16f;
                     slime.scale = 1.2f;
                 }
@@ -100,7 +100,8 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor);
+            var dye = Owner?.cMinion ?? 0;
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, armorShaderToUse: dye);
             return false;
         }
     }

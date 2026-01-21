@@ -1,11 +1,13 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using System.IO;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using Microsoft.Xna.Framework;
-using System;
-using System.IO;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,6 +15,7 @@ using Terraria.ModLoader.Utilities;
 
 namespace CalamityMod.NPCs.Abyss
 {
+    [LongDistanceNetSync]
     public class OarfishHead : ModNPC
     {
         private Vector2 patrolSpot = Vector2.Zero;
@@ -25,9 +28,8 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void SetStaticDefaults()
         {
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
-                CustomTexturePath = "CalamityMod/ExtraTextures/Bestiary/Oarfish_Bestiary",
                 PortraitPositionYOverride = 20
             };
             value.Position.X += 20;
@@ -45,7 +47,7 @@ namespace CalamityMod.NPCs.Abyss
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 0, 10, 0);
+            NPC.value = Item.buyPrice(silver: 10);
             NPC.behindTiles = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
@@ -93,7 +95,7 @@ namespace CalamityMod.NPCs.Abyss
             {
                 if (Main.rand.NextBool())
                 {
-                    Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, 204, 0f, 0f, 150, default(Color), 0.3f);
+                    Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.TreasureSparkle, 0f, 0f, 150, default(Color), 0.3f);
                     dust.fadeIn = 0.75f;
                     dust.velocity *= 0.1f;
                     dust.noLight = true;
@@ -151,7 +153,11 @@ namespace CalamityMod.NPCs.Abyss
                 NPC.alpha = 0;
 
             if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > 5600f)
-                NPC.active = false;
+            {
+                NPC.TargetClosest(false);
+                if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > 5600f)
+                    NPC.active = false;
+            }
 
             float currentSpeed = speed;
             float currentTurnSpeed = turnSpeed;
@@ -330,8 +336,8 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            var postClone = npcLoot.DefineConditionalDropSet(DropHelper.PostCal());
-            postClone.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 3, 5, 4, 7));
+            var postLevi = npcLoot.DefineConditionalDropSet(DropHelper.PostLevi());
+            postLevi.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 3, 5, 4, 7));
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -346,7 +352,7 @@ namespace CalamityMod.NPCs.Abyss
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("OarfishHead").Type, 1f);
             }
         }
@@ -354,7 +360,16 @@ namespace CalamityMod.NPCs.Abyss
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<CrushDepth>(), 90);
+                target.AddBuff(ModContent.BuffType<CrushDepth>(), 120);
+        }
+
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            if (NPC.IsABestiaryIconDummy)
+            {
+                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, NPC, drawColor, TextureAssets.Npc[Type].Value, TextureAssets.Npc[ModContent.NPCType<OarfishBody>()].Value, 11, 10, 0.6f, Vector2.Zero, 3, 10);
+            }
+            return true;
         }
     }
 }

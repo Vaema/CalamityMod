@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Sounds;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.Projectiles.Enemy
 {
@@ -12,7 +12,7 @@ namespace CalamityMod.Projectiles.Enemy
         public new string LocalizationCategory => "Projectiles.Enemy";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 6;
+            Main.projFrames[Type] = 6;
         }
 
         public override void SetDefaults()

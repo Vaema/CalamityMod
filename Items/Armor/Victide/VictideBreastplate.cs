@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Victide
@@ -11,9 +12,13 @@ namespace CalamityMod.Items.Armor.Victide
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
         public string BulkTexture => "CalamityMod/Items/Armor/Victide/VictideBreastplate_Bulk";
 
+        public static int RegenBoost = 2;
+
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RegenBoost.ToRegenPerSecond());
+
         public override void Load()
         {
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 //register the faulds texture. This appears either when the leggings  or the chestplate is equipped (both works)
                 EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Armor/Victide/VictideFaulds_Waist", EquipType.Waist, name: "VictideFaulds");
@@ -22,8 +27,7 @@ namespace CalamityMod.Items.Armor.Victide
 
         public override void SetStaticDefaults()
         {
-           
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 var equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
                 ArmorIDs.Body.Sets.HidesArms[equipSlot] = true;
@@ -35,20 +39,14 @@ namespace CalamityMod.Items.Armor.Victide
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
-            Item.defense = 5; //9
+            Item.defense = 4;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.endurance += 0.05f;
-            player.GetCritChance<GenericDamageClass>() += 5;
-            if (Collision.DrownCollision(player.position, player.width, player.height, player.gravDir))
-            {
-                player.statDefense += 5;
-                player.endurance += 0.1f;
-            }
+            player.lifeRegen += RegenBoost;
         }
 
         public override void AddRecipes()

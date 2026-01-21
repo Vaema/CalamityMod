@@ -1,10 +1,10 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -36,10 +36,6 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.channel = true;
             Item.shoot = ModContent.ProjectileType<PulseDragonProjectile>();
             Item.shootSpeed = 20f;
-
-            modItem.UsesCharge = true;
-            modItem.MaxCharge = 190f;
-            modItem.ChargePerUse = 0.32f;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockBack)
@@ -64,7 +60,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
                 AddIngredient<UelibloomBar>(8).
                 AddIngredient(ItemID.LunarBar, 4).
                 AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(4, out Func<bool> condition), condition).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

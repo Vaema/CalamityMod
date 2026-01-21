@@ -1,8 +1,7 @@
 ﻿using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
-using CalamityMod.Items.Materials;
 using CalamityMod.Items.Pets;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
@@ -24,28 +23,28 @@ namespace CalamityMod.Items.TreasureBags
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 3;
-			ItemID.Sets.BossBag[Item.type] = true;
-            ItemID.Sets.PreHardmodeLikeBossBag[Item.type] = true;
+            ItemID.Sets.BossBag[Type] = true;
+            ItemID.Sets.PreHardmodeLikeBossBag[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 24;
             Item.height = 24;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
             Item.rare = ItemRarityID.Cyan;
             Item.expert = true;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossBags;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossBags;
+        }
 
         public override bool CanRightClick() => true;
 
-		public override Color? GetAlpha(Color lightColor) => Color.Lerp(lightColor, Color.White, 0.4f);
+        public override Color? GetAlpha(Color lightColor) => Color.Lerp(lightColor, Color.White, 0.4f);
 
         public override void PostUpdate() => Item.TreasureBagLightAndDust();
 
@@ -56,11 +55,10 @@ namespace CalamityMod.Items.TreasureBags
 
         public override void ModifyItemLoot(ItemLoot itemLoot)
         {
-			// Money
-			itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<HiveMind>()));
+            // Money
+            itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<HiveMind>()));
 
             // Materials
-            itemLoot.Add(ModContent.ItemType<RottenMatter>(), 1, 30, 40);
             itemLoot.Add(ItemID.DemoniteBar, 1, 15, 20);
             itemLoot.Add(ItemID.RottenChunk, 1, 15, 20);
             itemLoot.AddIf(() => Main.hardMode, ItemID.CursedFlame, 1, 25, 30);
@@ -73,7 +71,7 @@ namespace CalamityMod.Items.TreasureBags
                 ModContent.ItemType<Shadethrower>(),
                 ModContent.ItemType<ShaderainStaff>(),
                 ModContent.ItemType<DankStaff>(),
-                new WeightedItemStack(ModContent.ItemType<RotBall>(), 1f, 50, 75),
+                ModContent.ItemType<RotBall>(),
             }));
 
             // Equipment

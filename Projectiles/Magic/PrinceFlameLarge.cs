@@ -1,12 +1,13 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -15,12 +16,14 @@ namespace CalamityMod.Projectiles.Magic
         public new string LocalizationCategory => "Projectiles.Magic";
         public ref float Time => ref Projectile.ai[0];
         public const int Lifetime = 60;
-        public const int FadeoutTime = 25;
+        public const int FadeoutTime = 24;
+        public static Color FlameColor => new Color(255, 180, 80);
+
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 8;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
+            Main.projFrames[Type] = 8;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
         }
 
         public override void SetDefaults()
@@ -38,7 +41,7 @@ namespace CalamityMod.Projectiles.Magic
         public override void AI()
         {
             // Create rose petals.
-            if (Projectile.localAI[0] == 0f)
+            if (Time == 0f)
             {
                 for (int i = 0; i < 10; i++)
                 {
@@ -49,7 +52,6 @@ namespace CalamityMod.Projectiles.Magic
                     rose.scale = Main.rand.NextFloat(1.2f, 1.7f);
                     rose.noGravity = Main.rand.NextBool();
                 }
-                Projectile.localAI[0] = 1f;
             }
 
             // Explode before dissipating.
@@ -58,39 +60,42 @@ namespace CalamityMod.Projectiles.Magic
 
             bool dissipating = Projectile.timeLeft < FadeoutTime;
 
-            for (int i = 0; i < (dissipating ? 2 : 1); i++)
-            {
-                Dust fire = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.ProfanedFire);
-                fire.velocity = Main.rand.NextVector2Unit() * Main.rand.NextFloat(2f, 6f);
-                fire.scale *= Main.rand.NextFloat(1.15f, 1.7f);
-                fire.noGravity = Main.rand.NextBool();
-            }
-
             // Dissipate at the end of the projectile's lifetime.
             if (dissipating)
             {
                 Projectile.frame = (int)Math.Round(MathHelper.Lerp(4f, 7f, Utils.GetLerpValue(FadeoutTime, 0f, Projectile.timeLeft, true)));
                 Projectile.velocity *= 0.95f;
+
+                if (Main.rand.NextBool())
+                {
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(4f, 4f), ModContent.DustType<LightDust>(), (-Projectile.velocity).RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.1f, 0.2f));
+                    dust.noGravity = true;
+                    dust.scale = Main.rand.NextFloat(0.5f, 1f);
+                    dust.color = FlameColor * 0.8f;
+
+                    Particle mist = new MediumMistParticle(Projectile.Center, Projectile.velocity * 0.5f, FlameColor, Color.DarkSlateGray, Main.rand.NextFloat(0.4f, 0.6f), 140, Main.rand.NextFloat(-0.1f, 0.1f));
+                    GeneralParticleHandler.SpawnParticle(mist);
+                }
+
+                Particle dyingSmoke = new HeavySmokeParticle(Projectile.Center, Projectile.velocity * 0.5f, Color.Lerp(FlameColor, Color.DarkSlateGray, 0.3f), 12, Main.rand.NextFloat(0.3f, 0.4f), 0.6f, Main.rand.NextFloat(-0.1f, 0.1f), true);
+                GeneralParticleHandler.SpawnParticle(dyingSmoke);
                 return;
             }
 
-            // Create bursts of fire dust.
-            if (Time % 8f == 7f)
+            // Create bursts of fire dust
+            if (Time % 2f == 1f && Time > 5f)
             {
-                for (int i = 0; i < 12; i++)
-                {
-                    Vector2 dustSpawnOffset = Vector2.UnitX * -Projectile.width / 2f;
-                    dustSpawnOffset += -Vector2.UnitY.RotatedBy(i * MathHelper.TwoPi / 12f) * new Vector2(8f, 16f);
-                    dustSpawnOffset = dustSpawnOffset.RotatedBy(Projectile.rotation - MathHelper.PiOver2);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(16f, 16f), ModContent.DustType<LightDust>(), (-Projectile.velocity).RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.1f, 0.3f));
+                dust.noGravity = true;
+                dust.scale = Main.rand.NextFloat(0.8f, 1.5f);
+                dust.color = FlameColor;
 
-                    Dust holyFire = Dust.NewDustDirect(Projectile.Center, 0, 0, (int)CalamityDusts.ProfanedFire, 0f, 0f, 160, default, 1f);
-                    holyFire.scale = 1.1f;
-                    holyFire.noGravity = true;
-                    holyFire.position = Projectile.Center + dustSpawnOffset;
-                    holyFire.velocity = Projectile.velocity * 0.1f;
-                    holyFire.velocity = (Projectile.Center - Projectile.velocity * 3f - holyFire.position).SafeNormalize(Vector2.Zero) * 1.25f;
-                }
+                Particle mist = new MediumMistParticle(Projectile.Center, Projectile.velocity * 0.5f, FlameColor, Color.DarkSlateGray, Main.rand.NextFloat(1f, 1.5f), 180, Main.rand.NextFloat(-0.1f, 0.1f));
+                GeneralParticleHandler.SpawnParticle(mist);
             }
+
+            Particle smoke = new HeavySmokeParticle(Projectile.Center, Projectile.velocity * 0.5f, FlameColor, 24, Main.rand.NextFloat(0.6f, 1f), 0.6f, Main.rand.NextFloat(-0.1f, 0.1f), true);
+            GeneralParticleHandler.SpawnParticle(smoke);
 
             Time++;
             Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
@@ -109,6 +114,13 @@ namespace CalamityMod.Projectiles.Magic
             int damage = (int)(Projectile.damage * 0.66f);
             float kb = Projectile.knockBack * 0.4f;
             float offsetAngle = Main.rand.NextFloatDirection() * 0.31f;
+            for (float i = 0f; i < MathHelper.TwoPi; i += 0.05f)
+            {
+                Vector2 velocity = (i + offsetAngle + MathHelper.ToRadians(45f)).ToRotationVector2() * (0.5f + (MathF.Sin(6f * i) + 1f) * 8f);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), velocity);
+                dust.noGravity = true;
+                dust.color = Main.hslToRgb(Main.rand.NextFloat(0.05f, 0.15f), 1f, 0.66f);
+            }
             for (int i = 0; i < ThePrince.FlameSplitCount; i++)
             {
                 Vector2 shootVelocity = (MathHelper.TwoPi * i / ThePrince.FlameSplitCount + offsetAngle).ToRotationVector2() * 8f;
@@ -121,7 +133,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             lightColor = Color.Lerp(lightColor, Color.White, 0.8f);
             lightColor.A /= 4;
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
@@ -129,15 +141,6 @@ namespace CalamityMod.Projectiles.Magic
         {
             if (timeLeft > FadeoutTime)
                 ExplodeIntoFireballs();
-
-            for (int i = 0; i < 30; i++)
-            {
-                Dust fire = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.ProfanedFire);
-                fire.velocity = Main.rand.NextVector2Unit() * Main.rand.NextFloat(3f, 8f);
-                fire.position += fire.velocity.RotatedBy(MathHelper.PiOver2) * 2f;
-                fire.scale *= Main.rand.NextFloat(1.15f, 1.7f);
-                fire.noGravity = true;
-            }
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)

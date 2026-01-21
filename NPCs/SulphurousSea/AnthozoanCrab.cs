@@ -1,12 +1,12 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using System.IO;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
-using CalamityMod.Projectiles.Enemy;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Projectiles.Enemy;
 using Microsoft.Xna.Framework;
-using System;
-using System.IO;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -17,10 +17,12 @@ namespace CalamityMod.NPCs.SulphurousSea
     public class AnthozoanCrab : ModNPC
     {
         public int boulderIndex;
+
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 16;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            Main.npcFrameCount[Type] = 16;
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 SpriteDirection = 1
             };
@@ -32,13 +34,13 @@ namespace CalamityMod.NPCs.SulphurousSea
         public override void SetDefaults()
         {
             NPC.noGravity = true;
-            NPC.damage = 45;
+            NPC.damage = 0; // 0 contact damage, projectile damage is handled separately
             NPC.width = 56;
             NPC.height = 42;
             NPC.defense = 22;
             NPC.lifeMax = 900;
             NPC.aiStyle = AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 1, 0);
+            NPC.value = Item.buyPrice(silver: 8);
             NPC.HitSound = SoundID.NPCHit38;
             NPC.DeathSound = SoundID.NPCDeath46;
             NPC.knockBackResist = 0.04f;
@@ -53,7 +55,7 @@ namespace CalamityMod.NPCs.SulphurousSea
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.AnthozoanCrab")
             });
@@ -63,10 +65,12 @@ namespace CalamityMod.NPCs.SulphurousSea
         {
             writer.Write(boulderIndex);
         }
+
         public override void ReceiveExtraAI(BinaryReader reader)
         {
             boulderIndex = reader.ReadInt32();
         }
+
         public override void AI()
         {
             if (NPC.ai[1]++ % 360f < 280f)
@@ -163,9 +167,10 @@ namespace CalamityMod.NPCs.SulphurousSea
                 {
                     NPC.velocity.X = 0f;
                     Vector2 rockSpawnPosition = new Vector2(16f * -NPC.spriteDirection + NPC.Center.X, NPC.Bottom.Y - 6f);
+                    int damage = Main.masterMode ? 18 : Main.expertMode ? 21 : 29;
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        boulderIndex = Projectile.NewProjectile(NPC.GetSource_FromAI(), rockSpawnPosition, Vector2.Zero, ModContent.ProjectileType<CrabBoulder>(), 29, 6f);
+                        boulderIndex = Projectile.NewProjectile(NPC.GetSource_FromAI(), rockSpawnPosition, Vector2.Zero, ModContent.ProjectileType<CrabBoulder>(), damage, 6f);
                         NPC.netUpdate = true;
                     }
                 }
@@ -226,9 +231,9 @@ namespace CalamityMod.NPCs.SulphurousSea
             {
                 for (int k = 0; k < 15; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("AnthozoanCrabGore").Type, NPC.scale);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("AnthozoanCrabGore2").Type, NPC.scale);

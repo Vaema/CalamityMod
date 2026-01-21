@@ -1,10 +1,7 @@
-﻿using CalamityMod.Buffs.Summon;
-using CalamityMod.CalPlayer;
-using CalamityMod.Projectiles.Typeless;
-using Microsoft.Xna.Framework;
+﻿using System;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -13,29 +10,19 @@ namespace CalamityMod.Items.Accessories
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
-            Item.width = 42;
-            Item.height = 36;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.width = 48;
+            Item.height = 54;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
-            Item.defense = 5;
             Item.accessory = true;
-        }
-
-        public override bool CanEquipAccessory(Player player, int slot, bool modded)
-        {
-            if (player.Calamity().gladiatorSword)
-                return false;
-
-            return true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            float damageIncrease = 0.2f;
-            float moveSpeedIncrease = 0.2f;
+            float statPower = (float)Math.Round(0.2f * Utils.GetLerpValue(1, 0.5f, ((float)player.statLife / (float)player.statLifeMax2), true), 2);
             player.Calamity().gladiatorSword = true;
-            player.GetDamage<GenericDamageClass>() += damageIncrease - (damageIncrease * player.statLife / player.statLifeMax2);
-            player.moveSpeed += moveSpeedIncrease - (moveSpeedIncrease * player.statLife / player.statLifeMax2);
+            player.GetDamage<GenericDamageClass>() += statPower;
+            player.moveSpeed += statPower;
         }
     }
 }

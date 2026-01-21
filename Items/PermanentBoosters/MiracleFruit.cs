@@ -1,4 +1,5 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.Collections.Generic;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -6,8 +7,6 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using System.Linq;
-using System.Collections.Generic;
 
 namespace CalamityMod.Items.PermanentBoosters
 {
@@ -21,23 +20,44 @@ namespace CalamityMod.Items.PermanentBoosters
         public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/MiracleFruitConsume");
         public override void SetStaticDefaults()
         {
-           	// For some reason Life/Mana boosting items are in this set (along with Magic Mirror+)
-			ItemID.Sets.SortingPriorityBossSpawns[Type] = 20; // Life Fruit
+            // For some reason Life/Mana boosting items are in this set (along with Magic Mirror+)
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 20; // Life Fruit
         }
 
         public override void SetDefaults()
         {
             Item.width = 32;
             Item.height = 36;
-            Item.useAnimation = 30;
-            Item.rare = ItemRarityID.Yellow;
-            Item.useTime = 30;
-            Item.useStyle = ItemUseStyleID.HoldUp;
-            Item.UseSound = UseSound;
             Item.consumable = true;
+            Item.useAnimation = Item.useTime = 30;
+            Item.UseSound = UseSound;
+            Item.useStyle = ItemUseStyleID.HoldUp;
+            Item.value = Item.sellPrice(gold: 30);
+            Item.rare = ItemRarityID.Yellow;
         }
 
-        public override bool CanUseItem(Player player) => player.ConsumedLifeFruit == Player.LifeFruitMax;
+        public static bool HasConsumedBefore(Player player) => player.Calamity().mFruit;
+
+        public override bool CanUseItem(Player player)
+        {
+            if (player.ConsumedLifeFruit != Player.LifeFruitMax)
+            {
+                return false;
+            }
+
+            if (HasConsumedBefore(player))
+            {
+                if (player.whoAmI == Main.myPlayer)
+                {
+                    string key = "Mods.CalamityMod.Misc.MiracleFruitText";
+                    Color messageColor = Color.DeepSkyBlue;
+                    Main.NewText(Language.GetTextValue(key), messageColor);
+                }
+                return false;
+            }
+
+            return true;
+        }
 
         public override bool? UseItem(Player player)
         {
@@ -47,10 +67,7 @@ namespace CalamityMod.Items.PermanentBoosters
                 player.itemTime = Item.useTime;
                 if (modPlayer.mFruit)
                 {
-                    string key = "Mods.CalamityMod.Misc.MiracleFruitText";
-                    Color messageColor = Color.DeepSkyBlue;
-                    CalamityUtils.DisplayLocalizedText(key, messageColor);
-                    return false;
+                    return null;
                 }
 
                 player.UseHealthMaxIncreasingItem(LifeBoost);
@@ -61,17 +78,14 @@ namespace CalamityMod.Items.PermanentBoosters
 
         public override void ModifyTooltips(List<TooltipLine> list)
         {
-            TooltipLine line = list.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Tooltip1");
-
-            if (line != null && Main.LocalPlayer.Calamity().mFruit)
-                line.Text += "\n" + CalamityUtils.GetTextValue("Misc.GenericConsumedText");
+            if (HasConsumedBefore(Main.LocalPlayer))
+                list.AddConsumedTooltip();
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.LifeFruit, 5).
-                AddIngredient<TrapperBulb>(5).
+                AddIngredient(ItemID.LifeFruit).
                 AddIngredient<LifeAlloy>(5).
                 AddIngredient<LivingShard>(12).
                 AddTile(TileID.MythrilAnvil).

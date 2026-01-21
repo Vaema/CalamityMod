@@ -63,7 +63,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 if (Main.rand.NextBool(10))
                 {
-                    Dust ghostDust = Dust.NewDustPerfect(Projectile.Center, 56, -Projectile.rotation.ToRotationVector2().RotatedByRandom(MathHelper.PiOver2) * Main.rand.NextFloat(2f, 3f));
+                    Dust ghostDust = Dust.NewDustPerfect(Projectile.Center, DustID.BlueFairy, -Projectile.rotation.ToRotationVector2().RotatedByRandom(MathHelper.PiOver2) * Main.rand.NextFloat(2f, 3f));
                     ghostDust.customData = false;
                     ghostDust.noLight = true;
                     ghostDust.noLightEmittence = true;
@@ -77,17 +77,17 @@ namespace CalamityMod.Projectiles.Summon
 
         public void FollowState()
         {
-            // If the minion starts to get far, force the minion to go to you.
-            if (!Projectile.WithinRange(Owner.Center, AncientIceChunk.MaxDistanceFromOwner))
+            // Teleport to the owner if sufficiently far away.
+            if (!Projectile.WithinRange(Owner.Center, 1200f))
             {
-                Projectile.velocity = (Projectile.velocity + Projectile.SafeDirectionTo(Owner.Center)) * 0.9f;
+                Projectile.Center = Owner.Center;
                 SyncVariables();
             }
 
-            // Teleport to the owner if sufficiently far away.
-            else if (!Projectile.WithinRange(Owner.Center, 1200f))
+            // If the minion starts to get far, force the minion to go to you.
+            else if (!Projectile.WithinRange(Owner.Center, AncientIceChunk.MaxDistanceFromOwner))
             {
-                Projectile.Center = Owner.Center;
+                Projectile.velocity = (Projectile.velocity + Projectile.SafeDirectionTo(Owner.Center)) * 0.9f;
                 SyncVariables();
             }
 
@@ -132,7 +132,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 Vector2 velocity = CalamityUtils.CalculatePredictiveAimToTarget(Projectile.Center, Target, 25f);
 
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(),
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(),
                     Projectile.Center,
                     velocity,
                     ModContent.ProjectileType<IceClasperSummonProjectile>(),
@@ -154,13 +154,7 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
-        public void SyncVariables()
-        {
-            Projectile.netUpdate = true;
-            if (Projectile.netSpam >= 10)
-                Projectile.netSpam = 9;
-        }
-
+        public void SyncVariables() => Projectile.ForceNetUpdate(false);
         #endregion
 
         public override void OnSpawn(IEntitySource source)
@@ -176,7 +170,7 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     float angle = MathHelper.TwoPi / dustAmount * dustIndex;
                     Vector2 velocity = angle.ToRotationVector2() * Main.rand.NextFloat(3f, 7f);
-                    Dust spawnDust = Dust.NewDustPerfect(Projectile.Center, 56, velocity);
+                    Dust spawnDust = Dust.NewDustPerfect(Projectile.Center, DustID.BlueFairy, velocity);
                     spawnDust.customData = false;
                     spawnDust.noGravity = true;
                     spawnDust.velocity *= .75f;
@@ -185,11 +179,11 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
-        public override bool? CanDamage() => (State == AIState.Ram) ? null : false;
+        public override bool MinionContactDamage() => State == AIState.Ram;
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;
@@ -199,7 +193,7 @@ namespace CalamityMod.Projectiles.Summon
             AfterimageInterpolant = MathHelper.Clamp(AfterimageInterpolant, 0f, 1f);
             float AfterimageFade = MathHelper.Lerp(0f, 1f, AfterimageInterpolant);
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 0; i < Projectile.oldPos.Length; i++)
                 {

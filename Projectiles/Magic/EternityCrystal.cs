@@ -1,12 +1,13 @@
-﻿using CalamityMod.Items.Weapons.Magic;
+﻿using System;
+using System.IO;
+using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Projectiles.Typeless;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.Audio;
-using CalamityMod.Sounds;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -29,7 +30,7 @@ namespace CalamityMod.Projectiles.Magic
         public const int InwardCollapseTime = 70;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 2;
+            Main.projFrames[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -127,11 +128,9 @@ namespace CalamityMod.Projectiles.Magic
         }
         public void ExplosionEffect(NPC target, Player player)
         {
-            // Apply damage to the target and register it to the owner's DPS meter.
-            // TODO -- why does Eternity directly StrikeNPC with its own damage variance instead of using a DirectStrike
-            int damage = (int)player.GetTotalDamage<MagicDamageClass>().ApplyTo(Eternity.ExplosionDamage * Main.rand.NextFloat(0.9f, 1.1f));
-            player.addDPS(damage);
-            target.StrikeNPC(target.CalculateHitInfo(damage, 0, false, 0f));
+            // Apply damage to the target.
+            int damage = (int)player.GetTotalDamage<MagicDamageClass>().ApplyTo(Eternity.ExplosionDamage);
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), damage, 0f, Projectile.owner, target.whoAmI);
 
             Vector2 randomCirclePointVector = Vector2.UnitY.RotatedBy(Projectile.rotation);
 
@@ -166,8 +165,8 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D myTexture = ModContent.Request<Texture2D>(Texture).Value;
-            Rectangle frame = myTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
+            Texture2D myTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            Rectangle frame = myTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Color trasparentCrystalColor = Projectile.GetAlpha(lightColor) * 0.6f;
             Vector2 origin = frame.Size() / 2f;
 

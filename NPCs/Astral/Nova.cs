@@ -1,29 +1,28 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using ReLogic.Content;
-using Terraria.GameContent.ItemDropRules;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.NPCs.Astral
 {
     public class Nova : ModNPC
     {
-        private static Texture2D glowmask;
+        public static Asset<Texture2D> glowmask;
 
         private float travelAcceleration = 0.2f;
         private float targetTime = 120f;
@@ -33,11 +32,11 @@ namespace CalamityMod.NPCs.Astral
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 8;
+            Main.npcFrameCount[Type] = 8;
 
             if (!Main.dedServ)
-                glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/Astral/NovaGlow", AssetRequestMode.ImmediateLoad).Value;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+                glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/Astral/NovaGlow", AssetRequestMode.AsyncLoad);
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Scale = 0.64f,
                 PortraitPositionXOverride = 10f,
@@ -52,22 +51,21 @@ namespace CalamityMod.NPCs.Astral
             NPC.width = 78;
             NPC.height = 50;
             NPC.damage = 45;
-            NPC.defense = 15;
-            NPC.DR_NERD(0.15f);
-            NPC.lifeMax = 230;
+            NPC.defense = 26;
+            NPC.lifeMax = 300;
             NPC.DeathSound = CommonCalamitySounds.AstralNPCDeathSound;
             NPC.noGravity = true;
             NPC.knockBackResist = 0.5f;
-            NPC.value = Item.buyPrice(0, 0, 20, 0);
+            NPC.value = Item.buyPrice(silver: 5);
             NPC.aiStyle = -1;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<NovaBanner>();
             if (DownedBossSystem.downedAstrumAureus)
             {
                 NPC.damage = 75;
-                NPC.defense = 25;
+                NPC.defense = 36;
                 NPC.knockBackResist = 0.4f;
-                NPC.lifeMax = 350;
+                NPC.lifeMax = 450;
             }
             if (CalamityWorld.revenge)
             {
@@ -81,14 +79,14 @@ namespace CalamityMod.NPCs.Astral
             }
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<AbovegroundAstralBiome>().Type };
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<BiomeManagers.AstralInfectionBiome>().Type };
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Nova")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Nova")
             });
         }
 
@@ -133,6 +131,9 @@ namespace CalamityMod.NPCs.Astral
             Player target = Main.player[NPC.target];
             if (NPC.ai[3] >= 0)
             {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
                 CalamityGlobalNPC.DoFlyingAI(NPC, (CalamityWorld.death ? 8.5f : CalamityWorld.revenge ? 7f : 5.5f), (CalamityWorld.death ? 0.055f : CalamityWorld.revenge ? 0.045f : 0.035f), 400f, 150, false);
 
                 if (Collision.CanHit(NPC.position, NPC.width, NPC.height, target.position, target.width, target.height))
@@ -169,11 +170,20 @@ namespace CalamityMod.NPCs.Astral
 
                     NPC.velocity += new Vector2(NPC.ai[1], NPC.ai[2]) * travelAcceleration; //acceleration per frame
 
+                    // Set damage or avoid cheap bullshit
+                    if (NPC.velocity.Length() > 4f)
+                        NPC.damage = NPC.defDamage;
+                    else
+                        NPC.damage = 0;
+
                     //rotation
                     NPC.rotation = NPC.velocity.ToRotation();
                 }
                 else if (NPC.ai[3] == -waitBeforeTravel)
                 {
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
+
                     between.Normalize();
                     NPC.ai[1] = between.X;
                     NPC.ai[2] = between.Y;
@@ -184,6 +194,9 @@ namespace CalamityMod.NPCs.Astral
                 }
                 else
                 {
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
+
                     //slowdown
                     NPC.velocity *= slowdown;
 
@@ -209,12 +222,12 @@ namespace CalamityMod.NPCs.Astral
 
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
-                for (int i = 0; i < Main.maxPlayers; i++)
+                foreach (Player player in Main.ActivePlayers)
                 {
-                    if (Main.player[i].getRect().Intersects(myRect))
+                    if (player.getRect().Intersects(myRect))
                     {
-                        int direction = NPC.Center.X - Main.player[i].Center.X < 0 ? -1 : 1;
-                        Main.player[i].Hurt(PlayerDeathReason.ByNPC(NPC.whoAmI), NPC.damage, direction);
+                        int direction = NPC.Center.X - player.Center.X < 0 ? -1 : 1;
+                        player.Hurt(PlayerDeathReason.ByNPC(NPC.whoAmI), NPC.damage, direction);
                     }
                 }
             }
@@ -237,15 +250,15 @@ namespace CalamityMod.NPCs.Astral
             }
             for (int i = 0; i < 15; i++)
             {
-                int dust = Dust.NewDust(NPC.Center - off, size, size, 31, 0f, 0f, 100, default, 1.7f);
+                int dust = Dust.NewDust(NPC.Center - off, size, size, DustID.Smoke, 0f, 0f, 100, default, 1.7f);
                 Main.dust[dust].velocity *= 1.4f;
             }
             for (int i = 0; i < 27; i++)
             {
-                int dust = Dust.NewDust(NPC.Center - off, size, size, 6, 0f, 0f, 100, default, 2.4f);
+                int dust = Dust.NewDust(NPC.Center - off, size, size, DustID.Torch, 0f, 0f, 100, default, 2.4f);
                 Main.dust[dust].noGravity = true;
                 Main.dust[dust].velocity *= 5f;
-                dust = Dust.NewDust(NPC.Center - off, size, size, 6, 0f, 0f, 100, default, 1.6f);
+                dust = Dust.NewDust(NPC.Center - off, size, size, DustID.Torch, 0f, 0f, 100, default, 1.6f);
                 Main.dust[dust].velocity *= 3f;
             }
         }
@@ -263,7 +276,7 @@ namespace CalamityMod.NPCs.Astral
             //if dead do gores
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     for (int i = 0; i < 7; i++)
                     {
@@ -278,11 +291,11 @@ namespace CalamityMod.NPCs.Astral
             var exploded = npcLoot.DefineConditionalDropSet((info) => info.npc.ai[3] <= -10000f);
 
             // 2-3 Stardust (3-4 Expert+)
-            exploded.OnFailedConditions(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<Stardust>(), 1, 2, 3, 3, 4));
-            exploded.OnFailedConditions(ItemDropRule.ByCondition(DropHelper.If(() => DownedBossSystem.downedAstrumAureus), ModContent.ItemType<StellarCannon>(), 7));
+            exploded.OnFailedConditions(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<StarblightSoot>(), 1, 2, 3, 3, 4));
+            exploded.OnFailedConditions(ItemDropRule.ByCondition(DropHelper.If(() => DownedBossSystem.downedAstrumAureus), ModContent.ItemType<StellarCannon>(), 10));
 
             // If exploded, then have a chance to drop Glorious End and nothing else
-            exploded.Add(ModContent.ItemType<GloriousEnd>(), 7);
+            exploded.Add(ModContent.ItemType<GloriousEnd>(), 10);
         }
 
         public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -291,7 +304,7 @@ namespace CalamityMod.NPCs.Astral
                 return;
 
             Vector2 drawPosition = NPC.Center - screenPos - new Vector2(0, NPC.scale * 4f);
-            spriteBatch.Draw(glowmask, drawPosition, NPC.frame, Color.White * 0.75f, NPC.rotation, new Vector2(57f, 37f), NPC.scale, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
+            spriteBatch.Draw(glowmask.Value, drawPosition, NPC.frame, Color.White * 0.75f, NPC.rotation, new Vector2(57f, 37f), NPC.scale, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
@@ -310,7 +323,7 @@ namespace CalamityMod.NPCs.Astral
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 45, true);
+                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 180);
         }
     }
 }

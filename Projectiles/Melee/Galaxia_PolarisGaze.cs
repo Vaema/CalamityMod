@@ -1,15 +1,15 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using System.IO;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
-using Terraria.Audio;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -21,11 +21,9 @@ namespace CalamityMod.Projectiles.Melee
         Vector2 direction = Vector2.Zero;
         public ref float Shred => ref Projectile.ai[0]; //Charge, basically
         public ref float HitChargeCooldown => ref Projectile.ai[1];
-        public ref float ChargeSoundCooldown => ref Projectile.localAI[0];
         public float Bounce(float x) => x <= 50 ? x / 50f : x <= 65 ? 1 + 0.15f * (float)Math.Sin((x - 50f) / 15f * MathHelper.Pi) : 1f;
         public float ShredRatio => MathHelper.Clamp(Shred / (maxShred * 0.5f), 0f, 1f);
         public Player Owner => Main.player[Projectile.owner];
-        private bool OwnerCanShoot => Owner.channel && !Owner.noItems && !Owner.CCed;
 
         public const float maxShred = 650; //How much shred you get
 
@@ -36,10 +34,6 @@ namespace CalamityMod.Projectiles.Melee
         public Particle[] Rings = new Particle[3];
         public Particle PolarStar;
 
-
-        public override void SetStaticDefaults()
-        {
-        }
         public override void SetDefaults()
         {
             Projectile.DamageType = DamageClass.Melee;
@@ -77,23 +71,21 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     if (proj.active && proj.type == ProjectileType<PolarisGazeStar>() && proj.owner == Owner.whoAmI)
                     {
-                        if (CalamityUtils.AngleBetween(Owner.Center - Main.MouseWorld, Owner.Center - proj.Center) > MathHelper.PiOver4)
-                        {
-                            proj.Kill();
-                            break;
-                        }
-
                         Wheel = proj;
                         Dashing = true;
                         DashStart = Owner.Center;
                         Wheel.timeLeft = 60;
-                        Owner.GiveIFrames(FourSeasonsGalaxia.PolarisAttunement_SlashIFrames);
+
+                        // 17APR2024: Ozzatron: Galaxia's spiral gives iframes when striking enemies in a similar manner to a ram dash.
+                        // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
+                        Owner.GiveUniversalIFrames(FourSeasonsGalaxia.PolarisAttunement_SlashIFrames);
+
                         break;
                     }
                 }
             }
 
-            if (!OwnerCanShoot)
+            if (Owner.CantUseHoldout())
             {
                 Projectile.Kill();
                 return;
@@ -122,26 +114,27 @@ namespace CalamityMod.Projectiles.Melee
 
             if (PolarStar == null)
             {
-                PolarStar = new GenericSparkle(Owner.Center + direction, Vector2.Zero, Color.White, Color.CornflowerBlue, Projectile.scale, 2, 0.05f, 5f, true);
+                PolarStar = new GenericSparkle(Owner.Center + direction, Vector2.Zero, Color.White, Color.DodgerBlue, Projectile.scale, 2, 0.05f, 5f, true);
                 GeneralParticleHandler.SpawnParticle(PolarStar);
             }
             else
             {
                 PolarStar.Time = 0;
                 PolarStar.Position = Owner.Center + direction * 46 * Projectile.scale;
-                PolarStar.Rotation += (1 + (float)Math.Sin(Main.GlobalTimeWrappedHourly * 4f)) * 0.02f;
+                PolarStar.Color = ShredRatio > 0.75 ? Color.Lerp(Color.White, Color.CornflowerBlue, Utils.Remap(ShredRatio, 0.75f, 0.85f, 0f, 1f)) : Color.White;
+                PolarStar.Rotation += (1 + (float)Math.Sin(Main.GlobalTimeWrappedHourly * 4f)) * (ShredRatio > 0.85 ? 0.03f : 0.02f);
                 PolarStar.Scale = Projectile.scale * 2f;
             }
 
             if (Main.rand.NextBool())
             {
                 Vector2 smokeSpeed = direction.RotatedByRandom(MathHelper.PiOver4 * 0.3f) * Main.rand.NextFloat(10f, 30f) * (ShredRatio * 0.5f + 1f);
-                Particle smoke = new HeavySmokeParticle(Projectile.Center, smokeSpeed + Owner.velocity, Color.Lerp(Color.Purple, Color.Indigo, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 6f)), 30, Main.rand.NextFloat(0.6f, 1.2f) * (ShredRatio * 0.5f + 1f), 0.8f, 0, false, 0, true);
+                Particle smoke = new HeavySmokeParticle(Projectile.Center, smokeSpeed + Owner.velocity, Color.Lerp(Color.Purple, Color.Indigo, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 6f)), 30, Main.rand.NextFloat(0.5f, 1f) * (ShredRatio * 0.5f + 1f), 0.6f, 0, false, 0);
                 GeneralParticleHandler.SpawnParticle(smoke);
 
-                if (Main.rand.Next(3) == 0)
+                if (Main.rand.NextBool(3) && ShredRatio > 0.85)
                 {
-                    Particle smokeGlow = new HeavySmokeParticle(Projectile.Center, smokeSpeed + Owner.velocity, Main.hslToRgb(0.55f, 1, 0.5f + 0.2f * ShredRatio), 20, Main.rand.NextFloat(0.4f, 0.7f) * (ShredRatio * 0.5f + 1f), 0.8f, 0, true, 0.01f, true);
+                    Particle smokeGlow = new HeavySmokeParticle(Projectile.Center, smokeSpeed + Owner.velocity, Main.hslToRgb(0.55f, 1, 0.5f + 0.2f * ShredRatio), 20, Main.rand.NextFloat(0.4f, 0.7f) * (ShredRatio * 0.5f + 1f), 0.6f, 0, true, 0.01f);
                     GeneralParticleHandler.SpawnParticle(smokeGlow);
                 }
             }
@@ -152,6 +145,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Shred < 0)
                 Shred = 0;
 
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             //Manage position and rotation
             direction = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
             direction.Normalize();
@@ -160,7 +154,7 @@ namespace CalamityMod.Projectiles.Melee
 
             //Scaling based on shred
             Projectile.localNPCHitCooldown = FourSeasonsGalaxia.PolarisAttunement_LocalIFrames - (int)(MathHelper.Lerp(0, FourSeasonsGalaxia.PolarisAttunement_LocalIFrames - FourSeasonsGalaxia.PolarisAttunement_LocalIFramesCharged, ShredRatio)); //Increase the hit frequency
-            Projectile.scale = 1f + (ShredRatio * 1f); //SWAGGER
+            Projectile.scale = 1f + (ShredRatio * 1.5f); //SWAGGER
 
 
             if ((Wheel == null || !Wheel.active) && Dashing)
@@ -171,16 +165,6 @@ namespace CalamityMod.Projectiles.Melee
 
                 if (Owner.whoAmI == Main.myPlayer)
                 {
-                    int blastDamage = Owner.CalcIntDamage<MeleeDamageClass>(FourSeasonsGalaxia.PolarisAttunement_SlashBoltsDamage);
-                    for (int i = 0; i < 5; i++)
-                    {
-                        Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center, Main.rand.NextVector2CircularEdge(15, 15), ProjectileType<GalaxiaBolt>(), blastDamage, 0f, Owner.whoAmI, 0.55f, MathHelper.Pi * 0.02f);
-                        {
-                            blast.timeLeft = 100;
-                        }
-                    }
-
-
                     Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center - DashStart / 2f, Vector2.Zero, ProjectileType<PolarisGazeDash>(), (int)(Projectile.damage * FourSeasonsGalaxia.PolarisAttunement_SlashDamageBoost), 0, Owner.whoAmI);
                     if (proj.ModProjectile is PolarisGazeDash dash)
                     {
@@ -209,26 +193,11 @@ namespace CalamityMod.Projectiles.Melee
             Owner.itemRotation = direction.ToRotation();
             if (Owner.direction != 1)
             {
-                Owner.itemRotation -= 3.14f;
+                Owner.itemRotation -= MathHelper.Pi;
             }
             Owner.itemRotation = MathHelper.WrapAngle(Owner.itemRotation);
             Owner.itemTime = 2;
             Owner.itemAnimation = 2;
-
-            //Play a sound when the blade throw is available
-            if (ShredRatio > 0.85 && Owner.whoAmI == Main.myPlayer)
-            {
-                if (ChargeSoundCooldown <= 0)
-                {
-                    SoundEngine.PlaySound(SoundID.DD2_BookStaffCast with { Volume = SoundID.DD2_BookStaffCast.Volume * 2.5f });
-                    ChargeSoundCooldown = 20;
-                }
-            }
-            else
-            {
-                ChargeSoundCooldown--;
-            }
-
 
             Shred += FourSeasonsGalaxia.PolarisAttunement_ShredChargeupGain;
             HitChargeCooldown--;
@@ -240,7 +209,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             float maxMultiplier = FourSeasonsGalaxia.PolarisAttunement_FullChargeDamage / (float)FourSeasonsGalaxia.PolarisAttunement_BaseDamage;
             float damageMultiplier = MathHelper.Lerp(1f, maxMultiplier, ShredRatio);
-            //Adjust the damage to make it constant based on the local iframes
+            // Adjust the damage to make it constant based on the local iframes
             float damageReduction = Projectile.localNPCHitCooldown / (float)FourSeasonsGalaxia.PolarisAttunement_LocalIFrames;
 
             modifiers.SourceDamage *= damageMultiplier * damageReduction;
@@ -250,13 +219,11 @@ namespace CalamityMod.Projectiles.Melee
         {
             float maxMultiplier = FourSeasonsGalaxia.PolarisAttunement_FullChargeDamage / (float)FourSeasonsGalaxia.PolarisAttunement_BaseDamage;
             float damageMultiplier = MathHelper.Lerp(1f, maxMultiplier, ShredRatio);
-            //Adjust the damage to make it constant based on the local iframes
+            // Adjust the damage to make it constant based on the local iframes
             float damageReduction = Projectile.localNPCHitCooldown / (float)FourSeasonsGalaxia.PolarisAttunement_LocalIFrames;
 
             modifiers.SourceDamage *= damageMultiplier * damageReduction;
         }
-
-
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => ShredTarget();
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => ShredTarget();
@@ -270,11 +237,13 @@ namespace CalamityMod.Projectiles.Melee
             // get lifted up
             if (HitChargeCooldown <= 0)
             {
-                SoundEngine.PlaySound(SoundID.NPCHit30, Projectile.Center); //Sizzle
-                Shred += 80; //Augment the shredspeed
-                if (Owner.velocity.Y > 0)
-                    Owner.velocity.Y = -2f; //Get "stuck" into the enemy partly
-                Owner.GiveIFrames(FourSeasonsGalaxia.PolarisAttunement_ShredIFrames); // i framez.
+                SoundEngine.PlaySound(SoundID.NPCHit30, Projectile.Center); // Sizzle
+                Shred += 80; // Augment the shredspeed
+
+                // 17APR2024: Ozzatron: Galaxia's pogo gives iframes when striking enemies in a similar manner to a bonk dash.
+                // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
+                Owner.GiveUniversalIFrames(FourSeasonsGalaxia.PolarisAttunement_ShredIFrames);
+
                 HitChargeCooldown = 20;
             }
         }
@@ -284,7 +253,7 @@ namespace CalamityMod.Projectiles.Melee
             SoundEngine.PlaySound(SoundID.NPCHit43, Projectile.Center);
             if (ShredRatio > 0.85 && Owner.whoAmI == Main.myPlayer)
             {
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, direction * 36f, ProjectileType<PolarisGazeStar>(), (int)(Projectile.damage * FourSeasonsGalaxia.PolarisAttunement_ShotDamageBoost), Projectile.knockBack, Owner.whoAmI, Shred);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.ClampedMouseWorld(), Vector2.Zero, ProjectileType<PolarisGazeStar>(), (int)(Projectile.damage * FourSeasonsGalaxia.PolarisAttunement_ShotDamageBoost), Projectile.knockBack, Owner.whoAmI, Shred);
             }
             if (Dashing)
             {

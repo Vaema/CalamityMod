@@ -1,10 +1,7 @@
-﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.StatBuffs;
-using CalamityMod.Dusts;
+﻿using CalamityMod.Buffs.StatBuffs;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -30,13 +27,13 @@ namespace CalamityMod.Projectiles.Healing
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
-            Projectile.timeLeft = 1810;
+            Projectile.timeLeft = LifeJelly.AuraLifetime + 10;
         }
 
         public override void AI()
         {
             Framecounter++;
-            
+
             for (int playerIndex = 0; playerIndex < Main.maxPlayers; playerIndex++)
             {
                 Player player = Main.player[playerIndex];
@@ -73,19 +70,19 @@ namespace CalamityMod.Projectiles.Healing
 
                 for (int i = 0; i < 1; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2CircularEdge(155f, 155f), 242);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2CircularEdge(155f, 155f), DustID.PinkTorch);
                     dust.scale = Main.rand.NextFloat(2.2f, 3.3f);
                     dust.noGravity = true;
                 }
 
                 for (int i = 0; i < 1; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(150f, 150f), 242);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(150f, 150f), DustID.PinkTorch);
                     dust.scale = Main.rand.NextFloat(0.8f, 1.3f);
                     dust.noGravity = true;
                 }
 
-                if (Framecounter == 1800)
+                if (Framecounter == LifeJelly.AuraLifetime)
                 {
                     ShinkGrow = 2;
                 }

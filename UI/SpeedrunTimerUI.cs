@@ -1,6 +1,4 @@
-﻿using System;
-using CalamityMod.CalPlayer;
-using CalamityMod.NPCs.PrimordialWyrm;
+﻿using CalamityMod.CalPlayer;
 using CalamityMod.NPCs.AquaticScourge;
 using CalamityMod.NPCs.AstrumAureus;
 using CalamityMod.NPCs.AstrumDeus;
@@ -11,18 +9,19 @@ using CalamityMod.NPCs.CeaselessVoid;
 using CalamityMod.NPCs.Crabulon;
 using CalamityMod.NPCs.Cryogen;
 using CalamityMod.NPCs.DesertScourge;
-using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.NPCs.ExoMechs.Ares;
 using CalamityMod.NPCs.Leviathan;
 using CalamityMod.NPCs.OldDuke;
 using CalamityMod.NPCs.Perforator;
 using CalamityMod.NPCs.PlaguebringerGoliath;
+using CalamityMod.NPCs.PrimordialWyrm;
 using CalamityMod.NPCs.ProfanedGuardians;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.NPCs.Ravager;
 using CalamityMod.NPCs.Signus;
 using CalamityMod.NPCs.SlimeGod;
 using CalamityMod.NPCs.Yharon;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -32,7 +31,6 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.UI
 {
-    // TODO -- Combine with SpeedrunTimerStoppingSystem, which should be renamed and call the UI draw code in this file.
     public class SpeedrunTimerUI
     {
         // These values put the Speedrun Timer roughly at the top center of a 1080p screen.
@@ -44,11 +42,11 @@ namespace CalamityMod.UI
 
         public static void Draw(Player player)
         {
-            if (Main.gameMenu || !CalamityConfig.Instance.SpeedrunTimer)
+            if (Main.gameMenu || !CalamityClientConfig.Instance.SpeedrunTimer)
                 return;
 
             // Sanity check the planned position before drawing
-            Vector2 screenRatioPosition = new Vector2(CalamityConfig.Instance.SpeedrunTimerPosX, CalamityConfig.Instance.SpeedrunTimerPosY);
+            Vector2 screenRatioPosition = new Vector2(CalamityClientConfig.Instance.SpeedrunTimerPosX, CalamityClientConfig.Instance.SpeedrunTimerPosY);
             if (screenRatioPosition.X < 0f || screenRatioPosition.X > 100f)
                 screenRatioPosition.X = DefaultTimerPosX;
             if (screenRatioPosition.Y < 0f || screenRatioPosition.Y > 100f)
@@ -63,10 +61,7 @@ namespace CalamityMod.UI
             CalamityPlayer calamityPlayer = player.Calamity();
 
             // Main timer
-            string formatStr = @"hh\:mm\:ss\.ff";
-            string formatStrDays = @"d\:hh\:mm\:ss\.ff";
-            TimeSpan totalTime = CalamityMod.SpeedrunTimer.Elapsed.Add(calamityPlayer.previousSessionTotal);
-            string text = totalTime.ToString(totalTime.Days > 0 ? formatStrDays : formatStr);
+            string text = SpeedrunTimerSystem.GetTimerText(calamityPlayer);
             float scale = 2f;
             Utils.DrawBorderStringFourWay(Main.spriteBatch, FontAssets.MouseText.Value, text, screenPos.X, screenPos.Y, Color.White, Color.Black, default, scale);
 
@@ -74,8 +69,7 @@ namespace CalamityMod.UI
                 return;
 
             // Latest split
-            TimeSpan split = calamityPlayer.lastSplit;
-            text = split.ToString(split.Days > 0 ? formatStrDays : formatStr);
+            text = SpeedrunTimerSystem.GetSplitText(calamityPlayer);
             scale = 1f;
             float lineTwoX = screenPos.X + SplitHorizontalOffset;
             float lineTwoY = screenPos.Y + SplitVerticalOffset;
@@ -122,7 +116,7 @@ namespace CalamityMod.UI
             28 => TextureAssets.NpcHeadBoss[NPCID.Sets.BossHeadTextures[ModContent.NPCType<AstrumDeusHead>()]].Value,
             29 => TextureAssets.NpcHeadBoss[8].Value, // Moon Lord
             30 => TextureAssets.NpcHeadBoss[NPCID.Sets.BossHeadTextures[ModContent.NPCType<ProfanedGuardianCommander>()]].Value,
-            31 => TextureAssets.NpcHeadBoss[NPCID.Sets.BossHeadTextures[ModContent.NPCType<Bumblefuck>()]].Value,
+            31 => TextureAssets.NpcHeadBoss[NPCID.Sets.BossHeadTextures[ModContent.NPCType<Dragonfolly>()]].Value,
             32 => TextureAssets.NpcHeadBoss[NPCID.Sets.BossHeadTextures[ModContent.NPCType<Providence>()]].Value,
             33 => TextureAssets.NpcHeadBoss[NPCID.Sets.BossHeadTextures[ModContent.NPCType<CeaselessVoid>()]].Value,
             34 => ModContent.Request<Texture2D>("CalamityMod/NPCs/StormWeaver/StormWeaverHeadNaked_Head_Boss").Value,

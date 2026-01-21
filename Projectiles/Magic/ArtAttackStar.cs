@@ -1,9 +1,10 @@
-﻿using CalamityMod.Items.Weapons.Magic;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.Graphics.Primitives;
+using CalamityMod.Items.Weapons.Magic;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Graphics.Shaders;
@@ -15,14 +16,17 @@ namespace CalamityMod.Projectiles.Magic
     public class ArtAttackStar : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
-        public PrimitiveTrail TrailDrawer = null;
+
         public Player Owner => Main.player[Projectile.owner];
+
         public ref float Time => ref Projectile.ai[0];
+
         public const int StarShapeCreationDelay = 12;
+
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 180;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 180;
         }
 
         public override void SetDefaults()
@@ -38,7 +42,6 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void AI()
         {
-
             // Die if the holdout is gone.
             if (Owner.ownedProjectileCounts[ModContent.ProjectileType<ArtAttackHoldout>()] <= 0 && Time >= 2f)
             {
@@ -106,21 +109,22 @@ namespace CalamityMod.Projectiles.Magic
 
         public void DoMouseMovement()
         {
-            Projectile.Center = Main.MouseWorld;
+            // 14NOV2024: Ozzatron: Art Attack is intentionally limited to clamped mouse so larger screens don't give an advantage.
+            // If this feels too weird on larger screens, this could be reverted. It is a rather unique case.
+
+            // Projectile.Center = Main.MouseWorld;
+            Projectile.Center = Owner.ClampedMouseWorld();
 
             // Continuously sync since mouse information is local.
-            Projectile.netUpdate = true;
-            Projectile.netSpam = 0;
+            Projectile.ForceNetUpdate();
         }
 
         public void EmitIdleDust()
         {
-
             for (int i = 0; i < 3; i++)
             {
-                Dust rainbowMagic = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(8f, 8f), 261);
-                rainbowMagic.velocity = Main.rand.NextVector2Circular(6f, 6f) - ((Projectile.position - Projectile.oldPos[1])/3f).RotatedByRandom(0.51f);
-
+                Dust rainbowMagic = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(8f, 8f), DustID.AncientLight);
+                rainbowMagic.velocity = Main.rand.NextVector2Circular(6f, 6f) - ((Projectile.position - Projectile.oldPos[1]) / 3f).RotatedByRandom(0.51f);
                 rainbowMagic.color = Main.hslToRgb(Main.rand.NextFloat(), 1f, Main.rand.NextFloat(0.5f, 0.9f));
                 rainbowMagic.color.A = 128;
                 rainbowMagic.scale = Main.rand.NextFloat(1.3f, 1.6f);
@@ -133,9 +137,9 @@ namespace CalamityMod.Projectiles.Magic
         {
             float damageFactor = MathHelper.Lerp(1f, ArtAttack.MaxDamageBoostFactor, Utils.GetLerpValue(0f, ArtAttack.MaxDamageBoostTime, Time, true));
             int damage = (int)(Projectile.damage * damageFactor);
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (var n in Main.ActiveNPCs)
             {
-                if (!Main.npc[i].CanBeChasedBy())
+                if (!n.CanBeChasedBy())
                     continue;
 
                 bool enemyIsInShape = false;
@@ -158,9 +162,9 @@ namespace CalamityMod.Projectiles.Magic
                 Rectangle shapeRectangle = Utils.CenteredRectangle(center, area);
                 for (int j = 0; j < cleanOldPositions.Count; j++)
                 {
-                    Vector2 left = Main.npc[i].Center - Vector2.UnitX * 2000f;
-                    Vector2 right = Main.npc[i].Center + Vector2.UnitX * 2000f;
-                    bool inRangeOfStars = shapeRectangle.Intersects(Main.npc[i].Hitbox);
+                    Vector2 left = n.Center - Vector2.UnitX * 2000f;
+                    Vector2 right = n.Center + Vector2.UnitX * 2000f;
+                    bool inRangeOfStars = shapeRectangle.Intersects(n.Hitbox);
                     bool lineCheck = Collision.CheckLinevLine(left, right, cleanOldPositions[j], cleanOldPositions[(j + 1) % cleanOldPositions.Count]).Length > 0;
                     if (lineCheck && inRangeOfStars)
                     {
@@ -172,12 +176,12 @@ namespace CalamityMod.Projectiles.Magic
                 // Strike an enemy if it's in the shape.
                 if (enemyIsInShape)
                 {
-                    SoundEngine.PlaySound(SoundID.DD2_LightningBugZap, Main.npc[i].Center);
-                    CreateDustExplosionEffect(Main.npc[i].Center);
+                    SoundEngine.PlaySound(SoundID.DD2_LightningBugZap, n.Center);
+                    CreateDustExplosionEffect(n.Center);
 
                     if (Main.myPlayer == Projectile.owner)
                     {
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Main.npc[i].Center, Vector2.Zero, ModContent.ProjectileType<ArtAttackStrike>(), damage, 0f, Projectile.owner, i);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), n.Center, Vector2.Zero, ModContent.ProjectileType<ArtAttackStrike>(), damage, 0f, Projectile.owner, n.whoAmI);
                     }
                 }
             }
@@ -187,7 +191,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             for (int i = 0; i < 60; i++)
             {
-                Dust rainbowMagic = Dust.NewDustPerfect(dustSpawnPosition + Main.rand.NextVector2Circular(12f, 12f), 267);
+                Dust rainbowMagic = Dust.NewDustPerfect(dustSpawnPosition + Main.rand.NextVector2Circular(12f, 12f), DustID.RainbowMk2);
                 rainbowMagic.velocity = Main.rand.NextVector2Unit() * Main.rand.NextFloat(2f, 9.5f);
                 rainbowMagic.color = Main.hslToRgb(Main.rand.NextFloat(), 1f, Main.rand.NextFloat(0.5f, 0.9f));
                 rainbowMagic.color.A = 100;
@@ -199,7 +203,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft) => CreateDustExplosionEffect(Projectile.Center);
 
-        public Color TrailColor(float completionRatio)
+        public Color TrailColor(float completionRatio, Vector2 vertexPos)
         {
             float hue = (Main.GlobalTimeWrappedHourly * -0.62f + completionRatio * 1.5f) % 1f;
             float brightness = MathHelper.SmoothStep(0.5f, 1f, Utils.GetLerpValue(0.3f, 0f, completionRatio, true));
@@ -209,7 +213,7 @@ namespace CalamityMod.Projectiles.Magic
             return color;
         }
 
-        public float TrailWidth(float completionRatio)
+        public float TrailWidth(float completionRatio, Vector2 vertexPos)
         {
             float widthInterpolant = Utils.GetLerpValue(0f, 0.25f, completionRatio, true) * Utils.GetLerpValue(1.1f, 0.7f, completionRatio, true);
             return MathHelper.SmoothStep(8f, 20f, widthInterpolant);
@@ -217,18 +221,15 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (TrailDrawer is null)
-                TrailDrawer = new PrimitiveTrail(TrailWidth, TrailColor, null, GameShaders.Misc["CalamityMod:ArtAttack"]);
-
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition + Vector2.UnitY * Projectile.gfxOffY;
             Vector2 origin = texture.Size() * 0.5f;
 
             Main.spriteBatch.EnterShaderRegion();
-            GameShaders.Misc["CalamityMod:ArtAttack"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/FabstaffStreak"));
+            GameShaders.Misc["CalamityMod:ArtAttack"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
             GameShaders.Misc["CalamityMod:ArtAttack"].Apply();
 
-            TrailDrawer.Draw(Projectile.oldPos, Projectile.Size * 0.5f - Main.screenPosition, 180);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(TrailWidth, TrailColor, (_,_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:ArtAttack"]), 180);
             Main.spriteBatch.ExitShaderRegion();
 
             Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(Color.White), Projectile.rotation, origin, Projectile.scale, 0, 0);

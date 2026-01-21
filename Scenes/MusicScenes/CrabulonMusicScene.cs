@@ -1,5 +1,4 @@
-using CalamityMod.NPCs.Crabulon;
-using Terraria;
+﻿using CalamityMod.NPCs.Crabulon;
 using Terraria.ID;
 using Terraria.ModLoader;
 

@@ -1,7 +1,7 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -16,11 +16,11 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.height = 34;
             Item.damage = 53;
             Item.mana = 10;
-            Item.useTime = Item.useAnimation = 24;
+            Item.useAnimation = Item.useTime = 30;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noMelee = true;
             Item.knockBack = 2f;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.UseSound = SoundID.Item42;
             Item.autoReuse = true;
@@ -35,7 +35,7 @@ namespace CalamityMod.Items.Weapons.Summon
             {
                 if (player.whoAmI == Main.myPlayer)
                 {
-                    int p = Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, type, damage, knockback, player.whoAmI, 0f, 1f);
+                    int p = Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI, 0f, 1f);
                     if (Main.projectile.IndexInRange(p))
                         Main.projectile[p].originalDamage = Item.damage;
                     player.UpdateMaxTurrets();

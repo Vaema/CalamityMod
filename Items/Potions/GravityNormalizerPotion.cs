@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Buffs.Potions;
-using CalamityMod.Items.Materials;
 using CalamityMod.Items.Fishing.AstralCatches;
+using CalamityMod.Items.Materials;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,23 +14,18 @@ namespace CalamityMod.Items.Potions
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;
+            ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
+                new Color(255, 164, 94),
+                new Color(109, 242, 196),
+                new Color(255, 255, 191)
+            };
         }
 
         public override void SetDefaults()
         {
-            Item.width = 28;
-            Item.height = 18;
-            Item.useTurn = true;
-            Item.maxStack = 9999;
+            Item.DefaultToFood(24, 36, ModContent.BuffType<GravityNormalizerBuff>(), CalamityUtils.MinutesToFrames(8), true);
+            Item.value = Item.sellPrice(silver: 2);
             Item.rare = ItemRarityID.Lime;
-            Item.useAnimation = 17;
-            Item.useTime = 17;
-            Item.useStyle = ItemUseStyleID.DrinkLiquid;
-            Item.UseSound = SoundID.Item3;
-            Item.consumable = true;
-            Item.buffType = ModContent.BuffType<GravityNormalizerBuff>();
-            Item.buffTime = CalamityUtils.SecondsToFrames(480f);
-            Item.value = Item.buyPrice(0, 2, 0, 0);
         }
 
         public override void AddRecipes()
@@ -39,7 +35,7 @@ namespace CalamityMod.Items.Potions
                 AddIngredient<AldebaranAlewife>().
                 AddIngredient<AureusCell>().
                 AddTile(TileID.AlchemyTable).
-				AddConsumeItemCallback(Recipe.ConsumptionRules.Alchemy).
+                AddConsumeIngredientCallback(Recipe.IngredientQuantityRules.Alchemy).
                 Register();
 
             CreateRecipe().

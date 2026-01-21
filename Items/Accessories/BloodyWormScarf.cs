@@ -13,17 +13,18 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 26;
             Item.height = 42;
-            Item.defense = 7;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.defense = 3;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.accessory = true;
+            Item.expert = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.bloodyWormTooth = true;
-            player.endurance += 0.07f;
+            player.endurance += 0.1f;
         }
 
         public override void AddRecipes()

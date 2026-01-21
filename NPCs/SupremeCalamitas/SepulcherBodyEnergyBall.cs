@@ -1,14 +1,11 @@
-﻿using CalamityMod.Events;
-using CalamityMod.Projectiles.Boss;
+﻿using System.IO;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.NPCs.SupremeCalamitas
 {
@@ -18,11 +15,12 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public NPC AheadSegment => Main.npc[(int)NPC.ai[1]];
         public NPC HeadSegment => Main.npc[(int)NPC.ai[2]];
         public ref float AttackTimer => ref NPC.localAI[0];
+        public int NoStartAttack = 240;
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.SepulcherHead.DisplayName");
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            Main.npcFrameCount[NPC.type] = 5;
+            Main.npcFrameCount[Type] = 5;
         }
 
         public override void SetDefaults()
@@ -32,8 +30,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             NPC.width = 20;
             NPC.height = 20;
             NPC.lifeMax = CalamityWorld.revenge ? 345000 : 300000;
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -66,6 +62,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
         public override void AI()
         {
+            NoStartAttack--;
+
             if (NPC.ai[2] > 0f)
                 NPC.realLife = (int)NPC.ai[2];
 
@@ -88,7 +86,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 {
                     for (int i = 0; i < 2; i++)
                     {
-                        Dust fire = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, 182, 0f, 0f, 100, default, 2f);
+                        Dust fire = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.TheDestroyer, 0f, 0f, 100, default, 2f);
                         fire.noGravity = true;
                         fire.noLight = true;
                     }
@@ -103,28 +101,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             else
                 NPC.alpha = HeadSegment.alpha;
 
-            AttackTimer += BossRushEvent.BossRushActive ? 1.5f : 1f;
-            float attackgate = !HeadSegment.Calamity().unbreakableDR && Main.zenithWorld ? 450f : 900f;
-            if (AttackTimer >= attackgate)
-            {
-                AttackTimer = 0f;
-                if (Main.netMode != NetmodeID.MultiplayerClient)
-                {
-                    int type = ModContent.ProjectileType<BrimstoneBarrage>();
-                    int damage = NPC.GetProjectileDamage(type);
-                    int totalProjectiles = 4;
-                    float radians = MathHelper.TwoPi / totalProjectiles;
-                    Vector2 spinningPoint = Vector2.Normalize(new Vector2(-1f, -1f));
-                    for (int k = 0; k < totalProjectiles; k++)
-                    {
-                        Vector2 velocity = spinningPoint.RotatedBy(radians * k);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, damage, 0f, Main.myPlayer);
-                    }
-                    NPC.netUpdate = true;
-                }
-                SoundEngine.PlaySound(SupremeCalamitas.BrimstoneShotSound, NPC.Center);
-            }
-
             if (Main.npc.IndexInRange((int)NPC.ai[1]))
             {
                 Vector2 offsetToAheadSegment = AheadSegment.Center - NPC.Center;
@@ -138,7 +114,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter++;
-            NPC.frame.Y = ((int)(NPC.frameCounter / 5) + NPC.whoAmI) % Main.npcFrameCount[NPC.type] * frameHeight;
+            NPC.frame.Y = ((int)(NPC.frameCounter / 5) + NPC.whoAmI) % Main.npcFrameCount[Type] * frameHeight;
         }
 
         public override void HitEffect(NPC.HitInfo hit)

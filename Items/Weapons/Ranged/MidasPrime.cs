@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -10,9 +9,17 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class MidasPrime : ModItem, ILocalizedModType
+    public class MidasPrime : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+
+        // The Hold SHIFT tooltip is an easter egg and is not indicated to the player in any way.
+        public bool ShowExtensionIndicator => false;
+        
+        // Easter egg has a special tooltip key and color.
+        public string TooltipExtensionKey => "UltrakillEasterEgg";
+        public Color? TooltipExtensionColor => Color.Red;
+
         internal static readonly SoundStyle ShootSound = new("CalamityMod/Sounds/Item/CrackshotColtShot") { Volume = 0.5f, PitchVariance = 0.1f };
 
         // Internal storage used to keep track between UseItem and Shoot hooks whether a gold coin was queued up
@@ -29,14 +36,13 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2.25f;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.UseSound = ShootSound;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<MarksmanShot>();
             Item.useAmmo = AmmoID.Bullet;
             Item.shootSpeed = 14f;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         // This item has a right click.
@@ -56,12 +62,10 @@ namespace CalamityMod.Items.Weapons.Ranged
             if (player.altFunctionUse == 2)
             {
                 // player.CanBuyItem() breaks if the player has more than 2,147 platinum coins and was never fixed
-                // This alternative method works no matter how much money the player has
-                long cashAvailable = Utils.CoinsCount(out bool overflow, player.inventory);
-                if (cashAvailable < 100 && !overflow)
-                    return false;
-
-                return player.GetActiveRicoshotCoinCount() < 4;
+                // 20APR2024: Ozzatron: The method was instead replaced with player.CanAfford, which is immune to overflow
+                // Additionally, CanAfford checks your Piggy Bank, Safe, etc., meaning Midas Prime can use coins from there
+                bool hasAtLeastOneSilver = player.CanAfford(100);
+                return hasAtLeastOneSilver && player.GetActiveRicoshotCoinCount() < 4;
             }
             return true;
         }
@@ -71,10 +75,12 @@ namespace CalamityMod.Items.Weapons.Ranged
             // Remove either 1 gold (if possible) or 1 silver (otherwise) when using right click
             if (player.altFunctionUse == 2)
             {
-                long cashAvailable = Utils.CoinsCount(out bool overflow, player.inventory);
+                // 20APR2024: Ozzatron: Use CanAfford (new function) to sum money across all the player's banks
+                // If they have a sum total of at least 1 gold everywhere, they can toss a gold coin
+                bool hasAtLeastOneGold = player.CanAfford(10000);
 
                 // If the player has at least 1 gold in their inventory, spend it and use a gold coin
-                if (overflow || cashAvailable > 10000)
+                if (hasAtLeastOneGold)
                 {
                     player.BuyItem(10000);
                     nextShotGoldCoin = true;
@@ -94,7 +100,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         // This hook is a convenient location to change the use sound.
         public override void UseAnimation(Player player)
         {
-            Item.UseSound = ShootSound; 
+            Item.UseSound = ShootSound;
             if (player.altFunctionUse == 2)
                 Item.UseSound = RicoshotCoin.BlingSound;
         }
@@ -137,14 +143,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             // Otherwise use default behavior (which is just to return true).
             return base.Shoot(player, source, position, velocity, type, damage, knockback);
         }
-
-        #region Hidden ULTRAKILL Reference Tooltip
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
-            TooltipLine ultrakillIntro = new TooltipLine(Mod, "CalamityMod:UltrakillIntroReference", this.GetLocalizedValue("UltrakillEasterEgg")) { OverrideColor = Color.Red };
-            CalamityUtils.HoldShiftTooltip(tooltips, new TooltipLine[] { ultrakillIntro });
-        }
-        #endregion
 
         // Make the gun have visible recoil when fired for extra cool factor.
         #region Firing Animation

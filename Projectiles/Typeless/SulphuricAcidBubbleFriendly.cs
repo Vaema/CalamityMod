@@ -1,4 +1,4 @@
-using CalamityMod.Buffs.StatDebuffs;
+﻿using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -16,7 +16,7 @@ namespace CalamityMod.Projectiles.Typeless
         private bool fromArmour = false;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 7;
+            Main.projFrames[Type] = 7;
         }
 
         public override void SetDefaults()
@@ -101,8 +101,8 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture2D13 = ModContent.Request<Texture2D>(Texture).Value;
-            int framing = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
+            Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int framing = Terraria.GameContent.TextureAssets.Projectile[Type].Value.Height / Main.projFrames[Type];
             int y6 = framing * Projectile.frame;
             Main.spriteBatch.Draw(texture2D13, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture2D13.Width, framing)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture2D13.Width / 2f, (float)framing / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;
@@ -136,16 +136,30 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.position.X = Projectile.position.X - (float)(Projectile.width / 2);
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
             int inc;
-            for (int i = 0; i < 25; i = inc + 1)
+            //For use with Contaminated Bile's Stealth Strike
+            if (Projectile.Calamity().stealthStrike)
             {
-                int toxicDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 31, 0f, 0f, 0, default, 1f);
-                Main.dust[toxicDust].position = (Main.dust[toxicDust].position + Projectile.position) / 2f;
-                Main.dust[toxicDust].velocity = new Vector2((float)Main.rand.Next(-100, 101), (float)Main.rand.Next(-100, 101));
-                Main.dust[toxicDust].velocity.Normalize();
-                Dust dust = Main.dust[toxicDust];
-                dust.velocity *= (float)Main.rand.Next(1, 30) * 0.1f;
-                Main.dust[toxicDust].alpha = Projectile.alpha;
-                inc = i;
+                for (int k = 0; k < 15; k++)
+                {
+                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center, DustID.SteampunkSteam, new Vector2(8, 8).RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(0.05f, 0.8f));
+                    dust2.scale = Main.rand.NextFloat(0.75f, 0.95f);
+                    dust2.noGravity = true;
+                    dust2.color = Main.rand.NextBool(3) ? Color.YellowGreen : Color.OliveDrab;
+                }
+            }
+            else
+            {
+                for (int i = 0; i < 25; i = inc + 1)
+                {
+                    int toxicDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Smoke, 0f, 0f, 0, default, 1f);
+                    Main.dust[toxicDust].position = (Main.dust[toxicDust].position + Projectile.position) / 2f;
+                    Main.dust[toxicDust].velocity = new Vector2((float)Main.rand.Next(-100, 101), (float)Main.rand.Next(-100, 101));
+                    Main.dust[toxicDust].velocity.Normalize();
+                    Dust dust = Main.dust[toxicDust];
+                    dust.velocity *= (float)Main.rand.Next(1, 30) * 0.1f;
+                    Main.dust[toxicDust].alpha = Projectile.alpha;
+                    inc = i;
+                }
             }
         }
     }

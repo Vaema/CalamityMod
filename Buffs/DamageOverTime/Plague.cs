@@ -1,4 +1,5 @@
-﻿using CalamityMod.Particles;
+﻿using CalamityMod.DataStructures;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -9,25 +10,28 @@ namespace CalamityMod.Buffs.DamageOverTime
 {
     public class Plague : ModBuff
     {
+        public static DebuffData debuffData = new DebuffData()
+        {
+            EnemyLostRegen = 100,
+            SicknessDebuffScaling = 1
+        };
         public override void SetStaticDefaults()
         {
             Main.debuff[Type] = true;
             Main.pvpBuff[Type] = true;
             Main.buffNoSave[Type] = true;
             BuffID.Sets.LongerExpertDebuff[Type] = true;
+            BuffDatasets.DebuffDataset[Type] = debuffData;
         }
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.Calamity().pFlames = true;
+            player.Calamity().plague = true;
         }
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            if (npc.Calamity().pFlames < npc.buffTime[buffIndex])
-                npc.Calamity().pFlames = npc.buffTime[buffIndex];
-            npc.DelBuff(buffIndex);
-            buffIndex--;
+            npc.Calamity().plague = true;
         }
 
         internal static void DrawEffects(PlayerDrawSet drawInfo)
@@ -36,15 +40,18 @@ namespace CalamityMod.Buffs.DamageOverTime
 
             float numberOfDusts = 2f;
             float rotFactor = 360f / numberOfDusts;
+            int particleAmt = Player.Calamity().alchFlask ? 1 : 2;
+            int dustSpawnAmt = Player.Calamity().alchFlask ? 4 : 7;
             if (Player.miscCounter % 4 == 0)
             {
-                for (int i = 0; i < 2; i++)
+                for (int i = 0; i < particleAmt; i++)
                 {
-                    DirectionalPulseRing pulse = new DirectionalPulseRing(Player.Calamity().RandomDebuffVisualSpot, Vector2.Zero, Main.rand.NextBool(3) ? Color.LimeGreen : Color.Green, new Vector2(1, 1), 0, Main.rand.NextFloat(0.07f, 0.18f), 0f, 35);
+                    float pulseScale = Main.rand.NextFloat(Player.Calamity().alchFlask ? 0.04f : 0.07f, Player.Calamity().alchFlask ? 0.12f : 0.18f);
+                    DirectionalPulseRing pulse = new DirectionalPulseRing(Player.Calamity().RandomDebuffVisualSpot, Vector2.Zero, Main.rand.NextBool(3) ? Color.LimeGreen : Color.Green, Vector2.One, 0, pulseScale, 0f, 20);
                     GeneralParticleHandler.SpawnParticle(pulse);
                 }
 
-                for (int i = 0; i < 7; i++)
+                for (int i = 0; i < dustSpawnAmt; i++)
                 {
                     int DustID = Main.rand.NextBool(30) ? 220 : 89;
                     float rot = MathHelper.ToRadians(i * rotFactor);
@@ -62,7 +69,7 @@ namespace CalamityMod.Buffs.DamageOverTime
             Vector2 npcSize = npc.Center + new Vector2(Main.rand.NextFloat(-npc.width / 2, npc.width / 2), Main.rand.NextFloat(-npc.height / 2, npc.height / 2));
             if (Main.rand.NextBool(3))
             {
-                DirectionalPulseRing pulse = new DirectionalPulseRing(npcSize, Vector2.Zero, Main.rand.NextBool(3) ? Color.LimeGreen : Color.Green, new Vector2(1, 1), 0, Main.rand.NextFloat(0.07f, 0.18f) + (0.0000007f * npc.width * npc.height), 0f, 35);
+                DirectionalPulseRing pulse = new DirectionalPulseRing(npcSize, Vector2.Zero, Main.rand.NextBool(3) ? Color.LimeGreen : Color.Green, new Vector2(1, 1), 0, Main.rand.NextFloat(0.07f, 0.18f) + (0.0000007f * npc.width * npc.height), 0f, 15);
                 GeneralParticleHandler.SpawnParticle(pulse);
 
                 for (int i = 0; i < 4; i++)

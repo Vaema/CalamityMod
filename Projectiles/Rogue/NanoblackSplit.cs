@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -23,8 +23,9 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 3;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 3;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -128,10 +129,9 @@ namespace CalamityMod.Projectiles.Rogue
             bool bossFound = false;
             int target = -1;
             float minDist = HomingStartRange;
-            for (int i = 0; i < Main.maxNPCs; ++i)
+            foreach (NPC npc in Main.ActiveNPCs)
             {
-                NPC npc = Main.npc[i];
-                if (!npc.active || npc.type == NPCID.TargetDummy)
+                if (npc.type == NPCID.TargetDummy)
                     continue;
 
                 // If we've found a valid boss target, ignore ALL targets which aren't bosses.
@@ -149,7 +149,7 @@ namespace CalamityMod.Projectiles.Rogue
                         if (npc.boss)
                             bossFound = true;
                         minDist = distToNPC;
-                        target = i;
+                        target = npc.whoAmI;
                     }
                 }
             }
@@ -168,7 +168,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 

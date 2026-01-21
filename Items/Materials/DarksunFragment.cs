@@ -19,22 +19,22 @@ namespace CalamityMod.Items.Materials
             Item.ResearchUnlockCount = 100;
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(6, 8));
             ItemID.Sets.AnimatesAsSoul[Type] = true;
-            ItemID.Sets.ItemNoGravity[Item.type] = true;
-			ItemID.Sets.SortingPriorityMaterials[Type] = 117;
+            ItemID.Sets.ItemNoGravity[Type] = true;
+            ItemID.Sets.SortingPriorityMaterials[Type] = 117;
         }
 
         public override void SetDefaults()
         {
             Item.width = 28;
             Item.height = 32;
-            Item.maxStack = 9999;
-            Item.value = Item.sellPrice(gold: 12);
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.maxStack = Item.CommonMaxStack;
+            Item.value = Item.sellPrice(silver: 60);
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
         {
-            Texture2D texture = TextureAssets.Item[Item.type].Value;
+            Texture2D texture = TextureAssets.Item[Type].Value;
             spriteBatch.Draw(texture, Item.position - Main.screenPosition, Item.GetCurrentFrame(ref frame, ref frameCounter, 6, 8), lightColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
             return false;
         }

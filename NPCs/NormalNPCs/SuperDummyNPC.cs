@@ -1,7 +1,8 @@
 ﻿using System.IO;
-using CalamityMod.World;
+using CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -10,10 +11,12 @@ namespace CalamityMod.NPCs.NormalNPCs
     public class SuperDummyNPC : ModNPC
     {
         public int deathCounter = 0;
+        public RevengeanceAndDeathAI.MimicAI ZenithSeedMimicAI;
+
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            Main.npcFrameCount[NPC.type] = 11;
+            Main.npcFrameCount[Type] = 11;
             NPCID.Sets.CantTakeLunchMoney[Type] = true;
         }
 
@@ -24,12 +27,14 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.damage = 0;
             NPC.defense = 0;
             NPC.lifeMax = 9999999;
-            NPC.HitSound = SoundID.NPCHit15;
+            NPC.HitSound = null;
             NPC.DeathSound = SoundID.NPCDeath2;
-            NPC.value = 0f;
             NPC.knockBackResist = 0f;
             NPC.netAlways = true;
             NPC.aiStyle = NPCAIStyleID.FaceClosestPlayer;
+
+            ZenithSeedMimicAI = new RevengeanceAndDeathAI.MimicAI();
+            ZenithSeedMimicAI.NPC = NPC;
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -51,7 +56,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 if (deathCounter >= 6000)
                 {
                     NPC.damage = NPC.lifeMax;
-                    CalamityGlobalAI.BuffedMimicAI(NPC, Mod);
+                    ZenithSeedMimicAI.AI(Mod);
                     return false;
                 }
             }
@@ -60,7 +65,8 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void UpdateLifeRegen(ref int damage)
         {
-            NPC.lifeRegen += 2000000;
+            if (NPC.lifeRegen >= 0)
+                NPC.lifeRegen += 2000000;
         }
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => Main.zenithWorld;
@@ -70,51 +76,64 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void HitEffect(NPC.HitInfo hit)
         {
             // Dummy AI, no way
-            NPC.ai[0] = hit.HitDirection * -NPC.direction;
+            NPC.localAI[0] = (int)hit.Damage;
+            if (NPC.localAI[0] < 20f)
+            {
+                NPC.localAI[0] = 20f;
+            }
+            if (NPC.localAI[0] > 120f)
+            {
+                NPC.localAI[0] = 120f;
+            }
+            NPC.localAI[1] = hit.HitDirection;
             // Reset hit timer if it isn't enraged
             if (deathCounter > 0 && deathCounter < 6000)
             {
                 deathCounter = 0;
             }
+            SoundStyle toPlay = Main.rand.Next(3) switch
+            {
+                0 => SoundID.NPCHit15,
+                1 => SoundID.NPCHit16,
+                2 => SoundID.NPCHit17,
+                _ => SoundID.NPCHit15
+            };
+            if (NPC.soundDelay <= 0)
+            {
+                SoundEngine.PlaySound(toPlay, NPC.Center);
+            }
         }
 
         public override void FindFrame(int frameHeight)
         {
-            // Start animating when hit. Continue animating as long as the animation isn't finished
-            if (NPC.justHit || NPC.frameCounter > 0 || (NPC.frame.Y != 0 && NPC.frame.Y != frameHeight * 4))
+            int hitDirection = (int)NPC.localAI[1];
+            if (NPC.direction == 1)
             {
-                NPC.frameCounter += 1.0;
+                hitDirection *= -1;
             }
-            if (NPC.frameCounter > 6.0)
+            if (NPC.localAI[0] > 24f)
             {
-                NPC.frameCounter = 0.0;
-                NPC.frame.Y += frameHeight;
+                NPC.localAI[0] = 24f;
             }
-
-            // Hit from behind
-            if (NPC.ai[0] == -1 || deathCounter > 6000)
+            if (NPC.localAI[0] > 0f)
             {
-                if ((NPC.justHit || deathCounter > 6000) && NPC.frame.Y > frameHeight * 2)
-                {
-                    NPC.frame.Y = frameHeight;
-                }    
-                else if (NPC.frame.Y > frameHeight * 3)
-                {
-                    NPC.frame.Y = 0;
-                }
+                NPC.localAI[0] -= 1f;
             }
-            // Hit from in front
-            else
+            if (NPC.localAI[0] < 0f)
             {
-                if (NPC.justHit && NPC.frame.Y > frameHeight * 7)
-                {
-                    NPC.frame.Y = frameHeight * 5;
-                }
-                else if (NPC.frame.Y > frameHeight * 10 || NPC.frame.Y < frameHeight * 4)
-                {
-                    NPC.frame.Y = frameHeight * 4;
-                }
+                NPC.localAI[0] = 0f;
             }
+            int animationSpeed = ((hitDirection == -1) ? 4 : 6);
+            int currentFrame = (int)NPC.localAI[0] / animationSpeed;
+            if (NPC.localAI[0] % (float)animationSpeed != 0f)
+            {
+                currentFrame++;
+            }
+            if (currentFrame != 0 && hitDirection == 1)
+            {
+                currentFrame += 5;
+            }
+            NPC.frame.Y = currentFrame * frameHeight;
         }
 
         public override bool CheckDead()

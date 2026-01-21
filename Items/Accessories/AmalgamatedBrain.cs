@@ -1,52 +1,33 @@
-﻿using CalamityMod.Balancing;
-using CalamityMod.CalPlayer;
-using CalamityMod.Items.Potions.Alcohol;
-using CalamityMod.Projectiles.Magic;
+﻿using CalamityMod.CalPlayer;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    // TODO -- this item includes a dodge accessory, Brain of Cthulhu
-    public class AmalgamatedBrain : ModItem, ILocalizedModType
+    public class AmalgamatedBrain : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static int NimbusDamage => CalamityUtils.ScaleWithDifficulty(18);
+
         public override void SetDefaults()
         {
             Item.width = 34;
             Item.height = 34;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.accessory = true;
+            Item.expert = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
+            modPlayer.rBrain = true; // Handles shaderain cloud spawning on hit
             modPlayer.aBrain = true;
             player.brainOfConfusionItem = Item;
-            if (player.immune)
-            {
-                var source = player.GetSource_Accessory(Item);
-                if (player.miscCounter % 6 == 0)
-                {
-                    if (player.whoAmI == Main.myPlayer)
-                    {
-                        int damage = (int)player.GetBestClassDamage().ApplyTo(60);
-                        damage = player.ApplyArmorAccDamageBonusesTo(damage);
-
-                        Projectile rain = CalamityUtils.ProjectileRain(source, player.Center, 400f, 100f, 500f, 800f, 22f, ModContent.ProjectileType<AuraRain>(), damage, 2f, player.whoAmI);
-                        if (rain.whoAmI.WithinBounds(Main.maxProjectiles))
-                        {
-                            rain.DamageType = DamageClass.Generic;
-                            rain.tileCollide = false;
-                            rain.penetrate = 1;
-                        }
-                    }
-                }
-            }
-            player.GetDamage<GenericDamageClass>() += 0.1f;
         }
 
         public override void AddRecipes()

@@ -1,6 +1,6 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -14,8 +14,8 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -61,7 +61,7 @@ namespace CalamityMod.Projectiles.Summon
                 int constant = 50;
                 for (int i = 0; i < constant; i++)
                 {
-                    int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, 173, 0f, 0f, 0, default, 1f);
+                    int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, DustID.ShadowbeamStaff, 0f, 0f, 0, default, 1f);
                     Main.dust[dust].velocity *= 2f;
                     Main.dust[dust].scale *= 1.15f;
                 }
@@ -111,14 +111,14 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 if (!isInRange)
                 {
-                    for (int j = 0; j < Main.maxNPCs; j++)
+                    foreach (NPC n in Main.ActiveNPCs)
                     {
-                        if (Main.npc[j].CanBeChasedBy(Projectile, false))
+                        if (n.CanBeChasedBy(Projectile, false))
                         {
-                            float otherNPCX = Main.npc[j].position.X + (float)(Main.npc[j].width / 2);
-                            float otherNPCY = Main.npc[j].position.Y + (float)(Main.npc[j].height / 2);
+                            float otherNPCX = n.position.X + (float)(n.width / 2);
+                            float otherNPCY = n.position.Y + (float)(n.height / 2);
                             float otherNPCDist = Math.Abs(Projectile.position.X + (float)(Projectile.width / 2) - otherNPCX) + Math.Abs(Projectile.position.Y + (float)(Projectile.height / 2) - otherNPCY);
-                            if (otherNPCDist < attackRange && Collision.CanHit(Projectile.position, Projectile.width, Projectile.height, Main.npc[j].position, Main.npc[j].width, Main.npc[j].height))
+                            if (otherNPCDist < attackRange && Collision.CanHit(Projectile.position, Projectile.width, Projectile.height, n.position, n.width, n.height))
                             {
                                 attackRange = otherNPCDist;
                                 projX = otherNPCX;
@@ -136,7 +136,7 @@ namespace CalamityMod.Projectiles.Summon
                     projY -= Projectile.Center.Y;
                     int projectileType = ModContent.ProjectileType<DaedalusCrystalShot>();
                     float randSpeed = Main.rand.Next(10, 15); //modify the speed the projectile are shot.  Lower number = slower projectile.
-                    Vector2 firingDirection = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
+                    Vector2 firingDirection = Projectile.Center;
                     float projXDirection = projXStore - firingDirection.X;
                     float projYDirection = projYStore - firingDirection.Y;
                     float projSpeed = (float)Math.Sqrt((double)(projXDirection * projXDirection + projYDirection * projYDirection));

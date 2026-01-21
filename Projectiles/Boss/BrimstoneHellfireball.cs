@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Boss
 {
     public class BrimstoneHellfireball : ModProjectile, ILocalizedModType
@@ -12,14 +11,13 @@ namespace CalamityMod.Projectiles.Boss
         public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 6;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 3;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            Main.projFrames[Type] = 6;
+            ProjectileID.Sets.TrailCacheLength[Type] = 3;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
         {
-            Projectile.Calamity().DealsDefenseDamage = true;
             Projectile.width = 34;
             Projectile.height = 34;
             Projectile.hostile = true;
@@ -61,13 +59,7 @@ namespace CalamityMod.Projectiles.Boss
 
             Lighting.AddLight(Projectile.Center, 0.5f, 0f, 0f);
 
-            if (Projectile.localAI[0] == 0f)
-            {
-                SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
-                Projectile.localAI[0] += 1f;
-            }
-
-            int brimDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, (int)CalamityDusts.Brimstone, 0f, 0f, 170, default, 1.1f);
+            int brimDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.Brimstone, 0f, 0f, 170, default, 1.1f);
             Main.dust[brimDust].noGravity = true;
             Main.dust[brimDust].velocity *= 0.5f;
             Main.dust[brimDust].velocity += Projectile.velocity * 0.1f;
@@ -89,12 +81,12 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 150);
+            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 240);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor * 0.5f, 1);
             return false;
         }
     }

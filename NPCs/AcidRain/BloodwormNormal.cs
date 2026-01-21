@@ -1,22 +1,22 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Events;
 using CalamityMod.Items.SummonItems;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.Utilities;
+
 namespace CalamityMod.NPCs.AcidRain
 {
     public class BloodwormNormal : ModNPC
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 7;
-            Main.npcCatchable[NPC.type] = true;
-            NPCID.Sets.CountsAsCritter[NPC.type] = true;
+            Main.npcFrameCount[Type] = 7;
+            Main.npcCatchable[Type] = true;
+            NPCID.Sets.CountsAsCritter[Type] = true;
         }
 
         public override void SetDefaults()
@@ -56,10 +56,9 @@ namespace CalamityMod.NPCs.AcidRain
             NPC.velocity.X = xSpeed * NPC.ai[0];
             NPC.spriteDirection = (int)NPC.ai[0];
             bool flee = false;
-            for (int i = 0; i < Main.player.Length; i++)
+            foreach (Player player in Main.ActivePlayers)
             {
-                Player player = Main.player[i];
-                if (player.active && !player.dead && Vector2.Distance(player.Center, NPC.Center) <= 220f)
+                if (!player.dead && Vector2.Distance(player.Center, NPC.Center) <= 220f)
                 {
                     flee = true;
                     break;
@@ -81,7 +80,7 @@ namespace CalamityMod.NPCs.AcidRain
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Bloodworm")
             });
@@ -94,7 +93,7 @@ namespace CalamityMod.NPCs.AcidRain
             {
                 NPC.frameCounter = 0;
                 NPC.frame.Y += frameHeight;
-                if (NPC.frame.Y >= Main.npcFrameCount[NPC.type] * frameHeight)
+                if (NPC.frame.Y >= Main.npcFrameCount[Type] * frameHeight)
                 {
                     NPC.frame.Y = 0;
                 }
@@ -118,6 +117,13 @@ namespace CalamityMod.NPCs.AcidRain
             int bloodwormAmt = NPC.CountNPCS(NPC.type);
             float spawnMult = bloodwormAmt > 5 ? 1f : (float)(0.16 * Math.Pow(5 - bloodwormAmt, 2)) + 1f;
             float baseSpawnRate = DownedBossSystem.downedBoomerDuke ? 0.1f : AcidRainEvent.OldDukeHasBeenEncountered ? 0.4f : 0.2f;
+
+            float luck = spawnInfo.Player.luck;
+            if (luck > 0f && Main.rand.NextFloat() < luck)
+                spawnMult *= Main.rand.NextFloat(1f, 2f);
+            if (luck < 0f && Main.rand.NextFloat() < -luck)
+                spawnMult *= Main.rand.NextFloat(0.5f, 1f);
+
             float spawnRate = baseSpawnRate * spawnMult;
 
             return spawnRate;

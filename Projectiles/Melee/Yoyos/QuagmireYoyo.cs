@@ -12,12 +12,13 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<Quagmire>();
         public const int MaxUpdates = 2;
+        public ref float Timer => ref Projectile.localAI[2];
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.YoyosLifeTimeMultiplier[Projectile.type] = -1f;
-            ProjectileID.Sets.YoyosMaximumRange[Projectile.type] = 480f;
-            ProjectileID.Sets.YoyosTopSpeed[Projectile.type] = 36f / MaxUpdates;
+            ProjectileID.Sets.YoyosLifeTimeMultiplier[Type] = -1f;
+            ProjectileID.Sets.YoyosMaximumRange[Type] = Quagmire.Reach;
+            ProjectileID.Sets.YoyosTopSpeed[Type] = Quagmire.Speed / MaxUpdates;
         }
 
         public override void SetDefaults()
@@ -34,18 +35,17 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
         public override void AI()
         {
+            Timer++;
             if ((Projectile.position - Main.player[Projectile.owner].position).Length() > 3200f) //200 blocks
                 Projectile.Kill();
             if (Main.rand.NextBool(5 * MaxUpdates))
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 44, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.JungleSpore, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             if (Projectile.owner == Main.myPlayer)
             {
-                if (Main.rand.NextBool(10 * MaxUpdates))
+                if (Timer % (10 * MaxUpdates) == 0)
                 {
-                    Projectile spore = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity * Main.rand.NextFloat(0.15f, 0.35f) + Vector2.UnitX.RotatedByRandom(MathHelper.Pi), ProjectileID.SporeGas + Main.rand.Next(3), (int)(Projectile.damage * 0.5), Projectile.knockBack, Projectile.owner);
+                    Projectile spore = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity * Main.rand.NextFloat(0.15f, 0.35f) + Vector2.UnitX.RotatedByRandom(MathHelper.Pi), ProjectileID.SporeGas + Main.rand.Next(3), (int)(Projectile.damage * 0.75f), Projectile.knockBack, Projectile.owner);
                     spore.DamageType = DamageClass.MeleeNoSpeed;
-                    spore.usesLocalNPCImmunity = true;
-                    spore.localNPCHitCooldown = 30;
                 }
             }
         }
@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }

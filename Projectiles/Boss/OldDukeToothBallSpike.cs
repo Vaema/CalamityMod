@@ -1,6 +1,9 @@
 ﻿using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
+using CalamityMod.NPCs.OldDuke;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -32,10 +35,27 @@ namespace CalamityMod.Projectiles.Boss
 
             for (int i = 0; i < 2; i++)
             {
-                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.SulfurousSeaAcid, 0, 0, 0, default, 0.6f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid, 0, 0, 0, default, 0.6f);
                 Main.dust[dust].noGravity = true;
                 Main.dust[dust].velocity *= 0.3f;
             }
+        }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            // There are two of each draw call because it makes the additive glow a bit brighter
+            Asset<Texture2D> tex = ModContent.Request<Texture2D>(Texture);
+            for (int i = 0; i < 5; i++)
+            {
+                Main.EntitySpriteDraw(tex.Value, Projectile.Center - (Projectile.velocity * i) - Main.screenPosition, tex.Frame(), OldDuke.GlowColor, Projectile.rotation, tex.Frame().Center(), MathHelper.Lerp(1.5f, 0.2f, (float)i / 5f), SpriteEffects.None);
+                Main.EntitySpriteDraw(tex.Value, Projectile.Center - (Projectile.velocity * i) - Main.screenPosition, tex.Frame(), OldDuke.GlowColor, Projectile.rotation, tex.Frame().Center(), MathHelper.Lerp(1.5f, 0.2f, (float)i / 5f), SpriteEffects.None);
+            }
+            Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition, tex.Frame(), OldDuke.GlowColor, Projectile.rotation, tex.Frame().Center(), 1.5f, SpriteEffects.None);
+            Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition, tex.Frame(), OldDuke.GlowColor, Projectile.rotation, tex.Frame().Center(), 1.5f, SpriteEffects.None);
+
+            Projectile.DrawBackglow(OldDuke.GlowColor, 4f);
+
+            return base.PreDraw(ref lightColor);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
@@ -43,17 +63,17 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<Irradiated>(), 120);
+            target.AddBuff(ModContent.BuffType<Irradiated>(), 360);
         }
 
         public override void OnKill(int timeLeft)
         {
             for (int i = 0; i <= 2; i++)
             {
-                int idx = Dust.NewDust(Projectile.position, 8, 8, (int)CalamityDusts.SulfurousSeaAcid, 0, 0, 0, default, 0.75f);
+                int idx = Dust.NewDust(Projectile.position, 8, 8, (int)CalamityDusts.SulphurousSeaAcid, 0, 0, 0, default, 0.75f);
                 Main.dust[idx].noGravity = true;
                 Main.dust[idx].velocity *= 3f;
-                idx = Dust.NewDust(Projectile.position, 8, 8, (int)CalamityDusts.SulfurousSeaAcid, 0, 0, 0, default, 0.75f);
+                idx = Dust.NewDust(Projectile.position, 8, 8, (int)CalamityDusts.SulphurousSeaAcid, 0, 0, 0, default, 0.75f);
                 Main.dust[idx].noGravity = true;
                 Main.dust[idx].velocity *= 3f;
             }

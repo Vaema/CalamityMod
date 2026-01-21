@@ -1,7 +1,8 @@
-﻿using Terraria.DataStructures;
+﻿using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -9,26 +10,27 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class ScourgeoftheDesert : RogueWeapon
     {
+
         public override void SetDefaults()
         {
-            Item.width = 82;
-            Item.height = 82;
+            Item.width = 112;
+            Item.height = 116;
             Item.damage = 12;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = Item.useAnimation = 24;
+            Item.useAnimation = Item.useTime = 24;
             Item.knockBack = 3.5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.shoot = ModContent.ProjectileType<ScourgeoftheDesertProj>();
             Item.shootSpeed = 12f;
             Item.DamageType = RogueDamageClass.Instance;
         }
 
-		public override float StealthDamageMultiplier => 0.65f;
+        public override float StealthDamageMultiplier => 0.65f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

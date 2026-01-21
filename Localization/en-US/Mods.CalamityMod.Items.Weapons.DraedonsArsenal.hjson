@@ -1,11 +1,48 @@
-FrequencyManipulator: {
-	DisplayName: Frequency Manipulator
+﻿AerialTracker: {
+	DisplayName: P-LSR: Aerial Tracker
 	Tooltip:
 		'''
-		Swings a spear around and then throws it
-		On collision, the spear releases a burst of homing energy
-		Stealth strikes release more energy and explode on collision
-		[c/1FFBFF:'A lengthy device originally used for mechanical tuning.']
+		Releases a flying disk that fires lasers at nearby enemies
+		Lasers do not directly damage enemies, but instead apply a stacking laser burn effect
+		Once hit by enough lasers or sufficient time has passed, laser burn will deal direct damage
+		The disk gains acceleration as it returns to the player
+		Stealth strikes toss two disks that can fire at multiple different targets from farther range
+		'''
+}
+
+AqueousHunterDrone: {
+	DisplayName: P-PMA: Aqueous Hunter Drone
+	Tooltip:
+		'''
+		Summons a shrimp drone that fires bursts of homing plasma missiles
+		<right> while holding any summon weapon to command the shrimp to launch a vertical missile barrage
+		Vertical missiles aim towards your cursor and leave a lingering blast if they hit solid ground
+		Each shrimp uses 4 minion slots
+		[c/1FBFF:'When pursuing the adherents of gods, Yharim believed no stone should be left unturned.]
+		[c/1FBFF:Weaponry for underwater contingencies was an unusually heavy focus, but no models ever saw deployment.']
+		'''
+}
+
+Auger: {
+	DisplayName: P-GSS: Auger
+	Tooltip:
+		'''
+		A wrist-mounted device which emits a magnetic energy blade
+		<right> to create a brief magnetic pull at your cursor and amplify your next slash
+		[c/1FFBFF:'Initially manufactured to serrate and separate chunks of raw material for transport.]
+		[c/1FFBFF:Keeping both hands free without compromising on power made it exceptionally ergonomic.']
+		'''
+}
+
+CountermeasureMitt: {
+	DisplayName: B-LSR: Countermeasure Mitt
+	Tooltip:
+		'''
+		A precision welding glove with laser emitters in each fingertip
+		<right> to focus all emitters into a short range palm blast that always critically strikes
+		Palm blasts have a cooldown which is significantly shorter if they miss
+		[c/1FFBFF:'Most battalions prefer to either spread attacks widely, or focus on a singular target.]
+		[c/1FFBFF:This glove caters to both, though it will never bridge the gap between their strategies.']
 		'''
 }
 
@@ -20,46 +57,17 @@ GalvanizingGlaive: {
 		'''
 }
 
-GatlingLaser: {
-	DisplayName: Gatling Laser
+HolofibreImmolator: {
+	DisplayName: R-PMA: Holofibre Immolator
 	Tooltip:
 		'''
-		Fires a rapid barrage of accelerated lasers to annihilate foes
-		[c/1FFBFF:'Developed to be used primarily by Yharim's fleet and base defense force.']
-		'''
-}
-
-GaussDagger: {
-	DisplayName: Gauss Dagger
-	Tooltip:
-		'''
-		Slices through foes with turbulent magnetic force
-		Repeated strikes envelop foes in a damaging magnetic flux
-		'''
-}
-
-GaussPistol: {
-	DisplayName: Gauss Pistol
-	Tooltip:
-		'''
-		Fires a devastating high-velocity blast with extreme knockback
-		[c/1FFBFF:'Though this arcane pistol may seem mundane, it is deceivingly powerful.]
-		[c/1FFBFF:One of the many advantages of magical firearms is that size does not equal power.']
-		'''
-}
-
-GaussRifle: {
-	DisplayName: Gauss Rifle
-	Tooltip: Fires a devastating powerful high-velocity blast with absurd knockback
-}
-
-HeavyLaserRifle: {
-	DisplayName: Heavy Laser Rifle
-	Tooltip:
-		'''
-		Fires an incredibly accurate pair of destructive laser beams
-		[c/1FFBFF:'Though Godseeker Knights are often brutish, not all prefer close quarters melee combat.]
-		[c/1FFBFF:As such, Yharim personally requested that I create heavy weaponry for them despite being few in number.']
+		Fires three gravity-affected plasma drops which dissolve through foes
+		Holding <left> quickly charges the bow, firing a high-speed plasma arrow
+		Plasma arrows will detonate after impact, creating stronger explosions if stuck into tiles
+		Holding <right> will repeatedly fire uncharged shots
+		Holding <right> and <left> will automatically fire charged arrows at a slightly slower rate
+		[c/1FFBFF:'The elegance of holofibre is unmatched.]
+		[c/1FFBFF:However, mechanical tension may have produced more consistent results.']
 		'''
 }
 
@@ -68,23 +76,41 @@ HydraulicVoltCrasher: {
 	Tooltip:
 		'''
 		An electrically charged jackhammer which shocks all nearby foes on hit
+		Press <right> to use without hammering down walls
 		[c/1FFBFF:'A device made to electrically stamp metal plates, instantly fusing them.]
 		[c/1FFBFF:Naturally, it can also function as a devastating weapon.']
-		'''
-}
-
-MatterModulator: {
-	DisplayName: Matter Modulator
-	Tooltip:
-		'''
-		Fires a burst of unstable matter that pierces infinitely but deals little damage
-		After striking a tile, the matter will gain enhanced damage and no longer pierce
 		'''
 }
 
 MountedScanner: {
 	DisplayName: Mounted Scanner
 	Tooltip: Summons a powerful scanner module above your head that fires lasers at nearby enemies
+}
+
+Nidhogg: {
+	DisplayName: B-GSS: Nidhogg
+	Tooltip:
+		'''
+		A magnet powered energy railgun that fires rapidly, creating lingering magnetic implosions that pull in weak enemies on hit
+		Only one implosion can exist at a time
+		Press <right> to begin charging a devastating energy beam that always crits and will fire once ready
+		This charge attack can not be interrupted once started and has a long cooldown
+		[c/1FFBFF:'Many soldiers underestimate the destructive capabilities of magnetism.]
+		[c/1FFBFF:This railgun has reliably pulled in skeptics of its crushing efficiency.']
+		'''
+}
+
+PhalanxSurge: {
+	DisplayName: W-LSR: Phalanx Surge
+	Tooltip:
+		'''
+		Fires a spread of lasers
+		Holding <right> charges the weapon, allowing it to thrust forward and impale enemies with an energy spear
+		Holding <left> when firing the charge attack will launch you forward at high speeds and deal extra damage
+		Using the charged attack has a short cooldown
+		[c/1FFBFF:'There was much call from Yharim's forces for close range armaments.]
+		[c/1FFBFF:A laser lance with which to gore their foes was met with thunderous applause.']
+		'''
 }
 
 Phaseslayer: {
@@ -94,7 +120,6 @@ Phaseslayer: {
 		Projects a colossal laser blade which is controlled by the cursor
 		Move the cursor to swing the blade and rip and tear through enemies
 		Faster swings deal more damage and release additional sword beams
-		When at low charge, the blade becomes smaller and weaker
 		'''
 }
 
@@ -136,16 +161,33 @@ PulseDragon: {
 		'''
 }
 
+PulseGrenade: {
+	DisplayName: R-PLS: Pulse Grenade
+	Tooltip:
+		'''
+		A regenerating grenade that will track enemies and burst into 8 pulse orbs
+		Pulse orbs will return to you and reform the grenade, hitting anything in their path
+		Stealth strikes throw the grenade at high speeds and burst into twice as many orbs
+		'''
+}
+
 PulsePistol: {
-	DisplayName: Pulse Pistol
-	Tooltip: Fires a pulse that arcs to a new target on enemy hits
+	DisplayName: P-PLS: Pulse Pistol
+	Tooltip:
+		'''
+		Fires a pulse orb that tracks nearby targets
+		After hitting an enemy, the pulse orb will split in two
+		Pulse orb pierce will increase when killing enemies
+		'''
 }
 
 PulseRifle: {
-	DisplayName: Pulse Rifle
+	DisplayName: A-PLS: Pulse Rifle
 	Tooltip:
 		'''
-		Fires an enhanced pulse that arcs to a new target on enemy hits
+		Fires an enhanced pulse beam that dissipates into 4 high-frequency pulse orbs on hit
+		Pulse orbs aggressively track nearby targets and track faster the more they hit
+		Pulse orb pierce will not decrease when killing enemies or dealing low damage
 		[c/1FFBFF:'My own personal weapon, used to stamp out failed creations.]
 		[c/1FFBFF:I have backed up the schematics in the event of the original's destruction.']
 		'''
@@ -155,8 +197,21 @@ PulseTurretRemote: {
 	DisplayName: Pulse Turret Remote
 	Tooltip:
 		'''
-		Summons a pulse turret which eradicates nearby foes with focused energy blasts
+		{$CommonItemTooltip.Sentry}
+		Summons a turret to fire explosive pulse blasts at your enemies
 		Only one pulse turret may exist at a time
+		'''
+}
+
+ShortCircuit: {
+	DisplayName: P-TSL: Short Circuit
+	Tooltip:
+		'''
+		Press <left> to rapidly fire stunning bolts with high knockback
+		Press <right> to shoot a hook that attaches to enemies and rapidly electrocutes them
+		After electrocuting an enemy enough, the hook will create a shock explosion before returning to you
+		Successful hook attacks have a short cooldown that is applied unless the hook kills an enemy
+		{$Common.ArmorPenetration}
 		'''
 }
 
@@ -172,31 +227,12 @@ SnakeEyes: {
 		'''
 }
 
-StarSwallowerContainmentUnit: {
-	DisplayName: Star Swallower Containment Unit
-	Tooltip:
-		'''
-		Summons a biomechanical frog that vomits plasma onto enemies
-		[c/1FFBFF:'These simplistic creatures were mechanized to autonomously transport plasma.]
-		[c/1FFBFF:They are vastly more servicable than their mundane organic counterparts.']
-		'''
-}
-
 SystemBane: {
 	DisplayName: System Bane
 	Tooltip:
 		'''
 		Hurls an unstable device which sticks to the ground and shocks nearby enemies with lightning
 		Stealth strikes make the device emit a large, damaging electromagnetic field
-		'''
-}
-
-Taser: {
-	DisplayName: Taser
-	Tooltip:
-		'''
-		Shoots a hook that attaches to enemies and electrocutes them before returning
-		A slow, simple electric weapon, meant only for low ranking guards
 		'''
 }
 
@@ -219,13 +255,16 @@ TheAnomalysNanogun: {
 		'''
 }
 
-TrackingDisk: {
-	DisplayName: Tracking Disk
+Vulcan: {
+	DisplayName: R-GSS: Vulcan
 	Tooltip:
 		'''
-		Releases a flying disk that fires lasers at nearby enemies
-		This disk gains acceleration as it returns to the player
-		Stealth strikes fire lasers at a faster rate and distance, and can fire at multiple different targets
+		A mana-fueled Gatling cannon that fires in bursts
+		Press <right> to launch a magnetic harpoon which attracts your shots
+		Launching a harpoon makes burst fire mode last longer
+		When a harpoon expires, all magnetized shots launch at nearby enemies with increased damage
+		[c/1FFBFF:'Originally a ceiling mounted mining beam, the removal of its battery reduced its heft only marginally.]
+		[c/1FFBFF:It saw little use and many complaints from the battlemage corps.']
 		'''
 }
 

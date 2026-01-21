@@ -1,6 +1,6 @@
-﻿using CalamityMod.Items.Weapons.Ranged;
+﻿using System;
+using CalamityMod.Items.Weapons.Ranged;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -43,29 +43,29 @@ namespace CalamityMod.Projectiles.Ranged
 
         public void AttemptToFireProjectiles(Player player)
         {
-            bool canFire = player.channel && player.HasAmmo(player.ActiveItem()) && !player.noItems && !player.CCed;
-            if (!canFire)
+            if (player.CantUseHoldout() || !player.HasAmmo(player.HeldItem))
             {
                 Projectile.Kill();
                 return;
             }
-            if (Projectile.owner == Main.myPlayer && Time % player.ActiveItem().useTime == 0)
+            if (Projectile.owner == Main.myPlayer && Time % player.HeldItem.useTime == 0)
             {
                 int type = ProjectileID.WoodenArrowFriendly; // This doesn't really matter. It's overwritten anyway. But it is passed into the PickAmmo method.
-                float shotSpeed = player.ActiveItem().shootSpeed;
-                int damage = player.GetWeaponDamage(player.ActiveItem());
-                float knockBack = player.ActiveItem().knockBack;
+                float shotSpeed = player.HeldItem.shootSpeed;
+                int damage = player.GetWeaponDamage(player.HeldItem);
+                float knockBack = player.HeldItem.knockBack;
 
-                player.PickAmmo(player.ActiveItem(), out type, out shotSpeed, out damage, out knockBack, out _); // Pick ammo and consume it (this incorporates the bow's chance to not consume ammo).
+                player.PickAmmo(player.HeldItem, out type, out shotSpeed, out damage, out knockBack, out _); // Pick ammo and consume it (this incorporates the bow's chance to not consume ammo).
 
-                if (player.ActiveItem().UseSound.HasValue)
-                    SoundEngine.PlaySound(player.ActiveItem().UseSound.GetValueOrDefault(), Projectile.Center);
+                if (player.HeldItem.UseSound.HasValue)
+                    SoundEngine.PlaySound(player.HeldItem.UseSound.GetValueOrDefault(), Projectile.Center);
 
                 type = ModContent.ProjectileType<UltimaBolt>();
                 float shootLaserChance = Utils.GetLerpValue(Ultima.FullChargeTime * 0.35f, Ultima.FullChargeTime, Time, true);
                 Vector2 shotPosition = player.RotatedRelativePoint(player.MountedCenter, true);
                 shotPosition += Projectile.velocity.ToRotation().ToRotationVector2().RotatedByRandom(MathHelper.ToRadians(40f)).RotatedBy(-0.25f * Projectile.spriteDirection) * 42f;
 
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Projectile.velocity = player.SafeDirectionTo(Main.MouseWorld);
 
                 Vector2 shotVelocity = Projectile.velocity * shotSpeed; // The velocity should always be a unit vector.
@@ -85,7 +85,7 @@ namespace CalamityMod.Projectiles.Ranged
                     sparkVelocity = sparkVelocity.RotatedBy(offsetAngle);
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), shotPosition, sparkVelocity, ModContent.ProjectileType<UltimaSpark>(), damage / 3, knockBack, Projectile.owner);
                 }
-                knockBack = player.GetWeaponKnockback(player.ActiveItem(), knockBack);
+                knockBack = player.GetWeaponKnockback(player.HeldItem, knockBack);
 
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), shotPosition, shotVelocity, type, damage, knockBack, Projectile.owner);
                 Projectile.netUpdate = true;

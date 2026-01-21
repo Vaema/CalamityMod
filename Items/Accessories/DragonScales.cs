@@ -2,7 +2,6 @@
 using CalamityMod.CalPlayer;
 using CalamityMod.Rarities;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -12,13 +11,13 @@ namespace CalamityMod.Items.Accessories
         public new string LocalizationCategory => "Items.Accessories";
         public static int ShitBaseDamage = 57;
         public static int TornadoBaseDamage = 210;
-        
+
         public override void SetDefaults()
         {
             Item.width = 32;
             Item.height = 34;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.value = Item.buyPrice(platinum: 15); // Sold by Bandit
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.accessory = true;
         }
 

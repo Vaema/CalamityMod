@@ -2,7 +2,6 @@
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
@@ -13,8 +12,8 @@ namespace CalamityMod.DataStructures
 {
     public enum AttunementID : byte
     {
-        Default, Hot, Cold, Tropical, Evil,  //Broken biome blade
-        TrueDefault, TrueHot, TrueCold, TrueTropical, TrueEvil, Holy, Astral, Marine, //Biome blade
+        Default, Hot, Cold, Evil,  //Broken biome blade
+        TrueDefault, TrueHot, TrueCold, TrueTropical, TrueEvil, Holy, //Biome blade
         Whirlwind, FlailBlade, SuperPogo, Shockwave, //True biome blade
         Phoenix, Aries, Polaris, Andromeda //Galaxia
     }
@@ -26,9 +25,9 @@ namespace CalamityMod.DataStructures
 
         public static void Load()
         {
-             attunementArray = new Attunement[] {
-                  new DefaultAttunement(), new HotAttunement(), new ColdAttunement(), new TropicalAttunement(), new EvilAttunement(),
-                  new TrueDefaultAttunement(), new TrueHotAttunement(), new TrueColdAttunement(), new TrueTropicalAttunement(), new TrueEvilAttunement(), new HolyAttunement(), new AstralAttunement(), new MarineAttunement(),
+            attunementArray = new Attunement[] {
+                  new DefaultAttunement(), new HotAttunement(), new ColdAttunement(), new EvilAttunement(),
+                  new TrueDefaultAttunement(), new TrueHotAttunement(), new TrueColdAttunement(), new TrueTropicalAttunement(), new TrueEvilAttunement(), new HolyAttunement(),
                   new WhirlwindAttunement(), new FlailBladeAttunement(), new SuperPogoAttunement(), new ShockwaveAttunement(),
                   new PhoenixAttunement(), new AriesAttunement(), new PolarisAttunement(), new AndromedaAttunement(),
                   null
@@ -97,13 +96,13 @@ namespace CalamityMod.DataStructures
 
         public override void ApplyStats(Item item)
         {
-            item.channel = false;
-            item.noUseGraphic = false;
-            item.useStyle = ItemUseStyleID.Swing;
-            item.shoot = ProjectileType<PurityProjection>();
-            item.shootSpeed = 12f;
-            item.UseSound = SoundID.Item1;
-            item.noMelee = false;
+            item.channel = true;
+            item.noUseGraphic = true;
+            item.useStyle = ItemUseStyleID.Shoot;
+            item.shoot = ProjectileType<PureClarity>();
+            item.shootSpeed = 0f;
+            item.UseSound = null;
+            item.noMelee = true;
         }
     }
     public class HotAttunement : Attunement
@@ -177,31 +176,6 @@ namespace CalamityMod.DataStructures
         }
     }
 
-    public class TropicalAttunement : Attunement
-    {
-        public TropicalAttunement()
-        {
-            id = AttunementID.Tropical;
-            tooltipColor = new Color(162, 200, 85);
-
-            energyParticleEdgeColor = new Color(53, 112, 4);
-            energyParticleCenterColor = new Color(131, 173, 39);
-        }
-
-        public override float DamageMultiplier => BrokenBiomeBlade.TropicalAttunement_BaseDamage / (float)BrokenBiomeBlade.BaseDamage;
-
-        public override void ApplyStats(Item item)
-        {
-            item.channel = false;
-            item.noUseGraphic = true;
-            item.useStyle = ItemUseStyleID.Swing;
-            item.shoot = ProjectileType<GrovetendersTouch>();
-            item.shootSpeed = 30;
-            item.UseSound = null;
-            item.noMelee = true;
-        }
-    }
-
     public class EvilAttunement : Attunement
     {
         public EvilAttunement()
@@ -241,7 +215,7 @@ namespace CalamityMod.DataStructures
         public TrueDefaultAttunement()
         {
             id = AttunementID.TrueDefault;
-            tooltipColor = new Color(171, 180, 73);
+            tooltipColor = new Color(201, 220, 93);
 
             energyParticleEdgeColor = new Color(117, 126, 72);
             energyParticleCenterColor = new Color(200, 184, 136);
@@ -251,13 +225,13 @@ namespace CalamityMod.DataStructures
 
         public override void ApplyStats(Item item)
         {
-            item.channel = false;
-            item.noUseGraphic = false;
-            item.useStyle = ItemUseStyleID.Swing;
-            item.shoot = ProjectileType<TruePurityProjection>();
-            item.shootSpeed = 12f;
-            item.UseSound = SoundID.Item1;
-            item.noMelee = false;
+            item.channel = true;
+            item.noUseGraphic = true;
+            item.useStyle = ItemUseStyleID.Shoot;
+            item.shoot = ProjectileType<TruePureClarity>();
+            item.shootSpeed = 0f;
+            item.UseSound = null;
+            item.noMelee = true;
         }
     }
     public class TrueHotAttunement : Attunement
@@ -432,55 +406,6 @@ namespace CalamityMod.DataStructures
             item.noMelee = true;
         }
     }
-
-    public class AstralAttunement : Attunement
-    {
-        public AstralAttunement()
-        {
-            id = AttunementID.Astral;
-            tooltipColor = new Color(91, 73, 196);
-
-            energyParticleEdgeColor = new Color(58, 56, 165);
-            energyParticleCenterColor = new Color(153, 120, 255);
-        }
-
-        public override float DamageMultiplier => TrueBiomeBlade.AstralAttunement_BaseDamage / (float)TrueBiomeBlade.BaseDamage;
-        public override void ApplyStats(Item item)
-        {
-            item.channel = true;
-            item.noUseGraphic = true;
-            item.useStyle = ItemUseStyleID.Thrust;
-            item.shoot = ProjectileType<ExtantAbhorrence>();
-            item.shootSpeed = 12f;
-            item.UseSound = null;
-            item.noMelee = true;
-        }
-    }
-
-    public class MarineAttunement : Attunement
-    {
-        public MarineAttunement()
-        {
-            id = AttunementID.Marine;
-            tooltipColor = new Color(61, 103, 209);
-
-            energyParticleEdgeColor = new Color(27, 59, 101);
-            energyParticleCenterColor = new Color(27, 112643, 255);
-        }
-
-        public override float DamageMultiplier => TrueBiomeBlade.MarineAttunement_BaseDamage / (float)TrueBiomeBlade.BaseDamage;
-
-        public override void ApplyStats(Item item)
-        {
-            item.channel = false;
-            item.noUseGraphic = true;
-            item.useStyle = ItemUseStyleID.Thrust;
-            item.shoot = ProjectileType<GestureForTheDrowned>();
-            item.shootSpeed = 12f;
-            item.UseSound = null;
-            item.noMelee = true;
-        }
-    }
     #endregion
 
     #region True Biome Blade Attunements
@@ -490,7 +415,7 @@ namespace CalamityMod.DataStructures
         {
             id = AttunementID.Whirlwind;
             tooltipColor = new Color(220, 105, 197);
-            tooltipColor2 = new Color(171, 239, 113);
+            tooltipColor2 = new Color(132, 70, 232);
         }
 
         public override float DamageMultiplier => OmegaBiomeBlade.WhirlwindAttunement_BaseDamage / (float)OmegaBiomeBlade.BaseDamage;
@@ -508,13 +433,14 @@ namespace CalamityMod.DataStructures
 
         public override void PassiveEffect(Player player, IEntitySource source, ref int UseTimer, ref bool Procced, Projectile projectile = null)
         {
-            if (UseTimer % 30 == 29 && Main.rand.Next(2) == 0)
+            if (Procced)
             {
-                SoundEngine.PlaySound(SoundID.Item78);
                 int damage = (int)player.GetTotalDamage<MeleeDamageClass>().ApplyTo(OmegaBiomeBlade.WhirlwindAttunement_PassiveBaseDamage);
-                Projectile beamSword = Projectile.NewProjectileDirect(source, player.Center, player.SafeDirectionTo(Main.MouseWorld, Vector2.One) * 15f, ProjectileType<SwordsmithsPrideBeam>(), damage, 10f, player.whoAmI, 1f);
-                beamSword.timeLeft = 50;
-                UseTimer++;
+                // 14NOV2024: Ozzatron: clamped mouse world unnecessary here, just used for direction
+                Vector2 velocity = (Main.MouseWorld - player.Center).SafeNormalize(Vector2.UnitX) * 15f;
+                Projectile.NewProjectile(source, player.Center, velocity, ProjectileType<SwordsmithsPrideAstralBomber>(), damage, 0f, player.whoAmI);
+
+                Procced = false;
             }
         }
     }
@@ -579,12 +505,7 @@ namespace CalamityMod.DataStructures
         {
             if (Procced)
             {
-                if (!player.moonLeech)
-                {
-                    player.statLife += OmegaBiomeBlade.SuperPogoAttunement_PassiveLifeSteal;
-                    player.HealEffect(OmegaBiomeBlade.SuperPogoAttunement_PassiveLifeSteal);
-                }
-
+                player.DoLifestealDirect(null, OmegaBiomeBlade.SuperPogoAttunement_PassiveLifeSteal);
                 Procced = false;
             }
         }
@@ -595,7 +516,7 @@ namespace CalamityMod.DataStructures
         public ShockwaveAttunement()
         {
             id = AttunementID.Shockwave;
-            tooltipColor = new Color(132, 109, 233);
+            tooltipColor = new Color(71, 191, 71);
             tooltipColor2 = new Color(122, 213, 233);
         }
 
@@ -606,7 +527,7 @@ namespace CalamityMod.DataStructures
             item.channel = true;
             item.noUseGraphic = true;
             item.useStyle = ItemUseStyleID.Shoot;
-            item.shoot = ProjectileType<MercurialTides>();
+            item.shoot = ProjectileType<EarthenTides>();
             item.shootSpeed = 12f;
             item.UseSound = null;
             item.noMelee = true;
@@ -617,7 +538,7 @@ namespace CalamityMod.DataStructures
             if (UseTimer % 120 == 119)
             {
                 int damage = (int)player.GetTotalDamage<MeleeDamageClass>().ApplyTo(OmegaBiomeBlade.ShockwaveAttunement_PassiveBaseDamage);
-                Projectile.NewProjectile(source, player.Center, Vector2.Zero, ProjectileType<MercurialTidesBlast>(), damage, 10f, player.whoAmI, 1f);
+                Projectile.NewProjectile(source, player.Center, Vector2.Zero, ProjectileType<EarthenTidesShockwave>(), damage, 10f, player.whoAmI, 2f);
                 UseTimer++;
             }
         }
@@ -649,16 +570,7 @@ namespace CalamityMod.DataStructures
             item.shootSpeed = 12f;
             item.UseSound = null;
             item.noMelee = true;
-        }
-
-        public override void PassiveEffect(Player player, IEntitySource source, ref int UseTimer, ref bool Procced, Projectile projectile = null)
-        {
-            if (UseTimer % 500 == 449)
-            {
-                SoundEngine.PlaySound(SoundID.Item78);
-                Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, ProjectileType<GalaxiaTropicRing>(), 0, 0f, player.whoAmI, 1f);
-                UseTimer++;
-            }
+            item.reuseDelay = 12;
         }
     }
 
@@ -683,16 +595,7 @@ namespace CalamityMod.DataStructures
             item.shootSpeed = 12f;
             item.UseSound = null;
             item.noMelee = true;
-        }
-
-        public override void PassiveEffect(Player player, IEntitySource source, ref int UseTimer, ref bool Procced, Projectile projectile = null)
-        {
-            if (UseTimer % 500 == 449)
-            {
-                SoundEngine.PlaySound(SoundID.Item78);
-                Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, ProjectileType<GalaxiaTropicRing>(), 0, 0f, player.whoAmI, 1f);
-                UseTimer++;
-            }
+            item.reuseDelay = 12;
         }
     }
 
@@ -717,16 +620,7 @@ namespace CalamityMod.DataStructures
             item.shootSpeed = 12f;
             item.UseSound = null;
             item.noMelee = true;
-        }
-
-        public override void PassiveEffect(Player player, IEntitySource source, ref int UseTimer, ref bool Procced, Projectile projectile = null)
-        {
-            if (UseTimer % 500 == 449)
-            {
-                SoundEngine.PlaySound(SoundID.Item78);
-                Projectile.NewProjectile(source, player.Center, Vector2.Zero, ProjectileType<GalaxiaTropicRing>(), FourSeasonsGalaxia.CancerPassiveDamage, 0f, player.whoAmI, 0f);
-                UseTimer++;
-            }
+            item.reuseDelay = 12;
         }
     }
 
@@ -752,16 +646,7 @@ namespace CalamityMod.DataStructures
             item.shootSpeed = 12f;
             item.UseSound = null;
             item.noMelee = true;
-        }
-
-        public override void PassiveEffect(Player player, IEntitySource source, ref int UseTimer, ref bool Procced, Projectile projectile = null)
-        {
-            if (UseTimer % 500 == 449)
-            {
-                SoundEngine.PlaySound(SoundID.Item78);
-                Projectile.NewProjectile(source, player.Center, Vector2.Zero, ProjectileType<GalaxiaTropicRing>(), FourSeasonsGalaxia.CancerPassiveDamage, 0f, player.whoAmI, 0f);
-                UseTimer++;
-            }
+            item.reuseDelay = 12;
         }
     }
 

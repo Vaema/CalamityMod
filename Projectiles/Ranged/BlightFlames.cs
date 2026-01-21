@@ -22,8 +22,12 @@ namespace CalamityMod.Projectiles.Ranged
         public int Time = 0;
         public bool postTileHit = false;
         public bool postEnemyHit = false;
+        public NPC targeted;
+        public Vector2 savedDist;
 
         public Color FogColor = new Color(30, 255, 30);
+
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = 14;
@@ -55,7 +59,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 for (int i = 0; i <= 8; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, 91, Projectile.velocity * 0.6f);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.GemDiamond, Projectile.velocity * 0.6f);
                     dust.scale = Main.rand.NextFloat(1.1f, 1.9f);
                     dust.velocity = Projectile.velocity.RotatedByRandom(0.3f) * Main.rand.NextFloat(0.3f, 2.1f);
                     dust.noGravity = true;
@@ -68,7 +72,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 for (int i = 0; i <= 3; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, 220, Projectile.velocity * 0.6f);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.FireworkFountain_Green, Projectile.velocity * 0.6f);
                     dust.scale = Main.rand.NextFloat(0.4f, 1.2f);
                     dust.velocity = Projectile.velocity.RotatedByRandom(0.3f) * Main.rand.NextFloat(0.3f, 2.1f);
                     dust.noGravity = false;
@@ -76,34 +80,33 @@ namespace CalamityMod.Projectiles.Ranged
             }
             if (Main.rand.NextBool(4) && Time > 135 && !postTileHit && !postEnemyHit)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(145, 145), 220, Vector2.Zero);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(145, 145), DustID.FireworkFountain_Green, Vector2.Zero);
                 dust.scale = Main.rand.NextFloat(0.2f, 0.4f);
                 dust.noGravity = true;
             }
             if (Main.rand.NextBool(20) && (postTileHit || postEnemyHit))
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(145, 145), 220, Vector2.Zero);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(145, 145), DustID.FireworkFountain_Green, Vector2.Zero);
                 dust.scale = Main.rand.NextFloat(0.4f, 1.2f);
                 dust.noGravity = true;
             }
             // Add some degree of variation to the fog with rotation/color
 
-            if (Main.rand.NextBool(3))
-                FogColor.G = (byte)Main.rand.Next(160, 230 + 1);
             ScaleFactor += 0.0061f;
-            ScaleFactor = MathHelper.Clamp(ScaleFactor, 0f, Projectile.scale);
+            ScaleFactor = MathHelper.Clamp(ScaleFactor, 0f, Projectile.scale * 0.8f);
             Lighting.AddLight(Projectile.Center, new Vector3(1f, 1f, 0.25f) * ScaleFactor);
 
             Projectile.velocity *= 0.99f;
             Projectile.Opacity = Utils.GetLerpValue(30f, 50f, Projectile.timeLeft, true) * Utils.GetLerpValue(0f, 130f, Projectile.timeLeft, true);
 
-            if (postEnemyHit && !postTileHit)
+            if (postEnemyHit && !postTileHit && targeted != null && targeted.life > 0 && targeted.active)
             {
-                CalamityUtils.HomeInOnNPC(Projectile, true, 300f, 25f, 35f);
+                Projectile.Center = targeted.Center + savedDist;
+                savedDist *= 0.99f;
             }
 
             // 08DEC2023: Ozzatron: All below code does not run on dedicated servers as it requires clientside lighting information.
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             // Calculate light power. This checks below the position of the fog to check if this fog is underground.
@@ -114,9 +117,12 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (!postTileHit)
-                Projectile.Center = Projectile.Center + Main.rand.NextVector2Circular(20, 20);
-            target.AddBuff(ModContent.BuffType<Plague>(), 420);
+            //if (!postTileHit)
+            //Projectile.Center = Projectile.Center + Main.rand.NextVector2Circular(20, 20);
+
+            //Doze - Flamethrowers in vanilla are long debuff infliction tools (20 seconds of their debuff).
+            //I am applying this as the base for Cal flamethrowers, with shorter times being the exception instead of the rule
+            target.AddBuff(ModContent.BuffType<Plague>(), 1200);
 
             for (int i = 0; i <= 3; i++)
             {
@@ -129,8 +135,9 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.velocity = Vector2.Zero;
                 Projectile.timeLeft = 300;
                 postEnemyHit = true;
+                targeted = target;
+                savedDist = Projectile.Center - target.Center;
             }
-
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
@@ -144,7 +151,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (!postEnemyHit)
             {
                 Projectile.velocity = oldVelocity * 0.95f;
-                Projectile.position -= Projectile.velocity;
+                Projectile.Center -= Projectile.velocity;
                 if (!postTileHit)
                 {
                     Projectile.timeLeft = 800;
@@ -162,15 +169,15 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Main.spriteBatch.SetBlendState(BlendState.Additive);
-
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D splatTex = ModContent.Request<Texture2D>("CalamityMod/Particles/WaterFoam").Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
-            float opacity = Utils.GetLerpValue(0f, 0.08f, LightPower, true) * Projectile.Opacity * 0.65f;
-            Color drawColor = FogColor * opacity;
-            Main.EntitySpriteDraw(texture, drawPosition, null, drawColor, Projectile.rotation, texture.Size() * 0.5f, ScaleFactor, SpriteEffects.None);
+            float opacity =  Projectile.Opacity * 0.3f;
+            Color drawColor = (FogColor with { A = 0 }) * opacity;
+            
+            Main.EntitySpriteDraw(texture, drawPosition + Main.rand.NextVector2Circular(19, 19), null, drawColor * 0.55f, Projectile.rotation, texture.Size() * 0.5f, ScaleFactor * 1.2f, SpriteEffects.None);
 
-            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+            Main.EntitySpriteDraw(texture, drawPosition, null, drawColor, -Projectile.rotation * 0.9f, texture.Size() * 0.5f, ScaleFactor, SpriteEffects.None);
             return false;
         }
     }

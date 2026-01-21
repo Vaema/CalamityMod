@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -33,7 +32,7 @@ namespace CalamityMod.Tiles.Abyss.Stalactite
             TileObjectData.newTile.DrawYOffset = -2;
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(57, 48, 83), CalamityUtils.GetText("Tiles.Stalactite"));
-            DustType = (int)CalamityDusts.SulfurousSeaAcid;
+            DustType = (int)CalamityDusts.SulphurousSeaAcid;
 
             base.SetStaticDefaults();
         }

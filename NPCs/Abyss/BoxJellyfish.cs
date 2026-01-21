@@ -1,15 +1,15 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
-using CalamityMod.Items.Weapons.Magic;
-using Terraria.GameContent.ItemDropRules;
 
 namespace CalamityMod.NPCs.Abyss
 {
@@ -17,8 +17,8 @@ namespace CalamityMod.NPCs.Abyss
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0);
+            Main.npcFrameCount[Type] = 4;
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
             value.Position.Y += 10;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
         }
@@ -29,12 +29,12 @@ namespace CalamityMod.NPCs.Abyss
             NPC.damage = 44;
             NPC.width = 30;
             NPC.height = 33;
-            NPC.defense = 5;
-            NPC.lifeMax = 90;
+            NPC.defense = 8;
+            NPC.lifeMax = 100;
             NPC.alpha = 20;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 0, 80);
+            NPC.value = Item.buyPrice(silver: 1);
             NPC.HitSound = SoundID.NPCHit25;
             NPC.DeathSound = SoundID.NPCDeath28;
             Banner = NPC.type;
@@ -48,10 +48,10 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Ocean,
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.BoxJellyfish")
+                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Ocean,
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.BoxJellyfish")
             });
         }
 
@@ -116,7 +116,7 @@ namespace CalamityMod.NPCs.Abyss
                 {
                     NPC.TargetClosest(true);
                     float lungeSpeed = CalamityWorld.death ? 12f : CalamityWorld.revenge ? 10f : 8f;
-                    Vector2 npcPosition = new Vector2(NPC.position.X + NPC.width * 0.5f, NPC.position.Y + NPC.height * 0.5f);
+                    Vector2 npcPosition = NPC.Center;
                     float targetX = Main.player[NPC.target].position.X + (Main.player[NPC.target].width / 2) - npcPosition.X;
                     float targetY = Main.player[NPC.target].position.Y + (Main.player[NPC.target].height / 2) - npcPosition.Y;
                     float targetDistance = (float)Math.Sqrt(targetX * targetX + targetY * targetY);
@@ -179,7 +179,7 @@ namespace CalamityMod.NPCs.Abyss
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter += 0.15f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
@@ -220,7 +220,7 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(ItemID.JellyfishNecklace, 100);
+            npcLoot.Add(ItemID.JellyfishNecklace, 30);
             var postSkeletron = npcLoot.DefineConditionalDropSet(() => NPC.downedBoss3);
             postSkeletron.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<AbyssShocker>(), 50, 40));
         }

@@ -1,12 +1,13 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.IO;
+using System.Reflection;
+using CalamityMod.CalPlayer;
+using CalamityMod.Packets;
 using CalamityMod.Tiles.DraedonStructures;
 using Microsoft.Xna.Framework;
-using System.IO;
-using System.Reflection;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ObjectData;
 
 namespace CalamityMod.TileEntities
 {
@@ -20,7 +21,16 @@ namespace CalamityMod.TileEntities
         public override bool IsTileValidForEntity(int x, int y)
         {
             Tile tile = Main.tile[x, y];
-            return tile.HasTile && tile.TileType == ModContent.TileType<LabHologramProjector>() && tile.TileFrameX == 0 && tile.TileFrameY == 0;
+
+            int style = 0, alt = 0;
+            TileObjectData.GetTileInfo(tile, ref style, ref alt);
+            TileObjectData data = TileObjectData.GetTileData(tile.TileType, style, alt);
+
+            int sheetSquare = 16 + data.CoordinatePadding;
+            int FrameX = tile.TileFrameX / sheetSquare % data.Width;
+            int FrameY = tile.TileFrameY / sheetSquare % data.Height;
+
+            return tile.HasTile && tile.TileType == ModContent.TileType<LabHologramProjector>() && FrameX == 0 && FrameY == 0;
         }
 
         // Check if the hologram should become visible.
@@ -35,11 +45,10 @@ namespace CalamityMod.TileEntities
             // If one is, pop up.
             Vector2 projectorCenterPos = Center;
             float distSQ = PopupDistance * PopupDistance;
-            for (int i = 0; i < Main.maxPlayers; ++i)
+            foreach (Player p in Main.ActivePlayers)
             {
-                Player p = Main.player[i];
-                if (!p.active) // The lack of a dead check is intentional. Dead players keep hologram boxes on for amusement.
-                    continue;
+                // The lack of a dead check is intentional. Dead players keep hologram boxes on for amusement.
+
                 if (p.DistanceSQ(projectorCenterPos) < distSQ)
                 {
                     PoppingUp = true;
@@ -72,12 +81,8 @@ namespace CalamityMod.TileEntities
         // If this projector breaks, anyone who's viewing it is no longer viewing it.
         public override void OnKill()
         {
-            for (int i = 0; i < Main.maxPlayers; ++i)
+            foreach (Player p in Main.ActivePlayers)
             {
-                Player p = Main.player[i];
-                if (!p.active)
-                    continue;
-
                 // Use reflection to stop TML from spitting an error here.
                 // Try-catching will not stop this error, TML will print it to console anyway. The error is harmless.
                 ModPlayer[] mpStorageArray = (ModPlayer[])typeof(Player).GetField("modPlayers", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(p);
@@ -100,27 +105,8 @@ namespace CalamityMod.TileEntities
         {
             if (Main.netMode == NetmodeID.SinglePlayer)
                 return;
-            ModPacket packet = Mod.GetPacket();
-            packet.Write((byte)CalamityModMessageType.LabHologramProjector);
-            packet.Write(ID);
-            packet.Write(PoppingUp);
-            packet.Send(-1, -1);
-        }
 
-        internal static bool ReadSyncPacket(Mod mod, BinaryReader reader)
-        {
-            int teID = reader.ReadInt32();
-            bool exists = ByID.TryGetValue(teID, out TileEntity te);
-
-            // The rest of the packet must be read even if it turns out the projector doesn't exist for whatever reason.
-            bool pop = reader.ReadBoolean();
-
-            if (exists && te is TELabHologramProjector projector)
-            {
-                projector.PoppingUp = pop;
-                return true;
-            }
-            return false;
+            TELabHologramProjectorPacket.Send(this, PoppingUp);
         }
     }
 }

@@ -1,18 +1,19 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System;
 
 namespace CalamityMod.Projectiles.Enemy
 {
     public class InkPoisonCloud : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Enemy";
+
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 10;
+            Main.projFrames[Type] = 10;
         }
 
         public override void SetDefaults()
@@ -35,6 +36,7 @@ namespace CalamityMod.Projectiles.Enemy
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
+
             if (Projectile.ai[0] < 180f)
             {
                 if (Projectile.frame >= 4)
@@ -42,11 +44,13 @@ namespace CalamityMod.Projectiles.Enemy
                     Projectile.frame = 0;
                 }
             }
-            if (Projectile.ai[0] > 180f)
+            else
             {
                 Projectile.damage = 0;
             }
-            else if (Projectile.frame >= Main.projFrames[Projectile.type])
+
+            // Kill the Projectile if reached end of frame
+            if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.Kill();
             }
@@ -61,11 +65,11 @@ namespace CalamityMod.Projectiles.Enemy
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             var effects = Projectile.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
             Vector2 drawOrigin = new(tex.Width * 0.5f, Projectile.height * 0.5f);
             Vector2 vector = new Vector2(Projectile.Center.X, Projectile.Center.Y) - Main.screenPosition + new Vector2(0, Projectile.gfxOffY);
-            Rectangle rectangle = new(0, tex.Height / Main.projFrames[Projectile.type] * Projectile.frame, tex.Width, tex.Height / Main.projFrames[Projectile.type]);
+            Rectangle rectangle = new(0, tex.Height / Main.projFrames[Type] * Projectile.frame, tex.Width, tex.Height / Main.projFrames[Type]);
             Main.EntitySpriteDraw(tex, vector, rectangle, Color.White * 0.75f, Projectile.rotation, drawOrigin, Projectile.scale * 1.2f, effects, 0);
 
             return true;

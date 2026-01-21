@@ -1,7 +1,8 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System.IO;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Placeables.Banners;
-using System.IO;
+using CalamityMod.NPCs.NormalNPCs;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -14,8 +15,8 @@ namespace CalamityMod.NPCs.SulphurousSea
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0);
+            Main.npcFrameCount[Type] = 4;
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
             value.Position.X += 10f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
         }
@@ -30,7 +31,7 @@ namespace CalamityMod.NPCs.SulphurousSea
             NPC.lifeMax = 120;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 1, 0);
+            NPC.value = Item.buyPrice(silver: 1);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath40;
             NPC.knockBackResist = 0.8f;
@@ -46,7 +47,7 @@ namespace CalamityMod.NPCs.SulphurousSea
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Toxicatfish")
             });
@@ -64,7 +65,7 @@ namespace CalamityMod.NPCs.SulphurousSea
 
         public override void AI()
         {
-            CalamityAI.PassiveSwimmingAI(NPC, Mod, 0, Main.player[NPC.target].Calamity().GetAbyssAggro(160f), 0.25f, 0.15f, 8f, 8f, 0.1f);
+            CalamityRegularEnemyAI.PassiveSwimmingAI(NPC, Mod, 0, Main.player[NPC.target].Calamity().GetAbyssAggro(160f), 0.25f, 0.15f, 8f, 8f, 0.1f);
         }
 
         public override bool? CanBeHitByProjectile(Projectile projectile)
@@ -84,7 +85,7 @@ namespace CalamityMod.NPCs.SulphurousSea
                 return;
             }
             NPC.frameCounter += NPC.chaseable ? 0.15f : 0.075f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
@@ -122,7 +123,7 @@ namespace CalamityMod.NPCs.SulphurousSea
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Toxicatfish").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Toxicatfish2").Type, 1f);

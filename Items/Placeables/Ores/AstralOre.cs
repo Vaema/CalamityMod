@@ -1,4 +1,5 @@
 ﻿using Terraria;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -10,21 +11,13 @@ namespace CalamityMod.Items.Placeables.Ores
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 100;
-			ItemID.Sets.SortingPriorityMaterials[Type] = 99; // Luminite
+            ItemID.Sets.SortingPriorityMaterials[Type] = 99; // Luminite
+            ItemTrader.ChlorophyteExtractinator.AddOption_OneWay(Type, 1, ItemID.Meteorite, 1);
         }
 
         public override void SetDefaults()
         {
-            Item.width = 22;
-            Item.height = 22;
-            Item.createTile = ModContent.TileType<Tiles.Ores.AstralOre>();
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTurn = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.autoReuse = true;
-            Item.consumable = true;
-            Item.maxStack = 9999;
+            Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.Ores.AstralOre>());
             Item.value = Item.sellPrice(silver: 36);
             Item.rare = ItemRarityID.Cyan;
         }

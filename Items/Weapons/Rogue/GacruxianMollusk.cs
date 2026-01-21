@@ -9,7 +9,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class GacruxianMollusk : RogueWeapon
     {
-        public static int BaseDamage = 36;
         public static float Knockback = 5f;
         public static float Speed = 15f;
 
@@ -18,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.width = 24;
             Item.height = 22;
             Item.DamageType = RogueDamageClass.Instance;
-            Item.damage = BaseDamage;
+            Item.damage = 36;
             Item.knockBack = Knockback;
             Item.autoReuse = true;
             Item.useTime = 26;
@@ -29,8 +28,8 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.noUseGraphic = true;
             Item.shoot = ModContent.ProjectileType<GacruxianProj>();
             Item.shootSpeed = Speed;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
-            Item.rare = ItemRarityID.LightRed;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.rare = ItemRarityID.Pink;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

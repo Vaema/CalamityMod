@@ -1,11 +1,11 @@
-﻿using CalamityMod.CalPlayer;
-using System;
+﻿using System;
+using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Pets
 {
@@ -16,9 +16,9 @@ namespace CalamityMod.Projectiles.Pets
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            Main.projPet[Projectile.type] = true;
-            ProjectileID.Sets.LightPet[Projectile.type] = true;
+            Main.projFrames[Type] = 4;
+            Main.projPet[Type] = true;
+            ProjectileID.Sets.LightPet[Type] = true;
         }
 
         public override void SetDefaults()
@@ -34,7 +34,6 @@ namespace CalamityMod.Projectiles.Pets
 
         private void Pickup()
         {
-            int defaultItemGrabRange = 38;
             Player player = Main.player[Projectile.owner];
 
             for (int itemIndex = 0; itemIndex < Main.maxItems; itemIndex++)
@@ -44,7 +43,7 @@ namespace CalamityMod.Projectiles.Pets
                 {
                     if (new Rectangle((int)Projectile.position.X, (int)Projectile.position.Y, Projectile.width, Projectile.height).Intersects(new Rectangle((int)item.position.X, (int)item.position.Y, item.width, item.height)))
                     {
-                        if (Projectile.owner == Main.myPlayer && (player.ActiveItem().type != ItemID.None || player.itemAnimation <= 0))
+                        if (Projectile.owner == Main.myPlayer && (player.HeldItem.type != ItemID.None || player.itemAnimation <= 0))
                         {
                             // TODO -- fix this maybe? (what is it?)
                             if (!ItemLoader.OnPickup(item, player))
@@ -77,15 +76,7 @@ namespace CalamityMod.Projectiles.Pets
                             {
                                 continue;
                                 //Main.PlaySound(7, (int)player.position.X, (int)player.position.Y, 1);
-                                //player.statLife += 20;
-                                //if (Main.myPlayer == player.whoAmI)
-                                //{
-                                //    player.HealEffect(20, true);
-                                //}
-                                //if (player.statLife > player.statLifeMax2)
-                                //{
-                                //    player.statLife = player.statLifeMax2;
-                                //}
+                                //player.HealPlayer(20);
                                 //Main.item[itemIndex] = new Item();
                                 //if (Main.netMode == 1)
                                 //{
@@ -170,7 +161,7 @@ namespace CalamityMod.Projectiles.Pets
             }
             float flySpeed = 0.5f;
             Projectile.tileCollide = false;
-            Vector2 flyDirection = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
+            Vector2 flyDirection = Projectile.Center;
             float xDist = player.position.X + (float)(player.width / 2) - flyDirection.X;
             float yDist = player.position.Y + (float)(player.height / 2) - flyDirection.Y;
             yDist += (float)Main.rand.Next(-10, 21);
@@ -360,7 +351,7 @@ namespace CalamityMod.Projectiles.Pets
             for (int itemIndex = 0; itemIndex < Main.maxItems; itemIndex++)
             {
                 Item item = Main.item[itemIndex];
-                if (item.active && item.noGrabDelay == 0 && item.playerIndexTheItemIsReservedFor == Projectile.owner && 
+                if (item.active && item.noGrabDelay == 0 && item.playerIndexTheItemIsReservedFor == Projectile.owner &&
                     ItemLoader.CanPickup(item, Main.player[item.playerIndexTheItemIsReservedFor]) && Main.player[item.playerIndexTheItemIsReservedFor].ItemSpace(item).CanTakeItemToPersonalInventory)
                 {
                     if (ItemID.Sets.NebulaPickup[item.type])
@@ -462,12 +453,12 @@ namespace CalamityMod.Projectiles.Pets
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             if (color == 1)
                 texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Pets/SparksBlue").Value;
             if (color == 2)
                 texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Pets/SparksGreen").Value;
-            int height = texture.Height / Main.projFrames[Projectile.type];
+            int height = texture.Height / Main.projFrames[Type];
             int frameHeight = height * Projectile.frame;
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (Projectile.spriteDirection == -1)

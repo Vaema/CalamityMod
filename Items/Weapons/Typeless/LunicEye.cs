@@ -2,49 +2,53 @@
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.Items.Weapons.Typeless
 {
     public class LunicEye : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Typeless";
+
+        public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/LunicShot", 2) { Volume = 0.8f, PitchVariance = 0.1f };
+        public static readonly SoundStyle ImpactSound = new("CalamityMod/Sounds/Item/LunicImpact") { PitchVariance = 0.1f };
+
         public override void SetDefaults()
         {
             Item.width = 60;
             Item.height = 36;
+            Item.damage = 32;
             Item.DamageType = AverageDamageClass.Instance;
-            Item.damage = 9;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
-            Item.rare = ItemRarityID.LightRed;
-            Item.useAnimation = 15;
-            Item.useTime = 15;
-            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.useAnimation = Item.useTime = 22;
             Item.knockBack = 4.5f;
-            Item.UseSound = CommonCalamitySounds.LaserCannonSound;
-            Item.autoReuse = true;
-            Item.noMelee = true;
             Item.shoot = ModContent.ProjectileType<LunicBeam>();
             Item.shootSpeed = 12f;
+
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.UseSound = UseSound;
+            Item.autoReuse = true;
+            Item.noMelee = true;
+
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
+            Item.rare = ItemRarityID.LightRed;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ClasslessWeapon;
-		}
-
-        public override Vector2? HoldoutOffset()
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
         {
-            return new Vector2(-5, 0);
+            itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ClasslessWeapon;
         }
+
+        public override Vector2? HoldoutOffset() => new Vector2(-5, 0);
+
+        public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback) => position += velocity.SafeNormalize(Vector2.Zero) * 48f;
 
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddRecipeGroup("AnyCobaltBar", 10).
-                AddIngredient<Stardust>(20).
+                AddIngredient<StarblightSoot>(20).
                 AddTile(TileID.Anvils).
                 Register();
         }

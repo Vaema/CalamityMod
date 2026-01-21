@@ -1,9 +1,9 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
         public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.Spears[Item.type] = true;
+            ItemID.Sets.Spears[Type] = true;
         }
 
         public override void SetDefaults()
@@ -37,14 +37,10 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.autoReuse = true;
 
             Item.rare = ItemRarityID.Yellow;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
 
             Item.shoot = ModContent.ProjectileType<GalvanizingGlaiveProjectile>();
             Item.shootSpeed = 21f;
-
-            modItem.UsesCharge = true;
-            modItem.MaxCharge = 135f;
-            modItem.ChargePerUse = 0.075f;
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
@@ -63,8 +59,8 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             CreateRecipe().
                 AddIngredient<MysteriousCircuitry>(12).
                 AddIngredient<DubiousPlating>(18).
-                AddIngredient<InfectedArmorPlating>(10).
                 AddIngredient<LifeAlloy>(5).
+                AddIngredient<InfectedArmorPlating>(10).
                 AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(3, out Func<bool> condition), condition).
                 AddTile(TileID.MythrilAnvil).
                 Register();

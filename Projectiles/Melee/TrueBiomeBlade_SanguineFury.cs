@@ -1,16 +1,16 @@
-﻿using Terraria.Graphics.Shaders;
+﻿using System;
+using System.IO;
+using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
-using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Particles;
-using Terraria.Audio;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -27,7 +27,6 @@ namespace CalamityMod.Projectiles.Melee
         public ref float ChargeSoundCooldown => ref Projectile.localAI[1];
         public Player Owner => Main.player[Projectile.owner];
         public bool CanPogo => Owner.velocity.Y != 0 && PogoCooldown <= 0; //Only pogo when in the air and if the cooldown is zero
-        private bool OwnerCanShoot => Owner.channel && !Owner.noItems && !Owner.CCed;
 
         public const float pogoStrenght = 16f; //How much the player gets pogoed up
         public const float maxShred = 500; //How much shred you get
@@ -36,10 +35,6 @@ namespace CalamityMod.Projectiles.Melee
         public bool Dashing;
         public Vector2 DashStart;
 
-
-        public override void SetStaticDefaults()
-        {
-        }
         public override void SetDefaults()
         {
             Projectile.DamageType = DamageClass.Melee;
@@ -53,10 +48,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.timeLeft = OmegaBiomeBlade.SuperPogoAttunement_LocalIFrames;
         }
 
-        public override bool? CanDamage()
-        {
-            return Projectile.timeLeft <= 2; //Prevent spam click abuse
-        }
+        public override bool? CanDamage() => Projectile.timeLeft <= 2; //Prevent spam click abuse
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
@@ -111,6 +103,7 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     if (proj.active && proj.type == ProjectileType<SanguineFuryWheel>() && proj.owner == Owner.whoAmI)
                     {
+                        // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                         if (CalamityUtils.AngleBetween(Owner.Center - Owner.Calamity().mouseWorld, Owner.Center - proj.Center) > MathHelper.PiOver4)
                         {
                             proj.Kill();
@@ -121,13 +114,17 @@ namespace CalamityMod.Projectiles.Melee
                         Dashing = true;
                         DashStart = Owner.Center;
                         Wheel.timeLeft = 60;
-                        Owner.GiveIFrames(OmegaBiomeBlade.SuperPogoAttunement_SlashIFrames);
+
+                        // 17APR2024: Ozzatron: True Biome Blade's pogo gives iframes when striking enemies in a similar manner to a bonk dash.
+                        // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
+                        Owner.GiveUniversalIFrames(OmegaBiomeBlade.SuperPogoAttunement_PlayerSliceIFrames);
+
                         break;
                     }
                 }
             }
 
-            if (!OwnerCanShoot)
+            if (Owner.CantUseHoldout())
             {
                 Projectile.Kill();
                 return;
@@ -140,6 +137,7 @@ namespace CalamityMod.Projectiles.Melee
 
             Lighting.AddLight(Projectile.Center, new Vector3(1f, 0.56f, 0.56f) * ShredRatio);
 
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             //Manage position and rotation
             direction = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
             direction.Normalize();
@@ -147,8 +145,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.Center = Owner.Center + (direction * 60);
 
             //Scaling based on shred
-            Projectile.localNPCHitCooldown = OmegaBiomeBlade.SuperPogoAttunement_LocalIFrames - (int)(MathHelper.Lerp(0, OmegaBiomeBlade.SuperPogoAttunement_LocalIFrames - OmegaBiomeBlade.SuperPogoAttunement_LocalIFramesCharged, ShredRatio)); //Increase the hit frequency
-            Projectile.scale = 1f + (ShredRatio * 1f); //SWAGGER
+            Projectile.scale = 1.25f + (ShredRatio * 1f); //SWAGGER
 
 
             if ((Wheel == null || !Wheel.active) && Dashing)
@@ -159,7 +156,7 @@ namespace CalamityMod.Projectiles.Melee
                 SoundEngine.PlaySound(CommonCalamitySounds.MeatySlashSound, Projectile.Center);
                 if (Owner.whoAmI == Main.myPlayer)
                 {
-                    Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center - DashStart / 2f, Vector2.Zero, ProjectileType<SanguineFuryDash>(), (int)(Projectile.damage * OmegaBiomeBlade.SuperPogoAttunement_SlashDamageBoost), 0, Owner.whoAmI);
+                    Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center - DashStart / 2f, Vector2.Zero, ProjectileType<SanguineFuryDash>(), (int)(Projectile.damage * OmegaBiomeBlade.SuperPogoAttunement_SliceDamageMult), 0, Owner.whoAmI);
                     if (proj.ModProjectile is SanguineFuryDash dash)
                     {
                         dash.DashStart = DashStart;
@@ -184,8 +181,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Collision.SolidCollision(Owner.Center + (direction * 100 * Projectile.scale) - Vector2.One * 5f, 10, 10) && !Dashing)
             {
                 Pogo();
-                Projectile.netUpdate = true;
-                Projectile.netSpam = 0;
+                Projectile.ForceNetUpdate();
             }
 
             //Make the owner look like theyre holding the sword bla bla
@@ -194,7 +190,7 @@ namespace CalamityMod.Projectiles.Melee
             Owner.itemRotation = direction.ToRotation();
             if (Owner.direction != 1)
             {
-                Owner.itemRotation -= 3.14f;
+                Owner.itemRotation -= MathHelper.Pi;
             }
             Owner.itemRotation = MathHelper.WrapAngle(Owner.itemRotation);
             Owner.itemTime = 2;
@@ -221,27 +217,6 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.timeLeft = 2;
         }
 
-        //Since the iframes vary, adjust the damage to be consistent no matter the iframes. The true scaling happens between the BaseDamage and the FulLChargeDamage
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
-            float maxMultiplier = OmegaBiomeBlade.SuperPogoAttunement_FullChargeDamage / (float)OmegaBiomeBlade.SuperPogoAttunement_BaseDamage;
-            float damageMultiplier = MathHelper.Lerp(1f, maxMultiplier, ShredRatio);
-            //Adjust the damage to make it constant based on the local iframes
-            float damageReduction = Projectile.localNPCHitCooldown / (float)OmegaBiomeBlade.SuperPogoAttunement_LocalIFrames;
-
-            modifiers.SourceDamage *= damageMultiplier * damageReduction;
-        }
-
-        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
-        {
-            float maxMultiplier = OmegaBiomeBlade.SuperPogoAttunement_FullChargeDamage / (float)OmegaBiomeBlade.SuperPogoAttunement_BaseDamage;
-            float damageMultiplier = MathHelper.Lerp(1f, maxMultiplier, ShredRatio);
-            //Adjust the damage to make it constant based on the local iframes
-            float damageReduction = Projectile.localNPCHitCooldown / (float)OmegaBiomeBlade.SuperPogoAttunement_LocalIFrames;
-
-            modifiers.SourceDamage *= damageMultiplier * damageReduction;
-        }
-
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => ShredTarget();
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => ShredTarget();
 
@@ -254,14 +229,15 @@ namespace CalamityMod.Projectiles.Melee
                 sword.OnHitProc = true;
 
             Owner.fallStart = (int)(Owner.position.Y / 16f);
-            // get lifted up
             if (PogoCooldown <= 0)
             {
                 SoundEngine.PlaySound(SoundID.NPCHit30, Projectile.Center); //Sizzle
                 Shred += 62; //Augment the shredspeed
-                if (Owner.velocity.Y > 0)
-                    Owner.velocity.Y = -2f; //Get "stuck" into the enemy partly
-                Owner.GiveIFrames(OmegaBiomeBlade.SuperPogoAttunement_ShredIFrames); // i framez.
+
+                // 17APR2024: Ozzatron: True Biome Blade's shred pogo gives iframes when striking enemies in a similar manner to a bonk dash.
+                // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
+                Owner.GiveUniversalIFrames(OmegaBiomeBlade.SuperPogoAttunement_PlayerShredIFrames);
+
                 PogoCooldown = 20;
             }
         }
@@ -271,7 +247,7 @@ namespace CalamityMod.Projectiles.Melee
             SoundEngine.PlaySound(SoundID.NPCHit43, Projectile.Center);
             if (ShredRatio > 0.8 && Owner.whoAmI == Main.myPlayer)
             {
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, direction * 16f, ProjectileType<SanguineFuryWheel>(), (int)(Projectile.damage * OmegaBiomeBlade.SuperPogoAttunement_ShotDamageBoost), Projectile.knockBack, Owner.whoAmI, Shred);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, direction * 16f, ProjectileType<SanguineFuryWheel>(), (int)(Projectile.damage * OmegaBiomeBlade.SuperPogoAttunement_ShotDamageMult), Projectile.knockBack, Owner.whoAmI, Shred);
             }
             if (Dashing)
             {

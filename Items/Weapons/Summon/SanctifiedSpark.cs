@@ -1,9 +1,9 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
+using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Weapons.Summon
         public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
@@ -23,12 +23,12 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.damage = 128;
             Item.DamageType = DamageClass.Summon;
             Item.sentry = true;
-            Item.mana = 10;
-            Item.useTime = Item.useAnimation = 14;
+            Item.mana = 100;
+            Item.useAnimation = Item.useTime = 30;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5f;
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<ProfanedEnergy>();
@@ -36,8 +36,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            //CalamityUtils.OnlyOneSentry(player, type);
-            int p = Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, type, damage, knockback, player.whoAmI, 16f);
+            int p = Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI, 16f);
             if (Main.projectile.IndexInRange(p))
                 Main.projectile[p].originalDamage = Item.damage;
             player.UpdateMaxTurrets();

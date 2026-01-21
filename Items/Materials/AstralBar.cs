@@ -13,8 +13,9 @@ namespace CalamityMod.Items.Materials
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 25;
-			ItemID.Sets.SortingPriorityMaterials[Type] = 99; // Luminite
+            ItemID.Sets.SortingPriorityMaterials[Type] = 99; // Luminite
             ItemID.Sets.AnimatesAsSoul[Type] = true;
+            ItemTrader.ChlorophyteExtractinator.AddOption_OneWay(Type, 1, ItemID.MeteoriteBar, 1);
             Main.RegisterItemAnimation(Type, new DrawAnimationVertical(5, 12));
         }
 
@@ -28,7 +29,7 @@ namespace CalamityMod.Items.Materials
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<Stardust>(3).
+                AddIngredient<StarblightSoot>(3).
                 AddIngredient<AstralOre>(2).
                 AddTile(TileID.LunarCraftingStation).
                 Register();

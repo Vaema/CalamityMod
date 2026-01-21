@@ -1,41 +1,33 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.GameContent.Metadata;
 using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.ObjectData;
 
 namespace CalamityMod.Tiles
 {
-    public class GiantPlanteraBulb : ModTile
+    public class GiantPlanteraBulb : GlowMaskTile
     {
-        public static Asset<Texture2D> Glow { get; private set; }
-
-        public override void Load()
+        public override void SetupStatic()
         {
-            if (!Main.dedServ)
-            {
-                Glow = ModContent.Request<Texture2D>($"{Texture}Glow");
-            }
-        }
+            GlowMaskPaintInteraction = PaintColorTint.None;
 
-        public override void SetStaticDefaults()
-        {
             // Tile can provide light
             Main.tileLighted[Type] = true;
 
             Main.tileFrameImportant[Type] = true;
 
+            TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Plant"]);
+
             // Various data sets to protect this tile from premature death
             TileID.Sets.PreventsTileRemovalIfOnTopOfIt[Type] = true;
+            TileID.Sets.PreventsTileHammeringIfOnTopOfIt[Type] = true;
             TileID.Sets.PreventsTileReplaceIfOnTopOfIt[Type] = true;
             TileID.Sets.PreventsSandfall[Type] = true;
-            // CalamityGlobalTile.PreventsAnchorTileChanges.Add(Type);
 
             // Object data
             TileObjectData.newTile.Width = 5;
@@ -60,12 +52,6 @@ namespace CalamityMod.Tiles
 
             DustType = DustID.PlanteraBulb;
             HitSound = SoundID.Grass;
-        }
-
-        public override void Unload()
-        {
-            // Textures are auto disposed by tModLoader, all we need to do is get rid of the asset wrapper reference
-            Glow = null;
         }
 
         // Use the second map entry in Hardmode
@@ -192,22 +178,15 @@ namespace CalamityMod.Tiles
         {
             if (Main.hardMode)
             {
-                r = 243f / 500f; // ~123
-                g = 82f / 500f; // ~41
-                b = 171f / 500f; // ~87
+                r = 0.486f;
+                g = 0.164f;
+                b = 0.342f;
             }
         }
 
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
+        public override Color GetGlowMaskColor(int i, int j, TileDrawInfo drawData)
         {
-            var tile = Main.tile[i, j];
-
-            spriteBatch.Draw(
-                Glow.Value, 
-                new Vector2(i * 16, j * 16 + 2) - Main.screenPosition + CalamityUtils.TileDrawOffset, 
-                new Rectangle(tile.TileFrameX, tile.TileFrameY + AnimationFrameHeight * Main.tileFrame[Type], 16, 16), 
-                Color.Yellow
-            );
+            return Color.Yellow;
         }
     }
 }

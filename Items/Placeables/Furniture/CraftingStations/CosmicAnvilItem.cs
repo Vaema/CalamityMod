@@ -13,25 +13,15 @@ namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.width = 62;
-            Item.height = 32;
-            Item.maxStack = 9999;
-            Item.useTurn = true;
-            Item.autoReuse = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.consumable = true;
-            Item.createTile = ModContent.TileType<CosmicAnvil>();
-
-            Item.rare = ModContent.RarityType<DarkBlue>();
-            Item.value = Item.sellPrice(platinum: 2, gold: 50);
+            Item.DefaultToPlaceableTile(ModContent.TileType<CosmicAnvil>());
+            Item.value = Item.sellPrice(gold: 50);
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.CraftingObjects;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.CraftingObjects;
+        }
 
         public override void AddRecipes()
         {

@@ -1,6 +1,9 @@
 ﻿using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Items.Materials;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
@@ -8,26 +11,38 @@ namespace CalamityMod.Items.Potions.Alcohol
     public class Everclear : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Potions";
+
+        public static float DamageBoost = 0.25f;
+        public static int RegenLoss = 10;
+        public static float DefenseLossPercent = 0.30f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(), RegenLoss.ToRegenPerSecond(), DefenseLossPercent.ToPercent());
+
         public override void SetStaticDefaults()
         {
-            Item.ResearchUnlockCount = 5;
+            Item.ResearchUnlockCount = 20;
+            // Everclear is clear so uhm... yeah?
+            ItemID.Sets.DrinkParticleColors[Type] = new Color[2] {
+                new Color(153, 168, 162, 180),
+                new Color(198, 205, 207, 180)
+            };
         }
 
         public override void SetDefaults()
         {
-            Item.width = 28;
-            Item.height = 18;
-            Item.useTurn = true;
-            Item.maxStack = 9999;
+            Item.DefaultToFood(14, 42, ModContent.BuffType<EverclearBuff>(), CalamityUtils.MinutesToFrames(6), true);
+
+            Item.value = Item.sellPrice(silver: 80);
             Item.rare = ItemRarityID.Lime;
-            Item.useAnimation = 17;
-            Item.useTime = 17;
-            Item.useStyle = ItemUseStyleID.DrinkLiquid;
-            Item.UseSound = SoundID.Item3;
-            Item.consumable = true;
-            Item.buffType = ModContent.BuffType<EverclearBuff>();
-            Item.buffTime = CalamityUtils.SecondsToFrames(60f);
-            Item.value = Item.buyPrice(0, 2, 0, 0);
+        }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe(20).
+                AddIngredient(ItemID.Bottle, 20).
+                AddIngredient(ItemID.BlackLens).
+                AddIngredient(ItemID.SoulofNight, 10).
+                AddTile(TileID.Kegs).
+                Register();
         }
     }
 }

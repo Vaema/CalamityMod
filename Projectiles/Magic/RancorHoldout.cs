@@ -14,7 +14,7 @@ namespace CalamityMod.Projectiles.Magic
         public const int ManaConsumeRate = 12;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 16;
+            Main.projFrames[Type] = 16;
         }
 
         public override void SetDefaults()
@@ -34,7 +34,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.Center = Owner.Center + Vector2.UnitX * Owner.direction * 8f;
 
             // CheckMana returns true if the mana cost can be paid. If mana isn't consumed this frame, the CheckMana short-circuits out of being evaluated.
-            bool allowContinuedUse = Time % ManaConsumeRate != ManaConsumeRate - 1f || Owner.CheckMana(Owner.ActiveItem(), -1, true, false);
+            bool allowContinuedUse = Time % ManaConsumeRate != ManaConsumeRate - 1f || Owner.CheckMana(Owner.HeldItem, -1, true, false);
             bool bookStillInUse = Owner.channel && allowContinuedUse && !Owner.noItems && !Owner.CCed;
 
             // If the owner is no longer able to hold the book, kill it.
@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.frameCounter++;
             if (Projectile.frameCounter >= 4)
             {
-                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Projectile.type];
+                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Type];
                 Projectile.frameCounter = 0;
             }
 

@@ -12,9 +12,8 @@ namespace CalamityMod.Items.Fishing.AstralCatches
         public new string LocalizationCategory => "Items.Fishing";
         public override void SetDefaults()
         {
-            Item.CloneDefaults(ItemID.ZephyrFish);
-            Item.shoot = ModContent.ProjectileType<Astrophage>();
-            Item.buffType = ModContent.BuffType<AstrophageBuff>();
+            Item.DefaultToVanitypet(ModContent.ProjectileType<Astrophage>(), ModContent.BuffType<AstrophageBuff>());
+            Item.value = Item.sellPrice(gold: 3); // Equal to Zephyr Fish
             Item.rare = ItemRarityID.LightRed;
         }
 

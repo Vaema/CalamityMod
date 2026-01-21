@@ -1,10 +1,14 @@
+﻿using CalamityMod.Items.Accessories;
 using Terraria;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.StatBuffs
 {
     public class HallowedRunePower : ModBuff
     {
+        public override LocalizedText Description => base.Description.WithFormatArgs(HallowedRune.SummonDamageBoost.ToPercent());
+
         public override void SetStaticDefaults()
         {
             Main.debuff[Type] = false;
@@ -16,7 +20,7 @@ namespace CalamityMod.Buffs.StatBuffs
         public override void Update(Player player, ref int buffIndex)
         {
             player.Calamity().hallowedPower = true;
-            player.GetDamage<SummonDamageClass>() += 0.1f;
+            player.GetDamage<SummonDamageClass>() += HallowedRune.SummonDamageBoost;
         }
     }
 }

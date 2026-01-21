@@ -1,17 +1,17 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
 using static CalamityMod.CalamityUtils;
-using Terraria.Audio;
-using CalamityMod.Sounds;
-using CalamityMod.Buffs.DamageOverTime;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -55,7 +55,7 @@ namespace CalamityMod.Projectiles.Melee
 
         #region Throw variables
         //Only used for the long range throw
-        private bool OwnerCanShoot => Owner.channel && !Owner.noItems && !Owner.CCed && Owner.HeldItem.type == ItemType<ArkoftheElements>();
+        private bool OwnerCanShoot => !Owner.CantUseHoldout() && Owner.HeldItem.type == ItemType<ArkoftheElements>();
         public bool Thrown => Combo == 2 || Combo == 3;
         const float MaxThrowTime = 80;
         const float ThrowReachMax = 500;
@@ -74,8 +74,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -136,19 +136,19 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (!initialized) //Initialization
             {
-                Projectile.timeLeft = Thrown ? (int) MaxThrowTime : (int)MaxSwingTime;
+                Projectile.timeLeft = Thrown ? (int)MaxThrowTime : (int)MaxSwingTime;
                 SoundStyle sound = (Charge > 0 || Thrown) ? CommonCalamitySounds.LouderPhantomPhoenix : SoundID.Item71;
                 SoundEngine.PlaySound(sound, Projectile.Center);
                 direction = Projectile.velocity;
                 direction.Normalize();
                 Projectile.rotation = direction.ToRotation();
 
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, the result is capped separately
                 if (Thrown)
                     ThrowReach = MathHelper.Clamp((Owner.Center - Owner.Calamity().mouseWorld).Length(), ThrowReachMin, ThrowReachMax);
 
                 initialized = true;
-                Projectile.netUpdate = true;
-                Projectile.netSpam = 0;
+                Projectile.ForceNetUpdate();
             }
 
             if (!Thrown)
@@ -186,9 +186,7 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     Particle snapSpark = new GenericSparkle(Projectile.Center, Owner.velocity - Utils.SafeNormalize(Projectile.velocity, Vector2.Zero), Color.White, Color.OrangeRed, Main.rand.NextFloat(1f, 2f), 10 + Main.rand.Next(10), 0.1f, 3f);
                     GeneralParticleHandler.SpawnParticle(snapSpark);
-
-                    if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 3)
-                        Main.LocalPlayer.Calamity().GeneralScreenShakePower = 3;
+                    Main.LocalPlayer.SetScreenshake(3f);
 
                     if (Owner.whoAmI == Main.myPlayer)
                     {
@@ -209,7 +207,7 @@ namespace CalamityMod.Projectiles.Melee
                 if (Combo == 3f)
                 {
                     //Slow down the projectile's retraction
-                    float curveDownGently = MathHelper.Lerp(1f, 0.8f, 1f - (float)Math.Sqrt(1f - (float)Math.Pow(SnapEndCompletion , 2f)));
+                    float curveDownGently = MathHelper.Lerp(1f, 0.8f, 1f - (float)Math.Sqrt(1f - (float)Math.Pow(SnapEndCompletion, 2f)));
                     Projectile.Center = Owner.Center + direction * ThrowReach * curveDownGently;
                     Projectile.scale = 1.5f;
 
@@ -245,7 +243,7 @@ namespace CalamityMod.Projectiles.Melee
             target.AddBuff(ModContent.BuffType<ElementalMix>(), 60);
             for (int i = 0; i < 5; i++)
             {
-                Vector2 particleSpeed = Utils.SafeNormalize(target.Center - Projectile.Center , Vector2.One).RotatedByRandom(MathHelper.PiOver4 * 0.8f) * Main.rand.NextFloat(3.6f, 8f);
+                Vector2 particleSpeed = Utils.SafeNormalize(target.Center - Projectile.Center, Vector2.One).RotatedByRandom(MathHelper.PiOver4 * 0.8f) * Main.rand.NextFloat(3.6f, 8f);
                 Particle energyLeak = new SquishyLightParticle(target.Center, particleSpeed, Main.rand.NextFloat(0.3f, 0.6f), Color.OrangeRed, 60, 2, 2.5f, hueShift: 0.06f);
                 GeneralParticleHandler.SpawnParticle(energyLeak);
             }
@@ -258,13 +256,11 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (Combo == 3f)
             {
-                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 3)
-                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = 3;
-
+                Main.LocalPlayer.SetScreenshake(3f);
                 SoundEngine.PlaySound(SoundID.Item84, Projectile.Center);
 
                 Vector2 sliceDirection = direction * 40;
-                Particle SliceLine = new LineVFX(Projectile.Center - sliceDirection, sliceDirection * 2f, 0.2f, Color.Orange * 0.7f, expansion : 250f)
+                Particle SliceLine = new LineVFX(Projectile.Center - sliceDirection, sliceDirection * 2f, 0.2f, Color.Orange * 0.7f, expansion: 250f)
                 {
                     Lifetime = 10
                 };
@@ -308,7 +304,7 @@ namespace CalamityMod.Projectiles.Melee
             Vector2 drawOrigin = new Vector2(Combo == 1 ? sword.Width / 2f : flipped ? sword.Width : 0f, sword.Height);
             Vector2 drawOffset = Owner.Center + drawAngle.ToRotationVector2() * 10f - Main.screenPosition;
 
-            if (CalamityConfig.Instance.Afterimages && SwingTimer > ProjectileID.Sets.TrailCacheLength[Projectile.type])
+            if (CalamityClientConfig.Instance.Afterimages && SwingTimer > ProjectileID.Sets.TrailCacheLength[Type])
             {
                 for (int i = 0; i < Projectile.oldRot.Length; ++i)
                 {
@@ -362,7 +358,7 @@ namespace CalamityMod.Projectiles.Melee
             Vector2 backScissorDrawPosition = Owner.Center + drawAngle.ToRotationVector2() * 10f + functionalDrawAngle.ToRotationVector2() * 70f * Projectile.scale - Main.screenPosition; //Lined up with the hole in the front blade
             float backScissorRotation = drawRotation + (Combo == 1 ? (!flipped ? MathHelper.PiOver4 * 0.75f : MathHelper.PiOver4 * -0.75f) : 0f);
 
-            if (CalamityConfig.Instance.Afterimages && SwingTimer > ProjectileID.Sets.TrailCacheLength[Projectile.type])
+            if (CalamityClientConfig.Instance.Afterimages && SwingTimer > ProjectileID.Sets.TrailCacheLength[Type])
             {
                 for (int i = 0; i < Projectile.oldRot.Length; ++i)
                 {

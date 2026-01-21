@@ -1,7 +1,9 @@
 ﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Summon
@@ -9,13 +11,14 @@ namespace CalamityMod.Projectiles.Summon
     public class CrimsonSlimeGodMinion : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Summon";
+        public override string Texture => "CalamityMod/Projectiles/Summon/CrimslimeMinion";
         public float dust = 0f;
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 2;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 6;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -56,7 +59,7 @@ namespace CalamityMod.Projectiles.Summon
                     Vector2 rotate = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
                     rotate = rotate.RotatedBy((double)((float)(i - (constant / 2 - 1)) * 6.28318548f / (float)constant), default) + Projectile.Center;
                     Vector2 faceDirection = rotate - Projectile.Center;
-                    int dust = Dust.NewDust(rotate + faceDirection, 0, 0, 5, faceDirection.X * 1f, faceDirection.Y * 1f, 100, default, 1.1f);
+                    int dust = Dust.NewDust(rotate + faceDirection, 0, 0, DustID.Blood, faceDirection.X * 1f, faceDirection.Y * 1f, 100, default, 1.1f);
                     Main.dust[dust].noGravity = true;
                     Main.dust[dust].noLight = true;
                     Main.dust[dust].velocity = faceDirection;
@@ -84,5 +87,13 @@ namespace CalamityMod.Projectiles.Summon
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Texture2D slom = TextureAssets.Projectile[Type].Value;
+            Rectangle frame = slom.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
+            Main.EntitySpriteDraw(slom, Projectile.Center - Main.screenPosition, frame, Projectile.GetAlpha(lightColor), Projectile.rotation, frame.Size() / 2f, Projectile.scale, SpriteEffects.None);
+            return false;
+        }
     }
 }

@@ -19,8 +19,9 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projPet[Type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -52,7 +53,7 @@ namespace CalamityMod.Projectiles.Summon
 
             Projectile.netUpdate = true;
         }
-        
+
         public void CheckMinionExistance()
         {
             Owner.AddBuff(ModContent.BuffType<Herring>(), 1);
@@ -93,6 +94,8 @@ namespace CalamityMod.Projectiles.Summon
                 spawnDust.scale = velocity.Length() * 0.1f;
             }
         }
+
+        public override bool MinionContactDamage() => true;
 
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
     }

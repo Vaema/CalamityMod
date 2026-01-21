@@ -18,13 +18,13 @@ namespace CalamityMod.Items.Materials
             Item.ResearchUnlockCount = 25;
 
 
-			ItemID.Sets.SortingPriorityMaterials[Type] = 90; // Chlorophyte Ore
+            ItemID.Sets.SortingPriorityMaterials[Type] = 90; // Chlorophyte Ore
         }
 
         public override void SetDefaults()
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<CryonicBarTile>());
-            Item.value = Item.sellPrice(silver: 60);
+            Item.value = Item.sellPrice(silver: 72);
             Item.rare = ItemRarityID.Pink;
         }
 

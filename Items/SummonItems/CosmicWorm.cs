@@ -2,9 +2,7 @@
 using CalamityMod.Items.Materials;
 using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Rarities;
-using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -15,7 +13,7 @@ namespace CalamityMod.Items.SummonItems
         public new string LocalizationCategory => "Items.SummonItems";
         public override void SetStaticDefaults()
         {
-           	ItemID.Sets.SortingPriorityBossSpawns[Type] = 19; // Celestial Sigil
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 19; // Celestial Sigil
         }
 
         public override void SetDefaults()
@@ -29,10 +27,10 @@ namespace CalamityMod.Items.SummonItems
             Item.rare = ModContent.RarityType<Turquoise>();
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.BossItem;
+        }
 
         public override bool CanUseItem(Player player)
         {
@@ -41,16 +39,11 @@ namespace CalamityMod.Items.SummonItems
 
         public override bool? UseItem(Player player)
         {
-            string key = "Mods.CalamityMod.Status.Boss.EdgyBossText7";
-            Color messageColor = Color.Cyan;
-            CalamityUtils.DisplayLocalizedText(key, messageColor);
+            // Server literally do nothing here.
+            if (Main.dedServ)
+                return true;
 
-            SoundEngine.PlaySound(DevourerofGodsHead.SpawnSound, player.Center);
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-                NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<DevourerofGodsHead>());
-            else
-                NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, player.whoAmI, ModContent.NPCType<DevourerofGodsHead>());
-
+            NPC n = CalamityUtils.SpawnBossOnPosUsingItem<DevourerofGodsHead>(player, (int)player.Center.X, (int)player.Center.Y - 1600, DevourerofGodsHead.SpawnSound);
             return true;
         }
 
@@ -60,7 +53,7 @@ namespace CalamityMod.Items.SummonItems
                 AddIngredient<ArmoredShell>().
                 AddIngredient<TwistingNether>().
                 AddIngredient<DarkPlasma>().
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register()
                 .DisableDecraft();
 
@@ -68,10 +61,9 @@ namespace CalamityMod.Items.SummonItems
             CreateRecipe().
                 AddIngredient(ItemID.LunarBar, 40).
                 AddIngredient<GalacticaSingularity>(10).
-                AddIngredient<Polterplasm>(40).
-                AddTile(TileID.LunarCraftingStation).
-                Register()
-                .DisableDecraft();
+                AddIngredient<Necroplasm>(40).
+                AddTile(TileID.MythrilAnvil).
+                Register();
         }
     }
 }

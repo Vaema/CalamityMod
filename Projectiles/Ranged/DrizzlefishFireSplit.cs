@@ -1,12 +1,9 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Humanizer.In;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -28,15 +25,15 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 8;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
         public override bool PreDraw(ref Color lightColor)
         {
             if (Projectile.ai[1] == 1f)
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1, ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/DrizzlefishFire2").Value);
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1, ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/DrizzlefishFire2").Value);
             else
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1, ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/DrizzlefishFire").Value);
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1, ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/DrizzlefishFire").Value);
             //Changes the texture of the projectile
             if (Projectile.ai[1] == 1f)
             {
@@ -95,6 +92,10 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+
+            //Doze - Flamethrowers in vanilla are long debuff infliction tools (20 seconds of their debuff).
+            //I am applying this as the base for Cal flamethrowers, with shorter times being the exception instead of the rule
+            //This is one of the exceptions, as Brimstone Flames is a very strong debuff for it's tier
             if (Projectile.ai[1] == 1f)
             {
                 target.AddBuff(BuffID.OnFire3, 60);

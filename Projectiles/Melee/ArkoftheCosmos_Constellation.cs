@@ -1,11 +1,11 @@
-﻿using CalamityMod.Particles;
+﻿using System.Collections.Generic;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System.Collections.Generic;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -20,13 +20,14 @@ namespace CalamityMod.Projectiles.Melee
         public List<Particle> Particles;
 
         Vector2 AnchorStart => Owner.Center;
-        Vector2 AnchorEnd => Owner.Calamity().mouseWorld;
+        // 14NOV2024: Ozzatron: I have no idea what this does so I clamped it
+        Vector2 AnchorEnd => Owner.ClampedMouseWorld();
         public Vector2 SizeVector => Utils.SafeNormalize(AnchorEnd - AnchorStart, Vector2.Zero) * MathHelper.Clamp((AnchorEnd - AnchorStart).Length(), 0, ArkoftheCosmos.MaxThrowReach);
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 1;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 1;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
         public override void SetDefaults()
         {
@@ -51,7 +52,7 @@ namespace CalamityMod.Projectiles.Melee
             if (!Main.dedServ)
             {
                 Particles.Add(particle);
-                particle.Type = GeneralParticleHandler.particleTypes[particle.GetType()];
+                particle.Type = GeneralParticleHandler.particleIDsByTypes[particle.GetType()];
             }
         }
 
@@ -95,7 +96,7 @@ namespace CalamityMod.Projectiles.Melee
                     Line = new BloomLineVFX(previousStar, AnchorStart + SizeVector * i + offset - previousStar, 0.8f, constellationColor * 0.75f, 20, true, true);
                     BootlegSpawnParticle(Line);
 
-                    if (Main.rand.Next(3) == 0)
+                    if (Main.rand.NextBool(3))
                     {
                         constellationColorHue = (constellationColorHue + 0.16f) % 1;
                         constellationColor = Main.hslToRgb(constellationColorHue, 1, 0.8f);

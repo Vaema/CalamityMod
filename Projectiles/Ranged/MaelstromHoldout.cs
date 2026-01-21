@@ -13,9 +13,7 @@ namespace CalamityMod.Projectiles.Ranged
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<TheMaelstrom>();
         private Player Owner => Main.player[Projectile.owner];
-        private bool OwnerCanShoot => Owner.channel && Owner.HasAmmo(Owner.ActiveItem()) && !Owner.noItems && !Owner.CCed;
         private ref float CurrentChargingFrames => ref Projectile.ai[0];
-        private ref float ArrowsLoaded => ref Projectile.ai[1];
         private ref float FramesToLoadNextArrow => ref Projectile.localAI[0];
 
         public override string Texture => "CalamityMod/Items/Weapons/Ranged/TheMaelstrom";
@@ -37,7 +35,7 @@ namespace CalamityMod.Projectiles.Ranged
             Vector2 shootPosition = armPosition + Projectile.velocity * Projectile.width * 0.5f;
 
             // Destroy the holdout projectile if the owner is no longer eligible to hold it.
-            if (!OwnerCanShoot)
+            if (Owner.CantUseHoldout() || !Owner.HasAmmo(Owner.HeldItem))
             {
                 Projectile.Kill();
                 return;
@@ -47,7 +45,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (FramesToLoadNextArrow == 0f)
             {
                 SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
-                FramesToLoadNextArrow = Owner.ActiveItem().useAnimation;
+                FramesToLoadNextArrow = Owner.HeldItem.useAnimation;
             }
 
             // Actually make progress towards loading more arrows.
@@ -64,7 +62,7 @@ namespace CalamityMod.Projectiles.Ranged
         public void ShootProjectiles(Vector2 shootPosition)
         {
             // Create electric particles.
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 for (int i = 0; i < 16; i++)
                 {
@@ -86,14 +84,13 @@ namespace CalamityMod.Projectiles.Ranged
             if (Main.myPlayer != Projectile.owner)
                 return;
 
-            Item heldItem = Owner.ActiveItem();
+            Item heldItem = Owner.HeldItem;
 
             // Calculate damage at the instant the arrow is fired
             int arrowDamage = heldItem is null ? 0 : Owner.GetWeaponDamage(heldItem);
             float shootSpeed = heldItem.shootSpeed;
             float knockback = heldItem.knockBack;
 
-            bool uselessFuckYou = OwnerCanShoot;
             int projectileType = 0;
             Owner.PickAmmo(heldItem, out projectileType, out shootSpeed, out arrowDamage, out knockback, out _);
             projectileType = ModContent.ProjectileType<TheMaelstromShark>();
@@ -108,14 +105,13 @@ namespace CalamityMod.Projectiles.Ranged
         {
             if (Main.myPlayer == Projectile.owner)
             {
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, this is only used to aim the Maelstrom bow
+
                 float aimInterpolant = Utils.GetLerpValue(5f, 25f, Projectile.Distance(Main.MouseWorld), true);
                 Vector2 oldVelocity = Projectile.velocity;
                 Projectile.velocity = Vector2.Lerp(Projectile.velocity, Projectile.SafeDirectionTo(Main.MouseWorld), aimInterpolant);
                 if (Projectile.velocity != oldVelocity)
-                {
-                    Projectile.netSpam = 0;
-                    Projectile.netUpdate = true;
-                }
+                    Projectile.ForceNetUpdate();
             }
 
             Projectile.position = armPosition - Projectile.Size * 0.5f + Projectile.velocity * 24f;

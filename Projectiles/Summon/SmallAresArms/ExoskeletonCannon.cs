@@ -1,12 +1,12 @@
-﻿using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.ModLoader;
-using CalamityMod.Items.Weapons.Summon;
-using CalamityMod.InverseKinematics;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.IO;
 using CalamityMod.Buffs.Summon;
+using CalamityMod.InverseKinematics;
+using CalamityMod.Items.Weapons.Summon;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon.SmallAresArms
 {
@@ -69,6 +69,8 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
             Projectile.timeLeft = 900000;
             Projectile.scale = 1f;
             Projectile.DamageType = DamageClass.Summon;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -82,6 +84,10 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
         public override void ReceiveExtraAI(BinaryReader reader)
         {
             Projectile.rotation = reader.ReadSingle();
+
+            //limb count has passed from SendExtraAI
+            //therefore we should read this for packet aligns sake
+            _ = reader.ReadInt32();
 
             int limbCount = Limbs.Limbs.Length;
             for (int i = 0; i < limbCount; i++)
@@ -100,13 +106,14 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
                 Vector2 connectPosition = Main.LocalPlayer.Center + ConnectOffset;
                 connectPosition.X += (OwnerRestingOffset.X > 0f).ToDirectionInt() * Projectile.scale * 20f;
                 Vector2 endPosition = Owner.Center + OwnerRestingOffset;
+
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, the limb system caps the resulting possible length
                 endPosition += (Main.MouseWorld - endPosition) * 0.075f;
 
                 ClampFirstLimbRotation(ref Limbs[0].Rotation);
                 Limbs.Update(connectPosition, endPosition);
 
-                Projectile.netSpam = 0;
-                Projectile.netUpdate = true;
+                Projectile.ForceNetUpdate();
             }
 
             Projectile.ai[1] = 0f;
@@ -122,7 +129,9 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
 
             // Look at the mouse if not targetting anything.
             // If something is being targeted, look at them instead.
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             float idealRotation = Main.myPlayer != Projectile.owner ? Projectile.rotation : Projectile.AngleTo(Main.MouseWorld);
+
             NPC potentialTarget = Projectile.Center.ClosestNPCAt(AresExoskeleton.TargetingDistance);
             if (potentialTarget != null)
             {
@@ -146,7 +155,7 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
 
         public void DefaultDrawCannon(Texture2D glowmask)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Rectangle frame = texture.Frame(2, Main.projFrames[Type], TargetingSomething.ToInt(), Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;

@@ -1,6 +1,6 @@
-﻿using CalamityMod.Items.Weapons.Summon;
+﻿using System;
+using CalamityMod.Items.Weapons.Summon;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,8 +13,8 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -53,9 +53,9 @@ namespace CalamityMod.Projectiles.Summon
             }
 
             int flameCount = 0;
-            for (int i = 0; i < Main.projectile.Length; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                if (Main.projectile[i].active && Main.projectile[i].owner == Main.myPlayer && Main.projectile[i].type == ModContent.ProjectileType<LanternFlame>())
+                if (p.owner == Main.myPlayer && p.type == ModContent.ProjectileType<LanternFlame>())
                 {
                     flameCount++;
                 }

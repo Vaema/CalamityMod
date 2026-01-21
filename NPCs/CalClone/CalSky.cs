@@ -31,7 +31,7 @@ namespace CalamityMod.NPCs.CalClone
                 float x = 0f;
                 if (this.CalIndex != -1)
                 {
-                    x = Vector2.Distance(Main.player[Main.myPlayer].Center, Main.npc[this.CalIndex].Center);
+                    x = Vector2.Distance(Main.LocalPlayer.Center, Main.npc[this.CalIndex].Center);
                 }
                 return (1f - Utils.SmoothStep(3000f, 6000f, x));
             }
@@ -52,11 +52,11 @@ namespace CalamityMod.NPCs.CalClone
                 return true;
             }
             CalIndex = -1;
-            for (int i = 0; i < Main.npc.Length; i++)
+            foreach (NPC n in Main.ActiveNPCs)
             {
-                if (Main.npc[i].active && Main.npc[i].type == CalType)
+                if (n.type == CalType)
                 {
-                    CalIndex = i;
+                    CalIndex = n.whoAmI;
                     break;
                 }
             }

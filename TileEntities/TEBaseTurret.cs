@@ -1,6 +1,7 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.IO;
+using CalamityMod.Packets;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -114,7 +115,7 @@ namespace CalamityMod.TileEntities
         }
 
         // This function does nothing by default, but turrets can use it for flavor behaviors e.g. emitting sparks or beeping.
-        protected virtual void PassiveBehavior(Vector2 turretPos) {}
+        protected virtual void PassiveBehavior(Vector2 turretPos) { }
 
         protected virtual void ActiveBehavior(Vector2 turretPos, Vector2 targetPos)
         {
@@ -124,8 +125,9 @@ namespace CalamityMod.TileEntities
             // If the turret is too far off its mark or hasn't been around for long enough, don't fire at all.
             float deltaAngle = MathHelper.WrapAngle(Angle - targetAngle);
             bool angleCloseEnough = Math.Abs(deltaAngle) <= MaxTargetAngleDeviance;
-            if (!angleCloseEnough || FiringTime < FiringStartupDelay || !Collision.CanHitLine(turretPos, 1, 1, targetPos, 1, 1))
+            if (!angleCloseEnough || FiringTime < FiringStartupDelay || !CalamityUtils.PreciseCanHitInLine(turretPos, (targetPos - turretPos).ToRotation(), (targetPos - turretPos).Length()))
                 return;
+
 
             // Don't shoot every frame, but sync up the firing cadence to the startup delay.
             if ((FiringTime - FiringStartupDelay) % FiringUseTime == 0)
@@ -197,50 +199,19 @@ namespace CalamityMod.TileEntities
         {
             if (Main.netMode == NetmodeID.SinglePlayer)
                 return;
-            ModPacket packet = Mod.GetPacket();
-            packet.Write((byte)CalamityModMessageType.Turret);
-            packet.Write(ID);
-            packet.Write(FiringTime);
-            packet.Write(Angle);
-            packet.WriteVector2(TargetPos);
-            WriteExtraData(packet);
-            packet.Send(-1, -1);
-        }
 
-        protected internal static bool ReadSyncPacket(Mod mod, BinaryReader reader)
-        {
-            int teID = reader.ReadInt32();
-            bool exists = ByID.TryGetValue(teID, out TileEntity te);
-
-            // The rest of the packet must be read even if it turns out the turret doesn't exist for whatever reason.
-            int firingTime = reader.ReadInt32();
-            float angle = reader.ReadSingle();
-            Vector2 targetVec = reader.ReadVector2();
-
-            if (exists && te is TEBaseTurret turret)
-            {
-                turret.FiringTime = firingTime;
-                turret.Angle = angle;
-                turret.TargetPos = targetVec;
-                turret.ReadExtraData(mod, reader);
-                return true;
-            }
-            else
-            {
-                // Otherwise, discard the fixed extra bytes so the message stream doesn't go haywire.
-                _ = reader.ReadBytes(NumExtraBytes);
-                return false;
-            }
+            TETurretPacket.Send(this);
         }
 
         // Subclasses cannot override SendSyncPacket, but they can override these functions to sync their own extra data.
         // Due to the limitations of TML packets, this data must be exactly 16 bytes in size.
         // The default implementations here write 16 bytes of zeroes and dump all 16 bytes when read.
         public const int NumExtraBytes = 16;
-        protected virtual void WriteExtraData(BinaryWriter writer) {
+        public virtual void WriteExtraTurretData(BinaryWriter writer)
+        {
             writer.Write(0Lu);
             writer.Write(0Lu);
         }
-        protected virtual void ReadExtraData(Mod mod, BinaryReader reader) => _ = reader.ReadBytes(NumExtraBytes);
+        public virtual void ReadExtraTurretData(BinaryReader reader) => _ = reader.ReadBytes(NumExtraBytes);
     }
 }

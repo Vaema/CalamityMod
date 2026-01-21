@@ -1,8 +1,8 @@
-﻿using CalamityMod.DataStructures;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.DataStructures;
 using CalamityMod.World.Planets;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.WorldBuilding;
@@ -18,7 +18,7 @@ namespace CalamityMod.World
             int yIslandGen;
             Rectangle potentialArea;
 
-            if (WorldGen.getGoodWorldGen)
+            if (WorldGen.drunkWorldGen)
             {
                 do
                 {
@@ -284,7 +284,7 @@ namespace CalamityMod.World
             byte wall = (byte)(genCorruptHouse ? 35 : 174); //wall
             Vector2 vector = new Vector2((float)i, (float)j);
             int houseDirection = 1;
-            if (WorldGen.genRand.Next(2) == 0)
+            if (WorldGen.genRand.NextBool(2))
             {
                 houseDirection = -1;
             }
@@ -329,7 +329,7 @@ namespace CalamityMod.World
                         Main.tile[l, m].Get<TileWallWireStateData>().HasTile = true;
                         Main.tile[l, m].LiquidAmount = 0;
                         Main.tile[l, m].TileType = type;
-                        Main.tile[l, m].WallType = 0;
+                        Main.tile[l, m].WallType = WallID.None;
                         Main.tile[l, m].Get<TileWallWireStateData>().IsHalfBlock = false;
                         Main.tile[l, m].Get<TileWallWireStateData>().Slope = SlopeType.Solid;
                     }
@@ -359,7 +359,7 @@ namespace CalamityMod.World
             {
                 for (int p = minYSize; p < maxYSize; p++)
                 {
-                    if ((p != minYSize || (n != minXSize && n != maxXSize)) && Main.tile[n, p].WallType == 0)
+                    if ((p != minYSize || (n != minXSize && n != maxXSize)) && Main.tile[n, p].WallType == WallID.None)
                     {
                         Main.tile[n, p].Get<TileWallWireStateData>().HasTile = false;
                         Main.tile[n, p].WallType = wall;
@@ -381,7 +381,7 @@ namespace CalamityMod.World
                 Main.tile[xPos, yPos].Get<TileWallWireStateData>().HasTile = true;
                 Main.tile[xPos, yPos].LiquidAmount = 0;
                 Main.tile[xPos, yPos].TileType = type;
-                Main.tile[xPos, yPos].WallType = 0;
+                Main.tile[xPos, yPos].WallType = WallID.None;
                 Main.tile[xPos, yPos].Get<TileWallWireStateData>().IsHalfBlock = false;
                 Main.tile[xPos, yPos].Get<TileWallWireStateData>().Slope = SlopeType.Solid;
             }
@@ -407,14 +407,14 @@ namespace CalamityMod.World
             {
                 for (int wallY = wallYRange - 1; wallY <= wallYRange + 1; wallY++)
                 {
-                    Main.tile[wallX, wallY].WallType = 21; //glass
+                    Main.tile[wallX, wallY].WallType = WallID.Glass; //glass
                 }
             }
             for (int wallX2 = wallXMaxSize - wallYSize; wallX2 <= wallXMaxSize + wallYSize; wallX2++)
             {
                 for (int wallY2 = wallYRange - 1; wallY2 <= wallYRange + 1; wallY2++)
                 {
-                    Main.tile[wallX2, wallY2].WallType = 21; //glass
+                    Main.tile[wallX2, wallY2].WallType = WallID.Glass; //glass
                 }
             }
             int furnitureXPos = i + (largerRandValue / 2 + 1) * -houseDirection;

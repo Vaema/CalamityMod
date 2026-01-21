@@ -1,12 +1,11 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.DraedonsArsenal;
-using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -29,23 +28,19 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
             Item.width = 102;
             Item.height = 44;
-            Item.damage = 1850;
+            Item.damage = 1600;
             Item.knockBack = 4.5f;
-            Item.useTime = Item.useAnimation = AnomalysNanogunHoldout.PlasmaFireTimer;
+            Item.useAnimation = Item.useTime = AnomalysNanogunHoldout.PlasmaFireTimer;
             Item.shootSpeed = 5f;
             Item.DamageType = DamageClass.Ranged;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.shoot = ModContent.ProjectileType<AnomalysNanogunHoldout>();
             Item.UseSound = null;
+            Item.noMelee = true;
 
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             modItem.donorItem = true;
-
-            modItem.UsesCharge = true;
-            modItem.MaxCharge = 250f;
-            modItem.ChargePerUse = 0.8f;
-            modItem.ChargePerAltUse = 0.375f;
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips) => CalamityGlobalItem.InsertKnowledgeTooltip(tooltips, 4);
@@ -73,8 +68,8 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             // Right click is the MPBF Devastator
             if (player.altFunctionUse == 2)
             {
-                damage = (int)(damage * 0.5f);
-                knockback *= 0.8f;
+                damage = (int)(damage * 0.77f);
+                knockback *= 5f;
                 velocity = rotationVector * 13f;
             }
         }

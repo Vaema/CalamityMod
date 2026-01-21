@@ -1,8 +1,8 @@
 ﻿using CalamityMod.CalPlayer;
+using CalamityMod.CalPlayer.Dashes;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.CalPlayer.Dashes;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -15,16 +15,13 @@ namespace CalamityMod.Items.Accessories
             Item.width = 26;
             Item.height = 26;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.Calamity().donorItem = true;
         }
 
-        public override bool CanEquipAccessory(Player player, int slot, bool modded) => !player.Calamity().dodgeScarf;
-
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.GetDamage<TrueMeleeDamageClass>() += 0.15f;
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.dodgeScarf = true;
             modPlayer.evasionScarf = true;

@@ -1,14 +1,14 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
+using CalamityMod.Items.Materials;
+using CalamityMod.TileEntities;
 using CalamityMod.Tiles.DraedonSummoner;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using CalamityMod.TileEntities;
-using CalamityMod.CustomRecipes;
-using System.Collections.Generic;
-using System;
 
 namespace CalamityMod.Items.DraedonMisc
 {
@@ -21,11 +21,11 @@ namespace CalamityMod.Items.DraedonMisc
         {
             Item.width = 42;
             Item.height = 40;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.rare = ItemRarityID.Orange;
-            Item.useTime = Item.useAnimation = 15;
+            Item.useAnimation = Item.useTime = 15;
         }
 
         public override bool? UseItem(Player player) => true;
@@ -40,7 +40,7 @@ namespace CalamityMod.Items.DraedonMisc
 
             if (Main.myPlayer == player.whoAmI && player.WithinRange(Main.MouseWorld, checkDistance) && tile.HasTile && tile.TileType == ModContent.TileType<CodebreakerTile>())
             {
-                SoundEngine.PlaySound(InstallSound, Main.player[Main.myPlayer].Center);
+                SoundEngine.PlaySound(InstallSound, Main.LocalPlayer.Center);
 
                 TECodebreaker codebreakerTileEntity = CalamityUtils.FindTileEntity<TECodebreaker>(placeTileCoords.X, placeTileCoords.Y, CodebreakerTile.Width, CodebreakerTile.Height, CodebreakerTile.SheetSquare);
                 if (codebreakerTileEntity is null || codebreakerTileEntity.ContainsDecryptionComputer)

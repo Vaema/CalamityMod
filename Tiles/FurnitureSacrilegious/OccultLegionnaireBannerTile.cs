@@ -1,5 +1,4 @@
-using CalamityMod.Items.Placeables.FurnitureSacrilegious;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
@@ -18,12 +17,13 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
             Main.tileFrameImportant[Type] = true;
             Main.tileNoAttach[Type] = true;
             Main.tileLavaDeath[Type] = false;
+            TileID.Sets.MultiTileSway[Type] = true;
 
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2xX);
             TileObjectData.newTile.LavaDeath = false;
-			TileObjectData.newTile.Height = 3;
-			TileObjectData.newTile.Origin = new Point16(0, 0);
-			TileObjectData.newTile.AnchorBottom = default(AnchorData);
+            TileObjectData.newTile.Height = 3;
+            TileObjectData.newTile.Origin = new Point16(0, 0);
+            TileObjectData.newTile.AnchorBottom = default(AnchorData);
             TileObjectData.newTile.AnchorTop = new AnchorData(AnchorType.SolidTile | AnchorType.SolidSide | AnchorType.SolidBottom | AnchorType.PlanterBox, TileObjectData.newTile.Width, 0);
             TileObjectData.newTile.DrawYOffset = -2;
             TileObjectData.newAlternate.CopyFrom(TileObjectData.newTile);
@@ -37,6 +37,6 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
             AddMapEntry(new Color(43, 19, 42), Language.GetText("MapObject.Banner"));
         }
 
-        public override void SetDrawPositions(int i, int j, ref int width, ref int offsetY, ref int height, ref short tileFrameX, ref short tileFrameY) => CalamityUtils.PlatformHangOffset(i, j, ref offsetY);
+        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch) => CalamityUtils.DrawSwayingMultiTile(i, j);
     }
 }

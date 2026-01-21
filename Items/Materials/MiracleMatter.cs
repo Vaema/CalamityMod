@@ -1,8 +1,8 @@
-﻿using CalamityMod.Rarities;
+﻿using System;
+using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -16,19 +16,19 @@ namespace CalamityMod.Items.Materials
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 5;
-			ItemID.Sets.SortingPriorityMaterials[Type] = 122;
+            ItemID.Sets.SortingPriorityMaterials[Type] = 122;
         }
 
         public override void SetDefaults()
         {
-            Item.width = 46;
-            Item.height = 64;
-            Item.maxStack = 9999;
-            Item.value = Item.sellPrice(platinum: 6, gold: 50);
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.width = 70;
+            Item.height = 80;
+            Item.maxStack = Item.CommonMaxStack;
+            Item.value = Item.sellPrice(platinum: 1);
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
-        public void DrawBackAfterimage(SpriteBatch spriteBatch, Vector2 baseDrawPosition, Rectangle frame, float baseScale)
+        public void DrawBackAfterimage(SpriteBatch spriteBatch, Vector2 baseDrawPosition, Rectangle frame, Vector2 origin, float baseScale)
         {
             if (Item.velocity.X != 0f)
                 return;
@@ -47,22 +47,22 @@ namespace CalamityMod.Items.Materials
             for (int i = 0; i < 8; i++)
             {
                 Vector2 drawPosition = baseDrawPosition + (MathHelper.TwoPi * i / 8f).ToRotationVector2() * drawPositionOffset;
-                spriteBatch.Draw(TextureAssets.Item[Item.type].Value, drawPosition, frame, drawColor, 0f, Vector2.Zero, baseScale, SpriteEffects.None, 0f);
+                spriteBatch.Draw(TextureAssets.Item[Type].Value, drawPosition, frame, drawColor, 0f, origin, baseScale, SpriteEffects.None, 0f);
             }
         }
 
 
         public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
         {
-            Rectangle frame = TextureAssets.Item[Item.type].Value.Frame();
-            DrawBackAfterimage(spriteBatch, Item.position - Main.screenPosition, frame, scale);
+            Rectangle frame = TextureAssets.Item[Type].Value.Frame();
+            DrawBackAfterimage(spriteBatch, Item.position - Main.screenPosition, frame, Vector2.Zero, scale);
             return true;
         }
 
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
             Item.velocity.X = 0f;
-            DrawBackAfterimage(spriteBatch, position - frame.Size() * 0.25f, frame, scale);
+            DrawBackAfterimage(spriteBatch, position, frame, origin, scale);
             return true;
         }
 
@@ -73,7 +73,7 @@ namespace CalamityMod.Items.Materials
 
             if (Main.rand.NextBool(3))
             {
-                Dust exoFlame = Dust.NewDustDirect(Item.position, (int)(Item.width * Item.scale), (int)(Item.height * Item.scale * 0.6f), 6);
+                Dust exoFlame = Dust.NewDustDirect(Item.position, (int)(Item.width * Item.scale), (int)(Item.height * Item.scale * 0.6f), DustID.Torch);
                 exoFlame.velocity = Vector2.Lerp(Main.rand.NextVector2Unit(), -Vector2.UnitY, 0.5f) * Main.rand.NextFloat(1.8f, 2.6f);
                 exoFlame.scale *= Main.rand.NextFloat(0.85f, 1.15f);
                 exoFlame.fadeIn = 0.9f;
@@ -84,12 +84,12 @@ namespace CalamityMod.Items.Materials
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<ExoPrism>(5).
                 AddIngredient<AuricBar>(5).
+                AddIngredient<ExoPrism>(5).
                 AddIngredient<LifeAlloy>().
-                AddIngredient<CoreofCalamity>().
                 AddIngredient<AscendantSpiritEssence>().
                 AddIngredient<GalacticaSingularity>(3).
+                AddIngredient<CoreofCalamity>().
                 AddTile<DraedonsForge>().
                 Register();
         }

@@ -14,8 +14,8 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 28;
             Item.height = 32;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
-            Item.rare = ItemRarityID.Lime;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+            Item.rare = ItemRarityID.Yellow;
             Item.accessory = true;
         }
 
@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Accessories
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.holyMinions = true;
             player.GetKnockback<SummonDamageClass>() += 2.5f;
-            player.GetDamage<SummonDamageClass>() += 0.1f;
+            player.GetDamage<SummonDamageClass>() += 0.12f;
         }
 
         public override void AddRecipes()
@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient(ItemID.PygmyNecklace).
                 AddIngredient(ItemID.SummonerEmblem).
                 AddIngredient(ItemID.HolyWater, 30).
-                AddIngredient<CoreofSunlight>(5).
+                AddIngredient<EssenceofSunlight>(5).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

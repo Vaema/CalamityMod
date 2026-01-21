@@ -9,12 +9,12 @@ namespace CalamityMod.Particles
         public override bool UseAdditiveBlend => true;
         public override bool SetLifetime => true;
         public float RelativePower;
-        
-        
+
+
 
         public Color BrightColor;
         public Color DarkColor;
-        
+
 
         public FlameParticle(Vector2 position, int lifetime, float scale, float relativePower, Color brightColor, Color darkColor)
         {

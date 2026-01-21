@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Armor.Vanity
         public override void SetStaticDefaults()
         {
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
                 ArmorIDs.Head.Sets.DrawHead[Item.headSlot] = false;
         }
 

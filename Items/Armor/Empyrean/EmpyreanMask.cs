@@ -1,8 +1,8 @@
-﻿using CalamityMod.Buffs.StatBuffs;
-using CalamityMod.CalPlayer;
+using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Empyrean
@@ -12,9 +12,23 @@ namespace CalamityMod.Items.Armor.Empyrean
     public class EmpyreanMask : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PostMoonLord";
+
+        public static float RogueDamageBoost = 0.12f;
+        public static int RogueCritBoost = 7;
+        public static float RogueVelocityBoost = 0.1f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RogueDamageBoost.ToPercent(), RogueCritBoost, RogueVelocityBoost.ToPercent());
+
+        // Set Bonus
+        public static float SetBonusRogueStealth = 1.15f;
+        public static int WrathDuration = CalamityUtils.SecondsToFrames(3);
+        public static float PermanentWrathHealthRatio = 0.5f;
+        public static float WrathRogueDamageBoost = 0.1f;
+        public static int WrathRogueCritBoost = 5;
+        // There's 10 or so different magic numbers polluting CalamityPlayerOnHit for each projectile. I'm not adding it. - Iris
+
         public override void Load()
         {
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Armor/Empyrean/MeldTransformation_Head", EquipType.Head, name: "MeldTransformation");
                 EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Armor/Empyrean/MeldTransformation_Body", EquipType.Body, name: "MeldTransformation");
@@ -25,8 +39,7 @@ namespace CalamityMod.Items.Armor.Empyrean
 
         public override void SetStaticDefaults()
         {
-
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             var equipSlotHead = EquipLoader.GetEquipSlot(Mod, "MeldTransformation", EquipType.Head);
@@ -43,15 +56,12 @@ namespace CalamityMod.Items.Armor.Empyrean
         {
             Item.width = 18;
             Item.height = 18;
-            Item.value = CalamityGlobalItem.Rarity10BuyPrice;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
             Item.rare = ItemRarityID.Red;
-            Item.defense = 20; //71
+            Item.defense = 16; // 60
         }
 
-        public override bool IsArmorSet(Item head, Item body, Item legs)
-        {
-            return body.type == ModContent.ItemType<EmpyreanCloak>() && legs.type == ModContent.ItemType<EmpyreanCuisses>();
-        }
+        public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ModContent.ItemType<EmpyreanCloak>() && legs.type == ModContent.ItemType<EmpyreanCuisses>();
 
         public override void ArmorSetShadows(Player player)
         {
@@ -65,23 +75,18 @@ namespace CalamityMod.Items.Armor.Empyrean
         {
             var modPlayer = player.Calamity();
             modPlayer.xerocSet = true;
-            modPlayer.rogueStealthMax += 1.15f;
-            player.setBonus = this.GetLocalizedValue("SetBonus");
-            if (player.statLife <= (int)(player.statLifeMax2 * 0.5))
-            {
+            modPlayer.rogueStealthMax += SetBonusRogueStealth;
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusRogueStealth.ToStealth());
+            if (player.statLife <= (int)(player.statLifeMax2 * PermanentWrathHealthRatio))
                 player.AddBuff(ModContent.BuffType<EmpyreanWrath>(), 2);
-                player.AddBuff(ModContent.BuffType<EmpyreanRage>(), 2);
-            }
-            player.GetDamage<ThrowingDamageClass>() += 0.09f;
-            modPlayer.rogueVelocity += 0.09f;
             modPlayer.wearingRogueArmor = true;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<ThrowingDamageClass>() += 0.11f;
-            player.GetCritChance<ThrowingDamageClass>() += 11;
-            player.moveSpeed += 0.05f;
+            player.GetDamage<ThrowingDamageClass>() += RogueDamageBoost;
+            player.GetCritChance<ThrowingDamageClass>() += RogueCritBoost;
+            player.Calamity().rogueVelocity += RogueVelocityBoost;
         }
 
         public override void AddRecipes()
@@ -90,6 +95,7 @@ namespace CalamityMod.Items.Armor.Empyrean
                 AddIngredient<MeldConstruct>(10).
                 AddIngredient(ItemID.LunarBar, 8).
                 AddTile(TileID.LunarCraftingStation).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<EmpyreanCloak>()).
                 Register();
         }
     }

@@ -1,4 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -8,116 +10,50 @@ namespace CalamityMod.Projectiles.Rogue
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
-        public static float Radius = 100;
-        public static float RadiusStealth = 200;
-
         public override void SetDefaults()
         {
-            Projectile.width = (int)(Projectile.Calamity().stealthStrike ? RadiusStealth * 2 : Radius * 2);
-            Projectile.height = (int)(Projectile.Calamity().stealthStrike ? RadiusStealth * 2 : Radius * 2);
+            Projectile.width = 5;
+            Projectile.height = 5;
             Projectile.friendly = true;
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
-            Projectile.timeLeft = 9;
+            Projectile.timeLeft = 14;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
             Projectile.DamageType = RogueDamageClass.Instance;
         }
-
-        public override void AI()
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if (Projectile.timeLeft >= 5)
-            {
-                Projectile.alpha = (int)((1 - Projectile.ai[0]) * 255f);
+            float minMult = 0.35f;
+            int hitsToMinMult = 15;
+            float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+            modifiers.SourceDamage *= damageMult;
 
-                // Blast wave should be brighter on stealth strikes
-                int numDust = (int)(40 * Projectile.ai[0]) + 10;
-
-                for (int i = 0; i < numDust; i++)
-                {
-                    // Dust Type
-                    int dustToUse = Main.rand.Next(0, 3);
-                    int dustType = 0;
-                    switch (dustToUse)
-                    {
-                        case 0:
-                            dustType = 175;
-                            break;
-                        case 1:
-                            dustType = 229;
-                            break;
-                        case 2:
-                            dustType = 263;
-                            break;
-                    }
-
-                    // Shockwave
-                    Vector2 circleVelocity = new Vector2(Main.rand.NextFloat(-1, 1), Main.rand.NextFloat(-1, 1));
-                    circleVelocity.Normalize();
-                    circleVelocity *= (Projectile.Calamity().stealthStrike ? RadiusStealth : Radius) / 10f;
-
-                    int circle = Dust.NewDust(Projectile.Center, 1, 1, dustType, circleVelocity.X, circleVelocity.Y, 0, default, 1.5f);
-                    Main.dust[circle].noGravity = true;
-                }
-
-                // Cross
-                Vector2 dustLeft = (new Vector2(-1, 0)).RotatedBy(Projectile.rotation);
-                Vector2 dustRight = (new Vector2(1, 0)).RotatedBy(Projectile.rotation);
-                Vector2 dustUp = (new Vector2(0, -1)).RotatedBy(Projectile.rotation);
-                Vector2 dustDown = (new Vector2(0, 1) * 2f).RotatedBy(Projectile.rotation);
-
-                int dustScale = 7;
-                Vector2 dustPos = Projectile.Center - new Vector2((dustScale - 1) * 0.5f, (dustScale - 1) * 0.5f);
-
-                float minSpeed = 0f;
-                float maxSpeed = 5f;
-                float minScale = 1.9f;
-                float maxScale = 2.1f;
-                int dustCount = (int)(5 * Projectile.ai[0]);
-
-                for (int i = 0; i < dustCount; i++)
-                {
-                    // Dust Type
-                    int dustToUse = Main.rand.Next(0, 3);
-                    int dustType = 0;
-                    switch (dustToUse)
-                    {
-                        case 0:
-                            dustType = 175;
-                            break;
-                        case 1:
-                            dustType = 229;
-                            break;
-                        case 2:
-                            dustType = 263;
-                            break;
-                    }
-
-                    int left = Dust.NewDust(dustPos, dustScale, dustScale, dustType, 0f, 0f);
-                    Main.dust[left].noGravity = true;
-                    Main.dust[left].velocity = dustLeft * Main.rand.NextFloat(minSpeed, maxSpeed);
-                    Main.dust[left].scale = Main.rand.NextFloat(minScale, maxScale);
-
-                    int right = Dust.NewDust(dustPos, dustScale, dustScale, dustType, 0f, 0f);
-                    Main.dust[right].noGravity = true;
-                    Main.dust[right].velocity = dustRight * Main.rand.NextFloat(minSpeed, maxSpeed);
-                    Main.dust[right].scale = Main.rand.NextFloat(minScale, maxScale);
-
-                    int up = Dust.NewDust(dustPos, dustScale, dustScale, dustType, 0f, 0f);
-                    Main.dust[up].noGravity = true;
-                    Main.dust[up].velocity = dustUp * Main.rand.NextFloat(minSpeed, maxSpeed);
-                    Main.dust[up].scale = Main.rand.NextFloat(minScale, maxScale);
-
-                    int down = Dust.NewDust(dustPos, dustScale, dustScale, dustType, 0f, 0f);
-                    Main.dust[down].noGravity = true;
-                    Main.dust[down].velocity = dustDown * Main.rand.NextFloat(minSpeed, maxSpeed);
-                    Main.dust[down].scale = Main.rand.NextFloat(minScale, maxScale);
-                }
-            }
+            Vector2 launchVel = Utils.DirectionTo(Projectile.Center, target.Center) - Vector2.UnitY;
+            float launchPower = (Projectile.Calamity().stealthStrike ? 4f : 1) * 10;
+            target.MoveNPC(launchVel, launchPower, true);
         }
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
+        {
+            float crossSize = (Projectile.Calamity().stealthStrike ? 4f : 1) * 130;
+            float crosThickness = (Projectile.Calamity().stealthStrike ? 4f : 1) * 25;
+            float _ = float.NaN;
+            bool horizontalHit = Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center - Vector2.UnitX * crossSize, Projectile.Center + Vector2.UnitX * crossSize, crosThickness, ref _);
+            bool verticalHit = Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center - Vector2.UnitY * crossSize, Projectile.Center + Vector2.UnitY * crossSize * 1.7f, crosThickness, ref _);
+            return (horizontalHit || verticalHit);
+        }
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Player Owner = Main.player[Projectile.owner];
+            float fade = Utils.GetLerpValue(0, 9, Projectile.timeLeft, true);
+            Asset<Texture2D> him = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Jesus");
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, (Projectile.Calamity().stealthStrike ? RadiusStealth : Radius), targetHitbox);
+            if (Projectile.Calamity().stealthStrike && Main.zenithWorld)
+            {
+                Main.EntitySpriteDraw(him.Value, Owner.Center - Main.screenPosition, null, Color.White * 0.45f * fade, 0, him.Size() / 2f, 10, SpriteEffects.None, 0);
+            }
+            return false;
+        }
     }
 }

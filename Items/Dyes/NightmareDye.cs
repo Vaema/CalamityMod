@@ -2,7 +2,6 @@
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
@@ -12,7 +11,7 @@ namespace CalamityMod.Items.Dyes
 {
     public class NightmareDye : BaseDye
     {
-        public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(new Ref<Effect>(Mod.Assets.Request<Effect>("Effects/Dyes/NightmareDyeShader", AssetRequestMode.ImmediateLoad).Value), "DyePass").
+        public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(Mod.Assets.Request<Effect>("Effects/Dyes/NightmareDyeShader"), "DyePass").
             UseColor(new Color(249, 81, 0)).UseSecondaryColor(new Color(255, 203, 106));
         public override void SafeSetStaticDefaults()
         {
@@ -21,8 +20,8 @@ namespace CalamityMod.Items.Dyes
 
         public override void SafeSetDefaults()
         {
-            Item.rare = ModContent.RarityType<DarkBlue>();
-            Item.value = Item.sellPrice(0, 5, 0, 0);
+            Item.rare = ModContent.RarityType<CosmicPurple>();
+            Item.value = Item.sellPrice(gold: 1, silver: 50);
         }
 
         public override void AddRecipes()

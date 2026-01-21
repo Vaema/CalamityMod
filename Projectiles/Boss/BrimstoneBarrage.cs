@@ -1,11 +1,8 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Events;
 using CalamityMod.NPCs;
-using CalamityMod.NPCs.CalClone;
 using CalamityMod.NPCs.SupremeCalamitas;
-using CalamityMod.World;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
-using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -14,17 +11,18 @@ namespace CalamityMod.Projectiles.Boss
     public class BrimstoneBarrage : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Boss";
+        public int time = 0;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 2;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.TrailCacheLength[Type] = 2;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
         {
             Projectile.width = 18;
-            Projectile.height = 18;
+            Projectile.height = 44;
             Projectile.hostile = true;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
@@ -33,22 +31,25 @@ namespace CalamityMod.Projectiles.Boss
             CooldownSlot = ImmunityCooldownID.Bosses;
         }
 
-        public override void SendExtraAI(BinaryWriter writer)
-        {
-            writer.Write(Projectile.localAI[0]);
-        }
-
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
-            Projectile.localAI[0] = reader.ReadSingle();
-        }
-
         public override void AI()
         {
-            bool bossRush = BossRushEvent.BossRushActive;
+            int target = Player.FindClosest(Projectile.Center, 1, 1);
 
-            if (Projectile.velocity.Length() < (Projectile.ai[1] == 0f ? (bossRush ? 17.5f : 14f) : (bossRush ? 12.5f : 10f)))
-                Projectile.velocity *= bossRush ? 1.0125f : 1.01f;
+            float targetDist;
+            if (target != -1 && !Main.player[target].dead && Main.player[target].active && Main.player[target] != null)
+                targetDist = Vector2.Distance(Main.player[target].Center, Projectile.Center);
+            else
+                targetDist = 1000;
+
+            if (Projectile.velocity.Length() < Projectile.ai[2])
+            {
+                Projectile.velocity *= 1.01f;
+                if (Projectile.velocity.Length() > Projectile.ai[2])
+                {
+                    Projectile.velocity.Normalize();
+                    Projectile.velocity *= Projectile.ai[2];
+                }
+            }
 
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
 
@@ -79,15 +80,31 @@ namespace CalamityMod.Projectiles.Boss
                 }
             }
 
-            if (Projectile.localAI[0] == 0f)
+            // This only runs for SCal projectiles.
+            if (Projectile.ai[1] == 2f || (Projectile.ai[1] == 4f && time > 10))
             {
-                Projectile.localAI[0] = 1f;
+                if (targetDist < 1400f)
+                {
+                    SparkParticle orb = new SparkParticle(Projectile.Center - Projectile.velocity * 0.5f, -Projectile.velocity * Main.rand.NextFloat(0.1f, 0.6f), false, (int)MathHelper.Clamp(9 * Utils.GetLerpValue(630, 690, Projectile.timeLeft), 2, 9), 1.1f, (Main.rand.NextBool() ? Color.Red : Color.Lerp(Color.Red, Color.Magenta, 0.5f)) * Projectile.Opacity * 0.85f);
+                    GeneralParticleHandler.SpawnParticle(orb);
+                }
+            }
+            // This only runs for SCal seekers and Sepulcher projectiles.
+            if (Projectile.ai[1] == 3f)
+            {
+                if (Projectile.timeLeft > 600)
+                    Projectile.velocity *= 1.015f;
 
-                if (Projectile.ai[0] == 0f)
-                    Projectile.damage = NPC.AnyNPCs(ModContent.NPCType<SupremeCalamitas>()) ? Projectile.GetProjectileDamage(ModContent.NPCType<SupremeCalamitas>()) : Projectile.GetProjectileDamage(ModContent.NPCType<CalamitasClone>());
+                Projectile.scale = 0.85f;
+
+                Dust trailDust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(4, 4), DustID.TheDestroyer);
+                trailDust.noGravity = true;
+                trailDust.velocity = (-Projectile.velocity * 0.5f) * Main.rand.NextFloat(0.1f, 0.9f);
+                trailDust.scale = Main.rand.NextFloat(0.2f, 0.6f);
             }
 
             Lighting.AddLight(Projectile.Center, 0.75f * Projectile.Opacity, 0f, 0f);
+            time++;
         }
 
         public override bool CanHitPlayer(Player target) => Projectile.Opacity == 1f;
@@ -98,26 +115,31 @@ namespace CalamityMod.Projectiles.Boss
                 return;
 
             if (Projectile.ai[0] == 0f || Main.zenithWorld)
-                target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 120);
+                target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 180);
             else
-                target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 90);
+                target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
             lightColor.R = (byte)(255 * Projectile.Opacity);
 
-            if (CalamityGlobalNPC.SCal != -1)
+            if (CalamityGlobalNPC.SCal != -1 && NPC.AnyNPCs(ModContent.NPCType<SupremeCalamitas>()) == true)
             {
                 if (Main.npc[CalamityGlobalNPC.SCal].active)
                 {
-                    if (Main.npc[CalamityGlobalNPC.SCal].ModNPC<SupremeCalamitas>().cirrus)
+                    if (Main.npc[CalamityGlobalNPC.SCal].ModNPC<SupremeCalamitas>().permafrost)
+                    {
+                        lightColor.G = (byte)(255 * Projectile.Opacity);
                         lightColor.B = (byte)(255 * Projectile.Opacity);
+                        lightColor.R = 0;
+                    }
                 }
             }
 
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 10 * Projectile.scale, targetHitbox);
     }
 }

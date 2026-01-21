@@ -1,19 +1,18 @@
-﻿using CalamityMod.Tiles.SunkenSea;
-using CalamityMod.Walls;
-using CalamityMod.Items.DraedonMisc;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Items.LabFinders;
-using CalamityMod.Schematics;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.Items.DraedonMisc;
+using CalamityMod.Items.LabFinders;
+using CalamityMod.Items.Materials;
+using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Schematics;
+using CalamityMod.Tiles.SunkenSea;
+using CalamityMod.Walls;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.WorldBuilding;
-
 using static CalamityMod.Schematics.SchematicManager;
 
 namespace CalamityMod.World
@@ -46,10 +45,15 @@ namespace CalamityMod.World
             {
                 return true;
             }
-            if (tile.TileType == ModContent.TileType<Navystone>() ||
-            tile.TileType == ModContent.TileType<EutrophicSand>() ||
-            tile.WallType == ModContent.WallType<NavystoneWall>() ||
-            tile.WallType == ModContent.WallType<EutrophicSandWall>())
+            if (tile.TileType == ModContent.TileType<Basalt>() ||
+            tile.TileType == ModContent.TileType<Navystone>() || tile.TileType == ModContent.TileType<HardenedEutrophicSand>() ||
+            tile.TileType == ModContent.TileType<Shellstone>() || tile.TileType == ModContent.TileType<EutrophicSand>() ||
+            tile.TileType == ModContent.TileType<Limestone>() || tile.TileType == ModContent.TileType<PolypSand>() || tile.TileType == ModContent.TileType<ScarletSeaGrassTile>() || tile.TileType == ModContent.TileType<LimestoneCobble>() ||
+            tile.TileType == ModContent.TileType<Runestone>() || tile.TileType == ModContent.TileType<Dunesand>() ||
+            tile.WallType == ModContent.WallType<NavystoneWall>() || // hardened eutrophic sand doesnt have a wall lol
+            tile.WallType == ModContent.WallType<ShellstoneWall>() ||
+            tile.WallType == ModContent.WallType<LimestoneWall>() || // nor polyp sand
+            tile.WallType == ModContent.WallType<RunestoneWall>()) // ... nor dunesand
             {
                 return true;
             }
@@ -73,13 +77,13 @@ namespace CalamityMod.World
                 new ChestItem(potionType, WorldGen.genRand.Next(3, 5 + 1)),
             };
             float rng = WorldGen.genRand.NextFloat();
-            
+
             //Adds a Lab Seeking Mechanism at a 50% chance, or any of the 5 Bio Lab Seeking Mechanisms at a 10% chance each
-            if(rng < 0.5f)
+            if (rng < 0.5f)
                 contents.Insert(0, new ChestItem(ModContent.ItemType<LabSeekingMechanism>(), 1));
-            else if(rng < 0.6f)
+            else if (rng < 0.6f)
                 contents.Insert(0, new ChestItem(ModContent.ItemType<CyanSeekingMechanism>(), 1));
-            else if(rng < 0.7f)
+            else if (rng < 0.7f)
                 contents.Insert(0, new ChestItem(ModContent.ItemType<GreenSeekingMechanism>(), 1));
             else if (rng < 0.8f)
                 contents.Insert(0, new ChestItem(ModContent.ItemType<WhiteSeekingMechanism>(), 1));
@@ -101,7 +105,7 @@ namespace CalamityMod.World
 
             do
             {
-                int underworldTop = Main.maxTilesY - 200;
+                int underworldTop = Main.UnderworldLayer;
                 int placementPositionX = WorldGen.genRand.Next((int)(Main.maxTilesX * 0.1f), (int)(Main.maxTilesX * 0.9f));
                 int placementPositionY = WorldGen.genRand.Next(underworldTop - 550, underworldTop - 50);
 
@@ -180,7 +184,7 @@ namespace CalamityMod.World
 
             do
             {
-                int underworldTop = Main.maxTilesY - 200;
+                int underworldTop = Main.UnderworldLayer;
                 int placementPositionX = WorldGen.genRand.Next((int)(Main.maxTilesX * 0.15f), (int)(Main.maxTilesX * 0.85f));
                 int placementPositionY = WorldGen.genRand.Next(underworldTop - 400, underworldTop - 50);
 
@@ -242,6 +246,7 @@ namespace CalamityMod.World
             for (int i = 0; i < contents.Count; i++)
             {
                 chest.item[i].SetDefaults(contents[i].Type);
+                chest.item[i].Prefix(-1);
                 chest.item[i].stack = contents[i].Stack;
             }
         }
@@ -252,12 +257,19 @@ namespace CalamityMod.World
             string mapKey = HellLabKey;
             PilePlacementMaps.TryGetValue(mapKey, out PilePlacementFunction pilePlacementFunction);
             SchematicMetaTile[,] schematic = TileMaps[mapKey];
-            
+
             do
             {
-                int underworldTop = Main.maxTilesY - 200;
-                //gen opposite to the brimstone crags
-                int placementPositionX = (Main.dungeonX > Main.maxTilesX / 2) ? WorldGen.genRand.Next((int)(Main.maxTilesX / 12), (int)(Main.maxTilesX / 9)) : WorldGen.genRand.Next((int)(Main.maxTilesX * 0.82), (int)(Main.maxTilesX * 0.925));
+                int underworldTop = Main.UnderworldLayer;
+                // Generates opposite to the Brimstone Crags
+                // Has more wiggle room in Remix seed due to modified hell gen
+                bool dungeonRight = Main.dungeonX > Main.maxTilesX / 2;
+                int midLeft = Main.remixWorld ? 6 : 9;
+                float midRight = Main.remixWorld ? 0.6f : 0.82f;
+                int placementPositionX = dungeonRight ? WorldGen.genRand.Next((int)(Main.maxTilesX / 12), (int)(Main.maxTilesX / midLeft)) : WorldGen.genRand.Next((int)(Main.maxTilesX * midRight), (int)(Main.maxTilesX * 0.925));
+                // If in Drunk world but not GFB, Hell lab spawns in the center of the world (Hell gets swapped around)
+                if (Main.drunkWorld && !Main.remixWorld)
+                    placementPositionX = WorldGen.genRand.Next((int)(Main.maxTilesX * 0.4f), (int)(Main.maxTilesX * 0.6f));
                 int placementPositionY = WorldGen.genRand.Next(Main.maxTilesY - 150, Main.maxTilesY - 125);
 
                 placementPoint = new Point(placementPositionX, placementPositionY);
@@ -289,7 +301,7 @@ namespace CalamityMod.World
                     break;
                 }
             }
-            while (tries <= 20000);
+            while (tries <= 50000);
         }
         #endregion
 
@@ -326,61 +338,35 @@ namespace CalamityMod.World
 
         public static void PlaceSunkenSeaLab(out Point placementPoint, List<Point> workshopPoints, StructureMap structures)
         {
-            int tries = 0;
             string mapKey = SunkenSeaLabKey;
             PilePlacementMaps.TryGetValue(mapKey, out PilePlacementFunction pilePlacementFunction);
             SchematicMetaTile[,] schematic = TileMaps[mapKey];
             int labWidth = schematic.GetLength(0);
             int labHeight = schematic.GetLength(1);
 
-            do
-            {
-                // Pick a location based on the Underground Desert, because the Sunken Sea is based on the Underground Desert
-                Rectangle ugDesert = GenVars.UndergroundDesertLocation;
-                int placementPositionX = -1;
+            int sunkenSeaX = (GenVars.UndergroundDesertLocation.Left + GenVars.UndergroundDesertLocation.Right) / 2;
+            int sunkenSeaY = Main.maxTilesY / 2;
 
-                // Desperation generation: if 75% of attempts failed, start generating literally anywhere in the Sunken Sea
-                if (tries >= 1500)
-                    placementPositionX = WorldGen.genRand.Next(ugDesert.Left, ugDesert.Right - labWidth);
-                // 50% chance to be on either the left or the right.
-                // If it's on the right then shove it left because all schematics are placed based on their top left corner.
-                else if (WorldGen.genRand.NextBool())
-                    placementPositionX = WorldGen.genRand.Next(ugDesert.Left - 20, ugDesert.Left + 10);
-                else
-                    placementPositionX = WorldGen.genRand.Next(ugDesert.Right - 10, ugDesert.Right + 20) - labWidth;
+            int placementPositionX = sunkenSeaX < Main.maxTilesX / 2 ? sunkenSeaX - 120 : sunkenSeaX + 120;
+            int placementPositionY = (sunkenSeaY + (Main.maxTilesY / 4) - 25) - labHeight;
 
-                int sunkenSeaY = 0;
+            placementPoint = new Point(placementPositionX, placementPositionY);
+            Vector2 schematicSize = new Vector2(schematic.GetLength(0), schematic.GetLength(1));
 
-                //copied the desert position code from the sunken sea's generation so the lab always generates within the sunken sea properly
-                for (int y = Main.maxTilesY - 200; y >= Main.worldSurface; y--)
-                {
-                    if (Main.tile[placementPositionX, y].WallType == ModContent.WallType<NavystoneWall>() || 
-                    Main.tile[placementPositionX, y].WallType == ModContent.WallType<EutrophicSandWall>())
-                    {
-                        sunkenSeaY = y - 80; //offset so it generates nicely
-                        break;
-                    }
-                }
+            /*
+            I do not think that this check needs to exist for now, no other structures exist in the sunken sea at the moment
+            Once other sunken sea structures are added, i will likely re-enable this and modify the generation so that it avoids protected areas again
+            This is just so i can have it generating in time for the patreon beta
+            */
 
-                int placementPositionY = sunkenSeaY - labHeight;
-
-                placementPoint = new Point(placementPositionX, placementPositionY);
-                Vector2 schematicSize = new Vector2(schematic.GetLength(0), schematic.GetLength(1));
-
-                if (structures.CanPlace(new Rectangle(placementPoint.X, placementPoint.Y, (int)schematicSize.X, (int)schematicSize.Y)))
-                {
-                    bool hasPlacedLogAndSchematic = false;
-                    PlaceSchematic(mapKey, new Point(placementPoint.X, placementPoint.Y), SchematicAnchor.TopLeft, ref hasPlacedLogAndSchematic, new Action<Chest, int, bool>(FillSunkenSeaLaboratoryChest));
-                    CalamityUtils.AddProtectedStructure(new Rectangle(placementPoint.X, placementPoint.Y, (int)schematicSize.X, (int)schematicSize.Y), 20);
-                    //Reverted changes to center point placement; the change caused it to not center like it should, offsetting the range at which the bio lab theme plays
-                    CalamityWorld.SunkenSeaLabCenter = placementPoint.ToWorldCoordinates() + new Vector2(TileMaps[mapKey].GetLength(0), TileMaps[mapKey].GetLength(1)) * 8f;
-                    break;
-                }
-                //try again if the structure is colliding with a structure from another mod
-                else
-                    tries++;
-            }
-            while (tries <= 2000);
+            //if (structures.CanPlace(new Rectangle(placementPoint.X, placementPoint.Y, (int)schematicSize.X, (int)schematicSize.Y)))
+            //{
+                bool hasPlacedLogAndSchematic = false;
+                PlaceSchematic(mapKey, new Point(placementPoint.X, placementPoint.Y), SchematicAnchor.TopLeft, ref hasPlacedLogAndSchematic, new Action<Chest, int, bool>(FillSunkenSeaLaboratoryChest));
+                CalamityUtils.AddProtectedStructure(new Rectangle(placementPoint.X, placementPoint.Y, (int)schematicSize.X, (int)schematicSize.Y), 20);
+                //Reverted changes to center point placement; the change caused it to not center like it should, offsetting the range at which the bio lab theme plays
+                CalamityWorld.SunkenSeaLabCenter = placementPoint.ToWorldCoordinates() + new Vector2(TileMaps[mapKey].GetLength(0), TileMaps[mapKey].GetLength(1)) * 8f;
+            //}
         }
         #endregion
 
@@ -426,7 +412,7 @@ namespace CalamityMod.World
 
             do
             {
-                int underworldTop = Main.maxTilesY - 200;
+                int underworldTop = Main.UnderworldLayer;
                 int placementPositionX = WorldGen.genRand.Next(120, Main.maxTilesX - 120);
                 int placementPositionY = WorldGen.genRand.Next((int)Main.worldSurface + 160, underworldTop - HellVerticalAvoidance);
 
@@ -454,6 +440,11 @@ namespace CalamityMod.World
                         if (ShouldAvoidLocation(new Point(x, y)))
                             canGenerateInLocation = false;
                     }
+                }
+                // Snow overlaps a lot with jungle on drunk/gfb worlds so it needs a bit of extra help
+                if (Main.drunkWorld)
+                {
+                    iceTilesInArea *= 3;
                 }
                 if (!canGenerateInLocation || nearbyOtherWorkshop || iceTilesInArea < totalTiles * 0.35f || !structures.CanPlace(new Rectangle(placementPoint.X, placementPoint.Y, (int)schematicSize.X, (int)schematicSize.Y)))
                     tries++;
@@ -509,7 +500,7 @@ namespace CalamityMod.World
 
             do
             {
-                int underworldTop = Main.maxTilesY - 200;
+                int underworldTop = Main.UnderworldLayer;
                 int placementPositionX = WorldGen.genRand.Next(120, Main.maxTilesX - 120);
                 int placementPositionY = WorldGen.genRand.Next((int)Main.worldSurface + 160, underworldTop - HellVerticalAvoidance);
 
@@ -541,6 +532,11 @@ namespace CalamityMod.World
                         }
                     }
                 }
+                // Jungle overlaps a lot with snow on drunk/gfb worlds so it needs a bit of extra help
+                if (Main.drunkWorld)
+                {
+                    jungleTilesInArea *= 3;
+                }
                 if (!canGenerateInLocation || nearbyOtherWorkshop || jungleTilesInArea < totalTiles * 0.4f || !structures.CanPlace(new Rectangle(placementPoint.X, placementPoint.Y, (int)schematicSize.X, (int)schematicSize.Y)))
                 {
                     tries++;
@@ -568,7 +564,7 @@ namespace CalamityMod.World
                 new ChestItem(ModContent.ItemType<DubiousPlating>(), WorldGen.genRand.Next(8, 14 + 1)),
                 new ChestItem(ModContent.ItemType<MysteriousCircuitry>(), WorldGen.genRand.Next(7, 12 + 1)),
                 new ChestItem(ItemID.HerbBag, WorldGen.genRand.Next(12, 17 + 1)),
-                new ChestItem(ItemID.DayBloomPlanterBox, WorldGen.genRand.Next(5, 9 + 1)),
+                //new ChestItem(ItemID.DayBloomPlanterBox, WorldGen.genRand.Next(5, 9 + 1)), Removed from the chest because they're placed within the lab
                 new ChestItem(ItemID.BlinkrootPlanterBox, WorldGen.genRand.Next(5, 9 + 1)),
                 new ChestItem(ItemID.FireBlossomPlanterBox, WorldGen.genRand.Next(5, 9 + 1)),
                 new ChestItem(ItemID.MoonglowPlanterBox, WorldGen.genRand.Next(5, 9 + 1)),
@@ -586,14 +582,14 @@ namespace CalamityMod.World
                 contents.Insert(8, new ChestItem(ItemID.CrimsonPlanterBox, WorldGen.genRand.Next(5, 9 + 1)));
 
             // Add Thorium Marine Kelp if Thorium is loaded.
-            Mod thorium = CalamityMod.Instance.thorium;
+            Mod thorium = ExternalMods.thorium;
             if (thorium is not null)
             {
                 var marineKelpPlanterBox = thorium.Find<ModItem>("MarineKelpPlanterBox");
                 contents.Add(new ChestItem(marineKelpPlanterBox.Type, WorldGen.genRand.Next(5, 9 + 1)));
             }
             else
-                CalamityMod.Instance.Logger.Warn("Could not find Thorium Marine Kelp Planter Box. This item will not be added to the Draedon Planetoid Lab.");
+                CalamityMod.Log.Warn("Could not find Thorium Marine Kelp Planter Box. This item will not be added to the Draedon Planetoid Lab.");
 
             //Adds the Jungle Seeking Mechanism
             contents.Insert(0, new ChestItem(ModContent.ItemType<GreenSeekingMechanism>(), 1));
@@ -628,7 +624,7 @@ namespace CalamityMod.World
                 new ChestItem(potionType, WorldGen.genRand.Next(4, 7 + 1)),
                 new ChestItem(ModContent.ItemType<LabSeekingMechanism>(), 1),
             };
-            
+
             for (int i = 0; i < contents.Count; i++)
             {
                 chest.item[i].SetDefaults(contents[i].Type);

@@ -28,18 +28,16 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shootSpeed = 25f;
             Item.DamageType = RogueDamageClass.Instance;
 
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 
-		public override float StealthDamageMultiplier => 1.8f;
         public override float StealthKnockbackMultiplier => 7f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             float spreadAngle = MathHelper.ToRadians(2.5f);
-            Vector2 direction = velocity;
-            Vector2 baseDirection = direction.RotatedBy(-spreadAngle * 2.5f);
+            Vector2 baseDirection = velocity.RotatedBy(-spreadAngle * 2.5f);
 
             for (int i = 0; i < 6; i++)
             {
@@ -67,7 +65,7 @@ namespace CalamityMod.Items.Weapons.Rogue
                 AddIngredient<ReaperTooth>(6).
                 AddIngredient<Lumenyl>(15).
                 AddIngredient<RuinousSoul>(2).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

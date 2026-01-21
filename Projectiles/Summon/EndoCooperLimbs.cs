@@ -1,13 +1,14 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -17,10 +18,10 @@ namespace CalamityMod.Projectiles.Summon
         private int AttackMode = 0;
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 6;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -128,12 +129,14 @@ namespace CalamityMod.Projectiles.Summon
         {
             if (Projectile.ai[0] == 2f)
                 return false;
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+
+            var dye = Main.player[Projectile.owner]?.cMinion ?? 0;
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1, armorShaderToUse: dye);
             return false;
         }
 
         public override void PostDraw(Color lightColor)
-        {            
+        {
             if (Projectile.ai[0] == 2f)
                 return;
 
@@ -145,7 +148,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<GlacialState>(), 60);
-            target.AddBuff(BuffID.Frostburn, 180);
+            target.AddBuff(ModContent.BuffType<Voidfrost>(), 180);
         }
 
         public override bool? CanDamage() => AttackMode == 2;

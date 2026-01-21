@@ -1,10 +1,11 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Weapons.Ranged;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Graphics.Primitives;
+using CalamityMod.Items.Weapons.Ranged;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Graphics.Shaders;
@@ -17,7 +18,6 @@ namespace CalamityMod.Projectiles.Ranged
     public class ExoLightningBolt : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
-        internal PrimitiveTrail LightningDrawer;
 
         public bool HasPlayedSound;
 
@@ -35,8 +35,8 @@ namespace CalamityMod.Projectiles.Ranged
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 50;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
+            ProjectileID.Sets.TrailCacheLength[Type] = 50;
         }
 
         public override void SetDefaults()
@@ -135,9 +135,9 @@ namespace CalamityMod.Projectiles.Ranged
             }
         }
 
-        public float PrimitiveWidthFunction(float completionRatio) => CalamityUtils.Convert01To010(completionRatio) * Projectile.scale * Projectile.width;
+        public float PrimitiveWidthFunction(float completionRatio, Vector2 vertexPos) => CalamityUtils.Convert01To010(completionRatio) * Projectile.scale * Projectile.width;
 
-        public Color PrimitiveColorFunction(float completionRatio)
+        public Color PrimitiveColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float colorInterpolant = (float)Math.Sin(Projectile.identity / 3f + completionRatio * 20f + Main.GlobalTimeWrappedHourly * 1.1f) * 0.5f + 0.5f;
             Color color = CalamityUtils.MulticolorLerp(colorInterpolant, Color.GreenYellow, Color.Lime, Color.Cyan);
@@ -153,7 +153,7 @@ namespace CalamityMod.Projectiles.Ranged
             for (int i = 0; i < checkPoints.Count - 1; i++)
             {
                 float _ = 0f;
-                float width = PrimitiveWidthFunction(i / (float)checkPoints.Count);
+                float width = PrimitiveWidthFunction(i / (float)checkPoints.Count, Vector2.Zero);
                 if (Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), checkPoints[i], checkPoints[i + 1], width * 0.8f, ref _))
                     return true;
             }
@@ -162,15 +162,16 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (LightningDrawer is null)
-                LightningDrawer = new PrimitiveTrail(PrimitiveWidthFunction, PrimitiveColorFunction, PrimitiveTrail.RigidPointRetreivalFunction, GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"]);
-
             GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"].UseImage1("Images/Misc/Perlin");
             GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"].Apply();
 
-            LightningDrawer.Draw(Projectile.oldPos, Projectile.Size * 0.5f - Main.screenPosition, 18);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_,_) => Projectile.Size * 0.5f, false, shader: GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"]), 18);
             return false;
         }
+
+        // This projectile is forced to critically strike.
+        // This technically is a nerf, as it makes DSO's crits deal less damage.
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.SetCrit();
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<MiracleBlight>(), 300);
 

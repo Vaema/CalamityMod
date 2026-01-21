@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Placeables.Walls;
+﻿using CalamityMod.Items.Placeables.Abyss;
+using CalamityMod.Items.Placeables.Walls;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurnitureVoid
@@ -11,19 +12,7 @@ namespace CalamityMod.Items.Placeables.FurnitureVoid
             Item.ResearchUnlockCount = 100;
         }
 
-        public override void SetDefaults()
-        {
-            Item.width = 12;
-            Item.height = 12;
-            Item.maxStack = 9999;
-            Item.useTurn = true;
-            Item.autoReuse = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.consumable = true;
-            Item.createTile = ModContent.TileType<Tiles.FurnitureVoid.SmoothVoidstone>();
-        }
+        public override void SetDefaults() => Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.FurnitureVoid.SmoothVoidstone>());
 
         public override void AddRecipes()
         {
@@ -34,9 +23,11 @@ namespace CalamityMod.Items.Placeables.FurnitureVoid
             CreateRecipe().
                 AddIngredient<SmoothVoidstoneWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
             CreateRecipe().
                 AddIngredient<SmoothVoidstonePlatform>(2).
+                DisableDecraft().
                 Register();
         }
     }

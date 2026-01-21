@@ -1,12 +1,13 @@
-﻿using CalamityMod.Projectiles.BaseProjectiles;
+﻿using System;
+using CalamityMod.Particles;
+using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Enums;
+using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Particles;
-using System;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
@@ -38,7 +39,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Projectile.timeLeft = 12;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
-            Main.projFrames[Projectile.type] = 18;
+            Main.projFrames[Type] = 18;
         }
 
         public override void AI()
@@ -52,7 +53,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             if (Projectile.timeLeft == 12)
             {
                 Vector2 beamVector = Projectile.velocity;
-                float beamLength = DetermineLaserLength_CollideWithTiles(12);
+                float beamLength = DetermineLaserLength_CollideWithTiles();
 
                 //Rapid dust
                 int dustCount = Main.rand.Next(10, 30);
@@ -61,7 +62,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     float dustProgressAlongBeam = beamLength * Main.rand.NextFloat(0f, 0.8f);
                     Vector2 dustPosition = Projectile.Center + dustProgressAlongBeam * beamVector + beamVector.RotatedBy(MathHelper.PiOver2) * Main.rand.NextFloat(-6f, 6f) * Projectile.scale;
 
-                    Dust dust = Dust.NewDustPerfect(dustPosition, 187, beamVector * Main.rand.NextFloat(5f, 26f), 0, Color.OrangeRed, 2.2f);
+                    Dust dust = Dust.NewDustPerfect(dustPosition, DustID.BlueFlare, beamVector * Main.rand.NextFloat(5f, 26f), 0, Color.OrangeRed, 2.2f);
                     dust.noGravity = true;
                 }
 
@@ -69,8 +70,15 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 int step = 10;
                 while (step < LaserLength)
                 {
-                    Particle pulse = new DirectionalPulseRing(Projectile.Center + MathHelper.WrapAngle(Projectile.rotation + MathHelper.PiOver2).ToRotationVector2() * step, Vector2.Zero, Color.Red, new Vector2(0.5f, 1f), MathHelper.WrapAngle(Projectile.rotation + MathHelper.PiOver2), 0.1f, 1f, 12);
-                    GeneralParticleHandler.SpawnParticle(pulse);
+                    //Particle pulse = new DirectionalPulseRing(Projectile.Center + MathHelper.WrapAngle(Projectile.rotation + MathHelper.PiOver2).ToRotationVector2() * step, Vector2.Zero, Color.Red, new Vector2(0.5f, 1f), MathHelper.WrapAngle(Projectile.rotation + MathHelper.PiOver2), 0.1f, 1f, 12);
+                    //GeneralParticleHandler.SpawnParticle(pulse);
+                    for (int i = 0; i < 2; i++)
+                    {
+                        Particle pulse2 = new CustomPulse(Projectile.Center + MathHelper.WrapAngle(Projectile.rotation + MathHelper.PiOver2).ToRotationVector2() * step, Vector2.Zero, Color.Red, "CalamityMod/Particles/SmallBloomRing", new Vector2(0.4f, 1.1f), MathHelper.WrapAngle(Projectile.rotation + MathHelper.PiOver2), 0.1f, 1f, 12);
+                        GeneralParticleHandler.SpawnParticle(pulse2);
+                        Particle pulse3 = new CustomPulse(Projectile.Center + MathHelper.WrapAngle(Projectile.rotation + MathHelper.PiOver2).ToRotationVector2() * step, Vector2.Zero, Color.White, "CalamityMod/Particles/SmallBloomRing", new Vector2(0.4f, 1.1f), MathHelper.WrapAngle(Projectile.rotation + MathHelper.PiOver2), 0.1f, 0.9f, 12);
+                        GeneralParticleHandler.SpawnParticle(pulse3);
+                    }
                     step += 100;
                 }
             }
@@ -78,10 +86,23 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             else
                 Projectile.frameCounter++;
         }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            for (int i = 0; i <= 8; i++)
+            {
+                Dust dust = Dust.NewDustPerfect(target.Center, DustID.Rain_BloodMoon, (Projectile.velocity * 30).RotatedByRandom(MathHelper.ToRadians(25f)) * Main.rand.NextFloat(0.1f, 0.8f), 0, default, Main.rand.NextFloat(1.2f, 1.6f));
+                dust.noGravity = true;
+            }
+
+            if (Projectile.numHits > 0)
+                Projectile.damage = (int)(Projectile.damage * 0.5f);
+            if (Projectile.damage < 1)
+                Projectile.damage = 1;
+        }
 
         public override void DetermineScale() => Projectile.scale = 1f;
 
-        public override float DetermineLaserLength() => DetermineLaserLength_CollideWithTiles(5);
+        public override float DetermineLaserLength() => DetermineLaserLength_CollideWithTiles();
 
         public override bool ShouldUpdatePosition() => false;
 
@@ -102,9 +123,9 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         private void DrawPlasmaBeam(Color beamColor, float scale, int startFrame = 0, int middleFrame = 0, int endFrame = 0)
         {
-            Rectangle startFrameArea = LaserBeginTexture.Frame(1, Main.projFrames[Projectile.type], 0, startFrame);
-            Rectangle middleFrameArea = LaserMiddleTexture.Frame(1, Main.projFrames[Projectile.type], 0, middleFrame);
-            Rectangle endFrameArea = LaserEndTexture.Frame(1, Main.projFrames[Projectile.type], 0, endFrame);
+            Rectangle startFrameArea = LaserBeginTexture.Frame(1, Main.projFrames[Type], 0, startFrame);
+            Rectangle middleFrameArea = LaserMiddleTexture.Frame(1, Main.projFrames[Type], 0, middleFrame);
+            Rectangle endFrameArea = LaserEndTexture.Frame(1, Main.projFrames[Type], 0, endFrame);
 
             // Start texture drawing.
             Main.EntitySpriteDraw(LaserBeginTexture,

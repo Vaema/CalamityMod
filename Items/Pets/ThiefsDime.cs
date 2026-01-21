@@ -2,8 +2,8 @@
 using CalamityMod.Projectiles.Pets;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Pets
 {
@@ -12,12 +12,9 @@ namespace CalamityMod.Items.Pets
         public new string LocalizationCategory => "Items.Pets";
         public override void SetDefaults()
         {
-            Item.CloneDefaults(ItemID.WispinaBottle);
+            Item.DefaultToVanitypet(ModContent.ProjectileType<GoldiePet>(), ModContent.BuffType<GoldieBuff>());
             Item.UseSound = SoundID.CoinPickup;
-            Item.shoot = ModContent.ProjectileType<GoldiePet>();
-            Item.buffType = ModContent.BuffType<GoldieBuff>();
-
-            Item.value = Item.sellPrice(gold: 20); //Buy price of 1 Platinum
+            Item.value = Item.buyPrice(platinum: 1); // Sold by Bandit
             Item.rare = ItemRarityID.Pink;
         }
 

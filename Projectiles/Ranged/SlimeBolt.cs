@@ -1,9 +1,6 @@
 ﻿using CalamityMod.Particles;
-using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -19,7 +16,7 @@ namespace CalamityMod.Projectiles.Ranged
         public static float Fadetime => 225f;
         public static float EmpowerTime => 135f;
         public static float DamageFalloff => 0.85f;
-        public static Color SlimeColor => new Color (133, 133, 224);
+        public static Color SlimeColor => new Color(133, 133, 224);
 
         public ref float Time => ref Projectile.ai[0];
         public bool Empowered => Projectile.ai[0] >= EmpowerTime;
@@ -28,8 +25,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -50,7 +47,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (Time == EmpowerTime)
             {
                 Projectile.penetrate = 1;
-                Projectile.damage = (int)((Projectile.damage / Math.Pow(DamageFalloff, Projectile.numHits)) * 1.6f); // 7/4
+                Projectile.damage = (int)(Projectile.originalDamage * 1.6f);
                 Projectile.velocity *= 0f;
                 Projectile.rotation = Main.rand.NextFloat(0f, MathHelper.TwoPi);
 
@@ -143,7 +140,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             Main.spriteBatch.SetBlendState(BlendState.Additive);
 
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Main.EntitySpriteDraw(texture, drawPosition, null, SlimeColor, Projectile.rotation, texture.Size() * 0.5f, Projectile.scale, SpriteEffects.None, 0);
 

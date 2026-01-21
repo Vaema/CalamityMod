@@ -1,6 +1,6 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
-using CalamityMod.Tiles.Furniture.CraftingStations;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,23 +13,18 @@ namespace CalamityMod.Items.Potions
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 30;
+            ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
+                new Color(255, 31, 25),
+                new Color(162, 28, 25),
+                new Color(159, 10, 111)
+            };
         }
 
         public override void SetDefaults()
         {
-            Item.width = 24;
-            Item.height = 32;
-            Item.useTurn = true;
-            Item.maxStack = 9999;
-            Item.healLife = 300;
-            Item.useAnimation = 17;
-            Item.useTime = 17;
-            Item.useStyle = ItemUseStyleID.DrinkLiquid;
-            Item.UseSound = SoundID.Item3;
-            Item.consumable = true;
-            Item.potion = true;
-            Item.value = Item.buyPrice(0, 7, 0, 0);
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.DefaultToHealingPotion(24, 32, 300);
+            Item.value = Item.sellPrice(gold: 1);
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override void AddRecipes()

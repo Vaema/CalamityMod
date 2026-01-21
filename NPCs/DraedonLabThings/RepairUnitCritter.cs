@@ -1,11 +1,12 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using System.IO;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Critters;
 using CalamityMod.Items.DraedonMisc;
 using CalamityMod.Items.Placeables.Banners;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
@@ -50,17 +51,23 @@ namespace CalamityMod.NPCs.DraedonLabThings
 
         public const float Gravity = 0.4f;
 
+        public static Asset<Texture2D> GlowTexture;
+
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 17;
-            Main.npcCatchable[NPC.type] = true;
-            NPCID.Sets.CountsAsCritter[NPC.type] = true;
+            Main.npcFrameCount[Type] = 17;
+            Main.npcCatchable[Type] = true;
+            NPCID.Sets.CountsAsCritter[Type] = true;
             NPCID.Sets.CantTakeLunchMoney[Type] = true;
             NPCID.Sets.NormalGoldCritterBestiaryPriority.Add(Type);
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0);
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
             value.Position.Y += 12;
             value.PortraitPositionYOverride = 32f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glowmask", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -85,9 +92,9 @@ namespace CalamityMod.NPCs.DraedonLabThings
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.RepairUnitCritter")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.RepairUnitCritter")
             });
         }
 
@@ -117,7 +124,6 @@ namespace CalamityMod.NPCs.DraedonLabThings
                 Initialized = true;
             }
 
-            NPC.Calamity().ShouldFallThroughPlatforms = false;
             switch (CurrentState)
             {
                 case BehaviorState.WalkAround:
@@ -131,12 +137,8 @@ namespace CalamityMod.NPCs.DraedonLabThings
             }
             Time++;
 
-            for (int i = 0; i < Main.maxPlayers; i++)
+            foreach (Player player in Main.ActivePlayers)
             {
-                Player player = Main.player[i];
-                if (player is null || !player.active)
-                    continue;
-
                 if (NPC.Hitbox.Intersects(player.HitboxForBestiaryNearbyCheck))
                 {
                     Main.BestiaryTracker.Kills.RegisterKill(NPC);
@@ -144,6 +146,7 @@ namespace CalamityMod.NPCs.DraedonLabThings
                 }
             }
         }
+        public override bool? CanFallThroughPlatforms() => CurrentState == BehaviorState.WalkOnWalls;
 
         public void WalkAroundOnGround()
         {
@@ -246,7 +249,7 @@ namespace CalamityMod.NPCs.DraedonLabThings
             }
 
             // If there are walls to clime on and this NPC wants to climb on some, do so.
-            if (WantsToClimbOnSomeWall && CalamityUtils.ParanoidTileRetrieval((int)NPC.Center.X / 16, (int)NPC.Center.Y / 16).WallType > 0)
+            if (WantsToClimbOnSomeWall && CalamityUtils.ParanoidTileRetrieval((int)NPC.Center.X / 16, (int)NPC.Center.Y / 16).WallType > WallID.None)
             {
                 CurrentState = BehaviorState.WalkOnWalls;
                 StuckCount = 0f;
@@ -260,7 +263,6 @@ namespace CalamityMod.NPCs.DraedonLabThings
         {
             StuckCount = 0f;
             WantsToClimbOnSomeWall = false;
-            NPC.Calamity().ShouldFallThroughPlatforms = true;
 
             // Generate unusual movement patterns based on sines.
             float offsetAngle = CalamityUtils.AperiodicSin(Time / 360f, 0f, 1f) * 0.006f;
@@ -313,7 +315,7 @@ namespace CalamityMod.NPCs.DraedonLabThings
                 if (CurrentFrame < 9)
                     CurrentFrame = 9f;
                 CurrentFrame++;
-                if (CurrentFrame >= Main.npcFrameCount[NPC.type])
+                if (CurrentFrame >= Main.npcFrameCount[Type])
                     CurrentFrame = 9f;
                 NPC.frameCounter = 0;
             }
@@ -330,10 +332,10 @@ namespace CalamityMod.NPCs.DraedonLabThings
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int i = 0; i < 6; i++)
-                Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, 226);
+                Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.Electric);
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     for (int i = 1; i <= 3; i++)
                         Gore.NewGorePerfect(NPC.GetSource_Death(), NPC.Center, NPC.velocity.RotatedByRandom(0.3f) * Main.rand.NextFloat(0.7f, 1f), Mod.Find<ModGore>($"RepairUnit{i}").Type);
@@ -366,8 +368,8 @@ namespace CalamityMod.NPCs.DraedonLabThings
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D critterTexture = TextureAssets.Npc[NPC.type].Value;
-            Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/DraedonLabThings/RepairUnitCritterGlowmask").Value;
+            Texture2D critterTexture = TextureAssets.Npc[Type].Value;
+            Texture2D glowmask = GlowTexture.Value;
             Vector2 drawPosition = NPC.Center - screenPos + Vector2.UnitY * NPC.gfxOffY;
             SpriteEffects direction = NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
             spriteBatch.Draw(critterTexture, drawPosition, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, NPC.frame.Size() * 0.5f, NPC.scale, direction, 0f);

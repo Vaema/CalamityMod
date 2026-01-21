@@ -1,7 +1,7 @@
-﻿using CalamityMod.Items.Weapons.Magic;
+﻿using System;
+using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -20,7 +20,7 @@ namespace CalamityMod.Projectiles.Magic
         public ref float AttackTimer => ref Projectile.ai[1];
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 8;
+            Main.projFrames[Type] = 8;
         }
 
         public override void SetDefaults()
@@ -37,7 +37,7 @@ namespace CalamityMod.Projectiles.Magic
         public override void AI()
         {
             // If the player is no longer able to hold the book, kill it.
-            if (!Owner.channel || Owner.noItems || Owner.CCed)
+            if (Owner.CantUseHoldout())
             {
                 Projectile.Kill();
                 return;
@@ -48,8 +48,8 @@ namespace CalamityMod.Projectiles.Magic
 
             // Switch frames at a linearly increasing rate to make it look like the player is flipping pages quickly.
             Projectile.localAI[0] += Utils.Remap(Time, 0f, 180f, 1f, 5f);
-            Projectile.frame = (int)Math.Round(Projectile.localAI[0] / 10f) % Main.projFrames[Projectile.type];
-            if (Projectile.localAI[0] >= Main.projFrames[Projectile.type] * 10f)
+            Projectile.frame = (int)Math.Round(Projectile.localAI[0] / 10f) % Main.projFrames[Type];
+            if (Projectile.localAI[0] >= Main.projFrames[Type] * 10f)
                 Projectile.localAI[0] = 0f;
 
             AdjustPlayerValues();
@@ -67,7 +67,7 @@ namespace CalamityMod.Projectiles.Magic
 
             // If the owner has sufficient mana, consume it.
             // Otherwise, delete the book and don't bother summoning anything.
-            if (!Owner.CheckMana(Owner.ActiveItem().mana, true, false))
+            if (!Owner.CheckMana(Owner.HeldItem.mana, true, false))
             {
                 Projectile.Kill();
                 return;
@@ -104,7 +104,7 @@ namespace CalamityMod.Projectiles.Magic
 
             // Update the player's arm directions to make it look as though they're flipping through the book.
             float frontArmRotation = (MathHelper.PiOver2 - 0.46f) * -Owner.direction;
-            float backArmRotation = frontArmRotation + MathHelper.Lerp(0.23f, 0.97f, CalamityUtils.Convert01To010(Projectile.localAI[0] / Main.projFrames[Projectile.type] / 10f)) * -Owner.direction;
+            float backArmRotation = frontArmRotation + MathHelper.Lerp(0.23f, 0.97f, CalamityUtils.Convert01To010(Projectile.localAI[0] / Main.projFrames[Type] / 10f)) * -Owner.direction;
             Owner.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Full, backArmRotation);
             Owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, frontArmRotation);
         }
@@ -112,8 +112,8 @@ namespace CalamityMod.Projectiles.Magic
         public override bool PreDraw(ref Color lightColor)
         {
             float glowOutwardness = MathHelper.SmoothStep(0f, 4f, Utils.GetLerpValue(90f, 270f, Time, true));
-            Texture2D bookTexture = ModContent.Request<Texture2D>(Texture).Value;
-            Rectangle frame = bookTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
+            Texture2D bookTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            Rectangle frame = bookTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 drawPosition;
             Vector2 origin = frame.Size() * 0.5f;
             Color glowColor = Color.Lerp(Color.Pink, Color.Red, (float)Math.Cos(Main.GlobalTimeWrappedHourly * 5f) * 0.5f + 0.5f);

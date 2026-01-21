@@ -1,0 +1,64 @@
+# Maintenance notes:
+# - change dotnet-version to 8.0.x once tML updates (keep doing this so long as tML updates .NET),
+# - if/when we un-ignore the .csproj, get rid of creating one in this script.
+
+name: .NET Linter
+
+on:
+  push:
+    branches:
+      - "*"
+  pull_request:
+    branches:
+      - "*"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.0.x
+
+      - name: Restore dependencies
+        run: |
+          touch CalamityMod.csproj
+          echo '<?xml version="1.0" encoding="utf-8"?>
+          <Project Sdk="Microsoft.NET.Sdk">
+            <Import Project="..\tModLoader.targets" />
+            <PropertyGroup>
+              <AssemblyName>CalamityMod</AssemblyName>
+              <TargetFramework>net6.0</TargetFramework>
+              <PlatformTarget>AnyCPU</PlatformTarget>
+              <LangVersion>latest</LangVersion>
+            </PropertyGroup>
+            <ItemGroup>
+              <PackageReference Include="tModLoader.CodeAssist" Version="0.1.5" />
+            </ItemGroup>
+          </Project>' > CalamityMod.csproj
+
+          dotnet restore
+
+      - name: Pull TML
+        run: |
+          cd ..
+          mkdir ./tmod
+          touch tModLoader.targets
+
+          echo '<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+              <Import Project=".\tmod\tMLMod.targets" />
+          </Project>' > tModLoader.targets
+
+          cd ./tmod
+          wget https://github.com/tModLoader/tModLoader/releases/latest/download/tModLoader.zip
+          unzip tModLoader.zip
+          cd ..
+          cd ./CalamityMod
+
+      - name: Lint
+        run: |
+          dotnet format style CalamityMod.csproj --verify-no-changes

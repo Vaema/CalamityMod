@@ -1,14 +1,14 @@
-﻿using CalamityMod.Items.Weapons.Ranged;
+﻿using System;
+using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.NPCs;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.Enums;
 using Terraria.GameContent.Shaders;
 using Terraria.Graphics.Effects;
-using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Particles;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -94,7 +94,7 @@ namespace CalamityMod.Projectiles.Ranged
             Color beamColor = GetBeamColor(polarity);
             ProduceBeamDust(beamColor);
             // If the game is rendering (i.e. isn't a dedicated server), make the beam disturb water.
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 WaterShaderData wsd = (WaterShaderData)Filters.Scene["WaterDistortion"].GetShader();
                 // A universal time-based sinusoid which updates extremely rapidly. GlobalTimeWrappedHourly is 0 to 3600, measured in seconds.
@@ -140,15 +140,15 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.PolarityNPC().applyPolarity(polarity, target); //applies a positive or negative polarity on the target for 120 frames
+            target.GetGlobalNPC<CalamityPolarityNPC>().applyPolarity(polarity, target); //applies a positive or negative polarity on the target for 120 frames
         }
 
-        
+
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             // Ensure that the hit direction is correct when hitting enemies.
             modifiers.HitDirectionOverride = (Projectile.Center.X < target.Center.X).ToDirectionInt();
-            float targetPolarity = target.PolarityNPC().CurPolarity;
+            float targetPolarity = target.GetGlobalNPC<CalamityPolarityNPC>().CurPolarity;
             //If a polarity beam hits the target with the opposite polarity, the damage dealt increases by 20%
             if (polarity * targetPolarity < 0)
             {
@@ -181,7 +181,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (beamVector == Vector2.Zero || Projectile.velocity != Vector2.Zero)
                 return false;
 
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             float beamLength = Projectile.ai[0];
             Vector2 centerFloored = Projectile.Center.Floor() + beamVector * Projectile.scale * BeamRenderTileOffset;
             Vector2 scaleVec = new Vector2(Projectile.scale);

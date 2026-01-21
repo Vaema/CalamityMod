@@ -1,33 +1,61 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Dusts.WaterSplash;
+using CalamityMod.Gores.WaterDroplet;
+using CalamityMod.Systems.Graphic.LiquidSystem;
+using CalamityMod.Tiles.Abyss;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.Graphics;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Waters
 {
-    public class SulphuricDepthsWater : ModWaterStyle
+    public class SulphuricDepthsWaterflow : ModWaterfallStyle, IWaterfallStyleModifyColor
     {
-        public static int Type;
+        public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor) => WaterStyleCommon.ModifyTransparentWaterColor(x, y, ref liquidColor, false);
+    }
+
+    public class SulphuricDepthsWater : ModWaterStyle, IWaterStyleModifyColor, IWaterStyleModifyLight
+    {
+        public static int Type { get; private set; }
+        public static ModWaterStyle Instance { get; private set; }
+        public static ModWaterfallStyle WaterfallStyle { get; private set; }
+        public static int SplashDust { get; private set; }
+        public static int DropletGore { get; private set; }
+
         public override void SetStaticDefaults()
         {
             Type = Slot;
-        }
-        public override int ChooseWaterfallStyle()
-        {
-            return ModContent.Find<ModWaterfallStyle>("CalamityMod/SulphuricDepthsWaterflow").Slot;
-        }
-
-        public override int GetSplashDust()
-        {
-            return 33;
+            Instance = this;
+            WaterfallStyle = ModContent.Find<ModWaterfallStyle>("CalamityMod/SulphuricDepthsWaterflow");
+            SplashDust = ModContent.DustType<SulphuricDepthsSplash>();
+            DropletGore = ModContent.GoreType<SulphuricDepthsWaterDroplet>();
         }
 
-        public override int GetDropletGore()
+        public override void Unload()
         {
-            return 713;
+            Type = -1;
+            Instance = null;
+            WaterfallStyle = null;
+            SplashDust = 0;
+            DropletGore = 0;
         }
 
-        public override Color BiomeHairColor()
+        public override int ChooseWaterfallStyle() => WaterfallStyle.Slot;
+        public override int GetSplashDust() => SplashDust;
+        public override int GetDropletGore() => DropletGore;
+        public override Color BiomeHairColor() => new Color(35, 117, 89);
+        public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor, bool isSlope) => WaterStyleCommon.ModifyTransparentWaterColor(x, y, ref liquidColor, isSlope);
+        public void ModifyLight(in Tile tile, int i, int j, ref float r, ref float g, ref float b)
         {
-            return Color.Teal;
+            Vector3 outputColor = new Vector3(r, g, b);
+
+            if (tile.TileType != RustyChestTile.TileType)
+            {
+                outputColor = Vector3.Lerp(outputColor, Color.MediumSeaGreen.ToVector3(), 0.18f);
+            }
+            r = outputColor.X;
+            g = outputColor.Y;
+            b = outputColor.Z;
         }
     }
 }

@@ -9,6 +9,7 @@ namespace CalamityMod.Projectiles.Typeless
         public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = 8;
@@ -26,7 +27,7 @@ namespace CalamityMod.Projectiles.Typeless
         {
             Lighting.AddLight(Projectile.Center, 0.5f, 0.25f, 0f);
 
-            int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 127, 0f, 0f, 100, default, 2f);
+            int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Flare, 0f, 0f, 100, default, 2f);
             Main.dust[d].noGravity = true;
             Main.dust[d].velocity *= 0.5f;
             Main.dust[d].velocity += Projectile.velocity * 0.1f;

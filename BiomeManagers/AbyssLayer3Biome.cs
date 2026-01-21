@@ -1,6 +1,7 @@
 ﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.Placeables.FurnitureAbyss;
+using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Systems;
+using CalamityMod.Waters;
 using CalamityMod.World;
 using Terraria;
 using Terraria.ID;
@@ -16,12 +17,17 @@ namespace CalamityMod.BiomeManagers
             {
                 if (CalamityPlayer.areThereAnyDamnBosses)
                     return Main.curMusic;
-                return CalamityMod.Instance.GetMusicFromMusicMod("AbyssLayer3") ?? MusicID.Hell;
+
+                int? musicSlot = CalamityClientConfig.Instance.AbyssLayer3Alt ? 
+                    CalamityMod.Instance.GetMusicFromMusicMod("AbyssLayer3Alt") : 
+                    CalamityMod.Instance.GetMusicFromMusicMod("AbyssLayer3");
+                    
+                return musicSlot ?? MusicID.Hell;
             }
         }
 
-        public override ModWaterStyle WaterStyle => ModContent.Find<ModWaterStyle>("CalamityMod/MiddleAbyssWater");
-        public override int BiomeTorchItemType => ModContent.ItemType<AbyssTorch>();
+        public override ModWaterStyle WaterStyle => MiddleAbyssWater.Instance;
+        public override int BiomeTorchItemType => ModContent.ItemType<ThermalTorch>();
         public override SceneEffectPriority Priority => SceneEffectPriority.Environment;
         public override string BestiaryIcon => "CalamityMod/BiomeManagers/AbyssLayer3Icon";
         public override string BackgroundPath => "CalamityMod/Backgrounds/MapBackgrounds/AbyssBGLayer23";
@@ -32,7 +38,7 @@ namespace CalamityMod.BiomeManagers
             if (Main.remixWorld)
             {
                 return AbyssLayer1Biome.MeetsBaseAbyssRequirement(player, out int playerYTileCoords) && BiomeTileCounterSystem.Layer3Tiles >= 200 &&
-                playerYTileCoords <= SulphurousSea.YStart - (int)((Main.maxTilesY - 200) * 0.4f) && playerYTileCoords > SulphurousSea.YStart - (int)((Main.maxTilesY - 200) * 0.6f);
+                playerYTileCoords <= SulphurousSea.YStart - (int)(Main.UnderworldLayer * 0.4f) && playerYTileCoords > SulphurousSea.YStart - (int)(Main.UnderworldLayer * 0.6f);
             }
 
             return AbyssLayer1Biome.MeetsBaseAbyssRequirement(player, out int playerYTileCoords2) && BiomeTileCounterSystem.Layer3Tiles >= 200 &&

@@ -1,10 +1,10 @@
-﻿using CalamityMod.Dusts;
+﻿using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Buffs.StatDebuffs;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -26,8 +26,8 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -41,6 +41,8 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.penetrate = -1;
             Projectile.timeLeft = 360;
             Projectile.Opacity = 0f;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -56,9 +58,10 @@ namespace CalamityMod.Projectiles.Magic
             else
                 Projectile.Opacity = MathHelper.Clamp(Projectile.Opacity + 0.1f, 0f, 1f);
 
-            if (Projectile.timeLeft % 80f < 35f && Projectile.Distance(Main.MouseWorld) > 70f)
+            Vector2 mouse = Main.player[Projectile.owner].ClampedMouseWorld();
+            if (Projectile.timeLeft % 80f < 35f && Projectile.Distance(mouse) > 70f)
             {
-                float angleToTarget = Projectile.AngleTo(Main.MouseWorld);
+                float angleToTarget = Projectile.AngleTo(mouse);
                 float angleDifference = MathHelper.WrapAngle(angleToTarget - Projectile.velocity.ToRotation());
                 Projectile.velocity = Projectile.velocity.RotatedBy(angleDifference / 9f);
             }
@@ -146,7 +149,7 @@ namespace CalamityMod.Projectiles.Magic
         public override void OnKill(int timeLeft)
         {
             for (int i = 0; i < 23; i++)
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, (int)CalamityDusts.SulfurousSeaAcid, 0f, 0f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid, 0f, 0f);
         }
     }
 }

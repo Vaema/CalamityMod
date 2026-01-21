@@ -11,15 +11,15 @@ namespace CalamityMod.Items.Materials
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 25;
-			ItemID.Sets.SortingPriorityMaterials[Type] = 113;
+            ItemID.Sets.SortingPriorityMaterials[Type] = 113;
         }
 
         public override void SetDefaults()
         {
             Item.width = 15;
             Item.height = 12;
-            Item.maxStack = 9999;
-            Item.value = Item.sellPrice(gold: 4);
+            Item.maxStack = Item.CommonMaxStack;
+            Item.value = Item.sellPrice(gold: 2);
             Item.rare = ModContent.RarityType<Turquoise>();
         }
 
@@ -28,8 +28,8 @@ namespace CalamityMod.Items.Materials
             CreateRecipe(2).
                 AddIngredient<Bloodstone>(5).
                 AddIngredient<BloodOrb>().
-                AddIngredient<Polterplasm>().
-                AddTile(TileID.AdamantiteForge).
+                AddIngredient<Necroplasm>().
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

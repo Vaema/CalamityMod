@@ -19,7 +19,7 @@ namespace CalamityMod.Projectiles.Summon
         public ref float HopTimer => ref Projectile.ai[0];
         public ref float HopAmount => ref Projectile.ai[1];
         public bool SittingOnGround => Math.Abs(Projectile.velocity.X) < 1.55f && Projectile.velocity.Y == 0f;
-        public const float Gravity = 0.25f;
+        public const float FleshGravity = 0.25f;
         public const float MaxFallSpeed = 12f;
 
         public override void SetStaticDefaults()
@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Summon
         internal void EnforceGravity()
         {
             if (Projectile.velocity.Y < MaxFallSpeed)
-                Projectile.velocity.Y += Gravity;
+                Projectile.velocity.Y += FleshGravity;
         }
 
         internal void GenerateVisuals()
@@ -124,6 +124,8 @@ namespace CalamityMod.Projectiles.Summon
         }
 
         #endregion
+
+        public override bool MinionContactDamage() => true;
 
         public override void OnSpawn(IEntitySource source) => IFrames = 30;
 

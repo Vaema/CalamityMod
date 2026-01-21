@@ -11,25 +11,25 @@ namespace CalamityMod.Items.SummonItems.Invasion
         public new string LocalizationCategory => "Items.SummonItems";
         public override void SetStaticDefaults()
         {
-           	ItemID.Sets.SortingPriorityBossSpawns[Type] = 4; // Goblin Battle Standard
+            Item.ResearchUnlockCount = 3;
+            ItemID.Sets.SortingPriorityBossSpawns[Type] = 4; // Goblin Battle Standard
         }
 
         public override void SetDefaults()
         {
             Item.width = 16;
             Item.height = 28;
-            Item.maxStack = 1;
-            Item.rare = ItemRarityID.Green;
-            Item.useAnimation = 10;
-            Item.useTime = 10;
+            Item.consumable = true;
+            Item.maxStack = Item.CommonMaxStack;
+            Item.useAnimation = Item.useTime = 10;
             Item.useStyle = ItemUseStyleID.HoldUp;
-            Item.consumable = false;
+            Item.rare = ItemRarityID.Green;
         }
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.EventItem;
-		}
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
+        {
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.EventItem;
+        }
 
         public override bool CanUseItem(Player player)
         {
@@ -38,15 +38,20 @@ namespace CalamityMod.Items.SummonItems.Invasion
 
         public override bool? UseItem(Player player)
         {
-            CalamityNetcode.SyncWorld();
-            AcidRainEvent.TryStartEvent(true);
+            // Only Single Player client and Server should call this!
+            if (Main.netMode != NetmodeID.MultiplayerClient)
+            {
+                AcidRainEvent.TryStartEvent(forceRain: true);
+                // TryStartEvent already syncs the world data
+            }
+
             return true;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<SulphuricScale>(5).
+                AddIngredient<SulphuricScale>().
                 AddCondition(Condition.NearWater).
                 Register();
         }

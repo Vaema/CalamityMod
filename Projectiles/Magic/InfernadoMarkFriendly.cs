@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Magic
 {
     public class InfernadoMarkFriendly : ModProjectile, ILocalizedModType
@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Magic
                             Vector2 dustRotate = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
                             dustRotate = dustRotate.RotatedBy((double)(i - (dustAmt / 2 - 1)) * 3.1415926535897931 / (double)(float)dustAmt, default) + Projectile.Center;
                             Vector2 randDustOffset = ((float)(Main.rand.NextDouble() * 3.1415927410125732) - 1.57079637f).ToRotationVector2() * (float)Main.rand.Next(3, 8);
-                            int fiery = Dust.NewDust(dustRotate + randDustOffset, 0, 0, 244, randDustOffset.X * 2f, randDustOffset.Y * 2f, 100, default, 1.4f);
+                            int fiery = Dust.NewDust(dustRotate + randDustOffset, 0, 0, DustID.CopperCoin, randDustOffset.X * 2f, randDustOffset.Y * 2f, 100, default, 1.4f);
                             Main.dust[fiery].noGravity = true;
                             Main.dust[fiery].noLight = true;
                             Main.dust[fiery].velocity /= 4f;
@@ -93,14 +93,14 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(FlareSound, Projectile.position);
+            SoundEngine.PlaySound(FlareSound, Projectile.Center);
             int dustAmt = 36;
             for (int i = 0; i < dustAmt; i++)
             {
                 Vector2 rotate = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
                 rotate = rotate.RotatedBy((double)((float)(i - (dustAmt / 2 - 1)) * 6.28318548f / (float)dustAmt), default) + Projectile.Center;
                 Vector2 faceDirection = rotate - Projectile.Center;
-                int infernadoDust = Dust.NewDust(rotate + faceDirection, 0, 0, 244, faceDirection.X * 2f, faceDirection.Y * 2f, 100, default, 1.4f);
+                int infernadoDust = Dust.NewDust(rotate + faceDirection, 0, 0, DustID.CopperCoin, faceDirection.X * 2f, faceDirection.Y * 2f, 100, default, 1.4f);
                 Main.dust[infernadoDust].noGravity = true;
                 Main.dust[infernadoDust].noLight = true;
                 Main.dust[infernadoDust].velocity = faceDirection;

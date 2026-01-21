@@ -1,7 +1,7 @@
 ﻿using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Summon
 {
     public class MiniSandShark : ModProjectile, ILocalizedModType
@@ -9,7 +9,7 @@ namespace CalamityMod.Projectiles.Summon
         public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            ProjectileID.Sets.MinionShot[Type] = true;
         }
 
         public override void SetDefaults()
@@ -29,19 +29,19 @@ namespace CalamityMod.Projectiles.Summon
         public override void AI()
         {
             Projectile.rotation = Projectile.velocity.ToRotation(); // The projectile looks towards where it's going.
-            
+
             Projectile.netUpdate = true;
         }
 
         public override void OnKill(int timeLeft) // When the projectile hits an enemy, it'll make a dust impact effect.
         {
             SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
-            for (int dustIndex = 0; dustIndex < 36; dustIndex++)
+            for (int dustIndex = 0; dustIndex < 18; dustIndex++)
             {
                 Dust.NewDust(Projectile.Center,
                     Projectile.width,
                     Projectile.height,
-                    85,
+                    DustID.UnusedBrown,
                     Projectile.velocity.X / 2f,
                     Projectile.velocity.Y / 2f);
             }

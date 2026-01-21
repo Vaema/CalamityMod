@@ -1,9 +1,8 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
-using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -18,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 18;
             Item.height = 20;
-            Item.damage = 230;
+            Item.damage = 130;
             Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -28,8 +27,8 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 3f;
             Item.UseSound = SoundID.Item39;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
+            Item.rare = ModContent.RarityType<Turquoise>();
             Item.shoot = ModContent.ProjectileType<EmpyreanKnife>();
             Item.shootSpeed = 15f;
         }
@@ -87,7 +86,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 knifeSpawnYPos *= mouseDistance;
                 float x4 = realPlayerPos.X;
                 float y4 = realPlayerPos.Y;
-                Projectile.NewProjectile(source, x4, y4, knifeSpawnXPos, knifeSpawnYPos, type, damage, knockback, player.whoAmI, 0f, 0f);
+                Projectile.NewProjectile(source, x4, y4, knifeSpawnXPos, knifeSpawnYPos, type, damage, knockback, player.whoAmI);
             }
             return false;
         }
@@ -97,9 +96,8 @@ namespace CalamityMod.Items.Weapons.Melee
             CreateRecipe().
                 AddIngredient(ItemID.VampireKnives).
                 AddIngredient<MonstrousKnives>().
-                AddIngredient<CosmiliteBar>(8).
-                AddIngredient<DarksunFragment>(8).
-                AddTile<CosmicAnvil>().
+                AddIngredient<TwistingNether>(3).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

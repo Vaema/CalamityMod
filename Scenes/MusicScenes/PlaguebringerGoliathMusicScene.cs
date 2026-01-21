@@ -1,5 +1,4 @@
-using CalamityMod.NPCs.PlaguebringerGoliath;
-using Terraria;
+﻿using CalamityMod.NPCs.PlaguebringerGoliath;
 using Terraria.ID;
 using Terraria.ModLoader;
 

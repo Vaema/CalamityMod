@@ -1,19 +1,22 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using CalamityMod.Graphics.Primitives;
+using CalamityMod.NPCs;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Magic
 {
+    [PierceResistException]
     public class ApotheosisEnergy : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
-        internal PrimitiveTrail TrailDrawer = null;
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 20;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 20;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -24,9 +27,10 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.penetrate = -1;
+            Projectile.extraUpdates = 1;
             Projectile.timeLeft = 210;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 1;
+            Projectile.localNPCHitCooldown = 4;
         }
 
         public override void AI()
@@ -48,7 +52,7 @@ namespace CalamityMod.Projectiles.Magic
             }
         }
 
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             Color baseColor = Color.Cyan;
             if (completionRatio > 0.66f)
@@ -65,7 +69,7 @@ namespace CalamityMod.Projectiles.Magic
             return colorToUse * Projectile.Opacity;
         }
 
-        internal float WidthFunction(float completionRatio)
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos)
         {
             float width;
             float maxWidthOutwardness = 6f;
@@ -80,7 +84,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             for (int i = 0; i < Projectile.oldPos.Length; i++)
             {
-                if (Collision.CheckAABBvAABBCollision(Projectile.oldPos[i], projHitbox.Size(), targetHitbox.TopLeft(), projHitbox.Size()))
+                if (Collision.CheckAABBvAABBCollision(Projectile.oldPos[i], projHitbox.Size(), targetHitbox.TopLeft(), targetHitbox.Size()))
                     return true;
             }
             return false;
@@ -88,10 +92,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (TrailDrawer is null)
-                TrailDrawer = new PrimitiveTrail(WidthFunction, ColorFunction);
-
-            TrailDrawer.Draw(Projectile.oldPos, Projectile.Size * 0.5f - Main.screenPosition, 85);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_,_) => Projectile.Size * 0.5f), 85);
             return false;
         }
     }

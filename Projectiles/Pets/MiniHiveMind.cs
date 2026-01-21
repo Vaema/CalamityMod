@@ -3,9 +3,9 @@ using CalamityMod.CalPlayer;
 using CalamityMod.NPCs.HiveMind;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Pets
 {
@@ -17,12 +17,12 @@ namespace CalamityMod.Projectiles.Pets
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 16;
-            Main.projPet[Projectile.type] = true;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            Main.projFrames[Type] = 16;
+            Main.projPet[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 6;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
 
-            ProjectileID.Sets.CharacterPreviewAnimations[Projectile.type] = ProjectileID.Sets.SimpleLoop(0, Main.projFrames[Projectile.type], 6)
+            ProjectileID.Sets.CharacterPreviewAnimations[Type] = ProjectileID.Sets.SimpleLoop(0, Main.projFrames[Type], 6)
             .WithOffset(-12f, 0f).WithSpriteDirection(-1).WhenNotSelected(0, 0);
         }
 
@@ -112,7 +112,7 @@ namespace CalamityMod.Projectiles.Pets
             {
                 Projectile.frame++;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.frame = 0;
             }

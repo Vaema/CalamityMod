@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Items;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -91,9 +92,10 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 60;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            Main.projFrames[Projectile.type] = 8;
+            ProjectileID.Sets.TrailCacheLength[Type] = 60;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
+            Main.projFrames[Type] = 8;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         }
 
         public override void SetDefaults()
@@ -139,7 +141,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
                 Projectile.frame = 0;
 
             // Produce a tiny amount of light based on coin type.
@@ -242,7 +244,8 @@ namespace CalamityMod.Projectiles.Ranged
                     _ => ItemID.CopperCoin,
                 };
                 int coin = Item.NewItem(Projectile.GetSource_DropAsItem(), Projectile.Center, Vector2.One, itemID, noBroadcast: false);
-                Main.item[coin].Calamity().grabRangeMultiplier = UsedCoinGrabRangeMultiplier;
+                if (Main.item[coin].TryGetGlobalItem<GrabRangeGlobalItem>(out var grabRangeItem))
+                    grabRangeItem.grabRangeMultiplier = UsedCoinGrabRangeMultiplier;
 
                 // Sync this dropped coin in multiplayer.
                 if (Main.netMode == NetmodeID.MultiplayerClient)
@@ -252,8 +255,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
-            int numFrames = Main.projFrames[Projectile.type];
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int numFrames = Main.projFrames[Type];
             Rectangle frame = new Rectangle(
                 /* X */ (int)CoinType * tex.Width / 3,
                 /* Y */ Projectile.frame * tex.Height / numFrames,
@@ -269,8 +272,8 @@ namespace CalamityMod.Projectiles.Ranged
             // https://www.desmos.com/calculator/ngfg5fc9ds
             int numUpdatesPassed = CoinLifetime - Projectile.timeLeft;
             float x = Math.Clamp((float)numUpdatesPassed / CritDelayTime, 0f, 2f); // interpolant for the crit delay sheen
-            float sheenFunction = Math.Min(MathF.Pow(x + 0.1f, 6f), MathF.Pow(x - 2.1f, 6f));
-            float sheenOpacity = Math.Clamp(sheenFunction, 0f, 1f);
+            float sheenFunction = Math.Min(MathF.Pow(x + 0.1f, 10f), MathF.Pow(x - 2.1f, 10f));
+            float sheenOpacity = Math.Clamp(sheenFunction, 0f, 2f);
 
             // oh BOY another end begin boy
             if (sheenOpacity > 0f)
@@ -293,7 +296,7 @@ namespace CalamityMod.Projectiles.Ranged
                 };
 
                 Main.EntitySpriteDraw(bloomTex, Projectile.Center - Main.screenPosition, null, shineColor * sheenOpacity * 0.3f, MathHelper.PiOver2, bloomTex.Size() / 2f, shineScale * Projectile.scale, SpriteEffects.None, 0);
-                Main.EntitySpriteDraw(shineTex, Projectile.Center - Main.screenPosition, null, shineColor * sheenOpacity * 0.7f, MathHelper.PiOver2, shineTex.Size() / 2f, shineScale * Projectile.scale, SpriteEffects.None, 0);
+                Main.EntitySpriteDraw(shineTex, Projectile.Center - Main.screenPosition, null, shineColor * sheenOpacity, MathHelper.PiOver2, shineTex.Size() / 2f, shineScale * Projectile.scale, SpriteEffects.None, 0);
 
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);

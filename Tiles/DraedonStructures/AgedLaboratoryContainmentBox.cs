@@ -1,9 +1,7 @@
-using CalamityMod.Items.Placeables.DraedonStructures;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.Enums;
-using Terraria.Localization;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -39,7 +37,7 @@ namespace CalamityMod.Tiles.DraedonStructures
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 182);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.TheDestroyer);
             return false;
         }
 

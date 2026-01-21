@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
@@ -12,26 +13,75 @@ namespace CalamityMod.Particles
         public override bool UseCustomDraw => true;
         public override bool SetLifetime => true;
 
-        public Vector2 Squish;
-        public float ShakePower;
-        public float Opacity;
-        public Projectile AttachedProjectile;
-        public float  DisplacementFromProjectile;
+        /// <summary>
+        /// The function that decides to follow a specific <see cref="Vector2"/>.
+        /// </summary>
+        public Func<Vector2> FollowFunction;
 
-        public ThunderBoltVFX(Vector2 position, Color color, float rotation, float scale, Vector2 squish, float opacity = 1f, float shakePower = 20f, Projectile projectileToFollow = null, float displacementFromProjectile = 0f)
+        /// <summary>
+        /// The opacity of this particle, can only go from 0 to 1.<br/>
+        /// Defaults to 1.
+        /// </summary>
+        public float Opacity
+        {
+            get => opacity;
+            set => opacity = Math.Clamp(value, 0f, 1f);
+        }
+        private float opacity = 1f;
+
+        /// <summary>
+        /// The amount of shaking this particle will have.<br/>
+        /// Will always be positive.<br/>
+        /// Defaults to 0.
+        /// </summary>
+        public float ShakePower
+        {
+            get => shakePower;
+            set => shakePower = Math.Abs(value);
+        }
+        private float shakePower;
+
+        /// <summary>
+        /// The squish of this particle, how much is streched, widened, distorted, etc.<br/>
+        /// For standard purposes, it defaults to <see cref="Vector2.One"/>.
+        /// </summary>
+        public Vector2 Squish = Vector2.One;
+
+        /// <summary>
+        /// A constructor that spawns a particle that does not move from where it spawns.
+        /// </summary>
+        public ThunderBoltVFX(Vector2 position, float rotation, float scale, Color color, int lifeTime, float shakePower, float opacity = 1f, Vector2? squish = null)
         {
             Position = position;
-            Velocity = Vector2.Zero;
-            Color = color;
-            Scale = scale;
-            Squish = squish;
             Rotation = rotation;
+            Scale = scale;
+            Color = color;
             Opacity = opacity;
+            Lifetime = lifeTime;
             ShakePower = shakePower;
-            if (projectileToFollow != null)
-                AttachedProjectile = projectileToFollow;
-            DisplacementFromProjectile = displacementFromProjectile;
-            Lifetime = 30;
+            if (squish != null)
+                Squish = (Vector2)squish;
+        }
+
+        /// <summary>
+        /// A constructor that spawns a particle that follows a specific <see cref="Vector2"/>.<br/>
+        /// For simple one-line positions, you can just write in the argument, for example:<br/>
+        /// <br/>
+        /// <code>() => Projectile.Center</code>
+        /// For more complicated logic to decide which <see cref="Vector2"/> it should follow,<br/>
+        /// you'd just make your own function which returns a <see cref="Vector2"/> and give it as an argument.
+        /// </summary>
+        public ThunderBoltVFX(Func<Vector2> followFunction, float rotation, float scale, Color color, int lifeTime, float shakePower, float opacity = 1f, Vector2? squish = null)
+        {
+            FollowFunction = followFunction;
+            Rotation = rotation;
+            Scale = scale;
+            Color = color;
+            Opacity = opacity;
+            Lifetime = lifeTime;
+            ShakePower = shakePower;
+            if (squish != null)
+                Squish = (Vector2)squish;
         }
 
         public override void Update()
@@ -40,9 +90,7 @@ namespace CalamityMod.Particles
             float fadeFactor = 1f - 0.05f * MathHelper.Clamp((Time - 10) / 10f, 0f, 1f);
             Opacity *= fadeFactor;
             Squish.X *= fadeFactor;
-
-            if (AttachedProjectile != null && AttachedProjectile.active)
-                Position = AttachedProjectile.Center + Vector2.UnitY * DisplacementFromProjectile;
+            if (FollowFunction is not null) Position = FollowFunction.Invoke();
         }
 
         public override void CustomDraw(SpriteBatch spriteBatch)

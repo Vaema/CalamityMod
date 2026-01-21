@@ -1,8 +1,8 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -11,6 +11,9 @@ namespace CalamityMod.Items.Weapons.Melee
     public class GeliticBlade : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+
+        public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/GeliticBladeSwing", 2);
+
         public override void SetDefaults()
         {
             Item.width = 44;
@@ -22,19 +25,20 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 5.25f;
-            Item.UseSound = SoundID.Item1;
+            Item.UseSound = UseSound;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.shoot = ModContent.ProjectileType<GelWave>();
-            Item.shootSpeed = 9f;
+            Item.shootSpeed = 16f;
         }
 
         public override void MeleeEffects(Player player, Rectangle hitbox)
         {
-            if (Main.rand.NextBool(3))
+            if (Main.rand.NextBool(15))
             {
-                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 20);
+                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.BlueFairy);
+                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.PinkFairy);
             }
         }
 
@@ -53,7 +57,7 @@ namespace CalamityMod.Items.Weapons.Melee
             CreateRecipe().
                 AddIngredient<PurifiedGel>(18).
                 AddIngredient<BlightedGel>(18).
-                AddTile<StaticRefiner>().
+                AddTile(TileID.Solidifier).
                 Register();
         }
     }

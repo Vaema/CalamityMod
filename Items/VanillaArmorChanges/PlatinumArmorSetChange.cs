@@ -1,7 +1,5 @@
-﻿using System.Text;
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace CalamityMod.Items.VanillaArmorChanges
 {
@@ -15,33 +13,16 @@ namespace CalamityMod.Items.VanillaArmorChanges
 
         public override string ArmorSetName => "Platinum";
 
-        public const float HeadDamage = 0.06f;
-        public const float ChestCrit = 5f;
-        public const float LegsMoveSpeed = 0.1f;
-        public const float SetBonusLifeRegenPerDefense = 0.1f; // 10 defense = +1 life regen
-        public const float SetBonusDamagePerDefense = 0.001f; // 10 defense = +1% damage
-        public const float SetBonusCritPerDefense = 0.1f; // 10 defense = +1% crit chance
-        public const int SetBonusDefenseCap = 40;
-
-        public override void ApplyHeadPieceEffect(Player player) => player.GetDamage<GenericDamageClass>() += HeadDamage;
-
-        public override void ApplyBodyPieceEffect(Player player) => player.GetCritChance<GenericDamageClass>() += ChestCrit;
-
-        public override void ApplyLegPieceEffect(Player player) => player.moveSpeed += LegsMoveSpeed;
+        public const float SetBonusDR = 0.1f;
 
         public override void UpdateSetBonusText(ref string setBonusText)
         {
-            setBonusText += $"\n{CalamityUtils.GetTextValue($"Vanilla.Armor.SetBonus.{ArmorSetName}")}";
+            setBonusText += $"\n{CalamityUtils.GetText($"Vanilla.Armor.SetBonus.{ArmorSetName}").Format(SetBonusDR.ToPercent())}";
         }
 
         public override void ApplyArmorSetBonus(Player player)
         {
-            int defense = player.statDefense;
-            if (defense > SetBonusDefenseCap)
-                defense = SetBonusDefenseCap;
-            player.lifeRegen += (int)(defense * SetBonusLifeRegenPerDefense);
-            player.GetDamage<GenericDamageClass>() += defense * SetBonusDamagePerDefense;
-            player.GetCritChance<GenericDamageClass>() += defense * SetBonusCritPerDefense;
+            player.endurance += SetBonusDR;
         }
     }
 }

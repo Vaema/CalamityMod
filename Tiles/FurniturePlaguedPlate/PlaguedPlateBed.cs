@@ -1,8 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
-using Terraria.ID;
 using Terraria.GameContent.ObjectInteractions;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
@@ -16,19 +15,21 @@ namespace CalamityMod.Tiles.FurniturePlaguedPlate
             Main.tileFrameImportant[Type] = true;
             Main.tileLavaDeath[Type] = false;
             TileID.Sets.HasOutlines[Type] = true;
+            TileID.Sets.InteractibleByNPCs[Type] = true;
+            TileID.Sets.DisableSmartCursor[Type] = true;
+            TileID.Sets.IsValidSpawnPoint[Type] = true;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x4); //This bed has different dimensions to conventional beds, using bookcase dimentions instead
             TileObjectData.newTile.LavaDeath = false;
             TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16, 16, 16 };
             TileObjectData.addTile(Type);
-            AddMapEntry(new Color(191, 142, 111), CreateMapEntryName());
-            TileID.Sets.DisableSmartCursor[Type] = true;
-            AdjTiles = new int[] { TileID.Beds };
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsChair);
+            AddMapEntry(new Color(191, 142, 111), CreateMapEntryName());
+            AdjTiles = new int[] { TileID.Beds };
         }
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 178, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.BubbleBurst_Green, 0f, 0f, 1, new Color(255, 255, 255), 1f);
             return false;
         }
 
@@ -51,16 +52,16 @@ namespace CalamityMod.Tiles.FurniturePlaguedPlate
             if (player.SpawnX == spawnX && player.SpawnY == spawnY)
             {
                 player.RemoveSpawn();
-                Main.NewText("Spawn point removed!", 255, 240, 20);
+                Main.NewText(Language.GetTextValue("Game.SpawnPointRemoved"), 255, 240, 20);
             }
             else if (Player.CheckSpawn(spawnX, spawnY))
             {
                 player.ChangeSpawn(spawnX, spawnY);
-                Main.NewText("Spawn point set!", 255, 240, 20);
+                Main.NewText(Language.GetTextValue("Game.SpawnPointSet"), 255, 240, 20);
             }
             return true;
         }
 
-        public override void MouseOver(int i, int j) => CalamityUtils.MouseOver(i, j, ModContent.ItemType<Items.Placeables.FurniturePlagued.PlaguedPlateBed>());
+        public override void MouseOver(int i, int j) => FurnitureCommon.MouseOver(i, j, ModContent.ItemType<Items.Placeables.FurniturePlagued.PlaguedPlateBed>());
     }
 }

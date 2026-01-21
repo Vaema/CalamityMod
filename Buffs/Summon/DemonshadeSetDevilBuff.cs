@@ -1,34 +1,12 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.Projectiles.Typeless;
-using Terraria;
+﻿using CalamityMod.Projectiles.Typeless;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.Summon
 {
-    public class DemonshadeSetDevilBuff : ModBuff
+    public class DemonshadeSetDevilBuff : BaseSummonBuff
     {
-        public override void SetStaticDefaults()
-        {
-            Main.buffNoTimeDisplay[Type] = true;
-            Main.buffNoSave[Type] = true;
-        }
+        protected override int MinionProjectileType => ModContent.ProjectileType<DemonshadeRedDevil>();
 
-        public override void Update(Player player, ref int buffIndex)
-        {
-            CalamityPlayer modPlayer = player.Calamity();
-            if (player.ownedProjectileCounts[ModContent.ProjectileType<DemonshadeRedDevil>()] > 0)
-            {
-                modPlayer.rDevil = true;
-            }
-            if (!modPlayer.rDevil)
-            {
-                player.DelBuff(buffIndex);
-                buffIndex--;
-            }
-            else
-            {
-                player.buffTime[buffIndex] = 18000;
-            }
-        }
+        protected override ref bool MinionBool => ref BuffModdedOwner.rDevil;
     }
 }

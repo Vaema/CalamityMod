@@ -1,4 +1,6 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
@@ -6,7 +8,7 @@ using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.TreasureBags;
@@ -16,16 +18,15 @@ using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using Terraria.GameContent.ItemDropRules;
 
 namespace CalamityMod.NPCs.Signus
 {
@@ -37,12 +38,18 @@ namespace CalamityMod.NPCs.Signus
         private int lifeToAlpha = 0;
         private int stealthTimer = 0;
 
+        public static Asset<Texture2D> AltTexture;
+        public static Asset<Texture2D> AltTexture2;
+        public static Asset<Texture2D> Texture_Glow;
+        public static Asset<Texture2D> AltTexture_Glow;
+        public static Asset<Texture2D> AltTexture2_Glow;
+
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 6;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            Main.npcFrameCount[Type] = 6;
+            NPCID.Sets.TrailingMode[Type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 PortraitPositionYOverride = 10f,
                 Scale = 0.4f,
@@ -52,20 +59,32 @@ namespace CalamityMod.NPCs.Signus
             value.Position.Y += 10f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
             NPCID.Sets.MPAllowedEnemies[Type] = true;
+            if (!Main.dedServ)
+            {
+                Texture_Glow = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+                AltTexture_Glow = ModContent.Request<Texture2D>(Texture + "AltGlow", AssetRequestMode.AsyncLoad);
+                AltTexture2_Glow = ModContent.Request<Texture2D>(Texture + "Alt2Glow", AssetRequestMode.AsyncLoad);
+                AltTexture = ModContent.Request<Texture2D>(Texture + "Alt", AssetRequestMode.AsyncLoad);
+                AltTexture2 = ModContent.Request<Texture2D>(Texture + "Alt2", AssetRequestMode.AsyncLoad);
+            }
         }
+
+        public static int ScytheDamage = 60; // 240
+        public static int DustDamage = 60; // 240; Also applies to Legendary Mode Peanuts
+
+        // GFB exclusive
+        public static int StealthStrikeMult = 2; // 480
 
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 160; // 320
             NPC.npcSlots = 32f;
-            NPC.GetNPCDamage();
             NPC.width = 130;
             NPC.height = 130;
             NPC.defense = 60;
-            NPC.LifeMaxNERB(300000, 360000, 320000);
-            NPC.value = Item.buyPrice(2, 0, 0, 0);
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
+            NPC.LifeMaxNERB(250000, 375000, 380000);
+            NPC.value = Item.buyPrice(gold: 50);
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
             AIType = -1;
@@ -80,7 +99,7 @@ namespace CalamityMod.NPCs.Signus
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.TheUnderworld,
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Signus")
@@ -113,10 +132,9 @@ namespace CalamityMod.NPCs.Signus
 
             CalamityGlobalNPC.signus = NPC.whoAmI;
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             Vector2 vectorCenter = NPC.Center;
 
@@ -125,8 +143,8 @@ namespace CalamityMod.NPCs.Signus
             lifeToAlpha = (int)((Main.getGoodWorld ? 200D : 100D) * (1D - lifeRatio));
             int maxCharges = death ? 1 : revenge ? 2 : expertMode ? 3 : 4;
             int maxTeleports = (death && lifeRatio < 0.9) ? 1 : revenge ? 2 : expertMode ? 3 : 4;
-            float inertia = bossRush ? 9f : death ? 10f : revenge ? 11f : expertMode ? 12f : 14f;
-            float chargeVelocity = bossRush ? 16f : death ? 14f : revenge ? 13f : expertMode ? 12f : 10f;
+            float inertia = death ? 10f : revenge ? 11f : expertMode ? 12f : 14f;
+            float chargeVelocity = death ? 14f : revenge ? 13f : expertMode ? 12f : 10f;
             if (Main.getGoodWorld)
             {
                 inertia *= 0.5f;
@@ -136,8 +154,6 @@ namespace CalamityMod.NPCs.Signus
             bool phase2 = lifeRatio < 0.75f && expertMode;
             bool phase3 = lifeRatio < 0.5f;
             bool phase4 = lifeRatio < 0.33f;
-
-            NPC.damage = NPC.defDamage;
 
             // Get a target
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
@@ -234,7 +250,7 @@ namespace CalamityMod.NPCs.Signus
                 if (phase3 || revenge)
                     NPC.knockBackResist = 0f;
 
-                float speed = bossRush ? 20f : revenge ? 15f : expertMode ? 14f : 12f;
+                float speed = revenge ? 15f : expertMode ? 14f : 12f;
                 if (expertMode)
                     speed += death ? 6f * (float)(1D - lifeRatio) : 4f * (float)(1D - lifeRatio);
 
@@ -273,7 +289,7 @@ namespace CalamityMod.NPCs.Signus
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    NPC.localAI[1] += bossRush ? 1.5f : 1f;
+                    NPC.localAI[1] += 1f;
 
                     if (expertMode)
                         NPC.localAI[1] += death ? 3f * (float)(1D - lifeRatio) : 2f * (float)(1D - lifeRatio);
@@ -325,7 +341,7 @@ namespace CalamityMod.NPCs.Signus
             }
             else if (NPC.ai[0] == 1f)
             {
-                // Avoid cheap bullshit
+                // Disable contact damage for some time while fading away
                 NPC.damage = 0;
 
                 Vector2 position = new Vector2(NPC.ai[1] * 16f - (NPC.width / 2), NPC.ai[2] * 16f - (NPC.height / 2));
@@ -336,7 +352,7 @@ namespace CalamityMod.NPCs.Signus
                     Main.dust[dust].fadeIn = 1f;
                 }
 
-                NPC.alpha += bossRush ? 3 : 2;
+                NPC.alpha += 2;
                 if (expertMode)
                     NPC.alpha += death ? (int)Math.Round(4.5D * (1D - lifeRatio)) : (int)Math.Round(3D * (1D - lifeRatio));
 
@@ -361,32 +377,31 @@ namespace CalamityMod.NPCs.Signus
             }
             else if (NPC.ai[0] == 2f)
             {
-                // Avoid cheap bullshit
-                NPC.damage = 0;
-
                 NPC.alpha -= 50;
                 if (NPC.alpha <= lifeToAlpha)
                 {
+                    // Restore contact damage once returned to proper opacity
+                    NPC.damage = NPC.defDamage;
                     if (Main.netMode != NetmodeID.MultiplayerClient && revenge)
                     {
                         SoundEngine.PlaySound(SoundID.Item122, NPC.Center);
 
                         int cosmicMineSpawn = NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.position.X + 750f), (int)player.position.Y, ModContent.NPCType<CosmicMine>());
-                        if (Main.netMode == NetmodeID.Server)
+                        if (Main.dedServ)
                             NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, cosmicMineSpawn, 0f, 0f, 0f, 0, 0, 0);
 
                         int cosmicMineSpawn2 = NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.position.X - 750f), (int)player.position.Y, ModContent.NPCType<CosmicMine>());
-                        if (Main.netMode == NetmodeID.Server)
+                        if (Main.dedServ)
                             NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, cosmicMineSpawn2, 0f, 0f, 0f, 0, 0, 0);
 
                         if (stealthTimer >= maxStealth)
                         {
                             int stealthCosmicMine = NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.position.X + 950f), (int)player.position.Y, ModContent.NPCType<CosmicMine>());
-                            if (Main.netMode == NetmodeID.Server)
+                            if (Main.dedServ)
                                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, stealthCosmicMine, 0f, 0f, 0f, 0, 0, 0);
 
                             int stealthCosmicMine2 = NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.position.X - 950f), (int)player.position.Y, ModContent.NPCType<CosmicMine>());
-                            if (Main.netMode == NetmodeID.Server)
+                            if (Main.dedServ)
                                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, stealthCosmicMine2, 0f, 0f, 0f, 0, 0, 0);
 
                             SoundEngine.PlaySound(RaidersTalisman.StealthHitSound, NPC.Center);
@@ -450,7 +465,7 @@ namespace CalamityMod.NPCs.Signus
                 NPC.direction = playerLocation < 0f ? 1 : -1;
                 NPC.spriteDirection = NPC.direction;
 
-                float divisor = expertMode ? (bossRush ? 10f : death ? 12f : revenge ? 15f : 20f) - (float)Math.Ceiling(5D * (1D - lifeRatio)) : 20f;
+                float divisor = expertMode ? (death ? 12f : revenge ? 15f : 20f) - (float)Math.Ceiling(5D * (1D - lifeRatio)) : 20f;
                 float scytheBarrageTime = divisor * 3f;
                 float scytheBarrageCooldown = divisor * 3f;
 
@@ -473,16 +488,14 @@ namespace CalamityMod.NPCs.Signus
                             scytheXDist *= scytheDistance;
                             scytheYDist *= scytheDistance;
                             int type = ModContent.ProjectileType<SignusScythe>();
-                            int damage = NPC.GetProjectileDamage(type);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), vectorCenter.X, vectorCenter.Y, scytheXDist, scytheYDist, type, damage, 0f, Main.myPlayer, 0f, NPC.target + 1);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), vectorCenter.X, vectorCenter.Y, scytheXDist, scytheYDist, type, ScytheDamage, 0f, Main.myPlayer, 0f, NPC.target + 1);
                             if (stealthTimer >= maxStealth)
                             {
-                                damage *= 2;
                                 SoundEngine.PlaySound(RaidersTalisman.StealthHitSound, NPC.Center);
                                 for (int i = 0; i < 4; i++)
                                 {
                                     Vector2 offset = new Vector2(Main.rand.Next(-5, 6), Main.rand.Next(-5, 6));
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), vectorCenter.X, vectorCenter.Y, scytheXDist + offset.X, scytheYDist + offset.Y, type, damage, 0f, Main.myPlayer, 0f, NPC.target + 1);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), vectorCenter.X, vectorCenter.Y, scytheXDist + offset.X, scytheYDist + offset.Y, type, ScytheDamage * StealthStrikeMult, 0f, Main.myPlayer, 0f, NPC.target + 1);
                                 }
                                 stealthTimer = 0;
                             }
@@ -490,8 +503,8 @@ namespace CalamityMod.NPCs.Signus
                     }
                 }
 
-                float maxVelocityY = bossRush ? 1.5f : death ? 2.5f : 3f;
-                float maxVelocityX = bossRush ? 5f : death ? 7f : 8f;
+                float maxVelocityY = death ? 2.5f : 3f;
+                float maxVelocityX = death ? 7f : 8f;
 
                 if (NPC.position.Y > player.position.Y - 250f)
                 {
@@ -567,21 +580,21 @@ namespace CalamityMod.NPCs.Signus
                                 type = ModContent.NPCType<CosmicMine>();
                             }
                             int cosmicMineSpawn = NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.position.X + spawnX), (int)(player.position.Y + spawnY), type);
-                            if (Main.netMode == NetmodeID.Server)
+                            if (Main.dedServ)
                                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, cosmicMineSpawn, 0f, 0f, 0f, 0, 0, 0);
 
                             int cosmicMineSpawn2 = NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.position.X - spawnX), (int)(player.position.Y + spawnY), type);
-                            if (Main.netMode == NetmodeID.Server)
+                            if (Main.dedServ)
                                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, cosmicMineSpawn2, 0f, 0f, 0f, 0, 0, 0);
 
                             if (buffed)
                             {
                                 int stealthCosmicMine = NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.position.X + spawnX + spawnX / 2), (int)(player.position.Y + spawnY), ModContent.NPCType<CosmicLantern>());
-                                if (Main.netMode == NetmodeID.Server)
+                                if (Main.dedServ)
                                     NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, stealthCosmicMine, 0f, 0f, 0f, 0, 0, 0);
 
                                 int stealthCosmicMine2 = NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.position.X - spawnX - spawnX / 2), (int)(player.position.Y + spawnY), ModContent.NPCType<CosmicLantern>());
-                                if (Main.netMode == NetmodeID.Server)
+                                if (Main.dedServ)
                                     NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, stealthCosmicMine2, 0f, 0f, 0f, 0, 0, 0);
                             }
 
@@ -609,7 +622,7 @@ namespace CalamityMod.NPCs.Signus
 
                 if (calamityGlobalNPC.newAI[0] == 0f) // Line up the charge
                 {
-                    float velocity = bossRush ? 18f : revenge ? 16f : expertMode ? 15f : 14f;
+                    float velocity = revenge ? 16f : expertMode ? 15f : 14f;
                     if (expertMode)
                         velocity += death ? 6f * (float)(1D - lifeRatio) : 4f * (float)(1D - lifeRatio);
 
@@ -677,15 +690,10 @@ namespace CalamityMod.NPCs.Signus
                         if ((phase2 || buffed) && NPC.ai[2] % 3f == 0f)
                         {
                             SoundEngine.PlaySound(SoundID.Item73, NPC.Center);
-                            int type = (CalamityWorld.LegendaryMode && revenge) ? ModContent.ProjectileType<PeanutRocket>() : ModContent.ProjectileType<EssenceDust>();
-                            int damage = (CalamityWorld.LegendaryMode && revenge) ? 60 : NPC.GetProjectileDamage(type);
-                            Vector2 velocity = Main.zenithWorld ? new Vector2(Main.rand.Next(-10, 11), Main.rand.Next(-10, 11)) : Vector2.Zero;
-                            if (Main.getGoodWorld && !Main.zenithWorld)
-                            {
-                                velocity = new Vector2(Main.rand.Next(-5, 6), Main.rand.Next(-5, 6));
-                            }
+                            int type = Main.zenithWorld ? ModContent.ProjectileType<PeanutRocket>() : ModContent.ProjectileType<EssenceDust>();
+                            Vector2 velocity = Main.rand.NextVector2Circular(Main.zenithWorld ? 10f : 0f, Main.zenithWorld ? 10f : 0f);
                             int ai = buffed ? 69 : 0;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), vectorCenter, velocity, type, damage, 0f, Main.myPlayer, ai);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), vectorCenter, velocity, type, DustDamage, 0f, Main.myPlayer, ai);
                         }
                     }
 
@@ -771,8 +779,8 @@ namespace CalamityMod.NPCs.Signus
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D NPCTexture = TextureAssets.Npc[NPC.type].Value;
-            Texture2D glowMaskTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Signus/SignusGlow").Value;
+            Texture2D NPCTexture = TextureAssets.Npc[Type].Value;
+            Texture2D glowMaskTexture = Texture_Glow.Value;
 
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
@@ -780,12 +788,12 @@ namespace CalamityMod.NPCs.Signus
 
             int afterimageAmt = 5;
             Rectangle frame = NPC.frame;
-            int frameCount = Main.npcFrameCount[NPC.type];
+            int frameCount = Main.npcFrameCount[Type];
 
             if (NPC.ai[0] == 4f)
             {
-                NPCTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Signus/SignusAlt2").Value;
-                glowMaskTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Signus/SignusAlt2Glow").Value;
+                NPCTexture = AltTexture2.Value;
+                glowMaskTexture = AltTexture2_Glow.Value;
                 afterimageAmt = 10;
                 int frameY = 94 * (int)(NPC.frameCounter / 12.0);
                 if (frameY >= 94 * 6)
@@ -794,14 +802,14 @@ namespace CalamityMod.NPCs.Signus
             }
             else if (NPC.ai[0] == 3f)
             {
-                NPCTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Signus/SignusAlt").Value;
-                glowMaskTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Signus/SignusAltGlow").Value;
+                NPCTexture = AltTexture.Value;
+                glowMaskTexture = AltTexture_Glow.Value;
                 afterimageAmt = 7;
             }
             else
             {
-                NPCTexture = TextureAssets.Npc[NPC.type].Value;
-                glowMaskTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Signus/SignusGlow").Value;
+                NPCTexture = TextureAssets.Npc[Type].Value;
+                glowMaskTexture = Texture_Glow.Value;
             }
 
             Vector2 halfSizeTexture = new Vector2(NPCTexture.Width / 2, NPCTexture.Height / frameCount / 2);
@@ -814,7 +822,7 @@ namespace CalamityMod.NPCs.Signus
                 transparency = (100 - (stealthTimer - 300)) * 0.01f;
             }
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 1; i < afterimageAmt; i += 2)
                 {
@@ -840,7 +848,7 @@ namespace CalamityMod.NPCs.Signus
                 eyeGlowColor = Color.MediumBlue;
             }
 
-            if (CalamityConfig.Instance.Afterimages)
+            if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int j = 1; j < afterimageAmt; j++)
                 {
@@ -878,7 +886,7 @@ namespace CalamityMod.NPCs.Signus
             return false;
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ModContent.ItemType<SupremeHealingPotion>();
         }
@@ -887,6 +895,10 @@ namespace CalamityMod.NPCs.Signus
 
         public override void OnKill()
         {
+            // Don't bother running any of this in Boss Rush.
+            if (BossRushEvent.BossRushActive)
+                return;
+
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
             DownedBossSystem.downedSignus = true;
             CalamityNetcode.SyncWorld();
@@ -909,10 +921,11 @@ namespace CalamityMod.NPCs.Signus
                 normalOnly.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, weapons));
 
                 // Materials
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<TwistingNether>(), 1, 5, 7));
+                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<TwistingNether>(), 1, 10, 12));
 
                 // Equipment
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<SpectralVeil>()));
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<SpectralVeil>()));
 
                 // Vanity
                 normalOnly.Add(ModContent.ItemType<SignusMask>(), 7);
@@ -931,8 +944,8 @@ namespace CalamityMod.NPCs.Signus
             // GFB Nanotech and Ethereal Talisman drops
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
-                GFBOnly.Add(ModContent.ItemType<Nanotech>(), hideLootReport: true);
-                GFBOnly.Add(ModContent.ItemType<EtherealTalisman>(), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<Nanotech>()), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<EtherealTalisman>()), hideLootReport: true);
             }
 
             // Lore
@@ -941,8 +954,7 @@ namespace CalamityMod.NPCs.Signus
 
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
-            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
+            NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -961,7 +973,7 @@ namespace CalamityMod.NPCs.Signus
                 NPC.position.Y = NPC.position.Y - (NPC.height / 2);
                 for (int i = 0; i < 40; i++)
                 {
-                    int teleportDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
+                    int teleportDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
                     Main.dust[teleportDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -971,13 +983,13 @@ namespace CalamityMod.NPCs.Signus
                 }
                 for (int j = 0; j < 60; j++)
                 {
-                    int teleportDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 3f);
+                    int teleportDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 3f);
                     Main.dust[teleportDust2].noGravity = true;
                     Main.dust[teleportDust2].velocity *= 5f;
-                    teleportDust2 = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
+                    teleportDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.PurpleCosmilite, 0f, 0f, 100, default, 2f);
                     Main.dust[teleportDust2].velocity *= 2f;
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     float randomSpread = Main.rand.Next(-200, 201) / 100f;
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity * randomSpread, Mod.Find<ModGore>("Signus").Type, 1f);
@@ -1013,7 +1025,7 @@ namespace CalamityMod.NPCs.Signus
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 420, true);
+                target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 420);
         }
     }
 }

@@ -1,101 +1,45 @@
-﻿using CalamityMod.Projectiles.Healing;
+﻿using CalamityMod.Items.BaseItems;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
-using Terraria;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class GrandGuardian : ModItem, ILocalizedModType
+    public class GrandGuardian : CustomUseProjItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetDefaults()
         {
             Item.width = 130;
             Item.height = 130;
-            Item.damage = 150;
-            Item.DamageType = DamageClass.Melee;
-            Item.useAnimation = 22;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 22;
+            Item.damage = 515;
+            Item.DamageType = TrueMeleeDamageClass.Instance;
+            Item.useAnimation = 35;
+            Item.useTime = 35;
             Item.useTurn = true;
-            Item.knockBack = 8.5f;
-            Item.UseSound = SoundID.Item1;
+            Item.knockBack = 9f;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity10BuyPrice;
+            Item.value = CalamityGlobalItem.RarityRedBuyPrice;
             Item.rare = ItemRarityID.Red;
-            Item.shootSpeed = 12f;
-        }
 
-        public override void UseStyle(Player player, Rectangle heldItemFrame)
+            Item.channel = true;
+            Item.shoot = ModContent.ProjectileType<GrandGuardianHoldout>();
+            Item.noUseGraphic = true;
+            Item.noMelee = true;
+            Item.useStyle = ItemUseStyleID.Shoot;
+        }
+        public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
         {
-            player.itemLocation += new Vector2(-32f * player.direction, 12f * player.gravDir).RotatedBy(player.itemRotation);
+            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/GrandGuardianGlow").Value);
         }
-
-        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            if (target.Calamity().miscDefenseLoss < target.defense)
-                target.Calamity().miscDefenseLoss += 1;
-
-            if (target.Calamity().miscDefenseLoss >= target.defense && target.canGhostHeal && !player.moonLeech)
-            {
-                player.statLife += 4;
-                player.HealEffect(4);
-            }
-
-            OnHitEffects(player, target.Center, target.life, target.lifeMax, Item.knockBack, Item.damage);
-        }
-
-        public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
-        {
-            OnHitEffects(player, target.Center, target.statLife, target.statLifeMax2, Item.knockBack, Item.damage);
-        }
-
-        private void OnHitEffects(Player player, Vector2 targetPos, int targetLife, int targetMaxLife, float knockback, int damage)
-        {
-            var source = player.GetSource_ItemUse(Item);
-
-            // Grand Guardian is classed as a regular melee weapon, so despite being a true melee on-hit, these scale with regular melee.
-            StatModifier playerMeleeDmg = player.GetTotalDamage<MeleeDamageClass>();
-            int rainbowBoomDamage = (int)playerMeleeDmg.ApplyTo(damage * 0.5f);
-            int rainBoltDamage = (int)playerMeleeDmg.ApplyTo(damage * 0.75f);
-            
-            Projectile.NewProjectile(source, targetPos, Vector2.Zero, ModContent.ProjectileType<RainbowBoom>(), rainbowBoomDamage, 0f, player.whoAmI);
-
-            if (targetLife <= (targetMaxLife * 0.5f) && player.ownedProjectileCounts[ModContent.ProjectileType<RainBolt>()] < 3)
-            {
-                float randomSpeedX = Main.rand.Next(6, 13);
-                float randomSpeedY = Main.rand.Next(6, 13);
-                Projectile.NewProjectile(source, targetPos.X, targetPos.Y, -randomSpeedX, -randomSpeedY, ModContent.ProjectileType<RainBolt>(), rainBoltDamage, knockback, player.whoAmI);
-                Projectile.NewProjectile(source, targetPos.X, targetPos.Y, randomSpeedX, -randomSpeedY, ModContent.ProjectileType<RainBolt>(), rainBoltDamage, knockback, player.whoAmI);
-                Projectile.NewProjectile(source, targetPos.X, targetPos.Y, 0f, -randomSpeedY, ModContent.ProjectileType<RainBolt>(), rainBoltDamage, knockback, player.whoAmI);
-            }
-            if (targetLife <= 0 && !player.moonLeech && player.ownedProjectileCounts[ModContent.ProjectileType<RainHeal>()] < 3)
-            {
-                float randomSpeedX = Main.rand.Next(3, 7);
-                float randomSpeedY = Main.rand.Next(3, 7);
-                Projectile.NewProjectile(source, targetPos.X, targetPos.Y, -randomSpeedX, -randomSpeedY, ModContent.ProjectileType<RainHeal>(), 0, 0f, player.whoAmI);
-                Projectile.NewProjectile(source, targetPos.X, targetPos.Y, randomSpeedX, -randomSpeedY, ModContent.ProjectileType<RainHeal>(), 0, 0f, player.whoAmI);
-                Projectile.NewProjectile(source, targetPos.X, targetPos.Y, 0f, -randomSpeedY, ModContent.ProjectileType<RainHeal>(), 0, 0f, player.whoAmI);
-            }
-        }
-
-        public override void MeleeEffects(Player player, Rectangle hitbox)
-        {
-            if (Main.rand.NextBool(3))
-            {
-                int dust = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 66, 0f, 0f, 100, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1f);
-                Main.dust[dust].noGravity = true;
-            }
-        }
-
+        public override bool MeleePrefix() => true;
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient<MajesticGuard>().
-                AddIngredient<BurntSienna>().
-                AddIngredient(ItemID.FragmentNebula, 6).
+                AddIngredient(ItemID.FragmentNebula, 12).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

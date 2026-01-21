@@ -18,11 +18,12 @@ namespace CalamityMod.Projectiles.Summon
         public ref float FlowerShootTimer => ref Projectile.ai[0];
 
         public ref float RotationMovement => ref Projectile.ai[1];
-        
+
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projPet[Type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -48,7 +49,7 @@ namespace CalamityMod.Projectiles.Summon
             TargetNPC(potentialTarget); // Targets the NPC.
 
             Lighting.AddLight(Projectile.Center, Color.Fuchsia.ToVector3()); // Makes a light with the same color as the flowers.
-            Projectile.Center = Owner.Center + RotationMovement.ToRotationVector2() * 100f; // Spins around the player.
+            Projectile.Center = Owner.Center + RotationMovement.ToRotationVector2() * 100f + Vector2.UnitY * Owner.gfxOffY; // Spins around the player.
             Projectile.rotation += MathHelper.ToRadians(6.25f * Owner.direction); // Rotates around itself in the direction of the owner
             Projectile.scale = MathHelper.Lerp(1f, 1.005f, FlowerShootTimer % 100f); // Expands the closer it is to shooting, goes back to normal once shot; peridoically.
             RotationMovement += MathHelper.ToRadians(1.25f * Owner.direction); // The changing variable that moves the flower, changes directions depending on the player.
@@ -74,7 +75,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 for (int i = 0; i < 36; i++)
                 {
-                    Dust spawnEffect = Dust.NewDustPerfect(Projectile.Center, 179);
+                    Dust spawnEffect = Dust.NewDustPerfect(Projectile.Center, DustID.BubbleBurst_Purple);
                     spawnEffect.noGravity = true;
                     spawnEffect.velocity = Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(2f, 7f);
                 }
@@ -108,8 +109,6 @@ namespace CalamityMod.Projectiles.Summon
             FlowerShootTimer = MathHelper.Clamp(FlowerShootTimer, 0f, 101f);
             Projectile.netUpdate = true;
         }
-
-        public override bool? CanDamage() => false;
 
         #endregion
     }

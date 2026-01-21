@@ -11,6 +11,8 @@ namespace CalamityMod.Projectiles.Summon
     {
         public new string LocalizationCategory => "Projectiles.Summon";
 
+        public override string Texture => "CalamityMod/NPCs/OldDuke/OldDukeToothBall";
+
         public ref float TargetShotID => ref Projectile.ai[0];
 
         public override void SetStaticDefaults() => ProjectileID.Sets.MinionShot[Type] = true;
@@ -55,17 +57,16 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     float angle = MathHelper.TwoPi / dustAmount * dustIndex;
                     Vector2 velocity = angle.ToRotationVector2() * Main.rand.NextFloat(1f, 3f);
-                    Dust.NewDustPerfect(Projectile.Center, 7, velocity);
+                    Dust.NewDustPerfect(Projectile.Center, DustID.WoodFurniture, velocity);
 
-                    Dust deathDust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, 7);
+                    Dust deathDust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.WoodFurniture);
                     deathDust.noGravity = true;
                 }
 
                 SoundEngine.PlaySound(SoundID.NPCDeath1, Projectile.Center);
             }
 
-            Projectile.netUpdate = true;
-            Projectile.netSpam = 0;
+            Projectile.ForceNetUpdate();
         }
     }
 }

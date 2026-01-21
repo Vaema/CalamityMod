@@ -1,10 +1,10 @@
-﻿using CalamityMod.Items.Placeables;
+﻿using CalamityMod.Items.Placeables.Abyss;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.Enums;
 using Terraria.GameContent;
 using Terraria.ID;
-using Terraria.Enums;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -36,7 +36,7 @@ namespace CalamityMod.Tiles.Rubblemaker.Abyss
             TileObjectData.newTile.LavaDeath = true;
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(37, 24, 63));
-            DustType = 33;
+            DustType = DustID.Water;
 
             RegisterItemDrop(ModContent.ItemType<SulphurousShale>());
             FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<SulphurousShale>(), Type, 0);
@@ -46,7 +46,7 @@ namespace CalamityMod.Tiles.Rubblemaker.Abyss
 
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
         }
         public override void NumDust(int i, int j, bool fail, ref int num)

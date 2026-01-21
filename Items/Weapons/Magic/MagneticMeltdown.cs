@@ -14,31 +14,31 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 78;
             Item.height = 78;
-            Item.damage = 100;
+            Item.damage = 200;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 40;
-            Item.useTime = 49;
-            Item.useAnimation = 49;
+            Item.mana = 32;
+            Item.useTime = 37;
+            Item.useAnimation = 37;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 4f;
             Item.UseSound = SoundID.Item20;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<MagneticOrb>();
-            Item.shootSpeed = 12f;
+            Item.shootSpeed = 18f;
 
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
         }
 
-        
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             Vector2 v = velocity;
@@ -55,10 +55,9 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.SpectreStaff).
                 AddIngredient(ItemID.MagnetSphere).
-                AddIngredient<DarkPlasma>(3).
-                AddTile(TileID.LunarCraftingStation).
+                AddIngredient<TwistingNether>(3).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

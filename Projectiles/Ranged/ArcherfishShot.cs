@@ -1,4 +1,4 @@
-﻿using CalamityMod.Dusts;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -24,7 +24,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.MaxUpdates = 3;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override void AI()
@@ -41,7 +40,7 @@ namespace CalamityMod.Projectiles.Ranged
             // Water trail
             for (int i = 0; i < 6; i++)
             {
-                Dust water = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, 211, 0f, 0f, 100);
+                Dust water = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.Wet, 0f, 0f, 100);
                 water.noGravity = true;
                 water.velocity = Projectile.velocity * 0.5f;
             }
@@ -59,6 +58,15 @@ namespace CalamityMod.Projectiles.Ranged
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Wet, 240);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(BuffID.Wet, 120);
+            target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 120);
+        }
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
+        {
+            target.AddBuff(BuffID.Wet, 120);
+            target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 120);
+        }
     }
 }

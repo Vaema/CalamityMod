@@ -1,13 +1,13 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using System.IO;
+using CalamityMod.Events;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -16,9 +16,9 @@ namespace CalamityMod.Projectiles.Boss
         public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 5;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            Main.projFrames[Type] = 5;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -79,7 +79,7 @@ namespace CalamityMod.Projectiles.Boss
                     dustVel = dustVel.RotatedByRandom(2.0f * angleRandom);
                     int randomDustType = Main.rand.NextBool() ? 107 : 110;
 
-                    int plasmaDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 200, default, 1.7f);
+                    int plasmaDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 200, default, 1.7f);
                     Main.dust[plasmaDust].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (float)Main.rand.NextDouble() * Projectile.width / 2f;
                     Main.dust[plasmaDust].noGravity = true;
 
@@ -87,7 +87,7 @@ namespace CalamityMod.Projectiles.Boss
                     dust.velocity *= 3f;
                     dust = Main.dust[plasmaDust];
 
-                    plasmaDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 100, default, 0.8f);
+                    plasmaDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 100, default, 0.8f);
                     Main.dust[plasmaDust].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (float)Main.rand.NextDouble() * Projectile.width / 2f;
 
                     dust = Main.dust[plasmaDust];
@@ -107,7 +107,7 @@ namespace CalamityMod.Projectiles.Boss
                     dustVel = dustVel.RotatedByRandom(2.0f * angleRandom);
                     int randomDustType = Main.rand.NextBool() ? 107 : 110;
 
-                    int plasmaDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 0, default, 2f);
+                    int plasmaDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, randomDustType, dustVel.X, dustVel.Y, 0, default, 2f);
                     Main.dust[plasmaDust2].position = Projectile.Center + Vector2.UnitX.RotatedByRandom(MathHelper.Pi).RotatedBy(Projectile.velocity.ToRotation()) * Projectile.width / 3f;
                     Main.dust[plasmaDust2].noGravity = true;
 
@@ -118,10 +118,9 @@ namespace CalamityMod.Projectiles.Boss
             }
 
             // Difficulty modes
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             // Light
             Lighting.AddLight(Projectile.Center, 0.2f, 1f, 0f);
@@ -131,7 +130,7 @@ namespace CalamityMod.Projectiles.Boss
             Vector2 distanceFromTarget = Main.player[target].Center - Projectile.Center;
 
             // Set AI to stop homing, start accelerating
-            float stopHomingDistance = bossRush ? 120f : death ? 160f : revenge ? 180f : expertMode ? 200f : 240f;
+            float stopHomingDistance = death ? 160f : revenge ? 180f : expertMode ? 200f : 240f;
             if (distanceFromTarget.Length() < stopHomingDistance || Projectile.ai[0] == 1f || Projectile.timeLeft < 480)
             {
                 Projectile.ai[0] = 1f;
@@ -144,7 +143,7 @@ namespace CalamityMod.Projectiles.Boss
 
             // Home in on target
             float scaleFactor = Projectile.velocity.Length();
-            float inertia = bossRush ? 6f : death ? 8f : revenge ? 9f : expertMode ? 10f : 12f;
+            float inertia = death ? 8f : revenge ? 9f : expertMode ? 10f : 12f;
             distanceFromTarget.Normalize();
             distanceFromTarget *= scaleFactor;
             Projectile.velocity = (Projectile.velocity * inertia + distanceFromTarget) / (inertia + 1f);
@@ -152,8 +151,8 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.velocity *= scaleFactor;
 
             // Fly away from other rockets
-            float pushForce = bossRush ? 0.07f : death ? 0.06f : revenge ? 0.055f : expertMode ? 0.05f : 0.04f;
-            float pushDistance = bossRush ? 120f : death ? 100f : revenge ? 90f : expertMode ? 80f : 60f;
+            float pushForce = death ? 0.06f : revenge ? 0.055f : expertMode ? 0.05f : 0.04f;
+            float pushDistance = death ? 100f : revenge ? 90f : expertMode ? 80f : 60f;
             for (int k = 0; k < Main.maxProjectiles; k++)
             {
                 Projectile otherProj = Main.projectile[k];
@@ -179,28 +178,19 @@ namespace CalamityMod.Projectiles.Boss
             }
         }
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (info.Damage <= 0)
-                return;
-
-            target.AddBuff(BuffID.OnFire, 360);
-            target.AddBuff(BuffID.CursedInferno, 180);
-        }
-
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
         public override void PostDraw(Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-            int height = texture.Height / Main.projFrames[Projectile.type];
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int height = texture.Height / Main.projFrames[Type];
             int drawStart = height * Projectile.frame;
             Vector2 origin = Projectile.Size / 2;
-            Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/ApolloRocketGlow").Value, Projectile.Center - Main.screenPosition, new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, drawStart, texture.Width, height)), Color.White, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/ApolloRocketGlow").Value, Projectile.Center - Main.screenPosition, new Rectangle(0, drawStart, texture.Width, height), Color.White, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
         }
 
         public override void OnKill(int timeLeft)
@@ -235,7 +225,7 @@ namespace CalamityMod.Projectiles.Boss
                 Main.dust[dust].velocity *= 2f;
             }
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 Vector2 goreSource = Projectile.Center;
                 int goreAmt = 3;

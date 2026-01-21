@@ -1,9 +1,9 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -15,7 +15,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override string Texture => "CalamityMod/Projectiles/FireProj";
 
         public static int Lifetime => 60;
-        public static int Fadetime => 80;
+        public static int Fadetime => 50;
         public ref float Time => ref Projectile.ai[0];
         public int MistType = -1;
 
@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             Projectile.velocity = oldVelocity * 0.95f;
-			Projectile.position -= Projectile.velocity;
+            Projectile.position -= Projectile.velocity;
             Time++;
             Projectile.timeLeft--;
             return false;
@@ -82,7 +82,9 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 240);
+            //Doze - Flamethrowers in vanilla are long debuff infliction tools (20 seconds of their debuff).
+            //I am applying this as the base for Cal flamethrowers, with shorter times being the exception instead of the rule
+            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 1200);
 
             // Gas up the enemy
             int smokeCount = 3 + (int)MathHelper.Clamp(target.width * 0.1f, 0f, 20f);
@@ -98,7 +100,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D fire = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D fire = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D mist = ModContent.Request<Texture2D>("CalamityMod/Particles/MediumMist").Value;
 
             // The conga line of colors to sift through

@@ -1,6 +1,7 @@
+﻿using System;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
@@ -83,10 +84,10 @@ namespace CalamityMod.Projectiles.Magic
             float radius = 8f;
             Vector2 offset = Vector2.UnitY * pulse * radius;
 
-            Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, 132, Vector2.Zero);
+            Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, DustID.Firework_Blue, Vector2.Zero);
             dust.noGravity = true;
 
-            dust = Dust.NewDustPerfect(Projectile.Center - offset, 133, Vector2.Zero);
+            dust = Dust.NewDustPerfect(Projectile.Center - offset, DustID.Firework_Yellow, Vector2.Zero);
             dust.noGravity = true;
         }
     }

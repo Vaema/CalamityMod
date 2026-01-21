@@ -1,7 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Enemy
 {
     public class PearlRain : ModProjectile, ILocalizedModType
@@ -11,7 +12,7 @@ namespace CalamityMod.Projectiles.Enemy
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
+            Main.projFrames[Type] = 4;
         }
 
         public override void SetDefaults()
@@ -33,7 +34,7 @@ namespace CalamityMod.Projectiles.Enemy
                 Lighting.AddLight(Projectile.Center, (255 - Projectile.alpha) * 0f / 255f, (255 - Projectile.alpha) * 0.5f / 255f, (255 - Projectile.alpha) * 0.5f / 255f);
                 if (Main.rand.NextBool(5))
                 {
-                    Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 92, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f, 0, new Color(255, 255, 255), 0.7f);
+                    Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Frost, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f, 0, new Color(255, 255, 255), 0.7f);
                 }
             }
             Projectile.frameCounter++;
@@ -46,7 +47,7 @@ namespace CalamityMod.Projectiles.Enemy
             {
                 Projectile.frame = 0;
             }
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) - 1.57f;
+            Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
             Projectile.alpha -= 6;
         }
 

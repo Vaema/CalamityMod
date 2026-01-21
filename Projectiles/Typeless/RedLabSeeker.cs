@@ -1,7 +1,7 @@
-﻿using CalamityMod.World;
+﻿using System;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -16,8 +16,8 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 20;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
+            ProjectileID.Sets.TrailCacheLength[Type] = 20;
         }
 
         public override void SetDefaults()
@@ -52,7 +52,7 @@ namespace CalamityMod.Projectiles.Typeless
                 // Release lingering dust.
                 else
                 {
-                    Dust dust = Dust.NewDustPerfect(projectile.Center + Main.rand.NextVector2Circular(8f, 8f), 267);
+                    Dust dust = Dust.NewDustPerfect(projectile.Center + Main.rand.NextVector2Circular(8f, 8f), DustID.RainbowMk2);
                     dust.velocity = Main.rand.NextVector2Circular(2f, 2f);
                     dust.noGravity = true;
                     dust.color = dustColor;
@@ -78,7 +78,7 @@ namespace CalamityMod.Projectiles.Typeless
         {
             for (int i = 0; i < 8; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(16f, 16f), 267);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(16f, 16f), DustID.RainbowMk2);
                 dust.color = Color.Red;
                 dust.scale = Main.rand.NextFloat(0.95f, 1.25f);
                 dust.velocity = Main.rand.NextVector2Circular(2.5f, 2.5f);
@@ -92,7 +92,7 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             if (Time > 80f && Projectile.ai[1] == 0f)
             {
                 for (int i = 0; i < 24; i += 2)

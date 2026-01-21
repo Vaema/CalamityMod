@@ -1,7 +1,9 @@
-﻿using CalamityMod.Items.Weapons.Summon;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Graphics.Primitives;
+using CalamityMod.Items.Weapons.Summon;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
@@ -12,7 +14,6 @@ namespace CalamityMod.Projectiles.Summon
     public class CosmilampBeam : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Summon";
-        internal PrimitiveTrail TrailDrawer;
 
         public ref float Timer => ref Projectile.ai[0];
 
@@ -24,9 +25,10 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 32;
+            ProjectileID.Sets.MinionShot[Type] = true;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 32;
         }
 
         public override void SetDefaults()
@@ -82,7 +84,7 @@ namespace CalamityMod.Projectiles.Summon
                 Timer++;
         }
 
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float streakOpacity = Utils.GetLerpValue(0.8f, 0.54f, completionRatio, true) * Projectile.Opacity;
             Color endColor = Color.Lerp(Color.Fuchsia, Color.DarkViolet, (float)Math.Sin(completionRatio * MathHelper.Pi * 1.6f - Main.GlobalTimeWrappedHourly * 4f) * 0.5f + 0.5f);
@@ -93,7 +95,7 @@ namespace CalamityMod.Projectiles.Summon
             return Color.Lerp(endColor, Color.Black, 0.3f) * streakOpacity;
         }
 
-        internal float WidthFunction(float completionRatio)
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos)
         {
             float expansionCompletion = 1f - (float)Math.Pow(1f - Utils.GetLerpValue(0f, 0.3f, completionRatio, true), 2D);
             float maxWidth = Projectile.Opacity * Projectile.width * 1.65f;
@@ -103,17 +105,18 @@ namespace CalamityMod.Projectiles.Summon
             return MathHelper.Lerp(0f, maxWidth, expansionCompletion);
         }
 
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Nightwither>(), 240);
+
         public override bool PreDraw(ref Color lightColor)
         {
-            // Initialize the trail drawer.
-            TrailDrawer ??= new(WidthFunction, ColorFunction, specialShader: GameShaders.Misc["CalamityMod:ImpFlameTrail"]);
-
             Projectile.localAI[0] = 0f;
             GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
-            TrailDrawer.Draw(Projectile.oldPos, Projectile.Size * 0.5f - Main.screenPosition, 42);
 
+            var settings = new PrimitiveSettings(WidthFunction, ColorFunction, (_,_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"]);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, settings, 42);
             Projectile.localAI[0] = 1f;
-            TrailDrawer.Draw(Projectile.oldPos, Projectile.Size * 0.5f - Main.screenPosition, 42);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, settings, 42);
+
             return false;
         }
     }

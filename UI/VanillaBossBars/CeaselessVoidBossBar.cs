@@ -3,8 +3,6 @@ using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.UI.BigProgressBar;
@@ -24,8 +22,8 @@ namespace CalamityMod.UI.VanillaBossBars
         public override bool? ModifyInfo(ref BigProgressBarInfo info, ref float life, ref float lifeMax, ref float shield, ref float shieldMax)
         {
             NPC target = Main.npc[info.npcIndexToAimAt];
-			if (!target.active)
-				return false;
+            if (!target.active)
+                return false;
 
             // Get the boss health, obviously
             life = target.life;
@@ -33,7 +31,7 @@ namespace CalamityMod.UI.VanillaBossBars
 
             // Normal boss health
             float lifePercent = Utils.Clamp(life / lifeMax, 0f, 1f);
-            
+
             // Reset the shield
             shield = 0f;
             shieldMax = 0f;
@@ -50,13 +48,12 @@ namespace CalamityMod.UI.VanillaBossBars
                 FalseNPCSegment.SetDefaults(NPCType<DarkEnergy>(), target.GetMatchingSpawnParams());
                 shieldMax = (int)(FalseNPCSegment.lifeMax * ExpectedBallsCounter * (1 - RatioToCombust));
                 shield -= (int)(FalseNPCSegment.lifeMax * ExpectedBallsCounter * RatioToCombust);
-                
-                for (int i = 0; i < Main.maxNPCs; i++)
-    			{
-			    	NPC part = Main.npc[i];
-		    		if (part.active && part.type == NPCType<DarkEnergy>())
-	    				shield += part.life;				
-    			}
+
+                foreach (NPC part in Main.ActiveNPCs)
+                {
+                    if (part.type == NPCType<DarkEnergy>())
+                        shield += part.life;
+                }
             }
             return true;
         }

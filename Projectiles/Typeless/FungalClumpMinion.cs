@@ -1,13 +1,15 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using CalamityMod.CalPlayer;
+using CalamityMod.NPCs;
 using CalamityMod.Projectiles.Healing;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
+    [PierceResistException]
     public class FungalClumpMinion : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
@@ -15,9 +17,9 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 6;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 6;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -57,7 +59,7 @@ namespace CalamityMod.Projectiles.Typeless
                 }
             }
 
-			Projectile.damage = (int)player.GetBestClassDamage().ApplyTo(Projectile.originalDamage);
+            Projectile.damage = (int)player.GetBestClassDamage().ApplyTo(Projectile.originalDamage);
 
             //Animation
             Projectile.frameCounter++;
@@ -66,7 +68,7 @@ namespace CalamityMod.Projectiles.Typeless
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.frame = 0;
             }
@@ -80,7 +82,7 @@ namespace CalamityMod.Projectiles.Typeless
                     Vector2 spawnPos = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
                     spawnPos = spawnPos.RotatedBy((double)((float)(i - (dustAmt / 2 - 1)) * MathHelper.TwoPi / (float)dustAmt), default) + Projectile.Center;
                     Vector2 velocity = spawnPos - Projectile.Center;
-                    int idx = Dust.NewDust(spawnPos + velocity, 0, 0, 56, velocity.X * 1.5f, velocity.Y * 1.5f, 100, default, 1.4f);
+                    int idx = Dust.NewDust(spawnPos + velocity, 0, 0, DustID.BlueFairy, velocity.X * 1.5f, velocity.Y * 1.5f, 100, default, 1.4f);
                     Main.dust[idx].noGravity = true;
                     Main.dust[idx].noLight = true;
                     Main.dust[idx].velocity = velocity;
@@ -91,7 +93,7 @@ namespace CalamityMod.Projectiles.Typeless
             //Periodically create dust
             if (Main.rand.NextBool(16) && !modPlayer.fungalClumpVanity)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 56, Projectile.velocity.X * 0.05f, Projectile.velocity.Y * 0.05f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.BlueFairy, Projectile.velocity.X * 0.05f, Projectile.velocity.Y * 0.05f);
             }
 
             //Anti-sticky movement failsafe
@@ -228,23 +230,7 @@ namespace CalamityMod.Projectiles.Typeless
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            if (!target.canGhostHeal)
-                return;
-
-            float healAmt = damageDone * 0.25f;
-            if ((int)healAmt == 0)
-                return;
-
-            if (Main.player[Main.myPlayer].lifeSteal <= 0f)
-                return;
-
-            if (healAmt > CalamityMod.lifeStealCap)
-                healAmt = CalamityMod.lifeStealCap;
-
-            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], healAmt, ModContent.ProjectileType<FungalHeal>(), 1200f, 3f);
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => Main.player[Projectile.owner].SpawnLifeStealProjectile(target, Projectile, ModContent.ProjectileType<FungalHeal>(), 1, 2f);
 
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
 

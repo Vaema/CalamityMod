@@ -1,9 +1,9 @@
-﻿using CalamityMod.DataStructures;
-using CalamityMod.Schematics;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.DataStructures;
+using CalamityMod.Schematics;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.Generation;
 using Terraria.ID;
@@ -15,11 +15,7 @@ namespace CalamityMod.World.Planets
     {
         public override bool Place(Point origin, StructureMap structures)
         {
-            // 1 on Small, 1.52 on Medium, 2 on Large
-            float scale = (float)Main.maxTilesX / 4200f;
-            // Clamp scale to prevent problems on extra large worlds
-            scale = MathHelper.Clamp(scale, 1f, 2f);
-            int radius = (int)((float)_random.Next(30, 36) * scale); //50 to 65
+            int radius = 54;
 
             if (!CheckIfPlaceable(origin, radius, structures))
             {
@@ -89,6 +85,10 @@ namespace CalamityMod.World.Planets
 
             mainShape.Subtract(outerCoreShape, origin, origin);
 
+            bool hasPlacedLogAndSchematic = false;
+            SchematicManager.PlaceSchematic(SchematicManager.PlanetoidLabKey, new Point(origin.X, origin.Y), SchematicAnchor.Center, ref hasPlacedLogAndSchematic, new Action<Chest, int, bool>(DraedonStructures.FillPlanetoidLaboratoryChest));
+            CalamityWorld.PlanetoidLabCenter = origin.ToWorldCoordinates();
+
             //PLACE GRASS
             Vector2 worldCenter = origin.ToWorldCoordinates();
             WorldUtils.Gen(origin, new ModShapes.OuterOutline(mainShape, true, true), Actions.Chain(new GenAction[]
@@ -103,11 +103,6 @@ namespace CalamityMod.World.Planets
                 new Actions.Smooth(),
                 new Actions.SetFrames(true)
             }));
-
-            // TODO -- This should probably use PlacementAnchor.Center and just provide the center of the planetoid...
-            bool hasPlacedLogAndSchematic = false;
-            SchematicManager.PlaceSchematic(SchematicManager.PlanetoidLabKey, new Point(origin.X - 33, origin.Y - 17), SchematicAnchor.TopLeft, ref hasPlacedLogAndSchematic, new Action<Chest, int, bool>(DraedonStructures.FillPlanetoidLaboratoryChest));
-            CalamityWorld.PlanetoidLabCenter = origin.ToWorldCoordinates();
 
             //PLACE BREAKABLE GRASS AND TREES
             WorldUtils.Gen(origin, new ModShapes.OuterOutline(mainShape, true, true), Actions.Chain(new GenAction[]

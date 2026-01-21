@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Buffs.Potions;
 using CalamityMod.Items.Materials;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -12,24 +13,18 @@ namespace CalamityMod.Items.Potions
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;
+            ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
+                new Color(223, 135, 244),
+                new Color(94, 74, 213),
+                new Color(156, 217, 246)
+            };
         }
 
         public override void SetDefaults()
         {
-            Item.width = 28;
-            Item.height = 18;
-            Item.useTurn = true;
-            Item.maxStack = 9999;
-            Item.rare = ItemRarityID.Orange;
-            Item.useAnimation = 17;
-            Item.useTime = 17;
-            Item.useStyle = ItemUseStyleID.DrinkLiquid;
-            Item.UseSound = SoundID.Item3;
-            Item.value = Item.buyPrice(0, 2, 0, 0);
+            Item.DefaultToFood(24, 34, ModContent.BuffType<Zerg>(), CalamityUtils.MinutesToFrames(7), true);
+            Item.value = Item.sellPrice(silver: 2);
             Item.rare = ItemRarityID.LightRed;
-            Item.consumable = true;
-            Item.buffType = ModContent.BuffType<Zerg>();
-            Item.buffTime = CalamityUtils.SecondsToFrames(900f);
         }
 
         public override void AddRecipes()
@@ -37,14 +32,14 @@ namespace CalamityMod.Items.Potions
             CreateRecipe().
                 AddIngredient(ItemID.BottledWater).
                 AddIngredient<PurifiedGel>(2).
-                AddIngredient<DemonicBoneAsh>().
+                AddIngredient(ItemID.Fireblossom, 2).
                 AddTile(TileID.AlchemyTable).
-				AddConsumeItemCallback(Recipe.ConsumptionRules.Alchemy).
+                AddConsumeIngredientCallback(Recipe.IngredientQuantityRules.Alchemy).
                 Register();
 
             CreateRecipe().
                 AddIngredient(ItemID.BottledWater).
-                AddIngredient<BloodOrb>(20).
+                AddIngredient<BloodOrb>(5).
                 AddIngredient<PurifiedGel>(2).
                 AddTile(TileID.AlchemyTable).
                 Register()

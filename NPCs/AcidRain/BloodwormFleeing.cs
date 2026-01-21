@@ -1,5 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -11,7 +11,7 @@ namespace CalamityMod.NPCs.AcidRain
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.BloodwormNormal.DisplayName");
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 5;
+            Main.npcFrameCount[Type] = 5;
             this.HideFromBestiary();
         }
 
@@ -53,7 +53,7 @@ namespace CalamityMod.NPCs.AcidRain
             {
                 NPC.frameCounter = 0;
                 NPC.frame.Y += frameHeight;
-                if (NPC.frame.Y >= Main.npcFrameCount[NPC.type] * frameHeight)
+                if (NPC.frame.Y >= Main.npcFrameCount[Type] * frameHeight)
                     NPC.frame.Y = 0;
             }
         }

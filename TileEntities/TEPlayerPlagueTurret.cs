@@ -1,7 +1,7 @@
-﻿using CalamityMod.Projectiles.Turret;
+﻿using System.IO;
+using CalamityMod.Projectiles.Turret;
 using CalamityMod.Tiles.PlayerTurrets;
 using Microsoft.Xna.Framework;
-using System.IO;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -69,10 +69,9 @@ namespace CalamityMod.TileEntities
 
 
             //This turret can switch targets at any time
-            for (int i = 0; i < Main.maxNPCs; ++i)
+            foreach (NPC npc in Main.ActiveNPCs)
             {
-                NPC npc = Main.npc[i];
-                if (!npc.active || npc.friendly || npc.CountsAsACritter)
+                if (npc.friendly || npc.CountsAsACritter)
                     continue;
 
                 float distSQ = npc.DistanceSQ(targetingCenter);
@@ -80,7 +79,7 @@ namespace CalamityMod.TileEntities
                 {
                     distSQToBeat = distSQ;
                     ret = npc.Center;
-                    indexToSet = i;
+                    indexToSet = npc.whoAmI;
                 }
             }
 
@@ -106,13 +105,13 @@ namespace CalamityMod.TileEntities
         // This type of turret syncs extra data: its player target index.
         // This only takes 2 bytes so a junk array is written for the remainder of the space.
         private const int BytesUsed = 2;
-        private static readonly byte[] JunkData = new byte[] { 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA };
-        protected override void WriteExtraData(BinaryWriter writer)
+        private static readonly byte[] JunkData = new byte[NumExtraBytes - BytesUsed];
+        public override void WriteExtraTurretData(BinaryWriter writer)
         {
             writer.Write((short)_npcTargetIndex);
             writer.Write(JunkData);
         }
-        protected override void ReadExtraData(Mod mod, BinaryReader reader)
+        public override void ReadExtraTurretData(BinaryReader reader)
         {
             _npcTargetIndex = reader.ReadInt16();
             _ = reader.ReadBytes(NumExtraBytes - BytesUsed);

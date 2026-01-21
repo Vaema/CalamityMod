@@ -1,14 +1,14 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Items.Weapons.Summon;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
-using CalamityMod.Items.Weapons.Summon;
-using Terraria.GameContent;
 using Terraria.Audio;
-using System.Linq;
-using System;
-using System.Collections.Generic;
+using Terraria.GameContent;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon.SmallAresArms
 {
@@ -121,7 +121,7 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
         public ref float Time => ref Projectile.ai[1];
 
         public static Rectangle MouseRectangle => new((int)Main.MouseScreen.X, (int)Main.MouseScreen.Y, 2, 2);
-        
+
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.DrawScreenCheckFluff[Type] = 9999999;
@@ -152,7 +152,7 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
                 laserCannonID,
                 gaussNukeID,
             };
-            
+
             // Initialize things.
             if (PlayerOffset == Vector2.Zero)
                 PlayerOffset = Main.MouseWorld - Main.LocalPlayer.Center;
@@ -160,22 +160,22 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
             // Dynamically update panel icons.
             for (int i = 0; i < 4; i++)
                 PanelIcons[i].CurrentState = IconType.Inactive;
-            for (int i = 0; i < Main.maxProjectiles; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                if (!arms.Contains(Main.projectile[i].type) || Main.projectile[i].owner != Projectile.owner || !Main.projectile[i].active)
+                if (!arms.Contains(p.type) || p.owner != Projectile.owner)
                     continue;
 
                 IconType stateFromID = IconType.Inactive;
-                if (Main.projectile[i].type == plasmaCannonID)
+                if (p.type == plasmaCannonID)
                     stateFromID = IconType.Plasma;
-                if (Main.projectile[i].type == teslaCannonID)
+                if (p.type == teslaCannonID)
                     stateFromID = IconType.Tesla;
-                if (Main.projectile[i].type == laserCannonID)
+                if (p.type == laserCannonID)
                     stateFromID = IconType.Laser;
-                if (Main.projectile[i].type == gaussNukeID)
+                if (p.type == gaussNukeID)
                     stateFromID = IconType.Gauss;
 
-                PanelIcons[(int)Main.projectile[i].ai[0]].CurrentState = stateFromID;
+                PanelIcons[(int)p.ai[0]].CurrentState = stateFromID;
             }
 
             // Handle fade effects.
@@ -195,9 +195,9 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
             if (ArmIDToSpawn >= 0)
             {
                 bool armAlreadyExists = false;
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    if (!arms.Contains(Main.projectile[i].type) || Main.projectile[i].owner != Projectile.owner || !Main.projectile[i].active || Main.projectile[i].ai[0] != ArmIndex)
+                    if (!arms.Contains(p.type) || p.owner != Projectile.owner || p.ai[0] != ArmIndex)
                         continue;
 
                     armAlreadyExists = true;
@@ -215,12 +215,12 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
             if (ShouldDeleteArmIndex)
             {
                 SoundEngine.PlaySound(SoundID.Item74, Projectile.Center);
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    if (!arms.Contains(Main.projectile[i].type) || Main.projectile[i].owner != Projectile.owner || !Main.projectile[i].active || Main.projectile[i].ai[0] != ArmIndex)
+                    if (!arms.Contains(p.type) || p.owner != Projectile.owner || p.ai[0] != ArmIndex)
                         continue;
                     
-                    Main.projectile[i].Kill();
+                    p.Kill();
                 }
             }
 
@@ -235,7 +235,7 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
             if (Main.myPlayer != Projectile.owner)
                 return false;
 
-            Texture2D panelTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D panelTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D plasmaTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/SmallAresArms/ExoskeletonPanelPlasma").Value;
             Texture2D arrowTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/SmallAresArms/Arrow").Value;
             Vector2 area = plasmaTexture.Frame(1, 7, 0, 0).Size();

@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Materials
         public override void SetDefaults()
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<ShadowspecBarTile>());
-            Item.value = Item.sellPrice(platinum: 1, gold: 92);
+            Item.value = Item.sellPrice(gold: 21);
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
         }

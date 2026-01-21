@@ -1,10 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Buffs.StatDebuffs;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -13,7 +12,7 @@ namespace CalamityMod.Projectiles.Summon
         public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            ProjectileID.Sets.MinionShot[Type] = true;
         }
 
         public override void SetDefaults()
@@ -21,9 +20,9 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.friendly = true;
             Projectile.width = Projectile.height = 18;
             Projectile.timeLeft = 300;
-            Projectile.penetrate = 3;
-            Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 10;
+            Projectile.penetrate = 2;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 30;
             Projectile.DamageType = DamageClass.Summon;
         }
 
@@ -47,7 +46,7 @@ namespace CalamityMod.Projectiles.Summon
             int splash = 0;
             while (splash < 4)
             {
-                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 233, -Projectile.velocity.X * 0.15f, -Projectile.velocity.Y * 0.10f, 150, default, 0.9f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GoldCritter_LessOutline, -Projectile.velocity.X * 0.15f, -Projectile.velocity.Y * 0.10f, 150, default, 0.9f);
                 splash += 1;
             }
         }
@@ -57,11 +56,14 @@ namespace CalamityMod.Projectiles.Summon
             Texture2D texture;
             switch (Projectile.ai[0])
             {
-                case 1f: texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/GastricBelcherVomit2").Value;
+                case 1f:
+                    texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/GastricBelcherVomit2").Value;
                     break;
-                case 2f: texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/GastricBelcherVomit3").Value;
+                case 2f:
+                    texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/GastricBelcherVomit3").Value;
                     break;
-                default: texture = ModContent.Request<Texture2D>(Texture).Value;
+                default:
+                    texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
                     break;
             }
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, new Rectangle?(new Rectangle(0, 0, texture.Width, texture.Height)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2(texture.Width / 2f, texture.Height / 2f), Projectile.scale, SpriteEffects.None, 0);

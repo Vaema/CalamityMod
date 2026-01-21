@@ -1,4 +1,4 @@
-using CalamityMod.Tiles.Furniture.CraftingStations;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurnitureStatigel
@@ -8,23 +8,15 @@ namespace CalamityMod.Items.Placeables.FurnitureStatigel
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.width = 26;
-            Item.height = 26;
-            Item.maxStack = 9999;
-            Item.useTurn = true;
-            Item.autoReuse = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.consumable = true;
-            Item.createTile = ModContent.TileType<Tiles.FurnitureStatigel.StatigelTable>();
+            Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.FurnitureStatigel.StatigelTable>());
+            Item.value = Item.sellPrice(copper: 60);
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient<StatigelBlock>(8).
-                AddTile<StaticRefiner>().
+                AddTile(TileID.Solidifier).
                 Register();
         }
     }

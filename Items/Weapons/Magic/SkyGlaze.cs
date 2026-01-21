@@ -1,6 +1,6 @@
-﻿using CalamityMod.Projectiles.Magic;
+﻿using System;
+using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -13,14 +13,14 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 52;
             Item.height = 74;
-            Item.damage = 10;
+            Item.damage = 8;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 8;
             Item.useTime = 25;
@@ -28,8 +28,8 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 3.5f;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
-            Item.rare = ItemRarityID.Blue;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.rare = ItemRarityID.Green;
             Item.UseSound = SoundID.Item102;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<StickyFeather>();

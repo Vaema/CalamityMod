@@ -39,6 +39,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 8;
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
             ProjectileID.Sets.TrailingMode[Type] = 2;
@@ -283,7 +284,7 @@ namespace CalamityMod.Projectiles.Summon
 
                 int tentacleAmount = 6;
                 for (int tentacleIndex = 0; tentacleIndex < tentacleAmount; tentacleIndex++)
-                    Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<PlantationStaffTentacle>(), Projectile.damage, Projectile.knockBack, Owner.whoAmI, tentacleIndex, Projectile.whoAmI);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<PlantationStaffTentacle>(), Projectile.damage, Projectile.knockBack, Owner.whoAmI, tentacleIndex, Projectile.whoAmI);
 
                 SoundEngine.PlaySound(SoundID.Roar with { Volume = .3f, Pitch = 1f, PitchVariance = .1f }, Projectile.Center);
             }
@@ -323,10 +324,12 @@ namespace CalamityMod.Projectiles.Summon
         private void ShootEffect()
         {
             for (int i = 0; i < 5; i++)
-                Dust.NewDustPerfect(Projectile.Center, 40, Projectile.rotation.ToRotationVector2().RotatedByRandom(MathHelper.PiOver4) * Main.rand.NextFloat(3f, 5f));
+                Dust.NewDustPerfect(Projectile.Center, DustID.JunglePlants, Projectile.rotation.ToRotationVector2().RotatedByRandom(MathHelper.PiOver4) * Main.rand.NextFloat(3f, 5f));
         }
 
         #endregion
+
+        public override bool MinionContactDamage() => true;
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
@@ -336,12 +339,12 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;
 
-            if (State == AIState.Ramming && CalamityConfig.Instance.Afterimages)
+            if (State == AIState.Ramming && CalamityClientConfig.Instance.Afterimages)
                 CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor);
 
             Main.EntitySpriteDraw(texture, drawPosition, frame, Projectile.GetAlpha(lightColor), Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);

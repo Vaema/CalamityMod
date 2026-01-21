@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Melee;
+﻿using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -19,24 +20,36 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.noMelee = true;
             Item.useTurn = true;
             Item.noUseGraphic = true;
-            Item.useAnimation = 25;
+            Item.useAnimation = 60;
             Item.useTime = 25;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 9f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
-            Item.channel = true;
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.shoot = ModContent.ProjectileType<ViolenceThrownProjectile>();
             Item.shootSpeed = 15f;
+            Item.channel = true;
         }
 
-        public override bool CanUseItem(Player player) => player.altFunctionUse == 2 || player.ownedProjectileCounts[Item.shoot] <= 0;
+        public override bool AltFunctionUse(Player player)
+        {
+            return true;
+        }
+
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, velocity.ToRotation());
+            if (player.altFunctionUse == 2) 
+            {
+                ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
+                player.itemAnimation = player.itemAnimationMax = player.itemTime = player.itemTimeMax = 60;
+                Projectile.NewProjectile(source, position, velocity*1.6666f, type, (int)(damage * 20), knockback, player.whoAmI, 0f, velocity.ToRotation(), 0);
+            }
+            else
+                Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, velocity.ToRotation(), 1);
             return false;
         }
     }

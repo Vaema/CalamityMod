@@ -1,9 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
+using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -16,71 +17,58 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.SentryShot[Projectile.type] = true;
+            ProjectileID.Sets.SentryShot[Type] = true;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Projectile.width = Projectile.height = 6;
             Projectile.friendly = true;
-            Projectile.tileCollide = true;
-            Projectile.timeLeft = 180;
+            Projectile.tileCollide = false;
+            Projectile.extraUpdates = 3;
+            Projectile.timeLeft = 240;
             Projectile.DamageType = DamageClass.Summon;
         }
 
         public override void AI()
         {
             Player player = Main.player[Projectile.owner];
+            NPC potentialTarget = Projectile.Center.MinionHoming(900f, Main.player[Projectile.owner]);
+            float velPower = Utils.GetLerpValue(2, 5, Projectile.velocity.Length(), true);
             if (count == 0f)
             {
-                SoundEngine.PlaySound(SoundID.Item73, Projectile.position);
-                Projectile.position.X = Projectile.position.X + (float)(Projectile.width / 2);
-                Projectile.position.Y = Projectile.position.Y + (float)(Projectile.height / 2);
-                Projectile.width = 20;
-                Projectile.height = 20;
-                Projectile.position.X = Projectile.position.X - (float)(Projectile.width / 2);
-                Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
-                for (int i = 0; i < 10; i++)
-                {
-                    int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 2f);
-                    Main.dust[dust].velocity *= 3f;
-                    if (Main.rand.NextBool())
-                    {
-                        Main.dust[dust].scale = 0.5f;
-                        Main.dust[dust].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
-                    }
-                }
-                for (int j = 0; j < 20; j++)
-                {
-                    int dust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 246, 0f, 0f, 100, default, 3f);
-                    Main.dust[dust2].noGravity = true;
-                    Main.dust[dust2].velocity *= 5f;
-                    dust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 246, 0f, 0f, 100, default, 2f);
-                    Main.dust[dust2].velocity *= 2f;
-                }
+                
                 count += 1f;
             }
             Projectile.localAI[0] += 1f;
             if (Projectile.localAI[0] > 4f)
             {
-                for (int k = 0; k < 5; k++)
-                {
-                    int otherDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 0.75f);
-                    Main.dust[otherDust].velocity *= 0f;
-                }
+                Particle beam = new CustomSpark(Projectile.Center, Projectile.velocity * 0.1f, "CalamityMod/Particles/SmallBloom", false, 8, 0.085f, Color.Lerp(Color.OrangeRed, Color.Goldenrod, Utils.GetLerpValue(270, 230, Projectile.timeLeft)), new Vector2(1f, (1 + 0.8f * velPower)), true, false, 0, false, false, 0.5f * velPower);
+                GeneralParticleHandler.SpawnParticle(beam);
             }
-            NPC potentialTarget = Projectile.Center.MinionHoming(300f, Main.player[Projectile.owner]);
-            if (potentialTarget != null)
-                Projectile.velocity = (Projectile.velocity * 20f + Projectile.SafeDirectionTo(potentialTarget.Center) * 25f) / 21f;
+            
+            if (potentialTarget != null && (Projectile.localAI[0] % 100 <= 55 || Projectile.localAI[0] < 20))
+            {
+                Projectile.timeLeft++; // Extend liftime so it doesnt fizzle out so fast while tracking something
+                Projectile.velocity = (Projectile.velocity * 20f + Projectile.SafeDirectionTo(potentialTarget.Center) * 8f) / 21f;
+            }
+            else
+                Projectile.velocity *= Main.rand.NextFloat(0.96f, 0.97f);
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<HolyFlames>(), 180);
 
         public override void OnKill(int timeLeft)
         {
-            for (int k = 0; k < 5; k++)
+            for (int j = 0; j < 9; j++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 244, Projectile.oldVelocity.X * 0f, Projectile.oldVelocity.Y * 0f);
+                Dust c = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>());
+                c.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedByRandom(0.5f) * Main.rand.NextFloat(7, 15);
+                c.scale = Main.rand.NextFloat(0.9f, 1.1f);
+                c.noGravity = true;
+                c.color = Main.rand.NextBool() ? Color.Orange : Color.Goldenrod;
+                c.noLightEmittence = true;
             }
         }
     }

@@ -20,6 +20,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
@@ -31,7 +32,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void MinionAI()
         {
-            Projectile.Center = Owner.Center + OffsetAngle.ToRotationVector2() * 150f;
+            Projectile.Center = Owner.Center + OffsetAngle.ToRotationVector2() * 150f + Vector2.UnitY * Owner.gfxOffY;
 
             Time++;
             if (Time % 50 == 49 && Main.myPlayer == Projectile.owner && Target != null)
@@ -53,13 +54,11 @@ namespace CalamityMod.Projectiles.Summon
             {
                 for (int i = 0; i < 36; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, 179);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.BubbleBurst_Purple);
                     dust.noGravity = true;
                     dust.velocity = Main.rand.NextVector2Unit() * Main.rand.NextFloat(2f, 7f);
                 }
             }
         }
-
-        public override bool? CanDamage() => false;
     }
 }

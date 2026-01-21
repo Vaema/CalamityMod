@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -13,7 +13,8 @@ namespace CalamityMod.Projectiles.Summon
         public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            ProjectileID.Sets.MinionShot[Type] = true;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         }
 
         public override void SetDefaults()
@@ -41,12 +42,12 @@ namespace CalamityMod.Projectiles.Summon
             if (Main.rand.NextBool(8))
             {
                 Vector2 value3 = Vector2.UnitX.RotatedByRandom(1.5707963705062866).RotatedBy((double)Projectile.velocity.ToRotation(), default);
-                int rainbowDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 66, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 150, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1.2f);
+                int rainbowDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RainbowTorch, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 150, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1.2f);
                 Main.dust[rainbowDust].noGravity = true;
                 Main.dust[rainbowDust].velocity = value3 * 0.66f;
                 Main.dust[rainbowDust].position = Projectile.Center + value3 * 12f;
             }
-            if (Main.rand.NextBool(24) && Main.netMode != NetmodeID.Server)
+            if (Main.rand.NextBool(24) && !Main.dedServ)
             {
                 int rainbowGore = Gore.NewGore(Projectile.GetSource_FromAI(), Projectile.Center, new Vector2(Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f), 16, 1f);
                 Main.gore[rainbowGore].velocity *= 0.66f;
@@ -56,10 +57,10 @@ namespace CalamityMod.Projectiles.Summon
             {
                 if (Main.rand.NextBool(5))
                 {
-                    int rainbowDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 66, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 150, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1.2f);
+                    int rainbowDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RainbowTorch, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, 150, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1.2f);
                     Main.dust[rainbowDust].noGravity = true;
                 }
-                if (Main.rand.NextBool(10) && Main.netMode != NetmodeID.Server)
+                if (Main.rand.NextBool(10) && !Main.dedServ)
                 {
                     Gore.NewGore(Projectile.GetSource_FromAI(), Projectile.position, new Vector2(Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f), Main.rand.Next(16, 18), 1f);
                 }
@@ -92,15 +93,15 @@ namespace CalamityMod.Projectiles.Summon
             SoundEngine.PlaySound(SoundID.Zombie103, Projectile.Center);
             for (int i = 0; i < 3; i++)
             {
-                int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 66, 0f, 0f, 100, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1.5f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RainbowTorch, 0f, 0f, 100, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1.5f);
                 Main.dust[dust].noGravity = true;
             }
             for (int j = 0; j < 30; j++)
             {
-                int rainbowDusty = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 66, 0f, 0f, 0, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 2.5f);
+                int rainbowDusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RainbowTorch, 0f, 0f, 0, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 2.5f);
                 Main.dust[rainbowDusty].noGravity = true;
                 Main.dust[rainbowDusty].velocity *= 3f;
-                rainbowDusty = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 66, 0f, 0f, 100, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1.5f);
+                rainbowDusty = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RainbowTorch, 0f, 0f, 100, new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB), 1.5f);
                 Main.dust[rainbowDusty].velocity *= 2f;
                 Main.dust[rainbowDusty].noGravity = true;
             }

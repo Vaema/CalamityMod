@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.CalPlayer;
+using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -13,9 +14,9 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void SetDefaults()
         {
             Item.width = Item.height = 120;
-            Item.damage = 616;
+            Item.damage = 240;
             Item.knockBack = 8.5f;
-            Item.useAnimation = Item.useTime = 18;
+            Item.useAnimation = Item.useTime = 40;
             Item.DamageType = RogueDamageClass.Instance;
             Item.autoReuse = true;
             Item.shootSpeed = 18f;
@@ -26,17 +27,28 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
-		public override float StealthDamageMultiplier => 0.75f;
+        public override float StealthDamageMultiplier => 0.3f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            int shuriken = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
-            if (player.Calamity().StealthStrikeAvailable() && Main.projectile.IndexInRange(shuriken))
-                Main.projectile[shuriken].Calamity().stealthStrike = true;
-            return false;
+            CalamityPlayer p = Main.LocalPlayer.Calamity();
+            //If stealth is full, shoot a spread of 3 shurikens
+            if (p.StealthStrikeAvailable())
+            {
+                int spread = 20;
+                for (int i = -1; i <= 1; i++)
+                {
+                    Vector2 perturbedspeed = velocity.RotatedBy(MathHelper.ToRadians(spread * i));
+                    int proj = Projectile.NewProjectile(source, position, perturbedspeed, type, damage, knockback, player.whoAmI, 0f, 1f);
+                    if (proj.WithinBounds(Main.maxProjectiles))
+                        Main.projectile[proj].Calamity().stealthStrike = true;
+                }
+                return false;
+            }
+            return true;
         }
     }
 }

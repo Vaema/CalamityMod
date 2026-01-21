@@ -1,12 +1,13 @@
-﻿using CalamityMod.NPCs.AcidRain;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.OldDuke;
+using CalamityMod.Packets;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.UI;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -59,16 +60,16 @@ namespace CalamityMod.Events
 
         public static Dictionary<int, AcidRainSpawnData> PossibleMinibossesPolter = new();
 
-        public static List<int> AllMinibosses => PossibleMinibossesAS.Select(miniboss => miniboss.Key).ToList().Concat(PossibleMinibossesPolter.Select(miniboss => miniboss.Key)).Distinct().ToList();
+        public static List<int> AllMinibosses => PossibleMinibossesAS.Select(miniboss => miniboss.Key).Concat(PossibleMinibossesPolter.Select(miniboss => miniboss.Key)).Distinct().ToList();
 
         public static bool AnyRainMinibosses
         {
             get
             {
-                for (int i = 0; i < Main.npc.Length; i++)
+                foreach (NPC npc in Main.ActiveNPCs)
                 {
-                    if (Main.npc[i].active && (PossibleMinibossesAS.Select(miniboss => miniboss.Key).Contains(Main.npc[i].type) ||
-                        PossibleMinibossesPolter.Select(miniboss => miniboss.Key).Contains(Main.npc[i].type)))
+                    if ((PossibleMinibossesAS.Select(miniboss => miniboss.Key).Contains(npc.type) ||
+                        PossibleMinibossesPolter.Select(miniboss => miniboss.Key).Contains(npc.type)))
                     {
                         return true;
                     }
@@ -101,20 +102,14 @@ namespace CalamityMod.Events
         /// Broadcasts some text from a given localization key.
         /// </summary>
         /// <param name="localizationKey">The key to write</param>
-        public static void BroadcastEventText(string localizationKey) => CalamityUtils.DisplayLocalizedText(localizationKey, TextColor);
+        public static void BroadcastEventText(string localizationKey) => CalamityUtils.BroadcastLocalizedText(localizationKey, TextColor);
 
         public static int NeededEnemyKills
         {
             get
             {
-                int playerCount = 0;
-                for (int i = 0; i < Main.player.Length; i++)
-                {
-                    if (Main.player[i].active)
-                    {
-                        playerCount++;
-                    }
-                }
+                int playerCount = Main.CurrentFrameFlags.ActivePlayersCount;
+
                 if (DownedBossSystem.downedPolterghast)
                     return (int)(Math.Log(playerCount + Math.E - 1) * 170f);
                 else if (DownedBossSystem.downedAquaticScourge)
@@ -186,15 +181,10 @@ namespace CalamityMod.Events
         /// </summary>
         public static void TryStartEvent(bool forceRain = false)
         {
-            if (AcidRainEventIsOngoing || (!NPC.downedBoss1 && !Main.hardMode && !DownedBossSystem.downedAquaticScourge) || BossRushEvent.BossRushActive)
+            if (AcidRainEventIsOngoing || (!NPC.downedBoss1 && !Main.hardMode && !DownedBossSystem.downedAquaticScourge && !DownedBossSystem.downedPolterghast) || BossRushEvent.BossRushActive || Terraria.GameContent.Creative.CreativePowerManager.Instance.GetPower<Terraria.GameContent.Creative.CreativePowers.FreezeRainPower>().Enabled)
                 return;
 
-            int playerCount = 0;
-            for (int i = 0; i < Main.player.Length; i++)
-            {
-                if (Main.player[i].active)
-                    playerCount++;
-            }
+            int playerCount = Main.CurrentFrameFlags.ActivePlayersCount;
 
             if (playerCount > 0)
             {
@@ -243,12 +233,8 @@ namespace CalamityMod.Events
             if (!HasStartedAcidicDownpour)
             {
                 int sulphSeaWidth = SulphurousSea.BiomeWidth;
-                for (int playerIndex = 0; playerIndex < Main.maxPlayers; playerIndex++)
+                foreach (Player player in Main.ActivePlayers)
                 {
-                    Player player = Main.player[playerIndex];
-                    if (!player.active)
-                        continue;
-
                     // An artificial biome can be made, and therefore, the event could be started by an artificial biome.
                     // While fighting the event in an artificial biome is not bad, having it be started by a patch of Sulphurous Sand
                     // would definitely be strange.
@@ -257,7 +243,6 @@ namespace CalamityMod.Events
                     if (inNaturalSeaPosition && player.Calamity().ZoneSulphur)
                     {
                         // Makes rain pour at its maximum intensity (but only after an idiot meanders into the Sulphurous Sea)
-                        // You'll never catch me, Fabs, Not when I shift into MAXIMUM OVERDRIVE!!
                         HasStartedAcidicDownpour = true;
                         CalamityNetcode.SyncWorld();
                         break;
@@ -312,7 +297,7 @@ namespace CalamityMod.Events
                             int playerClosestToAbyss = Player.FindClosest(new Vector2(Abyss.AtLeftSideOfWorld ? 0 : Main.maxTilesX * 16, (int)Main.worldSurface), 0, 0);
                             Player closestToAbyss = Main.player[playerClosestToAbyss];
                             if (Main.netMode != NetmodeID.MultiplayerClient && Math.Abs(closestToAbyss.Center.X - (Abyss.AtLeftSideOfWorld ? 0 : Main.maxTilesX * 16)) <= 12000f)
-                                Projectile.NewProjectile(source, closestToAbyss.Center + Vector2.UnitY * 160f, Vector2.Zero, ModContent.ProjectileType<OverlyDramaticDukeSummoner>(), 120, 8f, Main.myPlayer);
+                                Projectile.NewProjectile(source, closestToAbyss.Center + Vector2.UnitY * 160f, Vector2.Zero, ModContent.ProjectileType<OverlyDramaticDukeSummoner>(), 0, 8f, Main.myPlayer);
                         }
                     }
                 }
@@ -345,36 +330,17 @@ namespace CalamityMod.Events
                         DownedBossSystem.downedAquaticScourgeAcidRain = DownedBossSystem.downedAquaticScourge;
                     }
                     HasTriedToSummonOldDuke = false;
-                    CalamityMod.StopRain();
+                    CalamityWorld.StopRain();
                 }
                 CalamityNetcode.SyncWorld();
 
-                // You will be tempted to turn this into a single if conditional.
-                // Don't do this. Doing so has caused so much misery, with various things being read instead
-                // of the correct thing, like booleans being mixed up in the sending and receiving process.
-                // In short, leave this alone.
-                if (Main.netMode == NetmodeID.Server)
+                // Flow: 2024/09/06 
+                // Salute for the one who wrote 3 if conditional block after experiencing immeasurable torment with packet generations
+                if (Main.dedServ)
                 {
-                    var netMessage = CalamityMod.Instance.GetPacket();
-                    netMessage.Write((byte)CalamityModMessageType.AcidRainSync);
-                    netMessage.Write(AcidRainEventIsOngoing);
-                    netMessage.Write(AccumulatedKillPoints);
-                    netMessage.Write(TimeSinceLastAcidRainKill);
-                    netMessage.Send();
-                }
-                if (Main.netMode == NetmodeID.Server)
-                {
-                    var netMessage = CalamityMod.Instance.GetPacket();
-                    netMessage.Write((byte)CalamityModMessageType.AcidRainOldDukeSummonSync);
-                    netMessage.Write(HasTriedToSummonOldDuke);
-                    netMessage.Send();
-                }
-                if (Main.netMode == NetmodeID.Server)
-                {
-                    var netMessage = CalamityMod.Instance.GetPacket();
-                    netMessage.Write((byte)CalamityModMessageType.EncounteredOldDukeSync);
-                    netMessage.Write(OldDukeHasBeenEncountered);
-                    netMessage.Send();
+                    AcidRainSyncPacket.Send();
+                    AcidRainOldDukeSummonSyncPacket.Send();
+                    EncounteredOldDukeSyncPacket.Send();
                 }
             }
         }
@@ -387,11 +353,9 @@ namespace CalamityMod.Events
             if ((int)Main.time == (int)(Main.nightLength - 1f) && !Main.dayTime && Main.rand.NextBool(increasedEventChance ? 3 : 300))
             {
                 bool shouldNotStartEvent = false;
-                for (int playerIndex = 0; playerIndex < Main.maxPlayers; playerIndex++)
+                foreach (Player player in Main.ActivePlayers)
                 {
-                    if (!Main.player[playerIndex].active)
-                        continue;
-                    if (Main.player[playerIndex].Calamity().noStupidNaturalARSpawns)
+                    if (player.Calamity().noStupidNaturalARSpawns)
                     {
                         shouldNotStartEvent = true;
                         break;
@@ -407,9 +371,9 @@ namespace CalamityMod.Events
             // Attempt to force an Acid Rain immediately after the EoC is dead when someone wanders to the sea.
             if (NPC.downedBoss1 && !DownedBossSystem.downedEoCAcidRain && !HasBeenForceStartedByEoCDefeat)
             {
-                for (int playerIndex = 0; playerIndex < Main.maxPlayers; playerIndex++)
+                foreach (Player player in Main.ActivePlayers)
                 {
-                    if (Main.player[playerIndex].active && Main.player[playerIndex].Calamity().ZoneSulphur)
+                    if (player.Calamity().ZoneSulphur)
                     {
                         HasBeenForceStartedByEoCDefeat = true;
                         TryStartEvent();

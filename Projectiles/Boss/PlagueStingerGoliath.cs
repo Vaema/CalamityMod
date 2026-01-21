@@ -1,19 +1,22 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.NPCs.PlaguebringerGoliath;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Boss
 {
     public class PlagueStingerGoliath : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Boss";
+
         public override void SetDefaults()
         {
             Projectile.width = 10;
             Projectile.height = 10;
-            Projectile.scale = 1.5f;
             Projectile.hostile = true;
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
@@ -49,19 +52,25 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<Plague>(), 90);
+            target.AddBuff(ModContent.BuffType<Plague>(), 120);
+        }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Projectile.DrawBackglow(PlaguebringerGoliath.BackglowColor, 4f);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor);
+            return false;
         }
 
         public override void PostDraw(Color lightColor)
         {
-            Vector2 center = new Vector2(Projectile.Center.X, Projectile.Center.Y);
-            Vector2 textureArea = new Vector2(ModContent.Request<Texture2D>(Texture).Value.Width / 2, ModContent.Request<Texture2D>(Texture).Value.Height / 2);
-            Vector2 drawArea = center - Main.screenPosition;
-            drawArea -= new Vector2(ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/PlagueStingerGoliathGlow").Value.Width, ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/PlagueStingerGoliathGlow").Value.Height) * 1f / 2f;
-            drawArea += textureArea * 1f + new Vector2(0f, 4f + Projectile.gfxOffY);
+            Texture2D glow = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/PlagueStingerGoliathGlow").Value;
+            Vector2 textureArea = new Vector2(glow.Width / 2, glow.Height / Main.projFrames[Type] / 2);
+            Vector2 drawArea = Projectile.Center - Main.screenPosition;
+            drawArea -= new Vector2(glow.Width, glow.Height / Main.projFrames[Type]) / 2f;
+            drawArea += textureArea + new Vector2(0f, Projectile.gfxOffY);
             Color whiteColor = Color.White;
-            Main.spriteBatch.Draw(ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/PlagueStingerGoliathGlow").Value, drawArea,
-                null, whiteColor, Projectile.rotation, textureArea, Projectile.scale, SpriteEffects.None, 0);
+            Main.spriteBatch.Draw(glow, drawArea, null, whiteColor, Projectile.rotation, textureArea, Projectile.scale, SpriteEffects.None, 0);
         }
     }
 }

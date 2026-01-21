@@ -1,25 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.DataStructures;
+using CalamityMod.Enums;
+using CalamityMod.Utilities.Daybreak;
+using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Graphics.Shaders;
-using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Graphics.Renderers.CalamityRenderers
 {
     public class DyeableShadersRenderer : BaseRenderer
     {
         #region Fields/Properties
-        public static Dictionary<IDyeableShaderRenderer, ManagedRenderTarget> Targets
+        public static Dictionary<IDyeableShaderRenderer, RenderTargetLease> Targets
         {
             get;
             private set;
         }
 
-        public static Dictionary<IDyeableShaderRenderer, ArmorShaderData> Dyes
+        public static Dictionary<IDyeableShaderRenderer, int> Dyes
         {
             get;
             private set;
@@ -27,7 +29,7 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
 
         private static List<IDyeableShaderRenderer> RenderersToDrawThisFrame;
 
-        public override DrawLayer Layer => DrawLayer.Player;
+        public override GeneralDrawLayer Layer => GeneralDrawLayer.AfterPlayers;
 
         // This ignores MainTarget, and handles its own targets, so always call the draw methods.
         public override bool ShouldDraw => true;
@@ -36,73 +38,76 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
         #region Loading
         public override void Load()
         {
-            if (Main.netMode == NetmodeID.Server)
-                return;
-
-            Targets = new();
-            Dyes = new();
-            RenderersToDrawThisFrame = new();
+            Targets = [];
+            Dyes = [];
+            RenderersToDrawThisFrame = [];
         }
 
         public override void Unload()
         {
-            if (Main.netMode == NetmodeID.Server)
-                return;
-
+            Targets?.Clear();
             Targets = null;
+
+            Dyes?.Clear();
             Dyes = null;
+
+            RenderersToDrawThisFrame?.Clear();
             RenderersToDrawThisFrame = null;
         }
         #endregion
 
-        #region Detour Stuff
-        internal static void FindDyesDetour(On_Player.orig_UpdateItemDye orig, Player self, bool isNotInVanitySlot, bool isSetToHidden, Item armorItem, Item dyeItem)
+        #region Hooks
+        [Autoload(Side = ModSide.Client)]
+        private class ItemUpdateHooks : GlobalItem
         {
-            orig(self, isNotInVanitySlot, isSetToHidden, armorItem, dyeItem);
+            public override bool InstancePerEntity => false;
 
-            if (armorItem.ModItem is not IDyeableShaderRenderer drawer)
-                return;
+            public override void UpdateItemDye(Item item, Player player, int dye, bool hideVisual)
+            {
+                if (item.ModItem is not IDyeableShaderRenderer drawer)
+                    return;
 
-            // Store the dye in the slot.
-            Dyes[drawer] = GameShaders.Armor.GetShaderFromItemId(dyeItem.type);
-        }
+                // Store the dye and player in the slot.
+                drawer.OwnerPlayer = player?.whoAmI ?? Main.maxPlayers;
+                Dyes[drawer] = dye;
+            }
 
-        internal static void CheckVanityDetour(On_Player.orig_ApplyEquipVanity_Item orig, Player self, Item currentItem)
-        {
-            orig(self, currentItem);
-            CheckIfEquipIsValid(currentItem, false);
-        }
+            public override void UpdateVanity(Item item, Player player)
+            {
+                CheckIfEquipIsValid(item, false);
+            }
 
-        internal static void CheckAccessoryDetour(On_Player.orig_ApplyEquipFunctional orig, Player self, Item currentItem, bool hideVisual)
-        {
-            orig(self, currentItem, hideVisual);
-            CheckIfEquipIsValid(currentItem, hideVisual);
-        }
+            public override void UpdateAccessory(Item item, Player player, bool hideVisual)
+            {
+                CheckIfEquipIsValid(item, hideVisual);
+            }
 
-        internal static void CheckArmorSetsDetour(On_Player.orig_UpdateArmorSets orig, Player self, int i)
-        {
-            orig(self, i);
+            public override void UpdateArmorSet(Player player, string set)
+            {
+                // Check each armor piece in the same manner as tMod.
+                // If the entire set is equipped, and it is a renderer, it will be marked as valid.
+                Item head = player.armor[0];
+                Item body = player.armor[1];
+                Item legs = player.armor[2];
 
-            // Check each armor piece in the same manner as tMod.
-            // If the entire set is equipped, and it is a renderer, it will be marked as valid.
-            Item head = self.armor[0];
-            Item body = self.armor[1];
-            Item legs = self.armor[2];
-
-            if (head.ModItem != null && head.ModItem.IsArmorSet(head, body, legs) && head.ModItem is IDyeableShaderRenderer renderer)
-                MarkAsValid(renderer);
-                
-
-            if (body.ModItem != null && body.ModItem.IsArmorSet(head, body, legs) && body.ModItem is IDyeableShaderRenderer renderer2)
-                MarkAsValid(renderer2);
+                if (head.ModItem != null && head.ModItem.IsArmorSet(head, body, legs) && head.ModItem is IDyeableShaderRenderer renderer)
+                    MarkAsValid(renderer);
 
 
-            if (legs.ModItem != null && legs.ModItem.IsArmorSet(head, body, legs) && legs.ModItem is IDyeableShaderRenderer renderer3)
-                MarkAsValid(renderer3);
+                if (body.ModItem != null && body.ModItem.IsArmorSet(head, body, legs) && body.ModItem is IDyeableShaderRenderer renderer2)
+                    MarkAsValid(renderer2);
+
+
+                if (legs.ModItem != null && legs.ModItem.IsArmorSet(head, body, legs) && legs.ModItem is IDyeableShaderRenderer renderer3)
+                    MarkAsValid(renderer3);
+            }
         }
 
         private static void CheckIfEquipIsValid(Item item, bool hideVisual)
         {
+            if (Main.dedServ)
+                return;
+
             // Difficulty mode checks.
             if ((item.expertOnly && !Main.expertMode) || (item.masterOnly && !Main.masterMode))
                 return;
@@ -120,9 +125,15 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
 
         private static void MarkAsValid(IDyeableShaderRenderer renderer)
         {
-            // If it doesn't have a dictonary entry, create one.
-            if (!Targets.ContainsKey(renderer))
-                Main.QueueMainThreadAction(() => Targets[renderer] = new(true, ManagedRenderTarget.CreateScreenSizedTarget));
+            if (Main.dedServ)
+                return;
+
+            Main.QueueMainThreadAction(() =>
+            {
+                // If it doesn't have a dictonary entry, create one.
+                if (!Targets.ContainsKey(renderer))
+                    Main.QueueMainThreadAction(() => Targets[renderer] = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice));
+            });
 
             // Mark this item as drawable this frame.
             RenderersToDrawThisFrame.AddWithCondition(renderer, renderer.ShouldDrawDyeableShader);
@@ -131,12 +142,18 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
 
         #region Updates/Drawing
         // Clear the list at the beginning of each update, to ensure its only populated by correct ones.
-        public override void PreUpdate() => RenderersToDrawThisFrame.Clear();
+        public override void PreUpdate()
+        {
+            RenderersToDrawThisFrame?.Clear();
+        }
 
         public override void DrawToTarget(SpriteBatch spriteBatch)
         {
+            if (Main.dedServ)
+                return;
+
             // Leave if nothing to draw.
-            if (!RenderersToDrawThisFrame.Any())
+            if (RenderersToDrawThisFrame.Count <= 0)
                 return;
 
             // Sort the list by draw order.
@@ -148,32 +165,40 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
                     continue;
 
                 // Swap to the assosiated target and call the interface method.
-                target.SwapTo();
-                renderer.DrawDyeableShader(spriteBatch);
+                using (target.Scope(clearColor: Color.Transparent))
+                {
+                    renderer.DrawDyeableShader(spriteBatch);
+                }
             }
         }
 
         public override void DrawTarget(SpriteBatch spriteBatch)
         {
-            // Leave if nothing to draw.
-            if (!RenderersToDrawThisFrame.Any())
+            if (Main.dedServ)
                 return;
+
+            // Leave if nothing to draw.
+            if (RenderersToDrawThisFrame.Count <= 0)
+                return;
+
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise);
 
             foreach (var renderer in RenderersToDrawThisFrame)
             {
                 if (!Targets.TryGetValue(renderer, out var target))
                     continue;
 
-                Main.spriteBatch.End();
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer);
-
                 // If it is dyeable, and a dye exists, apply it. This has null safety, as dyeShader can be null here.
-                if (renderer.ShaderIsDyeable && Dyes.TryGetValue(renderer, out var dyeShader))
-                    dyeShader?.Apply(null, new(target, Vector2.Zero, new Rectangle(0, 0, target.Width, target.Height), Color.White));
+                if (renderer.ShaderIsDyeable && Dyes.TryGetValue(renderer, out var dyeID) && dyeID > 0)
+                    GameShaders.Armor.Apply(dyeID, null, new(target.Target, Vector2.Zero, new Rectangle(0, 0, target.Target.Width, target.Target.Height), Color.White));
 
                 // Draw the assosiated target that has been drawn to.
-                spriteBatch.Draw(target, Vector2.Zero, Color.White with { A = 0 });
+                spriteBatch.Draw(target.Target, Vector2.Zero, Color.White with { A = 0 });
             }
+
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise);
         }
         #endregion
     }

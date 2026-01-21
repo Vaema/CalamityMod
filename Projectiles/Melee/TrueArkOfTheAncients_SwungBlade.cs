@@ -1,16 +1,16 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using System.IO;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
 using static CalamityMod.CalamityUtils;
-using Terraria.Audio;
-using CalamityMod.Sounds;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -25,7 +25,7 @@ namespace CalamityMod.Projectiles.Melee
         public ref float Charge => ref Projectile.ai[1];
         public ref float HasFired => ref Projectile.localAI[0];
 
-        const float MaxTime = 35;
+        const float MaxTime = 40;
         private float SwingWidth = MathHelper.PiOver2 * 1.5f;
         public Vector2 DistanceFromPlayer => direction * 30;
         public float Timer => MaxTime - Projectile.timeLeft;
@@ -33,13 +33,13 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
         {
-            Projectile.DamageType = DamageClass.MeleeNoSpeed;
+            Projectile.DamageType = TrueMeleeNoSpeedDamageClass.Instance;
             Projectile.width = Projectile.height = 60;
             Projectile.width = Projectile.height = 60;
             Projectile.tileCollide = false;
@@ -81,8 +81,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.rotation = direction.ToRotation();
 
                 initialized = true;
-                Projectile.netUpdate = true;
-                Projectile.netSpam = 0;
+                Projectile.ForceNetUpdate();
             }
 
             //Manage position and rotation
@@ -90,11 +89,11 @@ namespace CalamityMod.Projectiles.Melee
 
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.Lerp(SwingWidth / 2 * SwingDirection, -SwingWidth / 2 * SwingDirection, SwingRatio());
 
-            Projectile.scale = 1.4f + ((float)Math.Sin(SwingRatio() * MathHelper.Pi) * 0.6f) + (Charge / 10f) * 0.6f;
+            Projectile.scale = 1.6f + ((float)Math.Sin(SwingRatio() * MathHelper.Pi) * 0.65f) + (Charge > 0 ? 0.6f : 0f);
 
             if (Owner.whoAmI == Main.myPlayer && SwingRatio() > 0.5f && HasFired == 0f && Charge > 0)
             {
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center + direction * 30f, Projectile.velocity * 2f, ProjectileType<TrueAncientBeam>(), (int)(Projectile.damage * TrueArkoftheAncients.beamDamageMultiplier), 2f, Owner.whoAmI) ;
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center + direction * 30f, Projectile.velocity * 2f, ProjectileType<TrueAncientBeam>(), (int)(Projectile.damage * TrueArkoftheAncients.beamDamageMultiplier), 2f, Owner.whoAmI);
                 HasFired = 1f;
             }
 
@@ -109,7 +108,7 @@ namespace CalamityMod.Projectiles.Melee
             }
             Owner.itemRotation = MathHelper.WrapAngle(Owner.itemRotation);
 
-            if (Charge > 0 && Main.rand.Next(2) == 0)
+            if (Charge > 0 && Main.rand.NextBool(2))
             {
                 Vector2 particleOrigin = Projectile.Center + Projectile.rotation.ToRotationVector2() * 85 * Projectile.scale;
                 Vector2 particleSpeed = Projectile.rotation.ToRotationVector2().RotatedByRandom(MathHelper.PiOver4) * Main.rand.NextFloat(1.2f, 2f);
@@ -130,10 +129,10 @@ namespace CalamityMod.Projectiles.Melee
 
             float drawAngle = Projectile.rotation;
             float drawRotation = Projectile.rotation + MathHelper.PiOver4 + extraAngle;
-            Vector2 drawOrigin = new Vector2(Owner.direction < 0 ? sword.Width : 0f , sword.Height);
+            Vector2 drawOrigin = new Vector2(Owner.direction < 0 ? sword.Width : 0f, sword.Height);
             Vector2 drawOffset = Owner.Center + drawAngle.ToRotationVector2() * 10f - Main.screenPosition;
 
-            if (CalamityConfig.Instance.Afterimages && Timer > ProjectileID.Sets.TrailCacheLength[Projectile.type])
+            if (CalamityClientConfig.Instance.Afterimages && Timer > ProjectileID.Sets.TrailCacheLength[Type])
             {
                 for (int i = 0; i < Projectile.oldRot.Length; ++i)
                 {
@@ -155,9 +154,9 @@ namespace CalamityMod.Projectiles.Melee
 
                 float opacity = (float)Math.Sin(Timer / MaxTime * MathHelper.Pi);
                 float rotation = (-MathHelper.PiOver4 * 0.5f + MathHelper.PiOver4 * 0.5f * Timer / MaxTime) * SwingDirection;
-                Color smearColor = Main.hslToRgb(((Timer - MaxTime * 0.5f ) / (MaxTime * 0.5f)) * 0.7f, 1, 0.6f);
+                Color smearColor = Main.hslToRgb(((Timer - MaxTime * 0.5f) / (MaxTime * 0.5f)) * 0.7f, 1, 0.6f);
 
-                Main.EntitySpriteDraw(smear, Owner.Center - Main.screenPosition, null, smearColor * 0.5f * opacity, Projectile.velocity.ToRotation() + MathHelper.Pi + rotation, smear.Size() / 2f, Projectile.scale * 1.4f, SpriteEffects.None, 0);
+                Main.EntitySpriteDraw(smear, Owner.Center - Main.screenPosition, null, smearColor * 0.5f * opacity, Projectile.velocity.ToRotation() + MathHelper.Pi + rotation, smear.Size() / 2f, Projectile.scale * 1.5f, SpriteEffects.None, 0);
 
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);

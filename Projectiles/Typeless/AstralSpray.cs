@@ -1,6 +1,9 @@
 ﻿using CalamityMod.World;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Typeless
 {
     public class AstralSpray : ModProjectile, ILocalizedModType
@@ -8,69 +11,50 @@ namespace CalamityMod.Projectiles.Typeless
         public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
+        public ref float Time => ref Projectile.ai[0];
+        public bool ShotFromTerraformer => Projectile.ai[1] == 1f;
+
+        public static int ConversionType;
+        public override void SetStaticDefaults() => ConversionType = ModContent.GetInstance<AstralConversion>().Type;
+
         public override void SetDefaults()
         {
-            Projectile.width = 16;
-            Projectile.height = 16;
-            Projectile.aiStyle = -1;
-            Projectile.friendly = true;
-            Projectile.alpha = 255;
-            Projectile.penetrate = -1;
-            Projectile.extraUpdates = 2;
-            Projectile.tileCollide = false;
-            Projectile.ignoreWater = true;
+            Projectile.DefaultToSpray();
+            Projectile.aiStyle = 0;
         }
 
         public override bool? CanDamage() => false;
 
-        public override bool PreAI()
+        public override void AI()
         {
+            if (Projectile.timeLeft > 133)
+                Projectile.timeLeft = 133;
+
             if (Main.myPlayer == Projectile.owner)
             {
-                int x = (int)(Projectile.Center.X / 16f);
-                int y = (int)(Projectile.Center.Y / 16f);
+                int size = ShotFromTerraformer ? 3 : 2;
+                Point tileCenter = Projectile.Center.ToTileCoordinates();
+                WorldGen.Convert(tileCenter.X, tileCenter.Y, ConversionType, size);
+            }
 
-                AstralBiome.ConvertToAstral(x - 1, x + 1, y - 1, y + 1);
-            }
-            if (Projectile.timeLeft > 133)
+            float dustStart = ShotFromTerraformer ? 3f : 7f;
+            if (Time > dustStart)
             {
-                Projectile.timeLeft = 133;
+                float dustScale = Utils.Remap(Time, dustStart + 1f, dustStart + 5f, 0.2f, 1f);
+                int dustArea = 0;
+                if (ShotFromTerraformer)
+                {
+                    dustScale *= 1.2f;
+                    dustArea = (int)(12f * dustScale);
+                }
+                
+                Dust spray = Dust.NewDustDirect(Projectile.position - Vector2.One * dustArea, Projectile.width + dustArea * 2, Projectile.height + dustArea * 2, DustID.Ice_Purple, Projectile.velocity.X * 0.4f, Projectile.velocity.Y * 0.4f, 100);
+                spray.noGravity = true;
+                spray.scale *= 1.75f * dustScale;
             }
-            if (Projectile.ai[0] > 7f)
-            {
-                float scalar = 1f;
-                if (Projectile.ai[0] == 8f)
-                {
-                    scalar = 0.2f;
-                }
-                else if (Projectile.ai[0] == 9f)
-                {
-                    scalar = 0.4f;
-                }
-                else if (Projectile.ai[0] == 10f)
-                {
-                    scalar = 0.6f;
-                }
-                else if (Projectile.ai[0] == 11f)
-                {
-                    scalar = 0.8f;
-                }
-                Projectile.ai[0]++;
-                for (int i = 0; i < 1; i++)
-                {
-                    int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 118, Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f, 100);
-                    Main.dust[d].noGravity = true;
-                    Main.dust[d].scale *= 1.75f * scalar;
-                    Main.dust[d].velocity.X *= 2f;
-                    Main.dust[d].velocity.Y *= 2f;
-                }
-            }
-            else
-            {
-                Projectile.ai[0]++;
-            }
+
+            Time++;
             Projectile.rotation += 0.3f * Projectile.direction;
-            return false;
         }
     }
 }

@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -11,8 +11,9 @@ namespace CalamityMod.Projectiles.Summon
         public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.MinionShot[Type] = true;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         }
 
         public override void SetDefaults()
@@ -36,7 +37,7 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.frame = 0;
             }
@@ -82,9 +83,8 @@ namespace CalamityMod.Projectiles.Summon
             }
             if (!homeIn)
             {
-                for (int i = 0; i < Main.maxNPCs; i++)
+                foreach (NPC npc in Main.ActiveNPCs)
                 {
-                    NPC npc = Main.npc[i];
                     if (npc.CanBeChasedBy(Projectile, false))
                     {
                         float extraDistance = (npc.width / 2) + (npc.height / 2);
@@ -109,7 +109,7 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.velocity = (Projectile.velocity * 20f + moveDirection * 21f) / (21f);
             }
 
-            int blueT = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 59, 0f, 0f, 100, default, 0.6f);
+            int blueT = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.BlueTorch, 0f, 0f, 100, default, 0.6f);
             Main.dust[blueT].noGravity = true;
             Main.dust[blueT].velocity *= 0.5f;
             Main.dust[blueT].velocity += Projectile.velocity * 0.1f;
@@ -118,16 +118,16 @@ namespace CalamityMod.Projectiles.Summon
         public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item45, Projectile.position);
-            int blue = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 59, 0f, 0f, 100, default, 1f);
+            int blue = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.BlueTorch, 0f, 0f, 100, default, 1f);
             Main.dust[blue].velocity *= 0.5f;
             if (Main.rand.NextBool())
             {
                 Main.dust[blue].scale = 0.5f;
                 Main.dust[blue].fadeIn = 1f + (float)Main.rand.Next(10) * 0.1f;
             }
-            int torch = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 59, 0f, 0f, 100, default, 1.4f);
+            int torch = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.BlueTorch, 0f, 0f, 100, default, 1.4f);
             Main.dust[torch].noGravity = true;
-            Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 59, 0f, 0f, 100, default, 0.8f);
+            Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.BlueTorch, 0f, 0f, 100, default, 0.8f);
         }
     }
 }

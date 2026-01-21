@@ -1,9 +1,9 @@
-﻿using CalamityMod.Projectiles.BaseProjectiles;
+﻿using System;
+using System.Linq;
+using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System;
-using System.Linq;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -30,7 +30,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            ProjectileID.Sets.MinionShot[Type] = true;
         }
 
         public override void SetDefaults()
@@ -75,7 +75,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             if (Main.projectile[OwnerIndex].localAI[0] == 0f)
                 Projectile.Kill();
         }
-        
+
         public override bool ShouldUpdatePosition() => false;
 
         public override void ExtraBehavior()
@@ -86,7 +86,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 Vector2 laserSpawnPosition = Projectile.Center + Projectile.velocity * (LaserLength - 14f);
                 for (int i = 0; i < 3; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(laserSpawnPosition + Main.rand.NextVector2Circular(8f, 8f), 261);
+                    Dust dust = Dust.NewDustPerfect(laserSpawnPosition + Main.rand.NextVector2Circular(8f, 8f), DustID.AncientLight);
                     dust.velocity = Main.rand.NextVector2CircularEdge(9f, 9f) * Main.rand.NextFloat(0.3f, 1f);
                     dust.color = Color.Lerp(Color.Crimson, Color.Red, Main.rand.NextFloat());
                     dust.noGravity = true;

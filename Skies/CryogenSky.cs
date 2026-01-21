@@ -1,11 +1,9 @@
-﻿using CalamityMod.NPCs.Cryogen;
+﻿using System;
+using CalamityMod.NPCs.Cryogen;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
-using Terraria.GameContent;
 using Terraria.Graphics.Effects;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Skies
@@ -30,7 +28,7 @@ namespace CalamityMod.Skies
 
         public static void UpdateDrawEligibility()
         {
-            bool useEffect = (NPC.AnyNPCs(ModContent.NPCType<Cryogen>()) || ShouldDrawRegularly) && !Main.gameMenu;
+            bool useEffect = (NPC.AnyNPCs(ModContent.NPCType<Cryogen>()) || ShouldDrawRegularly || Main.LocalPlayer.Calamity().monolithCryogenShader > 0) && !Main.gameMenu;
 
             if (SkyManager.Instance["CalamityMod:Cryogen"] != null && useEffect != SkyManager.Instance["CalamityMod:Cryogen"].IsActive())
             {
@@ -46,10 +44,17 @@ namespace CalamityMod.Skies
 
         public override void Update(GameTime gameTime)
         {
-            if (FadeInCountdown > 0)
-                FadeInCountdown--;
+            if (!ShouldDrawRegularly && Main.LocalPlayer.Calamity().monolithCryogenShader <= 0)
+            {
+                if (FadeInCountdown > 0)
+                    FadeInCountdown--;
+            }
+            else
+            {
+                FadeInCountdown = 1;
+            }
 
-            if (CryogenIndex == -1 && !ShouldDrawRegularly)
+            if (CryogenIndex == -1 && !ShouldDrawRegularly && Main.LocalPlayer.Calamity().monolithCryogenShader <= 0)
             {
                 UpdateCryogenIndex();
                 if (FadeoutTimer == 0)
@@ -89,7 +94,7 @@ namespace CalamityMod.Skies
 
         public float CalculateAuroraStrength()
         {
-            if (ShouldDrawRegularly)
+            if (ShouldDrawRegularly || Main.LocalPlayer.Calamity().monolithCryogenShader > 0)
                 return 1f;
 
             return 1f - GetCryogenLifeRatio();
@@ -101,15 +106,7 @@ namespace CalamityMod.Skies
             if (CryogenIndex >= 0 && Main.npc[CryogenIndex].active && Main.npc[CryogenIndex].type == cryogenType)
                 return true;
 
-            CryogenIndex = -1;
-            for (int i = 0; i < Main.npc.Length; i++)
-            {
-                if (Main.npc[i].active && Main.npc[i].type == cryogenType)
-                {
-                    CryogenIndex = i;
-                    break;
-                }
-            }
+            CryogenIndex = NPC.FindFirstNPC(cryogenType);
 
             return CryogenIndex != -1;
         }
@@ -143,7 +140,7 @@ namespace CalamityMod.Skies
                         auroraColor *= fadeInLerp;
                     if (FadeoutTimer > 0f)
                         auroraColor *= fadeOutLerp;
-                    if (Main.dayTime)
+                    if (Main.IsItDay())
                         auroraColor *= 0.4f;
 
                     float yBrightness = MathHelper.Lerp(1.5f, 0.5f, 1f - MathHelper.Clamp((Auroras[i].Center.Y + 300f) / 200f, 0f, 1f)) * 1.3f;

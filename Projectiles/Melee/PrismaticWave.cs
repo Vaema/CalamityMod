@@ -1,8 +1,5 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,8 +10,8 @@ namespace CalamityMod.Projectiles.Melee
     {
         public new string LocalizationCategory => "Projectiles.Melee";
         private int alpha = 50;
-        public Color[] colors = new Color[]
-        {
+        public Color[] colors =
+        [
             new Color(255, 0, 0, 50), //Red
             new Color(255, 128, 0, 50), //Orange
             new Color(255, 255, 0, 50), //Yellow
@@ -27,21 +24,15 @@ namespace CalamityMod.Projectiles.Melee
             new Color(128, 0, 255, 50), //Purple
             new Color(255, 0, 255, 50), //Fuschia
             new Color(255, 0, 128, 50) //Hot Pink
-        };
-        List<Color> colorSet = new List<Color>()
-        {
-            new Color(255, 0, 0, 50), //Red
-            new Color(255, 255, 0, 50), //Yellow
-            new Color(0, 255, 0, 50), //Green
-            new Color(0, 255, 255, 50), //Cyan
-            new Color(0, 0, 255, 50), //Blue
-            new Color(255, 0, 255, 50), //Fuschia
-        };
+        ];
+        public ref float Timer => ref Projectile.ai[0];
+        public Particle starEffect;
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
         }
 
         public override void SetDefaults()
@@ -50,94 +41,65 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.height = 36;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.DamageType = DamageClass.Ranged;
-            Projectile.DamageType = DamageClass.Melee;
-            Projectile.penetrate = 2;
+            Projectile.DamageType = MeleeRangedHybridDamageClass.Instance;
+            Projectile.alpha = 255;
             Projectile.timeLeft = 360;
             Projectile.tileCollide = false;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 20;
-        }
-
-        public override void SendExtraAI(BinaryWriter writer)
-        {
-            writer.Write(Projectile.localAI[0]);
-        }
-
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
-            Projectile.localAI[0] = reader.ReadSingle();
         }
 
         public override void AI()
         {
-            if (Projectile.localAI[0] == 0f)
-            {
-                Projectile.scale -= 0.02f;
-                Projectile.alpha += 30;
-                if (Projectile.alpha >= 250)
-                {
-                    Projectile.alpha = 255;
-                    Projectile.localAI[0] = 1f;
-                }
-            }
-            else if (Projectile.localAI[0] == 1f)
-            {
-                Projectile.scale += 0.02f;
-                Projectile.alpha -= 30;
-                if (Projectile.alpha <= 0)
-                {
-                    Projectile.alpha = 0;
-                    Projectile.localAI[0] = 0f;
-                }
-            }
+            Timer++;
+            Projectile.alpha -= 16;
+            if (Projectile.alpha < 64)
+                Projectile.alpha = 64;
             Lighting.AddLight(Projectile.Center, Main.DiscoR * 0.5f / 255f, Main.DiscoG * 0.5f / 255f, Main.DiscoB * 0.5f / 255f);
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X);
+
+            Projectile.rotation = Projectile.velocity.ToRotation();
             if (Main.rand.NextBool())
             {
-                int rainbow = Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 267, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, alpha, Main.rand.Next(colors));
+                int rainbow = Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.RainbowMk2, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, alpha, Main.rand.Next(colors));
                 Main.dust[rainbow].noGravity = true;
             }
+
+            // Determine random star rotation
+            if (Projectile.localAI[0] == 0f)
+                Projectile.localAI[0] = Main.rand.NextFloat(MathHelper.Pi / 60f, MathHelper.Pi / 12f) * Main.rand.NextBool().ToDirectionInt();
+
+            // Draw the star
+            if (starEffect == null)
+            {
+                Color projColor = Color.Lerp(Color.White, colors[(int)Projectile.ai[1]], 0.4f);
+                starEffect = new GenericSparkle(Projectile.Center + Projectile.velocity * 1.5f, Vector2.Zero, projColor, colors[(int)Projectile.ai[1]], Projectile.scale * 2.5f, 2, Timer * Projectile.localAI[0]);
+                GeneralParticleHandler.SpawnParticle(starEffect);
+            }
+            else
+            {
+                starEffect.Time = 0;
+                starEffect.Position = Projectile.Center + Projectile.velocity * 1.5f;
+            }
+
+            // Home in if it's from Cosmic Rainbow
+            if (Projectile.ai[2] == 1f)
+                CalamityUtils.HomeInOnNPC(Projectile, true, 400f, 18f, 20f);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (Projectile.timeLeft > 355)
-                return false;
-
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 2);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 2);
             return false;
         }
 
-        public override Color? GetAlpha(Color lightColor)
-        {
-            int colorIndex = (int)(Main.GlobalTimeWrappedHourly / 2 % colorSet.Count);
-            Color currentColor = colorSet[colorIndex];
-            Color nextColor = colorSet[(colorIndex + 1) % colorSet.Count];
-            return Color.Lerp(currentColor, nextColor, Main.GlobalTimeWrappedHourly % 2f > 1f ? 1f : Main.GlobalTimeWrappedHourly % 1f);
-        }
+        public override Color? GetAlpha(Color lightColor) => colors[(int)Projectile.ai[1]];
 
         public override void OnKill(int timeLeft)
         {
+            GeneralParticleHandler.RemoveParticle(starEffect);
             for (int k = 0; k < 3; k++)
             {
-                int rainbow = Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 267, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f, alpha, Main.rand.Next(colors));
+                int rainbow = Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.RainbowMk2, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f, alpha, Main.rand.Next(colors));
                 Main.dust[rainbow].noGravity = true;
             }
-        }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.AddBuff(ModContent.BuffType<Nightwither>(), 150);
-            target.AddBuff(BuffID.Daybreak, 150);
-            Projectile.velocity *= 0.75f;
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            target.AddBuff(ModContent.BuffType<Nightwither>(), 150);
-            target.AddBuff(BuffID.Daybreak, 150);
-            Projectile.velocity *= 0.75f;
         }
     }
 }

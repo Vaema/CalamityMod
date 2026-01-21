@@ -17,12 +17,11 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 64;
             Item.height = 64;
-            Item.damage = 195;
+            Item.damage = 165;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useTime = 3;
             Item.useAnimation = 9;
-            Item.reuseDelay = 1;
             Item.useLimitPerAnimation = 3;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 6.75f;
@@ -32,14 +31,13 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shoot = ModContent.ProjectileType<ExecutionersBladeProj>();
             Item.shootSpeed = 24f;
             Item.DamageType = RogueDamageClass.Instance;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
         {
             Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Rogue/ExecutionersBladeGlow").Value);
         }
-        public override float StealthDamageMultiplier => 0.6f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

@@ -1,6 +1,7 @@
-﻿using CalamityMod.Items.Accessories;
+﻿using System.IO;
+using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Placeables.Banners;
-using System.IO;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -14,7 +15,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 5;
+            Main.npcFrameCount[Type] = 5;
         }
 
         public override void SetDefaults()
@@ -24,11 +25,11 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.damage = 24;
             NPC.width = 44;
             NPC.height = 34;
-            NPC.defense = 8;
-            NPC.lifeMax = 150;
+            NPC.defense = 10;
+            NPC.lifeMax = 180;
             NPC.knockBackResist = 0.35f;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 2, 0);
+            NPC.value = Item.buyPrice(silver: 2);
             NPC.HitSound = SoundID.NPCHit33;
             NPC.DeathSound = SoundID.NPCDeath36;
             Banner = NPC.type;
@@ -40,9 +41,9 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.UndergroundDesert,
+                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Caverns,
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.GemCrawler")
             });
         }
@@ -87,12 +88,12 @@ namespace CalamityMod.NPCs.NormalNPCs
                 detected = true;
             if (!detected)
                 return;
-            CalamityAI.GemCrawlerAI(NPC, Mod, 6f, 0.06f);
+            CalamityRegularEnemyAI.GemCrawlerAI(NPC, Mod, 6f, 0.06f);
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (spawnInfo.PlayerSafe || spawnInfo.Player.Calamity().ZoneAbyss || spawnInfo.Player.Calamity().ZoneSunkenSea)
+            if (spawnInfo.PlayerSafe || spawnInfo.Player.Calamity().InAnyCalamityBiome)
             {
                 return 0f;
             }
@@ -103,15 +104,15 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 91, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.GemDiamond, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 20; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 91, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.GemDiamond, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("CrawlerDiamond").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("CrawlerDiamond2").Type, 1f);
@@ -125,6 +126,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             npcLoot.Add(ItemID.Diamond, 1, 2, 4);
             npcLoot.Add(ModContent.ItemType<ScuttlersJewel>(), 6);
+            npcLoot.Add(ModContent.ItemType<XyksBlessingBlue>(), 25);
         }
     }
 }

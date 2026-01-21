@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.StatDebuffs;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
-using CalamityMod.Buffs.StatDebuffs;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -42,14 +42,21 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(BuffID.Venom, 60);
-            target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 60);
+            //These projectiles are used for Fishbone Boomerang, and therefore should only inflict debuffs if they're from Bonebreaker
+            if (Projectile.DamageType == DamageClass.Melee)
+            {
+                target.AddBuff(BuffID.Venom, 60);
+                target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 60);
+            }
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            target.AddBuff(BuffID.Venom, 60);
-            target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 60);
+            if (Projectile.DamageType == DamageClass.Melee)
+            {
+                target.AddBuff(BuffID.Venom, 60);
+                target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 60);
+            }
         }
     }
 }

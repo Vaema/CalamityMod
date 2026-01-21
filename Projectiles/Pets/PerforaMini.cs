@@ -1,4 +1,4 @@
-using CalamityMod.Buffs.Pets;
+﻿using CalamityMod.Buffs.Pets;
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -12,10 +12,10 @@ namespace CalamityMod.Projectiles.Pets
         public new string LocalizationCategory => "Projectiles.Pets";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 8;
-            Main.projPet[Projectile.type] = true;
+            Main.projFrames[Type] = 8;
+            Main.projPet[Type] = true;
 
-            ProjectileID.Sets.CharacterPreviewAnimations[Projectile.type] = ProjectileID.Sets.SimpleLoop(0, Main.projFrames[Projectile.type], 6)
+            ProjectileID.Sets.CharacterPreviewAnimations[Type] = ProjectileID.Sets.SimpleLoop(0, Main.projFrames[Type], 6)
             .WithOffset(-8f, -20f).WithSpriteDirection(1).WhenNotSelected(0, 0);
         }
 
@@ -63,8 +63,8 @@ namespace CalamityMod.Projectiles.Pets
             //Dust
             if (Main.rand.NextBool(50))
             {
-                int d1 = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, 5, 0f, 0f, 100, default, 1.5f);
-                int d2 = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, 170, 0f, 0f, 170, default, 0.5f);
+                int d1 = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.Blood, 0f, 0f, 100, default, 1.5f);
+                int d2 = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.Ichor, 0f, 0f, 170, default, 0.5f);
                 Main.dust[d2].noLight = true;
                 Main.dust[d1].position = Projectile.Center;
                 Main.dust[d2].position = Projectile.Center;

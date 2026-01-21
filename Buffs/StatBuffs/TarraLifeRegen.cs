@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.StatBuffs
@@ -25,11 +26,11 @@ namespace CalamityMod.Buffs.StatBuffs
 
             if (Main.rand.NextBool(10))
             {
-                int dust = Dust.NewDust(drawInfo.Position - new Vector2(2f), Player.width + 4, Player.height + 4, 107, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 1f);
-                Main.dust[dust].noGravity = true;
-                Main.dust[dust].velocity *= 0.75f;
-                Main.dust[dust].velocity.Y -= 0.35f;
-                drawInfo.DustCache.Add(dust);
+                Dust dust = Dust.NewDustDirect(drawInfo.Position - new Vector2(2f), Player.width + 4, Player.height + 4, DustID.TerraBlade, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 1f);
+                dust.noGravity = true;
+                dust.velocity *= 0.75f;
+                dust.velocity.Y -= 0.35f;
+                drawInfo.DustCache.Add(dust.dustIndex);
             }
         }
     }

@@ -1,9 +1,9 @@
-﻿using CalamityMod.Buffs.Mounts;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.Buffs.Mounts;
 using CalamityMod.DataStructures;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -16,52 +16,25 @@ namespace CalamityMod.Items.Mounts.Minecarts
         public const int SegmentCount = 18;
         public override void SetStaticDefaults()
         {
-            MountData.Minecart = true;
-            MountData.delegations = new();
+            MountID.Sets.Cart[Type] = true;
+            Mount.SetAsMinecart(MountData, ModContent.BuffType<TheCartofGodsBuff>(), MountData.frontTexture);
+
+            // Tweaks to the base minecart data
             MountData.delegations.MinecartDust = CreateSparkDust;
-            MountID.Sets.Cart[ModContent.MountType<DoGCartMount>()] = true;
-
             MountData.spawnDust = 173;
-            MountData.buff = ModContent.BuffType<TheCartofGodsBuff>();
-
-            // Movement fields.
-            MountData.flightTimeMax = 0;
-            MountData.fallDamage = 1f;
-
-            // Mechanical Cart in vanilla uses 20f and 0.1f respectively for these fields.
-            MountData.runSpeed = 22f;
-            MountData.acceleration = 0.16f;
-
-            MountData.jumpHeight = 16;
-            MountData.jumpSpeed = 5.2f;
-            MountData.blockExtraJumps = true;
-            MountData.heightBoost = 12;
-
-            // Drawing fields.
-            MountData.playerYOffsets = new int[] { 6, 6, 6 };
             MountData.xOffset = 2;
             MountData.yOffset = 12;
-            MountData.bodyFrame = 3;
-
-            // Animation fields.
-            MountData.totalFrames = 3;
-            MountData.standingFrameCount = 1;
-            MountData.standingFrameDelay = 12;
-            MountData.standingFrameStart = 0;
-            MountData.runningFrameCount = 3;
-            MountData.runningFrameDelay = 12;
-            MountData.runningFrameStart = 0;
-            MountData.flyingFrameCount = 0;
-            MountData.flyingFrameDelay = 0;
-            MountData.flyingFrameStart = 0;
-            MountData.inAirFrameCount = 0;
-            MountData.inAirFrameDelay = 0;
-            MountData.inAirFrameStart = 0;
             MountData.idleFrameCount = 1;
             MountData.idleFrameDelay = 10;
             MountData.idleFrameStart = 0;
-            MountData.idleFrameLoop = false;
-            if (Main.netMode != NetmodeID.Server)
+
+            // Stat balancing
+            MountData.runSpeed = 20.0f;
+            MountData.acceleration = 0.1f;
+            MountData.MinecartUpgradeRunSpeed = 22.0f;
+            MountData.MinecartUpgradeAcceleration = 0.16f;
+
+            if (!Main.dedServ)
             {
                 MountData.textureWidth = 74;
                 MountData.textureHeight = 114;
@@ -74,7 +47,7 @@ namespace CalamityMod.Items.Mounts.Minecarts
             offsetDirection *= new Vector2(Main.rand.NextBool().ToDirectionInt(), 1f) * 13f;
             dustPosition += offsetDirection;
 
-            Dust spark = Dust.NewDustPerfect(dustPosition, 234);
+            Dust spark = Dust.NewDustPerfect(dustPosition, DustID.BoneTorch);
             spark.velocity = Main.rand.NextVector2Circular(4f, 4f);
             spark.velocity.X *= Main.rand.NextFloat(0.25f, 1f);
             spark.velocity.Y -= Main.rand.NextFloat(1.25f, 3f);

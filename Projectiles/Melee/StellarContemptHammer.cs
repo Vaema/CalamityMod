@@ -1,12 +1,13 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Particles;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -15,25 +16,24 @@ namespace CalamityMod.Projectiles.Melee
         public new string LocalizationCategory => "Projectiles.Melee";
 
         public override string Texture => "CalamityMod/Items/Weapons/Melee/StellarContempt";
-        public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/PwnagehammerSound") { Volume = 0.35f};
+        public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/PwnagehammerSound") { Volume = 0.35f };
         public static readonly SoundStyle RedHamSound = new("CalamityMod/Sounds/Item/StellarContemptClone") { Volume = 0.6f };
-        public static readonly SoundStyle UseSoundFunny = new("CalamityMod/Sounds/Item/CalamityBell") { Volume = 1.5f};
-
-        public ref int EmpoweredHammer => ref Main.player[Projectile.owner].Calamity().StellarHammer; 
+        public static readonly SoundStyle UseSoundFunny = new("CalamityMod/Sounds/Item/CalamityBell") { Volume = 1.5f };
+        public ref int EmpoweredHammer => ref Main.player[Projectile.owner].Calamity().StellarHammer;
         public int returnhammer = 0;
         public int DustOnce = 1;
-        public float rotatehammer = 8f;
-
+        public float rotatehammer = 15f;
+        public int time = 0;
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 11;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
+            ProjectileID.Sets.TrailCacheLength[Type] = 11;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 62;
-            Projectile.height = 62;
+            Projectile.width = 74;
+            Projectile.height = 74;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
             Projectile.tileCollide = false;
@@ -56,53 +56,19 @@ namespace CalamityMod.Projectiles.Melee
 
             if (returnhammer == 0)
             {
-                Projectile.velocity.X *= 0.981f;
-                Projectile.velocity.Y += 0.226f;
+                int falloffTime = 15;
+                if (time > falloffTime)
+                    Projectile.velocity.X *= 0.967f;
+                if (Projectile.velocity.Y < 15 && time > falloffTime)
+                    Projectile.velocity.Y += 0.426f;
+                if (Projectile.velocity.Y < 5)
+                    Projectile.velocity.Y *= 0.98f;
             }
 
             if (returnhammer == 1)
             {
                 if (EmpoweredHammer == 4)
                 {
-                    if (DustOnce == 1)
-                    {
-                        for (int i = 0; i < 20; ++i)
-                        {
-                            // Pick a random type of dust.
-                            int dustID;
-                            switch (Main.rand.Next(6))
-                            {
-                                case 0:
-                                    dustID = 229;
-                                    break;
-                                case 1:
-                                case 2:
-                                    dustID = 156;
-                                    break;
-                                default:
-                                    dustID = 156;
-                                    break;
-                            }
-
-                            // Choose a random speed and angle for the dust.
-                            float dustSpeed = Main.rand.NextFloat(3.0f, 19.0f);
-                            float angleRandom = 0.09f;
-                            Vector2 dustVel = new Vector2(0.0f, dustSpeed * -1f);
-                            dustVel = dustVel.RotatedBy(-angleRandom);
-                            dustVel = dustVel.RotatedByRandom(2.0f * angleRandom);
-
-                            // Pick a size for the dust particle.
-                            float scale = Main.rand.NextFloat(1.7f, 3.8f);
-
-                            // Actually spawn the dust.
-                            int idx = Dust.NewDust(Projectile.Center, 1, 1, dustID, dustVel.X, dustVel.Y, 0, default, scale);
-                            Main.dust[idx].noGravity = true;
-                            Main.dust[idx].position = Projectile.Center;
-                        }
-
-                        DustOnce = 0;
-                    }
-
                     Projectile.velocity.X *= 0.281f;
                     Projectile.velocity.Y -= 0.8f;
                     rotatehammer++;
@@ -125,7 +91,7 @@ namespace CalamityMod.Projectiles.Melee
             if (returnhammer == 2)
             {
                 Projectile.extraUpdates = 2;
-                float returnSpeed = StellarContempt.Speed;
+                float returnSpeed = StellarContempt.Speed * 0.7f;
                 float acceleration = 1.1f;
                 Player owner = Main.player[Projectile.owner];
                 Vector2 playerCenter = owner.Center;
@@ -172,10 +138,11 @@ namespace CalamityMod.Projectiles.Melee
 
                         for (int i = 0; i < 30; i++)
                         {
-                            Dust fire = Dust.NewDustPerfect(Projectile.Center, 156);
+                            Dust fire = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>());
                             fire.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedByRandom(0.8f) * new Vector2(4f, 1.25f) * Main.rand.NextFloat(0.9f, 1f);
                             fire.velocity = fire.velocity.RotatedBy(Projectile.rotation - MathHelper.PiOver2);
                             fire.velocity += Projectile.velocity * (EmpoweredHammer * 0.04f);
+                            fire.color = Main.rand.NextBool(3) ? Color.PaleTurquoise : Color.Turquoise;
 
                             fire.noGravity = true;
                             fire.scale = Main.rand.NextFloat(0.2f, 0.6f) * EmpoweredHammer;
@@ -183,6 +150,7 @@ namespace CalamityMod.Projectiles.Melee
                             fire = Dust.CloneDust(fire);
                             fire.velocity = Main.rand.NextVector2Circular(3f, 3f);
                             fire.velocity += Projectile.velocity * (EmpoweredHammer * 0.04f);
+                            fire.color = Main.rand.NextBool(3) ? Color.PaleTurquoise : Color.Turquoise;
                         }
 
                         Projectile.Kill();
@@ -193,10 +161,23 @@ namespace CalamityMod.Projectiles.Melee
             {
                 if (Projectile.velocity.Y < 0f)
                 {
-                    Particle streak = new ManaDrainStreak(player, Main.rand.NextFloat(0.9f, 1.5f), Main.rand.NextVector2CircularEdge(2f, 2f) * Main.rand.NextFloat(85f, 335f), Main.rand.NextFloat(30f, 44f), Color.PaleTurquoise, Color.Turquoise, Main.rand.Next(15, 30), Projectile.Center);
-                    GeneralParticleHandler.SpawnParticle(streak);
+                    float fade = Utils.GetLerpValue(3, -10, Projectile.velocity.Y, true);
+                    float numberOfDusts = 2f;
+                    float rotFactor = 360f / numberOfDusts;
+                    for (int i = 0; i < numberOfDusts; i++)
+                    {
+                        float rot = MathHelper.ToRadians(i * rotFactor);
+                        Vector2 velOffset = CalamityUtils.RandomVelocity(100f, 70f, 250f, 0.04f);
+                        velOffset *= Main.rand.NextFloat(25, 45) * fade;
+                        Particle energy = new SparkParticle(Projectile.Center + velOffset * 2.5f, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, false, 14, Main.rand.NextFloat(1.1f, 1.25f) - 0.5f * fade, Color.Turquoise);
+                        GeneralParticleHandler.SpawnParticle(energy);
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center + velOffset * 2.5f, DustID.FireworksRGB, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, 0, default, Main.rand.NextFloat(0.4f, 0.6f));
+                        dust.noGravity = true;
+                        dust.color = Color.Turquoise;
+                        dust.velocity += Projectile.velocity;
+                    }
+
                     Projectile.velocity.Y += 0.6f;
-                    Projectile.scale += 0.03f;
                 }
                 else
                 {
@@ -211,21 +192,15 @@ namespace CalamityMod.Projectiles.Melee
             }
 
             // Spawn dust as the hammer travels.
-            if (Main.rand.NextBool())
+            if (Main.rand.NextBool(3))
             {
                 Vector2 offset = new Vector2(12, 0).RotatedByRandom(MathHelper.ToRadians(360f));
                 Vector2 velOffset = new Vector2(4, 0).RotatedBy(offset.ToRotation());
-                Dust dust = Dust.NewDustPerfect(new Vector2(Projectile.Center.X, Projectile.Center.Y) + offset, DustID.UltraBrightTorch, new Vector2(Projectile.velocity.X * 0.3f + velOffset.X, Projectile.velocity.Y * 0.3f + velOffset.Y), 100);
+                Dust dust = Dust.NewDustPerfect(new Vector2(Projectile.Center.X, Projectile.Center.Y) + offset, ModContent.DustType<LightDust>(), new Vector2(Projectile.velocity.X * 0.3f + velOffset.X, Projectile.velocity.Y * 0.3f + velOffset.Y));
                 dust.noGravity = true;
+                dust.color = Main.rand.NextBool(3) ? Color.PaleTurquoise : Color.Turquoise;
             }
-
-            if (Main.rand.NextBool(6))
-            {
-                Vector2 offset = new Vector2(12, 0).RotatedByRandom(MathHelper.ToRadians(360f));
-                Vector2 velOffset = new Vector2(4, 0).RotatedBy(offset.ToRotation());
-                Dust dust = Dust.NewDustPerfect(new Vector2(Projectile.Center.X, Projectile.Center.Y) + offset, DustID.UltraBrightTorch, new Vector2(Projectile.velocity.X * 0.2f + velOffset.X, Projectile.velocity.Y * 0.2f + velOffset.Y), 100);
-                dust.noGravity = true;
-            }
+            time++;
         }
 
         // On hit play GONG and spawn dust.
@@ -234,6 +209,8 @@ namespace CalamityMod.Projectiles.Melee
             Player player = Main.player[Projectile.owner];
             if (returnhammer == 0)
             {
+                Projectile.ai[1] = target.whoAmI;
+
                 if (Main.zenithWorld)
                     SoundEngine.PlaySound(UseSoundFunny with { Pitch = EmpoweredHammer * 0.1f - 0.1f }, Projectile.Center);
                 else
@@ -250,29 +227,37 @@ namespace CalamityMod.Projectiles.Melee
                 returnhammer = 1;
             }
 
-            float numberOfDusts = 40f;
+            float numberOfDusts = MathHelper.Clamp(40 - Projectile.numHits * 5, 6, 40);
             float rotFactor = 360f / numberOfDusts;
             for (int i = 0; i < numberOfDusts; i++)
             {
                 float rot = MathHelper.ToRadians(i * rotFactor);
                 Vector2 offset = new Vector2(4.8f, 0).RotatedBy(rot * Main.rand.NextFloat(1.1f, 4.1f));
                 Vector2 velOffset = new Vector2(4f, 0).RotatedBy(rot * Main.rand.NextFloat(1.1f, 4.1f));
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, 229, new Vector2(velOffset.X, velOffset.Y));
-                dust.noGravity = true;
-                dust.velocity = velOffset;
-                dust.scale = Main.rand.NextFloat(1.5f, 3.2f);
-            }
 
-            SoundEngine.PlaySound(SoundID.Item14 with { Volume = 0.22f }, Projectile.Center);
-            Projectile.ai[1] = target.whoAmI;
+                if (i % 3 == 0)
+                {
+                    Particle orb = new CustomSpark(Projectile.Center + offset, velOffset * Main.rand.NextFloat(1f, 1.5f), "CalamityMod/Particles/Sparkle", false, 25, Main.rand.NextFloat(0.55f, 0.75f), Main.rand.NextBool(3) ? Color.PaleTurquoise : Color.Turquoise, new Vector2(1f, 2f), true, true);
+                    GeneralParticleHandler.SpawnParticle(orb);
+                }
+                else
+                {
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, ModContent.DustType<LightDust>(), new Vector2(velOffset.X, velOffset.Y));
+                    dust.noGravity = true;
+                    dust.velocity = velOffset * Main.rand.NextFloat(0.75f, 1);
+                    dust.scale = Main.rand.NextFloat(0.9f, 1.6f);
+                    dust.color = Main.rand.NextBool(3) ? Color.PaleTurquoise : Color.Turquoise;
+                }
+            }
         }
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if (Projectile.numHits > 0)
-                Projectile.damage = (int)(Projectile.damage * 0.9f);
-            if (Projectile.damage < 1)
-                Projectile.damage = 1;
+            target.AddBuff(ModContent.BuffType<Nightwither>(), 90);
+            float minMult = 0.7f;
+            int hitsToMinMult = 10;
+            float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+            modifiers.SourceDamage *= damageMult;
         }
 
         private void SpawnFlares(Vector2 targetPos, int width, int height)
@@ -315,16 +300,19 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), startPoint, velocity, ProjectileID.LunarFlare, flareDamage, flareKB, Main.myPlayer, 0f, AI1);
                     if (proj.WithinBounds(Main.maxProjectiles))
+                    {
                         Main.projectile[proj].DamageType = DamageClass.MeleeNoSpeed;
+                        Main.projectile[proj].tileCollide = false;
+                    }
                 }
             }
         }
-      
+
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 3);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 3);
             return false;
         }
     }
 }
-        
+

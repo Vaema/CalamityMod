@@ -1,12 +1,13 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
@@ -17,9 +18,8 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override void SetStaticDefaults()
         {
-
             // Visually a sword, but with no true melee capability. The Burning Sky is held out like a staff.
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
@@ -41,8 +41,8 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shoot = ModContent.ProjectileType<BurningMeteor>();
             Item.shootSpeed = 14f;
 
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -54,7 +54,7 @@ namespace CalamityMod.Items.Weapons.Melee
             for (int i = 0; i < ProjectilesPerBarrage; ++i)
             {
                 float randomSpeed = speed * Main.rand.NextFloat(0.7f, 1.4f);
-                CalamityUtils.ProjectileRain(source, Main.MouseWorld, 290f, 130f, 850f, 1100f, randomSpeed, type, damage, knockback, player.whoAmI);
+                CalamityUtils.ProjectileRain(source, player.ClampedMouseWorld(), 290f, 130f, 850f, 1100f, randomSpeed, type, damage, knockback, player.whoAmI);
             }
             return false;
         }

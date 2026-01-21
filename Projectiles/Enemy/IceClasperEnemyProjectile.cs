@@ -1,8 +1,8 @@
+﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using Microsoft.Xna.Framework;
 
 namespace CalamityMod.Projectiles.Enemy
 {
@@ -14,8 +14,8 @@ namespace CalamityMod.Projectiles.Enemy
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
         }
 
         public override void SetDefaults()
@@ -37,7 +37,7 @@ namespace CalamityMod.Projectiles.Enemy
             Projectile.velocity *= 1.01f;
 
             // Trail dust.
-            int trailDust = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, 172, Projectile.velocity.X, Projectile.velocity.Y, 0, default, 1.5f);
+            int trailDust = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.DungeonWater, Projectile.velocity.X, Projectile.velocity.Y, 0, default, 1.5f);
             Main.dust[trailDust].noGravity = true;
         }
 
@@ -51,9 +51,9 @@ namespace CalamityMod.Projectiles.Enemy
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (CalamityConfig.Instance.Afterimages)
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor);
-            
+            if (CalamityClientConfig.Instance.Afterimages)
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor);
+
             return true;
         }
     }

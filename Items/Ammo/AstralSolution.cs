@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Projectiles.Typeless;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -11,30 +10,14 @@ namespace CalamityMod.Items.Ammo
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 99;
-           	ItemID.Sets.SortingPriorityTerraforming[Type] = 95; // Red Solution
+            ItemID.Sets.SortingPriorityTerraforming[Type] = 94; // Red Solution
         }
 
-        public override void SetDefaults()
-        {
-            Item.width = 10;
-            Item.height = 12;
-            Item.ammo = AmmoID.Solution;
-            Item.shoot = ModContent.ProjectileType<AstralSpray>() - ProjectileID.PureSpray;
-            Item.value = Item.buyPrice(silver: 15);
-            Item.rare = ItemRarityID.Orange;
-            Item.maxStack = 9999;
-            Item.consumable = true;
-            return;
-        }
+        public override void SetDefaults() => Item.DefaultToSolution(ModContent.ProjectileType<AstralSpray>());
 
-		public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-		{
-			itemGroup = ContentSamples.CreativeHelper.ItemGroup.Solutions;
-		}
-
-        public override bool CanConsumeAmmo(Item ammo, Player player)
+        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
         {
-            return !(player.itemAnimation < player.ActiveItem().useAnimation - 3);
+            itemGroup = ContentSamples.CreativeHelper.ItemGroup.Solutions;
         }
     }
 }

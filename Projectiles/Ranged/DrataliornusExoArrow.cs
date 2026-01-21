@@ -1,7 +1,6 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -23,6 +22,8 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.ignoreWater = true;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.arrow = true;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 0;
         }
 
         public override void AI()
@@ -62,8 +63,6 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.immune[Projectile.owner] = 0;
-
             target.AddBuff(ModContent.BuffType<Dragonfire>(), 180);
         }
 

@@ -1,12 +1,12 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Systems;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.SunkenSea
 {
-    
+
     public class SeaPrismBrick : ModTile
     {
         private static int sheetWidth = 216;
@@ -20,8 +20,9 @@ namespace CalamityMod.Tiles.SunkenSea
             Main.tileShine[Type] = 3500;
             Main.tileShine2[Type] = true;
 
+            TileID.Sets.DrawsWalls[Type] = true;
             TileID.Sets.ChecksForMerge[Type] = true;
-            DustType = 33;
+            DustType = DustID.Water;
             AddMapEntry(new Color(47, 193, 236));
             HitSound = SoundID.Tink;
             Main.tileSpelunker[Type] = true;
@@ -43,7 +44,7 @@ namespace CalamityMod.Tiles.SunkenSea
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
         {
-            TileFraming.CompactFraming(i, j, resetFrame);
+            TileFramingSystem.CompactFraming(i, j, resetFrame);
             return false;
         }
     }

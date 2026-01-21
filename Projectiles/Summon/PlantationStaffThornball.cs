@@ -18,6 +18,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.MinionShot[Type] = true;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         }
 
         public override void SetDefaults()
@@ -74,7 +75,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void OnKill(int timeLeft)
         {
             for (int dustIndex = 0; dustIndex < 10; dustIndex++)
-                Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, 40, newColor: Color.Pink);
+                Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.JunglePlants, newColor: Color.Pink);
         }
     }
 }

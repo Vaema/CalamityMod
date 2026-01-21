@@ -1,9 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using CalamityMod.Enums;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Healing
@@ -11,12 +12,16 @@ namespace CalamityMod.Projectiles.Healing
     public class GladiatorHealOrb : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Healing";
+
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+
         public int target = -1;
+        public ref float heal => ref Projectile.ai[0];
+
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 20;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 20;
         }
 
         public override void SetDefaults()
@@ -28,12 +33,13 @@ namespace CalamityMod.Projectiles.Healing
             Projectile.alpha = 255;
             Projectile.penetrate = 1;
             Projectile.timeLeft = 4800;
-			Projectile.tileCollide = false;
+            Projectile.tileCollide = false;
             Projectile.extraUpdates = 3;
         }
 
         public override void AI()
         {
+            Projectile.scale = MathHelper.Lerp((heal / 8), 1, 0.65f);
             float maxDistance = 150f;
             if (target < 0)
             {
@@ -52,15 +58,17 @@ namespace CalamityMod.Projectiles.Healing
             }
             else HealHome();
         }
+
         public void PassiveBehavior()
         {
             float maxYVelocity = 2f;
-            CalamityUtils.StickToTiles(Projectile, false, false);
+            CommonProjectileAI.StickToTiles(Projectile, false, false);
             Projectile.velocity.X *= 0.99f;
             if (Projectile.velocity.Y < maxYVelocity)
                 Projectile.velocity.Y += 0.02f;
             if (Projectile.velocity.Y > maxYVelocity) { Projectile.velocity.Y = maxYVelocity; }
         }
+
         public void HealHome()
         {
             Player player = Main.player[target];
@@ -69,20 +77,18 @@ namespace CalamityMod.Projectiles.Healing
             float playerDist = playerVector.Length();
             if (playerDist < 50f && Projectile.position.X < player.position.X + player.width && Projectile.position.X + Projectile.width > player.position.X && Projectile.position.Y < player.position.Y + player.height && Projectile.position.Y + Projectile.height > player.position.Y)
             {
-                int healAmt = 10;
-                player.HealEffect(healAmt, false);
-                player.statLife += healAmt;
-                if (player.statLife > player.statLifeMax2)
-                {
-                    player.statLife = player.statLifeMax2;
-                }
+                player.HealPlayer((int)heal, HealTextType.Local);
+
                 SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/OrbHeal", 5) { Volume = 0.15f }, Projectile.Center);
-                NetMessage.SendData(MessageID.SpiritHeal, -1, -1, null, target, healAmt, 0f, 0f, 0, 0, 0);
+
+                NetMessage.SendData(MessageID.SpiritHeal, -1, -1, null, target, heal, 0f, 0f, 0, 0, 0);
+
                 Projectile.Kill();
             }
 
             Projectile.velocity = (playerVector.SafeNormalize(Vector2.UnitY) * 3.5f) + (player.velocity / 4);
         }
+
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D lightTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/SmallGreyscaleCircle").Value;
@@ -102,8 +108,8 @@ namespace CalamityMod.Projectiles.Healing
                     intensity *= Projectile.timeLeft / 60f;
                 }
                 // Become smaller the futher along the old positions we are.
-                Vector2 outerScale = new Vector2(1f) * intensity;
-                Vector2 innerScale = new Vector2(1f) * intensity * 0.7f;
+                Vector2 outerScale = new Vector2(1f) * Projectile.scale * intensity;
+                Vector2 innerScale = new Vector2(1f) * Projectile.scale * intensity * 0.7f;
                 outerColor *= intensity;
                 innerColor *= intensity;
                 Main.EntitySpriteDraw(lightTexture, drawPosition, null, outerColor, 0f, lightTexture.Size() * 0.5f, outerScale * 0.25f, SpriteEffects.None, 0);

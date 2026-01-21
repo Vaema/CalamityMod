@@ -1,6 +1,9 @@
-﻿using CalamityMod.Projectiles.Melee.Spears;
+﻿using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -9,32 +12,30 @@ namespace CalamityMod.Items.Weapons.Melee
     public class InsidiousImpaler : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.Spears[Item.type] = true;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 66;
             Item.height = 70;
-            Item.damage = 320;
-            Item.DamageType = DamageClass.Melee;
+            Item.damage = 300;
+            Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.noMelee = true;
             Item.useTurn = true;
             Item.noUseGraphic = true;
-            Item.useAnimation = Item.useTime = 15;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.knockBack = 8f;
+            Item.useAnimation = Item.useTime = 13;
+            Item.useStyle = ItemUseStyleID.Swing;
+            Item.knockBack = 12f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<InsidiousImpalerProj>();
-            Item.shootSpeed = 5f;
+            Item.shoot = ModContent.ProjectileType<InsidiousHarpoon>();
+            Item.shootSpeed = 18f;
 
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
-
-        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        {
+            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0, 0, 0);
+            return false;
+        }
     }
 }

@@ -1,7 +1,8 @@
-﻿using CalamityMod.Graphics.Metaballs;
+﻿using System;
+using CalamityMod.Graphics.Metaballs;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
@@ -15,15 +16,15 @@ namespace CalamityMod.Projectiles.Magic
             get
             {
                 int spiritType = ModContent.ProjectileType<SpiritCongregation>();
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    if (Main.projectile[i].type != spiritType || Main.projectile[i].identity != Projectile.ai[0] ||
-                        Main.projectile[i].owner != Projectile.owner)
+                    if (p.type != spiritType || p.identity != Projectile.ai[0] ||
+                        p.owner != Projectile.owner)
                     {
                         continue;
                     }
 
-                    return Main.projectile[i];
+                    return p;
                 }
                 return null;
             }
@@ -33,7 +34,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 3;
+            Main.projFrames[Type] = 3;
         }
 
         public override void SetDefaults()
@@ -52,7 +53,7 @@ namespace CalamityMod.Projectiles.Magic
 
             // Handle frames.
             Projectile.frameCounter++;
-            Projectile.frame = Projectile.frameCounter / 5 % Main.projFrames[Projectile.type];
+            Projectile.frame = Projectile.frameCounter / 5 % Main.projFrames[Type];
 
             float maxOpacity = 1f;
 
@@ -61,12 +62,8 @@ namespace CalamityMod.Projectiles.Magic
             float flySpeed = 8f;
             float flyInertia = 54f;
 
-            Projectile.hostile = true;
-            Projectile.friendly = false;
             if (ProjectileOwner != null && (ProjectileOwner.ModProjectile<SpiritCongregation>().CurrentPower > 0.97f || Projectile.timeLeft < 95))
             {
-                Projectile.hostile = false;
-
                 radius += 36f;
 
                 target = ProjectileOwner;
@@ -117,11 +114,11 @@ namespace CalamityMod.Projectiles.Magic
         {
             for (int i = 0; i < 6; i++)
             {
-                Dust polterplasm = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(12f, 12f), 261);
-                polterplasm.color = Color.Lerp(Color.LightPink, Color.Red, Main.rand.NextFloat(0.67f));
-                polterplasm.scale = 1.2f;
-                polterplasm.fadeIn = 0.55f;
-                polterplasm.noGravity = true;
+                Dust necroplasm = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(12f, 12f), DustID.AncientLight);
+                necroplasm.color = Color.Lerp(Color.LightPink, Color.Red, Main.rand.NextFloat(0.67f));
+                necroplasm.scale = 1.2f;
+                necroplasm.fadeIn = 0.55f;
+                necroplasm.noGravity = true;
             }
         }
     }

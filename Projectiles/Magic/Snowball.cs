@@ -1,9 +1,9 @@
 ﻿using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -19,7 +19,6 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.DamageType = DamageClass.Magic;
             Projectile.coldDamage = true;
             Projectile.penetrate = 1;
-            Projectile.extraUpdates = 1;
             Projectile.coldDamage = true;
         }
 
@@ -36,11 +35,11 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item27, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item27, Projectile.Center);
             //crystal bullet shards
             for (int i = 0; i < 10; ++i)
             {
-                int snow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 68, 0f, 0f, 0, new Color(), 1f);
+                int snow = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.BlueCrystalShard, 0f, 0f, 0, new Color(), 1f);
                 Main.dust[snow].noGravity = true;
                 Main.dust[snow].velocity *= 2f;
             }

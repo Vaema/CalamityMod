@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
         public override void SetDefaults()
@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useLimitPerAnimation = 2;
             Item.UseSound = SoundID.Item5;
             Item.shoot = ModContent.ProjectileType<DrataliornusBow>();
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.DamageType = DamageClass.Ranged;
@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useTurn = false;
             Item.useAmmo = AmmoID.Arrow;
             Item.autoReuse = true;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override bool AltFunctionUse(Player player)
@@ -88,7 +88,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             }
             else
             {
-                Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, ModContent.ProjectileType<DrataliornusBow>(), 0, 0f, player.whoAmI);
+                Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<DrataliornusBow>(), 0, 0f, player.whoAmI);
             }
 
             return false;
@@ -103,9 +103,9 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddIngredient<BlossomFlux>().
-                AddIngredient<EffulgentFeather>(12).
-                AddIngredient<YharonSoulFragment>(4).
                 AddIngredient<AuricBar>(5).
+                AddIngredient<YharonSoulFragment>(4).
+                AddIngredient<EffulgentFeather>(12).
                 AddTile<CosmicAnvil>().
                 Register();
         }

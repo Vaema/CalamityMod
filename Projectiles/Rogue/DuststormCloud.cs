@@ -1,14 +1,12 @@
 ﻿using Terraria;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Rogue
 {
     public class DuststormCloud : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
-        public override void SetStaticDefaults()
-        {
-            Main.projFrames[Projectile.type] = 4;
-        }
+        public override void SetStaticDefaults() => Main.projFrames[Type] = 4;
 
         public override void SetDefaults()
         {
@@ -16,13 +14,10 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.height = 14;
             Projectile.friendly = true;
             Projectile.alpha = 255;
-            Projectile.penetrate = -1; //Would only be used by Sandslasher stealth
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.timeLeft = 600;
             Projectile.DamageType = DamageClass.Generic;
-            Projectile.usesIDStaticNPCImmunity = true; //Would only be used by Sandslasher stealth
-            Projectile.idStaticNPCHitCooldown = 6; //Also only used by Sandslasher stealth
         }
 
         public override void AI()
@@ -33,7 +28,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.frame = 0;
             }

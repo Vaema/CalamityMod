@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Effects;
+using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -48,9 +49,9 @@ namespace CalamityMod.Graphics.Metaballs
             }
         }
 
-        public override MetaballDrawLayer DrawContext => MetaballDrawLayer.AfterProjectiles;
+        public override GeneralDrawLayer DrawLayer => GeneralDrawLayer.AfterProjectiles;
 
-        public override Color EdgeColor => Color.DarkRed;
+        public override Color EdgeColor => Color.Red with { A = 0 };
 
         public override void Update()
         {
@@ -72,12 +73,12 @@ namespace CalamityMod.Graphics.Metaballs
             Vector2 screenSize = new(Main.screenWidth, Main.screenHeight);
 
             // Supply shader parameter values.
-            metaballShader.Parameters["screenArea"]?.SetValue(screenSize);
-            metaballShader.Parameters["layerOffset"]?.SetValue(Vector2.Zero);
-            metaballShader.Parameters["singleFrameScreenOffset"]?.SetValue(Vector2.Zero);
+            metaballShader.Value.Parameters["screenArea"]?.SetValue(screenSize);
+            metaballShader.Value.Parameters["layerOffset"]?.SetValue(Vector2.Zero);
+            metaballShader.Value.Parameters["singleFrameScreenOffset"]?.SetValue(Vector2.Zero);
 
             // Apply the metaball shader.
-            metaballShader.CurrentTechnique.Passes[0].Apply();
+            metaballShader.Value.CurrentTechnique.Passes[0].Apply();
         }
 
         public static void SpawnParticle(Vector2 position, float size) => Particles.Add(new(position, size));
@@ -85,7 +86,7 @@ namespace CalamityMod.Graphics.Metaballs
         public override void DrawInstances()
         {
             float pureRedIntensity = 0.15f;
-            float opacity = 0.5f;
+            float opacity = 1f;
             Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/SmallGreyscaleCircle").Value;
 
             foreach (BloodBoilerParticle particle in Particles)

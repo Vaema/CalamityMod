@@ -28,7 +28,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 5;
+            Main.projFrames[Type] = 5;
         }
 
         public override void SetDefaults()
@@ -40,6 +40,8 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.penetrate = 100;
             Projectile.extraUpdates = 1;
             Projectile.timeLeft = 450;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override bool PreAI()
@@ -71,7 +73,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override float DetermineLaserLength()
         {
             if (Projectile.penetrate == 100)
-                return DetermineLaserLength_CollideWithTiles(8);
+                return DetermineLaserLength_CollideWithTiles();
             return LaserLength;
         }
 
@@ -95,7 +97,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override bool PreDraw(ref Color lightColor)
         {
             // Start texture drawing.
-            Rectangle beginFrame = LaserBeginTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
+            Rectangle beginFrame = LaserBeginTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Main.EntitySpriteDraw(LaserBeginTexture,
                              Projectile.Center - Main.screenPosition,
                              beginFrame,
@@ -108,14 +110,14 @@ namespace CalamityMod.Projectiles.Ranged
 
             // Prepare things for body drawing.
             float laserBodyLength = LaserLength;
-            laserBodyLength -= (LaserBeginTexture.Height * 0.5f + LaserEndTexture.Height) * Projectile.scale / Main.projFrames[Projectile.type];
+            laserBodyLength -= (LaserBeginTexture.Height * 0.5f + LaserEndTexture.Height) * Projectile.scale / Main.projFrames[Type];
             Vector2 centerOnLaser = Projectile.Center;
 
             // Body drawing.
-            Rectangle middleFrame = LaserMiddleTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
+            Rectangle middleFrame = LaserMiddleTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             if (laserBodyLength > 30f)
             {
-                float laserOffset = (LaserMiddleTexture.Height - 10f) * Projectile.scale / Main.projFrames[Projectile.type];
+                float laserOffset = (LaserMiddleTexture.Height - 10f) * Projectile.scale / Main.projFrames[Type];
                 float incrementalBodyLength = 0f;
                 while (incrementalBodyLength + 1f < laserBodyLength)
                 {
@@ -134,7 +136,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
 
             // End texture drawing.
-            Rectangle endFrame = LaserEndTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
+            Rectangle endFrame = LaserEndTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 laserEndCenter = centerOnLaser - Main.screenPosition;
             Main.EntitySpriteDraw(LaserEndTexture,
                              laserEndCenter,

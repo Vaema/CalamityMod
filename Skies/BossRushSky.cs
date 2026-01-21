@@ -1,7 +1,7 @@
-﻿using CalamityMod.Events;
+﻿using System;
+using CalamityMod.Events;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.Graphics.Effects;
@@ -23,7 +23,7 @@ namespace CalamityMod.Skies
 
         public static bool DetermineDrawEligibility()
         {
-            bool useEffect = ((BossRushEvent.BossRushActive && BossRushEvent.StartTimer > 100) || ShouldDrawRegularly) && !Main.gameMenu;
+            bool useEffect = ((BossRushEvent.BossRushActive && BossRushEvent.StartTimer > 100) || ShouldDrawRegularly || Main.LocalPlayer?.Calamity()?.monolithBossRushShader > 0) && !Main.gameMenu;
 
             if (SkyManager.Instance["CalamityMod:BossRush"] != null && useEffect != SkyManager.Instance["CalamityMod:BossRush"].IsActive())
             {
@@ -31,14 +31,6 @@ namespace CalamityMod.Skies
                     SkyManager.Instance.Activate("CalamityMod:BossRush");
                 else
                     SkyManager.Instance.Deactivate("CalamityMod:BossRush", new object[0]);
-            }
-
-            if (useEffect != Filters.Scene["CalamityMod:BossRush"].IsActive())
-            {
-                if (useEffect)
-                    Filters.Scene.Activate("CalamityMod:BossRush");
-                else
-                    Filters.Scene["CalamityMod:BossRush"].Deactivate(new object[0]);
             }
 
             return useEffect;
@@ -66,8 +58,8 @@ namespace CalamityMod.Skies
 
         private float GetIntensity()
         {
-            if (ShouldDrawRegularly)
-                return 1f;
+            if (ShouldDrawRegularly || Main.LocalPlayer?.Calamity().monolithBossRushShader > 0)
+                return 0.57f;
 
             float fadeRatio = BossRushEvent.StartTimer / (float)BossRushEvent.StartEffectTotalTime;
             return Utils.GetLerpValue(0.57f, 1f, fadeRatio, true);
@@ -77,7 +69,7 @@ namespace CalamityMod.Skies
 
         public override void Draw(SpriteBatch spriteBatch, float minDepth, float maxDepth)
         {
-            if (GetIntensity() == 0f)
+            if (GetIntensity() == 0f && Main.LocalPlayer?.Calamity()?.monolithBossRushShader <= 0)
                 return;
 
             if (maxDepth >= 0 && minDepth < 0 && GetIntensity() > 0f)
@@ -102,8 +94,12 @@ namespace CalamityMod.Skies
             Main.spriteBatch.End();
             Main.spriteBatch.Begin();
 
+            // Colors for the Eye
+            Color baseXerocColor = new Color(209, 183, 50);
+            Color dimXerocColor = new Color(181, 164, 81);
+
             // Draw the Xeroc eye at the back of the sky.
-            if (maxDepth >= float.MaxValue && minDepth < float.MaxValue && (BossRushEvent.EndTimer < BossRushEvent.EndVisualEffectTime - 40f || ShouldDrawRegularly))
+            if (maxDepth >= float.MaxValue && minDepth < float.MaxValue && (BossRushEvent.EndTimer < BossRushEvent.EndVisualEffectTime - 40f || ShouldDrawRegularly || Main.LocalPlayer?.Calamity()?.monolithBossRushShader > 0))
             {
                 Vector2 screenCenter = Main.screenPosition + new Vector2(Main.screenWidth, Main.screenHeight) * 0.5f;
                 screenCenter += new Vector2(Main.screenWidth, Main.screenHeight) * (Main.GameViewMatrix.Zoom - Vector2.One) * 0.5f;
@@ -112,11 +108,11 @@ namespace CalamityMod.Skies
                 Vector2 drawPosition = (drawWorldPosition - screenCenter) * 0.097f + screenCenter - Main.screenPosition - Vector2.UnitY * 100f;
 
                 Texture2D eyeTexture = ModContent.Request<Texture2D>("CalamityMod/Skies/XerocEye").Value;
-                Color baseColorDraw = Color.Lerp(Color.White, Color.Red, IncrementalInterest);
+                Color baseColorDraw = Color.Lerp(baseXerocColor, Color.DimGray, IncrementalInterest);
                 Vector2 origin = eyeTexture.Size() * 0.5f;
 
                 spriteBatch.Draw(eyeTexture, drawPosition, null, baseColorDraw, 0f, origin, scale, SpriteEffects.None, 0f);
-                Color fadedColor = Color.Lerp(baseColorDraw, Color.Coral, 0.3f) * MathHelper.Lerp(0.18f, 0.3f, IncrementalInterest);
+                Color fadedColor = Color.Lerp(baseColorDraw, dimXerocColor, 0.3f) * MathHelper.Lerp(0.18f, 0.3f, IncrementalInterest);
                 fadedColor.A = 0;
 
                 float backEyeOutwardness = MathHelper.Lerp(8f, 4f, IncrementalInterest);

@@ -1,12 +1,12 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using System.IO;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Projectiles.Enemy;
 using Microsoft.Xna.Framework;
-using System;
-using System.IO;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.ItemDropRules;
@@ -27,7 +27,7 @@ namespace CalamityMod.NPCs.AcidRain
         public const int TotalHitsNeededToDoDamage = 10;
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 7;
+            Main.npcFrameCount[Type] = 7;
         }
 
         public override void SetDefaults()
@@ -43,11 +43,10 @@ namespace CalamityMod.NPCs.AcidRain
             if (DownedBossSystem.downedPolterghast)
             {
                 NPC.lifeMax = 4200;
-                NPC.DR_NERD(0.2f);
             }
 
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 0, 5, 55);
+            NPC.value = Item.buyPrice(silver: 4);
             NPC.lavaImmune = true;
             NPC.noGravity = false;
             NPC.noTileCollide = false;
@@ -64,9 +63,9 @@ namespace CalamityMod.NPCs.AcidRain
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.FlakCrab")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.FlakCrab")
             });
         }
 
@@ -160,7 +159,7 @@ namespace CalamityMod.NPCs.AcidRain
             float speed = DownedBossSystem.downedPolterghast ? 29f : 17f;
             speed *= Main.rand.NextFloat(0.8f, 1.2f);
 
-            int damage = Main.expertMode ? DownedBossSystem.downedPolterghast ? 32 : 18 : DownedBossSystem.downedPolterghast ? 42 : 23;
+            int damage = Main.masterMode ? (DownedBossSystem.downedPolterghast ? 27 : 15) : Main.expertMode ? (DownedBossSystem.downedPolterghast ? 32 : 18) : (DownedBossSystem.downedPolterghast ? 42 : 23);
             Vector2 spawnPosition = NPC.Top + Vector2.UnitY * 6f;
             Vector2 shootVelocity = (closestTargetToTop.Center - spawnPosition).SafeNormalize(Vector2.UnitY).RotatedByRandom(0.25f) * speed;
             Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnPosition, shootVelocity, ModContent.ProjectileType<FlakAcid>(), damage, 2f);
@@ -179,7 +178,7 @@ namespace CalamityMod.NPCs.AcidRain
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(ModContent.ItemType<FlakToxicannon>(), 20);
+            npcLoot.Add(ModContent.ItemType<FlakToxicannon>(), 10);
             LeadingConditionRule postPolter = npcLoot.DefineConditionalDropSet(() => DownedBossSystem.downedPolterghast);
             postPolter.Add(ModContent.ItemType<CorrodedFossil>(), 15, 1, 3, !DownedBossSystem.downedPolterghast);
             postPolter.AddFail(ModContent.ItemType<CorrodedFossil>(), 3, 1, 3, DownedBossSystem.downedPolterghast);
@@ -199,7 +198,7 @@ namespace CalamityMod.NPCs.AcidRain
                 {
                     NPC.frame.Y += frameHeight;
                 }
-                if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[NPC.type])
+                if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[Type])
                 {
                     NPC.frame.Y = frameHeight * 3; // Frames 1 and 2 are for transitioning. Frame 0 is sitting still, and the rest are walking frames
                 }
@@ -214,15 +213,15 @@ namespace CalamityMod.NPCs.AcidRain
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 15; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("FlakCrabGore1").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("FlakCrabGore2").Type, 1f);

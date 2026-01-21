@@ -1,6 +1,6 @@
 ﻿using CalamityMod.BiomeManagers;
-using CalamityMod.Dusts;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Weapons.Summon;
@@ -16,7 +16,7 @@ namespace CalamityMod.NPCs.Crags
     {
         public override void SetStaticDefaults()
         {
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers(0)
+            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 PortraitPositionYOverride = 10f
             };
@@ -32,10 +32,10 @@ namespace CalamityMod.NPCs.Crags
             NPC.width = 80;
             NPC.height = 80;
             NPC.defense = 18;
-            NPC.lifeMax = 90;
+            NPC.lifeMax = 160;
             NPC.alpha = 100;
             NPC.knockBackResist = 0.7f;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(silver: 5);
             NPC.HitSound = SoundID.NPCHit49;
             NPC.DeathSound = SoundID.NPCDeath51;
             NPC.noGravity = true;
@@ -57,9 +57,9 @@ namespace CalamityMod.NPCs.Crags
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Scryllar")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Scryllar")
             });
         }
 
@@ -130,7 +130,7 @@ namespace CalamityMod.NPCs.Crags
                     break;
                 }
             }
-            if (Main.player[NPC.target].npcTypeNoAggro[NPC.type])
+            if (Main.player[NPC.target].npcTypeNoAggro[Type])
             {
                 bool inTileNoAggro = false;
                 for (int loopInc2 = npcTileY; loopInc2 < npcTileY + tileCheckLoopAmt - 2; loopInc2++)
@@ -277,7 +277,7 @@ namespace CalamityMod.NPCs.Crags
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 60, true);
+                target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120);
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -292,7 +292,7 @@ namespace CalamityMod.NPCs.Crags
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Scryllar").Type, NPC.scale);
                 }

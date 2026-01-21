@@ -1,11 +1,12 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System.IO;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.NPCs.NormalNPCs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
-using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -15,22 +16,28 @@ namespace CalamityMod.NPCs.Abyss
 {
     public class Laserfish : ModNPC
     {
+        public static Asset<Texture2D> GlowTexture;
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 6;
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
+            Main.npcFrameCount[Type] = 6;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
         {
             NPC.noGravity = true;
-            NPC.damage = 40;
+            NPC.damage = 0; // 0 contact damage, laser damage is handled in the general swimming AI
             NPC.width = 58;
             NPC.height = 32;
-            NPC.defense = 15;
-            NPC.lifeMax = 480;
+            NPC.defense = 20;
+            NPC.lifeMax = 600;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 10, 0);
+            NPC.value = Item.buyPrice(silver: 10);
             NPC.HitSound = SoundID.NPCHit51;
             NPC.DeathSound = SoundID.NPCDeath26;
             NPC.knockBackResist = 0.65f;
@@ -46,9 +53,9 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Laserfish")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Laserfish")
             });
         }
 
@@ -64,10 +71,7 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void AI()
         {
-            // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
-            NPC.damage = 0;
-
-            CalamityAI.PassiveSwimmingAI(NPC, Mod, 0, Main.player[NPC.target].Calamity().GetAbyssAggro(160f), 0.15f, 0.15f, 4f, 4f, 0.1f);
+            CalamityRegularEnemyAI.PassiveSwimmingAI(NPC, Mod, 0, Main.player[NPC.target].Calamity().GetAbyssAggro(160f), 0.15f, 0.15f, 4f, 4f, 0.1f);
         }
 
         public override bool? CanBeHitByProjectile(Projectile projectile)
@@ -87,7 +91,7 @@ namespace CalamityMod.NPCs.Abyss
                 return;
             }
             NPC.frameCounter += NPC.chaseable ? 0.15f : 0.075f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
@@ -96,11 +100,9 @@ namespace CalamityMod.NPCs.Abyss
         {
             if (!NPC.IsABestiaryIconDummy)
             {
-                Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/NPCs/Abyss/LaserfishGlow").Value;
-
                 var effects = NPC.direction == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
-                Main.EntitySpriteDraw(tex, NPC.Center - Main.screenPosition + new Vector2(0, NPC.gfxOffY + 4), 
+                Main.EntitySpriteDraw(GlowTexture.Value, NPC.Center - Main.screenPosition + new Vector2(0, NPC.gfxOffY + 4),
                 NPC.frame, Color.White * 0.5f, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, effects, 0);
             }
         }
@@ -120,7 +122,9 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.AddIf(DropHelper.PostCal(), ModContent.ItemType<Lumenyl>(), 2);
+            DropHelper.NormalVsExpertQuantity(ModContent.ItemType<MysteriousCircuitry>(), 2, 1, 2, 2, 3);
+            var postLevi = npcLoot.DefineConditionalDropSet(DropHelper.PostLevi());
+            postLevi.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 1, 2, 2, 3));
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -135,7 +139,7 @@ namespace CalamityMod.NPCs.Abyss
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Laserfish").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Laserfish2").Type, 1f);

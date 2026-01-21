@@ -1,9 +1,7 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System.Collections.Generic;
+using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
-using System.Collections.Generic;
-using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.GemTech
@@ -17,8 +15,8 @@ namespace CalamityMod.Items.Armor.GemTech
             Item.width = 48;
             Item.height = 32;
             Item.defense = 31;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.Calamity().donorItem = true;
         }
 

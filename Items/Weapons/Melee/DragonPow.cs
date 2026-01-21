@@ -1,10 +1,10 @@
 ﻿using CalamityMod.Items.Materials;
+using CalamityMod.NPCs.Yharon;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.NPCs.Yharon;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
@@ -36,8 +36,8 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.UseSound = Yharon.ShortRoarSound;
             Item.channel = true;
 
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.Calamity().donorItem = true;
 
             Item.shoot = ModContent.ProjectileType<DragonPowFlail>();
@@ -53,9 +53,8 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient(ItemID.Flairon).
                 AddIngredient<BallOFugu>().
                 AddIngredient<Tumbleweed>().
-                AddIngredient<UrchinFlail>().
-                AddIngredient<YharonSoulFragment>(4).
                 AddIngredient<AuricBar>(5).
+                AddIngredient<YharonSoulFragment>(4).
                 AddTile<CosmicAnvil>().
                 Register();
         }

@@ -1,16 +1,16 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using System.IO;
 using CalamityMod.Items.Weapons.Melee;
-using Terraria.Graphics.Shaders;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.ModLoader.ModContent;
 using static CalamityMod.CalamityUtils;
-using Terraria.Audio;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -22,7 +22,6 @@ namespace CalamityMod.Projectiles.Melee
         Vector2 direction = Vector2.Zero;
         public ref float CurrentState => ref Projectile.ai[0];
         public Player Owner => Main.player[Projectile.owner];
-        private bool OwnerCanShoot => Owner.channel && !Owner.noItems && !Owner.CCed;
         public const float throwOutTime = 90f;
         public const float throwOutDistance = 440f;
 
@@ -45,8 +44,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
         public override void SetDefaults()
         {
@@ -80,6 +79,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 SoundEngine.PlaySound(SoundID.Item90, Projectile.Center);
                 Projectile.velocity = Vector2.Zero;
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 direction = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
                 direction.Normalize();
                 initialized = true;
@@ -87,7 +87,7 @@ namespace CalamityMod.Projectiles.Melee
 
             Projectile.rotation = direction.ToRotation(); //Only done for afterimages
 
-            if (!OwnerCanShoot)
+            if (Owner.CantUseHoldout())
             {
                 if (CurrentState == 2f || (CurrentState == 0f && Empowerment / maxEmpowerment < 0.5))
                 {
@@ -99,12 +99,12 @@ namespace CalamityMod.Projectiles.Melee
                 else if (CurrentState == 0f)
                 {
                     CurrentState = 1f;
-                    if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 3)
-                        Main.LocalPlayer.Calamity().GeneralScreenShakePower = 3;
+                    Main.LocalPlayer.SetScreenshake(3f);
 
                     SoundEngine.PlaySound(SoundID.Item80, Projectile.Center);
+                    // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     direction = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
-                    //PARTICLES LOTS OF PARTICLES LOTS OF SPARKLES YES YES MH YES YES
+                    // PARTICLES LOTS OF PARTICLES LOTS OF SPARKLES
                     for (int i = 0; i <= 8; i++)
                     {
                         float variation = Main.rand.NextFloat(-MathHelper.PiOver4, MathHelper.PiOver4);
@@ -113,7 +113,7 @@ namespace CalamityMod.Projectiles.Melee
                         GeneralParticleHandler.SpawnParticle(Sparkle);
                     }
 
-                    //Actually do projectiles now
+                    // Actually do projectiles now
                     if (Owner.whoAmI == Main.myPlayer)
                     {
                         for (int i = 0; i <= 5; i++)
@@ -152,26 +152,17 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     Empowerment++; //Charge faster when near the end
 
-                    if (Main.rand.Next(2) == 0)
+                    if (Main.rand.NextBool(2))
 
                     {
-
-                        float Opacity = MathHelper.Clamp((Empowerment / maxEmpowerment - 0.5f) * 3f, 0, 1) * 0.75f;
+                        float Opacity = MathHelper.Clamp((Empowerment / maxEmpowerment - 0.5f) * 3f, 0, 1) * 0.5f;
                         float scaleFactor = MathHelper.Clamp((Empowerment / maxEmpowerment - 0.5f) * 3f, 0, 1);
 
-                        for (float i = 0f; i <= 1; i += 0.5f)
+                        for (float i = 0f; i < 2; i++)
                         {
-                            Vector2 smokepos = Projectile.Center + (direction * (60 + 40 * i) * Projectile.scale) + direction.RotatedBy(-MathHelper.PiOver2) * 30f * scaleFactor * Main.rand.NextFloat();
-
-
+                            Vector2 smokepos = Projectile.Center + (direction * (60 + 20 * i) * Projectile.scale) + direction.RotatedBy(-MathHelper.PiOver2) * 30f * scaleFactor * Main.rand.NextFloat();
                             Particle smoke = new HeavySmokeParticle(smokepos, direction.RotatedBy(-MathHelper.PiOver2) * 20f * scaleFactor + Owner.velocity, Color.Lerp(Color.MidnightBlue, Color.Indigo, i), 10 + Main.rand.Next(5), scaleFactor * Main.rand.NextFloat(2.8f, 3.1f), Opacity + Main.rand.NextFloat(0f, 0.2f), 0f, false, 0, true);
                             GeneralParticleHandler.SpawnParticle(smoke);
-
-                            if (Main.rand.Next(3) == 0)
-                            {
-                                Particle smokeGlow = new HeavySmokeParticle(smokepos, direction.RotatedBy(-MathHelper.PiOver2) * 20f * scaleFactor + Owner.velocity, Color.OrangeRed, 7, scaleFactor * Main.rand.NextFloat(2f, 2.4f), Opacity * 2, 0f, true, 0.001f, true);
-                                GeneralParticleHandler.SpawnParticle(smokeGlow);
-                            }
                         }
                     }
 
@@ -202,6 +193,7 @@ namespace CalamityMod.Projectiles.Melee
                     }
 
                     float rotationAdjusted = MathHelper.WrapAngle(Projectile.rotation) + MathHelper.Pi;
+                    // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     float mouseAngleAdjusted = MathHelper.WrapAngle(Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.One).ToRotation()) + MathHelper.Pi;
                     float deltaAngleShoot = Math.Abs(MathHelper.WrapAngle(rotationAdjusted - mouseAngleAdjusted));
 
@@ -209,9 +201,12 @@ namespace CalamityMod.Projectiles.Melee
                     {
                         if (Owner.whoAmI == Main.myPlayer)
                         {
+                            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                             Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.One) * 15f, ProjectileType<GalaxiaBolt>(), (int)(Projectile.damage * FourSeasonsGalaxia.PhoenixAttunement_BoltDamageReduction), 0f, Owner.whoAmI, 0.1f, MathHelper.Pi * 0.02f);
                         }
                         CanDirectFire = false;
+
+                        // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                         AngleReset = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.One).ToRotation();
                     }
 
@@ -221,7 +216,7 @@ namespace CalamityMod.Projectiles.Melee
                         float maxDistance = Projectile.scale * 1.9f * 78f;
                         Vector2 distance = Main.rand.NextVector2Circular(maxDistance, maxDistance);
                         Vector2 angularVelocity = Utils.SafeNormalize(distance.RotatedBy(MathHelper.PiOver2), Vector2.Zero) * 2f * (1f + distance.Length() / 15f);
-                        Particle glitter = new CritSpark(Owner.Center + distance, Owner.velocity + angularVelocity, Main.rand.Next(3) == 0 ? Color.Turquoise : Color.Coral, currentColor, 1f + 1 * (distance.Length() / maxDistance), 10, 0.05f, 3f);
+                        Particle glitter = new CritSpark(Owner.Center + distance, Owner.velocity + angularVelocity, Main.rand.NextBool(3)? Color.Turquoise : Color.Coral, currentColor, 1f + 1 * (distance.Length() / maxDistance), 10, 0.05f, 3f);
                         GeneralParticleHandler.SpawnParticle(glitter);
                     }
                 }
@@ -255,11 +250,20 @@ namespace CalamityMod.Projectiles.Melee
             Owner.itemRotation = direction.ToRotation();
             if (Owner.direction != 1)
             {
-                Owner.itemRotation -= 3.14f;
+                Owner.itemRotation -= MathHelper.Pi;
             }
             Owner.itemRotation = MathHelper.WrapAngle(Owner.itemRotation);
             Owner.itemTime = 2;
             Owner.itemAnimation = 2;
+        }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            if (CurrentState == 1f && Main.myPlayer == Projectile.owner && !AnyProjectiles(ProjectileType<PhoenixsPrideFirewall>()))
+            {
+                Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ProjectileType<PhoenixsPrideFirewall>(), Projectile.damage, 0f, Projectile.owner, target.whoAmI);
+                (proj.ModProjectile as PhoenixsPrideFirewall).Scale = MathHelper.Clamp(target.width / 100f, 0.3f, 1.25f);
+            }
         }
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
@@ -270,11 +274,7 @@ namespace CalamityMod.Projectiles.Melee
                 modifiers.SourceDamage *= FourSeasonsGalaxia.PhoenixAttunement_BaseDamageReduction + (FourSeasonsGalaxia.PhoenixAttunement_FullChargeDamageBoost * Empowerment / maxEmpowerment);
         }
 
-        public override void OnKill(int timeLeft)
-        {
-            if (smear != null)
-                smear.Kill();
-        }
+        public override void OnKill(int timeLeft) => smear?.Kill();
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -287,7 +287,7 @@ namespace CalamityMod.Projectiles.Melee
             Vector2 drawOffset = Projectile.Center - Main.screenPosition;
 
             //Afterimages
-            if (CalamityConfig.Instance.Afterimages && CurrentState == 0f && Empowerment / maxEmpowerment > 0.4f)
+            if (CalamityClientConfig.Instance.Afterimages && CurrentState == 0f && Empowerment / maxEmpowerment > 0.4f)
             {
                 for (int i = 0; i < Projectile.oldRot.Length; ++i)
                 {

@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Magic;
+﻿using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,6 +13,7 @@ namespace CalamityMod.Items.Weapons.Magic
     public class GhastlyVisage : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
+
         public override void SetDefaults()
         {
             Item.width = 32;
@@ -29,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shootSpeed = 9f;
             Item.shoot = ModContent.ProjectileType<GhastlyVisageProj>();
 
-            Item.value = CalamityGlobalItem.Rarity13BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 

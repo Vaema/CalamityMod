@@ -1,24 +1,25 @@
-﻿using Microsoft.Xna.Framework;
-using System;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Terraria.Audio;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
+using Terraria;
+using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
     public class NebulaCloudCore : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
-        private const float IntendedVelocity = 4f;
+        private const float IntendedVelocity = 6f;
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -27,12 +28,12 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.height = 32;
             Projectile.friendly = true;
             Projectile.alpha = 255;
-            Projectile.penetrate = 4;
+            Projectile.penetrate = 3;
             Projectile.ignoreWater = true;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.MaxUpdates = 3;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 8 * Projectile.MaxUpdates; // 8 effective, 24 total
+            Projectile.localNPCHitCooldown = 10 * Projectile.MaxUpdates; // 10 effective, 30 total
         }
 
         public override void AI()
@@ -47,7 +48,7 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
                 Projectile.frame = 0;
 
             // Decide what state the projectile is in.
@@ -85,7 +86,7 @@ namespace CalamityMod.Projectiles.Magic
                         else
                         {
                             Vector2 prettyDustDirect2 = Vector2.UnitY.RotatedByRandom(MathHelper.TwoPi);
-                            Dust prettyDust2 = Main.dust[Dust.NewDust(Projectile.Center - prettyDustDirect2 * 45f, 0, 0, 240)];
+                            Dust prettyDust2 = Main.dust[Dust.NewDust(Projectile.Center - prettyDustDirect2 * 45f, 0, 0, DustID.Granite)];
                             prettyDust2.noGravity = true;
                             prettyDust2.position = Projectile.Center - prettyDustDirect2 * 45f;
                             prettyDust2.velocity = prettyDustDirect2.RotatedBy(-MathHelper.PiOver2) * 4f;
@@ -126,7 +127,7 @@ namespace CalamityMod.Projectiles.Magic
                         if (Main.rand.NextBool())
                         {
                             Vector2 slowPrettyDustDirect = Vector2.UnitY.RotatedByRandom(MathHelper.TwoPi);
-                            Dust slowPrettyDust = Main.dust[Dust.NewDust(Projectile.Center - slowPrettyDustDirect * 45f, 0, 0, 86)];
+                            Dust slowPrettyDust = Main.dust[Dust.NewDust(Projectile.Center - slowPrettyDustDirect * 45f, 0, 0, DustID.GemAmethyst)];
                             slowPrettyDust.noGravity = true;
                             slowPrettyDust.position = Projectile.Center - slowPrettyDustDirect * Main.rand.Next(20, 31);
                             slowPrettyDust.velocity = slowPrettyDustDirect.RotatedBy(MathHelper.PiOver2) * 9f;
@@ -134,7 +135,7 @@ namespace CalamityMod.Projectiles.Magic
                             slowPrettyDust.fadeIn = 0.5f;
                             slowPrettyDust.customData = this;
                             slowPrettyDustDirect = Vector2.UnitY.RotatedByRandom(MathHelper.TwoPi);
-                            slowPrettyDust = Main.dust[Dust.NewDust(Projectile.Center - slowPrettyDustDirect * 45f, 0, 0, 90)];
+                            slowPrettyDust = Main.dust[Dust.NewDust(Projectile.Center - slowPrettyDustDirect * 45f, 0, 0, DustID.GemRuby)];
                             slowPrettyDust.noGravity = true;
                             slowPrettyDust.position = Projectile.Center - slowPrettyDustDirect * Main.rand.Next(20, 31);
                             slowPrettyDust.velocity = slowPrettyDustDirect.RotatedBy(MathHelper.PiOver2) * 9f;
@@ -146,7 +147,7 @@ namespace CalamityMod.Projectiles.Magic
                         else
                         {
                             Vector2 slowPrettyDustDirect2 = Vector2.UnitY.RotatedByRandom(MathHelper.TwoPi);
-                            Dust slowPrettyDust2 = Main.dust[Dust.NewDust(Projectile.Center - slowPrettyDustDirect2 * 45f, 0, 0, 240)];
+                            Dust slowPrettyDust2 = Main.dust[Dust.NewDust(Projectile.Center - slowPrettyDustDirect2 * 45f, 0, 0, DustID.Granite)];
                             slowPrettyDust2.noGravity = true;
                             slowPrettyDust2.position = Projectile.Center - slowPrettyDustDirect2 * Main.rand.Next(30, 41);
                             slowPrettyDust2.velocity = slowPrettyDustDirect2.RotatedBy(-MathHelper.PiOver2) * 6f;
@@ -169,17 +170,17 @@ namespace CalamityMod.Projectiles.Magic
                         int npcTrack = 0;
                         if (Projectile.ai[1] == 0f)
                         {
-                            for (int i = 0; i < Main.maxNPCs; i++)
+                            foreach (NPC n in Main.ActiveNPCs)
                             {
-                                if (Main.npc[i].CanBeChasedBy(this))
+                                if (n.CanBeChasedBy(this))
                                 {
-                                    Vector2 npcCenter = Main.npc[i].Center;
-                                    if (Projectile.Distance(npcCenter) < homingRange && Collision.CanHit(new Vector2(Projectile.position.X + Projectile.width / 2, Projectile.position.Y + Projectile.height / 2), 1, 1, Main.npc[i].position, Main.npc[i].width, Main.npc[i].height))
+                                    Vector2 npcCenter = n.Center;
+                                    if (Projectile.Distance(npcCenter) < homingRange && Collision.CanHit(new Vector2(Projectile.position.X + Projectile.width / 2, Projectile.position.Y + Projectile.height / 2), 1, 1, n.position, n.width, n.height))
                                     {
                                         homingRange = Projectile.Distance(npcCenter);
                                         projCenter = npcCenter;
                                         isHoming = true;
-                                        npcTrack = i;
+                                        npcTrack = n.whoAmI;
                                     }
                                 }
                             }
@@ -260,14 +261,14 @@ namespace CalamityMod.Projectiles.Magic
             float rotationScale = 0.95f + (Projectile.rotation * 0.75f).ToRotationVector2().Y * 0.1f;
             cloudColor *= rotationScale;
             float cloudScale = 0.6f + Projectile.scale * 0.6f * rotationScale;
-            Texture2D coreTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D coreTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D nebulaCloudTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/NebulaCloud", AssetRequestMode.ImmediateLoad).Value;
             Vector2 position = Projectile.Center - Main.screenPosition;
-            Vector2 coreOrigin = coreTexture.Size() / new Vector2(0, Main.projFrames[Projectile.type]) * 0.5f;
+            Vector2 coreOrigin = coreTexture.Size() / new Vector2(0, Main.projFrames[Type]) * 0.5f;
             Vector2 cloudOrigin = nebulaCloudTexture.Size() * 0.5f;
             Main.EntitySpriteDraw(nebulaCloudTexture, position, null, cloudColor, 0f - Projectile.rotation + 0.35f, cloudOrigin, cloudScale, spriteEffects ^ SpriteEffects.FlipHorizontally, 0);
             Main.EntitySpriteDraw(nebulaCloudTexture, position, null, fuckYou, 0f - Projectile.rotation, cloudOrigin, Projectile.scale, spriteEffects ^ SpriteEffects.FlipHorizontally, 0);
-            Main.EntitySpriteDraw(coreTexture, position, new Rectangle?(new Rectangle(0, Main.projFrames[Projectile.type] * Projectile.frame, coreTexture.Width, Main.projFrames[Projectile.type])), coreColor, (0f - Projectile.rotation) * 0.7f, coreOrigin, Projectile.scale, spriteEffects ^ SpriteEffects.FlipHorizontally, 0);
+            Main.EntitySpriteDraw(coreTexture, position, new Rectangle?(new Rectangle(0, Main.projFrames[Type] * Projectile.frame, coreTexture.Width, Main.projFrames[Type])), coreColor, (0f - Projectile.rotation) * 0.7f, coreOrigin, Projectile.scale, spriteEffects ^ SpriteEffects.FlipHorizontally, 0);
             Main.EntitySpriteDraw(nebulaCloudTexture, position, null, fuckYou * 0.8f, Projectile.rotation * 0.5f, cloudOrigin, Projectile.scale * 0.9f, spriteEffects, 0);
             fuckYou.A = 0;
 
@@ -287,22 +288,22 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.penetrate = -1;
             Projectile.Damage();
 
-            SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
 
             for (int i = 0; i < 6; i++)
             {
-                int blackDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 240, 0f, 0f, 100, default(Color), 1.75f);
+                int blackDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Granite, 0f, 0f, 100, default(Color), 1.75f);
                 Main.dust[blackDust].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(Math.PI) * (float)Main.rand.NextDouble() * Projectile.width / 2f;
             }
 
             for (int j = 0; j < 45; j++)
             {
-                int purpleDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 62, 0f, 0f, 200, default(Color), 5.05f);
+                int purpleDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.PurpleTorch, 0f, 0f, 200, default(Color), 5.05f);
                 Main.dust[purpleDust].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(Math.PI) * (float)Main.rand.NextDouble() * Projectile.width / 2f;
                 Main.dust[purpleDust].noGravity = true;
                 Dust dust = Main.dust[purpleDust];
                 dust.velocity *= 4f;
-                purpleDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 90, 0f, 0f, 100, default(Color), 1.75f);
+                purpleDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GemRuby, 0f, 0f, 100, default(Color), 1.75f);
                 Main.dust[purpleDust].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(Math.PI) * (float)Main.rand.NextDouble() * Projectile.width / 2f;
                 dust = Main.dust[purpleDust];
                 dust.velocity *= 2.5f;
@@ -313,7 +314,7 @@ namespace CalamityMod.Projectiles.Magic
 
             for (int k = 0; k < 15; k++)
             {
-                int purpleDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 62, 0f, 0f, 0, default(Color), 3.55f);
+                int purpleDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.PurpleTorch, 0f, 0f, 0, default(Color), 3.55f);
                 Main.dust[purpleDust2].position = Projectile.Center + Vector2.UnitX.RotatedByRandom(Math.PI).RotatedBy(Projectile.velocity.ToRotation()) * Projectile.width / 2f;
                 Main.dust[purpleDust2].noGravity = true;
                 Dust dust = Main.dust[purpleDust2];
@@ -322,7 +323,7 @@ namespace CalamityMod.Projectiles.Magic
 
             for (int l = 0; l < 15; l++)
             {
-                int blackDust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 240, 0f, 0f, 0, default(Color), 1.75f);
+                int blackDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Granite, 0f, 0f, 0, default(Color), 1.75f);
                 Main.dust[blackDust2].position = Projectile.Center + Vector2.UnitX.RotatedByRandom(Math.PI).RotatedBy(Projectile.velocity.ToRotation()) * Projectile.width / 2f;
                 Main.dust[blackDust2].noGravity = true;
                 Dust dust = Main.dust[blackDust2];
@@ -350,12 +351,10 @@ namespace CalamityMod.Projectiles.Magic
                 int totalProjectiles = Main.rand.Next(6, 9);
                 float radians = MathHelper.TwoPi / totalProjectiles;
                 int type = ModContent.ProjectileType<NebulaNova>();
-                float velocity = Main.rand.Next(70, 101) * 0.1f;
-                Vector2 spinningPoint = new Vector2(0f, -velocity);
                 for (int k = 0; k < totalProjectiles; k++)
                 {
-                    Vector2 velocity2 = spinningPoint.RotatedBy(radians * k);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + Utils.RandomVector2(Main.rand, -30f, 30f), velocity2, type, (int)(Projectile.damage * 0.5), Projectile.knockBack * 0.8f, Projectile.owner);
+                    Vector2 velocity = -Vector2.UnitY.RotatedBy(radians * k) * Main.rand.NextFloat(7f, 10f);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + Main.rand.NextVector2Circular(30f, 30f), velocity, type, (int)(Projectile.damage * 0.5), Projectile.knockBack * 0.8f, Projectile.owner);
                 }
             }
         }

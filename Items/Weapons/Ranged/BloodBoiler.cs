@@ -13,15 +13,20 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class BloodBoiler : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
-        
+
         public static readonly SoundStyle Heartbeat = new("CalamityMod/Sounds/Item/Heartbeat") { PitchVariance = 0.2f, Volume = 0.55f };
-        
+
         public bool shotReturn = false;
+
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
+        }
         public override void SetDefaults()
         {
             Item.width = 60;
             Item.height = 30;
-            Item.damage = 115;
+            Item.damage = 120;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 5;
             Item.useAnimation = 25;
@@ -30,7 +35,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 4f;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.shootSpeed = 9.5f;
             Item.shoot = ModContent.ProjectileType<BloodBoilerFire>();
@@ -41,11 +46,11 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             shotReturn = !shotReturn;
-            if (Main.rand.NextFloat() > 0.60f)
+            if (Main.rand.NextFloat() > 0.20f)
                 player.statLife -= 1;
             if (player.statLife <= 0)
             {
-                PlayerDeathReason pdr = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.BloodBoiler" + Main.rand.Next(1, 2 + 1)).Format(player.name));
+                PlayerDeathReason pdr = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.BloodBoiler" + Main.rand.Next(1, 2 + 1)).ToNetworkText(player.name));
                 player.KillMe(pdr, 1000.0, 0, false);
                 return false;
             }
@@ -58,7 +63,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddIngredient<BloodstoneCore>(6).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

@@ -2,7 +2,6 @@
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
@@ -12,8 +11,8 @@ namespace CalamityMod.Items.Dyes
 {
     public class AuricDye : BaseDye
     {
-        public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(new Ref<Effect>(Mod.Assets.Request<Effect>("Effects/Dyes/AuricDyeShader", AssetRequestMode.ImmediateLoad).Value), "DyePass").
-            UseColor(new Color(170, 96, 60)).UseSecondaryColor(new Color(226, 196, 106)).SetShaderTextureArmor(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/SharpNoise", AssetRequestMode.ImmediateLoad));
+        public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(Mod.Assets.Request<Effect>("Effects/Dyes/AuricDyeShader"), "DyePass").
+            UseColor(new Color(170, 96, 60)).UseSecondaryColor(new Color(226, 196, 106)).SetShaderTextureArmor(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/SharpNoise"));
         public override void SafeSetStaticDefaults()
         {
             Item.ResearchUnlockCount = 3;
@@ -21,8 +20,8 @@ namespace CalamityMod.Items.Dyes
 
         public override void SafeSetDefaults()
         {
-            Item.rare = ModContent.RarityType<Violet>();
-            Item.value = Item.sellPrice(0, 9, 0, 0);
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
+            Item.value = Item.sellPrice(gold: 2, silver: 50);
         }
 
         public override void AddRecipes()

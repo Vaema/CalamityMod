@@ -1,9 +1,9 @@
 ﻿using CalamityMod.Cooldowns;
 using CalamityMod.Items.Weapons.Melee;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Typeless
 {
@@ -14,7 +14,7 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 6;
+            Main.projFrames[Type] = 6;
         }
 
         public override void SetDefaults()
@@ -53,7 +53,7 @@ namespace CalamityMod.Projectiles.Typeless
             Player player = Main.player[Projectile.owner];
             Projectile.Center = player.Center;
             //if player is dead, null, or stops holding the Lion Heart, kill the projectile
-            if (player.dead || player is null || player.ActiveItem().type != ModContent.ItemType<LionHeart>())
+            if (player.dead || player is null || player.HeldItem.type != ModContent.ItemType<LionHeart>())
             {
                 Projectile.Kill();
             }

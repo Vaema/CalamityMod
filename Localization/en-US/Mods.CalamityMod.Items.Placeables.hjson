@@ -1,5 +1,145 @@
 FormattedBannerName: "{0} Banner"
 FormattedBannerTooltip: "{$CommonItemTooltip.BannerBonus}{0}"
+AcidEelBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+AeroSlimeBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+AmberCrawlerBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+AmethystCrawlerBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+AndroombaBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+AnthozoanCrabBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+AquaticUrchinBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+AriesBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+BurrowerBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+AstraglomerateBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+AstralachneaBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+AstralProbeBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+AstralSlimeBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+AtlasBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+AuroraSpiritBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+BabyCannonballJellyfishBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+BabyFlakCrabBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+BabyGhostBellBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+BelchingCoralBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+BloatfishBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+BloomSlimeBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+BobbitWormBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+BohldohrBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+BoxJellyfishBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+CalamityEyeBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+CannonballJellyfishBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+CarrionSwallowerBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+ChaoticPufferBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+CladCrabBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+ClamBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+CloudElementalBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+CnidrionBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+ColossalSquidBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+CrimulanBlightSlimeBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+CryonBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+CryoSlimeBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+CrystalCrawlerBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+CuttlefishBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+DespairStoneBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+DevilFishBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+DiamondCrawlerBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+DraconicSwarmerBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+EarthElementalBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+EbonianBlightSlimeBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+EidolistBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+EidolonWyrmJuvenileBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+EmeraldCrawlerBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+EutrophicRayBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+FearlessGoldfishWarriorBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+FlakCrabBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+FrogfishBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+FusionFeederBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+GammaSlimeBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+GhostBellBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+GiantSquidBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+GildedAxolotlBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+GnasherBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+GulperEelBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+HadarianBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+HauntedChumBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+HeatSpiritBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+IceClasperBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+ImpiousImmolatorBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+InfernalCongealmentBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+IrradiatedSlimeBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+JellyghoulBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+KelpieSeadragonBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+LaserfishBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+LazarusLampfishBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+LeerslugBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+LostShoalBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+LuminousCorvinaBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+MantisBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+MantisShrimpBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+MelterBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+MirageJellyBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+MorayEelBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+NovaBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+NuclearToadBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+OarfishBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+OrthoceraBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+OverloadedSoldierBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+PearlpodBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+PerennialSlimeBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+PestilentSlimeBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+PhantomSpiritBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+PiggyBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+PlaguebringerBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+PlagueChargerBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+PlagueshellBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+PodobooKoiBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+PolyperilBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+PrismBackBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+PrismaticGuppyBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+ProbesnoutBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+ProfanedEnergyBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+RadiatorBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+ReaperSharkBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+RenegadeWarlockBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+RepairUnitBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+RimehoundBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+RotdogBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+RubyCrawlerBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+SandProwlerBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+SapphireCrawlerBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+ScavengerBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+ScornEaterBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+ScryllarBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+SeaFloatyBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+SeaMinnowBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+SearslugBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+SharkoonBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+ShockstormShuttleBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+ShoreskipperBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+ShroombleBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+SightseerColliderBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+SightseerSpitterBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+SkyfinBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+SlabCrabBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+SlugbunBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+SoulSlurperBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+SteampodBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+StellarCulexBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+StormlionBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+StormlionSentryBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+SulflounderBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+SulphurousSkaterBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+SunskaterBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+TopazCrawlerBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+ToxicatfishBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+ToxicMinnowBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+TrasherBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+TrilobiteBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+ViperfishBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+VirulingBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+WulfrumAmplifierBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+WulfrumDroneBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+WulfrumGyratorBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+WulfrumHovercraftBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+WulfrumRoverBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 
 AstralPylon: {
 	DisplayName: Astral Pylon
@@ -116,6 +256,8 @@ CryonicBrick: {
 	Tooltip: ""
 }
 
+//  Draedon Structures
+
 AgedLaboratoryConsoleItem: {
 	DisplayName: Aged Laboratory Console
 	Tooltip: ""
@@ -170,7 +312,7 @@ ChargingStationItem: {
 	DisplayName: Charging Station
 	Tooltip:
 		'''
-		Charges Draedon's Arsenal items using Power Cells
+		Charges Draedon's Arsenal items using [i:CalamityMod/DraedonPowerCell] Draedon Power Cells
 		Place both an item and Power Cells into the Charging Station to charge the item
 		'''
 }
@@ -249,14 +391,26 @@ PowerCellFactoryItem: {
 	DisplayName: Power Cell Factory
 	Tooltip:
 		'''
-		Produces Draedon Power Cells over time
-		One cell is produced every 15 seconds
+		Produces [i:CalamityMod/DraedonPowerCell] Draedon Power Cells over time
+		One cell is produced every {0} seconds
 		'''
 }
 
 ReinforcedCrateItem: {
 	DisplayName: Reinforced Crate
 	Tooltip: ""
+}
+
+Rock: {
+	DisplayName: Rock
+	Tooltip:
+		'''
+		When the battle was finally over, the dust having just began to settle
+		Where even the stone refused the course of time, there sat a monk
+		Who dared to question history and stare into fate
+		'What is the true price of the past being ever eternal?
+		Why must our future forever haunt us?'
+		'''
 }
 
 RustedPipes: {
@@ -279,6 +433,8 @@ SecurityChest: {
 	Tooltip: ""
 }
 
+// End of Draedon Structures
+
 EutrophicGlass: {
 	DisplayName: Eutrophic Glass
 	Tooltip: ""
@@ -288,6 +444,35 @@ EutrophicSand: {
 	DisplayName: Eutrophic Sand
 	Tooltip: ""
 }
+
+HardenedEutrophicSand: {
+	DisplayName: Hardened Eutrophic Sand
+	Tooltip: ""
+}
+
+// Floral Paradise
+
+AlgalSlateItem: {
+	DisplayName: Algal Slate
+	Tooltip: ""
+}
+
+PeatItem: {
+	DisplayName: Peat
+	Tooltip: ""
+}
+
+PeatMossItem: {
+	DisplayName: Peat Moss
+	Tooltip: ""
+}
+
+ScintillatingBloom: {
+	DisplayName: Scintillating Bloom
+	Tooltip: ""
+}
+
+// End of Floral Paradise
 
 AbyssTreasureChest: {
 	DisplayName: Ancient Treasure Chest
@@ -350,7 +535,7 @@ AstrumAureusRelic: {
 
 AstrumDeusRelic: {
 	DisplayName: Astrum Deus Relic
-	Tooltip: A glimpse into what could have been...
+	Tooltip: ""
 }
 
 BrimstoneElementalRelic: {
@@ -390,7 +575,7 @@ CryogenRelic: {
 
 DesertScourgeRelic: {
 	DisplayName: Desert Scourge Relic
-	Tooltip: A glimpse into what could have been...
+	Tooltip: ""
 }
 
 DevourerOfGodsRelic: {
@@ -420,7 +605,7 @@ GreatSandSharkRelic: {
 
 HiveMindRelic: {
 	DisplayName: Hive Mind Relic
-	Tooltip: A glimpse into what could have been...
+	Tooltip: ""
 }
 
 LeviathanAnahitaRelic: {
@@ -445,7 +630,7 @@ OldDukeRelic: {
 
 PerforatorsRelic: {
 	DisplayName: Perforators Relic
-	Tooltip: A glimpse into what could have been...
+	Tooltip: ""
 }
 
 PlaguebringerGoliathRelic: {
@@ -493,6 +678,11 @@ YharonRelic: {
 	Tooltip: A glimpse into what will be...
 }
 
+CausticTorch: {
+	DisplayName: Caustic Torch
+	Tooltip: Can be placed in water
+}
+
 ChaosCandle: {
 	DisplayName: Chaos Candle
 	Tooltip: The mere presence of this candle enrages surrounding enemies drastically
@@ -502,8 +692,9 @@ CorruptionEffigy: {
 	DisplayName: Corruption Effigy
 	Tooltip:
 		'''
-		When placed down, nearby players have their movement speed and crit chance increased by 10%
-		Nearby players also suffer a 5% decrease to their damage reduction
+		<right> when placed to gain {0}% increased movement speed and critical strike chance
+		However, this comes at a cost of {1}% damage reduction
+		This cannot be stacked with Crimson Effigy
 		'''
 }
 
@@ -511,26 +702,16 @@ AltarOfTheAccursedItem: {
 	DisplayName: Altar of the Accursed
 	Tooltip:
 		'''
-		Offer Ashes of Calamity at this altar to summon the Witch
-		Doing so will create a square arena of blocks, with the altar at its center
-		During the battle, heart pickups only heal for half as much
+		Offer [i:CalamityMod/AshesofCalamity] {$Items.Materials.AshesofCalamity.DisplayName} at this altar to summon the Witch
+		Doing so will create a square arena, with the altar at its center
 		The Witch enrages while you are outside of the arena
+		Hovering over the altar while using ruler measurements will display a temporary arena box
 		{$CommonItemTooltip.SpecialCrafting}
 		'''
 }
 
-AncientAltar: {
-	DisplayName: Ancient Altar
-	Tooltip: "{$CommonItemTooltip.SpecialCrafting}"
-}
-
 AshenAltar: {
 	DisplayName: Ashen Altar
-	Tooltip: "{$CommonItemTooltip.SpecialCrafting}"
-}
-
-BotanicPlanter: {
-	DisplayName: Botanic Planter
 	Tooltip: "{$CommonItemTooltip.SpecialCrafting}"
 }
 
@@ -552,21 +733,6 @@ DraedonsForge: {
 		'''
 }
 
-EffulgentManipulator: {
-	DisplayName: Effulgent Manipulator
-	Tooltip: "{$CommonItemTooltip.SpecialCrafting}"
-}
-
-EutrophicShelf: {
-	DisplayName: Eutrophic Shelf
-	Tooltip: "{$CommonItemTooltip.SpecialCrafting}"
-}
-
-MonolithAmalgam: {
-	DisplayName: Monolith Amalgam
-	Tooltip: "{$CommonItemTooltip.SpecialCrafting}"
-}
-
 PlagueInfuser: {
 	DisplayName: Plague Infuser
 	Tooltip: "{$CommonItemTooltip.SpecialCrafting}"
@@ -577,18 +743,8 @@ ProfanedCrucible: {
 	Tooltip: "{$CommonItemTooltip.SpecialCrafting}"
 }
 
-StaticRefiner: {
-	DisplayName: Static Refiner
-	Tooltip: "{$CommonItemTooltip.SpecialCrafting}"
-}
-
 VoidCondenser: {
 	DisplayName: Void Condenser
-	Tooltip: "{$CommonItemTooltip.SpecialCrafting}"
-}
-
-WulfrumLabstationItem: {
-	DisplayName: Wulfrum Labstation
 	Tooltip: "{$CommonItemTooltip.SpecialCrafting}"
 }
 
@@ -596,18 +752,9 @@ CrimsonEffigy: {
 	DisplayName: Crimson Effigy
 	Tooltip:
 		'''
-		When placed down nearby players have their damage increased by 15% and defense by 10
-		Nearby players also suffer a 10% decrease to their maximum health
-		'''
-}
-
-ThankYouPainting: {
-	DisplayName: Thank You
-	Tooltip:
-		'''
-		Thanks to the entire team, everyone who supported, and those who all play the mod and keep it alive!
-		The confines of this painting is not enough to fit the entire team
-		Hold SHIFT to see a list of past and current developers
+		<right> when placed to gain {0}% damage and {1} defense
+		However, this comes at a cost of {2}% maximum health
+		This cannot be stacked with Corruption Effigy
 		'''
 }
 
@@ -617,7 +764,7 @@ EffigyOfDecay: {
 		'''
 		When placed down, nearby players can breathe underwater
 		This effect does not work in the abyss
-		Nearby players are also immune to the sulphuric poisoning
+		Nearby players are also immune to the {$Buffs.SulphuricPoisoning.DisplayName}
 		'''
 }
 
@@ -628,6 +775,11 @@ AbyssFountainItem: {
 
 AstralFountainItem: {
 	DisplayName: Astral Water Fountain
+	Tooltip: ""
+}
+
+BrimstoneLavaFountainItem: {
+	DisplayName: Brimstone Lava Fountain
 	Tooltip: ""
 }
 
@@ -651,9 +803,129 @@ LanternCenter: {
 	Tooltip: Lights up the night sky with celebratory lanterns
 }
 
+AstralProjector: {
+	DisplayName: Astral Projector
+	Tooltip: "'Control a small portion of the Astral Infection's influence.'"
+}
+
+BlueDistortedMonolith: {
+	DisplayName: Blue Distorted Monolith
+	Tooltip: "'Create a localized rupture in the fabric of reality.'"
+}
+
+BossRushMonolith: {
+	DisplayName: Boss Rush Monolith
+	Tooltip: "'Bring forth the end.'"
+}
+
+DeepSeaAnchor: {
+	DisplayName: Deep Sea Anchor
+	Tooltip: "'Dampen the air with heavy amounts of brine.'"
+}
+
+DraconicIncense: {
+	DisplayName: Draconic Incense
+	Tooltip: "'Ignite the air with dragonfire.'"
+}
+
+ExoObelisk: {
+	DisplayName: Exo Obelisk
+	Tooltip: "'Energize the atmosphere with exo energy.'"
+}
+
+ForgottenNobleStatue: {
+	DisplayName: Forgotten Noble Statue
+	Tooltip: ""
+}
+
+ForgottenScholarStatue: {
+	DisplayName: Forgotten Scholar Statue
+	Tooltip: ""
+}
+
+FrigidMonolith: {
+	DisplayName: Frigid Monolith
+	Tooltip: "'Enchant the sky with frosty auroras.'"
+}
+
+KelpTorch: {
+	DisplayName: Kelp Torch
+	Tooltip: Can be placed in water
+}
+
+OldDukeMonolith: {
+	DisplayName: Elden Diorama
+	Tooltip: ""
+}
+
+OtonilouStatue: {
+	DisplayName: Otonilou Memorial
+	Tooltip: ""
+}
+
+PlagueHumidifier: {
+	DisplayName: Plague Humidifier
+	Tooltip: "'Spread light amounts of the plague through the air.'"
+}
+
+PurpleDistortedMonolith: {
+	DisplayName: Purple Distorted Monolith
+	Tooltip: "'Create a localized rupture in the fabric of reality.'"
+}
+
 NavyPrismTorch: {
 	DisplayName: Navy Prism Torch
 	Tooltip: Can be placed in water
+}
+
+AmidiasPainting: {
+	DisplayName: Sea King's Release
+	Tooltip:
+		'''
+		'O. Rios'
+		'September-October!'
+		'''
+}
+
+CalamityCanvas2023: {
+	DisplayName: Calamity Canvas 2023
+	Tooltip:
+		'''
+		<right> when placed to open a UI which allows customizing the focus of the painting
+		<left> to make the focus follow the cursor, <left> again to set it
+		Arrow keys can also be used to manually adjust the focus point
+		The scroll wheel zooms the focus in and out
+		Hold Shift to hide the UI without closing it
+		'Embrace chaos'
+		'''
+}
+
+CalamityCanvas2024: {
+	DisplayName: Calamity Canvas 2024
+	Tooltip:
+		'''
+		<right> when placed to open a UI which allows customizing the focus of the painting
+		<left> to make the focus follow the cursor, <left> again to set it
+		Arrow keys can also be used to manually adjust the focus point
+		The scroll wheel zooms the focus in and out
+		Hold Shift to hide the UI without closing it
+		'Embrace havoc'
+		'''
+}
+
+ForgivenessPainting: {
+	DisplayName: Forgiveness
+	Tooltip: "'D. User'"
+}
+
+ThankYouPainting: {
+	DisplayName: Thank You
+	Tooltip:
+		'''
+		Thanks to the entire team, everyone who supported, and those who all play the mod and keep it alive!
+		The confines of this painting is not enough to fit the entire team
+		Hold Shift to see a list of past and current developers
+		'''
 }
 
 PiggyCage: {
@@ -666,11 +938,18 @@ RefractivePrismTorch: {
 	Tooltip: Can be placed in water
 }
 
+RepairUnitCage: {
+	DisplayName: Repair Unit Cage
+	Tooltip: ""
+}
+
 ResilientCandle: {
 	DisplayName: Resilient Candle
 	Tooltip:
 		'''
-		When placed, nearby players' defense blocks 15% more damage
+		<right> when placed to make defense block {0}% more damage
+		({1}% in Classic, {2}% in Expert, and {3}% in Master)
+		This cannot be stacked with other Candle buffs
 		'Neither rain nor wind can snuff its undying flame'
 		'''
 }
@@ -689,8 +968,9 @@ SpitefulCandle: {
 	DisplayName: Spiteful Candle
 	Tooltip:
 		'''
-		When placed, nearby enemies take 5% more damage.
-		This extra damage bypasses enemy damage reduction and defense
+		<right> when placed to deal {0}x damage to all enemies
+		The extra {1}x damage bypasses enemy defense and damage reduction
+		This cannot be stacked with other Candle buffs
 		'Its hateful glow flickers with ire'
 		'''
 }
@@ -700,14 +980,37 @@ SulphurousTorch: {
 	Tooltip: Can be placed in water
 }
 
+SunkenIdol: {
+	DisplayName: Sunken Idol
+	Tooltip: ""
+}
+
 ThaumaticChair: {
 	DisplayName: Thaumatic Chair
 	Tooltip: One of Chloe's finest creations
 }
 
+ThermalTorch: {
+	DisplayName: Thermal Torch
+	Tooltip:
+		'''
+		Can be placed in water
+		Can dispell the magical darkness of the Abyss when placed
+		'''
+}
+
 TranquilityCandle: {
 	DisplayName: Tranquility Candle
 	Tooltip: The mere presence of this candle calms surrounding enemies drastically
+}
+
+VoidTorch: {
+	DisplayName: Void Torch
+	Tooltip:
+		'''
+		Can be placed in water
+		Can dispell the magical darkness of the Abyss when placed
+		'''
 }
 
 AnahitaTrophy: {
@@ -914,8 +1217,9 @@ VigorousCandle: {
 	DisplayName: Vigorous Candle
 	Tooltip:
 		'''
-		When placed, nearby players regenerate 0.4% of their maximum health per second
-		This regeneration is at full power even while moving and bypasses Revengeance Mode caps
+		<right> when placed to regenerate {0}% of your maximum health per second
+		This regeneration is at full power even while moving
+		This cannot be stacked with other Candle buffs
 		'Its brilliant light suffuses those nearby with hope'
 		'''
 }
@@ -924,7 +1228,8 @@ WeightlessCandle: {
 	DisplayName: Weightless Candle
 	Tooltip:
 		'''
-		When placed, nearby players gain 10% movement speed, 10% wing time and 5% acceleration
+		<right> when placed to gain {0}% increased movement speed, wing time and acceleration
+		This cannot be stacked with other Candle buffs
 		'The floating flame seems to uplift your very spirit'
 		'''
 }
@@ -934,8 +1239,13 @@ WulfrumLureItem: {
 	Tooltip:
 		'''
 		Consumes [i:CalamityMod/EnergyCore] Energy Cores to emit a wulfrum signal that lures Wulfrum automatons out
-		The signal lasts for 30 seconds
+		The signal lasts for {0} seconds
 		'''
+}
+
+ZenithThrone: {
+	DisplayName: Zenith Throne
+	Tooltip: "'There will be no games, only damage per second...'"
 }
 
 AbyssBathtub: {
@@ -1021,11 +1331,6 @@ AbyssSynth: {
 AbyssTable: {
 	DisplayName: Abyss Table
 	Tooltip: ""
-}
-
-AbyssTorch: {
-	DisplayName: Abyss Torch
-	Tooltip: Can be placed in water
 }
 
 AbyssWorkBench: {
@@ -1135,6 +1440,11 @@ AcidwoodTable: {
 
 AcidwoodWorkBench: {
 	DisplayName: Acidwood Work Bench
+	Tooltip: ""
+}
+
+AncientAltar: {
+	DisplayName: Ancient Altar
 	Tooltip: ""
 }
 
@@ -1337,6 +1647,71 @@ SmoothBrimstoneSlag: {
 	Tooltip: ""
 }
 
+ActivatedAuricPanel: {
+	DisplayName: Activated Auric Panel
+	Tooltip: ""
+}
+
+AuricAbsorber: {
+	DisplayName: Auric Absorber
+	Tooltip: ""
+}
+
+AuricConsole: {
+	DisplayName: Auric Console
+	Tooltip: ""
+}
+
+AuricDisplay: {
+	DisplayName: Auric Display
+	Tooltip: ""
+}
+
+AuricLandMine: {
+	DisplayName: Auric Land Mine
+	Tooltip: Explodes when stepped on...
+}
+
+AuricPanel: {
+	DisplayName: Auric Panel
+	Tooltip: ""
+}
+
+AuricPlatform: {
+	DisplayName: Auric Platform
+	Tooltip: ""
+}
+
+AuricReinforcedCrate: {
+	DisplayName: Auric Reinforced Crate
+	Tooltip: ""
+}
+
+AuricRepulserPanel: {
+	DisplayName: Auric Repulser Panel
+	Tooltip: Repels players that come in contact with it
+}
+
+AuricScreen: {
+	DisplayName: Auric Screen
+	Tooltip: ""
+}
+
+AuricServer: {
+	DisplayName: Auric Server
+	Tooltip: ""
+}
+
+AuricTerminal: {
+	DisplayName: Auric Terminal
+	Tooltip: ""
+}
+
+ExoAuricPanel: {
+	DisplayName: Exo-Auric Panel
+	Tooltip: ""
+}
+
 BotanicBathtub: {
 	DisplayName: Botanic Bathtub
 	Tooltip: ""
@@ -1409,6 +1784,11 @@ BotanicLantern: {
 
 BotanicPiano: {
 	DisplayName: Botanic Piano
+	Tooltip: ""
+}
+
+BotanicPlanter: {
+	DisplayName: Botanic Planter
 	Tooltip: ""
 }
 
@@ -1542,98 +1922,308 @@ CosmiliteWorkBench: {
 	Tooltip: ""
 }
 
-EutrophicBathtub: {
-	DisplayName: Eutrophic Bathtub
+DriftwoodBaroqueCello: {
+	DisplayName: Driftwood Baroque Cello
 	Tooltip: ""
 }
 
-EutrophicBed: {
-	DisplayName: Eutrophic Bed
+DriftwoodBathtub: {
+	DisplayName: Driftwood Bathtub
 	Tooltip: ""
 }
 
-EutrophicBench: {
-	DisplayName: Eutrophic Bench
+DriftwoodBed: {
+	DisplayName: Driftwood Bed
 	Tooltip: ""
 }
 
-EutrophicBookcase: {
-	DisplayName: Eutrophic Bookcase
+DriftwoodBookcase: {
+	DisplayName: Driftwood Bookcase
 	Tooltip: ""
 }
 
-EutrophicCandelabra: {
-	DisplayName: Eutrophic Candelabra
+DriftwoodCandelabra: {
+	DisplayName: Driftwood Candelabra
 	Tooltip: ""
 }
 
-EutrophicCandle: {
-	DisplayName: Eutrophic Candle
+DriftwoodCandle: {
+	DisplayName: Driftwood Candle
 	Tooltip: ""
 }
 
-EutrophicChair: {
-	DisplayName: Eutrophic Chair
+DriftwoodChair: {
+	DisplayName: Driftwood Chair
 	Tooltip: ""
 }
 
-EutrophicChandelier: {
-	DisplayName: Eutrophic Chandelier
+DriftwoodChandelier: {
+	DisplayName: Driftwood Chandelier
 	Tooltip: ""
 }
 
-EutrophicChest: {
-	DisplayName: Eutrophic Chest
+DriftwoodChest: {
+	DisplayName: Driftwood Chest
 	Tooltip: ""
 }
 
-EutrophicClock: {
-	DisplayName: Eutrophic Clock
+DriftwoodDoor: {
+	DisplayName: Driftwood Door
 	Tooltip: ""
 }
 
-EutrophicDoor: {
-	DisplayName: Eutrophic Door
+DriftwoodDresser: {
+	DisplayName: Driftwood Dresser
 	Tooltip: ""
 }
 
-EutrophicDresser: {
-	DisplayName: Eutrophic Dresser
+DriftwoodLamp: {
+	DisplayName: Driftwood Lamp
 	Tooltip: ""
 }
 
-EutrophicLamp: {
-	DisplayName: Eutrophic Lamp
+DriftwoodLantern: {
+	DisplayName: Driftwood Lantern
 	Tooltip: ""
 }
 
-EutrophicLantern: {
-	DisplayName: Eutrophic Lantern
+DriftwoodPlatform: {
+	DisplayName: Driftwood Platform
 	Tooltip: ""
 }
 
-EutrophicPiano: {
-	DisplayName: Eutrophic Piano
-	Tooltip: ""
-}
-
-EutrophicPlatform: {
-	DisplayName: Eutrophic Platform
-	Tooltip: ""
-}
-
-EutrophicSink: {
-	DisplayName: Eutrophic Sink
+DriftwoodSink: {
+	DisplayName: Driftwood Sink
 	Tooltip: Counts as a water source
 }
 
-EutrophicTable: {
-	DisplayName: Eutrophic Table
+DriftwoodSofa: {
+	DisplayName: Driftwood Sofa
 	Tooltip: ""
 }
 
-EutrophicWorkBench: {
-	DisplayName: Eutrophic Work Bench
+DriftwoodSundial: {
+	DisplayName: Driftwood Sundial
+	Tooltip: ""
+}
+
+DriftwoodTable: {
+	DisplayName: Driftwood Table
+	Tooltip: ""
+}
+
+DriftwoodToilet: {
+	DisplayName: Driftwood Toilet
+	Tooltip: ""
+}
+
+DriftwoodWorkBench: {
+	DisplayName: Driftwood Work Bench
+	Tooltip: ""
+}
+
+AncientNavystoneBathtub: {
+	DisplayName: Ancient Navystone Bathtub
+	Tooltip: ""
+}
+
+AncientNavystoneBed: {
+	DisplayName: Ancient Navystone Bed
+	Tooltip: ""
+}
+
+AncientNavystoneBench: {
+	DisplayName: Ancient Navystone Bench
+	Tooltip: ""
+}
+
+AncientNavystoneBookcase: {
+	DisplayName: Ancient Navystone Bookcase
+	Tooltip: ""
+}
+
+AncientNavystoneCandelabra: {
+	DisplayName: Ancient Navystone Candelabra
+	Tooltip: ""
+}
+
+AncientNavystoneCandle: {
+	DisplayName: Ancient Navystone Candle
+	Tooltip: ""
+}
+
+AncientNavystoneChair: {
+	DisplayName: Ancient Navystone Chair
+	Tooltip: ""
+}
+
+AncientNavystoneChandelier: {
+	DisplayName: Ancient Navystone Chandelier
+	Tooltip: ""
+}
+
+AncientNavystoneChest: {
+	DisplayName: Ancient Navystone Chest
+	Tooltip: ""
+}
+
+AncientNavystoneClock: {
+	DisplayName: Ancient Navystone Clock
+	Tooltip: ""
+}
+
+AncientNavystoneDoor: {
+	DisplayName: Ancient Navystone Door
+	Tooltip: ""
+}
+
+AncientNavystoneDresser: {
+	DisplayName: Ancient Navystone Dresser
+	Tooltip: ""
+}
+
+AncientNavystoneLamp: {
+	DisplayName: Ancient Navystone Lamp
+	Tooltip: ""
+}
+
+AncientNavystoneLantern: {
+	DisplayName: Ancient Navystone Lantern
+	Tooltip: ""
+}
+
+AncientNavystonePiano: {
+	DisplayName: Ancient Navystone Piano
+	Tooltip: ""
+}
+
+AncientNavystonePlatform: {
+	DisplayName: Ancient Navystone Platform
+	Tooltip: ""
+}
+
+AncientNavystoneSink: {
+	DisplayName: Ancient Navystone Sink
+	Tooltip: Counts as a water source
+}
+
+AncientNavystoneTable: {
+	DisplayName: Ancient Navystone Table
+	Tooltip: ""
+}
+
+AncientNavystoneWorkBench: {
+	DisplayName: Ancient Navystone Work Bench
+	Tooltip: ""
+}
+
+AncientSmoothNavystone: {
+	DisplayName: Ancient Smooth Navystone
+	Tooltip: ""
+}
+
+EutrophicShelf: {
+	DisplayName: Eutrophic Shelf
+	Tooltip: ""
+}
+
+NavystoneBathtub: {
+	DisplayName: Navystone Bathtub
+	Tooltip: ""
+}
+
+NavystoneBed: {
+	DisplayName: Navystone Bed
+	Tooltip: ""
+}
+
+NavystoneBookcase: {
+	DisplayName: Navystone Bookcase
+	Tooltip: ""
+}
+
+NavystoneCandelabra: {
+	DisplayName: Navystone Candelabra
+	Tooltip: ""
+}
+
+NavystoneCandle: {
+	DisplayName: Navystone Candle
+	Tooltip: ""
+}
+
+NavystoneChair: {
+	DisplayName: Navystone Chair
+	Tooltip: ""
+}
+
+NavystoneChandelier: {
+	DisplayName: Navystone Chandelier
+	Tooltip: ""
+}
+
+NavystoneChest: {
+	DisplayName: Navystone Chest
+	Tooltip: ""
+}
+
+NavystoneClock: {
+	DisplayName: Navystone Clock
+	Tooltip: ""
+}
+
+NavystoneDoor: {
+	DisplayName: Navystone Door
+	Tooltip: ""
+}
+
+NavystoneDresser: {
+	DisplayName: Navystone Dresser
+	Tooltip: ""
+}
+
+NavystoneLamp: {
+	DisplayName: Navystone Lamp
+	Tooltip: ""
+}
+
+NavystoneLantern: {
+	DisplayName: Navystone Lantern
+	Tooltip: ""
+}
+
+NavystoneLyre: {
+	DisplayName: Navystone Lyre
+	Tooltip: ""
+}
+
+NavystonePlatform: {
+	DisplayName: Navystone Platform
+	Tooltip: ""
+}
+
+NavystoneSink: {
+	DisplayName: Navystone Sink
+	Tooltip: Counts as a water source
+}
+
+NavystoneTable: {
+	DisplayName: Navystone Table
+	Tooltip: ""
+}
+
+NavystoneToilet: {
+	DisplayName: Navystone Toilet
+	Tooltip: ""
+}
+
+NavystoneTriclinium: {
+	DisplayName: Navystone Triclinium
+	Tooltip: ""
+}
+
+NavystoneWorkBench: {
+	DisplayName: Navystone Work Bench
 	Tooltip: ""
 }
 
@@ -1779,6 +2369,126 @@ ExoToilet: {
 
 ExoWorkBench: {
 	DisplayName: Exo Work Bench
+	Tooltip: ""
+}
+
+MarniteChest: {
+	DisplayName: Marnite Chest
+	Tooltip: ""
+}
+
+MarniteDresser: {
+	DisplayName: Marnite Dresser
+	Tooltip: ""
+}
+
+MarniteBathtub: {
+	DisplayName: Marnite Bathtub
+	Tooltip: ""
+}
+
+MarniteBed: {
+	DisplayName: Marnite Bed
+	Tooltip: ""
+}
+
+MarniteBookcase: {
+	DisplayName: Marnite Bookcase
+	Tooltip: ""
+}
+
+MarniteCandelabra: {
+	DisplayName: Marnite Candelabra
+	Tooltip: ""
+}
+
+MarniteCandle: {
+	DisplayName: Marnite Candle
+	Tooltip: ""
+}
+
+MarniteChair: {
+	DisplayName: Marnite Chair
+	Tooltip: ""
+}
+
+MarniteChandelier: {
+	DisplayName: Marnite Chandelier
+	Tooltip: ""
+}
+
+MarniteClock: {
+	DisplayName: Marnite Clock
+	Tooltip: ""
+}
+
+MarniteDoor: {
+	DisplayName: Marnite Door
+	Tooltip: ""
+}
+
+MarniteLamp: {
+	DisplayName: Marnite Lamp
+	Tooltip: ""
+}
+
+MarniteLantern: {
+	DisplayName: Marnite Lantern
+	Tooltip: ""
+}
+
+MarniteLight: {
+	DisplayName: Marnite Light
+	Tooltip: ""
+}
+
+MarniteOrgan: {
+	DisplayName: Marnite Organ
+	Tooltip: ""
+}
+
+MarniteSink: {
+	DisplayName: Marnite Sink
+	Tooltip: ""
+}
+
+MarniteSofa: {
+	DisplayName: Marnite Sofa
+	Tooltip: ""
+}
+
+MarniteTable: {
+	DisplayName: Marnite Table
+	Tooltip: ""
+}
+
+MarniteToilet: {
+	DisplayName: Marnite Toilet
+	Tooltip: ""
+}
+
+MarniteWorkBench: {
+	DisplayName: Marnite Work Bench
+	Tooltip: ""
+}
+
+PolishedMarniteBlock: {
+	DisplayName: Polished Marnite Block
+	Tooltip: ""
+}
+
+PolishedMarnitePlatform: {
+	DisplayName: Polished Marnite Platform
+	Tooltip: ""
+}
+
+PolishedMarniteWall: {
+	DisplayName: Polished Marnite Wall
+	Tooltip: ""
+}
+
+MonolithAmalgam: {
+	DisplayName: Monolith Amalgam
 	Tooltip: ""
 }
 
@@ -2326,6 +3036,11 @@ SacrilegiousWorkBench: {
 	Tooltip: ""
 }
 
+SilvaBasin: {
+	DisplayName: Silva Basin
+	Tooltip: ""
+}
+
 SilvaBathtub: {
 	DisplayName: Silva Bathtub
 	Tooltip: ""
@@ -2423,6 +3138,11 @@ SilvaTable: {
 
 SilvaWorkBench: {
 	DisplayName: Silva Work Bench
+	Tooltip: ""
+}
+
+StaticRefiner: {
+	DisplayName: Static Refiner
 	Tooltip: ""
 }
 
@@ -2736,6 +3456,16 @@ VoidWorkBench: {
 	Tooltip: ""
 }
 
+ChargedWulfrumEnergyBarrier: {
+	DisplayName: Charged Wulfrum Energy Barrier
+	Tooltip: ""
+}
+
+ChargedWulfrumWallMountedBulb: {
+	DisplayName: Charged Wulfrum Wall Mounted Bulb
+	Tooltip: ""
+}
+
 WulfrumBathtub: {
 	DisplayName: Wulfrum Bathtub
 	Tooltip: ""
@@ -2781,6 +3511,16 @@ WulfrumDresser: {
 	Tooltip: ""
 }
 
+WulfrumEnergyBarrier: {
+	DisplayName: Wulfrum Energy Barrier
+	Tooltip: ""
+}
+
+WulfrumLabstationItem: {
+	DisplayName: Wulfrum Labstation
+	Tooltip: ""
+}
+
 WulfrumLamp: {
 	DisplayName: Wulfrum Lamp
 	Tooltip: ""
@@ -2791,8 +3531,18 @@ WulfrumLantern: {
 	Tooltip: ""
 }
 
+WulfrumPanels: {
+	DisplayName: Wulfrum Panels
+	Tooltip: ""
+}
+
 WulfrumPiano: {
 	DisplayName: Wulfrum Piano
+	Tooltip: ""
+}
+
+WulfrumPlatform: {
+	DisplayName: Wulfrum Platform
 	Tooltip: ""
 }
 
@@ -2801,9 +3551,19 @@ WulfrumPlating: {
 	Tooltip: ""
 }
 
+WulfrumSheets: {
+	DisplayName: Wulfrum Sheets
+	Tooltip: ""
+}
+
+WulfrumSiding: {
+	DisplayName: Wulfrum Siding
+	Tooltip: ""
+}
+
 WulfrumSink: {
 	DisplayName: Wulfrum Sink
-	Tooltip: ""
+	Tooltip: Counts as a water source
 }
 
 WulfrumSofa: {
@@ -2821,8 +3581,118 @@ WulfrumToilet: {
 	Tooltip: ""
 }
 
+WulfrumWallMountedBulb: {
+	DisplayName: Wulfrum Wall Mounted Bulb
+	Tooltip: ""
+}
+
 WulfrumWorkBench: {
 	DisplayName: Wulfrum Work Bench
+	Tooltip: ""
+}
+
+AnodizedWulfrumBathtub: {
+	DisplayName: Anodized Wulfrum Bathtub
+	Tooltip: ""
+}
+
+AnodizedWulfrumBookcase: {
+	DisplayName: Anodized Wulfrum Bookcase
+	Tooltip: ""
+}
+
+AnodizedWulfrumChair: {
+	DisplayName: Anodized Wulfrum Chair
+	Tooltip: ""
+}
+
+AnodizedWulfrumChandelier: {
+	DisplayName: Anodized Wulfrum Chandelier
+	Tooltip: ""
+}
+
+AnodizedWulfrumChest: {
+	DisplayName: Anodized Wulfrum Chest
+	Tooltip: ""
+}
+
+AnodizedWulfrumDeskLight: {
+	DisplayName: Anodized Wulfrum Desk Light
+	Tooltip: ""
+}
+
+AnodizedWulfrumDoor: {
+	DisplayName: Anodized Wulfrum Door
+	Tooltip: ""
+}
+
+AnodizedWulfrumDresser: {
+	DisplayName: Anodized Wulfrum Dresser
+	Tooltip: ""
+}
+
+AnodizedWulfrumJukebox: {
+	DisplayName: Anodized Wulfrum Jukebox
+	Tooltip: ""
+}
+
+AnodizedWulfrumLamp: {
+	DisplayName: Anodized Wulfrum Lamp
+	Tooltip: ""
+}
+
+AnodizedWulfrumLantern: {
+	DisplayName: Anodized Wulfrum Lantern
+	Tooltip: ""
+}
+
+AnodizedWulfrumPanels: {
+	DisplayName: Anodized Wulfrum Panels
+	Tooltip: ""
+}
+
+AnodizedWulfrumPlatform: {
+	DisplayName: Anodized Wulfrum Platform
+	Tooltip: ""
+}
+
+AnodizedWulfrumSink: {
+	DisplayName: Anodized Wulfrum Sink
+	Tooltip: Counts as a water source
+}
+
+AnodizedWulfrumSleepingPod: {
+	DisplayName: Anodized Wulfrum Sleeping Pod
+	Tooltip: ""
+}
+
+AnodizedWulfrumSofa: {
+	DisplayName: Anodized Wulfrum Sofa
+	Tooltip: ""
+}
+
+AnodizedWulfrumTable: {
+	DisplayName: Anodized Wulfrum Table
+	Tooltip: ""
+}
+
+AnodizedWulfrumTrim: {
+	DisplayName: Anodized Wulfrum Trim
+	Tooltip: ""
+}
+
+AnodizedWulfrumToilet: {
+	DisplayName: Anodized Wulfrum Toilet
+	Tooltip: ""
+}
+
+AnodizedWulfrumWorkBench: {
+	DisplayName: Anodized Wulfrum Work Bench
+	Tooltip: ""
+}
+
+RoundedAnodizedWulfrumPanels: {
+	DisplayName: Rounded Anodized Wulfrum Panels
 	Tooltip: ""
 }
 
@@ -2851,14 +3721,21 @@ LivingHolyFireBlock: {
 	Tooltip: ""
 }
 
-DraedonsAmbienceMusicBox: {
-	DisplayName: Music Box (Draedon's Ambience)
-	Tooltip: Plays high tech ambience by PinpinNeon
+LivingPlagueFireBlock: {
+	DisplayName: Living Plague Fire Block
+	Tooltip: ""
 }
 
-Navystone: {
-	DisplayName: Navystone
-	Tooltip: ""
+// Music Boxes
+
+DraedonExoSelectMusicBox: {
+	DisplayName: Music Box (Exo Mech Selection)
+	Tooltip: Plays 'Signal Received' by CDMusic
+}
+
+DraedonTalkMusicBox: {
+	DisplayName: Music Box (Codebreaker)
+	Tooltip: Plays a variant of 'Signal Received' by CDMusic
 }
 
 NovaeSlag: {
@@ -3006,6 +3883,11 @@ SpineSapling: {
 	Tooltip: Plants Giant Spine saplings on Brimstone Slag
 }
 
+Stohne: {
+	DisplayName: Stohne
+	Tooltip: ""
+}
+
 SulphurousSand: {
 	DisplayName: Sulphurous Sand
 	Tooltip: ""
@@ -3020,6 +3902,115 @@ SulphurousShale: {
 	DisplayName: Sulphurous Shale
 	Tooltip: ""
 }
+
+// Sunken Sea
+
+Basalt: {
+	DisplayName: Basalt
+	Tooltip: ""
+}
+
+Driftwood: {
+	DisplayName: Driftwood
+	Tooltip: ""
+}
+
+Dunesand: {
+	DisplayName: Dunesand
+	Tooltip: ""
+}
+
+Navystone: {
+	DisplayName: Navystone
+	Tooltip: ""
+}
+
+Shellstone: {
+	DisplayName: Shellstone
+	Tooltip: ""
+}
+
+PolishedNavystoneBrick: {
+	DisplayName: Polished Navystone Brick
+	Tooltip: ""
+}
+
+ShellstoneSlab: {
+	DisplayName: Shellstone Slab
+	Tooltip: ""
+}
+
+BlackPearlPile: {
+	DisplayName: Black Pearl Pile
+	Tooltip: ""
+}
+
+PinkPearlPile: {
+	DisplayName: Pink Pearl Pile
+	Tooltip: ""
+}
+
+WhitePearlPile: {
+	DisplayName: White Pearl Pile
+	Tooltip: ""
+}
+
+CyanCoral: {
+	DisplayName: Cyan Coral
+	Tooltip: ""
+}
+
+MagentaCoral: {
+	DisplayName: Magenta Coral
+	Tooltip: ""
+}
+
+OrangeCoral: {
+	DisplayName: Orange Coral
+	Tooltip: ""
+}
+
+LimeCoral: {
+	DisplayName: Lime Coral
+	Tooltip: ""
+}
+
+YellowCoral: {
+	DisplayName: Yellow Coral
+	Tooltip: ""
+}
+
+Runestone: {
+	DisplayName: Runestone
+	Tooltip: ""
+}
+
+RuneSand: {
+	DisplayName: Runesand
+	Tooltip: ""
+}
+
+Limestone: {
+	DisplayName: Limestone
+	Tooltip: ""
+}
+
+PolypSand: {
+	DisplayName: Polyp Sand
+	Tooltip: ""
+}
+
+TableCoralLeft: {
+	DisplayName: Table Coral
+	Tooltip: ""
+}
+
+VolcanicSand: {
+	DisplayName: Volcanic Sand
+	Tooltip: ""
+}
+
+// End of Sunken Sea
 
 UelibloomBrick: {
 	DisplayName: Uelibloom Brick
@@ -3048,6 +4039,11 @@ AcidwoodWallItem: {
 
 AerialiteBrickWall: {
 	DisplayName: Aerialite Brick Wall
+	Tooltip: ""
+}
+
+AncientSmoothNavystoneWall: {
+	DisplayName: Ancient Smooth Navystone Wall
 	Tooltip: ""
 }
 
@@ -3126,6 +4122,8 @@ CryonicBrickWall: {
 	Tooltip: ""
 }
 
+// Draedon
+
 HazardChevronWall: {
 	DisplayName: Hazard Chevron Wall
 	Tooltip: ""
@@ -3166,18 +4164,30 @@ RustedPlatingWall: {
 	Tooltip: ""
 }
 
+// End of Draedon
+
+AnodizedWulfrumTrimWall: {
+	DisplayName: Anodized Wulfrum Trim Wall
+	Tooltip: ""
+}
+
+ChargedWulfrumEnergyBarrierWall: {
+	DisplayName: Charged Wulfrum Energy Barrier Wall
+	Tooltip: ""
+}
+
+DriftwoodWall: {
+	DisplayName: Driftwood Wall
+	Tooltip: ""
+}
+
 ElumplateWall: {
 	DisplayName: Elumplate Wall
 	Tooltip: ""
 }
 
-EutrophicSandWall: {
-	DisplayName: Unsafe Eutrophic Sand Wall
-	Tooltip: ""
-}
-
-EutrophicSandWallSafe: {
-	DisplayName: Eutrophic Sand Wall
+EutrophicGlassWall: {
+	DisplayName: Eutrophic Glass Wall
 	Tooltip: ""
 }
 
@@ -3211,17 +4221,17 @@ HavocplateWall: {
 	Tooltip: ""
 }
 
+LimestoneWall: {
+	DisplayName: Limestone Wall
+	Tooltip: ""
+}
+
 NavyplateWall: {
 	DisplayName: Navyplate Wall
 	Tooltip: ""
 }
 
 NavystoneWall: {
-	DisplayName: Unsafe Navystone Wall
-	Tooltip: ""
-}
-
-NavystoneWallSafe: {
 	DisplayName: Navystone Wall
 	Tooltip: ""
 }
@@ -3271,6 +4281,21 @@ ProfanedSlabWall: {
 	Tooltip: ""
 }
 
+PyreMantleWall: {
+	DisplayName: Pyre Mantle Wall
+	Tooltip: ""
+}
+
+RoundedAnodizedWulfrumPanelWall: {
+	DisplayName: Rounded Anodized Wulfrum Panel Wall
+	Tooltip: ""
+}
+
+RunestoneWall: {
+	DisplayName: Runestone Wall
+	Tooltip: ""
+}
+
 RunicProfanedBrickWall: {
 	DisplayName: Runic Profaned Brick Wall
 	Tooltip: ""
@@ -3283,6 +4308,16 @@ ScorchedBoneWall: {
 
 ScoriaBrickWall: {
 	DisplayName: Scoria Brick Wall
+	Tooltip: ""
+}
+
+ShellstoneSlabWall: {
+	DisplayName: Shellstone Slab Wall
+	Tooltip: ""
+}
+
+ShellstoneWall: {
+	DisplayName: Shellstone Wall
 	Tooltip: ""
 }
 
@@ -3351,8 +4386,38 @@ VoidstoneWall: {
 	Tooltip: ""
 }
 
-HardenedEutrophicSand: {
-	DisplayName: Hardened Eutrophic Sand
+WulfrumComplexPanelWall: {
+	DisplayName: Wulfrum Complex Panel Wall
+	Tooltip: ""
+}
+
+WulfrumEnergyBarrierWall: {
+	DisplayName: Wulfrum Energy Barrier Wall
+	Tooltip: ""
+}
+
+WulfrumPanelWall: {
+	DisplayName: Wulfrum Panel Wall
+	Tooltip: ""
+}
+
+WulfrumPillar: {
+	DisplayName: Wulfrum Pillar
+	Tooltip: ""
+}
+
+WulfrumPlatingWall: {
+	DisplayName: Wulfrum Plating Wall
+	Tooltip: ""
+}
+
+WulfrumSheetWall: {
+	DisplayName: Wulfrum Sheet Wall
+	Tooltip: ""
+}
+
+WulfrumSidingWall: {
+	DisplayName: Wulfrum Siding Wall
 	Tooltip: ""
 }
 
@@ -3452,4 +4517,181 @@ WaterTurret: {
 		Shoots high-speed water blasts at nearby enemies
 		Cannot attack while a boss is alive
 		'''
+}
+
+// Draedon lab lights
+
+CagedLablightItem: {
+	DisplayName: Caged Lablight
+	Tooltip: ""
+}
+
+AgedLablightItem: {
+	DisplayName: Aged Lablight
+	Tooltip: ""
+}
+
+MiniCagedLablightItem: {
+	DisplayName: Mini Caged Lablight
+	Tooltip: ""
+}
+
+MiniAgedLablightItem: {
+	DisplayName: Mini Aged Lablight
+	Tooltip: ""
+}
+
+CagedCinderlightItem: {
+	DisplayName: Caged Cinderlight
+	Tooltip: ""
+}
+
+AgedCinderlightItem: {
+	DisplayName: Aged Cinderlight
+	Tooltip: ""
+}
+
+MiniCagedCinderlightItem: {
+	DisplayName: Mini Caged Cinderlight
+	Tooltip: ""
+}
+
+MiniAgedCinderlightItem: {
+	DisplayName: Mini Aged Cinderlight
+	Tooltip: ""
+}
+
+CagedFlamelightItem: {
+	DisplayName: Caged Flamelight
+	Tooltip: ""
+}
+
+AgedFlamelightItem: {
+	DisplayName: Aged Flamelight
+	Tooltip: ""
+}
+
+MiniCagedFlamelightItem: {
+	DisplayName: Mini Caged Flamelight
+	Tooltip: ""
+}
+
+MiniAgedFlamelightItem: {
+	DisplayName: Mini Aged Flamelight
+	Tooltip: ""
+}
+
+CagedFrostlightItem: {
+	DisplayName: Caged Frostlight
+	Tooltip: ""
+}
+
+AgedFrostlightItem: {
+	DisplayName: Aged Frostlight
+	Tooltip: ""
+}
+
+MiniCagedFrostlightItem: {
+	DisplayName: Mini Caged Frostlight
+	Tooltip: ""
+}
+
+MiniAgedFrostlightItem: {
+	DisplayName: Mini Aged Frostlight
+	Tooltip: ""
+}
+
+CagedBiolightItem: {
+	DisplayName: Caged Biolight
+	Tooltip: ""
+}
+
+AgedBiolightItem: {
+	DisplayName: Aged Biolight
+	Tooltip: ""
+}
+
+MiniCagedBiolightItem: {
+	DisplayName: Mini Caged Biolight
+	Tooltip: ""
+}
+
+MiniAgedBiolightItem: {
+	DisplayName: Mini Aged Biolight
+	Tooltip: ""
+}
+
+CagedBlacklightItem: {
+	DisplayName: Caged Blacklight
+	Tooltip: ""
+}
+
+AgedBlacklightItem: {
+	DisplayName: Aged Blacklight
+	Tooltip: ""
+}
+
+MiniCagedBlacklightItem: {
+	DisplayName: Mini Caged Blacklight
+	Tooltip: ""
+}
+
+MiniAgedBlacklightItem: {
+	DisplayName: Mini Aged Blacklight
+	Tooltip: ""
+}
+
+CagedFloodlightItem: {
+	DisplayName: Caged Floodlight
+	Tooltip: ""
+}
+
+AgedFloodlightItem: {
+	DisplayName: Aged Floodlight
+	Tooltip: ""
+}
+
+MiniCagedFloodlightItem: {
+	DisplayName: Mini Caged Floodlight
+	Tooltip: ""
+}
+
+MiniAgedFloodlightItem: {
+	DisplayName: Mini Aged Floodlight
+	Tooltip: ""
+}
+
+AridSoil: {
+	DisplayName: Arid Soil
+	Tooltip: ""
+}
+
+RunestoneTerracotta: {
+	DisplayName: Runestone Terracotta
+	Tooltip: ""
+}
+
+ShellTrimBrick: {
+	DisplayName: Shell Trim Brick
+	Tooltip: ""
+}
+
+ShellTrimBrickWall: {
+	DisplayName: Shell Trim Brick Wall
+	Tooltip: ""
+}
+
+BasaltSlab: {
+	DisplayName: Basalt Slab
+	Tooltip: ""
+}
+
+UnsafeNavystoneWall: {
+	DisplayName: Unsafe Navystone Wall
+	Tooltip: ""
+}
+
+MossyStone: {
+	DisplayName: Mossy Stone
+	Tooltip: ""
 }

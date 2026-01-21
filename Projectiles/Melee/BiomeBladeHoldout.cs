@@ -1,15 +1,17 @@
-﻿using CalamityMod.DataStructures;
+﻿using System;
+using CalamityMod.DataStructures;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Items.Weapons.Melee;
-using static Terraria.ModLoader.ModContent;
 using static CalamityMod.CalamityUtils;
-using Terraria.Audio;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -116,34 +118,26 @@ namespace CalamityMod.Projectiles.Melee
 
         public void Attune(TrueBiomeBlade item)
         {
-            bool jungle = Owner.ZoneJungle;
-            bool snow = Owner.ZoneSnow;
-            bool evil = Owner.ZoneCorrupt || Owner.ZoneCrimson;
-            bool desert = Owner.ZoneDesert;
-            bool hell = Owner.ZoneUnderworldHeight;
-            bool ocean = Owner.ZoneBeach || Owner.Calamity().ZoneSulphur;
-            bool hallow = Owner.ZoneHallow;
-            bool astral = Owner.Calamity().ZoneAstral;
-            bool marine = Owner.Calamity().ZoneAbyss || Owner.Calamity().ZoneSunkenSea;
+            bool jungleAttune = Owner.ZoneJungle;
+            bool coldAttune = Owner.ZoneSnow || Owner.ZoneSkyHeight;
+            bool evilAttune = Owner.ZoneCorrupt || Owner.ZoneCrimson;
+            bool hotAttune = Owner.ZoneDesert || Owner.ZoneUnderworldHeight;
+            bool heavenlyAttune = Owner.ZoneHallow || Owner.Calamity().ZoneAstral;
 
-            Attunement attunement = Attunement.attunementArray[(int)AttunementID.TrueDefault];
+            Attunement attunement = AttunementSystem.FindOrNull(AttunementID.TrueDefault);
 
-            if (desert || hell)
-                attunement = Attunement.attunementArray[(int)AttunementID.TrueHot];
-            if (snow)
-                attunement = Attunement.attunementArray[(int)AttunementID.TrueCold];
-            if (jungle || ocean)
-                attunement = Attunement.attunementArray[(int)AttunementID.TrueTropical];
-            if (evil)
-                attunement = Attunement.attunementArray[(int)AttunementID.TrueEvil];
-            if (hallow)
-                attunement = Attunement.attunementArray[(int)AttunementID.Holy];
-            if (astral)
-                attunement = Attunement.attunementArray[(int)AttunementID.Astral];
-            if (marine)
-                attunement = Attunement.attunementArray[(int)AttunementID.Marine];
+            if (hotAttune)
+                attunement = AttunementSystem.FindOrNull(AttunementID.TrueHot);
+            if (coldAttune)
+                attunement = AttunementSystem.FindOrNull(AttunementID.TrueCold);
+            if (jungleAttune)
+                attunement = AttunementSystem.FindOrNull(AttunementID.TrueTropical);
+            if (evilAttune)
+                attunement = AttunementSystem.FindOrNull(AttunementID.TrueEvil);
+            if (heavenlyAttune)
+                attunement = AttunementSystem.FindOrNull(AttunementID.Holy);
 
-            //If the owner already had the attunement , break out of it (And unswap)
+            //If the owner already had the attunement, break out of it (And unswap)
             if (item.secondaryAttunement == attunement)
             {
                 SoundEngine.PlaySound(SoundID.DD2_LightningBugZap, Projectile.Center);
@@ -177,7 +171,7 @@ namespace CalamityMod.Projectiles.Melee
 
             else if (ChanneledState == 1f)
             {
-                Texture2D tex = Request<Texture2D>(Texture).Value;
+                Texture2D tex = TextureAssets.Projectile[Type].Value;
                 Vector2 squishyScale = new Vector2(Math.Abs((float)Math.Sin(MathHelper.Pi + MathHelper.TwoPi * Projectile.timeLeft / 30f)), 1f);
                 SpriteEffects flip = (float)Math.Sin(MathHelper.Pi + MathHelper.TwoPi * Projectile.timeLeft / 30f) > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
                 Main.EntitySpriteDraw(tex, Projectile.position - Main.screenPosition, null, lightColor * (Projectile.timeLeft / 60f), 0, tex.Size() / 2, squishyScale * (2f - (Projectile.timeLeft / 60f)), flip, 0);

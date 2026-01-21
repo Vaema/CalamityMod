@@ -1,12 +1,11 @@
-﻿using CalamityMod.Items.Weapons.Magic;
+﻿using System;
+using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.Enums;
 using Terraria.GameContent.Shaders;
 using Terraria.Graphics.Effects;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
@@ -47,7 +46,7 @@ namespace CalamityMod.Projectiles.Magic
             // The beam itself still stops on tiles, but its invisible "source" projectile ignores them.
             Projectile.tileCollide = false;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 4;
+            Projectile.localNPCHitCooldown = -1;
 
             // The beam lasts for only some frames and fades out over that time.
             Projectile.timeLeft = Lifetime;
@@ -64,7 +63,7 @@ namespace CalamityMod.Projectiles.Magic
             }
 
             // On frame 1, set the beam vector and rotation, but set the real velocity to zero.
-            if(Projectile.velocity != Vector2.Zero)
+            if (Projectile.velocity != Vector2.Zero)
             {
                 beamVector = Vector2.Normalize(Projectile.velocity);
                 Projectile.rotation = Projectile.velocity.ToRotation();
@@ -94,7 +93,7 @@ namespace CalamityMod.Projectiles.Magic
             ProduceBeamDust(beamColor);
 
             // If the game is rendering (i.e. isn't a dedicated server), make the beam disturb water.
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 WaterShaderData wsd = (WaterShaderData)Filters.Scene["WaterDistortion"].GetShader();
                 // A universal time-based sinusoid which updates extremely rapidly. GlobalTimeWrappedHourly is 0 to 3600, measured in seconds.
@@ -141,7 +140,7 @@ namespace CalamityMod.Projectiles.Magic
             if (beamVector == Vector2.Zero || Projectile.velocity != Vector2.Zero)
                 return false;
 
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             float beamLength = Projectile.ai[0];
             Vector2 centerFloored = Projectile.Center.Floor() + beamVector * Projectile.scale * BeamRenderTileOffset;
             Vector2 scaleVec = new Vector2(Projectile.scale);

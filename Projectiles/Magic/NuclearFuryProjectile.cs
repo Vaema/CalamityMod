@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -12,8 +12,9 @@ namespace CalamityMod.Projectiles.Magic
         public new string LocalizationCategory => "Projectiles.Magic";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -34,8 +35,8 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void AI()
         {
-	    if (Projectile.ai[1] == 1f)
-		Projectile.penetrate = -1; // Gives infinite pierce to Valediction typhoons
+            if (Projectile.ai[1] == 1f)
+                Projectile.penetrate = -1; // Gives infinite pierce to Valediction typhoons
 
             Projectile.localAI[1] += 1f;
             if (Projectile.localAI[1] > 10f && Main.rand.NextBool(3))
@@ -45,7 +46,7 @@ namespace CalamityMod.Projectiles.Magic
                 {
                     Vector2 dustRotation = (Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width, (float)Projectile.height) / 2f).RotatedBy((double)(i - (dustAmt / 2 - 1)) * Math.PI / (double)dustAmt, new Vector2()) + Projectile.Center;
                     Vector2 randomRotation = ((Main.rand.NextFloat() * MathHelper.Pi) - MathHelper.PiOver2).ToRotationVector2() * (float)Main.rand.Next(3, 8);
-                    int nuclearDust = Dust.NewDust(dustRotation + randomRotation, 0, 0, 217, randomRotation.X * 2f, randomRotation.Y * 2f, 100, new Color(), 1.4f);
+                    int nuclearDust = Dust.NewDust(dustRotation + randomRotation, 0, 0, DustID.FishronWings, randomRotation.X * 2f, randomRotation.Y * 2f, 100, new Color(), 1.4f);
                     Dust dust = Main.dust[nuclearDust];
                     dust.noGravity = true;
                     dust.noLight = true;
@@ -131,10 +132,10 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item10, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item10, Projectile.Center);
             for (int k = 0; k < 5; k++)
             {
-                int dust = Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 34, 0f, 0f);
+                int dust = Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.BreatheBubble, 0f, 0f);
                 Main.dust[dust].velocity *= 0f;
                 Main.dust[dust].noGravity = true;
             }
@@ -147,7 +148,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

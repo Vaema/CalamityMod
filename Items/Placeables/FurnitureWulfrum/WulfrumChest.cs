@@ -1,6 +1,7 @@
-﻿// There is no Wulfrum Chest placed sprite...
+﻿// There is no Wulfrum Chest placed sprite... THERES STILL NONE
 /*
 using CalamityMod.Tiles.Furniture.CraftingStations;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurnitureWulfrum
@@ -15,16 +16,8 @@ namespace CalamityMod.Items.Placeables.FurnitureWulfrum
 
         public override void SetDefaults()
         {
-            Item.width = 32;
-            Item.height = 24;
-            Item.maxStack = 9999;
-            Item.useTurn = true;
-            Item.autoReuse = true;
-            Item.useAnimation = 15;
-            Item.useTime = 10;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.consumable = true;
-            Item.createTile = ModContent.TileType<Tiles.FurnitureWulfrum.WulfrumChest>();
+            Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.FurnitureWulfrum.WulfrumChest>());
+            Item.value = Item.sellPrice(silver: 1);
         }
 
         public override void AddRecipes()
@@ -32,7 +25,7 @@ namespace CalamityMod.Items.Placeables.FurnitureWulfrum
             CreateRecipe().
                 AddIngredient<WulfrumMetalScrap>(10).
                 AddRecipeGroup("IronBar", 2).
-                AddTile<WulfrumLabstation>().
+                AddTile(TileID.HeavyWorkBench).
                 Register();
         }
     }

@@ -1,11 +1,11 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.TileEntities;
 using CalamityMod.Tiles.DraedonSummoner;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -21,11 +21,11 @@ namespace CalamityMod.Items.DraedonMisc
         {
             Item.width = 52;
             Item.height = 52;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.rare = ModContent.RarityType<Turquoise>();
-            Item.useTime = Item.useAnimation = 15;
+            Item.useAnimation = Item.useTime = 15;
         }
 
         public override bool? UseItem(Player player) => true;
@@ -40,7 +40,7 @@ namespace CalamityMod.Items.DraedonMisc
 
             if (Main.myPlayer == player.whoAmI && player.WithinRange(Main.MouseWorld, checkDistance) && tile.HasTile && tile.TileType == ModContent.TileType<CodebreakerTile>())
             {
-                SoundEngine.PlaySound(InstallSound, Main.player[Main.myPlayer].Center);
+                SoundEngine.PlaySound(InstallSound, Main.LocalPlayer.Center);
 
                 TECodebreaker codebreakerTileEntity = CalamityUtils.FindTileEntity<TECodebreaker>(placeTileCoords.X, placeTileCoords.Y, CodebreakerTile.Width, CodebreakerTile.Height, CodebreakerTile.SheetSquare);
                 if (codebreakerTileEntity is null || codebreakerTileEntity.ContainsVoltageRegulationSystem)
@@ -62,7 +62,7 @@ namespace CalamityMod.Items.DraedonMisc
                 AddIngredient<UelibloomBar>(5).
                 AddIngredient(ItemID.LunarBar, 5).
                 AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(4, out Func<bool> condition), condition).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -14,8 +14,9 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 6;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -26,12 +27,12 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Melee;
             Projectile.tileCollide = false;
-            Projectile.penetrate = -1;
+            Projectile.penetrate = 3;
             Projectile.extraUpdates = 2;
-            Projectile.timeLeft = 135 * Projectile.MaxUpdates;
+            Projectile.timeLeft = 240 * Projectile.MaxUpdates;
             Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = Projectile.MaxUpdates * 13;
+            Projectile.localNPCHitCooldown = Projectile.MaxUpdates * 10;
         }
 
         public override void AI()
@@ -46,18 +47,14 @@ namespace CalamityMod.Projectiles.Melee
                 }
             }
             Projectile.rotation += Projectile.direction * 0.55f;
-            CalamityUtils.HomeInOnNPC(Projectile, true, 250f, 10f, 25f);
+            if (Projectile.timeLeft < 230 * Projectile.MaxUpdates)
+                CalamityUtils.HomeInOnNPC(Projectile, true, 300f, 10f, 25f);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
-        }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.AddBuff(ModContent.BuffType<Nightwither>(), 180);
         }
     }
 }

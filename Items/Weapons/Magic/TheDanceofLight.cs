@@ -1,9 +1,9 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 40;
             Item.height = 42;
-            Item.damage = 415;
+            Item.damage = 515;
             Item.knockBack = 4f;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 6;
@@ -49,7 +49,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shoot = ModContent.ProjectileType<LightBlade>();
             Item.shootSpeed = 14f;
 
-            Item.value = CalamityGlobalItem.Rarity16BuyPrice;
+            Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
         }
@@ -89,7 +89,6 @@ namespace CalamityMod.Items.Weapons.Magic
             CreateRecipe().
                 AddIngredient(ItemID.SkyFracture).
                 AddIngredient(ItemID.LunarFlareBook).
-                AddIngredient<WrathoftheAncients>().
                 AddIngredient<ShadowspecBar>(5).
                 AddTile<DraedonsForge>().
                 Register();

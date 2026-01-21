@@ -1,9 +1,9 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Enemy
 {
     public class FlameBurstHostile : ModProjectile, ILocalizedModType
@@ -27,7 +27,7 @@ namespace CalamityMod.Projectiles.Enemy
         {
             if (count == 0f)
             {
-                SoundEngine.PlaySound(SoundID.Item73, Projectile.position);
+                SoundEngine.PlaySound(SoundID.Item73, Projectile.Center);
                 Projectile.position.X = Projectile.position.X + (float)(Projectile.width / 2);
                 Projectile.position.Y = Projectile.position.Y + (float)(Projectile.height / 2);
                 Projectile.width = 20;
@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Enemy
                 Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
                 for (int i = 0; i < 10; i++)
                 {
-                    int flameDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 244, 0f, 0f, 100, default, 2f);
+                    int flameDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 2f);
                     Main.dust[flameDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -46,10 +46,10 @@ namespace CalamityMod.Projectiles.Enemy
                 }
                 for (int j = 0; j < 20; j++)
                 {
-                    int sparkDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 246, 0f, 0f, 100, default, 3f);
+                    int sparkDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GoldCoin, 0f, 0f, 100, default, 3f);
                     Main.dust[sparkDust].noGravity = true;
                     Main.dust[sparkDust].velocity *= 5f;
-                    sparkDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 246, 0f, 0f, 100, default, 2f);
+                    sparkDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GoldCoin, 0f, 0f, 100, default, 2f);
                     Main.dust[sparkDust].velocity *= 2f;
                 }
                 count += 1f;
@@ -59,7 +59,7 @@ namespace CalamityMod.Projectiles.Enemy
             {
                 for (int k = 0; k < 5; k++)
                 {
-                    int sparky = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 246, 0f, 0f, 100, default, 0.75f);
+                    int sparky = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GoldCoin, 0f, 0f, 100, default, 0.75f);
                     Main.dust[sparky].velocity *= 0f;
                 }
             }
@@ -96,7 +96,7 @@ namespace CalamityMod.Projectiles.Enemy
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 246, Projectile.oldVelocity.X * 0f, Projectile.oldVelocity.Y * 0f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.GoldCoin, Projectile.oldVelocity.X * 0f, Projectile.oldVelocity.Y * 0f);
             }
         }
     }

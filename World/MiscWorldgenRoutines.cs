@@ -1,25 +1,15 @@
-﻿using CalamityMod.Items.Accessories;
+﻿using System;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Potions;
-using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Tiles;
+using CalamityMod.Items.Potions.Food;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Astral;
-using CalamityMod.Tiles.Crags;
-using CalamityMod.Tiles.FurnitureAncient;
-using CalamityMod.Tiles.Ores;
-using CalamityMod.Walls;
+using CalamityMod.Tiles.FurnitureAuric;
 using Microsoft.Xna.Framework;
-using System;
-using System.Reflection;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
-using Terraria.IO;
 using Terraria.ModLoader;
-using Terraria.Utilities;
 using Terraria.WorldBuilding;
-using Terraria.GameContent.Generation;
 
 namespace CalamityMod.World
 {
@@ -62,6 +52,7 @@ namespace CalamityMod.World
                     return;
 
                 c.item[itemIndex].SetDefaults(id, false);
+                c.item[itemIndex].Prefix(-1);
 
                 // Don't set quantity unless quantity is specified
                 if (minQuantity > 0)
@@ -77,7 +68,7 @@ namespace CalamityMod.World
             // Astral Chest has completely different loot in it
             if (type == ModContent.TileType<AstralChestLocked>())
             {
-                PutItemInChest(ref chest, ModContent.ItemType<Stardust>(), 30, 80);
+                PutItemInChest(ref chest, ModContent.ItemType<StarblightSoot>(), 30, 80);
                 PutItemInChest(ref chest, ModContent.ItemType<AureusCell>(), 10, 14);
                 PutItemInChest(ref chest, ModContent.ItemType<ZergPotion>(), 8);
                 PutItemInChest(ref chest, ModContent.ItemType<ZenPotion>(), 3, 5);
@@ -143,33 +134,85 @@ namespace CalamityMod.World
         }
         #endregion
 
-        #region Place Rox Shrine
-        public static void PlaceRoxShrine()
+        #region Tunnel Tools
+        public static void CreateTunnel(int startX, int startY, int endX, int endY, int width = 6, int tileType = TileID.Dirt)
         {
-            while (!CalamityWorld.roxShrinePlaced)
-            {
-                CalamityWorld.roxShrinePlaced = true;
-                for (int x = 0; x < Main.maxTilesX; x++)
-                {
-                    for (int y = 0; y < Main.maxTilesY; y++)
-                    {
-                        if (Main.tile[x, y] != null && Main.tile[x, y].TileType == TileID.LargePiles)
-                        {
-                            if ((Main.tile[x, y].TileFrameX == 18 && Main.tile[x, y].TileFrameY == 0) || (Main.tile[x, y].TileFrameX == 45 && Main.tile[x, y].TileFrameY == 0))
-                            {
-                                if (WorldGen.genRand.NextBool(3))
-                                {
-                                    for (int dx = -1; dx < 2; dx++)
-                                    {
-                                        for (int dy = -1; dy < 2; dy++)
-                                            Main.tile[x + dx, y + dy].Get<TileWallWireStateData>().HasTile = false;
-                                    }
+            int dx = endX - startX;
+            int dy = endY - startY;
+            int steps = Math.Max(Math.Abs(dx), Math.Abs(dy));
 
-                                    WorldGen.PlaceTile(x, y + 1, ModContent.TileType<RoxTile>());
-                                    return;
+            for (int i = 0; i <= steps; i++)
+            {
+                float t = (float)i / steps;
+                int x = (int)(startX + dx * t);
+                int y = (int)(startY + dy * t);
+
+                // Draw a small circular path
+                for (int xi = -width; xi <= width; xi++)
+                {
+                    for (int yi = -width; yi <= width; yi++)
+                    {
+                        if (xi * xi + yi * yi <= width * width)
+                        {
+                            int tileX = x + xi;
+                            int tileY = y + yi;
+
+                            if (WorldGen.InWorld(tileX, tileY))
+                            {
+                                Tile tTile = Main.tile[tileX, tileY];
+                                tTile.HasTile = true;
+                                tTile.TileType = (ushort)tileType;
+                                WorldGen.SquareTileFrame(tileX, tileY);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        public static void ClearTunnel(int startX, int startY, int endX, int endY, int width = 3, int wallType = WallID.Dirt, int liquidType = LiquidID.Water, bool liquidOn = true, bool wallOn = true)
+        {
+            int dx = endX - startX;
+            int dy = endY - startY;
+            int steps = Math.Max(Math.Abs(dx), Math.Abs(dy));
+
+            for (int i = 0; i <= steps; i++)
+            {
+                float t = (float)i / steps;
+                int x = (int)(startX + dx * t);
+                int y = (int)(startY + dy * t);
+
+                for (int xi = -width; xi <= width; xi++)
+                {
+                    for (int yi = -width; yi <= width; yi++)
+                    {
+                        if (xi * xi + yi * yi <= width * width)
+                        {
+                            int tileX = x + xi;
+                            int tileY = y + yi;
+
+                            if (WorldGen.InWorld(tileX, tileY))
+                            {
+                                Tile tTile = Main.tile[tileX, tileY];
+                                tTile.HasTile = false;
+                                if (wallOn)
+                                {
+                                    tTile.WallType = (ushort)wallType;
                                 }
-                                else
-                                    CalamityWorld.roxShrinePlaced = false;
+
+                                tTile.LiquidAmount = 0;
+
+                                WorldGen.SquareWallFrame(tileX, tileY);
+
+                                // Optional: Add liquid with low chance
+                                if (liquidOn)
+                                {
+                                    if (WorldGen.genRand.NextBool(10))
+                                    {
+                                        tTile.LiquidAmount = 100;
+                                        tTile.LiquidType = liquidType;
+                                        WorldGen.SquareTileFrame(tileX, tileY);
+                                    }
+                                }
                             }
                         }
                     }
@@ -217,17 +260,17 @@ namespace CalamityMod.World
                     chasmWidth += WorldGen.genRand.Next(10);
                     chasmWidth -= WorldGen.genRand.Next(10);
                     float smallHoleLimit = 790f; //small
-                    
+
                     if (Main.maxTilesY > 1500)
-                    { 
-                        smallHoleLimit = 1360f; 
-                        
-                        if (Main.maxTilesY > 2100) 
-                        { 
-                            smallHoleLimit = 1950f; 
-                        } 
+                    {
+                        smallHoleLimit = 1360f;
+
+                        if (Main.maxTilesY > 2100)
+                        {
+                            smallHoleLimit = 1950f;
+                        }
                     }
-                    
+
                     if (ocean && maxChasmSize > smallHoleLimit)
                     {
                         if (chasmWidth < 7.0) //min width
@@ -427,7 +470,7 @@ namespace CalamityMod.World
         #region Smart Gem Gen
         public static void SmartGemGen()
         {
-            double oneThirdOfUnderground = (Main.maxTilesY - 200 - Main.worldSurface) / 3D;
+            double oneThirdOfUnderground = (Main.UnderworldLayer - Main.worldSurface) / 3D;
             double verticalStartFactor_Layer1 = Main.worldSurface;
             double verticalStartFactor_Layer2 = verticalStartFactor_Layer1 + oneThirdOfUnderground;
             double verticalStartFactor_Layer3 = verticalStartFactor_Layer1 + oneThirdOfUnderground * 2D;
@@ -485,6 +528,38 @@ namespace CalamityMod.World
                             }
                         }
                     }
+                }
+            }
+        }
+        #endregion
+
+        #region Auric Land Mines
+        public static void GenerateAuricLandMines()
+        {
+            int landMineID = ModContent.TileType<AuricLandMineTile>();
+            int landMineChance = Main.zenithWorld ? 150 : 300;
+            float maxDepth = Main.maxTilesY * (Main.zenithWorld ? 0.75f : 0.5f); // depth increased in gfb due to the evil columns that extend further downward
+            for (int x = 0; x < Main.maxTilesX; x++)
+            {
+                for (int y = 0; y < maxDepth; y++)
+                {
+                    Tile t = CalamityUtils.ParanoidTileRetrieval(x, y);
+                    Tile above = CalamityUtils.ParanoidTileRetrieval(x, y - 1);
+                    if (t != null)
+                    {
+                        if (above != null)
+                        {
+                            // Yharim killed the gods with auric land mines obviously
+                            if ((t.TileType == TileID.Ebonstone || t.TileType == TileID.Crimstone) && !above.HasTile)
+                            {
+                                if (WorldGen.genRand.NextBool(landMineChance))
+                                {
+                                    WorldGen.SlopeTile(x, y);
+                                    WorldGen.PlaceTile(x, y - 1, landMineID);
+                                }
+                            }
+                        }
+                    }                    
                 }
             }
         }

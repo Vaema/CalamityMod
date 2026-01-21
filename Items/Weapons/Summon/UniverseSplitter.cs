@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
+using CalamityMod.Items.Pets;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
@@ -31,9 +32,9 @@ namespace CalamityMod.Items.Weapons.Summon
 
             Item.DamageType = DamageClass.Summon;
             Item.mana = 300;
-            Item.damage = 15000;
+            Item.damage = 9000;
             Item.knockBack = 7f;
-            Item.useTime = Item.useAnimation = 10;
+            Item.useAnimation = Item.useTime = 10;
             Item.shoot = ModContent.ProjectileType<UniverseSplitterField>();
             Item.shootSpeed = 10f;
             Item.noUseGraphic = true;
@@ -51,14 +52,14 @@ namespace CalamityMod.Items.Weapons.Summon
             {
                 if (!player.HasCooldown(Cooldowns.UniverseSplitter.ID))
                 {
-                    player.AddCooldown(Cooldowns.UniverseSplitter.ID, CalamityUtils.SecondsToFrames(45));
-                    int p = Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, type, damage, knockback, player.whoAmI);
+                    player.AddCooldown(Cooldowns.UniverseSplitter.ID, CalamityUtils.SecondsToFrames(30));
+                    int p = Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
                     if (Main.projectile.IndexInRange(p))
                         Main.projectile[p].originalDamage = Item.damage;
                     for (int i = 0; i < 36; i++)
                     {
                         float angle = MathHelper.TwoPi / 36f * i + Main.rand.NextFloat(MathHelper.TwoPi / 36f);
-                        Dust dust = Dust.NewDustPerfect(position + angle.ToRotationVector2() * ItemUseDustMaxRadius, 247);
+                        Dust dust = Dust.NewDustPerfect(position + angle.ToRotationVector2() * ItemUseDustMaxRadius, DustID.PlatinumCoin);
                         dust.velocity = Vector2.Normalize(angle.ToRotationVector2()) * 2.5f;
                         dust.noGravity = true;
                         dust.scale = 0.8f;
@@ -75,6 +76,7 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void AddRecipes()
         {
             CreateRecipe().
+                AddIngredient<BurrowerController>().
                 AddIngredient<Abombination>().
                 AddIngredient<ShadowspecBar>(5).
                 AddTile<DraedonsForge>().

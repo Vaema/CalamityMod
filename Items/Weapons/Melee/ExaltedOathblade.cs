@@ -1,116 +1,95 @@
-﻿using Terraria.DataStructures;
+﻿using CalamityMod.Cooldowns;
+using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
-using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
     [LegacyName("TrueForbiddenOathblade")]
-    public class ExaltedOathblade : ModItem, ILocalizedModType
+    public class ExaltedOathblade : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+        public int throwCount = 0;
         public override void SetDefaults()
         {
             Item.width = 88;
             Item.height = 88;
-            Item.damage = 150;
-            Item.DamageType = DamageClass.Melee;
-            Item.useAnimation = 23;
-            Item.useTime = 23;
-            Item.useTurn = true;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.knockBack = 7.5f;
-            Item.UseSound = SoundID.Item1;
-            Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
-            Item.rare = ItemRarityID.Yellow;
-            Item.shoot = ModContent.ProjectileType<ForbiddenOathbladeProjectile>();
-            Item.shootSpeed = 3f;
-        }
+            Item.damage = 90;
+            Item.useAnimation = Item.useTime = 45;
 
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.shoot = ModContent.ProjectileType<ExaltedOathbladeThrownBlade>();
+            Item.useTurn = true;
+            Item.knockBack = 5.5f;
+            Item.noMelee = true;
+            Item.noUseGraphic = true;
+            Item.DamageType = DamageClass.Melee;
+            Item.UseSound = null;
+            Item.autoReuse = true;
+            Item.channel = true;
+
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+            Item.rare = ItemRarityID.Yellow;
+        }
+        public override bool MeleePrefix() => true;
+        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 31;
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[ModContent.ProjectileType<ExaltedOathbladeHoldout>()] <= 0 && !player.Calamity().mouseRight;
+        public override void HoldItem(Player player)
+        {
+            player.Calamity().mouseWorldListener = true;
+            if (player.Calamity().mouseRight && !player.mouseInterface && player.Calamity().killModeCooldown == 0 && !Main.mapFullscreen && !Main.blockMouse)
+            {
+                SoundStyle buff = new("CalamityMod/Sounds/Item/DemonSwordKillMode");
+                SoundEngine.PlaySound(buff with { Volume = 0.95f }, player.Center);
+
+                for (int i = 0; i < 10; i++)
+                {
+                    Vector2 vel = (MathHelper.TwoPi * i / 10f).ToRotationVector2() * 6.5f;
+                    Particle spark2 = new CustomSpark(player.Center + vel * 14, -vel * 0.1f, "CalamityMod/Particles/DemonSigilParticle", false, 22, 0.6f, (i % 2 == 0 ? Color.MediumOrchid : Color.BlueViolet) * 0.7f, new Vector2(1, 1), true, false, 0, false, false, -0.23f);
+                    GeneralParticleHandler.SpawnParticle(spark2);
+
+                    Dust c = Dust.NewDustPerfect(player.Center, ModContent.DustType<LightDust>());
+                    c.velocity = vel;
+                    c.scale = 1.7f;
+                    c.noGravity = true;
+                    c.color = (i % 2 != 0 ? Color.MediumOrchid : Color.BlueViolet);
+                    c.noLightEmittence = true;
+                }
+
+                player.Calamity().demonSwordKillMode = true;
+
+                int cooldownTime = KillMode.cooldownMax + KillMode.buffMax;
+                player.Calamity().killModeCooldown = cooldownTime;
+                player.AddCooldown(KillMode.ID, cooldownTime);
+            }
+            if (player.Calamity().demonSwordKillMode && player.ownedProjectileCounts[ModContent.ProjectileType<ExaltedOathbladeHoldout>()] <= 0 && player.Calamity().killModeCooldown == KillMode.cooldownMax + KillMode.buffMax)
+            {
+                Projectile blade = Projectile.NewProjectileDirect(player.GetSource_FromThis(), player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<ExaltedOathbladeHoldout>(), Item.damage * 15, Item.knockBack, player.whoAmI, 0, throwCount); //This used to be 23x damage.
+            }
+        }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            int index = 8;
-            for (int i = -index; i <= index; i += index)
-            {
-                Vector2 perturbedSpeed = velocity.RotatedBy(MathHelper.ToRadians(i));
-                Projectile.NewProjectile(source, position, perturbedSpeed, type, damage / 2, knockback, player.whoAmI, 0f, 0f);
-            }
+            throwCount++;
+            int useSpeed = (int)MathHelper.Clamp((Item.useTime / 2.8f), 1, 100);
+            Projectile blade = Projectile.NewProjectileDirect(source, player.MountedCenter, velocity, type, damage, knockback, player.whoAmI, 0, throwCount);
+            blade.localAI[2] = useSpeed;
+            blade.timeLeft += useSpeed;
             return false;
         }
-
-        public override void MeleeEffects(Player player, Rectangle hitbox)
-        {
-            if (Main.rand.NextBool(3))
-                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 173);
-        }
-
-        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.AddBuff(BuffID.ShadowFlame, 150);
-            target.AddBuff(BuffID.OnFire, 300);
-            if (hit.Crit)
-            {
-                target.AddBuff(BuffID.ShadowFlame, 450);
-                target.AddBuff(BuffID.OnFire, 900);
-                player.ApplyDamageToNPC(target, player.GetWeaponDamage(player.ActiveItem()) * 2, 0f, 0, false);
-                float firstDustScale = 1.7f;
-                float secondDustScale = 0.8f;
-                float thirdDustScale = 2f;
-                Vector2 dustRotation = (target.rotation - MathHelper.PiOver2).ToRotationVector2();
-                Vector2 dustVelocity = dustRotation * target.velocity.Length();
-                SoundEngine.PlaySound(SoundID.Item14, target.Center);
-                for (int i = 0; i < 40; i++)
-                {
-                    int swingDust = Dust.NewDust(target.position, target.width, target.height, 173, 0f, 0f, 200, default, firstDustScale);
-                    Dust dust = Main.dust[swingDust];
-                    dust.position = target.Center + Vector2.UnitY.RotatedByRandom(Math.PI) * (float)Main.rand.NextDouble() * (float)target.width / 2f;
-                    dust.noGravity = true;
-                    dust.velocity.Y -= 4.5f;
-                    dust.velocity *= 3f;
-                    dust.velocity += dustVelocity * Main.rand.NextFloat();
-                    swingDust = Dust.NewDust(target.position, target.width, target.height, 173, 0f, 0f, 100, default, secondDustScale);
-                    dust.position = target.Center + Vector2.UnitY.RotatedByRandom(Math.PI) * (float)Main.rand.NextDouble() * (float)target.width / 2f;
-                    dust.velocity.Y -= 3f;
-                    dust.velocity *= 2f;
-                    dust.noGravity = true;
-                    dust.fadeIn = 1f;
-                    dust.color = Color.Crimson * 0.5f;
-                    dust.velocity += dustVelocity * Main.rand.NextFloat();
-                }
-                for (int j = 0; j < 20; j++)
-                {
-                    int swingDust2 = Dust.NewDust(target.position, target.width, target.height, 173, 0f, 0f, 0, default, thirdDustScale);
-                    Dust dust = Main.dust[swingDust2];
-                    dust.position = target.Center + Vector2.UnitX.RotatedByRandom(Math.PI).RotatedBy((double)target.velocity.ToRotation(), default) * (float)target.width / 3f;
-                    dust.noGravity = true;
-                    dust.velocity.Y -= 1.5f;
-                    dust.velocity *= 0.5f;
-                    dust.velocity += dustVelocity * (0.6f + 0.6f * Main.rand.NextFloat());
-                }
-            }
-        }
-
-        public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
-        {
-            target.AddBuff(ModContent.BuffType<Shadowflame>(), 450);
-            target.AddBuff(BuffID.OnFire, 900);
-            SoundEngine.PlaySound(SoundID.Item14, target.Center);
-        }
-
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient<ForbiddenOathblade>().
                 AddIngredient(ItemID.BrokenHeroSword).
                 AddIngredient<AshesofCalamity>(8).
-                AddIngredient<InfectedArmorPlating>(8).
+                AddIngredient<ScoriaBar>(8).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

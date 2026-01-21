@@ -27,7 +27,7 @@ namespace CalamityMod.Projectiles.Rogue
         public const int TotalFlames = 120;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 8;
+            Main.projFrames[Type] = 8;
         }
         public override void SetDefaults()
         {
@@ -59,8 +59,8 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
-            int frameHeight = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int frameHeight = Terraria.GameContent.TextureAssets.Projectile[Type].Value.Height / Main.projFrames[Type];
 
 
             if (Flames.Length > 0)

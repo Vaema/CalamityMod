@@ -1,15 +1,16 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.ModLoader;
 
 namespace CalamityMod.UI
 {
-    // TODO -- This can be made into a ModSystem with simple OnModLoad and Unload hooks.
-    public static class PopupGUIManager
+    [Autoload(Side = ModSide.Client)]
+    public sealed class PopupGUIManager : ModSystem
     {
-        private static readonly List<PopupGUI> gUIs = new List<PopupGUI>();
+        internal static readonly List<PopupGUI> gUIs = [];
         public static bool GUIActive(PopupGUI gui) => gui.Active || gui.FadeTime > 0;
         public static bool AnyGUIsActive => gUIs.Any(GUIActive);
         public static PopupGUI GetActiveGUI => gUIs.FirstOrDefault(GUIActive);
@@ -55,18 +56,9 @@ namespace CalamityMod.UI
             gUIs.First(gui => gui.GetType() == type).Active = !gUIs.First(gui => gui.GetType() == type).Active;
         }
 
-        public static void LoadGUIs()
+        public override void Unload()
         {
-            // Look through every type in the mod, and check if it's derived from PopupGUI. If it is, create a copy and save it in the static list.
-            foreach (Type type in typeof(CalamityMod).Assembly.GetTypes())
-            {
-                // Don't load abstract classes since they cannot have instances.
-                if (type.IsAbstract)
-                    continue;
-                if (type.IsSubclassOf(typeof(PopupGUI)))
-                    gUIs.Add(Activator.CreateInstance(type) as PopupGUI);
-            }
+            gUIs?.Clear();
         }
-        public static void UnloadGUIs() => gUIs.Clear();
     }
 }

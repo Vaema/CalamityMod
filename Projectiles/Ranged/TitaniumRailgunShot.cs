@@ -1,11 +1,12 @@
-﻿using CalamityMod.Projectiles.BaseProjectiles;
+﻿using CalamityMod.Particles;
+using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Enums;
+using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Particles;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -47,9 +48,9 @@ namespace CalamityMod.Projectiles.Ranged
         {
             if (Projectile.timeLeft == 15)
             {
-                
+
                 Vector2 beamVector = Projectile.velocity;
-                float beamLength = DetermineLaserLength_CollideWithTiles(12);
+                float beamLength = DetermineLaserLength_CollideWithTiles();
 
                 //Rapid dust
                 int dustCount = Main.rand.Next(10, 30);
@@ -58,7 +59,7 @@ namespace CalamityMod.Projectiles.Ranged
                     float dustProgressAlongBeam = beamLength * Main.rand.NextFloat(0f, 0.8f);
                     Vector2 dustPosition = Projectile.Center + dustProgressAlongBeam * beamVector + beamVector.RotatedBy(MathHelper.PiOver2) * Main.rand.NextFloat(-6f, 6f) * Projectile.scale;
 
-                    Dust dust = Dust.NewDustPerfect(dustPosition, 187, beamVector * Main.rand.NextFloat(5f, 26f), 0, Color.White, 2.2f);
+                    Dust dust = Dust.NewDustPerfect(dustPosition, DustID.BlueFlare, beamVector * Main.rand.NextFloat(5f, 26f), 0, Color.White, 2.2f);
                     dust.noGravity = true;
                 }
 
@@ -77,7 +78,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void DetermineScale() => Projectile.scale = Projectile.timeLeft / Lifetime * MaxScale;
 
-        public override float DetermineLaserLength() => DetermineLaserLength_CollideWithTiles(5);
+        public override float DetermineLaserLength() => DetermineLaserLength_CollideWithTiles();
 
         public override bool ShouldUpdatePosition() => false;
 

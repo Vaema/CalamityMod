@@ -1,5 +1,4 @@
-﻿using CalamityMod.Buffs.Summon;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -63,10 +62,9 @@ namespace CalamityMod.Projectiles.Summon
             var live = false;
             Projectile nextSegment = new Projectile();
             BlackDragonHead head = new BlackDragonHead();
-            for (int i = 0; i < Main.maxProjectiles; i++)
+            foreach (Projectile projectile in Main.ActiveProjectiles)
             {
-                var projectile = Main.projectile[i];
-                if (projectile.type == Type && projectile.owner == Projectile.owner && projectile.active)
+                if (projectile.type == Type && projectile.owner == Projectile.owner)
                 {
                     if (projectile.ModProjectile<BlackDragonBody>().segmentIndex == segmentIndex - 1)
                     {
@@ -74,7 +72,7 @@ namespace CalamityMod.Projectiles.Summon
                         nextSegment = projectile;
                     }
                 }
-                if (projectile.type == ModContent.ProjectileType<BlackDragonHead>() && projectile.owner == Projectile.owner && projectile.active)
+                if (projectile.type == ModContent.ProjectileType<BlackDragonHead>() && projectile.owner == Projectile.owner)
                 {
                     if (segmentIndex == 1)
                     {
@@ -85,7 +83,7 @@ namespace CalamityMod.Projectiles.Summon
                 }
             }
             if (!live) Projectile.Kill();
-            Vector2 destinationOffset = nextSegment.Center+nextSegment.velocity - Projectile.Center;
+            Vector2 destinationOffset = nextSegment.Center + nextSegment.velocity - Projectile.Center;
             if (nextSegment.rotation != Projectile.rotation)
             {
                 float angle = MathHelper.WrapAngle(nextSegment.rotation - Projectile.rotation);
@@ -95,7 +93,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.rotation = destinationOffset.ToRotation();
             if (destinationOffset != Vector2.Zero)
             {
-                Projectile.Center = nextSegment.Center+nextSegment.velocity - destinationOffset.SafeNormalize(Vector2.Zero) * 20f;
+                Projectile.Center = nextSegment.Center + nextSegment.velocity - destinationOffset.SafeNormalize(Vector2.Zero) * 20f;
             }
         }
 
@@ -108,10 +106,9 @@ namespace CalamityMod.Projectiles.Summon
         {
             if (Main.player[Projectile.owner].ownedProjectileCounts[ModContent.ProjectileType<BlackDragonHead>()] > 0)
             {
-                for (int i = 0; i < Main.maxProjectiles; i++)
+                foreach (Projectile projectile in Main.ActiveProjectiles)
                 {
-                    var projectile = Main.projectile[i];
-                    if (projectile.type == ModContent.ProjectileType<BlackDragonHead>() && projectile.owner == Projectile.owner && projectile.active)
+                    if (projectile.type == ModContent.ProjectileType<BlackDragonHead>() && projectile.owner == Projectile.owner)
                     {
                         projectile.Kill();
                     }

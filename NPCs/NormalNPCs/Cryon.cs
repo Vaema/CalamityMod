@@ -12,7 +12,7 @@ namespace CalamityMod.NPCs.NormalNPCs
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 6;
+            Main.npcFrameCount[Type] = 6;
         }
 
         public override void SetDefaults()
@@ -22,11 +22,10 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.damage = 42;
             NPC.width = 50;
             NPC.height = 64;
-            NPC.defense = 10;
-            NPC.DR_NERD(0.1f);
+            NPC.defense = 25;
             NPC.lifeMax = 300;
-            NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.knockBackResist = 0.4f;
+            NPC.value = Item.buyPrice(silver: 3);
             NPC.HitSound = SoundID.NPCHit5;
             NPC.DeathSound = SoundID.NPCDeath7;
             Banner = NPC.type;
@@ -39,17 +38,17 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Snow,
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.UndergroundSnow,
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Cryon")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Cryon")
             });
         }
 
         public override void AI()
         {
-            CalamityAI.UnicornAI(NPC, Mod, false, CalamityWorld.death ? 8f : CalamityWorld.revenge ? 6f : 4f, 5f, CalamityWorld.death ? 0.2f : CalamityWorld.revenge ? 0.15f : 0.1f);
+            CalamityRegularEnemyAI.UnicornAI(NPC, Mod, false, CalamityWorld.death ? 8f : CalamityWorld.revenge ? 6f : 4f, 5f, CalamityWorld.death ? 0.2f : CalamityWorld.revenge ? 0.15f : 0.1f);
         }
 
         public override void FindFrame(int frameHeight)
@@ -96,8 +95,8 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             if (hurtInfo.Damage > 0)
             {
-                target.AddBuff(BuffID.Frostburn, 120, true);
-                target.AddBuff(BuffID.Chilled, 90, true);
+                target.AddBuff(BuffID.Frostburn, 180);
+                target.AddBuff(BuffID.Chilled, 90);
             }
         }
 
@@ -105,13 +104,13 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             for (int k = 0; k < 3; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 92, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Frost, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 15; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 92, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Frost, hit.HitDirection, -1f, 0, default, 1f);
                 }
             }
         }

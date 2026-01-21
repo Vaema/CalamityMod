@@ -1,23 +1,22 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.CalPlayer;
+using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Rogue
 {
+    [PierceResistException]
     public class GodsParanoiaProj : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/GodsParanoia";
 
-        public int kunaiStabbing = 10;
-
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 6;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -29,10 +28,9 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.tileCollide = false;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 600;
-            Projectile.extraUpdates = 1;
+            Projectile.timeLeft = 300;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = -1;
+            Projectile.localNPCHitCooldown = 40;
         }
 
         public override void AI()
@@ -49,53 +47,37 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.StickyProjAI(50);
 
             if (Projectile.ai[0] == 1f)
-            {
-                kunaiStabbing++;
-                if (kunaiStabbing >= 30 || (Projectile.Calamity().stealthStrike && kunaiStabbing >=20))
-                {
-                    kunaiStabbing = 0;
-                    float startOffsetX = Main.rand.NextFloat(100f, 200f) * (Main.rand.NextBool() ? -1f : 1f);
-                    float startOffsetY = Main.rand.NextFloat(100f, 200f) * (Main.rand.NextBool() ? -1f : 1f);
-                    Vector2 startPos = new Vector2(Projectile.position.X + startOffsetX, Projectile.position.Y + startOffsetY);
-                    float dx = Projectile.position.X - startPos.X;
-                    float dy = Projectile.position.Y - startPos.Y;
-
-                    // Add some randomness / inaccuracy
-                    dx += Main.rand.NextFloat(-5f, 5f);
-                    dy += Main.rand.NextFloat(-5f, 5f);
-                    float speed = Main.rand.NextFloat(20f, 25f);
-                    float dist = (float)Math.Sqrt((double)(dx * dx + dy * dy));
-                    dist = speed / dist;
-                    dx *= dist;
-                    dy *= dist;
-                    Vector2 kunaiSp = new Vector2(dx, dy);
-                    float angle = Main.rand.NextFloat(MathHelper.TwoPi);
-                    if (Projectile.owner == Main.myPlayer)
-                    {
-                        for (int i = 0; i < 3; i++)
-                        {
-                            int idx = Projectile.NewProjectile(Projectile.GetSource_FromThis(), startPos, kunaiSp, ModContent.ProjectileType<GodsParanoiaDart>(), Projectile.damage / 3, Projectile.knockBack / 3f, Projectile.owner, 0f, 0f);
-                            Main.projectile[idx].rotation = angle;
-                        }
-                    }
-                }
-            }
+                Projectile.MaxUpdates = 1; // Prevents the homing function extra updates from carrying over
             else
             {
-                Projectile.rotation += 0.2f * (float)Projectile.direction;
-                CalamityUtils.HomeInOnNPC(Projectile, false, 400f, Projectile.Calamity().stealthStrike ? 10f : 5f, 20f);
-            }
-
-            Player player = Main.player[Projectile.owner];
-            CalamityPlayer modPlayer = player.Calamity();
-            if (modPlayer.killSpikyBalls == true)
-            {
-                Projectile.active = false;
-                Projectile.netUpdate = true;
+                Projectile.rotation += 0.2f * Projectile.direction;
+                CalamityUtils.HomeInOnNPC(Projectile, false, 400f, Projectile.Calamity().stealthStrike ? 16f : 8f, 20f);
             }
         }
 
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 120);
+            OnHitDarts();
+        }
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
+        {
+            target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 120);
+            OnHitDarts();
+        }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => Projectile.ModifyHitNPCSticky(10);
+        private void OnHitDarts()
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                float startOffsetX = Main.rand.NextFloat(125f, 250f) * Main.rand.NextBool().ToDirectionInt();
+                float startOffsetY = Main.rand.NextFloat(125f, 250f) * Main.rand.NextBool().ToDirectionInt();
+                Vector2 startPos = Projectile.Center + new Vector2(startOffsetX, startOffsetY);
+
+                Vector2 kunaiSp = Vector2.Normalize(Projectile.Center - startPos) * 25f;
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), startPos, kunaiSp, ModContent.ProjectileType<GodsParanoiaDart>(), Projectile.damage / 2, Projectile.knockBack / 3f, Projectile.owner);
+            }
+        }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
@@ -108,12 +90,8 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 120);
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 120);
     }
 }

@@ -3,6 +3,7 @@ using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -14,24 +15,29 @@ namespace CalamityMod.NPCs.Ravager
     public class FlamePillar : ModNPC
     {
         public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/RavagerRockPillarHit", 3);
+        public static Asset<Texture2D> GlowTexture;
+
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            Main.npcFrameCount[NPC.type] = 4;
+            NPCID.Sets.ImmuneToAllBuffs[Type] = true;
+            Main.npcFrameCount[Type] = 4;
+            if (!Main.dedServ)
+            {
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+            }
         }
+
+        public static int FlameDamage = 30; // 120
+        public static int PostProviFlameBuff = 20; // +80 = 200
 
         public override void SetDefaults()
         {
-            NPC.GetNPCDamage();
+            NPC.damage = 75; // 150
             NPC.width = 40;
             NPC.height = 150;
-            NPC.defense = 35;
-            NPC.DR_NERD(0.2f);
             NPC.chaseable = false;
-            NPC.canGhostHeal = false;
-            NPC.lifeMax = DownedBossSystem.downedProvidence ? 14000 : 3500;
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
+            NPC.lifeMax = 1250;
             NPC.alpha = 255;
             NPC.aiStyle = -1;
             AIType = -1;
@@ -45,13 +51,20 @@ namespace CalamityMod.NPCs.Ravager
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter += 0.15f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
 
         public override void AI()
         {
+            if (NPC.lifeMax > 1250)
+                NPC.lifeMax = 1250;
+            if (NPC.life > NPC.lifeMax)
+                NPC.life = NPC.lifeMax;
+            // Avoid cheap bullshit
+            NPC.damage = 0;
+
             bool provy = DownedBossSystem.downedProvidence;
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
@@ -70,18 +83,9 @@ namespace CalamityMod.NPCs.Ravager
 
             if (NPC.alpha > 0)
             {
-                NPC.damage = 0;
-
                 NPC.alpha -= 5;
                 if (NPC.alpha < 0)
                     NPC.alpha = 0;
-            }
-            else
-            {
-                if (DownedBossSystem.downedProvidence && !BossRushEvent.BossRushActive)
-                    NPC.damage = (int)(NPC.defDamage * 1.5);
-                else
-                    NPC.damage = NPC.defDamage;
             }
 
             if (NPC.ai[0] == 0f)
@@ -120,18 +124,13 @@ namespace CalamityMod.NPCs.Ravager
                             }
                             Vector2 velocity = new Vector2(speedX, speedY);
                             int type = ModContent.ProjectileType<RavagerFlame>();
-                            int damage = NPC.GetProjectileDamage(type);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, damage + (provy ? 30 : 0), 0f, Main.myPlayer, 0f, 0f);
+                            NPC.SimpleStrikeNPC(NPC.lifeMax/4,0,false,noPlayerInteraction:true);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, FlameDamage + (provy ? PostProviFlameBuff : 0), 0f, Main.myPlayer, 0f, 0f);
                         }
 
                         NPC.ai[2] += 1f;
                         NPC.localAI[0] = 0f;
-
-                        NPC.netUpdate = true;
-
-                        // Prevent netUpdate from being blocked by the spam counter.
-                        if (NPC.netSpam >= 10)
-                            NPC.netSpam = 9;
+                        NPC.ForceNetUpdate(false);
                     }
                 }
                 else
@@ -141,6 +140,7 @@ namespace CalamityMod.NPCs.Ravager
                 }
             }
         }
+        public override bool? CanFallThroughPlatforms() => NPC.target >= 0 && Main.player[NPC.target].position.Y > NPC.position.Y + NPC.height;
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
@@ -148,15 +148,15 @@ namespace CalamityMod.NPCs.Ravager
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture2D15 = TextureAssets.Npc[NPC.type].Value;
-            Vector2 halfSizeTexture = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / 2);
+            Texture2D texture2D15 = TextureAssets.Npc[Type].Value;
+            Vector2 halfSizeTexture = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / 2);
             Vector2 drawLocation = NPC.Center - screenPos;
-            drawLocation -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+            drawLocation -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
             drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
 
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-            texture2D15 = ModContent.Request<Texture2D>("CalamityMod/NPCs/Ravager/FlamePillarGlow").Value;
+            texture2D15 = GlowTexture.Value;
             Color flameBlue = Color.Lerp(Color.White, Color.Cyan, 0.5f);
 
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, flameBlue, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
@@ -178,7 +178,7 @@ namespace CalamityMod.NPCs.Ravager
                 NPC.position.Y = NPC.position.Y - (NPC.height / 2);
                 for (int i = 0; i < 30; i++)
                 {
-                    int iceFlame = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, 135, 0f, 0f, 100, default, 2f);
+                    int iceFlame = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.IceTorch, 0f, 0f, 100, default, 2f);
                     Main.dust[iceFlame].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -188,10 +188,10 @@ namespace CalamityMod.NPCs.Ravager
                 }
                 for (int j = 0; j < 30; j++)
                 {
-                    int rockDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Stone, 0f, 0f, 100, default, 3f);
+                    int rockDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Stone, 0f, 0f, 100, default, 3f);
                     Main.dust[rockDust].noGravity = true;
                     Main.dust[rockDust].velocity *= 5f;
-                    rockDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Iron, 0f, 0f, 100, default, 2f);
+                    rockDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Iron, 0f, 0f, 100, default, 2f);
                     Main.dust[rockDust].velocity *= 2f;
                 }
             }
@@ -199,7 +199,7 @@ namespace CalamityMod.NPCs.Ravager
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    int iceFlame = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Iron, 0f, 0f, 100, default, 2f);
+                    int iceFlame = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Iron, 0f, 0f, 100, default, 2f);
                     Main.dust[iceFlame].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -209,13 +209,48 @@ namespace CalamityMod.NPCs.Ravager
                 }
                 for (int j = 0; j < 2; j++)
                 {
-                    int rockDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Stone, 0f, 0f, 100, default, 3f);
+                    int rockDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Stone, 0f, 0f, 100, default, 3f);
                     Main.dust[rockDust].noGravity = true;
                     Main.dust[rockDust].velocity *= 5f;
-                    rockDust = Dust.NewDust(new Vector2(NPC.position.X, NPC.position.Y), NPC.width, NPC.height, DustID.Iron, 0f, 0f, 100, default, 2f);
+                    rockDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Iron, 0f, 0f, 100, default, 2f);
                     Main.dust[rockDust].velocity *= 2f;
                 }
             }
+        }
+
+        public override void ModifyHitByItem(Player player, Item item, ref NPC.HitModifiers modifiers)
+        {
+            if (item.pick > 0)
+            {
+                modifiers.FlatBonusDamage += -10000;
+                modifiers.FinalDamage.Flat += item.pick - 1;
+                modifiers.SetCrit();
+            }
+            else
+            {
+                modifiers.SetMaxDamage(1);
+                modifiers.DisableCrit();
+                modifiers.HideCombatText();
+            }
+            base.ModifyHitByItem(player, item, ref modifiers);
+        }
+
+        public override void ModifyHitByProjectile(Projectile projectile, ref NPC.HitModifiers modifiers)
+        {
+            var item = Main.player[projectile.owner].HeldItem;
+            if (item.pick > 0 && projectile.CountsAsClass<MeleeDamageClass>())
+            {
+                modifiers.FlatBonusDamage += -10000;
+                modifiers.FinalDamage.Flat += item.pick-1;
+                modifiers.SetCrit();
+            }
+            else
+            {
+                modifiers.SetMaxDamage(1);
+                modifiers.DisableCrit();
+                modifiers.HideCombatText();
+            }
+            base.ModifyHitByProjectile(projectile, ref modifiers);
         }
     }
 }

@@ -1,8 +1,6 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
@@ -37,24 +35,6 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (Projectile.frameCounter > Lifetime)
                 Projectile.Kill();
-        }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            if (Main.dayTime || Main.rand.NextBool(3)) //100% during day, 33.33% chance at night
-                target.AddBuff(BuffID.Daybreak, 30);
-
-            if (!Main.dayTime || Main.rand.NextBool(3)) //100% at night, 33.33% chance during day
-                target.AddBuff(ModContent.BuffType<Nightwither>(), 30);
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (Main.dayTime || Main.rand.NextBool(3)) //100% during day, 33.33% chance at night
-                target.AddBuff(BuffID.Daybreak, 30);
-
-            if (!Main.dayTime || Main.rand.NextBool(3)) //100% at night, 33.33% chance during day
-                target.AddBuff(ModContent.BuffType<Nightwither>(), 30);
         }
 
         public override void PostDraw(Color lightColor)

@@ -1,15 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.DataStructures;
 using CalamityMod.UI.CalamitasEnchants;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 using Terraria;
 using Terraria.Audio;
-using Terraria.GameContent.Prefixes;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Utilities;
 
 namespace CalamityMod
 {
@@ -29,255 +29,16 @@ namespace CalamityMod
         /// <param name="item">The item to check.</param>
         public static bool IsWhip(this Item item) => item.shoot > ProjectileID.None && ProjectileID.Sets.IsAWhip[item.shoot];
 
+        /// <summary>
+        /// Marks the item as Revengeance Mode exclusive.<br />
+        /// This causes it to have a tooltip line which says "Revengeance", like how vanilla says "Expert" and "Master".
+        /// </summary>
+        /// <param name="item">The item to make difficulty exclusive.</param>
+        public static void SetRevExclusive(this Item item) => item.Calamity().revengeanceItem = true;
+
         #region Color Constants
         internal static readonly Color DevItemColor = new Color(255, 0, 255);
-        internal static readonly Color DonatorItemColor = new Color(196, 35, 44);
-        #endregion
-
-        // TODO -- This probably isn't the best place to put this but it needs to be somewhere easily accessible.
-        #region Accessory Prefix Stats
-        internal static int GetScalingDefense(int prefixID)
-        {
-            switch (prefixID)
-            {
-                default:
-                    return 0;
-
-                // Ironskin Potion
-                // This makes sense to be here but also not
-                case -1:
-                    if (DownedBossSystem.downedDoG)
-                        return 20;
-                    else if (NPC.downedMoonlord)
-                        return 16;
-                    else if (Main.hardMode)
-                        return 12;
-                    return 8;
-                
-                case PrefixID.Hard:
-                    if (DownedBossSystem.downedDoG)
-                        return 4;
-                    else if (NPC.downedMoonlord)
-                        return 3;
-                    else if (Main.hardMode)
-                        return 2;
-                    return 1;
-
-                case PrefixID.Guarding:
-                    if (DownedBossSystem.downedDoG)
-                        return 6;
-                    else if (NPC.downedMoonlord)
-                        return 4;
-                    else if (Main.hardMode)
-                        return 3;
-                    return 2;
-
-                case PrefixID.Armored:
-                    if (DownedBossSystem.downedDoG)
-                        return 8;
-                    else if (NPC.downedMoonlord)
-                        return 6;
-                    else if (Main.hardMode)
-                        return 5;
-                    return 3;
-
-                case PrefixID.Warding:
-                    if (DownedBossSystem.downedDoG)
-                        return 10;
-                    else if (NPC.downedMoonlord)
-                        return 8;
-                    else if (Main.hardMode)
-                        return 6;
-                    return 4;
-            }
-        }
-        #endregion
-
-        #region Reforging Algorithm
-        internal static int GetReworkedReforge(Item item, UnifiedRandom rand, int currentPrefix)
-        {
-            CalamityMod mod = CalamityMod.Instance;
-            int GetCalPrefix(string name)
-            {
-                bool found = mod.TryFind(name, out ModPrefix ret);
-                return found ? ret.Type : 0;
-            }
-
-            // This is the hardcoded value to "do nothing", and is thus the default choice.
-            int prefix = -1;
-
-            // ACCESSORIES
-            if (item.accessory)
-            {
-                int accRerolls = 0;
-                int[][] accessoryReforgeTiers = new int[][]
-                {
-                    /* 0 */ new int[] { PrefixID.Hard, PrefixID.Jagged, PrefixID.Brisk, PrefixID.Wild, GetCalPrefix("Quiet") },
-                    /* 1 */ new int[] { PrefixID.Guarding, PrefixID.Spiked, PrefixID.Precise, PrefixID.Fleeting, PrefixID.Rash, GetCalPrefix("Cloaked") },
-                    /* 2 */ new int[] { PrefixID.Armored, PrefixID.Angry, PrefixID.Hasty2, PrefixID.Intrepid, PrefixID.Arcane, GetCalPrefix("Camouflaged") },
-                    /* 3 */ new int[] { PrefixID.Warding, PrefixID.Menacing, PrefixID.Lucky, PrefixID.Quick2, PrefixID.Violent, GetCalPrefix("Silent") },
-                };
-
-                // Try to prevent the player from rolling the same modifier twice
-                do
-                {
-                    int newPrefix = IteratePrefix(rand, accessoryReforgeTiers, currentPrefix);
-                    if (newPrefix != currentPrefix)
-                    {
-                        prefix = newPrefix;
-                        break;
-                    }
-                    accRerolls++;
-                } while (accRerolls < 20);
-            }
-
-            // MELEE (includes tools and whips)
-            else if (item.CountsAsClass<MeleeDamageClass>() || item.CountsAsClass<SummonMeleeSpeedDamageClass>())
-            {
-                // Terrarian (has its own special "Legendary" for marketing reasons)
-                // Other items that want to use Legendary2 are also compatible
-                if (item.type == ItemID.Terrarian || PrefixLegacy.ItemSets.ItemsThatCanHaveLegendary2[item.type])
-                {
-                    int[][] terrarianReforgeTiers = new int[][]
-                    {
-                        /* 0 */ new int[] { PrefixID.Keen, PrefixID.Forceful, PrefixID.Strong },
-                        /* 1 */ new int[] { PrefixID.Hurtful, PrefixID.Ruthless, PrefixID.Zealous },
-                        /* 2 */ new int[] { PrefixID.Superior, PrefixID.Demonic, PrefixID.Godly },
-                        /* 3 */ new int[] { PrefixID.Legendary2 },
-                    };
-                    prefix = IteratePrefix(rand, terrarianReforgeTiers, currentPrefix);
-                }
-                
-                // Yoyos, Flails, Spears, etc.
-                // Spears actually work fine with Legendary, but vanilla doesn't give it to them, so we won't either.
-                // Rapiers, whips, and other specific vanilla weapons (ie. Zenith or Excalibur) are specifically excluded from this, so they get broadsword reforges despite not scaling with melee speed.
-                else if ((item.channel || item.noMelee) && item.useStyle != ItemUseStyleID.Rapier && !item.CountsAsClass<SummonMeleeSpeedDamageClass>() && !PrefixLegacy.ItemSets.SwordsHammersAxesPicks[item.type])
-                {
-                    int[][] meleeNoSpeedReforgeTiers = new int[][]
-                    {
-                        /* 0 */ new int[] { PrefixID.Keen, PrefixID.Forceful, PrefixID.Strong },
-                        /* 1 */ new int[] { PrefixID.Hurtful, PrefixID.Ruthless, PrefixID.Zealous },
-                        /* 2 */ new int[] { PrefixID.Superior, PrefixID.Demonic },
-                        /* 3 */ new int[] { PrefixID.Godly }
-                    };
-                    prefix = IteratePrefix(rand, meleeNoSpeedReforgeTiers, currentPrefix);
-                }
-
-                // All other melee weapons
-                else
-                {
-                    int[][] meleeReforgeTiers = new int[][]
-                    {
-                        /* 0 */ new int[] { PrefixID.Keen, PrefixID.Nimble, PrefixID.Nasty, PrefixID.Light, PrefixID.Heavy, PrefixID.Light, PrefixID.Forceful, PrefixID.Strong },
-                        /* 1 */ new int[] { PrefixID.Hurtful, PrefixID.Ruthless, PrefixID.Zealous, PrefixID.Quick, PrefixID.Pointy, PrefixID.Bulky },
-                        /* 2 */ new int[] { PrefixID.Murderous, PrefixID.Agile, PrefixID.Large, PrefixID.Dangerous, PrefixID.Sharp },
-                        /* 3 */ new int[] { PrefixID.Massive, PrefixID.Unpleasant, PrefixID.Savage, PrefixID.Superior },
-                        /* 4 */ new int[] { PrefixID.Demonic, PrefixID.Deadly2, PrefixID.Godly },
-                        /* 5 */ new int[] { PrefixID.Legendary } // for non-tools, Light is a mediocre low-tier reforge
-                    };
-                    int[][] toolReforgeTiers = new int[][]
-                    {
-                        /* 0 */ new int[] { PrefixID.Keen, PrefixID.Nimble, PrefixID.Nasty, PrefixID.Heavy, PrefixID.Light, PrefixID.Forceful, PrefixID.Strong },
-                        /* 1 */ new int[] { PrefixID.Hurtful, PrefixID.Ruthless, PrefixID.Zealous, PrefixID.Quick, PrefixID.Pointy, PrefixID.Bulky },
-                        /* 2 */ new int[] { PrefixID.Murderous, PrefixID.Agile, PrefixID.Large, PrefixID.Dangerous, PrefixID.Sharp },
-                        /* 3 */ new int[] { PrefixID.Massive, PrefixID.Unpleasant, PrefixID.Savage, PrefixID.Superior },
-                        /* 4 */ new int[] { PrefixID.Demonic, PrefixID.Deadly2, PrefixID.Godly },
-                        /* 5 */ new int[] { PrefixID.Legendary, PrefixID.Light } // for some tools, light is better than legendary. for others, it's equal
-                    };
-
-                    var tierListToUse = (item.pick > 0 || item.axe > 0 || item.hammer > 0) ? toolReforgeTiers : meleeReforgeTiers;
-                    prefix = IteratePrefix(rand, tierListToUse, currentPrefix);
-                }
-            }
-
-            // RANGED
-            else if (item.CountsAsClass<RangedDamageClass>())
-            {
-                int[][] rangedReforgeTiers = new int[][]
-                {
-                    /* 0 */ new int[] { PrefixID.Keen, PrefixID.Nimble, PrefixID.Nasty, PrefixID.Powerful, PrefixID.Forceful, PrefixID.Strong },
-                    /* 1 */ new int[] { PrefixID.Hurtful, PrefixID.Ruthless, PrefixID.Zealous, PrefixID.Quick, PrefixID.Intimidating },
-                    /* 2 */ new int[] { PrefixID.Murderous, PrefixID.Agile, PrefixID.Hasty, PrefixID.Staunch, PrefixID.Unpleasant },
-                    /* 3 */ new int[] { PrefixID.Superior, PrefixID.Demonic, PrefixID.Sighted },
-                    /* 4 */ new int[] { PrefixID.Godly, PrefixID.Rapid, /* ranged Deadly */ PrefixID.Deadly, /* universal Deadly */ PrefixID.Deadly2 },
-                    /* 5 */ new int[] { PrefixID.Unreal }
-                };
-                prefix = IteratePrefix(rand, rangedReforgeTiers, currentPrefix);
-            }
-
-            // MAGIC
-            else if (item.CountsAsClass<MagicDamageClass>() || item.CountsAsClass<MagicSummonHybridDamageClass>())
-            {
-                int[][] magicReforgeTiers = new int[][]
-                {
-                    /* 0 */ new int[] { PrefixID.Keen, PrefixID.Nimble, PrefixID.Nasty, PrefixID.Furious, PrefixID.Forceful, PrefixID.Strong },
-                    /* 1 */ new int[] { PrefixID.Hurtful, PrefixID.Ruthless, PrefixID.Zealous, PrefixID.Quick, PrefixID.Taboo, PrefixID.Manic },
-                    /* 2 */ new int[] { PrefixID.Murderous, PrefixID.Agile, PrefixID.Adept, PrefixID.Celestial, PrefixID.Unpleasant },
-                    /* 3 */ new int[] { PrefixID.Superior, PrefixID.Demonic, PrefixID.Mystic },
-                    /* 4 */ new int[] { PrefixID.Godly, PrefixID.Masterful, PrefixID.Deadly2 },
-                    /* 5 */ new int[] { PrefixID.Mythical }
-                };
-                prefix = IteratePrefix(rand, magicReforgeTiers, currentPrefix);
-            }
-
-            // SUMMON (not whips)
-            else if (item.CountsAsClass<SummonDamageClass>())
-            {
-                int[][] summonReforgeTiers = new int[][]
-                {
-                    /* 0 */ new int[] { PrefixID.Nimble, PrefixID.Furious },
-                    /* 1 */ new int[] { PrefixID.Forceful, PrefixID.Strong, PrefixID.Quick, PrefixID.Taboo, PrefixID.Manic },
-                    /* 2 */ new int[] { PrefixID.Hurtful, PrefixID.Adept, PrefixID.Celestial },
-                    /* 3 */ new int[] { PrefixID.Superior, PrefixID.Demonic, PrefixID.Mystic, PrefixID.Deadly2 },
-                    /* 4 */ new int[] { PrefixID.Masterful, PrefixID.Godly },
-                    /* 5 */ new int[] { PrefixID.Mythical, PrefixID.Ruthless } // you may want mythical early game for the knockback.
-                };
-                prefix = IteratePrefix(rand, summonReforgeTiers, currentPrefix);
-            }
-
-            // ROGUE (Calamity adds these reforges to all 1.4 TML throwing items)
-            else if (item.CountsAsClass<ThrowingDamageClass>())
-            {
-                // Added appropriate universal reforges to rogue, so they don't ONLY get modded prefixes.
-                int[][] rogueReforgeTiers = new int[][]
-                {
-                    /* 0 */ new int[] { PrefixID.Keen, PrefixID.Nimble, PrefixID.Nasty, PrefixID.Forceful, PrefixID.Strong, GetCalPrefix("Radical"), GetCalPrefix("Pointy") },
-                    /* 1 */ new int[] { PrefixID.Hurtful, PrefixID.Ruthless, PrefixID.Zealous, PrefixID.Quick, GetCalPrefix("Sharp"), GetCalPrefix("Glorious") },
-                    /* 2 */ new int[] { PrefixID.Murderous, PrefixID.Agile, PrefixID.Unpleasant, GetCalPrefix("Feathered"), GetCalPrefix("Sleek"), GetCalPrefix("Hefty") },
-                    /* 3 */ new int[] { PrefixID.Superior, PrefixID.Demonic, GetCalPrefix("Mighty"), GetCalPrefix("Serrated") },
-                    /* 4 */ new int[] { PrefixID.Godly, PrefixID.Deadly2, GetCalPrefix("Vicious"), GetCalPrefix("Lethal") },
-                    /* 5 */ new int[] { GetCalPrefix("Flawless") }
-                };
-                prefix = IteratePrefix(rand, rogueReforgeTiers, currentPrefix);
-            }
-
-            return prefix;
-        }
-
-        private static int GetPrefixTier(int[][] tiers, int currentPrefix)
-        {
-            for (int checkingTier = 0; checkingTier < tiers.Length; ++checkingTier)
-            {
-                int[] tierList = tiers[checkingTier];
-                for (int i = 0; i < tierList.Length; ++i)
-                    if (tierList[i] == currentPrefix)
-                        return checkingTier;
-            }
-
-            // If an invalid or modded prefix is detected, return -1.
-            // This will give a random tier 0 prefix (the "next tier"), starting fresh with a low-tier vanilla or Calamity prefix.
-            return -1;
-        }
-
-        private static int IteratePrefix(UnifiedRandom rand, int[][] reforgeTiers, int currentPrefix)
-        {
-            int currentTier = GetPrefixTier(reforgeTiers, currentPrefix);
-
-            // If max tier: give max tier reforges forever
-            // Otherwise: go up by 1 tier with every reforge, guaranteed
-            int newTier = currentTier == reforgeTiers.Length - 1 ? currentTier : currentTier + 1;
-            return rand.Next(reforgeTiers[newTier]);
-        }
+        internal static readonly Color DonatorItemColor = new Color(255, 121, 156);
         #endregion
 
         /// <summary>
@@ -291,9 +52,9 @@ namespace CalamityMod
             if (Main.dedServ || mhk is null)
                 return "";
 
-            List<string> keys = mhk.GetAssignedKeys();
+            List<string> keys = mhk.GetAssignedKeysOrEmpty();
             if (keys.Count == 0)
-                return "[NONE]";
+                return GetText("Misc.HotkeyNotBound").Value;
             else
             {
                 StringBuilder sb = new StringBuilder(16);
@@ -319,6 +80,18 @@ namespace CalamityMod
             if (line != null)
                 line.Text = line.Text.Replace(replacedKey, newKey);
         }
+        /// <summary>
+        /// Shortcut for finding all of a specific string in the tooltip and replacing it with a new string<br/>
+        /// Typically used for dynamic tooltip updating. Consider overriding Tooltip or using String.Format for applying constants.
+        /// </summary>
+        /// <param name="tooltips">The tooltip list provided to a <b>ModifyTooltips</b> TML hook.</param>
+        /// <param name="replacedKey">The key to be replaced.</param>
+        /// <param name="replacedKey">The new key.</param>
+        public static void FindAndReplaceAll(this List<TooltipLine> tooltips, string replacedKey, string newKey)
+        {
+            foreach (TooltipLine line in tooltips)
+                line.Text = line.Text.Replace(replacedKey, newKey);
+        }
 
         /// <summary>
         /// Shortcut for automatically placing one keybind within a tooltip. Requires the "[KEY]" string to be replaced.
@@ -329,54 +102,86 @@ namespace CalamityMod
         {
             if (Main.dedServ || mhk is null)
                 return;
-            
+
             string finalKey = mhk.TooltipHotkeyString();
             tooltips.FindAndReplace("[KEY]", finalKey);
         }
 
-        // Original code lifted from Iban's extended armor tooltips.
         /// <summary>
-        /// Performs standard edits to a list of tooltip lines to add more if the Left SHIFT key is held down.<br />
-        /// Optionally, hides the normal tooltip to replace it entirely.
+        /// Shortcut method for adding "You have already consumed this item" tooltip
         /// </summary>
-        /// <param name="tooltips">The tooltip list provided to a <b>ModifyTooltips</b> TML hook.</param>
-        /// <param name="holdShiftTooltips">An array of tooltip lines to add. Instantiate these yourself with C# elaborate new syntax.</param>
-        /// <param name="hideNormalTooltip">Set to true to replace the normal tooltip when holding SHIFT. Otherwise both tooltips will show at once.</param>
-        public static void HoldShiftTooltip(List<TooltipLine> tooltips, TooltipLine[] holdShiftTooltips, bool hideNormalTooltip = false)
+        /// <param name="tooltips"></param>
+        /// <param name="tooltipSearchKey"></param>
+        public static void AddConsumedTooltip(this List<TooltipLine> tooltips, string tooltipSearchKey = "Tooltip1")
         {
-            // Only perform any changes while holding SHIFT.
-            if (!Main.keyState.IsKeyDown(Keys.LeftShift))
-                return;
+            TooltipLine line = tooltips.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == tooltipSearchKey);
 
-            // Get the first index, last index and total count of standard vanilla tooltip lines.
-            // The first index and count are used to delete all vanilla tooltips when holding SHIFT, if requested.
-            // The last index is used to insert the "Hold SHIFT" tooltips in the right position.
-            int firstTooltipIndex = -1;
-            int lastTooltipIndex = -1;
-            int standardTooltipCount = 0;
-            for (int i = 0; i < tooltips.Count; i++)
+            if (line != null)
+                line.Text += "\n" + GetTextValue("Misc.GenericConsumedText");
+        }
+
+        public static Color FireDebuffColor => new(253, 107, 2);
+        public static Color SicknessDebuffColor => new(136, 198, 10);
+        public static Color WaterDebuffColor => new(105, 147, 255);
+        public static Color ColdDebuffColor => new(159, 230, 252);
+        public static Color ElectricDebuffColor => new(255, 245, 0);
+        public static Color BuffColor => new(255, 105, 237);
+        public static Color TypelessDebuffColor => new(230, 202, 250);
+        public static Color VulnHexDebuffColor => new(196, 35, 43);
+        public static Color MiracleBlightDebuffColor => Main.DiscoColor;
+
+        private static readonly Dictionary<int, List<(Color, float)>> debuffColorWeightsCache = [];
+
+        public static Color GetDebuffTooltipNameColor(int debuffId)
+        {
+            var color = TypelessDebuffColor;
+
+            if (debuffId == ModContent.BuffType<VulnerabilityHex>() || debuffId == ModContent.BuffType<TrueVulnerabilityHex>())
             {
-                if (tooltips[i].Name.StartsWith("Tooltip"))
+                color = Color.Lerp(VulnHexDebuffColor, FireDebuffColor, (MathF.Sin(Main.GlobalTimeWrappedHourly * 2) + 1) / 4f);
+            }
+            else if (debuffId == ModContent.BuffType<MiracleBlight>())
+            {
+                color = MiracleBlightDebuffColor;
+            }
+            else if (BuffDatasets.DebuffDataset[debuffId] is not null)
+            {
+                if (!debuffColorWeightsCache.TryGetValue(debuffId, out var weights))
                 {
-                    if (firstTooltipIndex == -1)
-                        firstTooltipIndex = i;
-                    lastTooltipIndex = i;
-                    standardTooltipCount++;
+                    weights =
+                    [
+                        (SicknessDebuffColor, BuffDatasets.DebuffDataset[debuffId].SicknessDebuffScaling),
+                        (FireDebuffColor, BuffDatasets.DebuffDataset[debuffId].HeatDebuffScaling),
+                        (WaterDebuffColor, BuffDatasets.DebuffDataset[debuffId].WaterDebuffScaling),
+                        (ElectricDebuffColor, BuffDatasets.DebuffDataset[debuffId].ElectricDebuffScaling),
+                        (ColdDebuffColor, BuffDatasets.DebuffDataset[debuffId].ColdDebuffScaling),
+                    ];
+                }
+
+                float totalWeight = 0;
+                Vector4 normalColor = new();
+
+                foreach (var item in weights)
+                {
+                    totalWeight += item.Item2;
+                    // ReSharper disable once PossiblyImpureMethodCallOnReadonlyVariable
+                    normalColor += item.Item1.ToVector4() * item.Item2;
+                }
+
+                if (totalWeight < 1)
+                {
+                    normalColor += TypelessDebuffColor.ToVector4() * (1 - totalWeight);
+                    totalWeight += (1 - totalWeight);
+                }
+
+                if (totalWeight != 0)
+                {
+                    normalColor /= totalWeight;
+                    color = new Color(normalColor);
                 }
             }
 
-            if (firstTooltipIndex != -1)
-            {
-                // If asked to, remove all standard tooltip lines. This moves the last tooltip index.
-                if (hideNormalTooltip)
-                {
-                    tooltips.RemoveRange(firstTooltipIndex, standardTooltipCount);
-                    lastTooltipIndex -= standardTooltipCount;
-                }
-
-                // Append every "Hold SHIFT" tooltip at the end of standard tooltips.
-                tooltips.InsertRange(lastTooltipIndex + 1, holdShiftTooltips);
-            }
+            return color;
         }
 
         private const float WorldInsertionOffset = 15f;
@@ -472,8 +277,8 @@ namespace CalamityMod
 
         public static Rectangle FixSwingHitbox(float hitboxWidth, float hitboxHeight)
         {
-            Player player = Main.player[Main.myPlayer];
-            Item item = player.ActiveItem();
+            Player player = Main.LocalPlayer;
+            Item item = player.HeldItem;
             float hitbox_X, hitbox_Y;
             float mountOffsetY = player.mount.PlayerOffsetHitbox;
 
@@ -677,7 +482,7 @@ namespace CalamityMod
                     showsOver = true;
             }
             //Fail if you have potion sickness
-            if (player.potionDelay > 0 || player.Calamity().potionTimer > 0)
+            if (player.potionDelay > 0)
                 showsOver = true;
 
             if (!showsOver)
@@ -691,7 +496,7 @@ namespace CalamityMod
                         healAmt = 0;
                 }
 
-                player.statLife += healAmt;
+                player.HealPlayer(healAmt, healAmt > 0 ? Enums.HealTextType.Broadcast : Enums.HealTextType.None);
                 player.statMana += item.healMana;
                 if (player.statMana > player.statManaMax2)
                 {
@@ -705,8 +510,6 @@ namespace CalamityMod
                     player.AddBuff(BuffID.ManaSickness, Player.manaSickTime, true);
                 if (Main.myPlayer == player.whoAmI)
                 {
-                    if (healAmt > 0)
-                        player.HealEffect(healAmt, true);
                     if (item.healMana > 0)
                         player.ManaEffect(item.healMana);
                 }
@@ -750,6 +553,15 @@ namespace CalamityMod
             }
         }
 
+        public static void RestoreConsumedItemByRightClick(this Item item)
+        {
+            bool favorited = item.favorited;
+            item.SetDefaults(item.type);
+            item.stack++;
+            item.favorited = favorited;
+            item.NetStateChanged();
+        }
+
         #region Rogue Prefixes
         public static int RandomRoguePrefix()
         {
@@ -772,29 +584,29 @@ namespace CalamityMod
                 mod.Find<ModPrefix>("Flimsy").Type,
                 mod.Find<ModPrefix>("Unbalanced").Type,
                 mod.Find<ModPrefix>("Atrocious").Type,
-				PrefixID.Keen,
-				PrefixID.Superior,
-				PrefixID.Forceful,
-				PrefixID.Broken,
-				PrefixID.Damaged,
-				PrefixID.Hurtful,
-				PrefixID.Strong,
-				PrefixID.Unpleasant,
-				PrefixID.Weak,
-				PrefixID.Ruthless,
-				PrefixID.Godly,
-				PrefixID.Demonic,
-				PrefixID.Zealous,
-				PrefixID.Quick,
-				PrefixID.Deadly2,
-				PrefixID.Agile,
-				PrefixID.Nimble,
-				PrefixID.Murderous,
-				PrefixID.Slow,
-				PrefixID.Sluggish,
-				PrefixID.Lazy,
-				PrefixID.Annoying,
-				PrefixID.Nasty
+                PrefixID.Keen,
+                PrefixID.Superior,
+                PrefixID.Forceful,
+                PrefixID.Broken,
+                PrefixID.Damaged,
+                PrefixID.Hurtful,
+                PrefixID.Strong,
+                PrefixID.Unpleasant,
+                PrefixID.Weak,
+                PrefixID.Ruthless,
+                PrefixID.Godly,
+                PrefixID.Demonic,
+                PrefixID.Zealous,
+                PrefixID.Quick,
+                PrefixID.Deadly2,
+                PrefixID.Agile,
+                PrefixID.Nimble,
+                PrefixID.Murderous,
+                PrefixID.Slow,
+                PrefixID.Sluggish,
+                PrefixID.Lazy,
+                PrefixID.Annoying,
+                PrefixID.Nasty
             });
             return roguePrefix;
         }

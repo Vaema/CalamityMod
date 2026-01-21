@@ -25,8 +25,8 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.noUseGraphic = true;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = SoundID.DD2_SkyDragonsFurySwing;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
     }
 }

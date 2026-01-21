@@ -1,9 +1,9 @@
-using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using System;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
@@ -20,7 +20,7 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.ignoreWater = false;
             Projectile.tileCollide = false;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 60;
+            Projectile.timeLeft = Projectile.ai[2] == 1f ? 30 : 60;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 10;
         }
@@ -77,7 +77,7 @@ namespace CalamityMod.Projectiles.Typeless
                 randAdjust = rand3 / randAdjust;
                 rand1 *= randAdjust;
                 rand2 *= randAdjust;
-                int bloody = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 5, 0f, 0f, 100, default, 1.8f);
+                int bloody = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Blood, 0f, 0f, 100, default, 1.8f);
                 Dust dust = Main.dust[bloody];
                 dust.noGravity = true;
                 dust.position.X = Projectile.Center.X;
@@ -89,6 +89,12 @@ namespace CalamityMod.Projectiles.Typeless
                 timerCounter++;
             }
             return;
+        }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            if (Projectile.ai[2] == 1f)
+                target.AddBuff(ModContent.BuffType<Laceration>(), 40);
         }
     }
 }

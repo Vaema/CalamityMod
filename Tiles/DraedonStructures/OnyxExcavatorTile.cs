@@ -1,8 +1,8 @@
 ﻿using CalamityMod.Items.Mounts;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Enums;
 using Terraria.DataStructures;
+using Terraria.Enums;
 using Terraria.GameContent;
 using Terraria.ModLoader;
 using Terraria.ObjectData;

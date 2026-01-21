@@ -1,10 +1,14 @@
-﻿using Terraria;
+﻿using CalamityMod.Items.Armor.Reaver;
+using Terraria;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.StatBuffs
 {
     public class ReaverRage : ModBuff
     {
+        public override LocalizedText Description => base.Description.WithFormatArgs(ReaverHeadTank.ReaverRageDefenseBoost, ReaverHeadTank.ReaverRageDamageBoost.ToPercent());
+
         public override void SetStaticDefaults()
         {
             Main.debuff[Type] = false;

@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Rarities;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,15 +12,14 @@ namespace CalamityMod.Items.Mounts
         {
             Item.width = 64;
             Item.height = 64;
-            Item.useTime = 20;
-            Item.useAnimation = 20;
+            Item.useAnimation = Item.useTime = 20;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item3;
             Item.noMelee = true;
-            Item.mountType = ModContent.MountType<PhuppersChair>();
+            Item.mountType = ModContent.MountType<BrimroseChair>();
 
-            Item.value = Item.buyPrice(platinum: 1, gold: 50);
-            Item.rare = ModContent.RarityType<Turquoise>();
+            Item.value = Item.sellPrice(gold: 5);
+            Item.rare = ItemRarityID.Yellow;
             Item.Calamity().devItem = true;
         }
 
@@ -30,7 +28,7 @@ namespace CalamityMod.Items.Mounts
             CreateRecipe().
                 AddIngredient<UnholyCore>(5).
                 AddIngredient<Bloodstone>(20).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

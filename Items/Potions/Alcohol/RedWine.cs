@@ -1,6 +1,10 @@
 ﻿using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Items.Materials;
+using CalamityMod.Items.Potions.Food;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
@@ -8,37 +12,35 @@ namespace CalamityMod.Items.Potions.Alcohol
     public class RedWine : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Potions";
+
+        public static float VerticalSpeedBoost = 0.1f;
+        public static float FlightTimeLoss = 0.25f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(VerticalSpeedBoost.ToPercent(), FlightTimeLoss.ToPercent());
+
         public override void SetStaticDefaults()
         {
-            Item.ResearchUnlockCount = 5;
+            Item.ResearchUnlockCount = 20;
+            ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
+                new Color(54, 5, 21),
+                new Color(82, 9, 36),
+                new Color(105, 4, 29)
+            };
         }
 
         public override void SetDefaults()
         {
-            Item.width = 28;
-            Item.height = 18;
-            Item.useTurn = true;
-            Item.maxStack = 9999;
+            Item.DefaultToFood(14, 48, ModContent.BuffType<RedWineBuff>(), CalamityUtils.MinutesToFrames(6));
+
+            Item.value = Item.sellPrice(silver: 30);
             Item.rare = ItemRarityID.LightRed;
-            Item.useAnimation = 17;
-            Item.useTime = 17;
-            Item.useStyle = ItemUseStyleID.DrinkLiquid;
-            Item.UseSound = SoundID.Item3;
-            Item.healLife = 200;
-            Item.consumable = true;
-            Item.potion = true;
-            Item.value = Item.buyPrice(0, 0, 65, 0);
         }
-
-        public override bool? UseItem(Player player)
+        public override void AddRecipes()
         {
-            Item.healLife = player.Calamity().baguette ? 250 : 200;
-            return null;
-        }
-
-        public override void OnConsumeItem(Player player)
-        {
-            player.AddBuff(ModContent.BuffType<RedWineBuff>(), 900);
+            CreateRecipe(20).
+                AddIngredient(ItemID.Bottle, 20).
+                AddIngredient(ItemID.FireFeather).
+                AddTile(TileID.Kegs).
+                Register();
         }
     }
 }

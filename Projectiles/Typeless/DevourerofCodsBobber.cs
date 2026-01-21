@@ -1,5 +1,4 @@
-using CalamityMod.Items.Fishing.FishingRods;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
@@ -10,13 +9,6 @@ namespace CalamityMod.Projectiles.Typeless
     public class DevourerofCodsBobber : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
-        private bool initialized = false;
-        private Color fishingLineColor;
-        public Color[] PossibleLineColors = new Color[]
-        {
-            new Color(252, 109, 202, 100), //a pink color
-            new Color(39, 151, 171, 100) // a blue color
-        };
 
         public override void SetDefaults()
         {
@@ -24,18 +16,6 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.height = 14;
             Projectile.aiStyle = ProjAIStyleID.Bobber;
             Projectile.bobber = true;
-            Projectile.penetrate = -1;
-        }
-
-        //What if we want to randomize the line color
-        public override void AI()
-        {
-            if (!initialized)
-            {
-                //Decide color of the pole by randomizing the array
-                fishingLineColor = Main.rand.Next(PossibleLineColors);
-                initialized = true;
-            }
         }
 
         //fuck glowmasks btw
@@ -60,7 +40,7 @@ namespace CalamityMod.Projectiles.Typeless
         public override bool PreDrawExtras()
         {
             Lighting.AddLight(Projectile.Center, 0.35f, 0f, 0.25f);
-            return Projectile.DrawFishingLine(ModContent.ItemType<TheDevourerofCods>(), fishingLineColor);
+            return true;
         }
     }
 }

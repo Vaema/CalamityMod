@@ -1,10 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Dusts;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -14,8 +13,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -30,7 +29,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.timeLeft = 600;
             Projectile.extraUpdates = 2;
             AIType = ProjectileID.Bullet;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override void AI()
@@ -42,7 +40,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 if (Main.rand.NextBool(3))
                 {
-                    int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 89, 0f, 0f, 0, default, 0.8f);
+                    int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GemEmerald, 0f, 0f, 0, default, 0.8f);
                     Main.dust[dust].alpha = Projectile.alpha;
                     Main.dust[dust].velocity *= 0f;
                     Main.dust[dust].noGravity = true;
@@ -122,7 +120,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             SoundEngine.PlaySound(SoundID.Item10, Projectile.position);
             for (int k = 0; k < 5; k++)
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 89, Projectile.oldVelocity.X * 0.2f, Projectile.oldVelocity.Y * 0.2f, 0, default, 0.6f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.GemEmerald, Projectile.oldVelocity.X * 0.2f, Projectile.oldVelocity.Y * 0.2f, 0, default, 0.6f);
         }
     }
 }

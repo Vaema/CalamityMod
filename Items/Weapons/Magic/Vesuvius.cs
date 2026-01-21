@@ -1,6 +1,6 @@
-﻿using CalamityMod.Projectiles.Magic;
+﻿using System;
+using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -13,8 +13,8 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            Item.staff[Type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
         public override void SetDefaults()
@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shootSpeed = 20f;
             Item.shoot = ModContent.ProjectileType<AsteroidMolten>();
 
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
         }
 

@@ -1,10 +1,10 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using CalamityMod.BiomeManagers;
 using CalamityMod.Dusts;
-using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Critters;
 using CalamityMod.Items.Pets;
+using CalamityMod.Items.Placeables.Banners;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -15,9 +15,9 @@ namespace CalamityMod.NPCs.AcidRain
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 6;
-            Main.npcCatchable[NPC.type] = true;
-            NPCID.Sets.CountsAsCritter[NPC.type] = true;
+            Main.npcFrameCount[Type] = 6;
+            Main.npcCatchable[Type] = true;
+            NPCID.Sets.CountsAsCritter[Type] = true;
         }
 
         public override void SetDefaults()
@@ -62,7 +62,7 @@ namespace CalamityMod.NPCs.AcidRain
             }
             if (Main.rand.NextBool(8) && NPC.catchItem == (short)ModContent.ItemType<GeyserShell>())
             {
-                int dust = Dust.NewDust(NPC.position - new Vector2(2f, 2f), NPC.width + 4, NPC.height + 4, (int)CalamityDusts.SulfurousSeaAcid, NPC.velocity.X * 0.4f, NPC.velocity.Y * 0.4f, 200, default, 1f);
+                int dust = Dust.NewDust(NPC.position - new Vector2(2f, 2f), NPC.width + 4, NPC.height + 4, (int)CalamityDusts.SulphurousSeaAcid, NPC.velocity.X * 0.4f, NPC.velocity.Y * 0.4f, 200, default, 1f);
                 Main.dust[dust].noGravity = true;
                 Main.dust[dust].velocity *= 1.1f;
                 Main.dust[dust].velocity.Y += 0.25f;
@@ -110,7 +110,7 @@ namespace CalamityMod.NPCs.AcidRain
                 {
                     NPC.frame.Y += frameHeight;
                 }
-                if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[NPC.type])
+                if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[Type])
                 {
                     NPC.frame.Y = frameHeight * 2;
                 }
@@ -141,15 +141,15 @@ namespace CalamityMod.NPCs.AcidRain
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 15; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulfurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("BabyFlakCrabGore").Type, 1f);
                 }

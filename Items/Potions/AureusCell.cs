@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -12,27 +13,24 @@ namespace CalamityMod.Items.Potions
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;
+            ItemID.Sets.FoodParticleColors[Type] = new Color[3] {
+                new Color(187, 220, 237),
+                new Color(237, 93, 83),
+                new Color(123, 99, 130)
+            };
         }
 
         public override void SetDefaults()
         {
-            Item.width = 28;
-            Item.height = 18;
-            Item.useTurn = true;
-            Item.maxStack = 9999;
-            Item.useAnimation = 17;
-            Item.useTime = 17;
-            Item.rare = ItemRarityID.Lime;
-            Item.useStyle = ItemUseStyleID.EatFood;
+            // Eating animation but gulp sound? Sure
+            Item.DefaultToFood(22, 38, BuffID.MagicPower, CalamityUtils.MinutesToFrames(8));
             Item.healMana = 200;
             Item.UseSound = SoundID.Item3;
-            Item.consumable = true;
-            Item.value = Item.buyPrice(0, 4, 50, 0);
-            Item.buffType = BuffID.MagicPower;
-            Item.buffTime = CalamityUtils.SecondsToFrames(360f);
+            Item.value = Item.sellPrice(silver: 50); // Based on material cost rather than potion cost
+            Item.rare = ItemRarityID.Lime;
         }
 
-        public override bool? UseItem(Player player)
+        public override void OnConsumeItem(Player player)
         {
             if (PlayerInput.Triggers.JustPressed.QuickBuff)
             {
@@ -49,7 +47,6 @@ namespace CalamityMod.Items.Potions
             }
             player.AddBuff(BuffID.MagicPower, Item.buffTime);
             player.AddBuff(BuffID.ManaRegeneration, Item.buffTime);
-            return true;
         }
     }
 }

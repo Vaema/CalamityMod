@@ -1,8 +1,8 @@
-﻿using Terraria.DataStructures;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -10,11 +10,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class FeatherKnife : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -22,28 +17,27 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.noMelee = true;
             Item.noUseGraphic = true;
 
-            Item.damage = 16;
+            Item.damage = 25;
             Item.useAnimation = Item.useTime = 20;
             Item.knockBack = 2f;
             Item.autoReuse = true;
-            Item.consumable = true;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item1;
-            Item.maxStack = 9999;
             Item.shoot = ModContent.ProjectileType<FeatherKnifeProjectile>();
             Item.shootSpeed = 25f;
             Item.DamageType = RogueDamageClass.Instance;
 
-            Item.value = Item.sellPrice(copper: 60);
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
         }
+        public override float StealthDamageMultiplier => 0.7f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (player.Calamity().StealthStrikeAvailable()) //setting the stealth strike
             {
                 int spread = 6;
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < 4; i++)
                 {
                     Vector2 perturbedspeed = new Vector2(velocity.X + Main.rand.Next(-3, 4), velocity.Y + Main.rand.Next(-3, 4)).RotatedBy(MathHelper.ToRadians(spread));
                     int proj = Projectile.NewProjectile(source, position, perturbedspeed, type, damage, knockback, player.whoAmI);
@@ -59,9 +53,10 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void AddRecipes()
         {
-            CreateRecipe(100).
-                AddIngredient<AerialiteBar>().
-                AddTile(TileID.SkyMill).
+            CreateRecipe().
+                AddIngredient<AerialiteBar>(6).
+                AddIngredient(ItemID.SunplateBlock, 4).
+                AddTile(TileID.Anvils).
                 Register();
         }
     }

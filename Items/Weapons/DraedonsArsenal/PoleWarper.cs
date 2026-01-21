@@ -1,11 +1,11 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -23,32 +23,28 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.width = 38;
             Item.height = 24;
             Item.shootSpeed = 10f;
-            Item.damage = 310;
+            Item.damage = 207;
             Item.mana = 12;
-            Item.useTime = Item.useAnimation = 9;
+            Item.useAnimation = Item.useTime = 24;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noMelee = true;
             Item.knockBack = 8f;
 
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
+            Item.rare = ModContent.RarityType<CosmicPurple>();
 
             Item.UseSound = SoundID.Item15;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<PoleWarperSummon>();
             Item.shootSpeed = 10f;
             Item.DamageType = DamageClass.Summon;
-
-            modItem.UsesCharge = true;
-            modItem.MaxCharge = 250f;
-            modItem.ChargePerUse = 1.25f;
-            modItem.ChargePerAltUse = 0f;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockBack)
         {
-            Projectile north = Projectile.NewProjectileDirect(source, Main.MouseWorld + Vector2.UnitY * 30f, Vector2.Zero, type, damage, knockBack, player.whoAmI);
-            Projectile south = Projectile.NewProjectileDirect(source, Main.MouseWorld - Vector2.UnitY * 30f, Vector2.Zero, type, damage, knockBack, player.whoAmI);
+            Vector2 mouse = player.ClampedMouseWorld();
+            Projectile north = Projectile.NewProjectileDirect(source, mouse + Vector2.UnitY * 30f, Vector2.Zero, type, damage, knockBack, player.whoAmI);
+            Projectile south = Projectile.NewProjectileDirect(source, mouse - Vector2.UnitY * 30f, Vector2.Zero, type, damage, knockBack, player.whoAmI);
             north.originalDamage = Item.damage;
             south.originalDamage = Item.damage;
             north.ai[1] = 1f;
@@ -56,9 +52,9 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
             float magnetCount = 0f;
 
-            for (int i = 0; i < Main.projectile.Length; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                if (Main.projectile[i].type == type && Main.projectile[i].active && Main.projectile[i].owner == player.whoAmI)
+                if (p.type == type && p.owner == player.whoAmI)
                 {
                     magnetCount++;
                 }
@@ -67,12 +63,12 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             // Adjust the offset of all existing magnets such that they form a psuedo-circle.
             // This offset is used when determining where a magnet should move to relative to its true destination (such as the player or an enemy).
             int magnetIndex = 0;
-            for (int i = 0; i < Main.projectile.Length; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                if (Main.projectile[i].type == type && Main.projectile[i].active && Main.projectile[i].owner == player.whoAmI)
+                if (p.type == type && p.owner == player.whoAmI)
                 {
-                    ((PoleWarperSummon)Main.projectile[i].ModProjectile).Time = 0f;
-                    ((PoleWarperSummon)Main.projectile[i].ModProjectile).AngularOffset = MathHelper.TwoPi * magnetIndex / magnetCount;
+                    ((PoleWarperSummon)p.ModProjectile).Time = 0f;
+                    ((PoleWarperSummon)p.ModProjectile).AngularOffset = MathHelper.TwoPi * magnetIndex / magnetCount;
                     magnetIndex++;
                 }
             }

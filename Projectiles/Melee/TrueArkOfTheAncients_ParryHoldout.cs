@@ -1,14 +1,14 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using System.IO;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
-using Terraria.Audio;
 
 
 namespace CalamityMod.Projectiles.Melee
@@ -35,6 +35,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.friendly = true;
             Projectile.penetrate = -1;
             Projectile.noEnchantmentVisuals = true;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override bool? CanDamage() => Timer <= ParryTime && AlreadyParried == 0f;
@@ -52,8 +54,10 @@ namespace CalamityMod.Projectiles.Melee
             TrueArkoftheAncients sword = (Owner.HeldItem.ModItem as TrueArkoftheAncients);
             if (sword != null)
                 sword.Charge = 10f;
+
             SoundEngine.PlaySound(SoundID.DD2_WitherBeastCrystalImpact);
             SoundEngine.PlaySound(SoundID.Item67);
+
             CombatText.NewText(Projectile.Hitbox, new Color(111, 247, 200), CalamityUtils.GetTextValue("Misc.ArkParry"), true);
             AlreadyParried = 1f;
         }
@@ -65,9 +69,13 @@ namespace CalamityMod.Projectiles.Melee
 
             GeneralParryEffects();
 
-            //only get iframes if the enemy has contact damage :)
+            // 17APR2024: Ozzatron: True Ark of the Ancients is a parry. It uses vanilla parry iframes and benefits from Cross Necklace.
+            // However, iframes are only granted if the target has contact damage. This means it won't work on Providence. Too bad. I have no sympathy for you if you are using this weapon line.
             if (target.damage > 0)
-                Owner.GiveIFrames(35);
+            {
+                int arkParryIFrames = Owner.ComputeParryIFrames();
+                Owner.GiveUniversalIFrames(arkParryIFrames, false);
+            }
 
             Vector2 particleOrigin = target.Hitbox.Size().Length() < 140 ? target.Center : Projectile.Center + Projectile.rotation.ToRotationVector2() * 60f;
             Particle spark = new GenericSparkle(particleOrigin, Vector2.Zero, Color.White, Color.HotPink, 1.2f, 35, 0.1f, 2);
@@ -88,17 +96,17 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.timeLeft = (int)MaxTime;
                 SoundEngine.PlaySound(SoundID.DD2_SkyDragonsFuryShot, Projectile.Center);
 
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Projectile.velocity = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
                 Projectile.velocity.Normalize();
                 Projectile.rotation = Projectile.velocity.ToRotation();
 
                 initialized = true;
-                Projectile.netUpdate = true;
-                Projectile.netSpam = 0;
+                Projectile.ForceNetUpdate();
             }
 
             //Manage position and rotation
-            Projectile.Center = Owner.Center + DistanceFromPlayer ;
+            Projectile.Center = Owner.Center + DistanceFromPlayer;
             Projectile.scale = 1.4f + ((float)Math.Sin(Timer / 160 * MathHelper.Pi) * 0.6f); //SWAGGER
 
             if (Timer > ParryTime)
@@ -129,7 +137,6 @@ namespace CalamityMod.Projectiles.Melee
                         //Bounce off the player if they are in the air
                         if (Owner.velocity.Y != 0)
                             Owner.velocity += Utils.SafeNormalize(Owner.Center - proj.Center, Vector2.Zero) * 2;
-
 
                         break;
                     }

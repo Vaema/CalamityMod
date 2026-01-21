@@ -1,9 +1,9 @@
-﻿using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
-using CalamityMod.Buffs.DamageOverTime;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -24,7 +24,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void AI()
         {
-            Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 6, Projectile.velocity.X * 0.1f, Projectile.velocity.Y * 0.1f);
+            Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Torch, Projectile.velocity.X * 0.1f, Projectile.velocity.Y * 0.1f);
         }
 
         public override void OnKill(int timeLeft)

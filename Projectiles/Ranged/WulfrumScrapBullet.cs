@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Graphics.Primitives;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -12,12 +13,11 @@ namespace CalamityMod.Projectiles.Ranged
     public class WulfrumScrapBullet : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
-        internal PrimitiveTrail TrailDrawer;
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
@@ -47,25 +47,21 @@ namespace CalamityMod.Projectiles.Ranged
             return base.OnTileCollide(oldVelocity);
         }
 
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float fadeOpacity = (float)Math.Sqrt(Projectile.timeLeft / 100f);
             return Color.PaleGoldenrod * fadeOpacity;
         }
 
-        internal float WidthFunction(float completionRatio)
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos)
         {
             return (1 - completionRatio) * 6.4f;
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (TrailDrawer is null)
-                TrailDrawer = new PrimitiveTrail(WidthFunction, ColorFunction, specialShader: GameShaders.Misc["CalamityMod:TrailStreak"]);
-
             GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(Request<Texture2D>("CalamityMod/ExtraTextures/Trails/BasicTrail"));
-            TrailDrawer.Draw(Projectile.oldPos, Projectile.Size * 0.5f - Main.screenPosition, 30);
-
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_,_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 30);
             return false;
         }
     }

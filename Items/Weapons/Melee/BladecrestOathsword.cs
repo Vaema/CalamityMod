@@ -7,50 +7,39 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class BladecrestOathsword : ModItem, ILocalizedModType
+    public class BladecrestOathsword : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+        public int throwCount = 0;
         public override void SetDefaults()
         {
             Item.width = 56;
             Item.height = 56;
-            Item.damage = 23;
-            Item.DamageType = DamageClass.Melee;
-            Item.useAnimation = 21;
-            Item.useTime = 21;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.knockBack = 4f;
-            Item.UseSound = SoundID.Item1;
-            Item.autoReuse = true;
-            Item.noUseGraphic = true;
-            Item.useTurn = false;
-            Item.channel = true;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
-            Item.rare = ItemRarityID.Orange;
+
+            Item.damage = 42;
+            Item.knockBack = 3f;
+            Item.useTime = 53;
+            Item.useAnimation = 53;
+            Item.shoot = ModContent.ProjectileType<BladecrestOathswordThrownBlade>();
             Item.shootSpeed = 6f;
-            // Set so the item isn't classified as true melee
-            Item.shoot = ModContent.ProjectileType<BladecrestOathswordProj>();
-        }
 
-        public override bool CanUseItem(Player player)
+            Item.noMelee = true;
+            Item.noUseGraphic = true;
+            Item.DamageType = DamageClass.Melee;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.UseSound = null;
+            Item.autoReuse = true;
+
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.rare = ItemRarityID.Orange;
+        }
+        public override void HoldItem(Player player) => player.Calamity().mouseWorldListener = true;
+        public override bool MeleePrefix() => true;
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            int bladeProjID = ModContent.ProjectileType<BladecrestOathswordProj>();
-            for (int i = 0; i < Main.maxProjectiles; i++)
-            {
-                if (Main.projectile[i].type != bladeProjID || !Main.projectile[i].active || Main.projectile[i].owner != player.whoAmI)
-                    continue;
-
-                return Main.projectile[i].ModProjectile<BladecrestOathswordProj>().PostSwingRepositionDelay <= 0f;
-            }
-
-            return base.CanUseItem(player);
+            throwCount++;
+            Projectile.NewProjectileDirect(source, player.MountedCenter, velocity, type, damage, knockback, player.whoAmI, 0, throwCount);
+            return false;
         }
-
-        // Return false because Shoot code is not actually relevant
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo spawnSource, Vector2 position, Vector2 velocity, int type, int damage, float knockback) => false;
-
-        public override bool? CanHitNPC(Player player, NPC target) => false;
-
-        public override bool CanHitPvp(Player player, Player target) => false;
     }
 }

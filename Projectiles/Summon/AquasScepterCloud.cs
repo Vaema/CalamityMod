@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
-using Terraria.GameContent;
 using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
 
@@ -57,10 +56,8 @@ namespace CalamityMod.Projectiles.Summon
             }
 
 
-            for (int i = 0; i < Main.maxNPCs; i++)
+            foreach (var npc in Main.ActiveNPCs)
             {
-                NPC npc = Main.npc[i];
-
                 if (npc.CanBeChasedBy())
                 {
                     float between = Vector2.Distance(npc.Center, Projectile.Center);
@@ -80,7 +77,7 @@ namespace CalamityMod.Projectiles.Summon
                 if (distanceFromTarget < 300)
                 {
                     if (LightningTimer >= 60f) //Every  60 AI cycles, plays the lightning sound and spawns 2 projectiles: the tesla aura for dealing damage in an aoe, and the cloud flash to simulate the brightness of the main cloud changing.
-                    { 
+                    {
                         SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/LightningAura"), Projectile.Center);
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Bottom.Y, 0f, 0f, ModContent.ProjectileType<AquasScepterTeslaAura>(), (int)(Projectile.damage * 7.2f), 16, Projectile.owner);
                         LightningTimer = 0f;
@@ -107,7 +104,7 @@ namespace CalamityMod.Projectiles.Summon
             Vector2 glowPos = Projectile.position - Main.screenPosition + (glowTex.Size() * 0.5f);
             Main.EntitySpriteDraw(glowTex, glowPos, null, dd.color, 0f, glowTex.Size() * 0.5f, 1f, SpriteEffects.None);
             Main.spriteBatch.End();
-            Main.spriteBatch.Begin();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 
             if (Main.rand.NextBool(240))
             {
@@ -115,9 +112,9 @@ namespace CalamityMod.Projectiles.Summon
                 if (DrawFlashTimer > 27)
                     DrawFlashTimer = 27;
             }
-                
+
             if (DrawFlashTimer > 0)
-            { 
+            {
                 float opacity = 1f - ((27 - DrawFlashTimer) / 27f);
                 Vector2 drawPosition = Projectile.position - Main.screenPosition + (flashTex.Size() * 0.5f);
                 Main.EntitySpriteDraw(flashTex, drawPosition, null, Color.White * opacity, 0f, flashTex.Size() * 0.5f, 1f, SpriteEffects.None);

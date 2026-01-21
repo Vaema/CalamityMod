@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Dusts;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -13,8 +13,8 @@ namespace CalamityMod.Projectiles.Ranged
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 8;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -35,7 +35,7 @@ namespace CalamityMod.Projectiles.Ranged
             Lighting.AddLight(Projectile.Center, 0.1f, 0.3f, 0.8f);
             if (Main.rand.NextBool(3))
             {
-                int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), 1, 1, ModContent.DustType<AstralBlue>(), 0f, 0f, 0, default, 0.5f);
+                int dust = Dust.NewDust(Projectile.position, 1, 1, ModContent.DustType<AstralBlue>(), 0f, 0f, 0, default, 0.5f);
                 Main.dust[dust].alpha = Projectile.alpha;
                 Main.dust[dust].velocity *= 0f;
                 Main.dust[dust].noGravity = true;
@@ -52,7 +52,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
@@ -67,7 +67,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, ModContent.DustType<AstralBlue>(), Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
             }
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 for (int i = 0; i < 3; i++)
                 {

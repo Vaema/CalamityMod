@@ -1,10 +1,9 @@
 ﻿using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -13,8 +12,8 @@ namespace CalamityMod.Projectiles.Melee
         public new string LocalizationCategory => "Projectiles.Melee";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
         }
 
         public override void SetDefaults()
@@ -84,7 +83,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Projectile.alpha = 0;
             }
-            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 0.785f;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4;
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -92,7 +91,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Projectile.timeLeft > 595)
                 return false;
 
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 2);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 2);
             return false;
         }
 

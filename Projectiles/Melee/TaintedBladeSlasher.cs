@@ -1,21 +1,21 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using System.IO;
+using CalamityMod.CalPlayer;
+using CalamityMod.Graphics.Primitives;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using Terraria.GameContent;
 
 namespace CalamityMod.Projectiles.Melee
 {
     public class TaintedBladeSlasher : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
-        internal PrimitiveTrail TrailDrawer = null;
         public ref float SwordItemID => ref Projectile.ai[1];
         public ref float VerticalOffset => ref Projectile.localAI[0];
         public ref float Time => ref Projectile.localAI[1];
@@ -106,8 +106,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 70;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 70;
         }
 
         public override void SetDefaults()
@@ -120,6 +120,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.timeLeft = 90000;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.noEnchantmentVisuals = true;
+            Projectile.ContinuouslyUpdateDamageStats = true;
         }
 
         public override void SendExtraAI(BinaryWriter writer) => writer.Write(VerticalOffset);
@@ -128,15 +129,15 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
-            CalamityPlayer.EnchantHeldItemEffects(Owner, Owner.Calamity(), Owner.ActiveItem());
-            if (!Owner.Calamity().bladeArmEnchant || Owner.ActiveItem().type != SwordItemID || Owner.CCed || !Owner.active || Owner.dead)
+            CalamityPlayer.EnchantHeldItemEffects(Owner, Owner.Calamity(), Owner.HeldItem);
+            if (!Owner.Calamity().bladeArmEnchant || Owner.HeldItem.type != SwordItemID || Owner.CCed || !Owner.active || Owner.dead)
             {
                 Projectile.Kill();
                 return;
             }
 
             if (Owner.itemAnimationMax == 0)
-                Owner.itemAnimationMax = (int)(Owner.ActiveItem().useAnimation * Owner.GetAttackSpeed<MeleeDamageClass>());
+                Owner.itemAnimationMax = (int)(Owner.HeldItem.useAnimation * Owner.GetAttackSpeed<MeleeDamageClass>());
 
             float swingOffsetAngle = MathHelper.SmoothStep(-1.87f, 3.79f, AttackCompletionRatio);
 
@@ -197,9 +198,9 @@ namespace CalamityMod.Projectiles.Melee
             Time++;
         }
 
-        internal float PrimitiveWidthFunction(float completionRatio) => BladeFrame.Height * 0.47f;
+        internal float PrimitiveWidthFunction(float completionRatio, Vector2 vertexPos) => BladeFrame.Height * 0.47f;
 
-        internal Color PrimitiveColorFunction(float completionRatio)
+        internal Color PrimitiveColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float opacity = Utils.GetLerpValue(0.8f, 0.52f, completionRatio, true) * Utils.GetLerpValue(1f, 0.81f, AttackCompletionRatio, true);
             Color startingColor = Color.Lerp(Color.Red, Color.DarkRed, 0.4f);
@@ -209,9 +210,6 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (TrailDrawer is null)
-                TrailDrawer = new PrimitiveTrail(PrimitiveWidthFunction, PrimitiveColorFunction, specialShader: GameShaders.Misc["CalamityMod:FadingSolidTrail"]);
-
             Texture2D forearmTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/TaintedForearm").Value;
             Texture2D armTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/TaintedArm").Value;
             Texture2D handTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/TaintedHand").Value;
@@ -248,13 +246,6 @@ namespace CalamityMod.Projectiles.Melee
                 Vector2 top = BladeCenterPosition + BladeOffsetDirection * BladeFrame.Height * 0.5f - Main.screenPosition;
                 Vector2 offsetToBlade = (top - bottom).SafeNormalize(Vector2.Zero).RotatedBy(MathHelper.PiOver2) * 5f;
 
-                TrailDrawer.OverridingStickPointStart = BladeCenterPosition - BladeOffsetDirection * BladeFrame.Height * 0.5f + offsetToBlade - Main.screenPosition;
-                TrailDrawer.OverridingStickPointEnd = BladeCenterPosition + BladeOffsetDirection * BladeFrame.Height * 0.5f + offsetToBlade - Main.screenPosition;
-
-                // Swap the ends if needed so that the trail faces the right direction.
-                if (Owner.direction == -1)
-                    Utils.Swap(ref TrailDrawer.OverridingStickPointStart, ref TrailDrawer.OverridingStickPointEnd);
-
                 Vector2[] drawPoints = new Vector2[Projectile.oldPos.Length];
                 Vector2 perpendicularDirection = BladeOffsetDirection.SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.PiOver2);
                 for (int i = 1; i < drawPoints.Length; i++)
@@ -265,7 +256,15 @@ namespace CalamityMod.Projectiles.Melee
                     drawPoints[i] = Projectile.Center + perpendicularDirection.RotatedBy(i * -0.014f * Owner.direction) * i * -Owner.direction * 6f;
                 }
 
-                TrailDrawer.Draw(drawPoints, BladeCenterPosition - Projectile.position - Main.screenPosition, 67);
+                var leftVertexPosition = BladeCenterPosition - BladeOffsetDirection * BladeFrame.Height * 0.5f + offsetToBlade - Main.screenPosition;
+                var rightVertexPosition = BladeCenterPosition + BladeOffsetDirection * BladeFrame.Height * 0.5f + offsetToBlade - Main.screenPosition;
+
+                // Swap the ends if needed so that the trail faces the right direction.
+                if (Owner.direction == -1)
+                    Utils.Swap(ref leftVertexPosition, ref rightVertexPosition);
+
+                PrimitiveRenderer.RenderTrail(drawPoints, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_,_) => BladeCenterPosition - Projectile.position,
+                    shader: GameShaders.Misc["CalamityMod:FadingSolidTrail"], initialVertexPositionsOverride: (leftVertexPosition, rightVertexPosition)), 67);
             }
 
             // Draw the blade.
@@ -290,8 +289,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            ItemLoader.OnHitNPC(Owner.ActiveItem(), Owner, target, hit, damageDone);
-            NPCLoader.OnHitByItem(target, Owner, Owner.ActiveItem(), hit, damageDone);
+            ItemLoader.OnHitNPC(Owner.HeldItem, Owner, target, hit, damageDone);
+            NPCLoader.OnHitByItem(target, Owner, Owner.HeldItem, hit, damageDone);
             PlayerLoader.OnHitNPC(Owner, target, hit, damageDone);
         }
     }

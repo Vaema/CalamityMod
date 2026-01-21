@@ -1,6 +1,6 @@
-﻿using CalamityMod.Items.Weapons.Magic;
+﻿using System;
+using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Localization;
@@ -26,13 +26,12 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void AI()
         {
-            Item heldItem = Owner.ActiveItem();
+            Item heldItem = Owner.HeldItem;
             Projectile.damage = heldItem is null ? 0 : Owner.GetWeaponDamage(heldItem);
 
             UpdatePlayerVisuals(Owner.Center);
 
-            bool stillUsingCannon = Owner.channel && !Owner.noItems && !Owner.CCed;
-            if (!stillUsingCannon)
+            if (Owner.CantUseHoldout())
             {
                 Projectile.Kill();
                 return;
@@ -86,6 +85,7 @@ namespace CalamityMod.Projectiles.Magic
             // Place the cannon directly into the player's hand at all times.
             Projectile.Center = center;
 
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             // Set the direction of the cannon if it hasn't been set yet.
             if (Projectile.velocity == Vector2.Zero || Projectile.velocity.Length() != 1f)
                 Projectile.velocity = (Main.MouseWorld - center).SafeNormalize(Vector2.UnitX * Projectile.direction);

@@ -1,9 +1,9 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -15,9 +15,10 @@ namespace CalamityMod.Projectiles.Summon
         public int Variant;
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
-            Main.projFrames[Projectile.type] = 7;
+            Main.projFrames[Type] = 7;
+            Main.projPet[Type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -68,7 +69,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 Projectile.frame = 1;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.frame = 1;
             }
@@ -171,11 +172,14 @@ namespace CalamityMod.Projectiles.Summon
             }
             return true;
         }
+
+        public override bool MinionContactDamage() => true;
+
         public override bool PreDraw(ref Color lightColor)
         {
             Rectangle frame = new Rectangle(Variant * Projectile.width, Projectile.frame * Projectile.height, Projectile.width, Projectile.height);
             SpriteEffects spriteEffects = (Projectile.spriteDirection == 1) ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-            Main.EntitySpriteDraw(ModContent.Request<Texture2D>(Texture).Value, Projectile.Center - Main.screenPosition, frame, Color.White, Projectile.rotation, Projectile.Size / 2f, 1f, spriteEffects, 0);
+            Main.EntitySpriteDraw(Terraria.GameContent.TextureAssets.Projectile[Type].Value, Projectile.Center - Main.screenPosition, frame, Color.White, Projectile.rotation, Projectile.Size / 2f, 1f, spriteEffects, 0);
             return false;
         }
 

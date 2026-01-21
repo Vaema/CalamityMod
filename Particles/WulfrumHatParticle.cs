@@ -1,7 +1,7 @@
-﻿using Microsoft.Xna.Framework;
-using Terraria;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Terraria;
 
 namespace CalamityMod.Particles
 {
@@ -42,9 +42,9 @@ namespace CalamityMod.Particles
             {
                 spriteEffect = SpriteEffects.FlipHorizontally;
             }
-                
-            float opacity = Math.Clamp(1 - (float)Math.Pow(LifetimeCompletion , 3f), 0f, 1f);
-            spriteBatch.Draw(baseTex, Position - Main.screenPosition, null, lightColor * opacity, Rotation, baseTex.Size()/2f, Scale, spriteEffect, 0);
+
+            float opacity = Math.Clamp(1 - (float)Math.Pow(LifetimeCompletion, 3f), 0f, 1f);
+            spriteBatch.Draw(baseTex, Position - Main.screenPosition, null, lightColor * opacity, Rotation, baseTex.Size() / 2f, Scale, spriteEffect, 0);
         }
     }
 }

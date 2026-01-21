@@ -1,11 +1,12 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -13,6 +14,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.ProfanedGuardians
 {
+    [HasPierceResist]
     public class ProfanedRocks : ModNPC
     {
         private bool start = true;
@@ -23,31 +25,37 @@ namespace CalamityMod.NPCs.ProfanedGuardians
         public const int MaxHP = 8000;
         public const int MaxBossRushHP = 20000;
 
+        public static Asset<Texture2D>[] Textures = new Asset<Texture2D>[6];
+
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            NPCID.Sets.TrailingMode[Type] = 1;
+            if (!Main.dedServ)
+            {
+                for (int i = 0; i < 6; i++)
+                {
+                    Textures[i] = ModContent.Request<Texture2D>(Texture + (i + 1), AssetRequestMode.AsyncLoad);
+                }
+            }
         }
 
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 100; // 200
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.GetNPCDamage();
             NPC.dontTakeDamage = true;
             NPC.width = 50;
             NPC.height = 50;
             NPC.defense = 100;
             NPC.lifeMax = BossRushEvent.BossRushActive ? MaxBossRushHP : MaxHP;
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.knockBackResist = 0f;
             NPC.Opacity = 0f;
             NPC.noGravity = true;
             NPC.chaseable = false;
             NPC.noTileCollide = true;
-            NPC.canGhostHeal = false;
             NPC.HitSound = SoundID.NPCHit52;
             NPC.DeathSound = SoundID.NPCDeath55;
             NPC.Calamity().VulnerableToHeat = false;
@@ -104,7 +112,6 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             // Stay invincile while the commander and defender are swapping sides and don't deal damage to avoid unfair hits
             if (Main.npc[CalamityGlobalNPC.doughnutBossDefender].localAI[3] == 1f)
             {
-                NPC.damage = 0;
                 NPC.dontTakeDamage = true;
 
                 NPC.Opacity -= 0.01f;
@@ -117,7 +124,6 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             // Stay invincible for 100 frames to avoid being instantly killed and don't deal damage to avoid unfair hits
             else if (NPC.Opacity < 1f)
             {
-                NPC.damage = 0;
                 NPC.dontTakeDamage = true;
 
                 NPC.Opacity += 0.01f;
@@ -127,22 +133,18 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 NPC.scale = MathHelper.Lerp(0.05f, 1f, NPC.Opacity);
             }
             else
-            {
-                NPC.damage = NPC.defDamage;
                 NPC.dontTakeDamage = false;
-            }
 
-            Lighting.AddLight((int)((NPC.position.X + (NPC.width / 2)) / 16f), (int)((NPC.position.Y + (NPC.height / 2)) / 16f), 0.7f * NPC.Opacity, 0.55f * NPC.Opacity, 0f);
+            Lighting.AddLight((int)(NPC.Center.X / 16f), (int)(NPC.Center.Y / 16f), 0.7f * NPC.Opacity, 0.55f * NPC.Opacity, 0f);
 
             // Set time left just in case something dumb happens with despawning
             if (NPC.timeLeft < 1800)
                 NPC.timeLeft = 1800;
 
             // Difficulty modes
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Spin and fly at the target
             if ((Main.npc[CalamityGlobalNPC.doughnutBossDefender].ai[0] != 0f && Main.npc[CalamityGlobalNPC.doughnutBossDefender].ai[1] >= -60f) || NPC.Calamity().newAI[0] < 0f)
@@ -156,12 +158,15 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
                 // Distance the rock travels before it starts to fall down
                 float maxChargeDistance = 4800f;
-                float chargeSpeed = bossRush ? 20f : death ? 18f : revenge ? 17f : expertMode ? 16f : 14f;
+                float chargeSpeed = death ? 18f : revenge ? 17f : expertMode ? 16f : 14f;
                 float fallDownGateValue = maxChargeDistance / chargeSpeed;
 
                 // Fall down after some time and blow up if inside tiles
                 if (NPC.Calamity().newAI[0] == -3f)
                 {
+                    // Set damage
+                    NPC.damage = NPC.defDamage;
+
                     // Accelerate towards final velocity
                     Vector2 finalVelocity = new Vector2(NPC.Calamity().newAI[2], NPC.Calamity().newAI[3]);
                     if (NPC.velocity.Length() < finalVelocity.Length())
@@ -198,9 +203,12 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 // Charge
                 else if (NPC.Calamity().newAI[0] == -2f)
                 {
+                    // Set damage
+                    NPC.damage = NPC.defDamage;
+
                     // Start off slow
                     Vector2 finalVelocity = NPC.SafeDirectionTo(player.Center, -Vector2.UnitY) * chargeSpeed;
-                    if (CalamityWorld.LegendaryMode && revenge)
+                    if (Main.getGoodWorld)
                         finalVelocity *= Main.rand.NextFloat(1f, 1.7f);
 
                     NPC.Calamity().newAI[2] = finalVelocity.X;
@@ -214,33 +222,32 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 // Rotate
                 else
                 {
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
+
                     // Push away from each other in Death and Boss Rush
                     if (death)
                     {
-                        float pushVelocity = bossRush ? 0.2f : 0.15f;
-                        for (int i = 0; i < Main.maxNPCs; i++)
+                        float pushVelocity = 0.15f;
+                        foreach (NPC n in Main.ActiveNPCs)
                         {
-                            if (Main.npc[i].active)
+                            if (n.whoAmI != NPC.whoAmI && n.type == NPC.type)
                             {
-                                if (i != NPC.whoAmI && Main.npc[i].type == NPC.type)
+                                if (Vector2.Distance(NPC.Center, n.Center) < 160f)
                                 {
-                                    if (Vector2.Distance(NPC.Center, Main.npc[i].Center) < 160f)
-                                    {
-                                        if (NPC.position.X < Main.npc[i].position.X)
-                                            NPC.velocity.X -= pushVelocity;
-                                        else
-                                            NPC.velocity.X += pushVelocity;
-
-                                        if (NPC.position.Y < Main.npc[i].position.Y)
-                                            NPC.velocity.Y -= pushVelocity;
-                                        else
-                                            NPC.velocity.Y += pushVelocity;
-                                    }
-
-                                    // Slow down so they don't push away from each other too far
+                                    if (NPC.position.X < n.position.X)
+                                        NPC.velocity.X -= pushVelocity;
                                     else
-                                        NPC.velocity *= 0.95f;
+                                        NPC.velocity.X += pushVelocity;
+
+                                    if (NPC.position.Y < n.position.Y)
+                                        NPC.velocity.Y -= pushVelocity;
+                                    else
+                                        NPC.velocity.Y += pushVelocity;
                                 }
+                                // Slow down so they don't push away from each other too far
+                                else
+                                    NPC.velocity *= 0.95f;
                             }
                         }
                     }
@@ -249,7 +256,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
                     // Rotate faster and charge
                     NPC.Calamity().newAI[1] += 1f;
-                    float chargeGateValue = bossRush ? 60f : death ? 80f : revenge ? 90f : expertMode ? 100f : 120f;
+                    float chargeGateValue = death ? 80f : revenge ? 90f : expertMode ? 100f : 120f;
                     chargeGateValue += chargeGateValue * 0.5f * NPC.ai[1];
                     float anglularSpeed = NPC.Calamity().newAI[1] / chargeGateValue;
                     anglularSpeed = 0.05f + anglularSpeed * 0.2f;
@@ -267,8 +274,11 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 return;
             }
 
+            // Avoid cheap bullshit
+            NPC.damage = 0;
+
             // Distance from Defender Guardian
-            double maxDistance = bossRush ? 360D : death ? 340D : revenge ? 330D : expertMode ? 320D : MinMaxDistance;
+            double maxDistance = death ? 340D : revenge ? 330D : expertMode ? 320D : MinMaxDistance;
             double rateOfChangeIncrease = (maxDistance / MinMaxDistance) - 1D;
             double rateOfChange = (NPC.ai[1] * 0.5f) + 2D + rateOfChangeIncrease;
             if (NPC.Calamity().newAI[0] == 0f)
@@ -308,7 +318,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             int npcType = (int)MathHelper.Clamp(NPC.ai[2], 1f, 6f);
-            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/ProfanedGuardians/ProfanedRocks" + npcType.ToString()).Value;
+            Texture2D texture = Textures[npcType - 1].Value;
             Vector2 drawOrigin = new Vector2(texture.Width / 2, texture.Height / 2);
             Vector2 drawPos = NPC.Center - screenPos;
             drawPos -= new Vector2(texture.Width, texture.Height) * NPC.scale / 2f;
@@ -316,7 +326,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             Rectangle frame = new Rectangle(0, 0, texture.Width, texture.Height);
 
             if (!NPC.dontTakeDamage)
-                NPC.DrawBackglow(Color.Orange, 4f, SpriteEffects.None, frame, screenPos, texture);
+                NPC.DrawBackglow(Color.Orange.MultiplyRGBA(new Color(255, 255, 255, 0)), 4f, SpriteEffects.None, frame, screenPos, texture);
 
             spriteBatch.Draw(texture, drawPos, frame, NPC.GetAlpha(drawColor), NPC.rotation, drawOrigin, NPC.scale, SpriteEffects.None, 0f);
 
@@ -333,7 +343,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<HolyFlames>(), 80, true);
+                target.AddBuff(ModContent.BuffType<HolyFlames>(), 120);
         }
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)
@@ -365,7 +375,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     int npcType = (int)NPC.ai[2];
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ProfanedRocksGore" + npcType.ToString()).Type, NPC.scale);

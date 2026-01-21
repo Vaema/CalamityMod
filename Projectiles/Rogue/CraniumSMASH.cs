@@ -1,8 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -13,8 +14,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetDefaults()
         {
-            Projectile.width = 192;
-            Projectile.height = 192;
+            Projectile.width = Projectile.height = 200;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
@@ -27,65 +27,49 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void AI()
         {
+            // Stealth on-death explosion is larger
+            if (Projectile.ai[1] == 1f)
+                Projectile.ExpandHitboxBy(300);
+
             if (Projectile.ai[0] == 0f)
-                SpawnExplosionDust();
-            if (Projectile.ai[0] <= 1f)
-                Projectile.ai[0]++;
+            {
+                SpawnExplosionDust(Projectile.width);
+                Projectile.ai[0] = 1f;
+            }
         }
 
-        void SpawnExplosionDust()
+        void SpawnExplosionDust(int size)
         {
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
-                Vector2 goreSource = Projectile.Center;
                 int goreAmt = 3;
-                Vector2 source = new Vector2(goreSource.X - 24f, goreSource.Y - 24f);
-                for (int goreIndex = 0; goreIndex < goreAmt; goreIndex++)
+                Vector2 source = Projectile.Center - new Vector2(24f);
+                for (int goreIndex = 1; goreIndex <= goreAmt; goreIndex++)
                 {
-                    float velocityMult = 0.33f;
-                    if (goreIndex < (goreAmt / 3))
-                    {
-                        velocityMult = 0.66f;
-                    }
-                    if (goreIndex >= (2 * goreAmt / 3))
-                    {
-                        velocityMult = 1f;
-                    }
-                    Mod mod = ModContent.GetInstance<CalamityMod>();
-                    int type = Main.rand.Next(61, 64);
-                    int smoke = Gore.NewGore(Projectile.GetSource_FromAI(), source, default, type, 1f);
-                    Gore gore = Main.gore[smoke];
-                    gore.velocity *= velocityMult;
-                    gore.velocity.X += 1f;
-                    gore.velocity.Y += 1f;
-                    type = Main.rand.Next(61, 64);
-                    smoke = Gore.NewGore(Projectile.GetSource_FromAI(), source, default, type, 1f);
-                    gore = Main.gore[smoke];
-                    gore.velocity *= velocityMult;
-                    gore.velocity.X -= 1f;
-                    gore.velocity.Y += 1f;
-                    type = Main.rand.Next(61, 64);
-                    smoke = Gore.NewGore(Projectile.GetSource_FromAI(), source, default, type, 1f);
-                    gore = Main.gore[smoke];
-                    gore.velocity *= velocityMult;
-                    gore.velocity.X += 1f;
-                    gore.velocity.Y -= 1f;
-                    type = Main.rand.Next(61, 64);
-                    smoke = Gore.NewGore(Projectile.GetSource_FromAI(), source, default, type, 1f);
-                    gore = Main.gore[smoke];
-                    gore.velocity *= velocityMult;
-                    gore.velocity.X -= 1f;
-                    gore.velocity.Y -= 1f;
+                    float velocityMult = 0.33f * goreIndex;
+                    int type = Main.rand.Next(61, 63 + 1);
+                    Gore smoke = Gore.NewGoreDirect(Projectile.GetSource_Death(), source, default, type, 1f);
+                    smoke.velocity *= velocityMult;
+                    type = Main.rand.Next(61, 63 + 1);
+                    smoke = Gore.NewGoreDirect(Projectile.GetSource_Death(), source, default, type, 1f);
+                    smoke.velocity *= velocityMult;
                 }
             }
 
-            for (int i = 0; i < 25; i++)
+            for (int i = 0; i < 30; i++)
             {
-                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 135, 0f, 0f, 100, default, 2f);
-                Main.dust[dust].noGravity = true;
-                Main.dust[dust].velocity *= 0f;
+                float edgeOffset = Main.rand.NextFloat(size * 0.35f, size / 2) * (Main.rand.NextBool() ? -1 : 1);
+                float randOffset = Main.rand.NextFloat(-size / 2, size / 2);
+                Vector2 spawnPos = Projectile.Center + (i % 2 == 0 ? new Vector2(edgeOffset, randOffset) : new Vector2(randOffset, edgeOffset));
+                Dust dust = Dust.NewDustPerfect(spawnPos, DustID.IceTorch, Vector2.Zero, 100, default, 2f);
+                dust.noGravity = true;
+            }
+            if (Projectile.ai[1] == 1f)
+            {
+                CustomPulse boo = new(Projectile.Center, Vector2.Zero, Color.SkyBlue, "CalamityMod/Particles/GlowSquareParticleBig", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.1f, 1.1f, 10);
+                GeneralParticleHandler.SpawnParticle(boo);
             }
         }
     }

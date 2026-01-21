@@ -32,6 +32,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 4;
+            Main.projPet[Type] = true;
             ProjectileID.Sets.DrawScreenCheckFluff[Type] = 12000;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
@@ -101,12 +102,12 @@ namespace CalamityMod.Projectiles.Summon
                         Projectile.velocity,
                         Color.Cyan with { A = 10 },
                         Utils.Remap(TimerToShoot, StellarTorusStaff.TimeBeforeCharging, StellarTorusStaff.TimeBeforeCharging + StellarTorusStaff.TimeCharging, relativeScale * 2f, relativeScale / 2f),
-                        (int)StellarTorusStaff  .TimeCharging);
+                        (int)StellarTorusStaff.TimeCharging);
                     GeneralParticleHandler.SpawnParticle(bloomCharge);
 
                     Vector2 chargeDustSpawn = Projectile.Center + Main.rand.NextVector2Circular(scale * 1.2f, scale * 1.2f);
                     Dust chargeDust = Dust.NewDustPerfect(chargeDustSpawn,
-                        307,
+                        DustID.MushroomTorch,
                         chargeDustSpawn.DirectionTo(Projectile.Center) * Main.rand.NextFloat(5f, 8f));
                     chargeDust.noGravity = true;
                     chargeDust.scale = chargeDust.velocity.Length() * .15f;
@@ -166,7 +167,7 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.rotation = MathHelper.Lerp(swingRotStart, swingRotStart + (MathHelper.PiOver4 * -LaserSwingDirection), RotationInterpolant);
                     RotationInterpolant += 1f / StellarTorusStaff.TimeShooting;
 
-                    Dust shootDust = Dust.NewDustPerfect(Projectile.Center, 307, Main.rand.NextVector2Circular(Main.rand.NextFloat(10f, 15f), Main.rand.NextFloat(10f, 15f)));
+                    Dust shootDust = Dust.NewDustPerfect(Projectile.Center, DustID.MushroomTorch, Main.rand.NextVector2Circular(Main.rand.NextFloat(10f, 15f), Main.rand.NextFloat(10f, 15f)));
                     shootDust.noGravity = true;
                     shootDust.scale = shootDust.velocity.Length() * .2f;
 
@@ -244,7 +245,7 @@ namespace CalamityMod.Projectiles.Summon
 
                 if (Main.projectile.IndexInRange(laser))
                     Main.projectile[laser].originalDamage = Projectile.originalDamage;
-                
+
                 HasShotLaser = true;
                 Projectile.netUpdate = true;
             }
@@ -263,7 +264,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;
@@ -272,7 +273,5 @@ namespace CalamityMod.Projectiles.Summon
 
             return false;
         }
-
-        public override bool? CanDamage() => false;
     }
 }

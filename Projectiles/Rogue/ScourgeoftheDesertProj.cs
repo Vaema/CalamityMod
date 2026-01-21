@@ -1,16 +1,10 @@
-﻿using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.NPCs.DesertScourge;
-using CalamityMod.NPCs.Ravager;
+﻿using System;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Magic;
-using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Humanizer.In;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -27,11 +21,14 @@ namespace CalamityMod.Projectiles.Rogue
         public Vector2 SavedOldVelocity;
         public Vector2 NPCDestination;
         public bool SetPierce = false;
+        public int postHitNoDig = 0;
+        public bool collideWithTiles = true;
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
         }
 
         public override void SetDefaults()
@@ -41,7 +38,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.friendly = true;
             Projectile.penetrate = 2;
             Projectile.DamageType = RogueDamageClass.Instance;
-            Projectile.tileCollide = true;
+            Projectile.tileCollide = false;
             Projectile.timeLeft = 600;
             Projectile.extraUpdates = 1;
             Projectile.usesLocalNPCImmunity = true;
@@ -54,7 +51,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.penetrate = Projectile.Calamity().stealthStrike ? 4 : 2;
                 SetPierce = true;
             }
-            InsideTiles = Collision.SolidCollision(Projectile.Center, 50, 50);
+            InsideTiles = Collision.SolidCollision(Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.UnitX * 10), 10, 10);
             Time++;
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4;
             Player Owner = Main.player[Projectile.owner];
@@ -67,7 +64,10 @@ namespace CalamityMod.Projectiles.Rogue
                 dust.noGravity = true;
                 dust.velocity = -Projectile.velocity * 0.5f;
             }
-            
+
+            if (postHitNoDig > 0)
+                postHitNoDig--;
+
             if (!InitialTileHit && Time > 45)
             {
                 if (Projectile.velocity.Y < 0)
@@ -93,6 +93,8 @@ namespace CalamityMod.Projectiles.Rogue
             }
             if (PostExitTiles)
             {
+                if (Projectile.velocity.Length() < 10)
+                    Projectile.velocity *= 1.02f;
                 if (Projectile.timeLeft % 2 == 0 && playerDist < 1400f)
                 {
                     SparkParticle spark = new SparkParticle(Projectile.Center - Projectile.velocity * 8f, -Projectile.velocity * 0.1f, false, 9, 2.3f, Color.White * 0.1f);
@@ -101,19 +103,28 @@ namespace CalamityMod.Projectiles.Rogue
             }
             if (InsideTiles)
             {
-                for (int i = 0; i < Main.maxNPCs; i++)
-                {
-                    if (Main.npc[i].CanBeChasedBy(Projectile.GetSource_FromThis(), false))
-                        NPCDestination = Main.npc[i].Center + Main.npc[i].velocity * 5f;
-                }
-
                 TimeUnderground++;
                 Vector3 DustLight = new Vector3(0.171f, 0.124f, 0.086f);
-                Lighting.AddLight(Projectile.Center + Projectile.velocity, DustLight * 4);
+                Lighting.AddLight(Projectile.Center + Projectile.velocity, DustLight * 1.5f);
                 if (Time % 15 == 0 && TimeUnderground < 120)
                 {
                     SoundEngine.PlaySound(SoundID.WormDig with { Volume = 0.7f, Pitch = 0.2f }, Projectile.Center);
                 }
+
+
+                NPC target = Projectile.Center.ClosestNPCAt(1800, true);
+                if (target == null)
+                {
+                    if (Projectile.velocity.Y < 0)
+                    {
+                        Projectile.velocity.Y *= 0.98f;
+                    }
+                    Projectile.velocity.Y += 0.08f;
+                    Projectile.velocity.X *= 0.99f;
+                    return;
+                }
+                NPCDestination = target.Center + target.velocity * 5f;
+
                 float returnSpeed = 10;
                 float acceleration = 0.2f;
                 float xDist = NPCDestination.X - Projectile.Center.X;
@@ -151,23 +162,28 @@ namespace CalamityMod.Projectiles.Rogue
                     }
                 }
             }
+
+            CustomTileCollide();
         }
-        public override bool OnTileCollide(Vector2 oldVelocity)
+        public void CustomTileCollide()
         {
-            SavedOldVelocity = oldVelocity;
-            Projectile.tileCollide = false;
-            if (!InitialTileHit) // Enter ground
+            if (collideWithTiles && postHitNoDig == 0 && InsideTiles && Time > 5)
             {
-                for (int i = 0; i <= 25; i++)
+                SavedOldVelocity = Projectile.velocity;
+                collideWithTiles = false;
+
+                if (!InitialTileHit) // Enter ground
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Projectile.velocity * 3, Main.rand.NextBool() ? 207 : 216, -Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(30f)) * Main.rand.NextFloat(0.3f, 0.9f), 0, default, Main.rand.NextFloat(1.3f, 1.8f));
-                    dust.noGravity = true;
+                    for (int i = 0; i <= 25; i++)
+                    {
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center + Projectile.velocity * 3, Main.rand.NextBool() ? 207 : 216, -Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(30f)) * Main.rand.NextFloat(0.3f, 0.9f), 0, default, Main.rand.NextFloat(1.3f, 1.8f));
+                        dust.noGravity = true;
+                    }
+                    Projectile.velocity = SavedOldVelocity * 0.7f;
+                    SoundEngine.PlaySound(SoundID.WormDig with { Volume = 1.5f, Pitch = 1.1f }, Projectile.Center);
+                    InitialTileHit = true;
                 }
-                Projectile.velocity = oldVelocity * 0.7f;
-                SoundEngine.PlaySound(SoundID.WormDig with { Volume = 1.5f, Pitch = 1.1f}, Projectile.Center);
-                InitialTileHit = true;
             }
-            return false;
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
@@ -178,13 +194,15 @@ namespace CalamityMod.Projectiles.Rogue
             }
             if (Projectile.Calamity().stealthStrike)
             {
+                if (PostExitTiles || InsideTiles)
+                    Projectile.extraUpdates = 4;
                 Projectile.timeLeft = 600;
                 Time = 10;
                 TimeUnderground = 0;
                 PostExitTiles = false;
+                postHitNoDig = 50;
                 InitialTileHit = false;
-                InsideTiles = false;
-                Projectile.tileCollide = true;
+                collideWithTiles = true;
             }
         }
         public override void OnKill(int timeLeft)
@@ -197,7 +215,7 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 2);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 2, null, true, true);
             return false;
         }
     }

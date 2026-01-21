@@ -2,17 +2,16 @@
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Graphics.Shaders;
 
 namespace CalamityMod.Items.Dyes
 {
     public class PinkCosmicFlameDye : BaseDye
     {
-        public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(new Ref<Effect>(Mod.Assets.Request<Effect>("Effects/Dyes/CosmicFlameShader", AssetRequestMode.ImmediateLoad).Value), "DyePass").
+        public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(Mod.Assets.Request<Effect>("Effects/Dyes/CosmicFlameShader"), "DyePass").
             UseColor(new Color(255, 115, 221)).UseSecondaryColor(new Color(255, 115, 221)).UseImage("Images/Misc/noise").UseSaturation(0f);
         public override void SafeSetStaticDefaults()
         {
@@ -21,8 +20,8 @@ namespace CalamityMod.Items.Dyes
 
         public override void SafeSetDefaults()
         {
-            Item.rare = ModContent.RarityType<DarkBlue>();
-            Item.value = Item.sellPrice(0, 5, 0, 0);
+            Item.rare = ModContent.RarityType<CosmicPurple>();
+            Item.value = Item.sellPrice(gold: 1, silver: 50);
         }
 
         public override void AddRecipes()

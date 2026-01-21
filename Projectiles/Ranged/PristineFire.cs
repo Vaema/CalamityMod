@@ -1,12 +1,10 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Dusts;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
 using Terraria;
-using Terraria.ID;
+using Terraria.Audio;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
@@ -16,44 +14,72 @@ namespace CalamityMod.Projectiles.Ranged
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Particles/MediumMist";
 
-        // Helix trail thing
-        public PrimitiveTrail HelixTrail = null;
-
-        public override void SetStaticDefaults()
-        {
-            ProjectileID.Sets.TrailCacheLength[Type] = 20;
-            ProjectileID.Sets.TrailingMode[Type] = 2;
-        }
-
         public float smokeOpa = 0.25f;
+        public ref float time => ref Projectile.ai[2];
+        public Vector2 beamPos;
+        public Vector2 beamPos2;
+        public bool hasIgnited = false;
+
+        public int boomTime = PristineFury.boomTime;
         public override void SetDefaults()
         {
-            Projectile.width = Projectile.height = 6;
+            Projectile.width = Projectile.height = 40;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.penetrate = 1;
-            Projectile.MaxUpdates = 4;
+            Projectile.MaxUpdates = 5;
             Projectile.timeLeft = 120;
+            Projectile.tileCollide = false;
         }
 
         public override void AI()
         {
-            if (Projectile.timeLeft < 118)
+            float mult = Utils.GetLerpValue(140, 75, Projectile.timeLeft, true);
+
+            Lighting.AddLight(Projectile.Center, Color.Lerp(Color.Red, Color.Goldenrod, mult).ToVector3() * 0.7f);
+
+            if (Projectile.timeLeft < 116)
             {
-                if (smokeOpa > 0)
-                    smokeOpa -= 0.02f;
+                float sine = (float)Math.Sin(time * 0.65f / MathHelper.Pi);
 
-                Lighting.AddLight(Projectile.Center, 1f, 1f, 0.25f);
-
-                // Light smoke
-                Color smokeColor = new Color(255, Main.rand.Next(160, 230 + 1), 100, 100);
-                Particle smoke = new HeavySmokeParticle(Projectile.Center, Projectile.velocity.RotatedByRandom(smokeOpa * 10) * (Main.rand.NextFloat(0.4f, 0.65f) - smokeOpa), smokeColor, 16, Main.rand.NextFloat(0.6f, 1.2f), 0.2f + smokeOpa, glowing: true);
-                GeneralParticleHandler.SpawnParticle(smoke);
+                beamPos = Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(MathHelper.PiOver2) * sine * (30f * mult * -1) * Utils.GetLerpValue(116, 108, Projectile.timeLeft, true);
+                beamPos2 = Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(MathHelper.PiOver2) * sine * (30f * mult) * Utils.GetLerpValue(116, 108, Projectile.timeLeft, true);
+                for (int i = 0; i < 2; i++)
+                {
+                    Particle beam = new CustomSpark(i == 0 ? beamPos : beamPos2, Projectile.velocity * 0.1f, "CalamityMod/Particles/SmallBloom", false, 6, (0.065f * mult) + 0.01f, Color.Lerp(Color.Red, Color.Goldenrod, mult), new Vector2(1f, 2.5f), true, false);
+                    GeneralParticleHandler.SpawnParticle(beam);
+                }
             }
+
+            if (!hasIgnited)
+            {
+                for (int x = 0; x < Main.maxProjectiles; x++)
+                {
+                    Projectile projectile = Main.projectile[x];
+                    if (Vector2.Distance(Projectile.Center, projectile.Center) <= 100 && projectile.active && projectile.type == ModContent.ProjectileType<PristineSecondary>() && projectile.Opacity > 0.7f)
+                    {
+                        if (projectile.ai[2] == 0)
+                        {
+                            projectile.ai[2] = boomTime;
+                            hasIgnited = true;
+                            SoundStyle ignite = new("CalamityMod/Sounds/Custom/Providence/ProvidenceBurn");
+                            SoundEngine.PlaySound(ignite with { Volume = 1f, Pitch = Main.rand.NextFloat(0.5f, 0.6f), SoundLimitBehavior = SoundLimitBehavior.IgnoreNew }, Projectile.Center);
+                        }
+                        else
+                            hasIgnited = true;
+                    }
+                }
+            }
+
             Projectile.rotation = Projectile.velocity.ToRotation();
+            time--;
         }
 
+        
+        //Doze - Flamethrowers in vanilla are long debuff infliction tools (20 seconds of their debuff).
+        //I am applying this as the base for Cal flamethrowers, with shorter times being the exception instead of the rule
+        //On Pristine Fury, the full 20 seconds is limited to the ignition of the secondary.
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<HolyFlames>(), 240);
 
         public override void OnKill(int timeLeft)
@@ -65,11 +91,15 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.localNPCHitCooldown = 10;
             Projectile.Damage();
 
-            LineParticle spark = new LineParticle(Projectile.Center, -Projectile.velocity.RotatedBy(Main.rand.NextFloat(0.23f, 0.56f)) * Main.rand.NextFloat(0.4f, 2.5f), false, 8, 1.2f, Main.rand.NextBool() ? Color.Orange : Color.DarkOrange);
-            GeneralParticleHandler.SpawnParticle(spark);
-            LineParticle spark2 = new LineParticle(Projectile.Center, -Projectile.velocity.RotatedBy(Main.rand.NextFloat(-0.23f, -0.56f)) * Main.rand.NextFloat(0.4f, 2.5f), false, 8, 1.2f, Main.rand.NextBool() ? Color.Orange : Color.DarkOrange);
-            GeneralParticleHandler.SpawnParticle(spark2);
-            
+            for (int i = 0; i < 4; i++)
+            {
+                Vector2 linePos = i < 2 ? beamPos : beamPos2;
+                Vector2 lineVel = (Utils.DirectionFrom(linePos, Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.UnitX) * 40) * 3).RotatedByRandom(0.16f) * Main.rand.NextFloat(0.4f, 2.5f);
+
+                Particle beam = new CustomSpark(linePos, lineVel, "CalamityMod/Particles/SmallBloom", false, 11, 0.09f, Main.rand.NextBool() ? Color.Orange : Color.DarkOrange, new Vector2(2f, 1.5f), true, false, 0, false, false, 1.1f);
+                GeneralParticleHandler.SpawnParticle(beam);
+            }
+
             for (int i = 0; i <= 3; i++)
             {
                 Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 169 : 158, new Vector2(5, 5).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1.5f), 0, default, Main.rand.NextFloat(1.6f, 2.2f));
@@ -85,32 +115,10 @@ namespace CalamityMod.Projectiles.Ranged
                 Particle smoke = new MediumMistParticle(smokePos, smokeVel, Main.rand.NextBool() ? Color.Orange : Color.DarkOrange, Color.Black, Main.rand.NextFloat(0.7f, 1.9f) - velMulti, 225 - Main.rand.Next(60), 0.1f);
                 GeneralParticleHandler.SpawnParticle(smoke);
             }
+
         }
-
-        public float HelixTrailWidthFunction(float completionRatio) => Utils.GetLerpValue(1f, 0.4f, completionRatio, true) * 1.5f;
-        public Color HelixTrailColorFunction(float completionRatio) => Projectile.timeLeft < 105 ? Projectile.ai[0] == 1 ? Color.DarkOrange * (1f - completionRatio) : Color.Orange * (1f - completionRatio) : Color.Transparent;
-
         public override bool PreDraw(ref Color lightColor)
         {
-            if (HelixTrail is null)
-                HelixTrail = new PrimitiveTrail(HelixTrailWidthFunction, HelixTrailColorFunction);
-
-            // Draw a double helix trail
-            for (int direction = -1; direction <= 1; direction += 2)
-            {
-                List<Vector2> trailPositions = new List<Vector2>();
-                int trailPoints = ProjectileID.Sets.TrailCacheLength[Type];
-                // Add points adjusted for sine
-                for (int i = 0; i < Projectile.oldPos.Length; i++)
-                {
-                    if (Projectile.oldPos[i] == Vector2.Zero)
-                        break;
-
-                    Vector2 sinOffset = (Vector2.UnitY * direction * MathF.Sin(i * MathHelper.Pi * 0.125f) * 24f).RotatedBy(Projectile.oldRot[i]);
-                    trailPositions.Add(Projectile.oldPos[i] + sinOffset);
-                }
-                HelixTrail.Draw(trailPositions, Projectile.Size * 0.5f- Main.screenPosition, 60);
-            }
             return false;
         }
     }

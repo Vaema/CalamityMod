@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -29,10 +29,9 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.MaxUpdates = 3;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Projectile.RotatingHitboxCollision(targetHitbox.TopLeft(), targetHitbox.Size(), scale: Projectile.scale);
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Projectile.RotatingHitboxCollision(targetHitbox);
 
         public override void AI()
         {
@@ -58,18 +57,16 @@ namespace CalamityMod.Projectiles.Ranged
 
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
         }
-        
+
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             //Audio feedback for hitting the ring
             SoundEngine.PlaySound(PopSound, Projectile.Center);
-
-            target.AddBuff(BuffID.Wet, 240);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 ringScale = Projectile.Size / tex.Size() * Projectile.scale;
             Color ringColor = Color.Lerp(Color.DodgerBlue, Color.Blue, Projectile.Opacity) * Projectile.Opacity * 1.2f;
 
@@ -85,7 +82,7 @@ namespace CalamityMod.Projectiles.Ranged
             for (float i = 0f; i < totalDusts; i++)
             {
                 Vector2 ringSpeed = new Vector2((float)Math.Cos(i / totalDusts * MathHelper.TwoPi), (float)Math.Sin(i / totalDusts * MathHelper.TwoPi) * 0.5f).RotatedBy(Projectile.rotation) * 4f * Projectile.scale;
-                Dust droplets = Dust.NewDustPerfect(Projectile.Center, 211, ringSpeed, 100);
+                Dust droplets = Dust.NewDustPerfect(Projectile.Center, DustID.Wet, ringSpeed, 100);
                 droplets.noGravity = true;
             }
         }

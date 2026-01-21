@@ -1,5 +1,5 @@
-﻿using CalamityMod.Items.Materials;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 30;
             Item.height = 38;
-            Item.value = CalamityGlobalItem.Rarity11BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.accessory = true;
         }
@@ -27,6 +27,7 @@ namespace CalamityMod.Items.Accessories
             player.GetDamage<ThrowingDamageClass>() += 0.12f;
             player.Calamity().rogueVelocity += 0.15f;
             player.Calamity().blunderBooster = true;
+            player.Calamity().blunderBoosterVisibility = !hideVisual;
             player.Calamity().stealthGenStandstill += 0.1f;
             player.Calamity().stealthGenMoving += 0.1f;
         }
@@ -38,7 +39,7 @@ namespace CalamityMod.Items.Accessories
             CreateRecipe().
                 AddIngredient<PlaguedFuelPack>().
                 AddIngredient<EffulgentFeather>(8).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

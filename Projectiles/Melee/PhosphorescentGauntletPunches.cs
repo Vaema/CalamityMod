@@ -31,7 +31,7 @@ namespace CalamityMod.Projectiles.Melee
         public const float LungeSpeed = 19f;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 14;
+            Main.projFrames[Type] = 14;
         }
 
         public override void SetDefaults()
@@ -73,7 +73,9 @@ namespace CalamityMod.Projectiles.Melee
 
         internal void ReelBack()
         {
-            Owner.GiveIFrames(PhosphorescentGauntlet.OnHitIFrames);
+            // 17APR2024: Ozzatron: Phosphorescent Gauntlet gives iframes when striking enemies in a similar manner to a bonk dash.
+            // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
+            Owner.GiveUniversalIFrames(PhosphorescentGauntlet.OnHitIFrames);
 
             // Create some visual effects.
             if (!Main.dedServ)
@@ -83,7 +85,7 @@ namespace CalamityMod.Projectiles.Melee
                 Vector2 topRight = Projectile.Center + Projectile.velocity.RotatedBy(MathHelper.PiOver2) * 40f;
                 foreach (Vector2 spawnPosition in new BezierCurve(topLeft, top, topRight).GetPoints(50))
                 {
-                    Dust sulphurousAcid = Dust.NewDustPerfect(spawnPosition + Projectile.velocity * 16f, (int)CalamityDusts.SulfurousSeaAcid);
+                    Dust sulphurousAcid = Dust.NewDustPerfect(spawnPosition + Projectile.velocity * 16f, (int)CalamityDusts.SulphurousSeaAcid);
                     sulphurousAcid.velocity = Projectile.velocity * 4f;
                     sulphurousAcid.noGravity = true;
                     sulphurousAcid.scale = 1.2f;
@@ -115,7 +117,7 @@ namespace CalamityMod.Projectiles.Melee
             Vector2 rotatedHandPosition = player.RotatedRelativePoint(player.position + handOffset, true);
             for (int i = 0; i < 4; i++)
             {
-                Dust dust = Dust.NewDustDirect(player.Center, 0, 0, (int)CalamityDusts.SulfurousSeaAcid, 0f, 0f, 150, default, 1.3f);
+                Dust dust = Dust.NewDustDirect(player.Center, 0, 0, (int)CalamityDusts.SulphurousSeaAcid, 0f, 0f, 150, default, 1.3f);
                 dust.position = rotatedHandPosition;
                 dust.velocity = Vector2.Zero;
                 dust.noGravity = true;
@@ -139,7 +141,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.frame++;
 
                 // Die at the end of the final punch.
-                if (Projectile.frame >= Main.projFrames[Projectile.type])
+                if (Projectile.frame >= Main.projFrames[Type])
                     Projectile.Kill();
             }
         }
@@ -156,8 +158,8 @@ namespace CalamityMod.Projectiles.Melee
         // Manual drawing is used to correct the origin of the projectile when drawn.
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D punchTexture = ModContent.Request<Texture2D>(Texture).Value;
-            Rectangle frame = punchTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
+            Texture2D punchTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            Rectangle frame = punchTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;
             SpriteEffects directionEffect = Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
             Main.EntitySpriteDraw(punchTexture, Projectile.Center - Main.screenPosition, frame, lightColor, Projectile.rotation, origin, Projectile.scale, directionEffect, 0);

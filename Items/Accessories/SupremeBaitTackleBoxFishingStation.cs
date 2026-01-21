@@ -12,26 +12,24 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 46;
             Item.height = 52;
-            Item.value = CalamityGlobalItem.Rarity4BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.accessory = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.fishingSkill += 80;
+            player.fishingSkill += 50;
             player.accFishingLine = true;
             player.accTackleBox = true;
             player.accLavaFishing = true;
             player.Calamity().fishingStation = true;
-            player.sonarPotion = true;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient(ItemID.LavaproofTackleBag).
-                AddIngredient(ItemID.SonarPotion, 5).
                 AddIngredient(ItemID.MasterBait, 5).
                 AddIngredient<MolluskHusk>(5).
                 AddTile(TileID.Anvils).

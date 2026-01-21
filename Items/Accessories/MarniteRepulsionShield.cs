@@ -1,21 +1,13 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.Projectiles.Typeless;
+﻿using System;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
-using System.Collections.Generic;
-using System.Linq;
-using static CalamityMod.CalamityUtils;
-using CalamityMod.Items.Potions.Alcohol;
 
 namespace CalamityMod.Items.Accessories
 {
     [AutoloadEquip(EquipType.Back)]
-    //Its not like its a renamed version of the bayonet, but i put this here more as a way to "refund" the item, so it doesnt end up rotting as an unloaded item.
+    //It's not like it's a renamed version of the bayonet, but I put this here more as a way to "refund" the item, so it doesnt end up rotting as an unloaded item.
     [LegacyName("MarniteBayonet")]
     public class MarniteRepulsionShield : ModItem, ILocalizedModType
     {
@@ -25,9 +17,9 @@ namespace CalamityMod.Items.Accessories
             Item.width = 24;
             Item.height = 30;
             Item.rare = ItemRarityID.Blue;
-            Item.value = CalamityGlobalItem.Rarity1BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.accessory = true;
-            Item.defense = 2;
+            Item.defense = 3;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -37,12 +29,11 @@ namespace CalamityMod.Items.Accessories
 
             if (player.whoAmI == Main.myPlayer)
             {
-                int baseDamage = player.ApplyArmorAccDamageBonusesTo(5);
                 var source = player.GetSource_Accessory(Item);
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<MarniteRepulsionHitbox>()] < 1)
                 {
-                    var hitbox = Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, ModContent.ProjectileType<MarniteRepulsionHitbox>(), baseDamage, 10f, Main.myPlayer);
-                    hitbox.originalDamage = baseDamage;
+                    var hitbox = Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, ModContent.ProjectileType<MarniteRepulsionHitbox>(), 5, 12f, Main.myPlayer);
+                    hitbox.originalDamage = 5;
                 }
             }
         }
@@ -91,7 +82,10 @@ namespace CalamityMod.Items.Accessories
             Projectile.penetrate = -1;
             Projectile.timeLeft = 700;
             Projectile.tileCollide = false;
+            Projectile.ArmorPenetration = 20;
             Projectile.netImportant = true;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -115,7 +109,7 @@ namespace CalamityMod.Items.Accessories
 
                     for (int i = 0; i < 5; i++)
                     {
-                        Dust dust = Dust.NewDustPerfect(dustOrigin, 229, dustVelocity, 120, Scale: Main.rand.NextFloat(0.6f, 1f));
+                        Dust dust = Dust.NewDustPerfect(dustOrigin, DustID.Vortex, dustVelocity, 120, Scale: Main.rand.NextFloat(0.6f, 1f));
                         dust.noGravity = true;
                         dustOrigin += dustOriginOffset;
                     }
@@ -127,7 +121,7 @@ namespace CalamityMod.Items.Accessories
         }
 
         public override bool? CanHitNPC(NPC target)
-        { 
+        {
             //Only enemies that are behind the player (shouldn't happen but just in case
             if (Math.Sign((Owner.Center - target.Center).X) != Owner.direction)
                 return false;

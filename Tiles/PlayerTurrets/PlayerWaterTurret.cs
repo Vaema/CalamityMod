@@ -1,7 +1,7 @@
-﻿using CalamityMod.Items.Placeables.PlaceableTurrets;
-using CalamityMod.TileEntities;
+﻿using CalamityMod.TileEntities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent.ObjectInteractions;
@@ -19,6 +19,8 @@ namespace CalamityMod.Tiles.PlayerTurrets
         public const int OriginOffsetX = 1;
         public const int OriginOffsetY = 1;
         public const int SheetSquare = 18;
+
+        public Asset<Texture2D> HeadTexture;
 
         public override void SetStaticDefaults()
         {
@@ -48,7 +50,7 @@ namespace CalamityMod.Tiles.PlayerTurrets
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 226);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Electric);
             return false;
         }
 
@@ -70,7 +72,7 @@ namespace CalamityMod.Tiles.PlayerTurrets
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
             Tile t = Main.tile[i, j];
-            if (t.TileFrameX != 36 || t.TileFrameY != 0)
+            if (t.TileFrameX != 36 || t.TileFrameY != 0 || t.IsTileActuallyInvisible())
                 return;
 
             TEPlayerWaterTurret te = CalamityUtils.FindTileEntity<TEPlayerWaterTurret>(i, j, Width, Height, SheetSquare);
@@ -79,11 +81,12 @@ namespace CalamityMod.Tiles.PlayerTurrets
             int drawDirection = te.Direction;
             Color drawColor = Lighting.GetColor(i, j);
 
-            Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Tiles/PlayerTurrets/WaterTurretHead").Value;
+            HeadTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/PlayerTurrets/WaterTurretHead");
+            Texture2D tex = HeadTexture.Value;
             Vector2 screenOffset = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + screenOffset;
             drawOffset.Y -= 2f;
-            drawOffset.X += (drawDirection == -1 ? -10f : 2f) -2f;
+            drawOffset.X += (drawDirection == -1 ? -10f : 2f) - 2f;
 
             SpriteEffects sfx = drawDirection == -1 ? SpriteEffects.FlipVertically : SpriteEffects.None;
             spriteBatch.Draw(tex, drawOffset, null, drawColor, te.Angle, tex.Size() * 0.5f, 1f, sfx, 0.0f);

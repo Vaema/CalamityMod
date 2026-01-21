@@ -1,75 +1,150 @@
+﻿using System.Linq;
+using CalamityMod.Graphics.Primitives;
+using CalamityMod.Particles;
+using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Graphics.Shaders;
+using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Magic
 {
-    public class SHPL : ModProjectile, ILocalizedModType
+    public class SHPL : ModProjectile, ILocalizedModType, IPixelatedPrimitiveRenderer
     {
         public new string LocalizationCategory => "Projectiles.Magic";
-        public override string Texture => "CalamityMod/Projectiles/LaserProj";
+
+        public bool ShouldStopAndDie
+        {
+            get => Projectile.ai[1] == 1f;
+            set => Projectile.ai[1] = value.ToInt();
+        }
+
+        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+
+        public GeneralDrawLayer LayerToRenderTo => GeneralDrawLayer.BeforeProjectiles;
+
+        public override void SetStaticDefaults()
+        {
+            ProjectileID.Sets.TrailCacheLength[Type] = 14;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+        }
 
         public override void SetDefaults()
         {
             Projectile.width = 5;
             Projectile.height = 5;
+            Projectile.scale = 1.85f;
             Projectile.friendly = true;
-            Projectile.alpha = 255;
-            Projectile.penetrate = 1;
             Projectile.extraUpdates = 3;
             Projectile.timeLeft = 600;
+            Projectile.penetrate = -1;
             Projectile.DamageType = DamageClass.Magic;
         }
 
+        public override bool? CanDamage() => !ShouldStopAndDie;
+
         public override void AI()
         {
-            if (Projectile.alpha > 0)
+            // 12MAY2025: fryzahh:
+            // This is made so that when hitting targets or tiles, the oldPos array can properly update so the laser appears to 
+            // naturally dissipate entirely before despawning. Of course, it's also coded so that the laser stops dealing damage 
+            // entirely once this is done to avoid hitting targets multiple times, so functionally the projectile remains the same
+            // and this change should have little to no effect on gameplay. If it does, ping me about it.
+            if (ShouldStopAndDie)
             {
-                Projectile.alpha -= 25;
+                Projectile.velocity *= 0f;
+                if (Projectile.oldPos.Last() == Projectile.position)
+                {
+                    Projectile.scale -= 0.15f;
+                    if (Projectile.scale <= 0f)
+                    {
+                        Projectile.Kill();
+                        return;
+                    }
+                }
+
+                // Spawn a bunch of dusts at the dissipation point.
+                for (int i = 0; i < 2; i++)
+                {
+                    Vector2 dustVelocity = Main.rand.NextVector2Circular(1f, 1f) * 6f;
+                    float dustScale = Main.rand.NextFloat(1.8f, 2.4f);
+                    Color dustColor = Color.Lerp(SHPB.FindColorForSoul((int)Projectile.ai[0]), Color.White, Main.rand.NextFloat());
+
+                    Dust dust = Dust.NewDustDirect(Projectile.Center, 1, 1, DustID.TintableDustLighted, dustVelocity.X, dustVelocity.Y, 0, dustColor, dustScale);
+                    dust.noGravity = true;
+                    dust.noLight = false;
+                    dust.noLightEmittence = false;
+                }
             }
-            if (Projectile.alpha < 0)
-            {
-                Projectile.alpha = 0;
-            }
+
+            Projectile.rotation += MathHelper.TwoPi / 60f;
             Lighting.AddLight((int)Projectile.Center.X / 16, (int)Projectile.Center.Y / 16, 0.5f, 0.2f, 0.5f);
             float timerIncr = 3f;
-            if (Projectile.ai[1] == 0f)
-            {
-                Projectile.localAI[0] += timerIncr;
-                if (Projectile.localAI[0] > 100f)
-                {
-                    Projectile.localAI[0] = 100f;
-                }
-            }
-            else
-            {
-                Projectile.localAI[0] -= timerIncr;
-                if (Projectile.localAI[0] <= 0f)
-                {
-                    Projectile.Kill();
-                    return;
-                }
-            }
+            Projectile.localAI[0] += timerIncr;
+            if (Projectile.localAI[0] > 100f)
+                Projectile.localAI[0] = 100f;
         }
 
-        public override Color? GetAlpha(Color lightColor) => new Color(255, Main.DiscoG, 155, Projectile.alpha);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => ShouldStopAndDie = true;
 
-        public override bool PreDraw(ref Color lightColor) => Projectile.DrawBeam(100f, 3f, lightColor);
+        public override bool OnTileCollide(Vector2 oldVelocity)
+        {
+            ShouldStopAndDie = true;
+            return false;
+        }
 
         public override void OnKill(int timeLeft)
         {
-            int dustAmt = Main.rand.Next(3, 7);
-            for (int d = 0; d < dustAmt; d++)
-            {
-                int dustType = Utils.SelectRandom(Main.rand, new int[]
-                {
-                    246,
-                    73,
-                    187
-                });
-                int idx = Dust.NewDust(Projectile.Center - Projectile.velocity / 2f, 0, 0, dustType, 0f, 0f, 100, default, 2.1f);
-                Main.dust[idx].velocity *= 2f;
-                Main.dust[idx].noGravity = true;
-            }
+            AltLineParticle line = new(Projectile.Center, -Projectile.velocity.RotatedByRandom(MathHelper.Pi / 6f), false, 20, 1f, SHPB.FindColorForSoul((int)Projectile.ai[0]));
+            GeneralParticleHandler.SpawnParticle(line);
+        }
+
+        public override bool PreDraw(ref Color lightColor) => false;
+
+        public override void PostDraw(Color lightColor)
+        {
+            if (!ShouldStopAndDie)
+                return;
+
+            // Draw a star over the collision point while dissipting.
+            Texture2D starTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/FullStar").Value;
+            Vector2 drawPosition = Projectile.Center - Main.screenPosition;
+
+            Main.spriteBatch.SetBlendState(BlendState.Additive);
+            Main.EntitySpriteDraw(starTexture, drawPosition, null, Color.White, Projectile.rotation, starTexture.Size() * 0.5f, Projectile.scale, 0);
+            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+        }
+
+        public float LaserWidthFunction(float completion, Vector2 vertexPos)
+        {
+            float maxBodyWidth = Projectile.scale * Projectile.width;
+            float scaleInterpolant = Utils.GetLerpValue(0.05f, 0.2f, completion, true) * Utils.GetLerpValue(0.95f, 0.8f, completion, true);
+            return maxBodyWidth * scaleInterpolant * Projectile.scale;
+        }
+
+        public float LaserCoreEnergyFunction(float completion, Vector2 vertexPos)
+        {
+            float maxBodyWidth = (Projectile.scale * Projectile.width) * 0.25f;
+            float scaleInterpolant = Utils.GetLerpValue(0.05f, 0.2f, completion, true) * Utils.GetLerpValue(0.95f, 0.8f, completion, true);
+            return maxBodyWidth * scaleInterpolant * Projectile.scale;
+        }
+
+        public Color LaserColorFunction(float completion, Vector2 vertexPos)
+        {
+            Color startColor = Color.Lerp(Color.White, SHPB.FindColorForSoul((int)Projectile.ai[0]), Utils.GetLerpValue(0f, 0.125f, completion, true));
+            Color bodyColor = Color.Lerp(startColor, SHPB.FindColorForSoul((int)Projectile.ai[0]), Utils.GetLerpValue(0.125f, 1f, completion, true));           
+            return Color.Lerp(startColor, bodyColor, completion);
+        }
+
+        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch, GeneralDrawLayer layer)
+        {
+            // Render the main trail for the body for the laser.
+            GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(LaserWidthFunction, LaserColorFunction, (_,_) => Projectile.Size * 0.5f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), Projectile.oldPos.Length * 2);
+
+            // Render a smaller, pure white trail in the same position to represent condensed energy in the core of the laser.
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(LaserCoreEnergyFunction, (_,_) => Color.White, (_,_) => Projectile.Size * 0.5f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), Projectile.oldPos.Length * 2);
         }
     }
 }

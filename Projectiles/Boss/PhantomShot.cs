@@ -1,11 +1,10 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.IO;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Boss
 {
@@ -42,7 +41,7 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.ai[1] = 1f;
                 SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
             }
-            Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + 1.57f;
+            Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + MathHelper.PiOver2;
             Projectile.localAI[0] += 1f;
             if (Projectile.localAI[0] > 9f)
             {
@@ -66,14 +65,6 @@ namespace CalamityMod.Projectiles.Boss
         public override Color? GetAlpha(Color lightColor)
         {
             return new Color(100, 250, 250, Projectile.alpha);
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (info.Damage <= 0)
-                return;
-
-            target.AddBuff(ModContent.BuffType<Nightwither>(), 80);
         }
     }
 }

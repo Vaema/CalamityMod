@@ -4,14 +4,19 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class HallowedRune : ModItem, ILocalizedModType
+    public class HallowedRune : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static int RegenBoost = 3;
+        public static int DefenseBoost = 5;
+        public static float SummonDamageBoost = 0.1f;
+
         public override void SetDefaults()
         {
             Item.width = 26;
             Item.height = 26;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.accessory = true;
         }

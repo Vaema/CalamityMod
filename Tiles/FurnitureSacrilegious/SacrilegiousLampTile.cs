@@ -1,19 +1,23 @@
 ﻿using CalamityMod.Items.Placeables.FurnitureSacrilegious;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.FurnitureSacrilegious
 {
     public class SacrilegiousLampTile : ModTile
     {
+        public Asset<Texture2D> FlameTexture;
+
         public override void SetStaticDefaults() => this.SetUpLamp(ModContent.ItemType<SacrilegiousLamp>(), true);
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 60, 0f, 0f, 1, new Color(255, 255, 255), 1f);
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 8, 0f, 0f, 1, new Color(100, 100, 100), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.RedTorch, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Iron, 0f, 0f, 1, new Color(100, 100, 100), 1f);
             return false;
         }
 
@@ -40,12 +44,13 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
 
         public override void HitWire(int i, int j)
         {
-            CalamityUtils.LightHitWire(Type, i, j, 1, 3);
+            FurnitureCommon.LightHitWire(Type, i, j, 1, 3);
         }
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            CalamityUtils.DrawFlameEffect(ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureSacrilegious/SacrilegiousLampTileFlame").Value, i, j);
+            FlameTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureSacrilegious/SacrilegiousLampTileFlame");
+            CalamityUtils.DrawFlameEffect(FlameTexture.Value, i, j);
         }
     }
 }

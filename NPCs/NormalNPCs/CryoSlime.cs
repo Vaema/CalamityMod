@@ -5,13 +5,14 @@ using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
+
 namespace CalamityMod.NPCs.NormalNPCs
 {
     public class CryoSlime : ModNPC
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 2;
+            Main.npcFrameCount[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -21,11 +22,11 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.damage = 30;
             NPC.width = 40;
             NPC.height = 30;
-            NPC.defense = 8;
-            NPC.lifeMax = 120;
-            NPC.knockBackResist = 0f;
+            NPC.defense = 24;
+            NPC.lifeMax = 280;
+            NPC.knockBackResist = 0.6f;
             AnimationType = NPCID.CorruptSlime;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(silver: 2);
             NPC.alpha = 50;
             NPC.lavaImmune = false;
             NPC.noGravity = false;
@@ -42,10 +43,10 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
-            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[] 
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.UndergroundSnow,
-				new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.CryoSlime")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.CryoSlime")
             });
         }
 
@@ -63,14 +64,13 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             if (hurtInfo.Damage > 0)
             {
-                target.AddBuff(BuffID.Frostburn, 120, true);
-                target.AddBuff(BuffID.Chilled, 90, true);
+                target.AddBuff(BuffID.Frostburn, 180);
+                target.AddBuff(BuffID.Chilled, 90);
             }
         }
 
         public override void HitEffect(NPC.HitInfo hit)
         {
-            // TODO -- This dust was an invalid dust. Replaced with a random dust.
             int dustType = 91;
             for (int k = 0; k < 5; k++)
             {

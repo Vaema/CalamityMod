@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityMod.Projectiles.Healing;
+
 namespace CalamityMod.Projectiles.Rogue
 {
     public class BloodsoakedCrashax : ModProjectile, ILocalizedModType
@@ -17,8 +19,8 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 6;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -47,7 +49,7 @@ namespace CalamityMod.Projectiles.Rogue
             else
             {
                 // Gravity
-                Projectile.velocity.Y += 0.11f;
+                Projectile.velocity.Y += 0.07f;
 
                 // Cap velocity.
                 speed = Projectile.velocity.Length();
@@ -85,26 +87,27 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            OnHitEffects(!target.canGhostHeal || Main.player[Projectile.owner].moonLeech);
+            target.AddBuff(ModContent.BuffType<Laceration>(), 120);
+            if (target.lifeMax > 5)
+                OnHitEffects(hit.Damage);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            OnHitEffects(Main.player[Projectile.owner].moonLeech);
+            target.AddBuff(ModContent.BuffType<Laceration>(), 120);
+            OnHitEffects(info.Damage);
         }
 
-        private void OnHitEffects(bool cannotLifesteal)
+        private void OnHitEffects(int damage)
         {
-            grind += 5; //THE GRIND NEVER STOPS
-            if (grind > 15)
-                grind = 15; // except when it's too much
+            grind += 6; //THE GRIND NEVER STOPS
+            if (grind > 18)
+                grind = 18; // except when it's too much
 
             if (Projectile.Calamity().stealthStrike && Projectile.owner == Main.myPlayer) //stealth strike attack
             {
                 int projID = ModContent.ProjectileType<Blood>();
-                int bloodDamage = Projectile.damage;
-                float bloodKB = 1f;
-                int stealth = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, projID, bloodDamage, bloodKB, Projectile.owner, 1f, 0.85f + Main.rand.NextFloat() * 1.15f);
+                int stealth = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.UnitX.RotatedByRandom(MathHelper.Pi) * 4f, projID, (int)(Projectile.damage * 0.5f), 1f, Projectile.owner, 1f, 0.85f + Main.rand.NextFloat() * 1.15f);
                 if (stealth.WithinBounds(Main.maxProjectiles))
                 {
                     Main.projectile[stealth].DamageType = RogueDamageClass.Instance;
@@ -112,17 +115,21 @@ namespace CalamityMod.Projectiles.Rogue
                 }
             }
 
-            if (cannotLifesteal || Main.rand.NextBool()) //canGhostHeal be like lol
-                return;
+            float orbAmount = Projectile.Calamity().stealthStrike ? 3 : Projectile.penetrate % 2;
+            if (orbAmount > 0)
+            {
+                float spreadAmount = MathHelper.ToRadians(360);
+                for (var i = 0; i < orbAmount; i++)
+                {
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.One.RotatedByRandom(spreadAmount) * 2f * Main.rand.NextFloat(0.75f, 1.25f), ModContent.ProjectileType<BloodstoneHealOrb>(), 10, 0f, Projectile.owner);
 
-            Player player = Main.player[Projectile.owner];
-            player.statLife += 1;
-            player.HealEffect(1);
+                }
+            }
         }
 
         public override bool PreDraw(ref Color lightColor) //afterimages
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

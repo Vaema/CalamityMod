@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -20,21 +21,21 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = Item.useAnimation = 13;
+            Item.useAnimation = Item.useTime = 13;
             Item.autoReuse = true;
             Item.UseSound = SoundID.Item1;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.shoot = ModContent.ProjectileType<WrathwingSpear>();
             Item.shootSpeed = 28f;
             Item.DamageType = RogueDamageClass.Instance;
         }
 
-		public override float StealthDamageMultiplier => 0.9f;
+        public override float StealthDamageMultiplier => 0.9f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            int proj = Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, type, damage, knockback, player.whoAmI);
+            int proj = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
             if (proj.WithinBounds(Main.maxProjectiles))
                 Main.projectile[proj].Calamity().stealthStrike = player.Calamity().StealthStrikeAvailable();
             return false;

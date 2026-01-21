@@ -1,10 +1,10 @@
-﻿using CalamityMod.World;
+﻿using System.IO;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.IO;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
-using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
@@ -59,10 +59,19 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         }
         public Player Target => Main.player[NPC.target];
         public SepulcherArmLimb[] Limbs = new SepulcherArmLimb[4];
+
+        public static Asset<Texture2D> HandTexture;
+        public static Asset<Texture2D> ForearmTexture;
+
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.SepulcherHead.DisplayName");
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
+            if (!Main.dedServ)
+            {
+                HandTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SupremeCalamitas/SepulcherHand", AssetRequestMode.AsyncLoad);
+                ForearmTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SupremeCalamitas/SepulcherForearm", AssetRequestMode.AsyncLoad);
+            }
         }
 
         public override void SetDefaults()
@@ -76,8 +85,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             global.DR = 0.999999f;
             global.unbreakableDR = true;
             NPC.lifeMax = CalamityWorld.revenge ? 345000 : 300000;
-            double HPBoost = CalamityConfig.Instance.BossHealthBoost * 0.01;
-            NPC.lifeMax += (int)(NPC.lifeMax * HPBoost);
             NPC.aiStyle = AIType = -1;
             NPC.knockBackResist = 0f;
             NPC.scale *= Main.expertMode ? 1.35f : 1.2f;
@@ -176,9 +183,9 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor_Unused)
         {
-            Texture2D armTexture = TextureAssets.Npc[NPC.type].Value;
-            Texture2D foreArmTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SupremeCalamitas/SepulcherForearm").Value;
-            Texture2D handTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SupremeCalamitas/SepulcherHand").Value;
+            Texture2D armTexture = TextureAssets.Npc[Type].Value;
+            Texture2D foreArmTexture = ForearmTexture.Value;
+            Texture2D handTexture = HandTexture.Value;
 
             Vector2 forearmDrawPosition = Limbs[0].Center - screenPos;
             Color drawColor = Lighting.GetColor((int)(Limbs[0].Center.X / 16), (int)(Limbs[0].Center.Y / 16));
@@ -199,7 +206,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         {
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Vector2 forearmGoreSpawnPosition = Limbs[0].Center + Main.rand.NextVector2Circular(6f, 6f);
                     Vector2 armGoreSpawnPosition = Limbs[1].Center + Main.rand.NextVector2Circular(6f, 6f);

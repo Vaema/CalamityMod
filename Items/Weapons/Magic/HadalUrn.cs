@@ -1,5 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.FurnitureVoid;
+using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -18,15 +18,14 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 58;
             Item.height = 38;
-            Item.damage = 30;
+            Item.damage = 37;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 10;
-            Item.useTime = 16;
-            Item.useAnimation = 16;
+            Item.useTime = Item.useAnimation = 20;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2.75f;
-            Item.value = CalamityGlobalItem.Rarity7BuyPrice;
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.Calamity().donorItem = true;
             Item.UseSound = ShootSound;
@@ -42,15 +41,14 @@ namespace CalamityMod.Items.Weapons.Magic
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             SoundEngine.PlaySound(SoundID.Item103 with { Volume = SoundID.Item103.Volume }, player.Center);
-            Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, ModContent.ProjectileType<HadalUrnHoldout>(), damage, knockback, player.whoAmI, 12);
+            Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<HadalUrnHoldout>(), damage, knockback, player.whoAmI, 12);
             return false;
         }
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient<BlackAnurian>().
-                AddIngredient<SmoothVoidstone>(20).
-                AddIngredient<Lumenyl>(5).
+                AddIngredient<Voidstone>(20).
                 AddIngredient<DepthCells>(15).
                 AddIngredient(ItemID.Bone, 10).
                 AddTile(TileID.MythrilAnvil).

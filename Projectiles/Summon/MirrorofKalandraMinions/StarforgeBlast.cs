@@ -1,11 +1,11 @@
-﻿using CalamityMod.Items.Weapons.Summon;
+﻿using System;
+using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System;
 
 namespace CalamityMod.Projectiles.Summon.MirrorofKalandraMinions
 {
@@ -51,7 +51,7 @@ namespace CalamityMod.Projectiles.Summon.MirrorofKalandraMinions
             {
                 float angle = MathHelper.TwoPi / dustAmount * dustIndex;
                 Vector2 velocity = angle.ToRotationVector2() * Main.rand.NextFloat(2f, 15f);
-                Dust boomDust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(MirrorofKalandra.Purple_BlastSize / 2, MirrorofKalandra.Purple_BlastSize / 2), 272, velocity);
+                Dust boomDust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(MirrorofKalandra.Purple_BlastSize / 2, MirrorofKalandra.Purple_BlastSize / 2), DustID.WitherLightning, velocity);
                 boomDust.noGravity = true;
                 boomDust.velocity *= .8f;
                 boomDust.scale = velocity.Length() * .08f;

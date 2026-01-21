@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
-using CalamityMod.NPCs.SulphurousSea;
-using CalamityMod.Items.Potions;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.Utilities;
 
@@ -114,11 +112,11 @@ namespace CalamityMod
         #region Bestiary Text
         public static string FirstKillText = CalamityUtils.GetTextValue("Condition.Drops.FirstKill");
         public static string MechBossText = CalamityUtils.GetTextValue("Condition.Drops.MechBoss");
+        public static string CataclysmKilledLast = CalamityUtils.GetTextValue("Condition.Drops.CataclysmKilledLast");
+        public static string CatastropheKilledLast = CalamityUtils.GetTextValue("Condition.Drops.CatastropheKilledLast");
         public static string CynosureText = CalamityUtils.GetTextValue("Condition.Drops.Cynosure");
 
-        public static string ProvidenceHallowText = CalamityUtils.GetTextValue("Condition.Drops.ProvidenceHallow");
-        public static string ProvidenceUnderworldText = CalamityUtils.GetTextValue("Condition.Drops.ProvidenceUnderworld");
-        public static string ProvidenceNightText = CalamityUtils.GetTextValue("Condition.Drops.ProvidenceNight");
+        public static string ProvidenceEnragedText = CalamityUtils.GetTextValue("Condition.Drops.ProvidenceEnraged");
         public static string ProvidenceChallengeText = CalamityUtils.GetTextValue("Condition.Drops.ProvidenceChallenge");
 
         #endregion
@@ -212,16 +210,15 @@ namespace CalamityMod
 
             int r = wormHead.whoAmI;
             float minDist = 1E+06f;
-            for (int i = 0; i < Main.npc.Length; ++i)
+            foreach (NPC n in Main.ActiveNPCs)
             {
-                NPC n = Main.npc[i];
-                if (n != null && n.active && idsToCheck.Contains(n.type))
+                if (idsToCheck.Contains(n.type))
                 {
                     float dist = (n.Center - playerPos).Length();
                     if (dist < minDist)
                     {
                         minDist = dist;
-                        r = i;
+                        r = n.whoAmI;
                     }
                 }
             }
@@ -283,42 +280,324 @@ namespace CalamityMod
         }
 
         /// <summary>
-        /// Adds all the common potions for fishing crates, alongside scaling mana and regen potions
+        /// Adds all the common drops for Biome Crates.
         /// </summary>
         /// <param name="loot">The ILoot interface for the loot table.</param>
-        public static void AddCratePotionRules(this ILoot loot)
+        /// <param name="hardMode">Whether or not the crate is considered a hardmode crate.</param>
+        public static void AddBiomeCrateLootRules(this ILoot loot, bool hardMode = true)
         {
-            loot.Add(ItemID.ObsidianSkinPotion, 10, 1, 3);
-            loot.Add(ItemID.SwiftnessPotion, 10, 1, 3);
-            loot.Add(ItemID.IronskinPotion, 10, 1, 3);
-            loot.Add(ItemID.NightOwlPotion, 10, 1, 3);
-            loot.Add(ItemID.ShinePotion, 10, 1, 3);
-            loot.Add(ItemID.MiningPotion, 10, 1, 3);
-            loot.Add(ItemID.HeartreachPotion, 10, 1, 3);
-            loot.Add(ItemID.TrapsightPotion, 10, 1, 3); // Dangersense Potion
+            if (hardMode)
+                loot.AddHardmodeOresToCrates(HardmodeCrateType.Biome);
+            else
+            {
+                // Pre-Hardmode Ore/Bar loot pools
+                // 20-35 Ores @ 14.29%; Individually 1.79%
+                IItemDropRule[] phmOres = new IItemDropRule[8]
+                {
+                    ItemDropRule.NotScalingWithLuck(ItemID.CopperOre, 1, 20, 35),
+                    ItemDropRule.NotScalingWithLuck(ItemID.TinOre, 1, 20, 35),
+                    ItemDropRule.NotScalingWithLuck(ItemID.IronOre, 1, 20, 35),
+                    ItemDropRule.NotScalingWithLuck(ItemID.LeadOre, 1, 20, 35),
+                    ItemDropRule.NotScalingWithLuck(ItemID.SilverOre, 1, 20, 35),
+                    ItemDropRule.NotScalingWithLuck(ItemID.TungstenOre, 1, 20, 35),
+                    ItemDropRule.NotScalingWithLuck(ItemID.GoldOre, 1, 20, 35),
+                    ItemDropRule.NotScalingWithLuck(ItemID.PlatinumOre, 1, 20, 35)
+                };
+                loot.Add(new OneFromRulesRule(7, phmOres));
 
-            // Define all the loot rules for the potion types
-            var supremePots = new OneFromOptionsNotScaledWithLuckDropRule(1, 1, ModContent.ItemType<SupremeHealingPotion>(), ModContent.ItemType<SupremeManaPotion>());
-            var superPots = new OneFromOptionsNotScaledWithLuckDropRule(1, 1, ItemID.SuperHealingPotion, ItemID.SuperManaPotion);
-            var greaterPots = new OneFromOptionsNotScaledWithLuckDropRule(1, 1, ItemID.GreaterHealingPotion, ItemID.GreaterManaPotion);
-            var regularPots = new OneFromOptionsNotScaledWithLuckDropRule(1, 1, ItemID.HealingPotion, ItemID.ManaPotion);
-            var lesserPots = new OneFromOptionsNotScaledWithLuckDropRule(1, 1, ItemID.LesserHealingPotion, ItemID.LesserManaPotion);
+                // 6-16 Bars @ 25%; Individually 4.17%
+                IItemDropRule[] phmBars = new IItemDropRule[6]
+                {
+                    ItemDropRule.NotScalingWithLuck(ItemID.IronBar, 1, 6, 16),
+                    ItemDropRule.NotScalingWithLuck(ItemID.LeadBar, 1, 6, 16),
+                    ItemDropRule.NotScalingWithLuck(ItemID.SilverBar, 1, 6, 16),
+                    ItemDropRule.NotScalingWithLuck(ItemID.TungstenBar, 1, 6, 16),
+                    ItemDropRule.NotScalingWithLuck(ItemID.GoldBar, 1, 6, 16),
+                    ItemDropRule.NotScalingWithLuck(ItemID.PlatinumBar, 1, 6, 16)
+                };
+                loot.Add(new OneFromRulesRule(4, phmBars));
+            }
 
-            // Chained LeadingConditionRules achieve the equivalent of "if killed X, else if killed Y, else if killed Z, else..."
-            var lcrSupremePotion = loot.DefineConditionalDropSet(() => DownedBossSystem.downedDoG);
-            var lcrSuperPotion = new LeadingConditionRule(If(() => DownedBossSystem.downedProvidence));
-            var lcrGreaterPotion = new LeadingConditionRule(If(() => NPC.downedMechBossAny));
-            var lcrRegularPotion = new LeadingConditionRule(If(() => NPC.downedBoss3));
+            // 2-4 Buff Potions @ 25%; Individually 4.17%
+            loot.Add(new OneFromRulesRule(4, new IItemDropRule[6]
+            {
+                ItemDropRule.NotScalingWithLuck(ItemID.ObsidianSkinPotion, 1, 2, 4),
+                ItemDropRule.NotScalingWithLuck(ItemID.SpelunkerPotion, 1, 2, 4),
+                ItemDropRule.NotScalingWithLuck(ItemID.HunterPotion, 1, 2, 4),
+                ItemDropRule.NotScalingWithLuck(ItemID.GravitationPotion, 1, 2, 4),
+                ItemDropRule.NotScalingWithLuck(ItemID.MiningPotion, 1, 2, 4),
+                ItemDropRule.NotScalingWithLuck(ItemID.HeartreachPotion, 1, 2, 4)
+            }));
 
-            // Actually chain all the LCRs together
-            lcrSupremePotion.Add(supremePots);
-            lcrSupremePotion.OnFailedConditions(lcrSuperPotion);
-            lcrSuperPotion.Add(superPots);
-            lcrSuperPotion.OnFailedConditions(lcrGreaterPotion);
-            lcrGreaterPotion.Add(greaterPots);
-            lcrGreaterPotion.OnFailedConditions(lcrRegularPotion);
-            lcrRegularPotion.Add(regularPots);
-            lcrRegularPotion.OnFailedConditions(lesserPots);
+            // 5-17 (Regular) Recovery Potions @ 50%; 25% Healing 25% Mana
+            loot.Add(new OneFromRulesRule(2, new IItemDropRule[2]
+            {
+                ItemDropRule.NotScalingWithLuck(ItemID.HealingPotion, 1, 5, 17),
+                ItemDropRule.NotScalingWithLuck(ItemID.ManaPotion, 1, 5, 17)
+            }));
+
+            // 2-6 Bait @ 50%; 25% Master 25% Journeyman
+            loot.Add(new OneFromRulesRule(2, new IItemDropRule[2]
+            {
+                ItemDropRule.NotScalingWithLuck(ItemID.MasterBait, 1, 2, 6),
+                ItemDropRule.NotScalingWithLuck(ItemID.JourneymanBait, 1, 2, 6)
+            }));
+
+            // 5-12 Gold Coin @ 25%
+            loot.Add(ItemID.GoldCoin, 4, 5, 12);
+        }
+
+        /// <summary>
+        /// Adds (or re-adds) Hardmode Ores to crates with respect to Hardmode Progression rework<br/>
+        /// Drop rules replicate vanilla's rules.
+        /// </summary>
+        /// <param name="loot">The ILoot interface for the loot table.</param>
+        /// <param name="type">Type of crate: Mythril, Titanium, Biome</param>
+        public static void AddHardmodeOresToCrates(this ILoot loot, HardmodeCrateType type)
+        {
+            var adamantiteLCR = loot.DefineConditionalDropSet(AdamantiteCondition);
+            var mythrilLCR = new LeadingConditionRule(MythrilCondition);
+            if (type == HardmodeCrateType.Biome)
+            {
+                // Pre-Hardmode loot pools
+                // 20-35 Ores @ 7.14%; Individually 0.89%
+                IItemDropRule[] phmOres = new IItemDropRule[8]
+                {
+                    ItemDropRule.NotScalingWithLuck(ItemID.CopperOre, 1, 20, 35),
+                    ItemDropRule.NotScalingWithLuck(ItemID.TinOre, 1, 20, 35),
+                    ItemDropRule.NotScalingWithLuck(ItemID.IronOre, 1, 20, 35),
+                    ItemDropRule.NotScalingWithLuck(ItemID.LeadOre, 1, 20, 35),
+                    ItemDropRule.NotScalingWithLuck(ItemID.SilverOre, 1, 20, 35),
+                    ItemDropRule.NotScalingWithLuck(ItemID.TungstenOre, 1, 20, 35),
+                    ItemDropRule.NotScalingWithLuck(ItemID.GoldOre, 1, 20, 35),
+                    ItemDropRule.NotScalingWithLuck(ItemID.PlatinumOre, 1, 20, 35)
+                };
+                // 6-16 Bars @ 8.33%; Individually 1.39%
+                IItemDropRule[] phmBars = new IItemDropRule[6]
+                {
+                    ItemDropRule.NotScalingWithLuck(ItemID.IronBar, 1, 6, 16),
+                    ItemDropRule.NotScalingWithLuck(ItemID.LeadBar, 1, 6, 16),
+                    ItemDropRule.NotScalingWithLuck(ItemID.SilverBar, 1, 6, 16),
+                    ItemDropRule.NotScalingWithLuck(ItemID.TungstenBar, 1, 6, 16),
+                    ItemDropRule.NotScalingWithLuck(ItemID.GoldBar, 1, 6, 16),
+                    ItemDropRule.NotScalingWithLuck(ItemID.PlatinumBar, 1, 6, 16)
+                };
+
+                // Tier 3 loot pools
+                // 20-35 Ores @ 7.14%; Individually 1.19%
+                IItemDropRule[] hmOresThree = new IItemDropRule[6]
+                {
+                    ItemDropRule.NotScalingWithLuck(ItemID.CobaltOre, 1, 20, 35),
+                    ItemDropRule.NotScalingWithLuck(ItemID.PalladiumOre, 1, 20, 35),
+                    ItemDropRule.NotScalingWithLuck(ItemID.MythrilOre, 1, 20, 35),
+                    ItemDropRule.NotScalingWithLuck(ItemID.OrichalcumOre, 1, 20, 35),
+                    ItemDropRule.NotScalingWithLuck(ItemID.AdamantiteOre, 1, 20, 35),
+                    ItemDropRule.NotScalingWithLuck(ItemID.TitaniumOre, 1, 20, 35)
+                };
+                // 5-16 Bars @ 16.67%; Individually 2.78%
+                IItemDropRule[] hmBarsThree = new IItemDropRule[6]
+                {
+                    ItemDropRule.NotScalingWithLuck(ItemID.CobaltBar, 1, 5, 16),
+                    ItemDropRule.NotScalingWithLuck(ItemID.PalladiumBar, 1, 5, 16),
+                    ItemDropRule.NotScalingWithLuck(ItemID.MythrilBar, 1, 5, 16),
+                    ItemDropRule.NotScalingWithLuck(ItemID.OrichalcumBar, 1, 5, 16),
+                    ItemDropRule.NotScalingWithLuck(ItemID.AdamantiteBar, 1, 5, 16),
+                    ItemDropRule.NotScalingWithLuck(ItemID.TitaniumBar, 1, 5, 16)
+                };
+                var adamantiteDropsOres = new SequentialRulesNotScalingWithLuckRule(7, new OneFromRulesRule(2, hmOresThree), new OneFromRulesRule(1, phmOres));
+                var adamantiteDropsBars = new SequentialRulesNotScalingWithLuckRule(4, new OneFromRulesRule(3, 2, hmBarsThree), new OneFromRulesRule(1, phmBars));
+
+                // Tier 2 loot pools
+                // 20-35 Ores @ 7.14%; Individually 1.79%
+                IItemDropRule[] hmOresTwo = new IItemDropRule[4]
+                {
+                    ItemDropRule.NotScalingWithLuck(ItemID.CobaltOre, 1, 20, 35),
+                    ItemDropRule.NotScalingWithLuck(ItemID.PalladiumOre, 1, 20, 35),
+                    ItemDropRule.NotScalingWithLuck(ItemID.MythrilOre, 1, 20, 35),
+                    ItemDropRule.NotScalingWithLuck(ItemID.OrichalcumOre, 1, 20, 35)
+                };
+                // 5-16 Bars @ 16.67%; Individually 4.17%
+                IItemDropRule[] hmBarsTwo = new IItemDropRule[4]
+                {
+                    ItemDropRule.NotScalingWithLuck(ItemID.CobaltBar, 1, 5, 16),
+                    ItemDropRule.NotScalingWithLuck(ItemID.PalladiumBar, 1, 5, 16),
+                    ItemDropRule.NotScalingWithLuck(ItemID.MythrilBar, 1, 5, 16),
+                    ItemDropRule.NotScalingWithLuck(ItemID.OrichalcumBar, 1, 5, 16)
+                };
+                var mythrilDropsOres = new SequentialRulesNotScalingWithLuckRule(7, new OneFromRulesRule(2, hmOresTwo), new OneFromRulesRule(1, phmOres));
+                var mythrilDropsBars = new SequentialRulesNotScalingWithLuckRule(4, new OneFromRulesRule(3, 2, hmBarsTwo), new OneFromRulesRule(1, phmBars));
+
+                // Tier 1 loot pools
+                // 20-35 Ores @ 7.14%; Individually 3.57%
+                IItemDropRule[] hmOresOne = new IItemDropRule[2]
+                {
+                    ItemDropRule.NotScalingWithLuck(ItemID.CobaltOre, 1, 20, 35),
+                    ItemDropRule.NotScalingWithLuck(ItemID.PalladiumOre, 1, 20, 35)
+                };
+                // 5-16 Bars @ 16.67%; Individually 8.33%
+                IItemDropRule[] hmBarsOne = new IItemDropRule[2]
+                {
+                    ItemDropRule.NotScalingWithLuck(ItemID.CobaltBar, 1, 5, 16),
+                    ItemDropRule.NotScalingWithLuck(ItemID.PalladiumBar, 1, 5, 16)
+                };
+                var cobaltDropsOres = new SequentialRulesNotScalingWithLuckRule(7, new OneFromRulesRule(2, hmOresOne), new OneFromRulesRule(1, phmOres));
+                var cobaltDropsBars = new SequentialRulesNotScalingWithLuckRule(4, new OneFromRulesRule(3, 2, hmBarsOne), new OneFromRulesRule(1, phmBars));
+
+                adamantiteLCR.Add(adamantiteDropsOres);
+                adamantiteLCR.Add(adamantiteDropsBars);
+                adamantiteLCR.OnFailedConditions(mythrilLCR);
+                mythrilLCR.Add(mythrilDropsOres);
+                mythrilLCR.Add(mythrilDropsBars);
+                mythrilLCR.OnFailedConditions(cobaltDropsOres);
+                mythrilLCR.OnFailedConditions(cobaltDropsBars);
+            }
+            else if (type == HardmodeCrateType.Mythril)
+            {
+                // Pre-Hardmode loot pools
+                // 12-21 Ores @ 8.33%; Individually 1.39%
+                IItemDropRule[] phmOres = new IItemDropRule[6]
+                {
+                    ItemDropRule.NotScalingWithLuck(ItemID.CopperOre, 1, 12, 21),
+                    ItemDropRule.NotScalingWithLuck(ItemID.TinOre, 1, 12, 21),
+                    ItemDropRule.NotScalingWithLuck(ItemID.IronOre, 1, 12, 21),
+                    ItemDropRule.NotScalingWithLuck(ItemID.LeadOre, 1, 12, 21),
+                    ItemDropRule.NotScalingWithLuck(ItemID.SilverOre, 1, 12, 21),
+                    ItemDropRule.NotScalingWithLuck(ItemID.TungstenOre, 1, 12, 21),
+                };
+                // 4-7 Bars @ 6.94%; Individually 1.16%
+                IItemDropRule[] phmBars = new IItemDropRule[6]
+                {
+                    ItemDropRule.NotScalingWithLuck(ItemID.CopperBar, 1, 4, 7),
+                    ItemDropRule.NotScalingWithLuck(ItemID.TinBar, 1, 4, 7),
+                    ItemDropRule.NotScalingWithLuck(ItemID.IronBar, 1, 4, 7),
+                    ItemDropRule.NotScalingWithLuck(ItemID.LeadBar, 1, 4, 7),
+                    ItemDropRule.NotScalingWithLuck(ItemID.SilverBar, 1, 4, 7),
+                    ItemDropRule.NotScalingWithLuck(ItemID.TungstenBar, 1, 4, 7),
+                };
+
+                // Tier 2 loot pools
+                // 12-21 Ores @ 8.33%; Individually 2.08%
+                IItemDropRule[] hmOresTwo = new IItemDropRule[4]
+                {
+                    ItemDropRule.NotScalingWithLuck(ItemID.CobaltOre, 1, 12, 21),
+                    ItemDropRule.NotScalingWithLuck(ItemID.PalladiumOre, 1, 12, 21),
+                    ItemDropRule.NotScalingWithLuck(ItemID.MythrilOre, 1, 12, 21),
+                    ItemDropRule.NotScalingWithLuck(ItemID.OrichalcumOre, 1, 12, 21)
+                };
+                // 3-7 Bars @ 13.89%; Individually 3.47%
+                IItemDropRule[] hmBarsTwo = new IItemDropRule[4]
+                {
+                    ItemDropRule.NotScalingWithLuck(ItemID.CobaltBar, 1, 3, 7),
+                    ItemDropRule.NotScalingWithLuck(ItemID.PalladiumBar, 1, 3, 7),
+                    ItemDropRule.NotScalingWithLuck(ItemID.MythrilBar, 1, 3, 7),
+                    ItemDropRule.NotScalingWithLuck(ItemID.OrichalcumBar, 1, 3, 7)
+                };
+                var mythrilDropsOres = new SequentialRulesNotScalingWithLuckRule(6, new OneFromRulesRule(2, hmOresTwo), new OneFromRulesRule(1, phmOres));
+                var mythrilDropsBars = new SequentialRulesNotScalingWithLuckRule(4, new OneFromRulesRule(3, 2, hmBarsTwo), new OneFromRulesRule(1, phmBars));
+                var mythrilDrops = new SequentialRulesNotScalingWithLuckRule(1, mythrilDropsOres, mythrilDropsBars);
+
+                // Tier 1 loot pools
+                // 12-21 Ores @ 8.33%; Individually 4.17%
+                IItemDropRule[] hmOresOne = new IItemDropRule[2]
+                {
+                    ItemDropRule.NotScalingWithLuck(ItemID.CobaltOre, 1, 12, 21),
+                    ItemDropRule.NotScalingWithLuck(ItemID.PalladiumOre, 1, 12, 21)
+                };
+                // 3-7 Bars @ 13.89%; Individually 6.94%
+                IItemDropRule[] hmBarsOne = new IItemDropRule[2]
+                {
+                    ItemDropRule.NotScalingWithLuck(ItemID.CobaltBar, 1, 3, 7),
+                    ItemDropRule.NotScalingWithLuck(ItemID.PalladiumBar, 1, 3, 7)
+                };
+                var cobaltDropsOres = new SequentialRulesNotScalingWithLuckRule(6, new OneFromRulesRule(2, hmOresOne), new OneFromRulesRule(1, phmOres));
+                var cobaltDropsBars = new SequentialRulesNotScalingWithLuckRule(4, new OneFromRulesRule(3, 2, hmBarsOne), new OneFromRulesRule(1, phmBars));
+                var cobaltDrops = new SequentialRulesNotScalingWithLuckRule(1, cobaltDropsOres, cobaltDropsBars);
+
+                mythrilLCR.Add(mythrilDrops);
+                mythrilLCR.OnFailedConditions(cobaltDrops);
+                loot.Add(mythrilLCR); // No Adamantite LCR here so we need to add this in
+            }
+            else if (type == HardmodeCrateType.Titanium)
+            {
+                // Pre-Hardmode loot pools
+                // 25-34 Ores @ 10%; Individually 2.5%
+                IItemDropRule[] phmOres = new IItemDropRule[4]
+                {
+                    ItemDropRule.NotScalingWithLuck(ItemID.SilverOre, 1, 25, 34),
+                    ItemDropRule.NotScalingWithLuck(ItemID.TungstenOre, 1, 25, 34),
+                    ItemDropRule.NotScalingWithLuck(ItemID.GoldOre, 1, 25, 34),
+                    ItemDropRule.NotScalingWithLuck(ItemID.PlatinumOre, 1, 25, 34)
+                };
+                // 8-11 Bars @ 8.89%; Individually 2.22%
+                IItemDropRule[] phmBars = new IItemDropRule[4]
+                {
+                    ItemDropRule.NotScalingWithLuck(ItemID.SilverBar, 1, 8, 11),
+                    ItemDropRule.NotScalingWithLuck(ItemID.TungstenBar, 1, 8, 11),
+                    ItemDropRule.NotScalingWithLuck(ItemID.GoldBar, 1, 8, 11),
+                    ItemDropRule.NotScalingWithLuck(ItemID.PlatinumBar, 1, 8, 11)
+                };
+
+                // Tier 3 loot pools
+                // 25-34 Ores @ 10%; Individually 2.5%
+                IItemDropRule[] hmOresThree = new IItemDropRule[4]
+                {
+                    ItemDropRule.NotScalingWithLuck(ItemID.MythrilOre, 1, 25, 34),
+                    ItemDropRule.NotScalingWithLuck(ItemID.OrichalcumOre, 1, 25, 34),
+                    ItemDropRule.NotScalingWithLuck(ItemID.AdamantiteOre, 1, 25, 34),
+                    ItemDropRule.NotScalingWithLuck(ItemID.TitaniumOre, 1, 25, 34)
+                };
+                // 8-11 Bars @ 17.78%; Individually 4.44%
+                IItemDropRule[] hmBarsThree = new IItemDropRule[4]
+                {
+                    ItemDropRule.NotScalingWithLuck(ItemID.MythrilBar, 1, 8, 11),
+                    ItemDropRule.NotScalingWithLuck(ItemID.OrichalcumBar, 1, 8, 11),
+                    ItemDropRule.NotScalingWithLuck(ItemID.AdamantiteBar, 1, 8, 11),
+                    ItemDropRule.NotScalingWithLuck(ItemID.TitaniumBar, 1, 8, 11)
+                };
+                var adamantiteDropsOres = new SequentialRulesNotScalingWithLuckRule(5, new OneFromRulesRule(2, hmOresThree), new OneFromRulesRule(1, phmOres));
+                var adamantiteDropsBars = new SequentialRulesNotScalingWithLuckRule(3, new OneFromRulesRule(3, 2, hmBarsThree), new OneFromRulesRule(1, phmBars));
+                var adamantiteDrops = new SequentialRulesNotScalingWithLuckRule(1, adamantiteDropsOres, adamantiteDropsBars);
+
+                // Tier 2 loot pools
+                // 25-34 Ores @ 10%; Individually 5%
+                IItemDropRule[] hmOresTwo = new IItemDropRule[2]
+                {
+                    ItemDropRule.NotScalingWithLuck(ItemID.MythrilOre, 1, 25, 34),
+                    ItemDropRule.NotScalingWithLuck(ItemID.OrichalcumOre, 1, 25, 34)
+                };
+                // 8-11 Bars @ 17.78%; Individually 8.89%
+                IItemDropRule[] hmBarsTwo = new IItemDropRule[2]
+                {
+                    ItemDropRule.NotScalingWithLuck(ItemID.MythrilBar, 1, 8, 11),
+                    ItemDropRule.NotScalingWithLuck(ItemID.OrichalcumBar, 1, 8, 11)
+                };
+                var mythrilDropsOres = new SequentialRulesNotScalingWithLuckRule(5, new OneFromRulesRule(2, hmOresTwo), new OneFromRulesRule(1, phmOres));
+                var mythrilDropsBars = new SequentialRulesNotScalingWithLuckRule(3, new OneFromRulesRule(3, 2, hmBarsTwo), new OneFromRulesRule(1, phmBars));
+                var mythrilDrops = new SequentialRulesNotScalingWithLuckRule(1, mythrilDropsOres, mythrilDropsBars);
+
+                // Tier 1 loot pools
+                // EXCEPTION: Titanium Crates do not drop Cobalt. This is added to make it not entirely useless to get early.
+                // 25-34 Ores @ 10%; Individually 5%
+                IItemDropRule[] hmOresOne = new IItemDropRule[2]
+                {
+                    ItemDropRule.NotScalingWithLuck(ItemID.CobaltOre, 1, 25, 34),
+                    ItemDropRule.NotScalingWithLuck(ItemID.PalladiumOre, 1, 25, 34)
+                };
+                // 8-11 Bars @ 17.78%; Individually 8.89%
+                IItemDropRule[] hmBarsOne = new IItemDropRule[2]
+                {
+                    ItemDropRule.NotScalingWithLuck(ItemID.CobaltBar, 1, 8, 11),
+                    ItemDropRule.NotScalingWithLuck(ItemID.PalladiumBar, 1, 8, 11)
+                };
+                var cobaltDropsOres = new SequentialRulesNotScalingWithLuckRule(5, new OneFromRulesRule(2, hmOresOne), new OneFromRulesRule(1, phmOres));
+                var cobaltDropsBars = new SequentialRulesNotScalingWithLuckRule(3, new OneFromRulesRule(3, 2, hmBarsOne), new OneFromRulesRule(1, phmBars));
+                var cobaltDrops = new SequentialRulesNotScalingWithLuckRule(1, cobaltDropsOres, cobaltDropsBars);
+
+                adamantiteLCR.Add(adamantiteDrops);
+                adamantiteLCR.OnFailedConditions(mythrilLCR);
+                mythrilLCR.Add(mythrilDrops);
+                mythrilLCR.OnFailedConditions(cobaltDrops);
+            }
         }
         #endregion
 
@@ -475,10 +754,29 @@ namespace CalamityMod
         #endregion
 
         #region Drop Rule Conditions
+        public static IItemDropRuleCondition MythrilCondition = If((info) =>
+        {
+            // If the Early Hardmode Progression Rework is not enabled, then Mythril/Orichalcum can always drop.
+            if (!CalamityServerConfig.Instance.EarlyHardmodeProgressionRework)
+                return true;
+
+            // If the Early Hardmode Progression Rework is enabled, then any Mechanical Boss must be defeated for Mythril/Orichalcum to drop.
+            return NPC.downedMechBossAny;
+        });
+        public static IItemDropRuleCondition AdamantiteCondition = If((info) =>
+        {
+            // If the Early Hardmode Progression Rework is not enabled, then Adamantite/Titanium can always drop.
+            if (!CalamityServerConfig.Instance.EarlyHardmodeProgressionRework)
+                return true;
+
+            // If the Early Hardmode Progression Rework is enabled, then 2 of the Mechanical Bosses must be defeated for Adamantite/Titanium to drop.
+            return (NPC.downedMechBoss1 && NPC.downedMechBoss2) || (NPC.downedMechBoss2 && NPC.downedMechBoss3) || (NPC.downedMechBoss1 && NPC.downedMechBoss3);
+        });
+
         public static IItemDropRuleCondition HallowedBarsCondition = If((info) =>
         {
             // If the Early Hardmode Progression Rework is not enabled, then Hallowed Bars can always drop from Mechanical Bosses.
-            if (!CalamityConfig.Instance.EarlyHardmodeProgressionRework)
+            if (!CalamityServerConfig.Instance.EarlyHardmodeProgressionRework)
                 return true;
 
             // If the Early Hardmode Progression Rework is enabled, then all 3 Mechanical Bosses must be defeated for Hallowed Bars to drop.
@@ -531,90 +829,71 @@ namespace CalamityMod
             return p.Calamity().tarraSet;
         });
 
-        internal const float TrasherEatDistance = 96f;
-        public static IItemDropRuleCondition AnglerFedToTrasherCondition = If((info) =>
-        {
-            bool trasherNearby = false;
-            for (int i = 0; i < Main.maxNPCs; ++i)
-            {
-                NPC nearby = Main.npc[i];
-                if (nearby is null || !nearby.active || nearby.type != ModContent.NPCType<Trasher>())
-                    continue;
-                if (info.npc.Distance(nearby.Center) < TrasherEatDistance)
-                {
-                    trasherNearby = true;
-                    break;
-                }
-            }
-            return trasherNearby;
-        });
-        // The text is a separate rule so it doesn't show up on the non-Trasher Fishing Rod drop which only occurs if the Angler is not fed to a Trasher
-        public static IItemDropRuleCondition TrasherText = If((info) => true, true, CalamityUtils.GetTextValue("Condition.Drops.TrasherKill"));
+        // Remix seed drop rules
+        public static IItemDropRuleCondition Remix => Condition.RemixWorld.ToDropCondition(ShowItemDropInUI.WhenConditionSatisfied);
+        public static IItemDropRuleCondition NotRemix => Condition.NotRemixWorld.ToDropCondition(ShowItemDropInUI.WhenConditionSatisfied);
 
         // Get Fixed Boi seed drop rule
-        public static IItemDropRuleCondition GFB = If((info) => Main.zenithWorld, () => Main.zenithWorld, CalamityUtils.GetTextValue("Condition.Drops.IsGFB"));
+        public static IItemDropRuleCondition GFB => Condition.ZenithWorld.ToDropCondition(ShowItemDropInUI.WhenConditionSatisfied);
 
-        public static IItemDropRuleCondition RevNoMaster = If((info) => !Main.masterMode && CalamityWorld.revenge, () => !Main.masterMode && CalamityWorld.revenge, CalamityUtils.GetTextValue("Condition.Drops.IsRev"));
-        public static IItemDropRuleCondition RevAndMaster = If((info) => Main.masterMode || CalamityWorld.revenge, () => Main.masterMode || CalamityWorld.revenge, () =>
-		{
-			return Main.masterMode ? Language.GetTextValue("Bestiary_ItemDropConditions.IsMasterMode") : CalamityUtils.GetTextValue("Condition.Drops.IsRev");
-		});
+        public static IItemDropRuleCondition RevNoMaster => CalamityConditions.InRevengeanceModeNotMasterMode.ToDropCondition(ShowItemDropInUI.WhenConditionSatisfied);
+        public static IItemDropRuleCondition RevAndMaster => CalamityConditions.InRevengeanceModeOrMasterMode.ToDropCondition(ShowItemDropInUI.WhenConditionSatisfied);
 
         #region Boss Defeat Conditionals
-        public static IItemDropRuleCondition PostKS(bool ui = true) => If(() => NPC.downedSlimeKing, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedKS"));
-        public static IItemDropRuleCondition PostDS(bool ui = true) => If(() => DownedBossSystem.downedDesertScourge, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedDS"));
-        public static IItemDropRuleCondition PostEoC(bool ui = true) => If(() => NPC.downedBoss1, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedEoC"));
-        public static IItemDropRuleCondition PostCrab(bool ui = true) => If(() => DownedBossSystem.downedCrabulon, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedCrab"));
-        public static IItemDropRuleCondition PostEvil1(bool ui = true) => If(() => NPC.downedBoss2, ui, CalamityUtils.GetTextValue("Condition.Drops.Downed" + (WorldGen.crimson ? "BoC" : "EoW")));
-        public static IItemDropRuleCondition PostHM(bool ui = true) => If(() => DownedBossSystem.downedHiveMind, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedHM"));
-        public static IItemDropRuleCondition PostPerfs(bool ui = true) => If(() => DownedBossSystem.downedPerforator, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedPerfs"));
-        public static IItemDropRuleCondition PostEvil2(bool ui = true) => If(() => DownedBossSystem.downedHiveMind || DownedBossSystem.downedPerforator, ui, CalamityUtils.GetTextValue("Condition.Drops.Downed" + (WorldGen.crimson ? "Perfs" : "HM")));
-        public static IItemDropRuleCondition PostQB(bool ui = true) => If(() => NPC.downedQueenBee, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedQB"));
-        public static IItemDropRuleCondition PostDeer(bool ui = true) => If(() => NPC.downedDeerclops, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedDeer"));
-        public static IItemDropRuleCondition PostSkele(bool ui = true) => If(() => NPC.downedBoss3, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedSkele"));
-        public static IItemDropRuleCondition PostSG(bool ui = true) => If(() => DownedBossSystem.downedSlimeGod, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedSG"));
-        public static IItemDropRuleCondition Hardmode(bool ui = true) => If(() => Main.hardMode, ui, CalamityUtils.GetTextValue("Condition.Drops.Hardmode"));
-        public static IItemDropRuleCondition PostQS(bool ui = true) => If(() => NPC.downedQueenSlime, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedQS"));
-        public static IItemDropRuleCondition PostCryo(bool ui = true) => If(() => DownedBossSystem.downedCryogen, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedCryo"));
-        public static IItemDropRuleCondition PostAS(bool ui = true) => If(() => DownedBossSystem.downedAquaticScourge, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedAS"));
-        public static IItemDropRuleCondition PostBrim(bool ui = true) => If(() => DownedBossSystem.downedBrimstoneElemental, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedBrim"));
-        public static IItemDropRuleCondition PostDest(bool ui = true) => If(() => NPC.downedMechBoss1, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedDest"));
-        public static IItemDropRuleCondition PostTwins(bool ui = true) => If(() => NPC.downedMechBoss2, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedTwins"));
-        public static IItemDropRuleCondition PostSP(bool ui = true) => If(() => NPC.downedMechBoss3, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedSP"));
-        public static IItemDropRuleCondition Post1Mech(bool ui = true) => If(() => NPC.downedMechBossAny, ui, CalamityUtils.GetTextValue("Condition.Drops.Downed1Mech"));
-        public static IItemDropRuleCondition Post3Mechs(bool ui = true) => If(() => NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3, ui, CalamityUtils.GetTextValue("Condition.Drops.Downed3Mechs"));
-        public static IItemDropRuleCondition PostCal(bool ui = true) => If(() => DownedBossSystem.downedCalamitasClone, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedCal"));
-        public static IItemDropRuleCondition PostPlant(bool ui = true) => If(() => NPC.downedPlantBoss, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedPlant"));
-        public static IItemDropRuleCondition PostCalPlant(bool ui = true) => If(() => DownedBossSystem.downedCalamitasClone || NPC.downedPlantBoss, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedCalPlant"));
-        public static IItemDropRuleCondition PostLevi(bool ui = true) => If(() => DownedBossSystem.downedLeviathan, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedLebi"));
-        public static IItemDropRuleCondition PostAureus(bool ui = true) => If(() => DownedBossSystem.downedAstrumAureus, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedAureus"));
-        public static IItemDropRuleCondition PostGolem(bool ui = true) => If(() => NPC.downedGolemBoss, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedGolem"));
-        public static IItemDropRuleCondition PostPBG(bool ui = true) => If(() => DownedBossSystem.downedPlaguebringer, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedPBG"));
-        public static IItemDropRuleCondition PostEoL(bool ui = true) => If(() => NPC.downedEmpressOfLight, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedEoL"));
-        public static IItemDropRuleCondition PostFish(bool ui = true) => If(() => NPC.downedFishron, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedFish"));
-        public static IItemDropRuleCondition PostRav(bool ui = true) => If(() => DownedBossSystem.downedRavager, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedRav"));
-        public static IItemDropRuleCondition PostLC(bool ui = true) => If(() => NPC.downedAncientCultist, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedLC"));
-        public static IItemDropRuleCondition PostAD(bool ui = true) => If(() => DownedBossSystem.downedAstrumDeus, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedAD"));
-        public static IItemDropRuleCondition PostML(bool ui = true) => If(() => NPC.downedMoonlord, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedML"));
-        public static IItemDropRuleCondition PostGuard(bool ui = true) => If(() => DownedBossSystem.downedGuardians, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedGuard"));
-        public static IItemDropRuleCondition PostBirb(bool ui = true) => If(() => DownedBossSystem.downedDragonfolly, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedBirb"));
-        public static IItemDropRuleCondition PostProv(bool ui = true) => If(() => DownedBossSystem.downedProvidence, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedProv"));
-        public static IItemDropRuleCondition PostSig(bool ui = true) => If(() => DownedBossSystem.downedSignus, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedSig"));
-        public static IItemDropRuleCondition PostSW(bool ui = true) => If(() => DownedBossSystem.downedStormWeaver, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedSW"));
-        public static IItemDropRuleCondition PostCV(bool ui = true) => If(() => DownedBossSystem.downedCeaselessVoid, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedCV"));
-        public static IItemDropRuleCondition PostPolter(bool ui = true) => If(() => DownedBossSystem.downedPolterghast, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedPolter"));
-        public static IItemDropRuleCondition PostOD(bool ui = true) => If(() => DownedBossSystem.downedBoomerDuke, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedOD"));
-        public static IItemDropRuleCondition PostDoG(bool ui = true) => If(() => DownedBossSystem.downedDoG, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedDoG"));
-        public static IItemDropRuleCondition PostYharon(bool ui = true) => If(() => DownedBossSystem.downedYharon, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedYharon"));
-        public static IItemDropRuleCondition PostExos(bool ui = true) => If(() => DownedBossSystem.downedExoMechs, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedExos"));
-        public static IItemDropRuleCondition PostSCal(bool ui = true) => If(() => DownedBossSystem.downedCalamitas, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedSCal"));
-        public static IItemDropRuleCondition PostAEW(bool ui = true) => If(() => DownedBossSystem.downedPrimordialWyrm, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedAEW"));
-        public static IItemDropRuleCondition PostClam(bool ui = true) => If(() => DownedBossSystem.downedCLAM, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedClam"));
-        public static IItemDropRuleCondition PostClamHM(bool ui = true) => If(() => DownedBossSystem.downedCLAMHardMode, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedClamHM"));
-        public static IItemDropRuleCondition PostGSS(bool ui = true) => If(() => DownedBossSystem.downedGSS, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedGSS"));
-        public static IItemDropRuleCondition PostBetsy(bool ui = true) => If(() => DownedBossSystem.downedBetsy, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedBetsy"));
-        public static IItemDropRuleCondition PostT1AR(bool ui = true) => If(() => DownedBossSystem.downedEoCAcidRain, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedT1AR"));
-        public static IItemDropRuleCondition PostT2AR(bool ui = true) => If(() => DownedBossSystem.downedAquaticScourgeAcidRain, ui, CalamityUtils.GetTextValue("Condition.Drops.DownedT2AR"));
+        public static IItemDropRuleCondition PostKS(bool ui = true) => Condition.DownedKingSlime.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostDS(bool ui = true) => CalamityConditions.DownedDesertScourge.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostEoC(bool ui = true) => Condition.DownedEyeOfCthulhu.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostCrab(bool ui = true) => CalamityConditions.DownedCrabulon.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostEvil1(bool ui = true) => Condition.DownedEowOrBoc.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostHM(bool ui = true) => CalamityConditions.DownedHiveMind.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostPerfs(bool ui = true) => CalamityConditions.DownedPerforator.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostEvil2(bool ui = true) => CalamityConditions.DownedHiveMindOrPerforator.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostQB(bool ui = true) => Condition.DownedQueenBee.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostDeer(bool ui = true) => Condition.DownedDeerclops.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostSkele(bool ui = true) => Condition.DownedSkeletron.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostSG(bool ui = true) => CalamityConditions.DownedSlimeGod.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition Hardmode(bool ui = true) => Condition.Hardmode.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostQS(bool ui = true) => Condition.DownedQueenSlime.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostCryo(bool ui = true) => CalamityConditions.DownedCryogen.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostAS(bool ui = true) => CalamityConditions.DownedAquaticScourge.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostBrim(bool ui = true) => CalamityConditions.DownedBrimstoneElemental.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostDest(bool ui = true) => Condition.DownedDestroyer.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostTwins(bool ui = true) => Condition.DownedTwins.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostSP(bool ui = true) => Condition.DownedSkeletronPrime.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition Post1Mech(bool ui = true) => Condition.DownedMechBossAny.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition Post3Mechs(bool ui = true) => Condition.DownedMechBossAll.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostCal(bool ui = true) => CalamityConditions.DownedCalamitasClone.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostPlant(bool ui = true) => Condition.DownedPlantera.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostCalPlant(bool ui = true) => CalamityConditions.DownedCalamitasCloneOrPlantera.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostLevi(bool ui = true) => CalamityConditions.DownedLeviathan.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostAureus(bool ui = true) => CalamityConditions.DownedAstrumAureus.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostGolem(bool ui = true) => Condition.DownedGolem.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostPBG(bool ui = true) => CalamityConditions.DownedPlaguebringer.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostEoL(bool ui = true) => Condition.DownedEmpressOfLight.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostFish(bool ui = true) => Condition.DownedDukeFishron.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostRav(bool ui = true) => CalamityConditions.DownedRavager.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostLC(bool ui = true) => Condition.DownedCultist.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostAD(bool ui = true) => CalamityConditions.DownedAstrumDeus.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostML(bool ui = true) => Condition.DownedMoonLord.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostGuard(bool ui = true) => CalamityConditions.DownedGuardians.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostBirb(bool ui = true) => CalamityConditions.DownedBumblebird.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostProv(bool ui = true) => CalamityConditions.DownedProvidence.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostSig(bool ui = true) => CalamityConditions.DownedSignus.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostSW(bool ui = true) => CalamityConditions.DownedStormWeaver.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostCV(bool ui = true) => CalamityConditions.DownedCeaselessVoid.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostPolter(bool ui = true) => CalamityConditions.DownedPolterghast.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostOD(bool ui = true) => CalamityConditions.DownedOldDuke.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostDoG(bool ui = true) => CalamityConditions.DownedDevourerOfGods.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostYharon(bool ui = true) => CalamityConditions.DownedYharon.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostExos(bool ui = true) => CalamityConditions.DownedExoMechs.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostSCal(bool ui = true) => CalamityConditions.DownedSupremeCalamitas.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostAEW(bool ui = true) => CalamityConditions.DownedPrimordialWyrm.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostClam(bool ui = true) => CalamityConditions.DownedClam.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostClamHM(bool ui = true) => CalamityConditions.DownedBuffedClam.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostGSS(bool ui = true) => CalamityConditions.DownedGreatSandShark.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostBetsy(bool ui = true) => CalamityConditions.DownedBetsy.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostT1AR(bool ui = true) => CalamityConditions.DownedAcidRainT1.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
+        public static IItemDropRuleCondition PostT2AR(bool ui = true) => CalamityConditions.DownedAcidRainT2.ToDropCondition(ui ? ShowItemDropInUI.Always : ShowItemDropInUI.Never);
         #endregion
         #endregion
 
@@ -1111,7 +1390,7 @@ namespace CalamityMod
             // You can customize this duration as you see fit. Calamity defaults it to 5 minutes.
             private const int DefaultDropProtectionTime = 18000; // 5 minutes
             private int protectionTime;
-            
+
             public PerPlayerDropRule(int itemID, int denominator, int minQuantity = 1, int maxQuantity = 1, int numerator = 1, int protectFrames = DefaultDropProtectionTime)
                 : base(itemID, denominator, minQuantity, maxQuantity, numerator)
             {
@@ -1149,15 +1428,17 @@ namespace CalamityMod
                     return;
 
                 // If server-side, then the item must be spawned for each client individually.
-                if (Main.netMode == NetmodeID.Server)
+                if (Main.dedServ)
                 {
                     NPC npc = info.npc;
                     int idx = Item.NewItem(npc.GetSource_Loot(), npc.Center, itemId, stack, true, -1);
-                    Main.timeItemSlotCannotBeReusedFor[idx] = protectionTime;
-                    for (int i = 0; i < Main.maxPlayers; ++i)
-                        if (Main.player[i].active)
-                            NetMessage.SendData(MessageID.InstancedItem, i, -1, null, idx);
-                    Main.item[idx].active = false;
+                    if (idx < Main.maxItems)
+                    {
+                        Main.timeItemSlotCannotBeReusedFor[idx] = protectionTime;
+                        foreach (Player player in Main.ActivePlayers)
+                            NetMessage.SendData(MessageID.InstancedItem, player.whoAmI, -1, null, idx);
+                        Main.item[idx].active = false;
+                    }
                 }
 
                 // Otherwise just drop the item.

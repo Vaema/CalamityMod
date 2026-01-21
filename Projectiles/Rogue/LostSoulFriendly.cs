@@ -9,9 +9,10 @@ namespace CalamityMod.Projectiles.Rogue
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -20,12 +21,12 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.height = 16;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
+            Projectile.tileCollide = false;
             Projectile.penetrate = 1;
             Projectile.timeLeft = 240;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.extraUpdates = 1;
             Projectile.alpha = 150;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override bool? CanHitNPC(NPC target) => (Projectile.timeLeft < 210 || Projectile.ai[0] == 2f) && target.CanBeChasedBy(Projectile);
@@ -38,7 +39,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
                 Projectile.frame = 0;
 
             Lighting.AddLight(Projectile.Center, 0.25f, 0.25f, 0.25f);
@@ -52,11 +53,11 @@ namespace CalamityMod.Projectiles.Rogue
         // Reduce damage of projectiles if more than the cap are active
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if (!Projectile.CountsAsClass<ThrowingDamageClass>())
+            if (Projectile.DamageType == DamageClass.Generic)
             {
-                int cap = 5;
+                int cap = 10;
                 float capDamageFactor = 0.05f;
-                int excessCount = Main.player[Projectile.owner].ownedProjectileCounts[Projectile.type] - cap;
+                int excessCount = Main.player[Projectile.owner].ownedProjectileCounts[Type] - cap;
                 modifiers.SourceDamage *= MathHelper.Clamp(1f - (capDamageFactor * excessCount), 0f, 1f);
             }
         }
@@ -65,7 +66,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             for (int j = 0; j <= 10; j++)
             {
-                Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 175, 0f, 0f, 100, default, 1f);
+                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.SpectreStaff, 0f, 0f, 100, default, 1f);
             }
         }
 
@@ -73,7 +74,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

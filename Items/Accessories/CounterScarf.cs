@@ -1,8 +1,8 @@
 ﻿using CalamityMod.CalPlayer;
-using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using CalamityMod.CalPlayer.Dashes;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -14,16 +14,12 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 30;
             Item.height = 38;
-            Item.value = CalamityGlobalItem.Rarity3BuyPrice;
+            Item.value = Item.buyPrice(gold: 20); // Sold by Clothier
             Item.rare = ItemRarityID.Orange;
             Item.accessory = true;
         }
-
-        public override bool CanEquipAccessory(Player player, int slot, bool modded) => !player.Calamity().dodgeScarf;
-
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.GetDamage<TrueMeleeDamageClass>() += 0.1f;
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.dodgeScarf = true;
             modPlayer.DashID = CounterScarfDash.ID;

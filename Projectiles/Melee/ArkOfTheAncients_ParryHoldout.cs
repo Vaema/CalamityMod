@@ -1,14 +1,14 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using System.IO;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.IO;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
-using Terraria.Audio;
 
 
 namespace CalamityMod.Projectiles.Melee
@@ -35,6 +35,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.friendly = true;
             Projectile.penetrate = -1;
             Projectile.noEnchantmentVisuals = true;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override bool? CanDamage() => Timer <= ParryTime && AlreadyParried == 0f;
@@ -65,9 +67,13 @@ namespace CalamityMod.Projectiles.Melee
 
             GeneralParryEffects();
 
-            //only get iframes if the enemy has contact damage :)
+            // 17APR2024: Ozzatron: Ark of the Ancients is a parry. It uses vanilla parry iframes and benefits from Cross Necklace.
+            // However, iframes are only granted if the target has contact damage. This means it won't work on Providence. Too bad. I have no sympathy for you if you are using this weapon line.
             if (target.damage > 0)
-                Owner.GiveIFrames(35);
+            {
+                int arkParryIFrames = Owner.ComputeParryIFrames();
+                Owner.GiveUniversalIFrames(arkParryIFrames, false);
+            }
 
             Vector2 particleOrigin = target.Hitbox.Size().Length() < 140 ? target.Center : Projectile.Center + Projectile.rotation.ToRotationVector2() * 60f;
             Particle spark = new GenericSparkle(particleOrigin, Vector2.Zero, Color.White, Color.HotPink, 1.2f, 35, 0.1f, 2);
@@ -88,51 +94,18 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.timeLeft = (int)MaxTime;
                 SoundEngine.PlaySound(SoundID.DD2_SkyDragonsFuryShot, Projectile.Center);
 
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Projectile.velocity = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
                 Projectile.velocity.Normalize();
                 Projectile.rotation = Projectile.velocity.ToRotation();
 
                 initialized = true;
-                Projectile.netUpdate = true;
-                Projectile.netSpam = 0;
+                Projectile.ForceNetUpdate();
             }
 
             //Manage position and rotation
-            Projectile.Center = Owner.Center + DistanceFromPlayer ;
+            Projectile.Center = Owner.Center + DistanceFromPlayer;
             Projectile.scale = 1.4f + ((float)Math.Sin(Timer / 160f * MathHelper.Pi) * 0.6f); //SWAGGER
-
-            if (Timer > ParryTime)
-                return;
-
-            if (AlreadyParried == 0)
-            {
-                float collisionPoint = 0f;
-                float bladeLength = 80f * Projectile.scale;
-
-                for (int k = 0; k < Main.maxProjectiles; k++)
-                {
-                    Projectile proj = Main.projectile[k];
-
-                    if (proj.active && proj.hostile && proj.damage > 1 && //Only parry harmful projectiles
-                        proj.velocity.Length() * (proj.extraUpdates + 1) > 1f && //Only parry projectiles that move semi-quickly
-                        proj.Size.Length() < 300 && //Only parry projectiles that aren't too large
-                        Collision.CheckAABBvLineCollision(proj.Hitbox.TopLeft(), proj.Hitbox.Size(), Owner.Center + DistanceFromPlayer, Owner.Center + DistanceFromPlayer + (Projectile.velocity * bladeLength), 24, ref collisionPoint))
-                    {
-                        GeneralParryEffects();
-
-                        //Reduce the projectile's damage by 50 for a second.
-                        if (proj.Calamity().flatDR < 50)
-                            proj.Calamity().flatDR = 50;
-                        if (proj.Calamity().flatDRTimer < 60)
-                            proj.Calamity().flatDRTimer = 60;
-
-                        //Bounce off the player if they are in the air
-                        if (Owner.velocity.Y != 0)
-                            Owner.velocity += Utils.SafeNormalize(Owner.Center - proj.Center, Vector2.Zero) * 2;
-                        break;
-                    }
-                }
-            }
 
             //Make the owner look like theyre holding the sword bla bla
             Owner.heldProj = Projectile.whoAmI;

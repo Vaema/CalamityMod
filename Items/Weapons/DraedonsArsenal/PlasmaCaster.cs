@@ -1,10 +1,10 @@
-﻿using CalamityMod.CustomRecipes;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -18,12 +18,10 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
     {
         public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
         public static readonly SoundStyle FireSound = new("CalamityMod/Sounds/Item/PlasmaCasterFire");
-
-        public const int BaseDamage = 705;
         public override void SetStaticDefaults()
         {
-           
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
         public override void SetDefaults()
@@ -33,7 +31,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.width = 62;
             Item.height = 30;
             Item.DamageType = DamageClass.Magic;
-            Item.damage = BaseDamage;
+            Item.damage = 705;
             Item.knockBack = 7f;
             Item.useTime = 45;
             Item.useAnimation = 45;
@@ -49,11 +47,6 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
             Item.shoot = ModContent.ProjectileType<PlasmaCasterShot>();
             Item.shootSpeed = 5f;
-
-            modItem.UsesCharge = true;
-            modItem.MaxCharge = 190f;
-            modItem.ChargePerUse = 0.32f;
-            modItem.ChargePerAltUse = 0.12f; // turbo mode is more energy inefficient
         }
 
         public override bool AltFunctionUse(Player player) => true;
@@ -110,7 +103,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
                 AddIngredient<UelibloomBar>(8).
                 AddIngredient(ItemID.LunarBar, 4).
                 AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(4, out Func<bool> condition), condition).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

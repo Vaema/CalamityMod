@@ -1,6 +1,6 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -14,9 +14,9 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 6;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 6;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -40,7 +40,7 @@ namespace CalamityMod.Projectiles.Summon
             bool isMinion = Projectile.type == ModContent.ProjectileType<WaterElementalMinion>();
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
-            if (!modPlayer.sirenWaifu && !modPlayer.allWaifus && !modPlayer.sirenWaifuVanity && !modPlayer.allWaifusVanity)
+            if (!modPlayer.waterElemental && !modPlayer.allElementals && !modPlayer.waterElementalVanity && !modPlayer.allElementalsVanity)
             {
                 Projectile.active = false;
                 return;
@@ -49,9 +49,9 @@ namespace CalamityMod.Projectiles.Summon
             {
                 if (player.dead)
                 {
-                    modPlayer.slWaifu = false;
+                    modPlayer.waterEleBuff = false;
                 }
-                if (modPlayer.slWaifu)
+                if (modPlayer.waterEleBuff)
                 {
                     Projectile.timeLeft = 2;
                 }
@@ -60,13 +60,13 @@ namespace CalamityMod.Projectiles.Summon
             {
                 for (int i = 0; i < 50; i++)
                 {
-                    int spawnDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, 33, 0f, 0f, 0, default, 1f);
+                    int spawnDust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, DustID.Water, 0f, 0f, 0, default, 1f);
                     Main.dust[spawnDust].velocity *= 2f;
                     Main.dust[spawnDust].scale *= 1.15f;
                 }
                 dust--;
             }
-            bool passive = modPlayer.sirenWaifuVanity || modPlayer.allWaifusVanity;
+            bool passive = modPlayer.waterElementalVanity || modPlayer.allElementalsVanity;
             if (!passive)
                 Lighting.AddLight(Projectile.Center, 0f, 0.25f, 1.5f);
 
@@ -125,14 +125,14 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 if (!canAttack)
                 {
-                    for (int i = 0; i < Main.maxNPCs; i++)
+                    foreach (NPC n in Main.ActiveNPCs)
                     {
-                        if (Main.npc[i].CanBeChasedBy(Projectile, false))
+                        if (n.CanBeChasedBy(Projectile, false))
                         {
-                            float targetX = Main.npc[i].position.X + (float)(Main.npc[i].width / 2);
-                            float targetY = Main.npc[i].position.Y + (float)(Main.npc[i].height / 2);
+                            float targetX = n.position.X + (float)(n.width / 2);
+                            float targetY = n.position.Y + (float)(n.height / 2);
                             float targetDist = Math.Abs(Projectile.position.X + (float)(Projectile.width / 2) - targetX) + Math.Abs(Projectile.position.Y + (float)(Projectile.height / 2) - targetY);
-                            if (targetDist < attackRange && Collision.CanHit(Projectile.position, Projectile.width, Projectile.height, Main.npc[i].position, Main.npc[i].width, Main.npc[i].height))
+                            if (targetDist < attackRange && Collision.CanHit(Projectile.position, Projectile.width, Projectile.height, n.position, n.width, n.height))
                             {
                                 attackRange = targetDist;
                                 projX = targetX;
@@ -166,7 +166,7 @@ namespace CalamityMod.Projectiles.Summon
                         projectileType = ModContent.ProjectileType<WaterElementalSong>();
                     }
                     float projVel = Main.rand.Next(12, 20);
-                    Vector2 fireDirection = new Vector2(Projectile.position.X + (float)Projectile.width * 0.5f, Projectile.position.Y + (float)Projectile.height * 0.5f);
+                    Vector2 fireDirection = Projectile.Center;
                     float fireXVel = projXStore - fireDirection.X;
                     float fireYVel = projYStore - fireDirection.Y;
                     float fireVelocity = (float)Math.Sqrt((double)(fireXVel * fireXVel + fireYVel * fireYVel));

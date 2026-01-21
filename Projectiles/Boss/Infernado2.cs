@@ -2,7 +2,6 @@
 using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.NPCs.Yharon;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -17,7 +16,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 12;
+            Main.projFrames[Type] = 12;
         }
 
         public override void SetDefaults()
@@ -61,7 +60,7 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.frame = 0;
             }
@@ -115,7 +114,7 @@ namespace CalamityMod.Projectiles.Boss
             bool breakapart = Main.zenithWorld && Projectile.ai[0] <= breakThreshold;
             if (Projectile.ai[0] <= 0f && !breakapart)
             {
-                float swaySize = 0.104719758f;
+                float swaySize = MathHelper.Pi / 30f;
                 float smolWidth = (float)Projectile.width / 5f;
                 smolWidth *= 2f;
                 float projXChange = (float)(Math.Cos((double)(swaySize * -(double)Projectile.ai[0])) - 0.5) * smolWidth;
@@ -130,7 +129,7 @@ namespace CalamityMod.Projectiles.Boss
             }
 
             if (Projectile.timeLeft == 720)
-                Projectile.damage = Projectile.GetProjectileDamage(ModContent.NPCType<Yharon>());
+                Projectile.damage = Yharon.TornadoDamage;
         }
 
         public override bool CanHitPlayer(Player target) => Projectile.timeLeft <= 720;
@@ -142,8 +141,8 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture2D13 = ModContent.Request<Texture2D>(Texture).Value;
-            int framing = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
+            Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int framing = Terraria.GameContent.TextureAssets.Projectile[Type].Value.Height / Main.projFrames[Type];
             int y6 = framing * Projectile.frame;
             Main.spriteBatch.Draw(texture2D13, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture2D13.Width, framing)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2((float)texture2D13.Width / 2f, (float)framing / 2f), Projectile.scale, SpriteEffects.None, 0);
             return false;
@@ -155,7 +154,7 @@ namespace CalamityMod.Projectiles.Boss
                 return;
 
             if (Projectile.timeLeft <= 720)
-                target.AddBuff(ModContent.BuffType<Dragonfire>(), 150);
+                target.AddBuff(ModContent.BuffType<Dragonfire>(), 180);
         }
     }
 }

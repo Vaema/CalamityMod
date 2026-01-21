@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.DamageType = DamageClass.Magic;
             Projectile.timeLeft = TotalXFrames * TotalYFrames * FrameTimer;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
+            Projectile.localNPCHitCooldown = 30;
         }
 
         public override void AI()
@@ -56,7 +56,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 position = Projectile.Center - Main.screenPosition;
             Vector2 origin = texture.Size() / new Vector2(TotalXFrames, TotalYFrames) * 0.5f;
             Rectangle frame = texture.Frame(TotalXFrames, TotalYFrames, frameX, frameY);

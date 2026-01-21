@@ -2,9 +2,9 @@
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -19,9 +19,9 @@ namespace CalamityMod.Projectiles.Summon
         public const float DistanceToCheck = 2800f;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 5;
-            ProjectileID.Sets.NeedsUUID[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 5;
+            ProjectileID.Sets.NeedsUUID[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -76,7 +76,7 @@ namespace CalamityMod.Projectiles.Summon
 
             if (Projectile.frameCounter++ > (potentialTarget is null ? 8 : 6))
             {
-                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Projectile.type];
+                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Type];
                 Projectile.frameCounter = 0;
             }
 

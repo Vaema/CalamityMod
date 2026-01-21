@@ -2,9 +2,9 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -20,15 +20,16 @@ namespace CalamityMod.Projectiles.Rogue
                 SoundEngine.PlaySound(SoundID.Item73, Projectile.Center);
                 for (int i = 0; i < 20; i++)
                 {
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), new Vector2(position.X + (-600 + i * 60), position.Y - 800), new Vector2(0f, 2.5f), ModContent.ProjectileType<ExecutionersBladeStealthProj>(), Projectile.damage * 4, Projectile.knockBack, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), new Vector2(position.X + (-600 + i * 60), position.Y - 800), new Vector2(0f, 2.5f), ModContent.ProjectileType<ExecutionersBladeStealthProj>(), (int)(Projectile.damage * 2.4f), Projectile.knockBack, Projectile.owner);
                 }
             }
         }
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 2;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 2;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -50,7 +51,7 @@ namespace CalamityMod.Projectiles.Rogue
             Lighting.AddLight(Projectile.Center, 0.5f, 0f, 0.65f);
             if (Main.rand.NextBool(5))
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 173, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
             CalamityUtils.HomeInOnNPC(Projectile, true, 250f, 12f, 20f);
         }
@@ -85,7 +86,7 @@ namespace CalamityMod.Projectiles.Rogue
             SoundEngine.PlaySound(SoundID.Item74, Projectile.position);
             for (int i = 0; i < 3; i++)
             {
-                int dust = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 2f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 2f);
                 Main.dust[dust].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -95,17 +96,17 @@ namespace CalamityMod.Projectiles.Rogue
             }
             for (int j = 0; j < 5; j++)
             {
-                int dust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 3f);
+                int dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 3f);
                 Main.dust[dust2].noGravity = true;
                 Main.dust[dust2].velocity *= 5f;
-                dust2 = Dust.NewDust(new Vector2(Projectile.position.X, Projectile.position.Y), Projectile.width, Projectile.height, 173, 0f, 0f, 100, default, 2f);
+                dust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 2f);
                 Main.dust[dust2].velocity *= 2f;
             }
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

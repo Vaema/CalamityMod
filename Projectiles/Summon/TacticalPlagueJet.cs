@@ -1,10 +1,10 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using System;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Summon;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -19,9 +19,10 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 3;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 3;
+            Main.projPet[Type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -59,8 +60,6 @@ namespace CalamityMod.Projectiles.Summon
             FalseGun.DamageType = DamageClass.Summon;
         }
 
-        public override bool? CanDamage() => false;
-
         public override void AI()
         {
             Player player = Main.player[Projectile.owner];
@@ -90,7 +89,7 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
                 Projectile.frame = 0;
 
             player.AddBuff(ModContent.BuffType<TacticalPlagueEngineBuff>(), 3600);

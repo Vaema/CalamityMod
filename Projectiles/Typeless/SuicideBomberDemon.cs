@@ -1,12 +1,13 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.IO;
+using CalamityMod.Graphics.Primitives;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Typeless
 {
@@ -20,12 +21,12 @@ namespace CalamityMod.Projectiles.Typeless
         }
         public ref float Time => ref Projectile.ai[1];
         public Player Owner => Main.player[Projectile.owner];
-        public PrimitiveTrail FlameTrailDrawer = null;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 12;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 11;
+            Main.projFrames[Type] = 12;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 11;
         }
 
         public override void SetDefaults()
@@ -146,7 +147,7 @@ namespace CalamityMod.Projectiles.Typeless
                 if (Time == 90f)
                     SoundEngine.PlaySound(SoundID.DD2_WyvernDiveDown, Projectile.Center);
 
-                Projectile.frame = Main.projFrames[Projectile.type] - 1;
+                Projectile.frame = Main.projFrames[Type] - 1;
 
                 // Fly away if no valid target was found.
                 if (target is null)
@@ -186,7 +187,7 @@ namespace CalamityMod.Projectiles.Typeless
             SoundEngine.PlaySound(SoundID.DD2_KoboldExplosion, Projectile.Center);
             for (int i = 0; i < 40; i++)
             {
-                Dust explosion = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, 267);
+                Dust explosion = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.RainbowMk2);
                 explosion.velocity = Main.rand.NextVector2Circular(4f, 4f);
                 explosion.color = Color.Red;
                 explosion.scale = 1.35f;
@@ -214,9 +215,9 @@ namespace CalamityMod.Projectiles.Typeless
             else modifiers.SourceDamage.Flat += 360f;
         }
 
-        public float FlameTrailWidthFunction(float completionRatio) => MathHelper.SmoothStep(21f, 8f, completionRatio);
+        public float FlameTrailWidthFunction(float completionRatio, Vector2 vertexPos) => MathHelper.SmoothStep(21f, 8f, completionRatio);
 
-        public Color FlameTrailColorFunction(float completionRatio)
+        public Color FlameTrailColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float trailOpacity = Utils.GetLerpValue(0.8f, 0.27f, completionRatio, true) * Utils.GetLerpValue(0f, 0.067f, completionRatio, true);
             Color startingColor = Color.Lerp(Color.Cyan, Color.White, 0.4f);
@@ -228,10 +229,6 @@ namespace CalamityMod.Projectiles.Typeless
         public override bool PreDraw(ref Color lightColor)
         {
             Main.spriteBatch.EnterShaderRegion();
-
-            // Initialize the flame trail drawer.
-            if (FlameTrailDrawer is null)
-                FlameTrailDrawer = new PrimitiveTrail(FlameTrailWidthFunction, FlameTrailColorFunction, null, GameShaders.Misc["CalamityMod:ImpFlameTrail"]);
 
             // Prepare the flame trail shader with its map texture.
             GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
@@ -245,7 +242,7 @@ namespace CalamityMod.Projectiles.Typeless
                 glowmask = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Typeless/SuicideBomberDemonGlowmaskFriendly").Value;
                 orbTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Typeless/SuicideBomberDemonOrbFriendly").Value;
             }
-            Rectangle frame = texture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
+            Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             SpriteEffects direction = Projectile.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
@@ -268,7 +265,7 @@ namespace CalamityMod.Projectiles.Typeless
 
                 Vector2 trailOffset = Projectile.Size * 0.5f;
                 trailOffset += (Projectile.rotation + MathHelper.PiOver2).ToRotationVector2() * 20f;
-                FlameTrailDrawer.Draw(Projectile.oldPos, trailOffset - Main.screenPosition, 61);
+                PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(FlameTrailWidthFunction, FlameTrailColorFunction, (_,_) => trailOffset, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"]), 61);
             }
 
             Main.spriteBatch.ExitShaderRegion();

@@ -13,13 +13,10 @@ namespace CalamityMod.Items.Pets
         public new string LocalizationCategory => "Items.Pets";
         public override void SetDefaults()
         {
-            Item.CloneDefaults(ItemID.WispinaBottle);
+            Item.DefaultToVanitypet(ModContent.ProjectileType<LittleLightProj>(), ModContent.BuffType<LittleLightBuff>());
             Item.UseSound = SoundID.Item83;
-            Item.shoot = ModContent.ProjectileType<LittleLightProj>();
-            Item.buffType = ModContent.BuffType<LittleLightBuff>();
-
-            Item.value = Item.sellPrice(gold: 15);
-            Item.rare = ModContent.RarityType<PureGreen>();
+            Item.value = Item.sellPrice(gold: 12);
+            Item.rare = ModContent.RarityType<Turquoise>();
             Item.Calamity().donorItem = true;
         }
 

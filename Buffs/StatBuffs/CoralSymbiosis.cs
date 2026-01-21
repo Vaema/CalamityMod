@@ -1,11 +1,14 @@
-﻿using Terraria;
+﻿using CalamityMod.Items.Weapons.Magic;
+using Terraria;
+using Terraria.Localization;
 using Terraria.ModLoader;
-using CalamityMod.Items.Weapons.Magic;
 
 namespace CalamityMod.Buffs.StatBuffs
 {
     public class CoralSymbiosis : ModBuff
     {
+        public override LocalizedText Description => base.Description.WithFormatArgs(CoralSpout.SymbiosisDamageBuff);
+
         public override void SetStaticDefaults()
         {
             Main.debuff[Type] = false;

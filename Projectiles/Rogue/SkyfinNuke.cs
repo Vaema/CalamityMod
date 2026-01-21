@@ -1,10 +1,11 @@
 ﻿using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -13,6 +14,7 @@ namespace CalamityMod.Projectiles.Rogue
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/SkyfinBombers";
 
+        public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = 30;
@@ -65,10 +67,10 @@ namespace CalamityMod.Projectiles.Rogue
         {
             Projectile.extraUpdates = 0;
             //Dust
-            for (int i = 0; i < 30;i++)
+            for (int i = 0; i < 30; i++)
             {
                 Vector2 dspeed = new Vector2(Main.rand.NextFloat(-4f, 4f), Main.rand.NextFloat(-4f, 4f));
-                Dust.NewDust(Projectile.Center, 1, 1, (int)CalamityDusts.SulfurousSeaAcid, dspeed.X, dspeed.Y, 0, default, 1.1f);
+                Dust.NewDust(Projectile.Center, 1, 1, (int)CalamityDusts.SulphurousSeaAcid, dspeed.X, dspeed.Y, 0, default, 1.1f);
             }
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 10;
@@ -84,8 +86,20 @@ namespace CalamityMod.Projectiles.Rogue
                 }
                 if (Projectile.Calamity().stealthStrike)
                 {
+                    #region Visuals
+                    //Taken from Contaminated Bile's rework since they use the same projectiles
+                    Particle blast = new CustomPulse(Projectile.Center, Vector2.Zero, Color.DarkOliveGreen, "CalamityMod/Particles/BloomRing", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.7f, 200, true, 0.7f);
+                    GeneralParticleHandler.SpawnParticle(blast);
+                    Particle blast1 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.OliveDrab * 0.5f, "CalamityMod/Particles/FlameExplosion", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0.02f, 0.05f, 340);
+                    GeneralParticleHandler.SpawnParticle(blast1);
+                    Particle blast2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.OliveDrab * 0.5f, "CalamityMod/Particles/FlameExplosion", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0.03f, 0.07f, 340);
+                    GeneralParticleHandler.SpawnParticle(blast2);
+                    Particle blast3 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.DarkOliveGreen * 0.55f, "CalamityMod/Particles/SoftRoundExplosion", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0.04f, 0.08f, 340);
+                    GeneralParticleHandler.SpawnParticle(blast3);
+                    #endregion
                     int explode = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BileExplosion>(), (int)(Projectile.damage * 0.4), Projectile.knockBack * 0.4f, Projectile.owner, 1f);
                     Main.projectile[explode].usesLocalNPCImmunity = true;
+                    Main.projectile[explode].usesIDStaticNPCImmunity = false;
                     Main.projectile[explode].localNPCHitCooldown = 30;
                 }
             }

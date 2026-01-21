@@ -1,56 +1,58 @@
-﻿using Terraria;
+﻿using CalamityMod.Items.BaseItems;
+using CalamityMod.Items.Materials;
+using CalamityMod.Projectiles.Melee;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class MajesticGuard : ModItem, ILocalizedModType
+    public class MajesticGuard : CustomUseProjItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+
         public override void SetDefaults()
         {
             Item.width = 100;
             Item.height = 100;
-            Item.scale = 1.5f;
-            Item.damage = 70;
-            Item.DamageType = DamageClass.Melee;
-            Item.useAnimation = 22;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 22;
+            Item.damage = 365;
+            Item.DamageType = TrueMeleeDamageClass.Instance;
+            Item.useAnimation = 50;
+            Item.useTime = 50;
             Item.useTurn = true;
-            Item.knockBack = 7.5f;
-            Item.UseSound = SoundID.Item1;
+            Item.knockBack = 12f;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
-        }
 
-        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
+            Item.channel = true;
+            Item.shoot = ModContent.ProjectileType<MajesticGuardHoldout>();
+            Item.noUseGraphic = true;
+            Item.noMelee = true;
+            Item.useStyle = ItemUseStyleID.Shoot;
+        }
+        public override bool MeleePrefix() => true;
+        public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
         {
-            if (target.Calamity().miscDefenseLoss < target.defense)
-                target.Calamity().miscDefenseLoss += 1;
-
-            // Healing effect does not trigger versus dummies
-            if (player.moonLeech)
-                return;
-
-            if (target.Calamity().miscDefenseLoss >= target.defense && target.canGhostHeal)
-            {
-                player.statLife += 3;
-                player.HealEffect(3);
-            }
+            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/MajesticGuardGlow").Value);
         }
-
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.AdamantiteSword).
-                AddIngredient(ItemID.SoulofMight, 15).
+                AddIngredient(ItemID.GoldBroadsword).
+                AddRecipeGroup("AnyMythrilBar", 15).
+                AddIngredient<EssenceofSunlight>(3).
+                AddIngredient<EssenceofHavoc>(3).
+                AddIngredient<EssenceofEleum>(3).
                 AddTile(TileID.MythrilAnvil).
                 Register();
             CreateRecipe().
-                AddIngredient(ItemID.TitaniumSword).
-                AddIngredient(ItemID.SoulofMight, 15).
+                AddIngredient(ItemID.PlatinumBroadsword).
+                AddRecipeGroup("AnyMythrilBar", 15).
+                AddIngredient<EssenceofSunlight>(3).
+                AddIngredient<EssenceofHavoc>(3).
+                AddIngredient<EssenceofEleum>(3).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

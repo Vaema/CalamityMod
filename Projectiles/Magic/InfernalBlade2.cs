@@ -1,10 +1,9 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
 namespace CalamityMod.Projectiles.Magic
 {
     public class InfernalBlade2 : ModProjectile, ILocalizedModType
@@ -23,6 +22,8 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.tileCollide = false;
             Projectile.timeLeft = 180;
             Projectile.DamageType = DamageClass.Magic;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -42,7 +43,7 @@ namespace CalamityMod.Projectiles.Magic
                     Vector2 dustRotate = Vector2.UnitX * 0f;
                     dustRotate += -Vector2.UnitY.RotatedBy((double)((float)dustIncr * (6.28318548f / dustLoopCheck)), default) * new Vector2(1f, 4f);
                     dustRotate = dustRotate.RotatedBy((double)Projectile.velocity.ToRotation(), default);
-                    int deepRed = Dust.NewDust(Projectile.Center, 0, 0, 182, 0f, 0f, 0, default, 1f);
+                    int deepRed = Dust.NewDust(Projectile.Center, 0, 0, DustID.TheDestroyer, 0f, 0f, 0, default, 1f);
                     Main.dust[deepRed].scale = 1.5f;
                     Main.dust[deepRed].noGravity = true;
                     Main.dust[deepRed].position = Projectile.Center + dustRotate;
@@ -56,11 +57,11 @@ namespace CalamityMod.Projectiles.Magic
         public override void OnKill(int timeLeft)
         {
             Collision.HitTiles(Projectile.position, Projectile.velocity, Projectile.width, Projectile.height);
-            SoundEngine.PlaySound(SoundID.Item10, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item10, Projectile.Center);
             int randDustAmt = Main.rand.Next(4, 10);
             for (int i = 0; i < randDustAmt; i++)
             {
-                int killDeepRed = Dust.NewDust(Projectile.Center, 0, 0, 182, 0f, 0f, 100, default, 1f);
+                int killDeepRed = Dust.NewDust(Projectile.Center, 0, 0, DustID.TheDestroyer, 0f, 0f, 100, default, 1f);
                 Main.dust[killDeepRed].velocity *= 1.6f;
                 Dust expr_FEDF_cp_0 = Main.dust[killDeepRed];
                 expr_FEDF_cp_0.velocity.Y -= 1f;
@@ -84,8 +85,8 @@ namespace CalamityMod.Projectiles.Magic
                 spriteEffects = SpriteEffects.FlipHorizontally;
             }
             Color colorArea = Lighting.GetColor((int)((double)Projectile.position.X + (double)Projectile.width * 0.5) / 16, (int)(((double)Projectile.position.Y + (double)Projectile.height * 0.5) / 16.0));
-            Texture2D texture2D3 = ModContent.Request<Texture2D>(Texture).Value;
-            int textureArea = ModContent.Request<Texture2D>(Texture).Value.Height / Main.projFrames[Projectile.type];
+            Texture2D texture2D3 = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int textureArea = Terraria.GameContent.TextureAssets.Projectile[Type].Value.Height / Main.projFrames[Type];
             int y3 = textureArea * Projectile.frame;
             Rectangle rectangle = new Rectangle(0, y3, texture2D3.Width, textureArea);
             Vector2 halfRect = rectangle.Size() / 2f;
@@ -95,11 +96,11 @@ namespace CalamityMod.Projectiles.Magic
             {
                 Color alphaColor = colorArea;
                 alphaColor = Projectile.GetAlpha(alphaColor);
-                alphaColor *= (float)(3 - j) / ((float)ProjectileID.Sets.TrailCacheLength[Projectile.type] * 1.5f);
+                alphaColor *= (float)(3 - j) / ((float)ProjectileID.Sets.TrailCacheLength[Type] * 1.5f);
                 Vector2 oldPosition = Projectile.oldPos[j];
                 float projRotation = Projectile.rotation;
                 SpriteEffects effects = spriteEffects;
-                if (ProjectileID.Sets.TrailingMode[Projectile.type] == 2)
+                if (ProjectileID.Sets.TrailingMode[Type] == 2)
                 {
                     projRotation = Projectile.oldRot[j];
                     effects = (Projectile.oldSpriteDirection[j] == -1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;

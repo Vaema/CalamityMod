@@ -1,13 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Balancing;
 using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
+using CalamityMod.Enums;
 using CalamityMod.Events;
-using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Armor;
+using CalamityMod.Items.Armor.GodSlayer;
+using CalamityMod.Systems.Collections;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.GameContent.Events;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.Player;
@@ -85,7 +91,8 @@ namespace CalamityMod
             }
             // We intentionally don't check whip class, because it inherits 100% from Summon
 
-            float rogue = player.GetTotalDamage<RogueDamageClass>().Additive;
+            // CIT 28FEB2025: Damage boosts from stealth are now subtracted from total damage when considering best class, to prevent all-class damage from being skewed by it.
+            float rogue = player.GetTotalDamage<RogueDamageClass>().Additive - player.Calamity().stealthDamage;
             if (rogue > bestDamage)
             {
                 bestClass = RogueDamageClass.Instance;
@@ -119,7 +126,8 @@ namespace CalamityMod
             if (summon > best) best = summon;
             // We intentionally don't check whip class, because it inherits 100% from Summon
 
-            float rogue = player.GetTotalDamage<RogueDamageClass>().Additive;
+            // CIT 28FEB2025: Damage boosts from stealth are now subtracted from total damage when considering best class, to prevent all-class damage from being skewed by it.
+            float rogue = player.GetTotalDamage<RogueDamageClass>().Additive - player.Calamity().stealthDamage;
             if (rogue > best) best = rogue;
 
             // Add the best typical damage stat, then return the full modifier.
@@ -127,21 +135,7 @@ namespace CalamityMod
             return ret;
         }
 
-        /// <summary>
-        /// Extension method which calculates the player's current multiplicative boost to armor set bonus and accessory damage.<br />
-        /// This is currently only used by the Old Fashioned drink.
-        /// </summary>
-        /// <param name="player">The player whose armor / accessory damage bonus should be applied.</param>
-        /// <param name="damage">The damage to apply the bonus to.</param>
-        /// <returns>Boosted damage. If no boosts are applicable, returns the damage parameter that was passed in.</returns>
-        public static int ApplyArmorAccDamageBonusesTo(this Player player, float damage)
-        {
-            if (!player.Calamity().oldFashioned)
-                return (int)damage;
-            return (int)(damage * OldFashioned.AccessoryAndSetBonusDamageMultiplier);
-        }
-
-        public static float GetRangedAmmoCostReduction(this Player player)
+        public static float GetAmmoCostReduction(this Player player)
         {
             // Tally up all possible vanilla effects.
             float vanillaCost = player.ammoBox ? 0.8f : 1f;
@@ -153,7 +147,7 @@ namespace CalamityMod
                 vanillaCost *= 0.75f;
 
             // Account for Calamity effects.
-            return vanillaCost * player.Calamity().rangedAmmoCost;
+            return vanillaCost * player.Calamity().ammoCost;
         }
 
         public static float GetStandingStealthRegen(this Player player)
@@ -174,82 +168,44 @@ namespace CalamityMod
         /// Calculates and returns the player's total light strength. This is used for Abyss darkness, among other things.<br/>
         /// The Stat Meter also reports this stat.
         /// </summary>
-        /// <returns>The player's total light strength.</returns>
-        public static int GetCurrentAbyssLightLevel(this Player player)
+        public static void SetAbyssLightLevels(this Player player)
         {
             CalamityPlayer mp = player.Calamity();
-            int light = mp.externalAbyssLight;
             bool underwater = player.IsUnderwater();
             bool miningHelmet = player.head == ArmorIDs.Head.MiningHelmet || player.head == ArmorIDs.Head.UltraBrightHelmet;
-
-            // The campfire bonus does not apply while in the Abyss.
-            if (!mp.ZoneAbyss && (player.HasBuff(BuffID.Campfire) || Main.SceneMetrics.HasCampfire))
-                light += 1;
-            if (mp.camper) // inherits Campfire so it is +2 in practice
-                light += 1;
+            //Things that include darkness multipliers
+            if (mp.camper)
+                mp.abyssPlayerGlowMultiplier += Utils.Remap(player.velocity.Length(), 0, 5, 1, 0);
             if (miningHelmet)
-                light += 1;
-            if (player.hasMagiluminescence)
-                light += 1;
-            if (player.lightOrb)
-                light += 1;
-            if (player.crimsonHeart)
-                light += 1;
-            if (player.magicLantern)
-                light += 1;
+                mp.abyssPlayerGlowMultiplier += 0.2f;
+            if (player.nightVision)
+                mp.abyssDarkness -= 0.4f;
             if (mp.giantPearl)
-                light += 1;
-            if (mp.radiator)
-                light += 1;
-            if (mp.bendyPet)
-                light += 1;
-            if (mp.sparks)
-                light += 1;
-            if (mp.thiefsDime)
-                light += 1;
+                mp.abyssPlayerGlowMultiplier += 0.2f;
             if (mp.fathomSwarmerVisage)
-                light += 1;
+            {
+                mp.abyssDarkness -= 0.2f;
+                mp.abyssPlayerGlowMultiplier += 0.2f;
+                mp.abyssFlashlightWidthMultiplier += 0.5f;
+            }
             if (mp.aquaticHeart)
-                light += 1;
-            if (mp.purity) // does not stack with downgrades
-                light += 2;
-            else if (mp.rOoze || mp.aAmpoule) // the two "yellow lights" do not stack with each other
-                light += 1;
-            if (mp.aquaticEmblem && underwater)
-                light += 1;
-            if (player.arcticDivingGear && underwater) // inherited by abyssal diving gear/suit. jellyfish necklace is inherited so arctic diving gear is really +2
-                light += 1;
+                mp.abyssDarkness -= 0.1f;
             if (mp.jellyfishNecklace && underwater) // inherited by jellyfish diving gear and higher
-                light += 1;
-            if (mp.lumenousAmulet && underwater)
-                light += 2;
+                mp.abyssPlayerGlowMultiplier += 0.2f;
+            if (mp.reaverExplore)
+            {
+                mp.abyssDarkness -= 0.2f;
+                mp.abyssPlayerGlowMultiplier += 0.2f;
+                mp.abyssFlashlightWidthMultiplier += 0.5f;
+            }
             if (mp.shine)
-                light += 2;
-            if (mp.blazingCore)
-                light += 2;
-            if (player.redFairy || player.greenFairy || player.blueFairy)
-                light += 2;
-            if (mp.babyGhostBell)
-                light += underwater ? 2 : 1;
-            if (player.petFlagDD2Ghost)
-                light += 2;
-            if (mp.sirenPet)
-                light += underwater ? 3 : 1;
-            if (player.petFlagPumpkingPet)
-                light += 3;
-            if (player.petFlagGolemPet)
-                light += 3;
-            if (player.petFlagFairyQueenPet)
-                light += 3;
-            if (player.wisp)
-                light += 3;
-            if (player.suspiciouslookingTentacle)
-                light += 3;
+                mp.abyssPlayerGlowMultiplier += 0.2f;
+            if (mp.babyGhostBell && underwater)
+                mp.abyssDarkness -= 0.1f;
+            if (mp.sirenPet && underwater)
+                mp.abyssDarkness -= 0.2f;
             if (mp.littleLightPet)
-                light += 3;
-            if (mp.profanedCrystalBuffs && !mp.ZoneAbyss)
-                light += (Main.dayTime || player.lavaWet) ? 2 : 1; // not sure how you'd be in lava in the abyss but go ham I guess
-            return light;
+                mp.abyssDarkness -= 0.4f;
         }
 
         /// <summary>
@@ -282,7 +238,7 @@ namespace CalamityMod
                 return false;
             return true;
         }
-        
+
         // See also: Player.IsStandingStillForSpecialEffects (Vanilla shiny stone + standing still mana regen)
         // That is more or less equivalent to this with the default value of 0.05
         public static bool StandingStill(this Player player, float velocity = 0.05f) => player.velocity.Length() < velocity;
@@ -320,16 +276,29 @@ namespace CalamityMod
             }
             return ConditionMet;
         }
+
+        /// <summary>
+        /// Disables the default wing flap sound from vanilla; this is to stop custom wings playing this sound when they shouldnt
+        /// This must be called each update (eg, in the wings item UpdateAccessory method)
+        /// </summary>
+        /// <param name="player">The Player to disable the sound on</param>
+        public static void DisableWingFlapSound(this Player player)
+        {
+            // vanilla plays a flap sound for all wings barring a few hardcoded exceptions
+            // the flapSound flag is used to see if the sound *has been* played, so we set it to true here to prevent it from playing 
+            player.flapSound = true;
+        }
+
         #endregion
 
         #region Location and Biomes
         public static bool IsUnderwater(this Player player) => Collision.DrownCollision(player.position, player.width, player.height, player.gravDir);
 
-        public static bool InSpace(this Player player)
+        public static bool ReducedSpaceGravity(this Player player)
         {
             float x = Main.maxTilesX / 4200f;
             x *= x;
-            float spaceGravityMult = (float)((player.position.Y / 16f - (60f + 10f * x)) / (Main.worldSurface / 6.0));
+            float spaceGravityMult = (float)((player.position.Y / 16f - (60f + 10f * x)) / (Main.worldSurface / (Main.remixWorld ? 1.0 : 6.0)));
             return spaceGravityMult < 1f;
         }
 
@@ -385,11 +354,11 @@ namespace CalamityMod
         // TODO -- Wrong. This should return false for weapons which emit true melee projectiles e.g. Arkhalis
         public static bool HoldingProjectileMeleeWeapon(this Player player)
         {
-            Item item = player.ActiveItem();
+            Item item = player.HeldItem;
             return item.CountsAsClass<MeleeDamageClass>() && item.shoot != ProjectileID.None;
         }
 
-        public static bool HoldingTrueMeleeWeapon(this Player player) => player.ActiveItem().IsTrueMelee();
+        public static bool HoldingTrueMeleeWeapon(this Player player) => player.HeldItem.IsTrueMelee();
 
         public static bool InventoryHas(this Player player, params int[] items)
         {
@@ -413,6 +382,92 @@ namespace CalamityMod
 
         #region Immunity Frames
         /// <summary>
+        /// Computes the appropriate amount of immunity frames to grant a player when they are struck by an attack.<br />
+        /// Accounts for all Calamity effects, but not effects from other mods.
+        /// </summary>
+        /// <param name="player">The player whose immunity frames are being computed.</param>
+        /// <returns>The amount of immunity frames the player should receive if struck.</returns>
+        public static int ComputeHitIFrames(this Player player, HurtInfo hurtInfo)
+        {
+            // Start with vanilla immunity frames.
+            int iframes = BalancingConstants.VanillaDefaultIFrames + (player.longInvince ? BalancingConstants.CrossNecklaceIFrameBoost : 0);
+
+            // Add on all Calamity effects.
+            int calBonusIFrames = player.GetExtraHitIFrames(hurtInfo);
+
+            return iframes + calBonusIFrames;
+        }
+
+        /// <summary>
+        /// Gets the total amount of extra immunity frames from a hit granted by various Calamity effects.
+        /// </summary>
+        /// <param name="player">The player whose extra immunity frames are being computed.</param>
+        /// <returns>The amount of extra immunity frames to grant.</returns>
+        public static int GetExtraHitIFrames(this Player player, HurtInfo hurtInfo)
+        {
+            CalamityPlayer modPlayer = player.Calamity();
+
+            int extraIFrames = 0;
+            if (modPlayer.godSlayerThrowing && hurtInfo.Damage > GodSlayerHeadRogue.SetBonusHurtDamageThreshold)
+                extraIFrames += GodSlayerHeadRogue.ExtraIFrames;
+
+            // Deific Amulet provides 10 to 40 bonus immunity frames when you get hit which scale with your missing health.
+            // If you only take 1 damage, you get 5 iframes.
+            // This effect is inherited by Rampart of Deities.
+            if (modPlayer.dAmulet)
+            {
+                if (hurtInfo.Damage > 1)
+                {
+                    float lifeRatio = (float)player.statLife / player.statLifeMax2;
+                    float iframeEffectivenessRatio = Utils.GetLerpValue(1.0f, 0.25f, lifeRatio, true);
+
+                    extraIFrames += (int)(iframeEffectivenessRatio * DeificAmulet.MaxBonusIFrames);
+                }
+                else
+                    extraIFrames += 5;
+            }
+
+            // Ozzatron 20FEB2024: Moved extra iframes from Seraph Tracers to Rampart of Deities to counteract its loss of Charm of Myths
+            // This stacks with the above Deific Amulet effect
+            if (modPlayer.rampartOfDeities && hurtInfo.Damage > 200)
+                extraIFrames += 30;
+            return extraIFrames;
+        }
+
+        /// <summary>
+        /// Computes the appropriate amount of immunity frames to grant a player when they activate a dodge.<br />
+        /// Accounts for all Calamity effects, but not effects from other mods.
+        /// </summary>
+        /// <param name="player">The player whose immunity frames are being computed.</param>
+        /// <returns>The amount of immunity frames the player should receive upon dodging.</returns>
+        public static int ComputeDodgeIFrames(this Player player)
+        {
+            int iframes = BalancingConstants.VanillaDodgeIFrames + (player.longInvince ? BalancingConstants.CrossNecklaceIFrameBoost : 0);
+            return iframes;
+        }
+
+        /// <summary>
+        /// Computes the appropriate amount of immunity frames to grant a player when they activate a parry.<br />
+        /// Accounts for all Calamity effects, but not effects from other mods.
+        /// </summary>
+        /// <param name="player">The player whose immunity frames are being computed.</param>
+        /// <returns>The amount of immunity frames the player should receive upon parrying.</returns>
+        public static int ComputeParryIFrames(this Player player)
+        {
+            int iframes = BalancingConstants.VanillaParryIFrames + (player.longInvince ? BalancingConstants.CrossNecklaceIFrameBoost_Parry : 0);
+            return iframes;
+        }
+
+        // Currently, reflects are functionally equivalent to dodges.
+        /// <summary>
+        /// Computes the appropriate amount of immunity frames to grant a player when they activate a reflect.<br />
+        /// Accounts for all Calamity effects, but not effects from other mods.
+        /// </summary>
+        /// <param name="player">The player whose immunity frames are being computed.</param>
+        /// <returns>The amount of immunity frames the player should receive upon reflecting an attack.</returns>
+        public static int ComputeReflectIFrames(this Player player) => player.ComputeDodgeIFrames();
+
+        /// <summary>
         /// Checks whether the player has any kind of immunity frames (or "iframes" for short) available.
         /// </summary>
         /// <param name="player">The player whose immunity frames should be checked.</param>
@@ -432,13 +487,47 @@ namespace CalamityMod
         }
 
         /// <summary>
-        /// Gives the player the specified number of immunity frames (or "iframes" for short).<br />If the player already has more iframes than you want to give them, this function does nothing.
+        /// Gives the player the specified number of immunity frames (or "iframes" for short) to a specific cooldown slot.<br />
+        /// If the player already has more iframes than you want to give them, this function does nothing.<br />
+        /// <br />
+        /// <b>This should be used for effects that need to mock or mimic the iframes that would be granted by getting hit.</b>
+        /// </summary>
+        /// <param name="player">The player who should be given immunity frames.</param>
+        /// <param name="cooldownSlot">The immunity cooldown slot to use. See TML documentation for which is which.</param>
+        /// <param name="frames">The number of immunity frames to give.</param>
+        /// <param name="blink">Whether or not the player should be blinking during this time.</param>
+        /// <returns>Whether or not any immunity frames were given.</returns>
+        public static bool GiveIFrames(this Player player, int cooldownSlot, int frames, bool blink = false)
+        {
+            // Check to see if there is any way for the player to get iframes from this operation.
+            bool anyIFramesWouldBeGiven = (cooldownSlot < 0) ? player.immuneTime < frames : player.hurtCooldowns[cooldownSlot] < frames;
+
+            // If they would get nothing, don't do it.
+            if (!anyIFramesWouldBeGiven)
+                return false;
+
+            // Apply iframes thoroughly. Player.AddImmuneTime is not used because iframes should not exceed the intended amount.
+            player.immune = true;
+            player.immuneNoBlink = !blink;
+            if (cooldownSlot < 0)
+                player.immuneTime = frames;
+            else
+                player.hurtCooldowns[cooldownSlot] = frames;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Gives the player the specified number of immunity frames (or "iframes" for short) to all cooldown slots.<br />
+        /// If the player already has more iframes than you want to give them, this function does nothing.<br />
+        /// <br />
+        /// <b>This should be used for effects like dodges or true invulnerability that should prevent the player from being hit for a predetermined time.</b>
         /// </summary>
         /// <param name="player">The player who should be given immunity frames.</param>
         /// <param name="frames">The number of immunity frames to give.</param>
         /// <param name="blink">Whether or not the player should be blinking during this time.</param>
         /// <returns>Whether or not any immunity frames were given.</returns>
-        public static bool GiveIFrames(this Player player, int frames, bool blink = false)
+        public static bool GiveUniversalIFrames(this Player player, int frames, bool blink = false)
         {
             // Check to see if there is any way for the player to get iframes from this operation.
             bool anyIFramesWouldBeGiven = false;
@@ -450,8 +539,7 @@ namespace CalamityMod
             if (!anyIFramesWouldBeGiven)
                 return false;
 
-            // Apply iframes thoroughly.
-            // Player.AddImmuneTime does exist, but is equivalent to the below code.
+            // Apply iframes thoroughly. Player.AddImmuneTime is not used because iframes should not exceed the intended amount.
             player.immune = true;
             player.immuneNoBlink = !blink;
             player.immuneTime = frames;
@@ -473,6 +561,117 @@ namespace CalamityMod
             player.immuneTime = 0;
             for (int i = 0; i < player.hurtCooldowns.Length; ++i)
                 player.hurtCooldowns[i] = 0;
+        }
+
+        /// <summary>
+        /// Lifted from Fargo's. Sets the damage and knockback of an incoming hit to zero, making it not affect the player.
+        /// </summary>
+        /// <param name="hurtInfo">The HurtInfo instance to nullify.</param>
+        public static void NullifyHit(ref this HurtInfo hurtInfo)
+        {
+            hurtInfo._damage = 0;
+            hurtInfo.Knockback = 0;
+        }
+        #endregion
+
+        #region Player Healing and Lifesteal
+        /// <summary>
+        /// Directly provides lifesteal to the player.
+        /// This obeys the spawn behaviour of lifesteal and incurs cooldown.
+        /// </summary>
+        /// <param name="player">The player being healed.</param>
+        /// <param name="target">The target being hit. Input null if there is none.</param>
+        /// <param name="amount">The amount of life being healed.</param>
+        /// <param name="cooldownMultiplier">The multiplier to the rate of lifesteal. Increase above 1 to make it weaker and below 1 to make it stronger.</param>
+        public static void DoLifestealDirect(this Player player, NPC target, int amount, float cooldownMultiplier = 1f)
+        {
+            // NPC limitations: disallow if target is not an enemy or deliberately disallowed from lifestealing
+            if (target is not null && (!target.IsAnEnemy(false) || !target.canGhostHeal))
+                return;
+
+            // Limit the amount of heal to the player's max health
+            amount = Math.Min(amount, player.statLifeMax2 - player.statLife);
+
+            // As well as the physical cap to how much HP can be healed
+            amount = Math.Min(amount, BalancingConstants.LifeStealCap);
+
+            // Player limitations: disallow if lifesteal variable reaches 0 or lower or Moon Bite is active
+            if (amount <= 0 || player.lifeSteal <= 0f || player.moonLeech)
+                return;
+
+            // Grant lifesteal and subtract from the variable accordingly
+            player.lifeSteal -= amount * cooldownMultiplier;
+            player.HealPlayer(amount);
+        }
+
+        /// <summary>
+        /// Spawns a projectile which grants healing to the player on contact.
+        /// This obeys the spawn behaviour of lifesteal and incurs cooldown.
+        /// This applies as a projectile on-hit effect. Use DoLifestealDirect for direct lifestealing.
+        /// </summary>
+        /// <param name="player">The player being healed.</param>
+        /// <param name="target">The target being hit. Input null if there is none.</param>
+        /// <param name="projSource">The source projectile performing this heal.</param>
+        /// <param name="projType">The type of healing projectile spawned.</param>
+        /// <param name="amount">The amount of life to heal.</param>
+        /// <param name="cooldownMultiplier">The multiplier to the rate of lifesteal. Increase above 1 to make it weaker and below 1 to make it stronger.</param>
+        /// <param name="shared">Whether or not the heal is given to the player on the team with lowest HP. False by default.</param>
+        /// <param name="distanceRequired">The distance the projectile has to be from the player to direct the heal to when sharing. Default of 3000f (187.5 tiles)</param>
+        public static void SpawnLifeStealProjectile(this Player player, NPC target, Projectile projSource, int projType, int amount, float cooldownMultiplier = 1f, bool shared = false, float distanceRequired = 3000f)
+        {
+            // NPC limitations: disallow if target is not an enemy or deliberately disallowed from lifestealing
+            if (target is not null && (!target.IsAnEnemy(false) || !target.canGhostHeal))
+                return;
+
+            int lowestHealthCheck = player.statLifeMax2 - player.statLife;
+            int targetPlayer = player.whoAmI;
+            if (shared)
+            {
+                foreach (Player otherPlayer in Main.ActivePlayers)
+                {
+                    if (!otherPlayer.dead && ((!player.hostile && !otherPlayer.hostile) || player.team == otherPlayer.team))
+                    {
+                        float playerDist = Vector2.Distance(projSource.Center, otherPlayer.Center);
+                        if (playerDist < distanceRequired && (otherPlayer.statLifeMax2 - otherPlayer.statLife) > lowestHealthCheck)
+                        {
+                            lowestHealthCheck = otherPlayer.statLifeMax2 - otherPlayer.statLife;
+                            targetPlayer = otherPlayer.whoAmI;
+                        }
+                    }
+                }
+            }
+
+            // Limit the amount of heal to the target player's max health
+            amount = Math.Min(amount, lowestHealthCheck);
+
+            // As well as the physical cap to how much HP can be healed
+            amount = Math.Min(amount, BalancingConstants.LifeStealCap);
+
+            // Player limitations: disallow if lifesteal variable reaches 0 or lower or Moon Bite is active
+            // This is performed on the player who DOES the lifesteal, and not the recipient
+            if (amount <= 0 || player.lifeSteal <= 0f || player.moonLeech)
+                return;
+
+            // Grant lifesteal and subtract from the variable accordingly
+            player.lifeSteal -= amount * cooldownMultiplier;
+            if (projSource.owner == Main.myPlayer)
+                Projectile.NewProjectile(projSource.GetSource_FromThis(), projSource.Center, Vector2.Zero, projType, 0, 0f, projSource.owner, targetPlayer, amount);
+        }
+
+        /// <summary>
+        /// A short method that heals the player.
+        /// All direct heals in Calamity should use this.
+        /// </summary>
+        /// <param name="player">The player being healed.</param>
+        /// <param name="amount">The amount of life being healed.</param>
+        /// <param name="healTextType">Whether the heal CombatText should be displayed, and whether it should be synced. Displays and syncs by default.</param>
+        public static void HealPlayer(this Player player, int amount, HealTextType healTextType = HealTextType.Broadcast)
+        {
+            player.statLife += amount;
+            if (player.statLife > player.statLifeMax2)
+                player.statLife = player.statLifeMax2;
+            if (healTextType != HealTextType.None)
+                player.HealEffect(amount, healTextType == HealTextType.Broadcast);
         }
         #endregion
 
@@ -520,15 +719,12 @@ namespace CalamityMod
         /// <param name="damageMult">A reference to the current in-use damage multiplier. This will be increased in-place.</param>
         public static void ApplyRippersToDamage(CalamityPlayer mp, bool trueMelee, ref float damageMult)
         {
-            // Reduce how much true melee benefits from Rage and Adrenaline.
-            float rageAndAdrenalineTrueMeleeDamageMult = 0.5f;
-
             // Rage and Adrenaline now stack additively with no special cases.
             if (mp.rageModeActive)
-                damageMult += trueMelee ? mp.RageDamageBoost * rageAndAdrenalineTrueMeleeDamageMult : mp.RageDamageBoost;
+                damageMult += trueMelee ? mp.RageDamageBoost * BalancingConstants.TrueMeleeRipperReductionFactor : mp.RageDamageBoost;
             // Draedon's Heart disables Adrenaline damage.
             if (mp.adrenalineModeActive && !mp.draedonsHeart)
-                damageMult += trueMelee ? mp.GetAdrenalineDamage() * rageAndAdrenalineTrueMeleeDamageMult : mp.GetAdrenalineDamage();
+                damageMult += trueMelee ? mp.GetAdrenalineDamage() * BalancingConstants.TrueMeleeRipperReductionFactor : mp.GetAdrenalineDamage();
         }
         #endregion
 
@@ -560,7 +756,7 @@ namespace CalamityMod
             {
                 CalamityPlayer mp = p.Calamity();
                 mp.cooldowns[id] = instance;
-                mp.SyncCooldownAddition(Main.netMode == NetmodeID.Server, instance);
+                mp.SyncCooldownAddition(Main.dedServ, instance);
             }
 
             return instance;
@@ -708,12 +904,12 @@ namespace CalamityMod
                 }
             }
 
-            player.itemLocation = finalPosition;
+            player.itemLocation = finalPosition + new Vector2(spriteSize.X * 0.5f, 0);
         }
         #endregion
 
         #region Visual Layers
-        public static void HideAccessories(this Player player, bool hideHeadAccs = true, bool hideBodyAccs = true, bool hideLegAccs = true,  bool hideShield = true)
+        public static void HideAccessories(this Player player, bool hideHeadAccs = true, bool hideBodyAccs = true, bool hideLegAccs = true, bool hideShield = true)
         {
             if (hideHeadAccs)
                 player.face = -1;
@@ -722,7 +918,7 @@ namespace CalamityMod
             {
                 player.handon = -1;
                 player.handoff = -1;
-                
+
                 player.back = -1;
                 player.front = -1;
                 player.neck = -1;
@@ -738,6 +934,64 @@ namespace CalamityMod
                 player.shield = -1;
         }
         #endregion
+
+        /// <summary>
+        /// Used to limit the cursor up to a 1080p monitor. A similar method is used for items such as Zenith in vanilla.
+        /// </summary>
+        /// <param name="player">The player to check.</param>
+        /// <returns>The current position of the player's mouse, clamped to a 1920x1080 screen.</returns>
+        public static Vector2 ClampedMouseWorld(this Player player)
+        {
+            Vector2 mouseWorld = player.Calamity().mouseWorld;
+
+            // Clamp each axis
+            mouseWorld.X = mouseWorld.X >= player.MountedCenter.X ? MathF.Min(mouseWorld.X, player.MountedCenter.X + 960f) : MathF.Max(mouseWorld.X, player.MountedCenter.X - 960f);
+            mouseWorld.Y = mouseWorld.Y >= player.MountedCenter.Y ? MathF.Min(mouseWorld.Y, player.MountedCenter.Y + 540f) : MathF.Max(mouseWorld.Y, player.MountedCenter.Y - 540f);
+            return mouseWorld;
+        }
+
+        /// <summary>
+        /// A shorthand bool to check if the player can continue using the holdout or not.
+        /// </summary>
+        /// <param name="player">The player using the holdout.</param>
+        /// <returns>Returns <see langword="true"/> if the player CAN'T use the item.</returns>
+        public static bool CantUseHoldout(this Player player, bool needsToHold = true) => player == null || !player.active || player.dead || (!player.channel && needsToHold) || player.CCed || player.noItems;
+
+        /// <summary>
+        /// A shorthand bool to check if the held item should trigger Calamity's summon damage penalty.
+        /// </summary>
+        /// <param name="player">The player to check.</param>
+        /// <param name="item">The current held item.</param>
+        /// <returns>Returns <see langword="true"/> if the held item should trigger the summon damage penalty.</returns>
+        public static bool ShouldTriggerSummonPenalty(Player player, Item item)
+        {
+            var modPlayer = player.Calamity();
+
+            bool forbiddenWithMagicWeapon = player.armor[0].type == ItemID.AncientBattleArmorHat && player.armor[1].type == ItemID.AncientBattleArmorShirt && player.armor[2].type == ItemID.AncientBattleArmorPants && item.CountsAsClass<MagicDamageClass>();
+            bool circletWithRogueWeapon = player.armor[0].type == ModContent.ItemType<ForbiddenCirclet>() && player.armor[1].type == ItemID.AncientBattleArmorShirt && player.armor[2].type == ItemID.AncientBattleArmorPants && item.CountsAsClass<RogueDamageClass>();
+            bool gemTechBlueGem = modPlayer.GemTechSet && modPlayer.GemTechState.IsBlueGemActive;
+
+            bool crossClassNerfDisabled = forbiddenWithMagicWeapon || circletWithRogueWeapon || modPlayer.fearmongerSet || gemTechBlueGem || modPlayer.profanedCrystalBuffs || DD2Event.Ongoing;
+
+            if (item.type > ItemID.None && !crossClassNerfDisabled)
+            {
+                bool heldItemIsClassedWeapon = !item.CountsAsClass<SummonDamageClass>() && (
+                    item.CountsAsClass<MeleeDamageClass>() ||
+                    item.CountsAsClass<RangedDamageClass>() ||
+                    item.CountsAsClass<MagicDamageClass>() ||
+                    item.CountsAsClass<ThrowingDamageClass>()
+                );
+
+                bool heldItemIsTool = (item.pick > 0 || item.axe > 0 || item.hammer > 0) && !CalamityItemSets.WeaponWithToolPowerAffectedBySummonPenalty[item.type];
+                bool heldItemCanBeUsed = item.useStyle != ItemUseStyleID.None;
+                bool heldItemIsAccessoryOrAmmo = item.accessory || item.ammo != AmmoID.None;
+                bool heldItemIsExcludedByModCall = CalamityItemSets.ItemWhichDisablesSummonerNerf[item.type];
+
+                if (heldItemIsClassedWeapon && heldItemCanBeUsed && !heldItemIsTool && !heldItemIsAccessoryOrAmmo && !heldItemIsExcludedByModCall)
+                    return true;
+            }
+            return false;
+        }
 
         /// <summary>
         /// Makes the given player send the given packet to all appropriate receivers.<br />

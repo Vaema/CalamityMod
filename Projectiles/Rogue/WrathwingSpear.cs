@@ -1,8 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -13,9 +14,10 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 8;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -37,6 +39,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 Projectile.ai[0] = 20f;
 
+                SoundEngine.PlaySound(SoundID.DD2_BetsyFireballShot with { Volume = 0.5f, MaxInstances = -1 }, Projectile.Center);
                 int fireballID = ModContent.ProjectileType<WrathwingFireball>();
                 int damage = (int)(Projectile.damage * 0.7f);
                 float angleDiff = Main.rand.NextFloat(-FireballAngleVariance, FireballAngleVariance);
@@ -107,7 +110,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

@@ -1,15 +1,15 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.IO;
+using CalamityMod.Buffs.Summon;
+using CalamityMod.Dusts;
+using CalamityMod.Items.Weapons.Summon;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
+using Terraria.Audio;
+using Terraria.GameContent.Drawing;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Items.Weapons.Summon;
-using CalamityMod.Buffs.Summon;
-using System.IO;
-using Terraria.GameContent.Drawing;
-using CalamityMod.Dusts;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -44,8 +44,9 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 18;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projPet[Type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -93,7 +94,6 @@ namespace CalamityMod.Projectiles.Summon
 
         public void ApplyMinionBuffs()
         {
-            // Maintain or remove the Mechworm buff from the owner.
             Owner.AddBuff(ModContent.BuffType<MoonFistBuff>(), 3600);
             if (Owner.dead)
                 Owner.Calamity().MoonFist = false;
@@ -180,7 +180,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 Vector2 dustDrawPosition = Vector2.Lerp(start, end, i / 74f);
 
-                Dust magic = Dust.NewDustPerfect(dustDrawPosition, 267);
+                Dust magic = Dust.NewDustPerfect(dustDrawPosition, DustID.RainbowMk2);
                 magic.velocity = -Vector2.UnitY * Main.rand.NextFloat(0.2f, 0.235f);
                 magic.color = Color.LightCyan;
                 magic.color.A = 0;
@@ -202,6 +202,8 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.Center = end;
             Projectile.netUpdate = true;
         }
+
+        public override bool MinionContactDamage() => true;
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
@@ -239,7 +241,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;

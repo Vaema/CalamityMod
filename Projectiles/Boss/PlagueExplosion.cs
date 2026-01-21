@@ -1,6 +1,7 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using System;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
@@ -46,7 +47,7 @@ namespace CalamityMod.Projectiles.Boss
                 randoAdjuster = rando3 / randoAdjuster;
                 rando1 *= randoAdjuster;
                 rando2 *= randoAdjuster;
-                int greenPlague = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 89, 0f, 0f, 100, default);
+                int greenPlague = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.GemEmerald, 0f, 0f, 100, default);
                 Main.dust[greenPlague].noGravity = true;
                 Main.dust[greenPlague].position.X = Projectile.Center.X;
                 Main.dust[greenPlague].position.Y = Projectile.Center.Y;

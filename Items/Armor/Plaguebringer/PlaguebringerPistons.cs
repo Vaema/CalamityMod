@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Plaguebringer
@@ -9,20 +10,27 @@ namespace CalamityMod.Items.Armor.Plaguebringer
     public class PlaguebringerPistons : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
+
+        public static int MinionSlotBoost = 1;
+        public static float SummonDamageBoost = 0.15f;
+        public static float MoveSpeedBoost = 0.15f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MinionSlotBoost, SummonDamageBoost.ToPercent(), MoveSpeedBoost.ToPercent());
+
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.defense = 8;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.defense = 10;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.Calamity().donorItem = true;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<SummonDamageClass>() += 0.15f;
-            player.moveSpeed += 0.15f;
+            player.maxMinions += MinionSlotBoost;
+            player.GetDamage<SummonDamageClass>() += SummonDamageBoost;
+            player.moveSpeed += MoveSpeedBoost;
 
             //Flower Boots code
             if (player.whoAmI == Main.myPlayer && player.velocity.Y == 0f && player.grappling[0] == -1)
@@ -133,8 +141,8 @@ namespace CalamityMod.Items.Armor.Plaguebringer
             CreateRecipe().
                 AddIngredient(ItemID.BeeGreaves).
                 AddIngredient(ItemID.FlowerBoots).
-                AddIngredient<PlagueCellCanister>(5).
                 AddIngredient<InfectedArmorPlating>(5).
+                AddIngredient<PlagueCellCanister>(5).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

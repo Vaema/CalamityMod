@@ -1,13 +1,12 @@
-﻿using CalamityMod.Buffs.Mounts;
+﻿using System;
+using CalamityMod.Buffs.Mounts;
 using CalamityMod.Items;
 using CalamityMod.Projectiles.Summon.AndromedaUI;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System;
-using Terraria.Audio;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
 
 namespace CalamityMod.Projectiles.Summon
 {
@@ -53,7 +52,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.NeedsUUID[Projectile.type] = true;
+            ProjectileID.Sets.NeedsUUID[Type] = true;
         }
 
         public override void SetDefaults()
@@ -114,13 +113,13 @@ namespace CalamityMod.Projectiles.Summon
 
                     Vector2 center = player.Center + new Vector2(6f, -2f).RotatedBy(player.velocity.ToRotation());
 
-                    int idx = Dust.NewDust(center, 0, 0, 226, 0f, 0f, 100, default, 0.5f);
+                    int idx = Dust.NewDust(center, 0, 0, DustID.Electric, 0f, 0f, 100, default, 0.5f);
                     Main.dust[idx].noGravity = true;
                     Main.dust[idx].position = center + spinningPoint;
                     Main.dust[idx].velocity = Vector2.Zero;
                     spinningPoint *= -1f;
 
-                    idx = Dust.NewDust(center, 0, 0, 226, 0f, 0f, 100, default, 0.5f);
+                    idx = Dust.NewDust(center, 0, 0, DustID.Electric, 0f, 0f, 100, default, 0.5f);
                     Main.dust[idx].noGravity = true;
                     Main.dust[idx].position = center + spinningPoint;
                     Main.dust[idx].velocity = Vector2.Zero;
@@ -131,6 +130,7 @@ namespace CalamityMod.Projectiles.Summon
                     ExitChargeModeEarly(player);
                 }
 
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 player.velocity = Vector2.Lerp(player.velocity, Projectile.SafeDirectionTo(Main.MouseWorld, Vector2.UnitY) * RightIconLungeSpeed, 0.225f);
                 Projectile.rotation = player.velocity.ToRotation() + MathHelper.PiOver2;
             }
@@ -156,13 +156,12 @@ namespace CalamityMod.Projectiles.Summon
                 // If the player has any existing UIs, kill them all.
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<AndromedaUI_Background>()] > 0)
                 {
-                    for (int i = 0; i < Main.projectile.Length; i++)
+                    foreach (Projectile p in Main.ActiveProjectiles)
                     {
-                        if (Main.projectile[i].active &&
-                            Main.projectile[i].type == ModContent.ProjectileType<AndromedaUI_Background>() &&
-                            Main.projectile[i].owner == player.whoAmI)
+                        if (p.type == ModContent.ProjectileType<AndromedaUI_Background>() &&
+                            p.owner == player.whoAmI)
                         {
-                            Main.projectile[i].Kill();
+                            p.Kill();
                         }
                     }
                 }
@@ -171,7 +170,7 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     if (Main.myPlayer == player.whoAmI)
                     {
-                        Projectile ui = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), 
+                        Projectile ui = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(),
                                                  Main.MouseWorld,
                                                  Vector2.Zero,
                                                  ModContent.ProjectileType<AndromedaUI_Background>(),
@@ -243,7 +242,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.position + dustOffset, 263);
+                    Dust dust = Dust.NewDustPerfect(Projectile.position + dustOffset, DustID.PortalBolt);
                     dust.velocity = Vector2.Normalize(dust.position - Projectile.Top).RotatedByRandom(0.4f) * Main.rand.NextFloat(4f, 7f) + Projectile.velocity;
                     dust.color = Color.SkyBlue;
                     dust.scale = Main.rand.NextFloat(0.9f, 1.35f);
@@ -289,13 +288,12 @@ namespace CalamityMod.Projectiles.Summon
             }
             int slashIndex = -1;
 
-            for (int i = 0; i < Main.projectile.Length; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                if (Main.projectile[i].active &&
-                    Main.projectile[i].type == ModContent.ProjectileType<AndromedaRegislash>() &&
-                    Main.projectile[i].owner == Projectile.owner)
+                if (p.type == ModContent.ProjectileType<AndromedaRegislash>() &&
+                    p.owner == Projectile.owner)
                 {
-                    slashIndex = i;
+                    slashIndex = p.whoAmI;
                     break;
                 }
             }
@@ -310,13 +308,12 @@ namespace CalamityMod.Projectiles.Summon
 
             int laserBeamIndex = -1;
 
-            for (int i = 0; i < Main.projectile.Length; i++)
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                if (Main.projectile[i].active &&
-                    Main.projectile[i].type == ModContent.ProjectileType<AndromedaDeathRay>() &&
-                    Main.projectile[i].owner == Projectile.owner)
+                if (p.type == ModContent.ProjectileType<AndromedaDeathRay>() &&
+                    p.owner == Projectile.owner)
                 {
-                    laserBeamIndex = i;
+                    laserBeamIndex = p.whoAmI;
                     break;
                 }
             }
@@ -332,9 +329,12 @@ namespace CalamityMod.Projectiles.Summon
             {
                 if (Projectile.owner == Main.myPlayer)
                 {
-                    SoundEngine.PlaySound(GaussRifle.FireSound, Projectile.Center);
+                    SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/MechGaussRifle"), Projectile.Center);
                     int damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(LaserBaseDamage);
+
+                    // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     Vector2 laserVelocity = (Main.MouseWorld - (Main.player[Projectile.owner].Center + new Vector2(Projectile.spriteDirection == 1 ? 48f : 22f, -28f))).SafeNormalize(Vector2.UnitX * Projectile.spriteDirection);
+
                     Projectile deathLaser = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(),
                                                                            Projectile.Center,
                                                                            laserVelocity,
@@ -352,7 +352,7 @@ namespace CalamityMod.Projectiles.Summon
         public void ExitChargeModeEarly(Player player)
         {
             RightIconCooldown = RightIconAttackTime;
-            SoundEngine.PlaySound(GaussRifle.FireSound, Projectile.Center);
+            SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/MechGaussRifle"), Projectile.Center);
             SpecialAttackExplosionDust(player);
         }
         public void SpecialAttackExplosionDust(Player player)
@@ -367,13 +367,13 @@ namespace CalamityMod.Projectiles.Summon
                         for (int speedSign = -1; speedSign <= 1; speedSign += 2)
                         {
                             float angle = MathHelper.Lerp(0f, MathHelper.TwoPi / 10f, (outwardness - 190f) / 170f);
-                            Dust dust = Dust.NewDustPerfect(Projectile.Center, 221);
+                            Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.FireworkFountain_Blue);
                             dust.noGravity = true;
                             dust.scale = 1.6f;
                             dust.position = player.Center + outwardness * (MathHelper.TwoPi / 10f * angleInterval).ToRotationVector2().RotatedBy(angle);
                             dust.velocity = player.SafeDirectionTo(dust.position) * 8f * speedSign;
 
-                            dust = Dust.NewDustPerfect(Projectile.Center, 221);
+                            dust = Dust.NewDustPerfect(Projectile.Center, DustID.FireworkFountain_Blue);
                             dust.noGravity = true;
                             dust.scale = 1.6f;
                             dust.position = player.Center + outwardness * (MathHelper.TwoPi / 10f * angleInterval).ToRotationVector2().RotatedBy(-angle);
@@ -396,7 +396,7 @@ namespace CalamityMod.Projectiles.Summon
                         int pointsOnStarSegment = 24;
                         for (int j = 0; j < pointsOnStarSegment; j++)
                         {
-                            Dust dust = Dust.NewDustPerfect(player.Center, 221);
+                            Dust dust = Dust.NewDustPerfect(player.Center, DustID.FireworkFountain_Blue);
                             dust.noGravity = true;
                             dust.scale = 1.9f;
                             dust.velocity = Vector2.Lerp(start, end, j / (float)pointsOnStarSegment) * 13f * new Vector2(1.414f, 1f);

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.Enums;
 using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Graphics.Metaballs
@@ -56,13 +56,13 @@ namespace CalamityMod.Graphics.Metaballs
             }
         }
 
-        public override MetaballDrawLayer DrawContext => MetaballDrawLayer.AfterProjectiles;
+        public override GeneralDrawLayer DrawLayer => GeneralDrawLayer.AfterProjectiles;
 
         public override Color EdgeColor => new(61, 6, 2);
 
         public override void Load()
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             // Load layer assets.
@@ -136,8 +136,12 @@ namespace CalamityMod.Graphics.Metaballs
             }
 
             // Draw gruesome eminence ghost heads.
-            foreach (Projectile eminence in CalamityUtils.AllProjectilesByID(ModContent.ProjectileType<SpiritCongregation>()))
-                eminence.ModProjectile<SpiritCongregation>().DrawHeadForMetaball();
+            int eminenceType = ModContent.ProjectileType<SpiritCongregation>();
+            foreach (Projectile p in Main.ActiveProjectiles)
+            {
+                if (p.type == eminenceType)
+                    p.ModProjectile<SpiritCongregation>().DrawHeadForMetaball();
+            }
         }
     }
 }

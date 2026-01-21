@@ -1,5 +1,5 @@
-﻿using CalamityMod.Projectiles.Magic;
-using Terraria;
+﻿using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Projectiles.Magic;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 5;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.UseSound = SoundID.Item46;
             Item.shoot = ModContent.ProjectileType<Snowflake>();

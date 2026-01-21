@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using ReLogic.Utilities;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.WorldBuilding;
@@ -26,16 +26,33 @@ namespace CalamityMod.World
 
                 int y = WorldGen.genRand.Next((int)Main.rockLayer, Main.maxTilesY - 500);
 
-                if (Main.tile[x, y].HasTile && Main.tile[x, y].TileType == 60)
+                if (Main.remixWorld)
                 {
-                    Rectangle ugDesert = GenVars.UndergroundDesertLocation;
-                    Rectangle InflatedSunkenSeaLocation = new Rectangle(ugDesert.Left - 160, ugDesert.Center.Y - 160, ugDesert.Width + 320, ugDesert.Height / 2 + 320);
-                    Rectangle TempleLocation = new Rectangle(x - 80, y - 80, 160, 160);
+                    while (Main.tile[x, y].HasTile || Main.tile[x, y].WallType > WallID.None || y > (int)(Main.worldSurface - 5.0))
+                    {
+                        y--;
+                    }
 
-                    if (!TempleLocation.Intersects(InflatedSunkenSeaLocation))
+                    y++;
+                    if (Main.tile[x, y].HasTile && (Main.tile[x, y].TileType == TileID.JungleGrass || Main.tile[x, y].TileType == TileID.Mud))
                     {
                         success = true;
                         GenNewTemple(x, y);
+                    }
+                }
+                else
+                {
+                    if (Main.tile[x, y].HasTile && Main.tile[x, y].TileType == TileID.JungleGrass)
+                    {
+                        Rectangle ugDesert = GenVars.UndergroundDesertLocation;
+                        Rectangle InflatedSunkenSeaLocation = new Rectangle(ugDesert.Left - 160, ugDesert.Center.Y - 160, ugDesert.Width + 320, ugDesert.Height / 2 + 320);
+                        Rectangle TempleLocation = new Rectangle(x - 80, y - 80, 160, 160);
+
+                        if (!TempleLocation.Intersects(InflatedSunkenSeaLocation))
+                        {
+                            success = true;
+                            GenNewTemple(x, y);
+                        }
                     }
                 }
             }
@@ -474,7 +491,7 @@ namespace CalamityMod.World
                 int roomToFillIndex = WorldGen.genRand.Next(totalRooms);
                 int randomPointInRoomX = WorldGen.genRand.Next(roomBounds[roomToFillIndex].X, roomBounds[roomToFillIndex].X + roomBounds[roomToFillIndex].Width);
                 int randomPointInRoomY = WorldGen.genRand.Next(roomBounds[roomToFillIndex].Y, roomBounds[roomToFillIndex].Y + roomBounds[roomToFillIndex].Height);
-                if (Main.tile[randomPointInRoomX, randomPointInRoomY].WallType == 87 && !Main.tile[randomPointInRoomX, randomPointInRoomY].HasTile)
+                if (Main.tile[randomPointInRoomX, randomPointInRoomY].WallType == WallID.LihzahrdBrickUnsafe && !Main.tile[randomPointInRoomX, randomPointInRoomY].HasTile)
                 {
                     bool successPlacingSpikes = false;
                     if (WorldGen.genRand.NextBool(2))
@@ -492,7 +509,7 @@ namespace CalamityMod.World
                         {
                             for (int dy = randomPointInRoomY - areaToCheck; dy < randomPointInRoomY + areaToCheck; dy++)
                             {
-                                if (Main.tile[dx, dy].HasTile && Main.tile[dx, dy].TileType == 10)
+                                if (Main.tile[dx, dy].HasTile && Main.tile[dx, dy].TileType == TileID.ClosedDoor)
                                 {
                                     noDoorInWay = false;
                                     break;
@@ -549,7 +566,7 @@ namespace CalamityMod.World
                         {
                             for (int dy = randomPointInRoomY - areaToCheck; dy < randomPointInRoomY + areaToCheck; dy++)
                             {
-                                if (Main.tile[dx, dy].HasTile && Main.tile[dx, dy].TileType == 10)
+                                if (Main.tile[dx, dy].HasTile && Main.tile[dx, dy].TileType == TileID.ClosedDoor)
                                 {
                                     noDoorInWay = false;
                                     break;

@@ -1,10 +1,10 @@
 ﻿using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.Plates;
 using CalamityMod.Items.Placeables.Ores;
+using CalamityMod.Items.Placeables.Plates;
 using CalamityMod.Rarities;
+using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -17,8 +17,8 @@ namespace CalamityMod.Items.Accessories
             Item.width = 28;
             Item.height = 28;
             Item.accessory = true;
-            Item.rare = ModContent.RarityType<DarkBlue>();
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.rare = ModContent.RarityType<CosmicPurple>();
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -30,10 +30,10 @@ namespace CalamityMod.Items.Accessories
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<ExodiumCluster>(25).
-                AddIngredient<Elumplate>(25).
                 AddIngredient<CosmiliteBar>(5).
-                AddTile(TileID.DemonAltar).
+                AddIngredient<Elumplate>(25).
+                AddIngredient<ExodiumCluster>(25).
+                AddTile<CosmicAnvil>().
                 Register();
         }
     }

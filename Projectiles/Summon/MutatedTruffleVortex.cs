@@ -51,7 +51,7 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.alpha = (int)Utils.Remap(Projectile.timeLeft, FadeoutTime, 0f, 0f, 255f);
 
                 float dustDistance = Projectile.width * Projectile.scale + 25f;
-                Dust vortexDust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2CircularEdge(dustDistance, dustDistance), (int)CalamityDusts.SulfurousSeaAcid, Scale: 2f);
+                Dust vortexDust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2CircularEdge(dustDistance, dustDistance), (int)CalamityDusts.SulphurousSeaAcid, Scale: 2f);
                 vortexDust.velocity = vortexDust.position.DirectionTo(Projectile.Center) * 10f;
                 vortexDust.noGravity = true;
 
@@ -66,8 +66,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void OnSpawn(IEntitySource source)
         {
             Projectile.scale = 0f;
-            Projectile.netUpdate = true;
-            Projectile.netSpam = 0;
+            Projectile.ForceNetUpdate();
         }
 
         public override bool? CanDamage()

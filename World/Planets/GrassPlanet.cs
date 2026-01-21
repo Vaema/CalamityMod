@@ -1,12 +1,10 @@
-﻿using CalamityMod.DataStructures;
-using CalamityMod.Tiles.Ores;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using CalamityMod.DataStructures;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.Generation;
 using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.WorldBuilding;
 
 namespace CalamityMod.World.Planets
@@ -20,8 +18,8 @@ namespace CalamityMod.World.Planets
     {
         private ushort[] oreTypes = new ushort[]
         {
-            GenVars.copperBar == TileID.Copper ? (Main.getGoodWorld ? TileID.Palladium : TileID.Tin) : (Main.getGoodWorld ? TileID.Cobalt : TileID.Copper),
-            GenVars.ironBar == TileID.Iron ? (Main.getGoodWorld ? TileID.Palladium : TileID.Lead) : (Main.getGoodWorld ? TileID.Cobalt : TileID.Iron)
+            GenVars.copper == TileID.Copper ? (Main.getGoodWorld ? TileID.Palladium : TileID.Tin) : (Main.getGoodWorld ? TileID.Cobalt : TileID.Copper),
+            GenVars.iron == TileID.Iron ? (Main.getGoodWorld ? TileID.Palladium : TileID.Lead) : (Main.getGoodWorld ? TileID.Cobalt : TileID.Iron)
         };
 
         public override bool Place(Point origin, StructureMap structures)
@@ -131,7 +129,7 @@ namespace CalamityMod.World.Planets
 
             //Boffin's funtime 2 -- Small shrine
             #region Boffin's funtime 2
-            bool boffsFuntime2 = _random.Next(10) == 0;
+            bool boffsFuntime2 = _random.NextBool(10);
             if (boffsFuntime2)
             {
                 int topLayer = origin.Y - radius - 4;
@@ -146,7 +144,7 @@ namespace CalamityMod.World.Planets
                         }
                     }
                 }
-                TopLayerFound:
+TopLayerFound:
 
                 ushort brickType = TileID.StoneSlab;
                 int shrineDepth = _random.Next(8, 13);

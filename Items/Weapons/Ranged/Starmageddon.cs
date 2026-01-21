@@ -16,15 +16,20 @@ namespace CalamityMod.Items.Weapons.Ranged
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
 
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
+        }
+
         public override void SetDefaults()
         {
             Item.width = 166;
             Item.height = 62;
-            Item.damage = 100;
+            Item.damage = 138;
             Item.knockBack = 4f;
             Item.shootSpeed = 16f;
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.useTime = Item.useAnimation = 30;
+            Item.useAnimation = Item.useTime = 30;
             Item.UseSound = null;
             Item.shoot = ModContent.ProjectileType<StarmageddonHeld>();
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
@@ -34,7 +39,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.channel = true;
             Item.useTurn = false;
             Item.autoReuse = true;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.Calamity().donorItem = true;
         }
 
@@ -56,9 +61,9 @@ namespace CalamityMod.Items.Weapons.Ranged
             CreateRecipe().
                 AddIngredient<Starfleet>().
                 AddIngredient<BarracudaGun>().
-                AddIngredient<ExodiumCluster>(15).
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<DarksunFragment>(8).
+                AddIngredient<ExodiumCluster>(15).
                 AddTile<CosmicAnvil>().
                 Register();
         }
