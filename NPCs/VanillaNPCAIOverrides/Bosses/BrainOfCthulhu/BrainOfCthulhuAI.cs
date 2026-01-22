@@ -3057,7 +3057,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         options.aggroRatio = -1f;
         options.finishThemOff = true;
         options.maxSearchRange = DespawnRange;
-        //options.targetType = NPCTargetType.ForceSwitch;
+        options.targetType = NPCTargetType.ForceSwitch;
 
         var available = GetAllValidTargets(NPC.Center);
         if (available.Any(p => !TargetsSet.Contains(p)))
