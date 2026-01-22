@@ -88,7 +88,8 @@ public class CreeperAI : VanillaAIOverride
             CalamityUtils.CalamityTargeting(NPC, default);
         #endregion
 
-        BrainOfCthulhuSystem.VerletTendrils[CreeperID].creeper = NPC.whoAmI;
+        if(!Main.dedServ)
+            BrainOfCthulhuSystem.VerletTendrils[CreeperID].creeper = NPC.whoAmI;
 
         if (bocAI.AIState < BrainAIState.SurfaceSpawnAnimation)
             NPC.damage = 0;

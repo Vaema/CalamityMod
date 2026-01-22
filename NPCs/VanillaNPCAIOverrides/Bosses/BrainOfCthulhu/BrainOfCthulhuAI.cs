@@ -325,6 +325,8 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             for (int i = 0; i < brainOfCthuluCreepersCount; i++)
                 NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, NPCID.Creeper, NPC.whoAmI, i, ai2: -1);
         }
+
+        NPC.netUpdate = true;
     }
 
     public override bool AI(Mod mod)
