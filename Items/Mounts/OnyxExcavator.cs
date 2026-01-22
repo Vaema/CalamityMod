@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using CalamityMod.Buffs.Mounts;
-using CalamityMod.Tiles.Abyss;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -35,7 +34,8 @@ namespace CalamityMod.Items.Mounts
                 TileID.ElderCrystalStand,
             ];
 
-            MountData.spawnDust = 109;
+            // Dust that spawns upon mounting or unmounting
+            MountData.spawnDust = DustID.Orichalcum;
             MountData.spawnDustNoGravity = true;
             MountData.buff = ModContent.BuffType<OnyxExcavatorBuff>();
 
@@ -45,9 +45,10 @@ namespace CalamityMod.Items.Mounts
             MountData.acceleration = 0.1f;
 
             // Vertical movement
-            MountData.fallDamage = 0f;
+            // 22JAN2026: Ozzatron: Onyx Excavator Drill does not make you immune to fall damage and blocks double jumps
             MountData.jumpHeight = 5;
             MountData.jumpSpeed = 3f;
+            MountData.blockExtraJumps = true;
 
             // Frames and offsets
             MountData.totalFrames = 6;
@@ -56,18 +57,19 @@ namespace CalamityMod.Items.Mounts
             for (int l = 0; l < array.Length; l++)
                 array[l] = 6;
 
-            array[1] = 4;
-            array[5] = 4;
+            // 22JAN2026: Ozzatron: removed copy pasted code that made the player's head bob like Unicorn
             MountData.playerYOffsets = array;
             MountData.playerHeadOffset = 10;
             MountData.bodyFrame = 3;
             MountData.xOffset = 10;
             MountData.yOffset = -1; //done
+            
             MountData.standingFrameCount = 1;
             MountData.standingFrameDelay = 12;
             MountData.standingFrameStart = 0;
             MountData.runningFrameCount = 6;
-            MountData.runningFrameDelay = 36; //36
+            // 22JAN2026: Ozzatron: vastly increased animation speed so the drill and wheels spin at appropriate speeds
+            MountData.runningFrameDelay = 12; //36
             MountData.runningFrameStart = MountData.standingFrameStart;
             MountData.inAirFrameCount = MountData.standingFrameCount;
             MountData.inAirFrameDelay = MountData.standingFrameDelay;
@@ -79,10 +81,12 @@ namespace CalamityMod.Items.Mounts
             MountData.swimFrameCount = MountData.inAirFrameCount;
             MountData.swimFrameDelay = MountData.inAirFrameDelay;
             MountData.swimFrameStart = MountData.inAirFrameStart;
+
             if (!Main.dedServ)
             {
-                MountData.backTextureExtra = ModContent.Request<Texture2D>("CalamityMod/Items/Mounts/OnyxExcavatorExtra");
-                MountData.frontTextureExtra = ModContent.Request<Texture2D>("CalamityMod/Items/Mounts/OnyxExcavatorExtra2");
+                // 22JAN2026: Ozzatron: Drill itself was rendering behind the mount instead of in front of it
+                MountData.frontTexture = ModContent.Request<Texture2D>("CalamityMod/Items/Mounts/OnyxExcavatorExtra2");
+                MountData.frontTextureExtra = ModContent.Request<Texture2D>("CalamityMod/Items/Mounts/OnyxExcavatorExtra");
                 MountData.textureWidth = MountData.backTexture.Width();
                 MountData.textureHeight = MountData.backTexture.Height();
             }
@@ -94,18 +98,23 @@ namespace CalamityMod.Items.Mounts
         {
             bool speed = Math.Abs(velocity.X) > mountedPlayer.mount.RunSpeed / 2f;
             float direction = Math.Sign(mountedPlayer.velocity.X);
+            
             Lighting.AddLight(mountedPlayer.Center, 0.5f, 0.5f, 0.4f);
+
             if (speed && velocity.Y == 0f)
             {
-                for (int i = 0; i < 2; i++)
+                // 22JAN2026: Ozzatron: significantly improved dust to be far less obnoxious when traveling at speed
+                // looks more like it's shaking off rust as it drives around
+                if (Main.rand.NextBool(3))
                 {
-                    Dust dust = Dust.NewDustDirect(mountedPlayer.BottomLeft, mountedPlayer.width, 6, DustID.Ghost, 0f, 0f, 0, default, 1f);
+                    Dust dust = Dust.NewDustDirect(mountedPlayer.BottomLeft, mountedPlayer.width, 6, DustID.RedMoss, 0f, 0f, 0, default, 1f);
                     dust.velocity = new Vector2(velocity.X * 0.15f, Main.rand.NextFloat() * -2f);
                     dust.noLight = true;
                     dust.scale = 0.2f + Main.rand.NextFloat() * 0.8f;
                     dust.fadeIn = 0.5f + Main.rand.NextFloat() * 1f;
                     dust.shader = GameShaders.Armor.GetSecondaryShader(mountedPlayer.cMount, mountedPlayer);
                 }
+
                 if (mountedPlayer.cMount == 0)
                 {
                     mountedPlayer.position += new Vector2(direction * 24f, 0f);
