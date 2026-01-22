@@ -163,9 +163,15 @@ public sealed partial class CalamityVanillaAIOverrideNPC : GlobalNPC
                     return new QueenBeeAI();
 
                 case NPCID.SkeletronHead:
-                    return new SkeletronAI();
+                    if (Main.netMode == NetmodeID.SinglePlayer)
+                        return new SkeletronAI();
+                    else return null;
+                
                 case NPCID.SkeletronHand:
-                    return new SkeletronAI.SkeletronHandAI();
+                    if (Main.netMode == NetmodeID.SinglePlayer)
+                        return new SkeletronAI.SkeletronHandAI();
+                    else return null;
+                
                 case NPCID.DungeonGuardian:
                     return new SkeletronAI.DungeonGuardianAI();
 
