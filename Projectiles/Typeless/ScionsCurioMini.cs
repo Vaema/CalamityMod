@@ -33,7 +33,7 @@ namespace CalamityMod.Projectiles.Typeless
         public int swineText = 1;
         public float actionSpeed = 1;
         public int chosenSecret = 0;
-        public int idleMax = 18000; // 5 minutes
+        public int idleMax = 10800; // 3 minutes
         Vector2 goalPosition;
         public List<int> listNumbers = new List<int>();
         public override void SetDefaults()
