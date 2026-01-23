@@ -122,7 +122,7 @@ namespace CalamityMod.Projectiles.Typeless
                 Lighting.AddLight(Projectile.Center, usedColor.ToVector3() * 0.3f);
 
             // Swine Secrets
-            int textSpeed = 5;
+            int textSpeed = 4;
             if (swineSecretTimer > 0)
             {
                 if (swineSecretTimer % textSpeed == 0 && swineSecretTimer > 30)
@@ -140,7 +140,8 @@ namespace CalamityMod.Projectiles.Typeless
                         swineText++;
                     float textSpacing = Utils.Remap(originalLength, 5, 190, 20, 9, true);
                     Vector2 position = Owner.Center - (Vector2.UnitX * originalLength * (textSpacing / 2)) + (Vector2.UnitX * originalLength * textSpacing / originalLength * swineText);
-                    CombatText.NewText(new Rectangle((int)position.X, (int)position.Y, 1, 1), usedColor, text, false, false);
+                    int letter = CombatText.NewText(new Rectangle((int)position.X, (int)position.Y, 1, 1), usedColor, text, false, false);
+                    Main.combatText[letter].lifeTime = 100;
                 }
                 if (swineSecretTimer % 6 == 0 && swineSecretTimer > 30)
                 {
