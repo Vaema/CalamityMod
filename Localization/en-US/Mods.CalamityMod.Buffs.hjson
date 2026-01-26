@@ -224,7 +224,11 @@ Laceration: {
 ManaBurn: {
 	DisplayName: Mana Burn
 	Description: The excess of mana sears your body and mind
-	ItemTooltip: ""
+	ItemTooltip:
+		'''
+		Typeless
+		Every 100 negative mana reduces your life regen by 4 HP/s, but burns enemies for 3% of dealt damage
+		'''
 }
 
 MiracleBlight: {

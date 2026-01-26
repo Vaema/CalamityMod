@@ -4695,7 +4695,7 @@ namespace CalamityMod.Projectiles
             //Mana Burn
             if (Main.player[projectile.owner].statMana < 0)
             {
-                float burnRatio = (-Main.player[projectile.owner].statMana / 5000f); // -400 mana = +8% dmg, -700 mana = +14% dmg
+                float burnRatio = (-Main.player[projectile.owner].statMana / 100) * ChaosStone.DamageMultPer100Mana;
                 target.Calamity().manaBurn += damageDone * burnRatio;
                 target.Calamity().playerManaBurnIntensity = -Main.player[projectile.owner].statMana / (float)Main.player[projectile.owner].statManaMax2;
             }

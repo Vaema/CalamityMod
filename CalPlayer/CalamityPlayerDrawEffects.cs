@@ -118,7 +118,7 @@ namespace CalamityMod.CalPlayer
                     break;
                 }
             }
-            if (DoG != null && Main.mapStyle != 2)
+            if (DoG != null && Main.mapStyle != 2 && !Main.hideUI)
             {
                 int drawCount = calamityPlayer.trippy ? 4 : 1;
 
