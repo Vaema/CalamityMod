@@ -38,6 +38,8 @@ public class BrainOfCthulhuAI : VanillaAIOverride
     private static SoundStyle IntroRoar = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Roar") with { PauseBehavior = PauseBehavior.PauseWithGame };
     private static SoundStyle Roar = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Short_Roar") with { PauseBehavior =  PauseBehavior.PauseWithGame};
     public static SoundStyle Laugh = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Laugh") with { PauseBehavior = PauseBehavior.PauseWithGame };
+    private static SoundStyle Growl = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Growl", 2) with { PauseBehavior = PauseBehavior.PauseWithGame };
+    private static SoundStyle Death = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Death_Roar") with { PauseBehavior = PauseBehavior.PauseWithGame };
 
     internal static bool SummonedViaItem = false;
     internal List<Particle> BoCAfterImages = [];
@@ -739,6 +741,8 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
             foreach (NPC creep in Main.npc.Where(n => n.active && n.type == NPCID.Creeper))
                 creep.AIOverride<CreeperAI>().Time = -1;
+
+            SoundEngine.PlaySound(Growl, NPC.Center);
 
             NPC.netUpdate = true;
         }
@@ -2772,6 +2776,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             }
 
             NPC.dontTakeDamage = false;
+            SoundEngine.PlaySound(Death, NPC.Center);
             if (Main.netMode != NetmodeID.MultiplayerClient)
                 NPC.StrikeInstantKill();
         }
@@ -3163,6 +3168,8 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         }
 
         AIState = BrainAIState.Phase2Idle;
+
+        SoundEngine.PlaySound(Growl, NPC.Center);
     }
 
     private void ResetAttackValues()
