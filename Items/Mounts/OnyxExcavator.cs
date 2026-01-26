@@ -15,7 +15,6 @@ namespace CalamityMod.Items.Mounts
     // - don't allow items to be used at all (like vanilla DCU)
     // - drill animation speed is independent of mount movement speed and always maxed when picking at least one tile
     // - separate animation for the drill coming out of the bottom when it digs down
-    // - player head should not bob up and down
     public class OnyxExcavator : ModMount
     {
         public static List<int> OnyxExcavatorImmuneTiles = null;
