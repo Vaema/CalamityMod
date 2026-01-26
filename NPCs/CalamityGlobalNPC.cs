@@ -4762,9 +4762,9 @@ namespace CalamityMod.NPCs
                     dust.color = Color.Red;
                     dust.fadeIn = laserBurnStacks * 0.3f;
                 }
+                // If for some reason neither burn type is set
                 if (laserBurnType == 0)
                 {
-                    Main.NewText("No Burn Type Set", Color.OrangeRed);
                     laserBurnMarked = false;
                     laserBurnTimer = 0;
                 }
