@@ -1,21 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.NPCs;
-using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
-using Terraria.DataStructures;
+using Terraria.Audio;
 using Terraria.GameContent.Prefixes;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using System;
-using System.IO;
-using CalamityMod.Projectiles.Summon;
 
 namespace CalamityMod.Projectiles.BaseProjectiles
 {
@@ -59,19 +56,19 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         }
         public override bool CanUseItem(Player player)
         {
-                if (player.itemTime > 0)
+            if (player.itemTime > 0)
+            {
+                return false;
+            }
+            for (int i = 0; i < 1000; i++)
+            {
+                var proj = Main.projectile[i];
+                if (proj.type == ProjectileType && proj.owner == player.whoAmI && proj.active)
                 {
                     return false;
                 }
-                for (int i = 0; i < 1000; i++)
-                {
-                    var proj = Main.projectile[i];
-                    if (proj.type == ProjectileType && proj.owner == player.whoAmI && proj.active)
-                    {
-                        return false;
-                    }
 
-                }
+            }
             return base.CanUseItem(player);
         }
     }
@@ -174,7 +171,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         /// <summary>
         /// What sound to use when the sword begins the actual swing (after startup frames)
         /// </summary>
-        public virtual SoundStyle? UseSound {get; set;} = null;
+        public virtual SoundStyle? UseSound { get; set; } = null;
         /// <summary>
         /// The length (from the player) of the projectile's line collision.
         /// This helps to prevent blindspots.
@@ -232,6 +229,8 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         public float SwingCompletion => swingTimer / (float)swingTime;
         public float CooldownCompletion => CooldownTimer / (float)CooldownTime;
 
+        private bool hasFakedOnSpawn = false;
+
         #endregion
 
         #region Overridable Methods  
@@ -240,10 +239,10 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         /// </summary>
         public virtual void AdditionalAI() { }
         /// <summary>
-        /// happens after OnSpawn. Use as not to cancel the default OnSpawn behavior.
+        /// happens at the beginning of AI the first frame.
         /// </summary>
         /// <param name="source"></param>
-        public virtual void Spawn(IEntitySource source) { }
+        public virtual void Spawn() { }
         /// <summary>
         /// happens after SetDefaults. Use as not to cancel default SetDefaults behavior.
         /// </summary>
@@ -262,7 +261,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         /// </summary>
         /// <param name="completion"></param>
         /// <returns></returns>
-        public virtual float trailWidth(float completion)
+        public virtual float trailWidth(float completion, Vector2 vertexPos)
         {
             return MathHelper.Lerp(30, 0, completion);
         }
@@ -272,7 +271,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         /// </summary>
         /// <param name="completion"></param>
         /// <returns></returns>
-        public virtual Color trailColor(float completion)
+        public virtual Color trailColor(float completion, Vector2 vertexPos)
         {
             return Color.Black;
         }
@@ -289,7 +288,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             Projectile.timeLeft = swingTime * 2;
             if (UsesBaseItem)
             {
-                Projectile.width = Projectile.height = Math.Max(BaseItem.height,BaseItem.width);
+                Projectile.width = Projectile.height = Math.Max(BaseItem.height, BaseItem.width);
             }
             Projectile.friendly = true;
             Projectile.penetrate = -1;
@@ -304,14 +303,12 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             Defaults();
         }
         /// <summary>
-        /// DO NOT OVERRIDE IN MOST SITUATIONS
-        /// use Spawn(IEntitySource) instead
-        /// That will run spawn code in the proper timing.
+        /// This hook runs at the beginning of AI the first time through.
         /// </summary>
-        public override void OnSpawn(IEntitySource source)
+        private void FakeOnSpawn()
         {
             var player = Main.player[Projectile.owner];
-            angle = (player.Center - Main.MouseWorld).SafeNormalize(Vector2.One);
+            angle = (player.MountedCenter - player.Calamity().mouseWorld).SafeNormalize(Vector2.One);
             Projectile.velocity = Vector2.Zero;
             if (angle.X < 0)
             {
@@ -332,7 +329,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
                 player.GetModPlayer<BaseSwordHoldoutPlayer>().swingNum++;
             }
             swingTime = Main.player[Projectile.owner].HeldItem.useTime;
-            Spawn(source);
+            Spawn();
             StartupTime *= Projectile.MaxUpdates;
             CooldownTime *= Projectile.MaxUpdates;
             swingTime *= Projectile.MaxUpdates;
@@ -371,16 +368,22 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         /// </summary>
         public override void AI()
         {
+            if (!hasFakedOnSpawn)
+            {
+                FakeOnSpawn();
+                hasFakedOnSpawn = true;
+            }
             var player = Main.player[Projectile.owner];
             Projectile.gfxOffY = player.gfxOffY;
+            player.Calamity().mouseWorldListener = true;
             var modplayer = player.GetModPlayer<BaseSwordHoldoutPlayer>();
             float adust = MathHelper.ToRadians(225);
             if (timer < StartupTime || timer > StartupTime + swingTime)
             {
                 if (inStartup)
-                    angle = Vector2.Lerp(angle, (player.Center - Main.MouseWorld).SafeNormalize(Vector2.One), RotateInStartup);
+                    angle = Vector2.Lerp(angle, (player.MountedCenter - player.Calamity().mouseWorld).SafeNormalize(Vector2.One), RotateInStartup);
                 if (inCooldown)
-                    angle = Vector2.Lerp(angle, (player.Center - Main.MouseWorld).SafeNormalize(Vector2.One), RotateInCooldown);
+                    angle = Vector2.Lerp(angle, (player.MountedCenter - player.Calamity().mouseWorld).SafeNormalize(Vector2.One), RotateInCooldown);
                 if (angle.X < 0)
                 {
                     player.direction = 1;
@@ -400,7 +403,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             {
                 adust = MathHelper.ToRadians(-45);
             }
-            var armCenter = player.Center - new Vector2(5 * player.direction, 2);
+            var armCenter = player.MountedCenter - new Vector2(5 * player.direction, 2);
             if (AfterImageLength > 0)
             {
                 oldProjectileRot.Add(Projectile.rotation);
@@ -411,9 +414,9 @@ namespace CalamityMod.Projectiles.BaseProjectiles
                     oldProjectilePos.RemoveAt(0);
                 }
             }
-            if (inSwing && swingTimer == 1 && UseSound != null) 
+            if (inSwing && swingTimer == 1 && UseSound != null)
             {
-                SoundEngine.PlaySound((SoundStyle)UseSound,player.Center);
+                SoundEngine.PlaySound((SoundStyle)UseSound, player.Center);
             }
             var angle2 = (AlternateSwings && modplayer.swingNum % 2 == 1 ? SwingFunction() : SwingFunction());
             Projectile.Center = armCenter - (angle * OffsetDistance * (1 + (Projectile.scale - 1) * 0.75f)).RotatedBy(Projectile.spriteDirection * angle2);
@@ -421,7 +424,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             AdditionalAI();
             if (!Projectile.active)
                 return;
-            oldPlayerOffset = Projectile.Center - player.Center;
+            oldPlayerOffset = Projectile.Center - player.MountedCenter;
             player.itemTime = ExistsTime + 2 - timer;
             player.itemAnimation = ExistsTime + 2 - timer;
             if (timer > ExistsTime)
@@ -480,13 +483,13 @@ namespace CalamityMod.Projectiles.BaseProjectiles
                 GameShaders.Misc["CalamityMod:ExobladeSlash"].Shader.Parameters["flipped"].SetValue(Projectile.spriteDirection == -1 ? false : true);
                 GameShaders.Misc["CalamityMod:ExobladeSlash"].Apply();
 
-                var positionsToUse = Projectile.oldPos.Take((int)MathHelper.Min(trailLength,swingTimer)).ToArray();
+                var positionsToUse = Projectile.oldPos.Take((int)MathHelper.Min(trailLength, swingTimer)).ToArray();
                 for (var i = 0; i < positionsToUse.Length; i++)
                 {
                     if (i >= timer) break;
                     positionsToUse[i] += (Projectile.oldRot[i] - MathHelper.PiOver4 * (Projectile.spriteDirection == -1 ? 3 : 1)).ToRotationVector2() * this.trailOffset * oldScale[i];
                 }
-                PrimitiveRenderer.RenderTrail(positionsToUse, new(trailWidth, trailColor, (_) => trailOffset, shader: GameShaders.Misc["CalamityMod:ExobladeSlash"]), 25);
+                PrimitiveRenderer.RenderTrail(positionsToUse, new(trailWidth, trailColor, (_, _) => trailOffset, shader: GameShaders.Misc["CalamityMod:ExobladeSlash"]), 25);
                 Main.spriteBatch.ExitShaderRegion();
 
                 Main.player[Projectile.owner].heldProj = Projectile.whoAmI;
@@ -508,9 +511,9 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             if (lineCollisionLength > 0)
             {
                 var player = Main.player[Projectile.owner];
-                var armcenter = player.Center - new Vector2(5 * player.direction, 2);
+                var armcenter = player.MountedCenter - new Vector2(5 * player.direction, 2);
                 var swordDir = armcenter.DirectionTo(Projectile.Center);
-                var collisionline = new Vector2(lineCollisionLength / 2f, 0).RotatedBy(swordDir.ToRotation())*Projectile.scale;
+                var collisionline = new Vector2(lineCollisionLength / 2f, 0).RotatedBy(swordDir.ToRotation()) * Projectile.scale;
                 bool c = Collision.CheckAABBvLineCollision(targetHitbox.Location.ToVector2(), targetHitbox.Size(), Projectile.Center, Projectile.Center + collisionline);
                 if (c && !float.IsNaN(collisionline.X) && !float.IsNaN(collisionline.Y))
                     return true;
@@ -530,27 +533,11 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         public override void SendExtraAI(BinaryWriter writer)
         {
             writer.WriteVector2(angle);
-            writer.Write(swingTime);
-            writer.Write(StartupTime);
-            writer.Write(CooldownTime);
-            writer.Write(timer);
-            writer.Write(swingTimer);
-            writer.Write(ExistsTime);
-            writer.Write(baseScale);
-            writer.Write(Projectile.scale);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
             angle = reader.ReadVector2();
-            swingTime = reader.Read();
-            StartupTime = reader.Read();
-            CooldownTime = reader.Read();
-            timer = reader.Read();
-            swingTimer = reader.Read();
-            ExistsTime = reader.Read();
-            baseScale = reader.ReadSingle();
-            Projectile.scale = reader.ReadSingle();
         }
         #endregion
 

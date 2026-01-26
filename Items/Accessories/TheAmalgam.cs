@@ -1,7 +1,5 @@
 ﻿using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.Ores;
-using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
@@ -32,6 +30,7 @@ namespace CalamityMod.Items.Accessories
             Item.accessory = true;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = RarityType<CosmicPurple>();
+            Item.expert = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -40,7 +39,6 @@ namespace CalamityMod.Items.Accessories
             modPlayer.rBrain = true; // Handles shaderain cloud spawning on hit
             modPlayer.amalgam = true;
             player.brainOfConfusionItem = Item;
-            player.GetDamage<GenericDamageClass>() += 0.1f;
             modPlayer.HeatDebuffMultiplier += 2f;
             modPlayer.ColdDebuffMultiplier += 2f;
             modPlayer.SicknessDebuffMultiplier += 2f;

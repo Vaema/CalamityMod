@@ -1,19 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Terraria;
-using Terraria.ModLoader;
 
 namespace CalamityMod.Packets
 {
-    public sealed class SyncNPCPosAndRotOnlyPacket : CalamityPacket
+    internal sealed class SyncNPCPosAndRotOnlyPacket : CalamityPacket
     {
         public static SyncNPCPosAndRotOnlyPacket Instance { get; private set; }
-
-        public override byte MessageType => (byte)CalamityModMessageType.SyncNPCPosAndRotOnly;
 
         public static void Send(NPC npc, int toClient = -1, int ignoreClient = -1)
         {
@@ -27,11 +20,11 @@ namespace CalamityMod.Packets
             packet.Send(toClient, ignoreClient);
         }
 
-        public override void HandlePacket(in BinaryReader packet, int sender)
+        public override void HandlePacket(BinaryReader packet, int sender)
         {
             var npc = packet.ReadNPC();
             var position = packet.ReadVector2();
-            var rotation = (float)packet.ReadHalf(); 
+            var rotation = (float)packet.ReadHalf();
 
             if (npc is null)
                 return;

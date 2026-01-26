@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
@@ -47,7 +48,7 @@ namespace CalamityMod.Projectiles.Magic
                         Color dustColor = Color.Lerp(Color.White, Color.YellowGreen, j / 6f);
                         float dustScale = MathHelper.Lerp(1.6f, 0.85f, j / 6f);
 
-                        Dust terraMagic = Dust.NewDustPerfect(Projectile.Center, 107);
+                        Dust terraMagic = Dust.NewDustPerfect(Projectile.Center, DustID.Terra);
                         terraMagic.velocity = angle.ToRotationVector2() * starSpeed;
                         terraMagic.color = dustColor;
                         terraMagic.scale = dustScale;
@@ -59,7 +60,7 @@ namespace CalamityMod.Projectiles.Magic
                 for (int i = 0; i < ovalPoints; i++)
                 {
                     float angle = MathHelper.TwoPi * i / ovalPoints;
-                    Dust terraMagic = Dust.NewDustPerfect(Projectile.Center, 107);
+                    Dust terraMagic = Dust.NewDustPerfect(Projectile.Center, DustID.Terra);
                     terraMagic.velocity = angle.ToRotationVector2() * 6f;
                     terraMagic.scale = 1.1f;
                     terraMagic.noGravity = true;

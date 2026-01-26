@@ -64,6 +64,6 @@ namespace CalamityMod.Tiles.FurnitureAncient
             return true;
         }
 
-        public override void MouseOver(int i, int j) => CalamityUtils.MouseOver(i, j, ModContent.ItemType<Items.Placeables.FurnitureAncient.AncientBed>());
+        public override void MouseOver(int i, int j) => FurnitureCommon.MouseOver(i, j, ModContent.ItemType<Items.Placeables.FurnitureAncient.AncientBed>());
     }
 }

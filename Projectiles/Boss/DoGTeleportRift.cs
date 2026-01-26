@@ -1,15 +1,13 @@
-﻿using System;
-using System.IO;
-using CalamityMod.Dusts;
+﻿using System.IO;
 using CalamityMod.Effects;
 using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Particles;
 using CalamityMod.Skies;
+using CalamityMod.Utilities.Daybreak;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
@@ -134,6 +132,7 @@ namespace CalamityMod.Projectiles.Boss
                 CrackExposure = MathHelper.Lerp(CrackExposure, MaxExposure, 0.075f);
                 Projectile.Opacity = MathHelper.Clamp(Projectile.Opacity + 0.05f, 0f, 1f);
                 Projectile.scale = MathHelper.Clamp(Projectile.scale + 0.02f, 0f, 1f);
+                Projectile.ForceNetUpdate();
             }
 
             // Post-explosion, slowly fade out.
@@ -205,7 +204,7 @@ namespace CalamityMod.Projectiles.Boss
                     CustomPulse plasmaExplosion = new(Projectile.Center, Vector2.Zero, DoGSky.DoGTwlight * 0.8f * brightnessMultiplier, "CalamityMod/Particles/PlasmaExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0f, 1.25f + i * 0.05f, 45);
                     GeneralParticleHandler.SpawnParticle(plasmaExplosion);
                 }
-                
+
                 CustomPulse shineExplosion = new(Projectile.Center, Vector2.Zero, DoGSky.DoGTwlight * brightnessMultiplier, "CalamityMod/Particles/ShineExplosion1", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0f, 0.75f, 45);
                 GeneralParticleHandler.SpawnParticle(shineExplosion);
                 CustomPulse shineExplosion2 = new(Projectile.Center, Vector2.Zero, Color.White * 0.6f * brightnessMultiplier, "CalamityMod/Particles/ShineExplosion2", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0f, 0.5f, 45);
@@ -253,7 +252,7 @@ namespace CalamityMod.Projectiles.Boss
             }
 
             // Draw the crack.
-            Effect crackShader = CalamityShaders.DoGRealityCrackShader;
+            Effect crackShader = CalamityShaders.DoGRealityCrackShader.Value;
             float crackOpcity = (AIState == 1f) ? Projectile.Opacity * 0.1f : 0.1f;
             Color darkerPixelColor = FakeRift ? Color.White : DoGSky.DoGTwlight;
 
@@ -263,15 +262,17 @@ namespace CalamityMod.Projectiles.Boss
             crackShader.Parameters["minBrightnessValue"].SetValue(0.75f);
             crackShader.Parameters["darkerPixelColor"].SetValue(darkerPixelColor.ToVector3());
             crackShader.Parameters["brighterPixelColor"].SetValue(Color.White.ToVector3());
-            Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, crackShader, Main.GameViewMatrix.TransformationMatrix, () =>
+            using (Main.spriteBatch.Scope())
             {
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, crackShader, Main.GameViewMatrix.TransformationMatrix);
                 int crackCount = FakeRift ? 1 : 3;
                 for (int i = 0; i < crackCount; i++)
                 {
                     float crackRotation = i * MathHelper.TwoPi / crackCount;
                     Main.EntitySpriteDraw(crackTexture, drawPosition + Vector2.UnitY * 8f, null, Color.White * Projectile.Opacity, crackRotation, crackTexture.Size() * 0.5f, CrackScale, 0);
                 }
-            });
+                Main.spriteBatch.End();
+            }
 
             if (AIState != 1f)
             {

@@ -1,18 +1,13 @@
-﻿using CalamityMod.Items.Placeables.FurniturePlagued;
-using CalamityMod.Systems;
+﻿using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.FurniturePlaguedPlate
 {
     public class PlaguedPlate : GlowMaskTile
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/FurniturePlaguedPlate/PlaguedPlateGlow";
-
         public override void SetupStatic()
         {
             Main.tileSolid[Type] = true;

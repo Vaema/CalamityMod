@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Enums;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
@@ -61,7 +62,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     float dustProgressAlongBeam = beamLength * Main.rand.NextFloat(0f, 0.8f);
                     Vector2 dustPosition = Projectile.Center + dustProgressAlongBeam * beamVector + beamVector.RotatedBy(MathHelper.PiOver2) * Main.rand.NextFloat(-6f, 6f) * Projectile.scale;
 
-                    Dust dust = Dust.NewDustPerfect(dustPosition, 187, beamVector * Main.rand.NextFloat(5f, 26f), 0, Color.OrangeRed, 2.2f);
+                    Dust dust = Dust.NewDustPerfect(dustPosition, DustID.BlueFlare, beamVector * Main.rand.NextFloat(5f, 26f), 0, Color.OrangeRed, 2.2f);
                     dust.noGravity = true;
                 }
 
@@ -89,7 +90,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         {
             for (int i = 0; i <= 8; i++)
             {
-                Dust dust = Dust.NewDustPerfect(target.Center, 218, (Projectile.velocity * 30).RotatedByRandom(MathHelper.ToRadians(25f)) * Main.rand.NextFloat(0.1f, 0.8f), 0, default, Main.rand.NextFloat(1.2f, 1.6f));
+                Dust dust = Dust.NewDustPerfect(target.Center, DustID.Rain_BloodMoon, (Projectile.velocity * 30).RotatedByRandom(MathHelper.ToRadians(25f)) * Main.rand.NextFloat(0.1f, 0.8f), 0, default, Main.rand.NextFloat(1.2f, 1.6f));
                 dust.noGravity = true;
             }
 

@@ -202,8 +202,7 @@ namespace CalamityMod.Projectiles.Melee
 
             // Sound and screenshake
             SoundEngine.PlaySound(GroundImpact, Projectile.Center);
-            if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 15)
-                Main.LocalPlayer.Calamity().GeneralScreenShakePower = 15;
+            Main.LocalPlayer.SetScreenshake(15f);
 
             // Dust and particles from the impact
             for (int d = 0; d < 13; d++)

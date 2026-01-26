@@ -42,7 +42,12 @@ AirSpinner: {
 
 AmidiasTrident: {
 	DisplayName: Amidias' Trident
-	Tooltip: Shoots homing whirlpools
+	Tooltip:
+		'''
+		[c/CCE9FF:Striking enemies inflicts] [c/28A3FF:Sea King's Assurance], [c/CCE9FF:which can stack up to eight]
+		Right click to spin the trident then thrust into the air, expending all nearby stacks of Sea King's Assurance
+		Secondary attack deals more damage for every stack applied
+		'''
 }
 
 AnarchyBlade: {
@@ -235,7 +240,7 @@ BrokenBiomeBlade: {
 		Hold down <right> while standing still on flat ground to attune the weapon to the powers of the surrounding biome
 		Pressing <right> otherwise switches between the current attunement and an extra stored one
 		Main Attunement : [ATT1]
-		Secondary Attunement: [ATT2]
+		Secondary Attunement : [ATT2]
 		'''
 	DefaultFunction: Does nothing... yet
 }
@@ -305,8 +310,11 @@ CrescentMoon: {
 	DisplayName: Crescent Moon
 	Tooltip:
 		'''
-		Fires a whip sword that summons homing crescent moons
-		'People wanted the moon, let's bring the moon to them'
+		Throws a lunar flail that releases homing moons at the apex of its path
+		Holding <left> spins the flail around you, generating Starbursts
+		With 20 Starbursts, hold <left> again after throwing the flail to cause it to explode
+		Instead of releasing moons, this explosion summons Scorpius to do immense damage and inflict [cbuff:CalamityMod/Voidfrost]
+		'Lunacy derived from genius'
 		'''
 }
 
@@ -358,7 +366,7 @@ DevilsDevastation: {
 		'''
 		[c/d13ca2:The perfect blade of the Underworld, wielding the power of Brimstone directly.]
 		[c/d13ca2:Humans understand this force as Havoc, the inevitable sundering of all order in fire.]
-		[c/d13ca2:Perhaps this is why the Brimstone Elemental had strength unrivaled by her sisters.]	
+		[c/d13ca2:Perhaps this is why the Brimstone Elemental had strength unrivaled by her sisters.]
 		'''
 }
 
@@ -433,19 +441,11 @@ EmpyreanKnives: {
 
 EntropicClaymore: {
 	DisplayName: Entropic Claymore
-	Tooltip: "[GFB]"
-	TooltipNormal:
+	Tooltip:
 		'''
 		Fires a spread of living plasma that swims though the air
 		Plasma will track your cursor or enemies near it, prioritizing which is closest
 		The plasma pierces, but will stop tracking after hitting the first enemy
-		'''
-	TooltipGFB:
-		'''
-		Fires a spread of dead tapeworms that swim throuh the air
-		Tapeworms will track your cursor or enemies near it, prioritizing which is closest
-		The tapeworms pierce, but will stop tracking after hitting the first enemy
-		[c/FF0000:'Go my tapeworms, make their balls itch']
 		'''
 }
 
@@ -483,17 +483,6 @@ ExaltedOathblade: {
 		[c/b63cd1:Crowned through his overwhelming might, his sword bathed in the blood of Demons and the fires of hell.]
 		[c/b63cd1:Even long after his passing, none have dared to take the seat.]
 		[c/b63cd1:Demonkind has not known unity since.]
-		'''
-}
-
-MawOfInfinity: {
-	DisplayName: Maw of Infinity
-	Tooltip:
-		'''
-		Swings a blade forged from the Devourer's maw in a 3-swing combo
-		The first swing only hits close range
-		The second swing additionally launches [c/ff00ff:Faith Incinerator]
-		The third swing unleashes [c/ff00ff:Divinity Devourer] at your cursor, exploding for masive damage
 		'''
 }
 
@@ -633,9 +622,13 @@ GalileoGladius: {
 	DisplayName: Galileo Gladius
 	Tooltip:
 		'''
-		Shoots a homing crescent moon
-		Spawns planetoids on enemy hits
-		'Don't underestimate the power of small space swords'
+		Rapidly stabs in front of the player, generating Starbursts on hit
+		<right> to throw the gladius on a constellation chain, impaling foes and inflicting [cbuff:CalamityMod/Voidfrost]
+		When the blade is impaled, use <left> or <right> to free it
+		<left> pulls it free and deals high damage, consuming 10 Starbursts
+		<right> pulls youself to the blade, allowing you to jump off the foe
+		Jumping off a foe consumes 20 Starbursts and provides invincibility
+		'Figaro, magnifico'
 		'''
 }
 
@@ -793,6 +786,17 @@ LifehuntScythe: {
 	Tooltip: Heals you on hit and shoots an energy scythe
 }
 
+Lightspeed: {
+	DisplayName: Lightspeed
+	Tooltip:
+		'''
+		[c/c7f5ff:Unleash a flurry of stabs which build Elemental Mastery on hit]
+		[c/c2fff2:Elemental Mastery is lost over time but briefly stops depleting after reaching its maximum]
+		[c/ffdfba:Press <right> with maximum Elemental Mastery to dash toward your cursor]
+		[c/ffc7c7:Hitting an enemy during the dash refunds some Elemental Mastery]
+		'''
+}
+
 LionHeart: {
 	DisplayName: Lion Heart
 	Tooltip:
@@ -808,8 +812,8 @@ Lucrecia: {
 	Tooltip:
 		'''
 		[c/9370db:Fires a spiraling darklight shard when swung]
-		[c/837ce4:Hits with the blade itself build energy]
-		[c/7489ee:Energy is lost over time but briefly stops depleting after reaching its maximum]
+		[c/837ce4:Hits with the blade itself build Darklight Energy]
+		[c/7489ee:Darklight Energy is lost over time but briefly stops depleting after reaching its maximum]
 		[c/6495f7:Press <right> with maximum energy to fire a double helix comet]
 		'''
 }
@@ -831,6 +835,17 @@ MantisClaws: {
 		Press <right> to form a pressurized bubble in front of you
 		Once fully formed, the bubble is instantly snapped down on, blasting foes with a water jet
 		'It's just that shrimple'
+		'''
+}
+
+MawOfInfinity: {
+	DisplayName: Maw of Infinity
+	Tooltip:
+		'''
+		Swings a blade forged from the Devourer's maw in a 3-swing combo
+		The first swing only hits close range
+		The second swing additionally launches [c/ff00ff:Faith Incinerator]
+		The third swing unleashes [c/ff00ff:Divinity Devourer] at your cursor, exploding for massive damage
 		'''
 }
 
@@ -934,7 +949,7 @@ OmegaBiomeBlade: {
 		Holding down <right> for 2 seconds attunes the weapon to the powers of the surrounding biome
 		Pressing <right> for a shorter period of time switches your active and passive attunements around
 		Active Attunement : [ATT1]
-		Passive Attunement: [ATT2]
+		Passive Attunement : [ATT2]
 		'''
 	DefaultFunction:
 		'''
@@ -1171,11 +1186,6 @@ SpineOfThanatos: {
 		'''
 }
 
-StarburstShiv: {
-	DisplayName: Starburst Shiv
-	Tooltip: Shoots a rainbow shiv that spawns additional shivs on hit
-}
-
 StarnightLance: {
 	DisplayName: Starnight Lance
 	Tooltip: Shoots a frigid starnight beam
@@ -1293,13 +1303,11 @@ Terratomere: {
 
 TerrorBlade: {
 	DisplayName: Terror Blade
-	GFBName: TERROR BLADD4
 	Tooltip:
 		'''
 		Fires a terror beam that bounces off tiles
-		On every bounce it emits an explosion[STATUS]
+		On every bounce it emits an explosion
 		'''
-	GFB: "'Ignore my spelling.'"
 }
 
 TheBurningSky: {
@@ -1426,7 +1434,7 @@ TrueBiomeBlade: {
 		Hold down <right> while standing still on flat ground to attune the weapon to the powers of the surrounding biome
 		Pressing <right> otherwise switches between the current attunement and an extra stored one
 		Main Attunement : [ATT1]
-		Secondary Attunement: [ATT2]
+		Secondary Attunement : [ATT2]
 		'''
 	DefaultFunction:
 		'''
@@ -1480,10 +1488,16 @@ UrchinMace: {
 
 VanishingPoint: {
 	DisplayName: Vanishing Point
-	Tooltip:
+	Tooltip: "[GFB]"
+	TooltipNormal:
 		'''
 		Fires a lance beam that splits multiple times as it travels
 		'Rend the cosmos asunder!'
+		'''
+	TooltipGFB:
+		'''
+		Fires a lance beam that splits, like, a LOT. Way more than it ever should.
+		'Rend the projectile limit asunder!'
 		'''
 }
 

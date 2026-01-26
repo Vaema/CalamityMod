@@ -88,14 +88,14 @@ namespace CalamityMod.Projectiles.Boss
             {
                 for (int i = 0; i < 20; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Vector2.UnitY * offset.Y, 261);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Vector2.UnitY * offset.Y, DustID.AncientLight);
                     dust.color = Utils.SelectRandom(Main.rand, Color.Cyan, Color.OrangeRed);
                     dust.scale = 1.15f;
                     dust.velocity = Main.rand.NextVector2CircularEdge(3f, 3f) * Main.rand.NextFloat(0.7f, 1.4f);
                     dust.noGravity = true;
 
                     float angle = MathHelper.TwoPi * i / 20f;
-                    dust = Dust.NewDustPerfect(Projectile.Center + Vector2.UnitY * offset.Y, 261);
+                    dust = Dust.NewDustPerfect(Projectile.Center + Vector2.UnitY * offset.Y, DustID.AncientLight);
                     dust.color = Utils.SelectRandom(Main.rand, Color.Cyan, Color.OrangeRed);
                     dust.scale = 1.15f;
                     dust.velocity = angle.ToRotationVector2() * 7f;
@@ -157,13 +157,13 @@ namespace CalamityMod.Projectiles.Boss
             // Generate dust at the star position. This gives them a trail effect.
             if (!Main.dedServ)
             {
-                Dust dust2 = Dust.NewDustPerfect(Projectile.Center + offset, 261);
+                Dust dust2 = Dust.NewDustPerfect(Projectile.Center + offset, DustID.AncientLight);
                 dust2.color = Color.Cyan;
                 dust2.scale = 1.15f;
                 dust2.velocity = Vector2.Zero;
                 dust2.noGravity = true;
 
-                dust2 = Dust.NewDustPerfect(Projectile.Center + offset * new Vector2(-1f, 1f), 261);
+                dust2 = Dust.NewDustPerfect(Projectile.Center + offset * new Vector2(-1f, 1f), DustID.AncientLight);
                 dust2.color = Color.OrangeRed;
                 dust2.scale = 1.15f;
                 dust2.velocity = Vector2.Zero;

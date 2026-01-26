@@ -187,7 +187,7 @@ namespace CalamityMod.Systems
                         // Display dialogue and set appropriate delay, if this dialogue shouldn't be skipped.
                         if (line.skipCondition is null || !line.skipCondition.Invoke())
                         {
-                            CalamityUtils.DisplayLocalizedText(line.LocalizationKey, BossRushEvent.XerocTextColor);
+                            CalamityUtils.BroadcastLocalizedText(line.LocalizationKey, BossRushEvent.XerocTextColor);
                             CurrentDialogueDelay = line.FrameDelay;
                         }
 

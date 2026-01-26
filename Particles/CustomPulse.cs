@@ -24,8 +24,9 @@ namespace CalamityMod.Particles
         private Vector2 Squish;
         private Color BaseColor;
         private float MakeLight;
+        SpriteEffects Effects = SpriteEffects.None;
 
-        public CustomPulse(Vector2 position, Vector2 velocity, Color color, string texture, Vector2 squish, float rotation, float originalScale, float finalScale, int lifeTime, bool UseAdditiveBlend = true, float baseOpacity = 1f, bool fade = true, float makeLight = 1)
+        public CustomPulse(Vector2 position, Vector2 velocity, Color color, string texture, Vector2 squish, float rotation, float originalScale, float finalScale, int lifeTime, bool UseAdditiveBlend = true, float baseOpacity = 1f, bool fade = true, float makeLight = 1, SpriteEffects effects = SpriteEffects.None)
         {
             Position = position;
             Velocity = velocity;
@@ -38,6 +39,7 @@ namespace CalamityMod.Particles
             BaseOpacity = baseOpacity;
             FadeOut = fade;
             Squish = squish;
+            Effects = effects;
             Rotation = rotation;
             UseAltVisual = UseAdditiveBlend;
             MakeLight = makeLight;
@@ -71,8 +73,7 @@ namespace CalamityMod.Particles
                     UseAltVisual = true;
                 }
             }
-            spriteBatch.Draw(tex, Position - Main.screenPosition, null, Color * opacity, Rotation, tex.Size() / 2f, Scale * Squish * scaleMult, SpriteEffects.None, 0);
+            spriteBatch.Draw(tex, Position - Main.screenPosition, null, Color * opacity, Rotation, tex.Size() / 2f, Scale * Squish * scaleMult, Effects, 0);
         }
-
     }
 }

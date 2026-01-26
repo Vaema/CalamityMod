@@ -214,7 +214,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 int doorCheckX = (int)((NPC.position.X + (float)(NPC.width / 2) + (float)(15 * NPC.direction)) / 16f);
                 int doorCheckY = (int)((NPC.position.Y + (float)NPC.height - 15f) / 16f);
-                if ((Main.tile[doorCheckX, doorCheckY - 1].HasUnactuatedTile && (Main.tile[doorCheckX, doorCheckY - 1].TileType == 10 || Main.tile[doorCheckX, doorCheckY - 1].TileType == 388)) & unusedFlag)
+                if ((Main.tile[doorCheckX, doorCheckY - 1].HasUnactuatedTile && (Main.tile[doorCheckX, doorCheckY - 1].TileType == TileID.ClosedDoor || Main.tile[doorCheckX, doorCheckY - 1].TileType == TileID.TallGateClosed)) & unusedFlag)
                 {
                     NPC.ai[2] += 1f;
                     NPC.ai[3] = 0f;
@@ -222,7 +222,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     {
                         NPC.velocity.X = 0.5f * (float)-(float)NPC.direction;
                         int doorOpenInc = 5;
-                        if (Main.tile[doorCheckX, doorCheckY - 1].TileType == 388)
+                        if (Main.tile[doorCheckX, doorCheckY - 1].TileType == TileID.TallGateClosed)
                         {
                             doorOpenInc = 2;
                         }
@@ -237,7 +237,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                         WorldGen.KillTile(doorCheckX, doorCheckY - 1, true, false, false);
                         if ((Main.netMode != NetmodeID.MultiplayerClient || !letMeIn) && letMeIn && Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            if (Main.tile[doorCheckX, doorCheckY - 1].TileType == 10)
+                            if (Main.tile[doorCheckX, doorCheckY - 1].TileType == TileID.ClosedDoor)
                             {
                                 bool canOpenDoor = WorldGen.OpenDoor(doorCheckX, doorCheckY - 1, NPC.direction);
                                 if (!canOpenDoor)
@@ -250,7 +250,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                                     NetMessage.SendData(MessageID.ToggleDoorState, -1, -1, null, 0, (float)doorCheckX, (float)(doorCheckY - 1), (float)NPC.direction, 0, 0, 0);
                                 }
                             }
-                            if (Main.tile[doorCheckX, doorCheckY - 1].TileType == 388)
+                            if (Main.tile[doorCheckX, doorCheckY - 1].TileType == TileID.TallGateClosed)
                             {
                                 bool canOpenTallGate = WorldGen.ShiftTallGate(doorCheckX, doorCheckY - 1, false);
                                 if (!canOpenTallGate)

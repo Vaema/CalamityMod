@@ -1,4 +1,5 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using System.Linq;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
@@ -14,44 +15,53 @@ namespace CalamityMod.Items.Weapons.Summon
     public class SarosPossession : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
-
-        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 8f;
-
         public override void SetDefaults()
         {
-            Item.width = Item.height = 56;
-            Item.damage = 500;
-            Item.knockBack = 4f;
+            Item.width = 44;
+            Item.height = 48;
+            Item.damage = 66;
             Item.mana = 10;
-
+            Item.useAnimation = Item.useTime = 24;
+            Item.useStyle = ItemUseStyleID.Swing;
+            Item.noMelee = true;
+            Item.knockBack = 1.15f;
+            Item.UseSound = SoundID.Item44;
             Item.buffType = ModContent.BuffType<SarosPossessionBuff>();
             Item.shoot = ModContent.ProjectileType<SarosAura>();
-            Item.useAnimation = Item.useTime = 10;
             Item.DamageType = DamageClass.Summon;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.UseSound = SoundID.DD2_BetsyFlameBreath;
-            Item.rare = ModContent.RarityType<CosmicPurple>();
-            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.noMelee = true;
+            Item.channel = true;
+
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
-        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0 && player.maxMinions >= 8;
+        public override bool CanUseItem(Player player)
+        {
+            return player.ownedProjectileCounts[ModContent.ProjectileType<SarosEclipseBeam>()] <= 0;
+        }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            if (player.ownedProjectileCounts[type] > 0)
+            {
+                var p = Main.projectile.First(x => x.active && x.type == type && x.owner == player.whoAmI);
+                p.ai[0]++;
+                p.netUpdate = true;
+                return false;
+            } else
+            {
+                player.channel = false;
+            }
             player.AddBuff(Item.buffType, 2);
-            CalamityUtils.KillShootProjectiles(true, type, player);
-            var minion = Projectile.NewProjectileDirect(source, position, Vector2.Zero, type, damage, knockback, player.whoAmI);
-            minion.originalDamage = Item.damage;
-            return false;
+            return true;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient<Sirius>().
-                AddIngredient<CosmiliteBar>(8).
-                AddIngredient<DarksunFragment>(8).
+                AddIngredient<AuricBar>(5).
+                AddIngredient<DarksunFragment>(15).
                 AddTile<CosmicAnvil>().
                 Register();
         }

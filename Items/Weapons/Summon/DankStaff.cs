@@ -12,17 +12,13 @@ namespace CalamityMod.Items.Weapons.Summon
     public class DankStaff : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<RotBall>();
-        }
         public override void SetDefaults()
         {
             Item.width = 58;
             Item.height = 58;
             Item.damage = 14;
             Item.mana = 10;
-            Item.useAnimation = Item.useTime = 30;
+            Item.useAnimation = Item.useTime = 36;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 2.25f;

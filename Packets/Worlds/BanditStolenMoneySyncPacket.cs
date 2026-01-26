@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using CalamityMod.World;
 using Terraria;
 
 namespace CalamityMod.Packets
 {
-    public sealed class BanditStolenMoneySyncPacket : CalamityPacket
+    internal sealed class BanditStolenMoneySyncPacket : CalamityPacket
     {
         public static BanditStolenMoneySyncPacket Instance { get; private set; }
-
-        public override byte MessageType => (byte)CalamityModMessageType.BanditStolenMoneySync;
 
         public static void Send(int amountStolenByBandit, int toClient = -1, int ignoreClient = -1)
         {
@@ -22,7 +15,7 @@ namespace CalamityMod.Packets
             packet.Send(toClient, ignoreClient);
         }
 
-        public override void HandlePacket(in BinaryReader packet, int sender)
+        public override void HandlePacket(BinaryReader packet, int sender)
         {
             var amountStolenByBandit = packet.Read7BitEncodedInt();
 

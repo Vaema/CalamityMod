@@ -4,13 +4,12 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
-using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Pets;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.TreasureBags;
 using CalamityMod.Items.Weapons.Magic;
@@ -96,7 +95,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             NPC.height = 198;
             NPC.defense = 50;
             NPC.DR_NERD(0.3f);
-            NPC.LifeMaxNERB(87500, 105000, 370000);
+            NPC.LifeMaxNERB(70000, 105000, 370000);
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
             AIType = -1;
@@ -199,7 +198,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             {
                 string key = "Mods.CalamityMod.Status.Boss.PlagueBossText";
                 Color messageColor = Color.Lime;
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
                 SoundEngine.PlaySound(NukeWarningSound, NPC.Center);
 
                 halfLife = true;
@@ -1354,7 +1353,8 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<InfectedArmorPlating>(), 1, 30, 40));
 
                 // Equipment
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<ToxicHeart>()));
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<ToxicHeart>()));
 
                 // Vanity
                 normalOnly.Add(ModContent.ItemType<PlaguebringerGoliathMask>(), 7);

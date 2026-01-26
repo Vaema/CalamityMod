@@ -2,6 +2,7 @@
 using CalamityMod.Items.Placeables.FurnitureSacrilegious;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent.ObjectInteractions;
 using Terraria.ID;
@@ -11,12 +12,13 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
 {
     public class SacrilegiousClockTile : ModTile
     {
+        public Asset<Texture2D> IconTexture;
+
         public override void SetStaticDefaults()
         {
             // This particular clock emits light
             Main.tileLighted[Type] = true;
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTorch);
-
             this.SetUpClock(ModContent.ItemType<SacrilegiousClock>(), true);
         }
 
@@ -36,7 +38,7 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
             b = 0.2f;
         }
 
-        public override bool RightClick(int x, int y) => CalamityUtils.ClockRightClick();
+        public override bool RightClick(int x, int y) => FurnitureCommon.ClockRightClick();
 
         public override void NearbyEffects(int i, int j, bool closer)
         {
@@ -51,12 +53,13 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
             num = fail ? 1 : 3;
         }
 
-        public override void MouseOver(int i, int j) => CalamityUtils.MouseOver(i, j, ModContent.ItemType<SacrilegiousClock>());
+        public override void MouseOver(int i, int j) => FurnitureCommon.MouseOver(i, j, ModContent.ItemType<SacrilegiousClock>());
 
         // For drawing the floating clock icon
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureSacrilegious/SacrilegiousClockTile_Icon").Value;
+            IconTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureSacrilegious/SacrilegiousClockTile_Icon");
+            Texture2D texture = IconTexture.Value;
             Tile tile = Main.tile[i, j];
             if (tile.IsTileActuallyInvisible())
                 return;

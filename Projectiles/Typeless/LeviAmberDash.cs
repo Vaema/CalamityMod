@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,6 +12,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
+    [PierceResistException]
     public class LeviAmberDash : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
@@ -138,7 +139,7 @@ namespace CalamityMod.Projectiles.Typeless
                 dust2.noGravity = false;
                 dust2.fadeIn = Main.rand.NextFloat(0f, 1.2f);
             }
-
+            Projectile.damage = (int)(Projectile.damage * 0.67f);
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, ExplosionRadius, targetHitbox);
         public override bool? CanDamage() => (isAlive ? null : false);

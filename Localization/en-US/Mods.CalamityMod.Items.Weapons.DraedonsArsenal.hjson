@@ -1,4 +1,4 @@
-AerialTracker: {
+﻿AerialTracker: {
 	DisplayName: P-LSR: Aerial Tracker
 	Tooltip:
 		'''
@@ -18,7 +18,7 @@ AqueousHunterDrone: {
 		<right> while holding any summon weapon to command the shrimp to launch a vertical missile barrage
 		Vertical missiles aim towards your cursor and leave a lingering blast if they hit solid ground
 		Each shrimp uses 4 minion slots
-		[c/1FBFF:'When pursuing the adherents of Gods, Yharim believed no stone should be left unturned.]
+		[c/1FBFF:'When pursuing the adherents of gods, Yharim believed no stone should be left unturned.]
 		[c/1FBFF:Weaponry for underwater contingencies was an unusually heavy focus, but no models ever saw deployment.']
 		'''
 }
@@ -57,15 +57,6 @@ GalvanizingGlaive: {
 		'''
 }
 
-GaussDagger: {
-	DisplayName: Gauss Dagger
-	Tooltip:
-		'''
-		Slices through foes with turbulent magnetic force
-		Striking foes envelops them in a damaging magnetic flux
-		'''
-}
-
 HolofibreImmolator: {
 	DisplayName: R-PMA: Holofibre Immolator
 	Tooltip:
@@ -73,7 +64,8 @@ HolofibreImmolator: {
 		Fires three gravity-affected plasma drops which dissolve through foes
 		Holding <left> quickly charges the bow, firing a high-speed plasma arrow
 		Plasma arrows will detonate after impact, creating stronger explosions if stuck into tiles
-		Holding <right> while firing will repeatedly fire uncharged shots
+		Holding <right> will repeatedly fire uncharged shots
+		Holding <right> and <left> will automatically fire charged arrows at a slightly slower rate
 		[c/1FFBFF:'The elegance of holofibre is unmatched.]
 		[c/1FFBFF:However, mechanical tension may have produced more consistent results.']
 		'''
@@ -108,6 +100,19 @@ Nidhogg: {
 		'''
 }
 
+PhalanxSurge: {
+	DisplayName: W-LSR: Phalanx Surge
+	Tooltip:
+		'''
+		Fires a spread of lasers
+		Holding <right> charges the weapon, allowing it to thrust forward and impale enemies with an energy spear
+		Holding <left> when firing the charge attack will launch you forward at high speeds and deal extra damage
+		Using the charged attack has a short cooldown
+		[c/1FFBFF:'There was much call from Yharim's forces for close range armaments.]
+		[c/1FFBFF:A laser lance with which to gore their foes was met with thunderous applause.']
+		'''
+}
+
 Phaseslayer: {
 	DisplayName: Phaseslayer
 	Tooltip:
@@ -115,7 +120,6 @@ Phaseslayer: {
 		Projects a colossal laser blade which is controlled by the cursor
 		Move the cursor to swing the blade and rip and tear through enemies
 		Faster swings deal more damage and release additional sword beams
-		When at low charge, the blade becomes smaller and weaker
 		'''
 }
 
@@ -199,19 +203,6 @@ PulseTurretRemote: {
 		'''
 }
 
-PhalanxSurge: {
-	DisplayName: W-LSR: Phalanx Surge
-	Tooltip:
-		'''
-		Fires a spread of lasers
-		Holding <right> charges the weapon, allowing it to thrust forward and impale enemies with an energy spear
-		Holding <left> when firing the charge attack will launch you forward at high speeds and deal extra damage
-		Using the charged attack has a short cooldown
-		[c/1FFBFF:'There was much call from Yharim's forces for close range armaments.]
-		[c/1FFBFF:A laser lance with which to gore their foes was met with thunderous applause.']
-		'''
-}
-
 ShortCircuit: {
 	DisplayName: P-TSL: Short Circuit
 	Tooltip:
@@ -264,15 +255,6 @@ TheAnomalysNanogun: {
 		'''
 }
 
-WavePounder: {
-	DisplayName: Wave Pounder
-	Tooltip:
-		'''
-		Throws a bomb which explodes into a agonizingly forceful shockwave
-		Stealth strikes emit absurdly powerful shockwaves
-		'''
-}
-
 Vulcan: {
 	DisplayName: R-GSS: Vulcan
 	Tooltip:
@@ -283,5 +265,14 @@ Vulcan: {
 		When a harpoon expires, all magnetized shots launch at nearby enemies with increased damage
 		[c/1FFBFF:'Originally a ceiling mounted mining beam, the removal of its battery reduced its heft only marginally.]
 		[c/1FFBFF:It saw little use and many complaints from the battlemage corps.']
+		'''
+}
+
+WavePounder: {
+	DisplayName: Wave Pounder
+	Tooltip:
+		'''
+		Throws a bomb which explodes into a agonizingly forceful shockwave
+		Stealth strikes emit absurdly powerful shockwaves
 		'''
 }

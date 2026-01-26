@@ -1,15 +1,11 @@
-﻿
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
-using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -41,6 +37,12 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         /// Offsets for drawing each segment
         /// </summary>
         public List<Vector2> SegmentTypeDrawOffsets = new List<Vector2>();
+
+        /// <summary>
+        /// A list of all glow textures for the segments to draw with
+        /// DOES include the head
+        /// </summary>
+        public virtual List<string?> GlowTextures { get; }
 
         /// <summary>
         /// How far through the current animation this worm is
@@ -77,6 +79,29 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         /// Use SegmentTextureAssets to get the data stored here.
         /// </summary>
         private List<Asset<Texture2D>> internalTexAssets = new List<Asset<Texture2D>>();
+        /// <summary>
+        /// The textures for each glow type of this worm. Works like getting a texture from TextureAssets
+        /// </summary>
+        public List<Asset<Texture2D>> GlowTextureAssets
+        {
+            get
+            {
+                if (internalGlowAssets.Count == 0)
+                    for (var i = 0; i < GlowTextures.Count; i++)
+                    {
+                        if (GlowTextures[i] is not null)
+                            internalGlowAssets.Add(ModContent.Request<Texture2D>(GlowTextures[i]));
+                        else internalGlowAssets.Add(ModContent.Request<Texture2D>("CalamityMod/Projectiles/InvisibleProj"));
+                    }
+                return internalGlowAssets;
+            }
+        }
+
+        /// <summary>
+        /// Internal list that stores the glow textureassets.
+        /// Use SegmentTextureAssets to get the data stored here.
+        /// </summary>
+        private List<Asset<Texture2D>> internalGlowAssets = new List<Asset<Texture2D>>();
 
         public List<BaseWormSegment> Segments = new();
        
@@ -96,6 +121,11 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         /// How rigid the segment should be when using default segment logic
         /// </summary>
         public float SegmentRigidity = 0.2f;
+
+        /// <summary>
+        /// The max rotational offset from the direction of the previous segment
+        /// </summary>
+        public float SegmentMaxRotation = MathHelper.TwoPi;
 
         /// <summary>
         /// The points used by ExactSegmentLogic to exactly follow the head
@@ -162,7 +192,9 @@ namespace CalamityMod.Projectiles.BaseProjectiles
                     nexSegDir = nexSegDir.MoveTowards((aheadSeg.rotation - thisSeg.rotation).ToRotationVector2(), 1f);
                 }
                 thisSeg.rotation = nexSegDir.ToRotation() + MathHelper.PiOver2;
-                thisSeg.Center = aheadSeg.Center - nexSegDir.SafeNormalize(Vector2.Zero) * segmentDistance;
+                float angledif = MathHelper.WrapAngle(thisSeg.rotation - aheadSeg.rotation);
+                thisSeg.rotation = thisSeg.rotation.AngleLerp(aheadSeg.rotation + MathHelper.Clamp(angledif, -SegmentMaxRotation * 0.5f, SegmentMaxRotation * 0.5f), 0.25f);
+                thisSeg.Center = aheadSeg.Center - (thisSeg.rotation - MathHelper.PiOver2).ToRotationVector2() * segmentDistance;
 
             }
         }
@@ -241,11 +273,15 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         #region Draw
         public override bool PreDraw(ref Color lightColor)
         {
+
             for (int i = Segments.Count - 1; i >= 0; i--)
             {
                 DrawSegment(ref lightColor, Segments[i]);
             }
             Main.spriteBatch.Draw(TextureAssets.Projectile[Type].Value, Projectile.Center - Main.screenPosition, null, lightColor * Projectile.Opacity, Projectile.rotation, TextureAssets.Projectile[Type].Value.Size() / 2, Projectile.scale, SpriteEffects.None, 1);
+
+            if (GlowTextures.Count > 0 && GlowTextures[0] is not null)
+                Main.spriteBatch.Draw(GlowTextureAssets[0].Value, Projectile.Center - Main.screenPosition, null, Color.White * Projectile.Opacity, Projectile.rotation, GlowTextureAssets[0].Size() / 2, Projectile.scale, SpriteEffects.None, 1);
             return false;
         }
 
@@ -258,6 +294,12 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             }
             var tex = SegmentTextureAssets[segment.segmentType].Value;
             Main.spriteBatch.Draw(tex, segment.Center - Main.screenPosition, null, color *segment.Opacity, segment.rotation, tex.Size() / 2 + (SegmentTypeDrawOffsets[segment.segmentType]), Projectile.scale, SpriteEffects.None, 1);
+            if (GlowTextures is null || !GlowTextures.IndexInRange(segment.segmentType + 1) || GlowTextures[segment.segmentType + 1] is null)
+            {
+                return;
+            }
+            tex = GlowTextureAssets[segment.segmentType + 1].Value;
+            Main.spriteBatch.Draw(tex, segment.Center - Main.screenPosition, null, Color.White * segment.Opacity, segment.rotation, tex.Size() / 2 + (SegmentTypeDrawOffsets[segment.segmentType]), Projectile.scale, SpriteEffects.None, 1);
         }
         #endregion
 

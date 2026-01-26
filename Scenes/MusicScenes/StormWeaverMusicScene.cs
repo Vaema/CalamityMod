@@ -1,5 +1,4 @@
 ﻿using CalamityMod.NPCs.StormWeaver;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 

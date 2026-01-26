@@ -152,12 +152,12 @@ namespace CalamityMod.Projectiles.Melee
                     break;
             }
 
-            //Only draw the cool effect if you have enough particle slots left. Itd look really ugly to have a half complete constellation
+            // Only draw the cool effect if you have enough particle slots left. It'd look really ugly to have a half complete constellation
             if (GeneralParticleHandler.FreeSpacesAvailable() > StarPositions.Length * 2)
             {
                 for (int i = 0; i < StarPositions.Length; i++)
                 {
-                    //The polar star gets bigger than the others. Also since andromeda has so many stars, make em smaller
+                    // The polar star gets bigger than the others. Also since andromeda has so many stars, make em smaller
                     Star = new GenericSparkle(Owner.Center + StarPositions[i], Vector2.Zero, Color.White, StarColor, (attunement.id == AttunementID.Polaris && i == 0) ? 3f : Main.rand.NextFloat(1f, 1.5f) * (attunement.id == AttunementID.Andromeda ? 0.8f : 1f), 20, 0f, 3f);
                     GeneralParticleHandler.SpawnParticle(Star);
 
@@ -175,10 +175,8 @@ namespace CalamityMod.Projectiles.Melee
                 }
             }
 
-            //Chunger
             SoundEngine.PlaySound(CommonCalamitySounds.LightningSound with { Volume = CommonCalamitySounds.LightningSound.Volume * 0.4f }, Projectile.Center);
-            if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 5)
-                Main.LocalPlayer.Calamity().GeneralScreenShakePower = 5;
+            Main.LocalPlayer.SetScreenshake(5f);
             item.mainAttunement = attunement;
         }
     }

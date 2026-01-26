@@ -1,11 +1,11 @@
 ﻿using CalamityMod.Items.Placeables.FurnitureSacrilegious;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -13,6 +13,8 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
 {
     public class RitualCandleTile : ModTile
     {
+        public Asset<Texture2D> FlameTexture;
+
         public override void SetStaticDefaults()
         {
             // Due to how Ritual Candles are implemented (right click to swap styles), item drop for the alternate style will never register normally.
@@ -74,12 +76,13 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
 
         public override void HitWire(int i, int j)
         {
-            CalamityUtils.LightHitWire(Type, i, j, 2, 2);
+            FurnitureCommon.LightHitWire(Type, i, j, 2, 2);
         }
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            CalamityUtils.DrawFlameEffect(ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureSacrilegious/RitualCandleTileFlame").Value, i, j);
+            FlameTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureSacrilegious/RitualCandleTileFlame");
+            CalamityUtils.DrawFlameEffect(FlameTexture.Value, i, j);
         }
     }
 }

@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using CalamityMod.FluidSimulation;
 using CalamityMod.Items;
 using CalamityMod.MainMenu;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles;
+using log4net;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
-using Terraria.ModLoader.Config;
 
 [assembly: InternalsVisibleTo("CalTestHelpers")]
 [assembly: InternalsVisibleTo("InfernumMode")]
@@ -29,6 +27,9 @@ namespace CalamityMod
 
         internal static CalamityMod Instance => _Instance ??= ModContent.GetInstance<CalamityMod>();
         private static CalamityMod _Instance;
+
+        // This should not be named as 'Logger' as it hides Instance Property 'Logger'
+        internal static ILog Log => Instance.Logger;
 
         #region Load
         public override void Load()

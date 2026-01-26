@@ -29,17 +29,23 @@ namespace CalamityMod.Items.Placeables.Crags
             Item.value = Item.buyPrice(silver: 1, copper: 50); // Sold by Dryad; equal to Ash Grass Seeds
         }
 
-        public override bool? UseItem(Player player)
+        public override bool? UseItem(Player player) => true;
+
+        public override bool ConsumeItem(Player player)
         {
-            var tile = Framing.GetTileSafely(Player.tileTargetX, Player.tileTargetY);
-            var tileAbove = Framing.GetTileSafely(Player.tileTargetX, Player.tileTargetY - 1);
+            var tileX = Player.tileTargetX;
+            var tileY = Player.tileTargetY;
+            var tile = Framing.GetTileSafely(tileX, tileY);
+            var tileAbove = Framing.GetTileSafely(tileX, tileY - 1);
 
             if (tile.HasTile && !tileAbove.HasTile && tileAbove.LiquidAmount == 0 && tile.TileType == ModContent.TileType<Tiles.Crags.ScorchedRemains>() && player.IsInTileInteractionRange(Player.tileTargetX, Player.tileTargetY, TileReachCheckSettings.Simple))
             {
-                Main.tile[Player.tileTargetX, Player.tileTargetY].TileType = (ushort)ModContent.TileType<Tiles.Crags.ScorchedRemainsGrass>();
-
+                tile.TileType = (ushort)ModContent.TileType<Tiles.Crags.ScorchedRemainsGrass>();
+                if (Main.netMode == NetmodeID.MultiplayerClient)
+                {
+                    NetMessage.SendTileSquare(player.whoAmI, tileX, tileY);
+                }
                 SoundEngine.PlaySound(SoundID.Dig, player.Center);
-
                 return true;
             }
 

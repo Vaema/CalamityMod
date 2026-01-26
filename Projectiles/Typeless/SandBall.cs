@@ -1,11 +1,5 @@
 ﻿using System;
 using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Items.Placeables.Abyss;
-using CalamityMod.Items.Placeables.Astral;
-using CalamityMod.Items.Placeables.SunkenSea;
-using CalamityMod.Tiles.Abyss;
-using CalamityMod.Tiles.AstralDesert;
-using CalamityMod.Tiles.SunkenSea;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;

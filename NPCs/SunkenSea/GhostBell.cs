@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.DataStructures;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.Particles;
+using CalamityMod.Pathfinding;
 using CalamityMod.Projectiles.Enemy;
-using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
-using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
@@ -159,13 +156,10 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (pathfinding == null)
             {
-                pathfinding = new PathfindingManager(NPC)
-                {
-                    Acceleration = 0.1f,
-                    MaxSpeed = 1f,
-                };
+                pathfinding = new PathfindingManager(this);
+                Acceleration = 0.1f;
+                MaxSpeed = 1f;
             }
-
             CreateTentacles();
             NPC.ai[2]++;
 
@@ -253,12 +247,12 @@ namespace CalamityMod.NPCs.SunkenSea
             // Move towards target
             else if (target != null)
             {
-                pathfinding.DoPathfinding(new PathfindingParameters(NPC.Center, target.Center, SunkenSeaTileValiditySizeless));
+                pathfinding.DoPathfinding(new PathfindingParameters(this, NPC.Center, target.Center, SunkenSeaTileValiditySizeless));
                 if (pathfinding.Path.Count > 0)
-                if (pathfinding.Path[^1].Distance(target.Center) > 300)
-                {
-                    pathfinding.ClearResults();
-                }
+                    if (pathfinding.Path[^1].Distance(target.Center) > 300)
+                    {
+                        pathfinding.ClearResults();
+                    }
                 if (Phase == (int)PhaseType.Angry)
                 {
                     if (target is Player && NPC.Distance(target.Center) < 300)
@@ -523,7 +517,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(ItemID.JellyfishNecklace, 25);
+            npcLoot.Add(ItemID.JellyfishNecklace, 30);
             LeadingConditionRule postDS = npcLoot.DefineConditionalDropSet(DropHelper.PostDS());
             postDS.Add(ModContent.ItemType<VoltaicJelly>(), 5);
         }

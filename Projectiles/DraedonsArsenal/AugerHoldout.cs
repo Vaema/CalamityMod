@@ -27,7 +27,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         // Both checks to make sure sounds/hitboxes only happen once per swing
         public bool makeSound = true;
         public bool makeHitbox = true;
-        public int cooldownGiven => (int)(400 / Owner.GetAttackSpeed<MeleeDamageClass>()); // Cooldown is effected by melee speed, lines up perfectly so you do 10 swings and end in time for a big swing
+        public int cooldownGiven => (int)(800 / Owner.GetAttackSpeed<MeleeDamageClass>()); // Cooldown is effected by melee speed, lines up perfectly so you do 22 swings and end in time for a big swing
         public float pullFx = 1; // Scaling on the effects of the blade when it's buffed
         public bool pressedRight = false;
         // Spawns a hitbox to do damage, rather than dealing damage itself
@@ -209,7 +209,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                         int damage = Projectile.damage;
                         if (Owner.Calamity().buffedAuger)
                         {
-                            Owner.Calamity().GeneralScreenShakePower = 5f;
+                            Owner.SetScreenshake(5f);
                             damage = (int)(damage * 2.5f);
                         }
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center + toMouse * 20 * (float)Math.Pow(scaleFx, 4), toMouse * 25, ModContent.ProjectileType<AugerSlash>(), damage, 0, Projectile.owner, 0, swingCount, Owner.Calamity().buffedAuger ? 5 : 0);

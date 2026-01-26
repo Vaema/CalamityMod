@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Melee;
+﻿using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -11,10 +10,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class ToothBall : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Aorta>();
-        }
         public override void SetDefaults()
         {
             Item.width = 30;

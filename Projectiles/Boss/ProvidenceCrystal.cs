@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using CalamityMod.Events;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.Particles;

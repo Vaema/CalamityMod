@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.AccessControl;
-using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Particles;
-using CalamityMod.Projectiles.Rogue;
-using CalamityMod.Sounds;
+﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -90,7 +84,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 for (int i = 0; i < 15; i++)
                 {
-                    Dust rainbowBurst = Dust.NewDustPerfect(Projectile.Center, 267);
+                    Dust rainbowBurst = Dust.NewDustPerfect(Projectile.Center, DustID.RainbowMk2);
                     rainbowBurst.color = Main.hslToRgb(i / 80f, 0.9f, 0.6f);
                     rainbowBurst.velocity = Main.rand.NextVector2Unit() * Main.rand.NextFloat(3f, 5.5f);
                     rainbowBurst.scale = Main.rand.NextFloat(1.4f, 2.4f);
@@ -108,8 +102,7 @@ namespace CalamityMod.Projectiles.Rogue
             int shootType = ModContent.ProjectileType<PrismShurikenBlade>();
             if (Main.myPlayer != Projectile.owner)
                 return;
-
-            if (CalamityUtils.CountOwnedProjectiles(shootType, Projectile.owner) > 24)
+            if (Main.LocalPlayer.ownedProjectileCounts[shootType] > 24)
                 return;
 
             int energyDamage = (int)(Projectile.damage * 0.5f);

@@ -93,7 +93,6 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(ItemID.LihzahrdBrick, 1, 10, 26);
             npcLoot.Add(ModContent.ItemType<Stohne>(), 1, 10, 26);
             npcLoot.Add(ItemID.LunarTabletFragment, 7, 10, 26);
             npcLoot.Add(ItemID.LihzahrdPowerCell, 50);

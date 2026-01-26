@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
-using CalamityMod.Graphics.Metaballs;
-using CalamityMod.Items.Ammo;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Typeless;
-using Humanizer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -14,7 +9,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.GameContent.Animations.IL_Actions.Sprites;
+
 namespace CalamityMod.Projectiles.Ranged
 {
     public class VanquisherArrowProj : ModProjectile, ILocalizedModType
@@ -52,6 +47,9 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
+            //This is so Grape Beer works properly with them
+            if (targeted != null && Projectile.localNPCImmunity[targeted.whoAmI] == -1)
+                Projectile.localNPCImmunity[targeted.whoAmI] = 15 * Projectile.extraUpdates;
             float rate = Main.GlobalTimeWrappedHourly * 5;
             List<Color> eColors = new List<Color>()
             {

@@ -1,6 +1,5 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Projectiles.Rogue;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -71,8 +70,7 @@ namespace CalamityMod.Projectiles.Boss
             }
             if (time >= attackTime && !doneAttack)
             {
-                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 7f)
-                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = 7f;
+                Main.LocalPlayer.SetScreenshake(7f);
                 SoundStyle attack = new("CalamityMod/Sounds/Custom/DoGLaserWallBigAttack2");
                 for (int i = 0; i < 2; i++)
                     SoundEngine.PlaySound(attack with { Volume = 0.8f, Pitch = 0, MaxInstances = -1 }, targetPos);

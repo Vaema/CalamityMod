@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Buffs.Summon;
-using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
@@ -26,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.damage = 560;
             Item.DamageType = DamageClass.Summon;
             Item.mana = 10;
-            Item.useAnimation = Item.useTime = 10;
+            Item.useAnimation = Item.useTime = 24;
             Item.knockBack = 0.25f;
             Item.buffType = ModContent.BuffType<CosmicEnergy>();
             Item.shoot = ModContent.ProjectileType<CosmicEnergySpiral>();

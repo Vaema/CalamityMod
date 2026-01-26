@@ -1,11 +1,8 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.NPCs;
-using CalamityMod.NPCs.Providence;
+﻿using CalamityMod.NPCs.Providence;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Boss

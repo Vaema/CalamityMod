@@ -63,7 +63,7 @@ namespace CalamityMod.NPCs.CalClone
                 NPC.scale *= 1.2f;
 
             NPC.defense = 10;
-            NPC.LifeMaxNERB(8500, 10000, 80000);
+            NPC.LifeMaxNERB(7000, 10000, 80000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -313,7 +313,7 @@ namespace CalamityMod.NPCs.CalClone
                         {
                             NPC.localAI[1] = 0f;
                             float calCloneBroProjSpeed = NPC.AnyNPCs(ModContent.NPCType<Catastrophe>()) ? 4f : 6f;
-                            int type = ModContent.ProjectileType<BrimstoneFire>();
+                            int type = ModContent.ProjectileType<CataclysmicFlame>();
                             calCloneBroProjLocation = new Vector2(NPC.position.X + NPC.width * 0.5f, NPC.position.Y + NPC.height * 0.5f);
                             calCloneBroProjTargetX = player.position.X + (player.width / 2) - calCloneBroProjLocation.X;
                             calCloneBroProjTargetY = player.position.Y + (player.height / 2) - calCloneBroProjLocation.Y;
@@ -358,7 +358,7 @@ namespace CalamityMod.NPCs.CalClone
                     {
                         SoundEngine.PlaySound(SupremeCalamitas.SupremeCalamitas.BrimstoneShotSound, NPC.Center);
 
-                        int type = ModContent.ProjectileType<BrimstoneBarrage>();
+                        int type = ModContent.ProjectileType<BurningBolt>();
 
                         int totalProjectiles = death ? 10 : revenge ? 8 : expertMode ? 6 : 4;
                         float radians = MathHelper.TwoPi / totalProjectiles;

@@ -99,14 +99,6 @@ namespace CalamityMod.NPCs.Leviathan
 
         public override Color? GetAlpha(Color drawColor) => NPC.ai[1] == 1f ? Color.Transparent : new Color(200, 200, 200, drawColor.A) * NPC.Opacity;
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (NPC.ai[1] == 1f || hurtInfo.Damage <= 0)
-                return;
-
-            target.AddBuff(BuffID.Frostburn, 240, true);
-        }
-
         public override bool CheckActive() => false;
 
         public override void HitEffect(NPC.HitInfo hit)

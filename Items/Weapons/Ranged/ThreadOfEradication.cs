@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.NPCs.DevourerofGods;
-using CalamityMod.Particles;
-using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -10,7 +8,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
@@ -22,10 +19,6 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
             tooltips.FindAndReplaceAll("ff00ff", Utils.Hex3(DevourerofGodsHead.SpecialMoveColor));
-        }
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<HyperdeathRiftScepter>();
         }
         public override void SetDefaults()
         {
@@ -77,8 +70,8 @@ namespace CalamityMod.Items.Weapons.Ranged
                     else
                     {
 
-                        if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 2 && Main.LocalPlayer.Distance(player.Center) < 1600)
-                            Main.LocalPlayer.Calamity().GeneralScreenShakePower = 2;
+                        if (Main.LocalPlayer.Distance(player.Center) < 1600)
+                            Main.LocalPlayer.SetScreenshake(2f);
                         if (Main.myPlayer == player.whoAmI)
                         {
                             Projectile.NewProjectile(Item.GetSource_FromThis(), player.Center + Vector2.UnitX.RotatedBy(player.itemRotation) * 2016, Vector2.UnitX.RotatedBy(player.itemRotation), ModContent.ProjectileType<FriendlyLaserWallBeam>(), storedDMG, storedKB, player.whoAmI, -1, 1);
@@ -92,8 +85,8 @@ namespace CalamityMod.Items.Weapons.Ranged
                 if (player.itemTime == 60)
                 {
 
-                    if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 5 && Main.LocalPlayer.Distance(player.Center) < 1600)
-                        Main.LocalPlayer.Calamity().GeneralScreenShakePower = 5;
+                    if (Main.LocalPlayer.Distance(player.Center) < 1600)
+                        Main.LocalPlayer.SetScreenshake(5f);
                     if (Main.myPlayer == player.whoAmI)
                     {
                         int p = Projectile.NewProjectile(Item.GetSource_FromThis(), player.Center + Vector2.UnitX.RotatedBy(player.itemRotation) * 2016, Vector2.UnitX.RotatedBy(player.itemRotation), ModContent.ProjectileType<FriendlyLaserWallBeam>(), storedDMG*4, storedKB, player.whoAmI,-0.25f,1);

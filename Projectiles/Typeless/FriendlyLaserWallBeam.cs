@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.NPCs.Abyss;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -18,7 +12,7 @@ namespace CalamityMod.Projectiles.Typeless
     public class FriendlyLaserWallBeam : ModProjectile, ILocalizedModType
     {
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-        public new string LocalizationCategory => "Projectiles.Boss";
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public float time = 0;
         public ref float attackSpeed => ref Projectile.ai[0];
         public ref float laserType => ref Projectile.ai[1];
@@ -90,8 +84,8 @@ namespace CalamityMod.Projectiles.Typeless
                 doneAttack = true;
                 storedTime = time;
                 Projectile.ForceNetUpdate();
-                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < Projectile.ai[2] && Main.LocalPlayer.Distance(Projectile.Center) < 1600)
-                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = Projectile.ai[2];
+                if (Main.LocalPlayer.Distance(Projectile.Center) < 1600)
+                    Main.LocalPlayer.SetScreenshake(Projectile.ai[2]);
             }
             float endTime = storedTime + 10;
             if (time >= endTime && doneAttack)
@@ -109,7 +103,7 @@ namespace CalamityMod.Projectiles.Typeless
         public override bool? CanHitNPC(NPC target)
         {
             if (canDamage)
-                return true;
+                return null;
             return false;
         }
         public override bool CanHitPlayer(Player target)

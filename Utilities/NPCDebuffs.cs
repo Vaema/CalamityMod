@@ -171,8 +171,6 @@ namespace CalamityMod
             EnemyStats.DebuffImmunities = new SortedDictionary<int, Tuple<GeneralImmunityStatus, int[]>>
             {
                 { ModContent.NPCType<KingSlimeJewelRuby>(), immuneToEverything },
-                { ModContent.NPCType<KingSlimeJewelSapphire>(), immuneToEverything },
-                { ModContent.NPCType<KingSlimeJewelEmerald>(), immuneToEverything },
 
                 { ModContent.NPCType<HiveMind>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<BrainRot>() }) },
 
@@ -405,9 +403,6 @@ namespace CalamityMod
                 { ModContent.NPCType<ProfanedEnergyBody>(), holy },
                 { ModContent.NPCType<Sunskater>(), holy },
 
-                { ModContent.NPCType<ArmoredDiggerHead>(), immuneToEverything },
-                { ModContent.NPCType<ArmoredDiggerBody>(), immuneToEverything },
-                { ModContent.NPCType<ArmoredDiggerTail>(), immuneToEverything },
                 { ModContent.NPCType<Eidolist>(), immuneToEverything },
 
                 { ModContent.NPCType<Frogfish>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Poisoned, BuffID.Venom }) },

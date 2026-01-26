@@ -5,7 +5,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
-using Terraria.GameContent;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -23,6 +22,9 @@ namespace CalamityMod.Items.Accessories.Wings
         public override float BaseAscent => 0.125f;
 
         public static int wingSlot = 0;
+        // How powerful the acceleration increase is while pressing UP
+        // This also affects the flight time tick rate
+        public static float BoostPower = 2f;
         public override void SetStaticDefaults()
         {
             ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(75, 6.5f, 1f);
@@ -87,6 +89,8 @@ namespace CalamityMod.Items.Accessories.Wings
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
+            player.DisableWingFlapSound();
+
             if (toggleEnabled && player.controlJump && player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
             {
                 player.rocketDelay2--;
@@ -152,6 +156,20 @@ namespace CalamityMod.Items.Accessories.Wings
             // Mirrors the +5% luck from Lucky Horseshoe (vanilla behavior).
             player.Calamity().calamityBonusLuck += 0.05f;
         }
+
+        public override void AdditionalFlightMovement(Player player, ref float ascentWhenFalling, ref float ascentWhenRising, ref float maxCanAscendMultiplier, ref float maxAscentMultiplier, ref float constantAscend)
+        {
+            if (player.TryingToHoverUp)
+            {
+                ascentWhenFalling *= BoostPower;
+                ascentWhenRising *= BoostPower;
+                maxCanAscendMultiplier *= BoostPower;
+                maxAscentMultiplier *= BoostPower;
+                constantAscend *= BoostPower;
+                player.wingTime -= BoostPower - 1f;
+            }
+        }
+
         public override void AddRecipes()
         {
             CreateRecipe().

@@ -89,7 +89,7 @@ namespace CalamityMod.Projectiles.Melee
                 SoundEngine.PlaySound((Main.rand.NextBool(2) ? SoundID.Item85 : SoundID.Item86).WithPitchOffset(-0.5f), Owner.Center);
                 SoundEngine.PlaySound(SoundID.NPCDeath14.WithPitchOffset(1f), Owner.Center);
 
-                Owner.Calamity().GeneralScreenShakePower = 3f;
+                Owner.SetScreenshake(3f);
 
                 GeneralParticleHandler.SpawnParticle(new MantisPunch(Owner.Center + new Vector2(26, 0).RotatedBy(Projectile.rotation), Projectile.rotation));
             }

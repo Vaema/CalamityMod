@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
+using CalamityMod.Items.Pets;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
@@ -58,7 +59,7 @@ namespace CalamityMod.Items.Weapons.Summon
                     for (int i = 0; i < 36; i++)
                     {
                         float angle = MathHelper.TwoPi / 36f * i + Main.rand.NextFloat(MathHelper.TwoPi / 36f);
-                        Dust dust = Dust.NewDustPerfect(position + angle.ToRotationVector2() * ItemUseDustMaxRadius, 247);
+                        Dust dust = Dust.NewDustPerfect(position + angle.ToRotationVector2() * ItemUseDustMaxRadius, DustID.PlatinumCoin);
                         dust.velocity = Vector2.Normalize(angle.ToRotationVector2()) * 2.5f;
                         dust.noGravity = true;
                         dust.scale = 0.8f;
@@ -75,6 +76,7 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void AddRecipes()
         {
             CreateRecipe().
+                AddIngredient<BurrowerController>().
                 AddIngredient<Abombination>().
                 AddIngredient<ShadowspecBar>(5).
                 AddTile<DraedonsForge>().

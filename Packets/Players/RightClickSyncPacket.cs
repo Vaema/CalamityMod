@@ -1,20 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using CalamityMod.CalPlayer;
-using CalamityMod.Events;
 using Terraria;
 
 namespace CalamityMod.Packets
 {
-    public sealed class RightClickSyncPacket : CalamityPacket
+    internal sealed class RightClickSyncPacket : CalamityPacket
     {
         public static RightClickSyncPacket Instance { get; private set; }
-
-        public override byte MessageType => (byte)CalamityModMessageType.RightClickSync;
 
         public static void Send(CalamityPlayer player, int toClient = -1, int ignoreClient = -1)
         {
@@ -27,7 +19,7 @@ namespace CalamityMod.Packets
             packet.Send(toClient, ignoreClient);
         }
 
-        public override void HandlePacket(in BinaryReader packet, int sender)
+        public override void HandlePacket(BinaryReader packet, int sender)
         {
             var player = packet.ReadCalamityPlayer();
             var rightClick = packet.ReadBoolean();

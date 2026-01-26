@@ -29,16 +29,22 @@ namespace CalamityMod.Items.Placeables.Astral
             Item.value = Item.buyPrice(silver: 20); // Sold by Dryad; equal to Hallowed Seeds
         }
 
-        public override bool? UseItem(Player player)
+        public override bool? UseItem(Player player) => true;
+
+        public override bool ConsumeItem(Player player)
         {
-            var tile = Framing.GetTileSafely(Player.tileTargetX, Player.tileTargetY);
+            var tileX = Player.tileTargetX;
+            var tileY = Player.tileTargetY;
+            var tile = Framing.GetTileSafely(tileX, tileY);
 
-            if (tile.HasTile && tile.TileType == ModContent.TileType<Tiles.Astral.AstralDirt>() && player.IsInTileInteractionRange(Player.tileTargetX, Player.tileTargetY, TileReachCheckSettings.Simple))
+            if (tile.HasTile && tile.TileType == ModContent.TileType<Tiles.Astral.AstralDirt>() && player.IsInTileInteractionRange(tileX, tileY, TileReachCheckSettings.Simple))
             {
-                Main.tile[Player.tileTargetX, Player.tileTargetY].TileType = (ushort)ModContent.TileType<Tiles.Astral.AstralGrass>();
-
+                tile.TileType = (ushort)ModContent.TileType<Tiles.Astral.AstralGrass>();
+                if (Main.netMode == NetmodeID.MultiplayerClient)
+                {
+                    NetMessage.SendTileSquare(player.whoAmI, tileX, tileY);
+                }
                 SoundEngine.PlaySound(SoundID.Dig, player.Center);
-
                 return true;
             }
 

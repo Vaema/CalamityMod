@@ -66,7 +66,7 @@ namespace CalamityMod.Projectiles.Magic
                 MovingUp = Projectile.ai[2] == 1;
 
             firingDelay--;
-            Item heldItem = Owner.ActiveItem();
+            Item heldItem = Owner.HeldItem;
 
             // Update damage based on curent magic damage stat (so Mana Sickness affects it)
             Projectile.damage = heldItem is null ? 0 : Owner.GetWeaponDamage(heldItem);
@@ -89,7 +89,7 @@ namespace CalamityMod.Projectiles.Magic
                     if (launchDelay < 50)
                         launchDelay++;
 
-                    if (launchDelay >= 50 && (Owner.CheckMana(Owner.ActiveItem(), (int)(heldItem.mana * Owner.manaCost) * 2, true, false)))
+                    if (launchDelay >= 50 && (Owner.CheckMana(Owner.HeldItem, (int)(heldItem.mana * Owner.manaCost) * 2, true, false)))
                     {
                         Shoot(true);
                         PostFireCooldown = 50;
@@ -99,7 +99,7 @@ namespace CalamityMod.Projectiles.Magic
                 }
                 else if (ShootingTimer >= FiringTime)
                 {
-                    if (Owner.CheckMana(Owner.ActiveItem(), -1, false, false))
+                    if (Owner.CheckMana(Owner.HeldItem, -1, false, false))
                     {
                         Shoot(false);
                         ShootingTimer = 0;
@@ -221,7 +221,7 @@ namespace CalamityMod.Projectiles.Magic
                 Particle smoke = new HeavySmokeParticle(tipPosition, smokeVel, StaticEffectsColor, Main.rand.Next(30, 50 + 1), Main.rand.NextFloat(0.1f, 0.4f), 0.5f, Main.rand.NextFloat(-0.2f, 0.2f), Main.rand.NextBool(), required: true);
                 GeneralParticleHandler.SpawnParticle(smoke);
 
-                Dust dust = Dust.NewDustPerfect(tipPosition, 303, smokeVel.RotatedByRandom(0.1f), 80, default, Main.rand.NextFloat(0.2f, 0.8f));
+                Dust dust = Dust.NewDustPerfect(tipPosition, DustID.SteampunkSteam, smokeVel.RotatedByRandom(0.1f), 80, default, Main.rand.NextFloat(0.2f, 0.8f));
                 dust.noGravity = false;
                 dust.color = StaticEffectsColor;
             }

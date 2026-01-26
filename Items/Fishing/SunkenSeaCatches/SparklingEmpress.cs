@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Fishing.SunkenSeaCatches
             Item.damage = 11;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 3;
-            Item.useAnimation = Item.useTime = 10;
+            Item.useAnimation = Item.useTime = 8;
             Item.knockBack = 0.25f;
             Item.shoot = ModContent.ProjectileType<SparklingEmpressHoldout>();
             Item.shootSpeed = 5f;

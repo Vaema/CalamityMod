@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Projectiles.Melee;
@@ -7,9 +6,7 @@ using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
@@ -21,7 +18,6 @@ namespace CalamityMod.Items.Weapons.Melee
         public override int ProjectileType => ModContent.ProjectileType<MawOfInfinityHoldout>();
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<TheObliterator>();
             base.SetStaticDefaults();
         }
         public override void ModifyTooltips(List<TooltipLine> tooltips)

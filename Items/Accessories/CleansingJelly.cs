@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.CalPlayer;
+﻿using CalamityMod.CalPlayer;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;

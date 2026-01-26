@@ -11,9 +11,8 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
         public override void SetStaticDefaults()
         {
             base.SetStaticDefaults();
-            RegisterItemDrop(ModContent.ItemType<Shellstone>(), Type, 0);
-            // TODO: None of these work
-            //FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<Shellstone>(), Type, 0);
+            RegisterItemDrop(ModContent.ItemType<Shellstone>(), Type);
+            FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<Shellstone>(), Type, 0, 1, 2, 3);
         }
     }
 
@@ -23,8 +22,8 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
         public override void SetStaticDefaults()
         {
             base.SetStaticDefaults();
-            RegisterItemDrop(ModContent.ItemType<Shellstone>(), Type, 0);
-            //FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<Shellstone>(), Type, 0);
+            RegisterItemDrop(ModContent.ItemType<Shellstone>(), Type);
+            FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<Shellstone>(), Type, 0, 1, 2, 3);
         }
     }
 }

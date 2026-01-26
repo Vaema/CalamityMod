@@ -15,7 +15,7 @@ namespace CalamityMod.Tiles.DraedonStructures
             Main.tileMerge[Type][ModContent.TileType<LaboratoryPipePlating>()] = true;
 
             HitSound = SoundID.Item52;
-            DustType = 32;
+            DustType = DustID.Sand;
             MinPick = 30;
             AddMapEntry(new Color(128, 90, 77));
         }

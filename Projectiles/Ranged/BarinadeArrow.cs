@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.Particles;
+﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -41,7 +40,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 for (int i = 0; i <= 5; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(3) ? 216 : 121, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.1f, 0.6f), 0, default, Main.rand.NextFloat(1.2f, 1.6f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(3) ? 216 : 207, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.1f, 0.6f), 0, default, Main.rand.NextFloat(1.2f, 1.6f));
                     dust.noGravity = true;
                 }
             }

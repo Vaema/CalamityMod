@@ -12,8 +12,7 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
         {
             base.SetStaticDefaults();
             RegisterItemDrop(ModContent.ItemType<OrangeCoral>(), Type, 0);
-            // TODO: Currently none of these work
-            //FlexibleTileWand.RubblePlacementMedium.AddVariations(ModContent.ItemType<OrangeCoral>(), Type, 0);
+            FlexibleTileWand.RubblePlacementMedium.AddVariations(ModContent.ItemType<OrangeCoral>(), Type, 0);
         }
     }
 
@@ -24,7 +23,7 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
         {
             base.SetStaticDefaults();
             RegisterItemDrop(ModContent.ItemType<OrangeCoral>(), Type, 0);
-            //FlexibleTileWand.RubblePlacementMedium.AddVariations(ModContent.ItemType<OrangeCoral>(), Type, 0);
+            FlexibleTileWand.RubblePlacementMedium.AddVariations(ModContent.ItemType<OrangeCoral>(), Type, 0);
         }
     }
     public class FryCoral3Echo : FryCoral3
@@ -34,7 +33,7 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
         {
             base.SetStaticDefaults();
             RegisterItemDrop(ModContent.ItemType<OrangeCoral>(), Type, 0);
-            //FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<OrangeCoral>(), Type, 0);
+            FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<OrangeCoral>(), Type, 0);
         }
     }
 }

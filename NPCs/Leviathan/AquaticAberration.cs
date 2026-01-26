@@ -1,15 +1,12 @@
 ﻿using System;
 using CalamityMod.Events;
-using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.Bestiary;
-using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.Utilities;
 
 namespace CalamityMod.NPCs.Leviathan
 {
@@ -272,12 +269,6 @@ namespace CalamityMod.NPCs.Leviathan
                     }
                 }
             }
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Bleeding, 240, true);
         }
 
         public override void HitEffect(NPC.HitInfo hit)

@@ -47,7 +47,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.height = 50;
             Item.damage = 34;
             Item.mana = 10;
-            Item.useAnimation = Item.useTime = 24;
+            Item.useAnimation = Item.useTime = 36;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 4.5f;
@@ -140,7 +140,6 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<SeashineHilt>().
                 AddIngredient<UnholyCore>(10).
                 AddIngredient<EssenceofHavoc>(5).
                 AddTile(TileID.MythrilAnvil).

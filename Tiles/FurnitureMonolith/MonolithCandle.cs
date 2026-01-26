@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -8,6 +9,9 @@ namespace CalamityMod.Tiles.FurnitureMonolith
 {
     public class MonolithCandle : ModTile
     {
+        public Asset<Texture2D> GlowTexture;
+        public Asset<Texture2D> FlameTexture;
+
         public override void SetStaticDefaults() => this.SetUpCandle(ModContent.ItemType<Items.Placeables.FurnitureMonolith.MonolithCandle>(), true);
 
         public override bool CreateDust(int i, int j, ref int type)
@@ -28,14 +32,15 @@ namespace CalamityMod.Tiles.FurnitureMonolith
 
             int xPos = Main.tile[i, j].TileFrameX;
             int yPos = Main.tile[i, j].TileFrameY;
-            Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureMonolith/MonolithCandleGlow").Value;
+
+            GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureMonolith/MonolithCandleGlow");
             Color drawColour = CalamityUtils.ApplyPaint(Main.tile[i, j].TileColor, new Color(100, 100, 100, 100));
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y - 4) + zero;
-            Main.spriteBatch.Draw(glowmask, drawOffset, new Rectangle?(new Rectangle(xPos, yPos, 18, 20)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+            Main.spriteBatch.Draw(GlowTexture.Value, drawOffset, new Rectangle?(new Rectangle(xPos, yPos, 18, 20)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
 
-            Texture2D glowmaskBright = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureMonolith/MonolithCandleFlame").Value;
-            Main.spriteBatch.Draw(glowmaskBright, drawOffset, new Rectangle?(new Rectangle(xPos, yPos, 18, 20)), Color.White, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+            FlameTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureMonolith/MonolithCandleFlame");
+            Main.spriteBatch.Draw(FlameTexture.Value, drawOffset, new Rectangle?(new Rectangle(xPos, yPos, 18, 20)), Color.White, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
         }
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
@@ -56,7 +61,7 @@ namespace CalamityMod.Tiles.FurnitureMonolith
 
         public override void HitWire(int i, int j)
         {
-            CalamityUtils.LightHitWire(Type, i, j, 1, 1);
+            FurnitureCommon.LightHitWire(Type, i, j, 1, 1);
         }
 
         public override void MouseOver(int i, int j)
@@ -69,7 +74,7 @@ namespace CalamityMod.Tiles.FurnitureMonolith
 
         public override bool RightClick(int i, int j)
         {
-            CalamityUtils.RightClickBreak(i, j);
+            FurnitureCommon.RightClickBreak(i, j);
             return true;
         }
     }

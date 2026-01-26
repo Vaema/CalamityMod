@@ -195,6 +195,9 @@ namespace CalamityMod.NPCs
                         rot = rot.RotatedBy(goalSegmentRotOffsets[i] * (mirror ? HeadNPC.NPC.velocity.X.DirectionalSign() : 1));
                         var dir = HeadNPC.Segments[i].Center.DirectionFrom(pos1);
                         HeadNPC.Segments[i].Center = pos1 + Vector2.Lerp(dir, -(rot), segmentRigidity) * dist;
+                        float rotationOffset = Vector2.Lerp(dir, -(rot), segmentRigidity).ToRotation();
+                        float finalOffset = (-rot).ToRotation().AngleLerp(rotationOffset, 0);
+                        HeadNPC.Segments[i].Center = pos1 + finalOffset.ToRotationVector2() * dist;
                         HeadNPC.Segments[i].velocity = HeadNPC.Segments[i].Center.DirectionTo(pos1);
                         HeadNPC.Segments[i].rotation = HeadNPC.Segments[i].velocity.ToRotation() + MathHelper.PiOver2;
                     }
@@ -382,7 +385,9 @@ namespace CalamityMod.NPCs
                 if (internalGlowAssets.Count == 0)
                     for (var i = 0; i < GlowTextures.Count; i++)
                     {
-                        internalGlowAssets.Add(ModContent.Request<Texture2D>(GlowTextures[i]));
+                        if (GlowTextures[i] is not null)
+                            internalGlowAssets.Add(ModContent.Request<Texture2D>(GlowTextures[i]));
+                        else internalGlowAssets.Add(ModContent.Request<Texture2D>("CalamityMod/Projectiles/InvisibleProj"));
                     }
                 return internalGlowAssets;
             }
@@ -410,6 +415,11 @@ namespace CalamityMod.NPCs
         /// How rigid the segment should be when using default segment logic
         /// </summary>
         public float SegmentRigidity = 0.2f;
+
+        /// <summary>
+        /// The max rotational offset from the direction of the previous segment
+        /// </summary>
+        public float SegmentMaxRotation = MathHelper.TwoPi;
 
         /// <summary>
         /// The points used by ExactSegmentLogic to exactly follow the head
@@ -479,7 +489,9 @@ namespace CalamityMod.NPCs
                     nexSegDir = nexSegDir.MoveTowards((aheadSeg.rotation - thisSeg.rotation).ToRotationVector2(), 1f);
                 }
                 thisSeg.rotation = nexSegDir.ToRotation() + MathHelper.PiOver2;
-                thisSeg.Center = aheadSeg.Center - nexSegDir.SafeNormalize(Vector2.Zero) * segmentDistance;
+                float angledif = MathHelper.WrapAngle(thisSeg.rotation - aheadSeg.rotation);
+                thisSeg.rotation = thisSeg.rotation.AngleLerp(aheadSeg.rotation + MathHelper.Clamp(angledif, -SegmentMaxRotation * 0.5f, SegmentMaxRotation * 0.5f),0.25f);
+                thisSeg.Center = aheadSeg.Center - (thisSeg.rotation -MathHelper.PiOver2).ToRotationVector2() * segmentDistance;
 
             }
         }
@@ -581,33 +593,51 @@ namespace CalamityMod.NPCs
         #endregion
 
         #region Draw
+
+        public override void FindFrame(int frameHeight)
+        {
+            if (NPC.IsABestiaryIconDummy)
+            {
+                NPC.rotation = MathF.Sin(Main.GlobalTimeWrappedHourly) * 0.2f + MathHelper.PiOver2;
+            }
+        }
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            if (NPC.IsABestiaryIconDummy)
+            {
+                drawColor = Color.White;
+                SegmentRigidity = 0.1f;
+                UpdateSegments();
+            }
             for (int i = Segments.Count - 1; i >= 0; i--)
             {
                 DrawSegment(spriteBatch, screenPos, drawColor, Segments[i]);
             }
-            spriteBatch.Draw(TextureAssets.Npc[Type].Value, NPC.Center - Main.screenPosition, null, drawColor* NPC.Opacity, NPC.rotation, TextureAssets.Npc[Type].Value.Size() / 2, NPC.scale, SpriteEffects.None, 1);
+            spriteBatch.Draw(TextureAssets.Npc[Type].Value, NPC.Center - screenPos, null, drawColor* NPC.Opacity, NPC.rotation, TextureAssets.Npc[Type].Value.Size() / 2, NPC.scale, SpriteEffects.None, 1);
             if (GlowTextures.Count > 0 && GlowTextures[0] is not null)
-                spriteBatch.Draw(GlowTextureAssets[0].Value, NPC.Center - Main.screenPosition, null, Color.White * NPC.Opacity, NPC.rotation, GlowTextureAssets[0].Size() / 2, NPC.scale, SpriteEffects.None, 1);
+                spriteBatch.Draw(GlowTextureAssets[0].Value, NPC.Center - screenPos, null, Color.White * NPC.Opacity, NPC.rotation, GlowTextureAssets[0].Size() / 2, NPC.scale, SpriteEffects.None, 1);
             return false;
         }
 
         public virtual void DrawSegment(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor, BaseWormSegment segment)
         {
             var color = Lighting.GetColor(segment.Center.ToTileCoordinates());
+            if (NPC.IsABestiaryIconDummy)
+            {
+                color = Color.White;
+            }
             if (!SegmentTextureAssets.IndexInRange(segment.segmentType))
             {
                 return;
             }
             var tex = SegmentTextureAssets[segment.segmentType].Value;
-            spriteBatch.Draw(tex, segment.Center - Main.screenPosition, null, color * segment.Opacity, segment.rotation, tex.Size() / 2 + (SegmentTypeDrawOffsets[segment.segmentType]), NPC.scale, SpriteEffects.None, 1);
+            spriteBatch.Draw(tex, segment.Center - screenPos, null, color * segment.Opacity, segment.rotation, tex.Size() / 2 + (SegmentTypeDrawOffsets[segment.segmentType]), NPC.scale, SpriteEffects.None, 1);
             if (!GlowTextures.IndexInRange(segment.segmentType+1) || GlowTextures[segment.segmentType+1] is null)
             {
                 return;
             }
             tex = GlowTextureAssets[segment.segmentType+1].Value;
-            spriteBatch.Draw(tex, segment.Center - Main.screenPosition, null, Color.White * segment.Opacity, segment.rotation, tex.Size() / 2 + (SegmentTypeDrawOffsets[segment.segmentType]), NPC.scale, SpriteEffects.None, 1);
+            spriteBatch.Draw(tex, segment.Center - screenPos, null, Color.White * segment.Opacity, segment.rotation, tex.Size() / 2 + (SegmentTypeDrawOffsets[segment.segmentType]), NPC.scale, SpriteEffects.None, 1);
         }
         #endregion
     }

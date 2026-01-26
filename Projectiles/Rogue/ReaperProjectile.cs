@@ -156,7 +156,7 @@ namespace CalamityMod.Projectiles.Rogue
                     {
                         float rot2 = (Projectile.rotation * Projectile.direction);
                         Vector2 dustPos = Projectile.Center + (i * MathHelper.Pi + Projectile.rotation * 0.3f + MathHelper.PiOver2).ToRotationVector2() * 70f;
-                        Dust dust = Dust.NewDustPerfect(dustPos, 267);
+                        Dust dust = Dust.NewDustPerfect(dustPos, DustID.RainbowMk2);
                         dust.noGravity = true;
                         dust.scale = 0.8f;
                         dust.color = Color.Chartreuse;
@@ -212,7 +212,7 @@ namespace CalamityMod.Projectiles.Rogue
                             velOffset *= Main.rand.NextFloat(25, 45) * fade;
                             Particle energy = new GlowOrbParticle(Projectile.Center + velOffset * 2.5f, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, false, (int)(14 - (5 * fade)), Main.rand.NextFloat(1.1f, 1.25f) - 0.5f * fade, Color.Chartreuse);
                             GeneralParticleHandler.SpawnParticle(energy);
-                            Dust dust = Dust.NewDustPerfect(Projectile.Center + velOffset * 2.5f, 278, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, 0, default, Main.rand.NextFloat(0.4f, 0.6f));
+                            Dust dust = Dust.NewDustPerfect(Projectile.Center + velOffset * 2.5f, DustID.FireworksRGB, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, 0, default, Main.rand.NextFloat(0.4f, 0.6f));
                             dust.noGravity = true;
                             dust.color = Color.Chartreuse;
                         }
@@ -237,7 +237,7 @@ namespace CalamityMod.Projectiles.Rogue
                     SoundEngine.PlaySound(fire2 with { Volume = 1f, Pitch = -0.3f }, rainSpot);
                     for (int i = 0; i < 37; i++)
                     {
-                        Dust chargefull = Dust.NewDustPerfect(rainSpot, 278);
+                        Dust chargefull = Dust.NewDustPerfect(rainSpot, DustID.FireworksRGB);
                         chargefull.velocity = Projectile.velocity.RotatedByRandom(100) * Main.rand.NextFloat(1, 8);
                         chargefull.scale = Main.rand.NextFloat(0.45f, 0.75f);
                         chargefull.noGravity = true;

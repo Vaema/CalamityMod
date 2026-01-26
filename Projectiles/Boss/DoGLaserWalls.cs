@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Net;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Particles;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CalamityMod.Projectiles.Boss
 {

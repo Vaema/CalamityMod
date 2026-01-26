@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using CalamityMod.NPCs.AstrumDeus;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;

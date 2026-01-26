@@ -1,25 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using CalamityMod.Balancing;
 using CalamityMod.Items.Accessories;
-using CalamityMod.Projectiles;
 using CalamityMod.Systems.Collections;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.Core;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.NPCs
 {
     public sealed class PierceResistNPC : GlobalNPC
     {
-        private static HashSet<int> exemptProjectiles;
-        private static HashSet<int> pierceResistNPC;
-        private static HashSet<int> singleHitboxNPC;
-        private static Dictionary<int, bool> singleHitboxExemptProjectiles;
+        internal static HashSet<int> exemptProjectiles;
+        internal static HashSet<int> pierceResistNPC;
+        internal static HashSet<int> singleHitboxNPC;
+        internal static Dictionary<int, bool> singleHitboxExemptProjectiles;
 
         public override void Load()
         {
@@ -58,10 +55,13 @@ namespace CalamityMod.NPCs
             exemptProjectiles.Add(ProjectileID.ClingerStaff);
             exemptProjectiles.Add(ProjectileID.FinalFractal);
             exemptProjectiles.Add(ProjectileID.FlyingKnife);
+            exemptProjectiles.Add(ProjectileID.HallowJoustingLance);
+            exemptProjectiles.Add(ProjectileID.JoustingLance);
             exemptProjectiles.Add(ProjectileID.LastPrismLaser);
             exemptProjectiles.Add(ProjectileType<MarniteRepulsionHitbox>()); // Included here as it does not have a projectile
             exemptProjectiles.Add(ProjectileID.MonkStaffT3);
             exemptProjectiles.Add(ProjectileID.PiercingStarlight);
+            exemptProjectiles.Add(ProjectileID.ShadowJoustingLance);
             exemptProjectiles.Add(ProjectileID.Terragrim);
 
             // Specific vanilla projectile single hitbox exemptions
@@ -73,20 +73,17 @@ namespace CalamityMod.NPCs
             singleHitboxExemptProjectiles[ProjectileID.ToxicCloud2] = true;
             singleHitboxExemptProjectiles[ProjectileID.ToxicCloud3] = true;
 
-            var projectileTypes = AssemblyManager.GetLoadableTypes(CalamityMod.Instance.Code)
-                .Where(type => !type.IsAbstract && type.IsSubclassOf(typeof(ModProjectile)));
-
-            foreach (var type in projectileTypes)
+            var projectiles = GetContent<ModProjectile>();
+            foreach (var projectile in projectiles)
             {
                 try
                 {
+                    var type = projectile.GetType();
                     var pierceResistException = type.GetCustomAttribute<PierceResistExceptionAttribute>();
                     if (pierceResistException == null)
                         continue;
 
-                    var projectileTypeMethod = typeof(ModContent).GetMethod(nameof(ModContent.ProjectileType));
-                    var projectileTypeActualMethod = projectileTypeMethod.MakeGenericMethod(type);
-                    int projectileType = (int)projectileTypeActualMethod.Invoke(null, null);
+                    int projectileType = projectile.Type;
 
                     if (pierceResistException.OnlyForSingleHitbox)
                     {
@@ -100,24 +97,21 @@ namespace CalamityMod.NPCs
                 }
                 catch (Exception e)
                 {
-                    CalamityMod.Instance.Logger.Error($"Exception thrown while evaluating type \"{type.Name}\": {e}");
+                    CalamityMod.Log.Error($"Exception thrown while evaluating type \"{projectile.FullName}\": {e}");
                 }
             }
 
-            var npcTypes = AssemblyManager.GetLoadableTypes(CalamityMod.Instance.Code)
-                .Where(type => !type.IsAbstract && type.IsSubclassOf(typeof(ModNPC)));
-
-            foreach (var type in npcTypes)
+            var npcs = GetContent<ModNPC>();
+            foreach (var npc in npcs)
             {
                 try
                 {
+                    var type = npc.GetType();
                     var hasPierceResist = type.GetCustomAttribute<HasPierceResistAttribute>();
                     if (hasPierceResist == null)
                         continue;
 
-                    var npcTypeMethod = typeof(ModContent).GetMethod(nameof(ModContent.NPCType));
-                    var npcTypeActualMethod = npcTypeMethod.MakeGenericMethod(type);
-                    int npcType = (int)npcTypeActualMethod.Invoke(null, null);
+                    int npcType = npc.Type;
 
                     pierceResistNPC.Add(npcType);
                     if (hasPierceResist.SingleHitbox)
@@ -125,7 +119,7 @@ namespace CalamityMod.NPCs
                 }
                 catch (Exception e)
                 {
-                    CalamityMod.Instance.Logger.Error($"Exception thrown while evaluating type \"{type.Name}\": {e}");
+                    CalamityMod.Log.Error($"Exception thrown while evaluating type \"{npc.FullName}\": {e}");
                 }
             }
         }
@@ -156,7 +150,8 @@ namespace CalamityMod.NPCs
 
             modifiers.FinalDamage *= 1f - damageReduction;
 
-            if ((projectile.penetrate > 1 || projectile.penetrate == -1) && !projectile.CountsAsClass<SummonDamageClass>() && projectile.aiStyle != ProjAIStyleID.Flail && projectile.aiStyle != ProjAIStyleID.MechanicalPiranha && projectile.aiStyle != ProjAIStyleID.Yoyo)
+            bool aiStyleExempt = projectile.aiStyle == ProjAIStyleID.Flail || projectile.aiStyle == ProjAIStyleID.MechanicalPiranha || projectile.aiStyle == ProjAIStyleID.Yoyo;
+            if ((projectile.penetrate > 1 || projectile.penetrate == -1) && !projectile.CountsAsClass<SummonDamageClass>() && !aiStyleExempt)
                 projectile.Calamity().timesPierced++;
         }
     }

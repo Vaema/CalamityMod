@@ -1,5 +1,5 @@
 ﻿using CalamityMod.Events;
-using CalamityMod.Items;
+using CalamityMod.Items.Placeables;
 using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -37,7 +37,7 @@ namespace CalamityMod.Projectiles.Typeless
 
             float currentShakePower = MathHelper.Lerp(1f, 20f, Utils.GetLerpValue(140f, 180f, Time, true) * Utils.GetLerpValue(10f, 40f, Projectile.timeLeft, true));
             if (Projectile.timeLeft > 5)
-                Main.LocalPlayer.Calamity().GeneralScreenShakePower = currentShakePower;
+                Main.LocalPlayer.SetScreenshake(currentShakePower);
 
             MoonlordDeathDrama.RequestLight(Utils.GetLerpValue(220f, 265f, Time, true) * Utils.GetLerpValue(10f, 30f, Projectile.timeLeft, true), Main.LocalPlayer.Center);
 

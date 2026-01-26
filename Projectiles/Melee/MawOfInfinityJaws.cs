@@ -1,7 +1,7 @@
 ﻿using System;
+using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -31,6 +31,18 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.localNPCHitCooldown = 10;
         }
 
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.WriteVector2(GoalPos);
+            writer.WriteVector2(StartPos);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            GoalPos = reader.ReadVector2();
+            StartPos = reader.ReadVector2();
+        }
+
         Vector2 GoalPos = Vector2.Zero;
         Vector2 StartPos = Vector2.Zero;
         float offset = 0;
@@ -42,6 +54,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 GoalPos = player.Calamity().mouseWorld;
                 StartPos = Projectile.Center;
+                Projectile.netUpdate = true;
             }
             Projectile.Center = Vector2.Lerp(StartPos, GoalPos, MathHelper.Min(1,MathF.Pow(1 - (Projectile.timeLeft - 5) / 30f,0.5f)));
             Projectile.rotation = StartPos.DirectionTo(GoalPos).ToRotation();
@@ -52,11 +65,11 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Projectile.friendly = true;
 
-                SoundEngine.PlaySound(new("CalamityMod/Sounds/NPCKilled/DevourerSegmentBreak1") { Volume = 0.3f, PitchVariance = 0.3f }, Projectile.position);
+                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/NPCKilled/DevourerSegmentBreak1") { Volume = 0.3f, PitchVariance = 0.3f }, Projectile.position);
                 SoundEngine.PlaySound(SoundID.Item62 with { Volume = 0.5f, PitchVariance = 0.3f }, Projectile.position);
                 for (int i = 0; i < 35; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, 181, new Vector2(4.5f, 4.5f).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1.9f), 0, default, Main.rand.NextFloat(1.5f, 2.8f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.GiantCursedSkullBolt, new Vector2(4.5f, 4.5f).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1.9f), 0, default, Main.rand.NextFloat(1.5f, 2.8f));
                     dust.shader = GameShaders.Armor.GetSecondaryShader(player.cShield, player);
                     dust.noGravity = true;
                 }
@@ -64,14 +77,14 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     Vector2 dustVel = new Vector2(6, 6).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1.2f);
 
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + dustVel * 2, 272, dustVel, 0, default, 1f);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + dustVel * 2, DustID.WitherLightning, dustVel, 0, default, 1f);
                     dust.shader = GameShaders.Armor.GetSecondaryShader(player.cShield, player);
 
-                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center + dustVel * 2, 226, dustVel, 0, default, 1f);
+                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center + dustVel * 2, DustID.Electric, dustVel, 0, default, 1f);
                     dust.shader = GameShaders.Armor.GetSecondaryShader(player.cShield, player);
                 }
-                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 5 && Main.LocalPlayer.Distance(Projectile.Center) < 1600)
-                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = 5;
+                if (Main.LocalPlayer.Distance(Projectile.Center) < 1600)
+                    Main.LocalPlayer.SetScreenshake(5f);
 
                 Particle pulse = new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Color.Aqua, new Vector2(2f, 2f), 0, 0.2f, 1.7f, 36);
                 GeneralParticleHandler.SpawnParticle(pulse);

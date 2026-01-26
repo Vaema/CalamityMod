@@ -49,8 +49,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     Particle spark = new GlowOrbParticle(placement, -Projectile.velocity * speed, false, 7, Main.rand.NextFloat(0.4f, 0.7f), Effects.ArsenalEffects.ArsenalPlasmaColor);
                     GeneralParticleHandler.SpawnParticle(spark);
 
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(6) ? Effects.ArsenalEffects.ArsenalDust : Effects.ArsenalEffects.ArsenalPlasmaDust, -Projectile.velocity);
-                    dust.scale = dust.type == Effects.ArsenalEffects.ArsenalDust ? Main.rand.NextFloat(0.2f, 0.5f) : Main.rand.NextFloat(0.4f, 1.1f);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, Effects.ArsenalEffects.ArsenalPlasmaDust, -Projectile.velocity);
+                    dust.scale = Main.rand.NextFloat(0.4f, 1.1f);
                     dust.velocity = (new Vector2(3, 3).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 0.7f));
                     dust.noGravity = true;
                     dust.color = Effects.ArsenalEffects.ArsenalPlasmaColor;

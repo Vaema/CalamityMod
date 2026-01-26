@@ -13,11 +13,9 @@ namespace CalamityMod.Items.Potions.Alcohol
     {
         public new string LocalizationCategory => "Items.Potions";
 
-        public static float DamageBoost = 0.06f;
-        public static int CritBoost = 2;
-        public static int RegenLoss = 1;
-        public static float DefenseLossPercent = 0.05f;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(), CritBoost, RegenLoss.ToRegenPerSecond(), DefenseLossPercent.ToPercent());
+        public static float DebuffBoost = 0.25f;
+        public static float DebuffLoss = 0.5f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs((DebuffBoost).ToPercent(), DebuffLoss.ToPercent());
 
         public override void SetStaticDefaults()
         {
@@ -31,26 +29,19 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(14, 36, ModContent.BuffType<VodkaBuff>(), CalamityUtils.MinutesToFrames(8), true);
+            Item.DefaultToFood(14, 36, ModContent.BuffType<VodkaBuff>(), CalamityUtils.MinutesToFrames(6), true);
 
-            Item.value = Item.sellPrice(silver: 40);
-            Item.rare = ItemRarityID.LightPurple;
+            Item.value = Item.sellPrice(silver: 2);
+            Item.rare = ItemRarityID.LightRed;
         }
         public override void AddRecipes()
         {
-            CreateRecipe().
-                AddIngredient(ItemID.Ale).
-                AddIngredient<HallowedOre>(3).
+            CreateRecipe(10).
+                AddIngredient(ItemID.Bottle, 10).
+                AddIngredient<PurifiedGel>(10).
+                AddIngredient<StarblightSoot>(10).
                 AddTile(TileID.Kegs).
                 Register();
-
-            CreateRecipe().
-                AddIngredient(ItemID.BottledWater).
-                AddIngredient<BloodOrb>(5).
-                AddIngredient<HallowedOre>().
-                AddTile(TileID.AlchemyTable).
-                Register()
-                .DisableDecraft();
         }
     }
 }

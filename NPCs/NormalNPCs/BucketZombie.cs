@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using CalamityMod.Projectiles.Summon;
-using CalamityMod.World;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
@@ -31,21 +29,11 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.knockBackResist = 0.45f;
             NPC.npcSlots = 1.15f; // Equal to the strongest variants
             NPC.value = Item.buyPrice(silver: 1);
-            Banner = NPCID.Zombie;
+            Banner = Item.NPCtoBanner(NPCID.Zombie);
             BannerItem = ItemID.ZombieBanner;
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
-        }
-
-        public override bool PreAI()
-        {
-            if (CalamityWorld.revenge)
-            {
-                VanillaNPCAIOverrides.RegularEnemies.RevengeanceAndDeathAI.BuffedFighterAI(NPC, Mod);
-                return false;
-            }
-            return true;
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

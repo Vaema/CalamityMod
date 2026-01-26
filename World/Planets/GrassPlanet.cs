@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using CalamityMod.DataStructures;
-using CalamityMod.Tiles.Ores;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.Generation;
 using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.WorldBuilding;
 
 namespace CalamityMod.World.Planets

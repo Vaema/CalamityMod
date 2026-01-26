@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Particles;
@@ -50,8 +49,8 @@ namespace CalamityMod.Projectiles.Typeless
                 Projectile.velocity *= 1.015f;
         }
 
-        internal float WidthFunction(float completionRatio) => (1f - completionRatio) * Projectile.scale * 16f;
-        internal Color ColorFunction(float completionRatio)
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos) => (1f - completionRatio) * Projectile.scale * 16f;
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float hue = 0.04f * (Projectile.ai[0] % 4f) + 0.1f * completionRatio * CalamityUtils.Convert01To010((Main.GlobalTimeWrappedHourly * 0.25f) % 1f);
             Color trailColor = Main.hslToRgb(hue, 0.8f, 0.6f);
@@ -61,7 +60,7 @@ namespace CalamityMod.Projectiles.Typeless
         public override bool PreDraw(ref Color lightColor)
         {
             GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 8);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_,_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 8);
 
             Main.spriteBatch.EnterShaderRegion(BlendState.Additive);
             Texture2D sparkleTex = TextureAssets.Projectile[Type].Value;
@@ -69,7 +68,7 @@ namespace CalamityMod.Projectiles.Typeless
             float bloomScale = (float)sparkleTex.Height / (float)bloomTex.Height;
             float sparkleScale = 0.5f + CalamityUtils.Convert01To010((Main.GlobalTimeWrappedHourly % 2f) / 2f) * 0.2f;
 
-            Color color = ColorFunction(0f);
+            Color color = ColorFunction(0f, Vector2.Zero);
             float rotation = Projectile.rotation + Main.GlobalTimeWrappedHourly * 8f;
             Vector2 drawPos = Projectile.Center - Main.screenPosition;
 
@@ -83,9 +82,9 @@ namespace CalamityMod.Projectiles.Typeless
         public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
-            Particle pulse = new CustomPulse(Projectile.Center, Vector2.Zero, ColorFunction(0f), "CalamityMod/Particles/SoftRoundExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0f, 0.04f, 15);
+            Particle pulse = new CustomPulse(Projectile.Center, Vector2.Zero, ColorFunction(0f, Vector2.Zero), "CalamityMod/Particles/SoftRoundExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0f, 0.04f, 15);
             GeneralParticleHandler.SpawnParticle(pulse);
-            Color smokeColor = Color.Lerp(ColorFunction(0f), Color.DarkSlateGray, 0.5f);
+            Color smokeColor = Color.Lerp(ColorFunction(0f, Vector2.Zero), Color.DarkSlateGray, 0.5f);
             for (int i = 0; i < 7; i++)
             {
                 Particle smoke = new HeavySmokeParticle(Projectile.Center, (Vector2.UnitX).RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(7f), smokeColor, 30, Main.rand.NextFloat(0.4f, 1f), 0.5f, Main.rand.NextFloat(-0.03f, 0.03f), true);
@@ -96,7 +95,7 @@ namespace CalamityMod.Projectiles.Typeless
                 Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), (Vector2.UnitX).RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(1.8f, 10f));
                 dust.noGravity = true;
                 dust.scale = Main.rand.NextFloat(0.8f, 1.5f);
-                dust.color = ColorFunction(0f);
+                dust.color = ColorFunction(0f, Vector2.Zero);
                 dust.noLightEmittence = true;
             }
         }

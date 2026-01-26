@@ -1,15 +1,15 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Projectiles.Ranged;
-using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
-using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using Microsoft.Xna.Framework;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
@@ -25,54 +25,50 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 122;
             Item.height = 50;
-            Item.damage = 150;
+            Item.damage = 4900;
             Item.DamageType = DamageClass.Ranged;
-            Item.useAnimation = Item.useTime = 15;
+            Item.useAnimation = Item.useTime = 70;
             Item.knockBack = 15f;
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.UseSound = SoundID.Item92;
-            Item.autoReuse = true;
             Item.noMelee = true;
-            Item.shoot = ModContent.ProjectileType<PlasmaBlast>();
-            Item.shootSpeed = 16f;
+            Item.channel = true;
+            Item.noUseGraphic = true;
+            Item.autoReuse = true;
+            Item.shoot = ModContent.ProjectileType<StarmadaStar>();
+            Item.shootSpeed = 12f;
             Item.useAmmo = AmmoID.FallenStar;
-            Item.rare = ModContent.RarityType<CosmicPurple>();
-            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
         }
-
-        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.Next(100) >= AmmoSavedPercent;
-
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        // Holdout projectile is spawned when holding the item, so using the item does nothing
+        public override bool CanUseItem(Player player) => false;
+        public override void ModifyTooltips(List<TooltipLine> list)
         {
-            for (int i = 0; i < 5; i++)
+            Player Owner = Main.LocalPlayer;
+            if (Owner is null)
+                return;
+            float rate = (Main.GlobalTimeWrappedHourly * 3);
+            List<Color> eColors = new List<Color>()
             {
-                int starType = Utils.SelectRandom(Main.rand,
-                [
-                    ModContent.ProjectileType<PlasmaBlast>(),
-                    ModContent.ProjectileType<AstralStar>(),
-                    ProjectileID.StarCannonStar,
-                    ProjectileID.Starfury
-                ]);
-                int star = Projectile.NewProjectile(source, position + Main.rand.NextVector2Circular(21f, 21f), velocity * Main.rand.NextFloat(0.8f, 1.2f), starType, damage, knockback, player.whoAmI);
-                if (star.WithinBounds(Main.maxProjectiles))
-                {
-                    Main.projectile[star].penetrate = 1;
-                    Main.projectile[star].timeLeft = 300;
-                    Main.projectile[star].DamageType = DamageClass.Ranged;
-                    Main.projectile[star].netUpdate = true;
-                }
-            }
-            return false;
-        }
+                new Color(164, 47, 160),
+                new Color(227, 97, 72),
+                new Color(193, 255, 146)
+            };
+            int colorIndex = (int)(rate / 2 % eColors.Count);
+            Color currentColor = eColors[colorIndex];
+            Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
+            Color eTooltipColor = Color.Lerp(currentColor, nextColor, rate % 2f >= 1f ? 1f : rate % 1f);
 
+            TooltipLine line = list.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Tooltip8");
+            if (line != null)
+                line.OverrideColor = Color.Lerp(eTooltipColor, Color.White, 0.2f);
+        }
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient<Starfleet>().
-                AddIngredient<StarSputter>().
-                AddIngredient<CosmiliteBar>(8).
-                AddIngredient<DarksunFragment>(8).
-                AddIngredient<ExodiumCluster>(15).
+                AddIngredient<AuricBar>(5).
+                AddIngredient<ExodiumCluster>(25).
                 AddTile<CosmicAnvil>().
                 Register();
         }

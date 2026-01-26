@@ -4,8 +4,8 @@ using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Utilities;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
 
@@ -38,7 +38,6 @@ namespace CalamityMod.Projectiles.Magic
 
         private Player Owner { get; set; }
 
-        private SlotId BigBeamSoundSlot;
         public int time = 0;
         public override void SetDefaults()
         {
@@ -105,7 +104,7 @@ namespace CalamityMod.Projectiles.Magic
 
             if (Main.rand.NextBool() || isBigLaser)
             {
-                Dust laserDust = Dust.NewDustPerfect(randomLineEffectPosition, 278, Projectile.velocity * Main.rand.NextFloat(5f, 40f), Scale: Main.rand.NextFloat(0.8f, 1.1f));
+                Dust laserDust = Dust.NewDustPerfect(randomLineEffectPosition, DustID.FireworksRGB, Projectile.velocity * Main.rand.NextFloat(5f, 40f), Scale: Main.rand.NextFloat(0.8f, 1.1f));
                 laserDust.noGravity = true;
                 laserDust.color = Main.rand.NextBool(3) ? color2 : color1;
             }

@@ -12,10 +12,6 @@ namespace CalamityMod.Items.Weapons.Summon
     public class FleshOfInfidelity : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<ToothBall>();
-        }
         public override void SetDefaults()
         {
             Item.width = 42;
@@ -26,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.shoot = ModContent.ProjectileType<FleshBallMinion>();
             Item.knockBack = 1f;
 
-            Item.useAnimation = Item.useTime = 10;
+            Item.useAnimation = Item.useTime = 36;
             Item.mana = 10;
             Item.noMelee = true;
             Item.autoReuse = true;

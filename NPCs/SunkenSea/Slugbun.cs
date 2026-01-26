@@ -1,5 +1,4 @@
-﻿using CalamityMod.BiomeManagers;
-using CalamityMod.Items.Critters;
+﻿using CalamityMod.Items.Critters;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Tiles.SunkenSea.Ambient;
 using Microsoft.Xna.Framework;
@@ -43,6 +42,7 @@ namespace CalamityMod.NPCs.SunkenSea
             ModContent.NPCType<SandProwlerNested>(),
             ModContent.NPCType<PrismaticGuppy>(),
             ModContent.NPCType<KelpieSeadragon>(),
+            ModContent.NPCType<GildedAxolotl>()
         };
 
         protected override List<int> PreyIDs => new List<int>();
@@ -77,8 +77,8 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.GravityIgnoresLiquid = true;
             NPC.chaseable = false;
-            //Banner = NPC.type;
-            //BannerItem = ModContent.ItemType<SlugbunBanner>();
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<SlugbunBanner>();
             NPC.catchItem = ModContent.ItemType<SlugbunItem>();
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = true;

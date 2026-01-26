@@ -11,7 +11,6 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.PrimordialWyrm;
 using CalamityMod.Sounds;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;

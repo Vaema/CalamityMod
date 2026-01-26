@@ -7,7 +7,6 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Projectiles.Enemy;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -624,7 +623,7 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(ItemID.BlackInk, 1, 3, 5);
+            npcLoot.Add(ItemID.BlackInk, 1, 12, 16);
             npcLoot.Add(ModContent.ItemType<InkBomb>(), 3);
 
             var postLevi = npcLoot.DefineConditionalDropSet(DropHelper.PostLevi());

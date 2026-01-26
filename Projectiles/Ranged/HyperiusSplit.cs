@@ -1,6 +1,4 @@
 ﻿using System;
-using CalamityMod.Dusts;
-using CalamityMod.Items.Ammo;
 using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;

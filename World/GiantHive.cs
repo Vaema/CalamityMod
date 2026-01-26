@@ -1,38 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using CalamityMod.DataStructures;
-using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Materials;
 using CalamityMod.Items.Potions;
-using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Tiles;
-using CalamityMod.Tiles.Abyss;
-using CalamityMod.Tiles.Astral;
-using CalamityMod.Tiles.Crags;
-using CalamityMod.Tiles.FloralParadise;
-using CalamityMod.Tiles.FurnitureAncient;
-using CalamityMod.Tiles.Ores;
 using CalamityMod.Walls;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.GameContent.Generation;
 using Terraria.ID;
-using Terraria.IO;
 using Terraria.ModLoader;
 using Terraria.Utilities;
 using Terraria.WorldBuilding;
-using CalamityMod.World;
 
 namespace CalamityMod.World
 {
     public class GiantHive
     {
-        public static bool GrowLivingJungleTree(Point origin)
+        public static bool GrowLivingJungleTree(Point origin, StructureMap structures)
         {
+            if (!structures.CanPlace(new Rectangle(origin.X - 50, origin.Y - 50, 100, 100)))
+                return false;
+
+            if (TooCloseToImportantLocations(origin))
+                return false;
+
+            Ref<int> ref1 = new Ref<int>(0);
+            Ref<int> ref2 = new Ref<int>(0);
+            Ref<int> ref3 = new Ref<int>(0);
+            WorldUtils.Gen(origin, new Shapes.Circle(15), Actions.Chain(new Modifiers.IsSolid(), new Actions.Scanner(ref1), new Modifiers.OnlyTiles(TileID.JungleGrass, TileID.Mud), new Actions.Scanner(ref2), new Modifiers.OnlyTiles(TileID.JungleGrass), new Actions.Scanner(ref3)));
+            if ((ref2.Value / (float)ref1.Value < 0.75f || ref3.Value < 2) && !WorldGen.drunkWorldGen)
+                return false;
+
             int treeHeight = (int)Main.worldSurface - (Main.maxTilesY / 10); //start here to not touch floating islands
             bool validHeightFound = false;
             int attempts = 0;
@@ -44,7 +41,7 @@ namespace CalamityMod.World
                     treeHeight++;
                 }
 
-                if (Main.tile[origin.X, treeHeight].HasTile || Main.tile[origin.X, treeHeight].WallType > 0)
+                if (Main.tile[origin.X, treeHeight].HasTile || Main.tile[origin.X, treeHeight].WallType > WallID.None)
                 {
                     validHeightFound = true;
                 }
@@ -220,8 +217,6 @@ namespace CalamityMod.World
                 }
             }
 
-            GrowLivingJungleTree(new Point(origin.X, origin.Y));
-
             CreateStandForLarva(larvaLocation);
 
             // Generate a second larva stand
@@ -241,7 +236,7 @@ namespace CalamityMod.World
             }
 
             // Honey chests
-            Vector2 honeyChestLocation = default;
+            //Vector2 honeyChestLocation = default;
             //for (int l = 0; l < maxAttempts; l++)
             //{
             //    Vector2 newStructureLocation = larvaLocation;

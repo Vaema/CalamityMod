@@ -1,8 +1,5 @@
 ﻿using System.Linq;
-using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.Ores;
-using CalamityMod.World;
 using Terraria;
 using Terraria.GameContent.Creative;
 using Terraria.GameContent.NetModules;

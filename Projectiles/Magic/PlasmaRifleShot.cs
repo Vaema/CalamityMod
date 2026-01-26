@@ -98,10 +98,10 @@ namespace CalamityMod.Projectiles.Magic
             }
         }
 
-        internal float HeadWidthFunction(float completionRatio) => Projectile.scale * (Projectile.ai[0] > 0f ? 2f : 4f) * Utils.GetLerpValue(0.5f, 0.25f, MathF.Abs(0.5f - completionRatio), true);
-        internal Color HeadColorFunction(float completionRatio) => Color.LightSlateGray * Projectile.Opacity;
-        internal float TrailWidthFunction(float completionRatio) => Projectile.scale * (Projectile.ai[0] > 0f ? 2f : 4f);
-        internal Color TrailColorFunction(float completionRatio) => Color.Lerp(Color.Chartreuse, Color.SlateGray, Utils.Remap(Projectile.Opacity, 0.5f, 1f, 0f, 0.8f)) * Projectile.Opacity * 0.3f;
+        internal float HeadWidthFunction(float completionRatio, Vector2 vertexPos) => Projectile.scale * (Projectile.ai[0] > 0f ? 2f : 4f) * Utils.GetLerpValue(0.5f, 0.25f, MathF.Abs(0.5f - completionRatio), true);
+        internal Color HeadColorFunction(float completionRatio, Vector2 vertexPos) => Color.LightSlateGray * Projectile.Opacity;
+        internal float TrailWidthFunction(float completionRatio, Vector2 vertexPos) => Projectile.scale * (Projectile.ai[0] > 0f ? 2f : 4f);
+        internal Color TrailColorFunction(float completionRatio, Vector2 vertexPos) => Color.Lerp(Color.Chartreuse, Color.SlateGray, Utils.Remap(Projectile.Opacity, 0.5f, 1f, 0f, 0.8f)) * Projectile.Opacity * 0.3f;
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -109,7 +109,7 @@ namespace CalamityMod.Projectiles.Magic
                 return false;
 
             PrimitiveRenderer.RenderTrail(TrailPos, new(TrailWidthFunction, TrailColorFunction), 30);
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(HeadWidthFunction, HeadColorFunction, (_) => Projectile.Size * 0.5f), 12);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(HeadWidthFunction, HeadColorFunction, (_,_) => Projectile.Size * 0.5f), 12);
             return false;
         }
     }

@@ -1,17 +1,13 @@
 ﻿using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Cooldowns;
 using CalamityMod.Items.Materials;
-using CalamityMod.Particles;
 using CalamityMod.Projectiles.Ranged;
-using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;
-using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
@@ -59,7 +55,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 84;
             Item.height = 46;
-            Item.damage = 97;
+            Item.damage = 100;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 10;
             Item.useAnimation = 10;

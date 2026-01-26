@@ -1,7 +1,4 @@
-﻿using CalamityMod.Items.DraedonMisc;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.Plates;
-using CalamityMod.Tiles.DraedonStructures.CagedLights;
+﻿using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

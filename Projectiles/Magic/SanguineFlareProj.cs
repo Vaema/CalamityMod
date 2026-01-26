@@ -1,8 +1,6 @@
 ﻿using System;
-using CalamityMod.Balancing;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
-using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Healing;
 using Microsoft.Xna.Framework;

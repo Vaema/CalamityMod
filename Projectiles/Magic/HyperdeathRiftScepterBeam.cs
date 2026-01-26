@@ -1,10 +1,8 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -15,7 +13,7 @@ namespace CalamityMod.Projectiles.Magic
     public class HyperdeathRiftScepterBeam : ModProjectile, ILocalizedModType
     {
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-        public new string LocalizationCategory => "Projectiles.Boss";
+        public new string LocalizationCategory => "Projectiles.Magic";
         public float time = 0;
         public ref float attackSpeed => ref Projectile.ai[0];
         public ref float laserType => ref Projectile.ai[2];
@@ -80,9 +78,8 @@ namespace CalamityMod.Projectiles.Magic
                 storedTime = time;
                 Projectile.ForceNetUpdate();
 
-
-                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 3 && Main.LocalPlayer.Distance(Projectile.Center) < 1600)
-                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = 3;
+                if (Main.LocalPlayer.Distance(Projectile.Center) < 1600)
+                    Main.LocalPlayer.SetScreenshake(3f);
             }
             float endTime = storedTime + 10;
             if (time >= endTime && doneAttack)
@@ -100,7 +97,7 @@ namespace CalamityMod.Projectiles.Magic
         public override bool? CanHitNPC(NPC target)
         {
             if (canDamage)
-                return true;
+                return null;
             return false;
         }
         public override bool CanHitPlayer(Player target)

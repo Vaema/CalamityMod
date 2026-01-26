@@ -1,13 +1,6 @@
-﻿using System;
-using System.IO;
-using CalamityMod.Events;
-using CalamityMod.NPCs;
-using CalamityMod.Sounds;
-using CalamityMod.World;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -61,14 +54,6 @@ namespace CalamityMod.Projectiles.Boss
         }
 
         public override bool CanHitPlayer(Player target) => Projectile.Opacity == 1f;
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (info.Damage <= 0 || Projectile.Opacity != 1f)
-                return;
-
-            target.AddBuff(BuffID.Darkness, 180);
-        }
 
         public override bool PreDraw(ref Color lightColor)
         {

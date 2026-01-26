@@ -68,7 +68,7 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override void KillHoldoutLogic()
         {
-            if (Owner.CantUseHoldout(false) || HeldItem.type != Owner.ActiveItem().type)
+            if (Owner.CantUseHoldout(false) || HeldItem.type != Owner.HeldItem.type)
                 Projectile.Kill();
         }
 
@@ -155,7 +155,17 @@ namespace CalamityMod.Projectiles.Ranged
                 inverseTimer--;
 
             // Changing Mode
-            if (Projectile.ai[2] >= 10)
+            if (Projectile.ai[2] == 20)
+            {
+                Projectile.frame = 6;
+                ShotsLoaded = 0;
+                if (Time == 0)
+                {
+                    Projectile.timeLeft = (int)(AftershotCooldownFrames * 1.5f);
+                    OffsetLengthFromArm = 45f;
+                }
+            }
+            else if (Projectile.ai[2] >= 10)
             {
                 ShotsLoaded = 0;
                 if (Time == 0)
@@ -210,17 +220,20 @@ namespace CalamityMod.Projectiles.Ranged
                         int charge2DamagePos = (int)(Projectile.damage * 0.5f); // Most of the damage comes from the explosion
                         int charge2DamageNeg = Projectile.damage * 20; // Big charge time? Check. No pierce? Check. 20x damage? Yes!
 
-                        if (Positive)
+                        if (Main.myPlayer == Projectile.owner)
                         {
-                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity * 2.5f, ModContent.ProjectileType<OntologicalDespoilerGrenade>(), charge2DamagePos, Projectile.knockBack, Projectile.owner);
-                            SoundEngine.PlaySound(OntologicalDespoiler.BigShot, Projectile.Center);
-                        }
-                        else
-                        {
-                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity * 0.6f, ModContent.ProjectileType<OntologicalDespoilerBeam>(), charge2DamageNeg, Projectile.knockBack * 3, Projectile.owner);
-                            Owner.Calamity().GeneralScreenShakePower = 12f;
-                            SoundEngine.PlaySound(OntologicalDespoiler.BigShot2 with { Pitch = 0.2f }, Projectile.Center);
-                            SoundEngine.PlaySound(OntologicalDespoiler.BigShot with { Pitch = -0.3f }, Projectile.Center);
+                            if (Positive)
+                            {
+                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity * 2.5f, ModContent.ProjectileType<OntologicalDespoilerGrenade>(), charge2DamagePos, Projectile.knockBack, Projectile.owner);
+                                SoundEngine.PlaySound(OntologicalDespoiler.BigShot, Projectile.Center);
+                            }
+                            else
+                            {
+                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity * 0.6f, ModContent.ProjectileType<OntologicalDespoilerBeam>(), charge2DamageNeg, Projectile.knockBack * 3, Projectile.owner);
+                                Owner.SetScreenshake(12f);
+                                SoundEngine.PlaySound(OntologicalDespoiler.BigShot2 with { Pitch = 0.2f }, Projectile.Center);
+                                SoundEngine.PlaySound(OntologicalDespoiler.BigShot with { Pitch = -0.3f }, Projectile.Center);
+                            }
                         }
 
                         // Setting stats for the flash visual effect so it doesn't stick to the gun
@@ -261,20 +274,23 @@ namespace CalamityMod.Projectiles.Ranged
                         ChargeSound?.Stop();
 
                         Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * BulletSpeed;
-                        Vector2 fireVec = shootVelocity * Main.rand.NextFloat(0.9f, 1.1f);
-                        if (Positive)
+                        if (Main.myPlayer == Projectile.owner)
                         {
-                            for (int i = 0; i < 3; i++)
+                            Vector2 fireVec = shootVelocity * Main.rand.NextFloat(0.9f, 1.1f);
+                            if (Positive)
                             {
-                                float angle = i == 0 ? -0.25f : i == 2 ? 0.25f : 0;
-                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, fireVec.RotatedBy(angle) * (1 - Math.Abs(angle * 0.25f)), ModContent.ProjectileType<OntologicalDespoilerShot>(), (int)(Projectile.damage / 1.2f), Projectile.knockBack, Projectile.owner, 0, 0, i);
+                                for (int i = 0; i < 3; i++)
+                                {
+                                    float angle = i == 0 ? -0.25f : i == 2 ? 0.25f : 0;
+                                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, fireVec.RotatedBy(angle) * (1 - Math.Abs(angle * 0.25f)), ModContent.ProjectileType<OntologicalDespoilerShot>(), (int)(Projectile.damage), Projectile.knockBack, Projectile.owner, 0, 0, i);
+                                }
                             }
-                        }
-                        else
-                        {
-                            for (int i = 0; i < 2; i++)
+                            else
                             {
-                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, fireVec.RotatedByRandom(0.45f) * Main.rand.NextFloat(0.8f, 1f), ModContent.ProjectileType<OntologicalDespoilerShot>(), (int)(Projectile.damage / 2.5f), Projectile.knockBack, Projectile.owner, 0, 0, 5);
+                                for (int i = 0; i < 2; i++)
+                                {
+                                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, fireVec.RotatedByRandom(0.45f) * Main.rand.NextFloat(0.8f, 1f), ModContent.ProjectileType<OntologicalDespoilerShot>(), (int)(Projectile.damage / 4f), Projectile.knockBack, Projectile.owner, 0, 0, 5);
+                                }
                             }
                         }
 
@@ -447,7 +463,7 @@ namespace CalamityMod.Projectiles.Ranged
             SpriteEffects flipSprite = (Projectile.spriteDirection * Owner.gravDir == -1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
             if (!Owner.CantUseHoldout())
             {
-                float rumble = MathHelper.Clamp(CurrentChargingFrames, 0f, Charge2Frames);
+                float rumble = (Projectile.ai[2] == 20 ? 200 : MathHelper.Clamp(CurrentChargingFrames, 0f, Charge2Frames));
                 drawPosition += Main.rand.NextVector2Circular(rumble / 120f, rumble / 120f);
             }
 

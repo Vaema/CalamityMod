@@ -146,9 +146,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Projectile.Center = Owner.Center;
                 SoundEngine.PlaySound(SoundID.Item120 with { Volume = SoundID.Item120.Volume * 0.5f }, Projectile.Center);
-
-                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 3)
-                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = 3;
+                Main.LocalPlayer.SetScreenshake(3f);
             }
 
             Projectile.scale = 1f + ScaleEquation();

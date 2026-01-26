@@ -32,7 +32,7 @@ namespace CalamityMod.NPCs.Other
             NPC.noTileCollide = true;
             NPC.knockBackResist = 0f;
             NPC.netAlways = true;
-            NPC.aiStyle = 0;
+            NPC.aiStyle = NPCAIStyleID.FaceClosestPlayer;
             NPC.Calamity().DoesNotDisappearInBossRush = true;
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToCold = true;

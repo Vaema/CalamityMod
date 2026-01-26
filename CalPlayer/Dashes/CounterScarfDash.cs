@@ -8,13 +8,18 @@ namespace CalamityMod.CalPlayer.Dashes
 {
     public class CounterScarfDash : PlayerDashEffect
     {
-        public static new string ID => "Counter Scarf";
+        public static new string ID { get; private set; }
 
         public override DashCollisionType CollisionType => DashCollisionType.NoCollision;
 
         public override bool IsOmnidirectional => false;
 
-        public override float CalculateDashSpeed(Player player) => player.Calamity().evasionScarf ? 16.3f : 15f;
+        public override void Load()
+        {
+            ID = DashID;
+        }
+
+        public override float CalculateDashSpeed(Player player) => player.Calamity().evasionScarf ? 19f : 15f;
 
         public override void OnDashEffects(Player player)
         {

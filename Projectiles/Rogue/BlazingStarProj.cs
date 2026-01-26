@@ -1,6 +1,5 @@
-﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Weapons.Rogue;
+﻿using CalamityMod.Packets.Entities;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -14,9 +13,9 @@ namespace CalamityMod.Projectiles.Rogue
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/BlazingStar";
 
-        public static int Lifetime = 1540;
-        public static int ReboundTime = 60;
-        public static float Speed = 13f;
+        private static int Lifetime = 300;
+        private int timeAlive => Lifetime - Projectile.timeLeft;
+        private bool hasHit = false;
 
         public override void SetStaticDefaults()
         {
@@ -26,99 +25,33 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetDefaults()
         {
-            Projectile.width = 34;
-            Projectile.height = 32;
+            Lifetime = 300;
+            Projectile.width = 16;
+            Projectile.height = 16;
             Projectile.friendly = true;
             Projectile.tileCollide = true;
-            Projectile.ignoreWater = true;
-            Projectile.penetrate = 5;
+            Projectile.penetrate = 10;
+            Projectile.MaxUpdates = 3;
             Projectile.timeLeft = Lifetime;
+            DrawOffsetX = -10;
             Projectile.DamageType = RogueDamageClass.Instance;
-            Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 10;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override void AI()
         {
-            if (Projectile.Calamity().stealthStrike)
-                Projectile.penetrate = Projectile.maxPenetrate = -1;
+            Projectile.rotation += 0.175f * Projectile.direction;
 
-            // Boomerang rotation
-            Projectile.rotation += 0.4f * Projectile.direction;
-
-            // Boomerang sound
-            if (Projectile.soundDelay == 0)
+            if (timeAlive == 0)
             {
-                Projectile.soundDelay = 8;
-                SoundEngine.PlaySound(SoundID.Item7, Projectile.position);
-            }
-
-            // Returns after some number of frames in the air
-            if (Projectile.timeLeft < Lifetime - ReboundTime)
-                Projectile.ai[0] = 1f;
-
-            if (Projectile.ai[0] != 0f)
-            {
-                Projectile.tileCollide = false;
-                float returnSpeed = 32.5f;
-                float acceleration = 2f;
-                Player owner = Main.player[Projectile.owner];
-
-                // Delete the projectile if it's excessively far away.
-                // Relying on the length instead of a second square root call for Normalize is used here for general performance since both the distance
-                // and normalized vector are used in this code.
-                float distanceToPlayer = Projectile.Distance(owner.Center);
-                Vector2 velocity = (owner.Center - Projectile.Center) / distanceToPlayer * returnSpeed;
-
-                // Kill the projectile is if it's super far from the player.
-                if (distanceToPlayer > 3000f)
-                    Projectile.Kill();
-
-                // Home back in on the player.
-
-                // No, projectiles do not have a SimpleFlyMovement extension method like NPCs do.
-                if (Projectile.velocity.X < velocity.X)
+                Projectile.localNPCHitCooldown = -1;
+                if (Projectile.Calamity().stealthStrike)
                 {
-                    Projectile.velocity.X = Projectile.velocity.X + acceleration;
-                    if (Projectile.velocity.X < 0f && velocity.X > 0f)
-                        Projectile.velocity.X += acceleration;
-                }
-                else if (Projectile.velocity.X > velocity.X)
-                {
-                    Projectile.velocity.X = Projectile.velocity.X - acceleration;
-                    if (Projectile.velocity.X > 0f && velocity.X < 0f)
-                        Projectile.velocity.X -= acceleration;
-                }
-                if (Projectile.velocity.Y < velocity.Y)
-                {
-                    Projectile.velocity.Y = Projectile.velocity.Y + acceleration;
-                    if (Projectile.velocity.Y < 0f && velocity.Y > 0f)
-                        Projectile.velocity.Y += acceleration;
-                }
-                else if (Projectile.velocity.Y > velocity.Y)
-                {
-                    Projectile.velocity.Y = Projectile.velocity.Y - acceleration;
-                    if (Projectile.velocity.Y > 0f && velocity.Y < 0f)
-                        Projectile.velocity.Y -= acceleration;
-                }
-
-                // Delete the projectile if it touches its owner.
-                if (Main.myPlayer == Projectile.owner)
-                {
-                    if (Projectile.Hitbox.Intersects(owner.Hitbox))
-                        Projectile.Kill();
+                    Projectile.penetrate = -1;
+                    Projectile.MaxUpdates++;
                 }
             }
-        }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.AddBuff(BuffID.OnFire3, 180);
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            target.AddBuff(BuffID.OnFire3, 180);
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -127,7 +60,52 @@ namespace CalamityMod.Projectiles.Rogue
             return false;
         }
 
-        // Make the star bounce on tiles.
+        void Ricochet()
+        {
+            float maxDistance = 1600f;
+            float npcDistCompare = 1600f;
+            int index = -1;
+            foreach (NPC n in Main.ActiveNPCs) // Find an NPC to ricochet to
+            {
+                if (!n.CanBeChasedBy(Projectile) || !Projectile.WithinRange(n.Center, maxDistance) || Projectile.localNPCImmunity[n.whoAmI] != 0)
+                    continue;
+
+                float currentNPCDist = Vector2.Distance(n.Center, Projectile.Center);
+                if ((currentNPCDist < npcDistCompare) && (Collision.CanHit(Projectile.Center, 1, 1, n.Center, 1, 1)))
+                {
+                    npcDistCompare = currentNPCDist;
+                    index = n.whoAmI;
+                }
+            }
+
+            // If you find an NPC, ricochet in their direction and reset iframes for them
+            if (index != -1)
+            {
+                Projectile.ai[1] = index;
+                Projectile.velocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(Projectile.Center, Main.npc[index], Projectile.velocity.Length(), Projectile.MaxUpdates);
+                Projectile.netUpdate = true;
+            }
+        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            if (Projectile.Calamity().stealthStrike)
+            {
+                if (!hasHit)
+                {
+                    target.Calamity().blazingStarShredTimer += 300;
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<FuckYou>(), 0, 0, Projectile.owner, 0f, 0.1f);
+
+                    // Shred must be synced, because OnHitNPC is only run for the client that hit the NPC
+                    if (Main.netMode != NetmodeID.SinglePlayer)
+                        GlaiveShredPacket.Send(target);
+                }
+                hasHit = true;
+            }
+            Ricochet();
+        }
+
+
+        // Make it bounce on tiles.
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             // Impacts the terrain even though it bounces off.
@@ -142,7 +120,10 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 Projectile.velocity.Y = -oldVelocity.Y;
             }
-            Projectile.ai[0] = 1f;
+            Projectile.ResetLocalNPCHitImmunity();
+            Ricochet();
+            if (Projectile.penetrate > 0)
+                Projectile.penetrate--;
             return false;
         }
     }

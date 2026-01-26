@@ -1,18 +1,15 @@
 ﻿using CalamityMod.Systems;
 using CalamityMod.Tiles.Ores;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.FurnitureAuric
 {
     public class AuricRepulserPanelTile : GlowMaskTile
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/FurnitureAuric/AuricRepulserPanelTile_Glow";
+        public override string GlowMaskAsset => $"{Texture}_Glow";
 
         public override void SetupStatic()
         {

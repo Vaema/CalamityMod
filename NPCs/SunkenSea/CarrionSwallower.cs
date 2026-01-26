@@ -1,9 +1,8 @@
 ﻿using System.IO;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Dusts;
-using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
-using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Enemy;
 using Microsoft.Xna.Framework;
@@ -44,8 +43,8 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.DeathSound = SoundID.DD2_SkeletonDeath;
             NPC.noGravity = true;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<TimelessShoresBiome>().Type };
-            //Banner = NPC.type;
-            //BannerItem = ModContent.ItemType<CarrionSwallowerBanner>();
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<CarrionSwallowerBanner>();
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -222,6 +221,11 @@ namespace CalamityMod.NPCs.SunkenSea
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ModContent.ItemType<WillOWisp>(), 1, 1, 2);
+        }
+
+        public override void HitEffect(NPC.HitInfo hit)
+        {
+            CalamityUtils.SpawnGores(NPC, "CarrionSwallower", 2);
         }
     }
 }

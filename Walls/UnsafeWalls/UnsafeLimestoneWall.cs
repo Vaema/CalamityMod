@@ -13,7 +13,7 @@ namespace CalamityMod.Walls.UnsafeWalls
         public override void SetStaticDefaults()
         {
             Main.wallHouse[Type] = false;
-            DustType = 22;
+            DustType = DustID.Pot;
             AddMapEntry(new Color(125, 85, 61));
             this.AddMapEntryWithWaterVisibility(new Color(78, 76, 127));
         }

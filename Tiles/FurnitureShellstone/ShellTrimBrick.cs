@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
-using CalamityMod.Systems;
+﻿using CalamityMod.Systems;
 using CalamityMod.Tiles.SunkenSea;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.FurnitureShellstone
 {
@@ -21,9 +21,9 @@ namespace CalamityMod.Tiles.FurnitureShellstone
             DustType = DustID.CorruptPlants;
             AddMapEntry(new Color(156, 191, 199));
 
-            this.RegisterUniversalMerge(ModContent.TileType<Navystone>(), "CalamityMod/Tiles/Merges/NavystoneMerge");
-            this.RegisterUniversalMerge(ModContent.TileType<EutrophicSand>(), "CalamityMod/Tiles/Merges/EutrophicSandMerge");
-            this.RegisterUniversalMerge(ModContent.TileType<Runestone>(), "CalamityMod/Tiles/Merges/RunestoneMerge");
+            this.RegisterBlendMergeWith(ModContent.TileType<Navystone>());
+            this.RegisterBlendMergeWith(ModContent.TileType<EutrophicSand>());
+            this.RegisterBlendMergeWith(ModContent.TileType<Runestone>());
         }
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)

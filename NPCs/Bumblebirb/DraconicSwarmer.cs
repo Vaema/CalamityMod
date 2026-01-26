@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Projectiles.Boss;
 using CalamityMod.Sounds;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;

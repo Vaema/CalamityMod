@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
-using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using ReLogic.Utilities;
 using System.Collections.Generic;

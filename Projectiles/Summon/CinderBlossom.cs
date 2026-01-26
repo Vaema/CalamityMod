@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using CalamityMod.Buffs.Summon;
+﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -67,7 +66,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             for (int i = 0; i < 36; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 6);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.Torch);
                 dust.noGravity = true;
                 dust.velocity = Vector2.UnitY.RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(2f, 6f);
             }

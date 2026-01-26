@@ -10,6 +10,16 @@ AbandonedSlimeStaff: {
 		'''
 }
 
+AmphibiansGuitar: {
+	DisplayName: Amphibian's Guitar
+	Tooltip:
+		'''
+		Summons up to 8 guitars that spin around you and shoot notes at the target, occasionally firing spread shots
+		If all 8 guitars are present, some notes become empowered, dealing extra damage
+		'I'll show you suffering!'
+		'''
+}
+
 AncientIceChunk: {
 	DisplayName: Ancient Ice Chunk
 	Tooltip:
@@ -169,7 +179,7 @@ Cnidarian: {
 	Tooltip:
 		'''
 		Fishes up an electric jellyfish
-		Periodically sends out sparks to electrocute nearby enemies.
+		Periodically sends out sparks to electrocute nearby enemies
 		[c/5C95A1:'From looking at their less sapient brethren, the Old Kingdom's inhabitants adapted tools and weapons designed for underwater efficiency.]
 		[c/5C95A1:The electric properties of ghost bells remain useful even after death, having been commonly used as conduits.']
 		'''
@@ -311,6 +321,11 @@ DreadmineStaff: {
 EnchantedConch: {
 	DisplayName: Enchanted Conch
 	Tooltip: Summons a hermit crab to fight for you
+}
+
+EnchantedKnifeStaff: {
+	DisplayName: Enchanted Knife Staff
+	Tooltip: Summons an Enchanted Knife to fight for you
 }
 
 Endogenesis: {
@@ -661,10 +676,10 @@ SarosPossession: {
 	DisplayName: Saros Possession
 	Tooltip:
 		'''
-		Summons a radiant aura that gives absolute control of light itself
-		The aura will annihilate enemies with orbs of radiance
-		There can only be one aura at a time
-		Requires 6 minion slots
+		Summons a radiant aura harnessing the power of primordial light
+		Repeated summons increase the power of the aura
+		<left> with full summon slots to channel an eclipse beam that decays over time
+		This beam recharges when not in use
 		'''
 }
 
@@ -697,9 +712,12 @@ Sirius: {
 	DisplayName: Sirius
 	Tooltip:
 		'''
-		Summons the brightest star in the night sky to shine upon your foes
-		There can only be one star at a time
-		Requires 6 minion slots
+		Summons the brightest star in the sky, Sirius, to protect you
+		Continue summoning to complete Canis Major
+		Repeated summons increase its power greatly, even after the constellation is complete
+		Sirius passively generates Starbursts when targeting enemies
+		When Starbursts are full, Sirius consumes them to launch a powerful piercing quasar that inflicts [cbuff:CalamityMod/Voidfrost]
+		'A guide to a dream never realized'
 		'''
 }
 
@@ -747,18 +765,6 @@ StaffOfNecrosteocytes: {
 		'''
 }
 
-VoidEaterMarionette: {
-	DisplayName: Void Eater Marionette
-	Tooltip:
-		'''
-		Contains the power to control a miniature Devourer
-		Repeated summons increase the length and power of the Devourer
-		The Devourer attacks with [c/ff00ff:Divinity Devourer], [c/ff00ff:Faith Incinerator] and [c/ff00ff:Ultracosmic Maelstrom]
-		Can play fetch with dropped items 
-		Shift-<right> this item in your inventory when the Devourer has been spawned to prioritize fetching
-		'''
-}
-
 StarspawnHelixStaff: {
 	DisplayName: Starspawn Helix Staff
 	Tooltip: Summons astral probes to protect you
@@ -779,7 +785,7 @@ SunSpiritStaff: {
 	Tooltip:
 		'''
 		Summons a solar spirit to protect you
-		There can only be one spirit at a time
+		Repeated summons increase its power
 		'''
 }
 
@@ -838,8 +844,8 @@ VengefulSunStaff: {
 	DisplayName: Vengeful Sun Staff
 	Tooltip:
 		'''
-		Summons a vengeful solar spirit to protect you
-		There can only be one spirit at a time
+		Summons an eclipse spirit to protect you
+		Repeated summons increase its power
 		'''
 }
 
@@ -888,6 +894,18 @@ VoidConcentrationStaff: {
 		'''
 }
 
+VoidEaterMarionette: {
+	DisplayName: Void Eater Marionette
+	Tooltip:
+		'''
+		Contains the power to control a miniature Devourer
+		Repeated summons increase the length and power of the Devourer
+		The Devourer attacks with [c/ff00ff:Divinity Devourer], [c/ff00ff:Faith Incinerator] and [c/ff00ff:Ultracosmic Maelstrom]
+		Can play fetch with dropped items 
+		Shift-<right> this item in your inventory when the Devourer has been spawned to prioritize fetching
+		'''
+}
+
 WarloksMoonFist: {
 	DisplayName: Warloks' Moon Fist
 	Tooltip:
@@ -924,33 +942,5 @@ YharonsKindleStaff: {
 		'''
 		Summons a fiery draconid to fight for you
 		Requires 5 minion slots to use
-		'''
-}
-
-FlarebatStaff: {
-	DisplayName: Flarebat Staff
-	Tooltip:
-		'''
-		Summons a bat construct of pure fire to fight for you
-		Swoops towards foes with great haste
-		'''
-}
-
-FrostbatStaff: {
-	DisplayName: Frostbat Staff
-	Tooltip:
-		'''
-		Summons a bat construct of pure ice to fight for you
-		Swoops towards foes with slow and precise maneuvers
-		'''
-}
-
-AmphibiansGuitar: {
-	DisplayName: Amphibian's Guitar
-	Tooltip:
-		'''
-		Summons up to 8 guitars that spin around you and shoot notes at the target, ocasianally firing spread shots
-		If all 8 guitars are present some notes become empowered dealing extra damage
-		"I'll show you suffering!"
 		'''
 }

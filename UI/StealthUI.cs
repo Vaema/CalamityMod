@@ -6,7 +6,6 @@ using Microsoft.Xna.Framework.Input;
 using ReLogic.Content;
 using Terraria;
 using Terraria.ModLoader;
-using static Microsoft.Xna.Framework.Input.Keys;
 
 namespace CalamityMod.UI
 {
@@ -136,7 +135,7 @@ namespace CalamityMod.UI
                 }
 
                 // When the mouse is released, save the config and destroy the drag offset.
-                if (ms.LeftButton == ButtonState.Released)
+                if (dragOffset.HasValue && ms.LeftButton == ButtonState.Released)
                 {
                     dragOffset = null;
                     CalamityClientConfig.Instance.SaveChanges();

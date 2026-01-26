@@ -1,17 +1,12 @@
 ﻿using System;
-using CalamityMod.Balancing;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
-using CalamityMod.Projectiles.Healing;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee.Spears
@@ -41,7 +36,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
             Projectile.extraUpdates = 5; //ExtraUpdates help make the VFX smoother
             Projectile.noEnchantmentVisuals = true;
         }
-        public override void Spawn(IEntitySource source)
+        public override void Spawn()
         {
             //This sets variables for the spear in general, as well as the secondary attack
             //The secondary attack is the "default" because it was coded first

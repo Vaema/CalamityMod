@@ -138,7 +138,7 @@ namespace CalamityMod.Projectiles.Ranged
             // Projectile shooting.
             if (shootThisFrame && Main.myPlayer == Projectile.owner)
             {
-                Item freedomStar = player.ActiveItem();
+                Item freedomStar = player.HeldItem;
 
                 // This grabs the weapon's current damage, taking current charge level into account.
                 int currentDamage = player.GetWeaponDamage(freedomStar);
@@ -147,26 +147,10 @@ namespace CalamityMod.Projectiles.Ranged
 
                 // Checks if the Freedom Star has sufficient charge to fire. If this is false, it stops functioning.
                 CalamityGlobalItem modItem = freedomStar.Calamity();
-                float chargeConsumed = FreedomStar.HoldoutChargeUse_Orb;
-                switch (chargeAmt)
-                {
-                    case 1:
-                        chargeConsumed = FreedomStar.HoldoutChargeUse_OrbLarge;
-                        break;
-
-                    case 2:
-                        chargeConsumed = MathHelper.Lerp(FreedomStar.HoldoutChargeUse_Laser, FreedomStar.HoldoutChargeUse_LaserLarge, lerpAmtForCharge);
-                        break;
-
-                    default:
-                        break;
-                }
-                bool hasCharge = modItem.Charge >= chargeConsumed;
+                bool hasCharge = true;
 
                 if (stillInUse && hasCharge)
                 {
-                    // Use charge when firing anything.
-                    modItem.Charge -= chargeConsumed;
 
                     if (Projectile.ai[0] == LaserGateValue)
                     {

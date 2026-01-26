@@ -192,7 +192,7 @@ namespace CalamityMod.Projectiles.Boss
                 // spawn too far from the blade.
                 spawnPosition += Main.rand.NextVector2CircularEdge(9f, 35f).RotatedBy(Projectile.velocity.ToRotation() + MathHelper.PiOver2);
 
-                Dust rainbowSpark = Dust.NewDustPerfect(spawnPosition, 261);
+                Dust rainbowSpark = Dust.NewDustPerfect(spawnPosition, DustID.AncientLight);
                 rainbowSpark.velocity = Projectile.velocity * 3f + Main.rand.NextVector2CircularEdge(1.5f, 1.5f);
                 rainbowSpark.noGravity = true;
                 rainbowSpark.color = Color.HotPink;

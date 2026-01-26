@@ -1,11 +1,8 @@
 ﻿using System;
 using System.IO;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.NPCs;
 using CalamityMod.NPCs.ProfanedGuardians;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.Particles;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
