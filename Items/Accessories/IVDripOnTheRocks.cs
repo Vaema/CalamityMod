@@ -19,8 +19,8 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 58;
             Item.height = 60;
-            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
-            Item.rare = ModContent.RarityType<Turquoise>();
+            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
+            Item.rare = ItemRarityID.Lime;
             Item.accessory = true;
         }
 
@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Accessories
         {
             CreateRecipe().
                 AddIngredient<OldFashioned>().
-                AddIngredient<UelibloomBar>(5).
+                AddIngredient<LivingShard>(6).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }
