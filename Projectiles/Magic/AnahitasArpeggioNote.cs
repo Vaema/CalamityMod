@@ -174,7 +174,7 @@ namespace CalamityMod.Projectiles.Magic
 
                     // Makes the notes slowly follow the mouse and rotate
                     Vector2 centerPointDirection = (Owner.Calamity().mouseWorld - ReleaseCenterPoint).SafeNormalize(Vector2.Zero);
-                    float distToMove = MathF.Min(2.75f, Vector2.Distance(Owner.Calamity().mouseWorld, ReleaseCenterPoint)); // The constant value is the maximum chase speed
+                    float distToMove = MathF.Min(5.75f, Vector2.Distance(Owner.Calamity().mouseWorld, ReleaseCenterPoint)); // The constant value is the maximum chase speed
                     ReleaseCenterPoint += centerPointDirection * distToMove;
                     Projectile.Center += centerPointDirection * distToMove;
                     Projectile.Center = ReleaseCenterPoint + Utils.DirectionTo(ReleaseCenterPoint, Projectile.Center).RotatedBy(MathHelper.Pi * 0.01f) * Vector2.Distance(ReleaseCenterPoint, Projectile.Center);

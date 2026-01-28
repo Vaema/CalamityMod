@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Weapons.Rogue
     [LegacyName("TerraDisk")]
     public class SamsaraSlicer : RogueWeapon
     {
-        public static float Speed = 20f;
+        public static float Speed = 25f;
 
         public override void SetDefaults()
         {
@@ -35,8 +35,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shoot = ModContent.ProjectileType<SamsaraSlicerProjectile>();
             Item.shootSpeed = Speed;
         }
-
-        public override float StealthVelocityMultiplier => 1.5f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
