@@ -2026,7 +2026,7 @@ V8000Engine: {
 	Tooltip:
 		'''
 		Grants a dash which can be used by both mounts and players alike
-		Mounts are fashioned with a cowcatcher which can damage enemies
+		This dash can ram through enemies without taking damage
 		'Are soul-powered engines eco-friendly?'
 		'''
 }

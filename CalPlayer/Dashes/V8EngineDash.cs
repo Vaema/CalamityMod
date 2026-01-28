@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Dusts;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Particles;
@@ -31,29 +32,52 @@ namespace CalamityMod.CalPlayer.Dashes
         public override void OnDashEffects(Player player)
         {
             Time = 0;
-            for (int m = 0; m < 3; m++)
+            for (int m = 0; m < 6; m++)
             {
-                PointParticle spark = new PointParticle(player.Center - player.velocity, -player.velocity * (0.08f * m), false, 25, 4f - (0.5f * m), (Main.rand.NextBool() ? Color.Firebrick : Color.OrangeRed) * 0.4f);
-                GeneralParticleHandler.SpawnParticle(spark);
+                float fxFade = Utils.GetLerpValue(5, 15, Math.Abs(player.velocity.X), true);
+
+                Vector2 trailPos = player.Center - (player.velocity * 2) + new Vector2(0, (18 - (m * 6)));
+                float trailScale = 1 * fxFade;
+                Color trailColor = Main.rand.NextBool(3) ? Color.Firebrick : Color.OrangeRed;
+
+                int dustStyle = ModContent.DustType<SquashDust>();
+                Dust dust2 = Dust.NewDustPerfect(trailPos, dustStyle, -player.velocity.SafeNormalize(Vector2.UnitX) * Main.rand.NextFloat(5, 15));
+                dust2.scale = Main.rand.NextFloat(0.75f, 1.2f);
+                dust2.color = trailColor;
+                dust2.noGravity = true;
+                dust2.fadeIn = 0.5f;
             }
         }
 
         public override void MidDashEffects(Player player, ref float dashSpeed, ref float dashSpeedDecelerationFactor, ref float runSpeedDecelerationFactor)
         {
-            Time++; // For VFX
-
             player.velocity.X *= 0.925f;
+            Dust hFlameDust = Dust.NewDustPerfect(player.Center + new Vector2(Main.rand.NextFloat(-6f, 6f), Main.rand.NextFloat(-15f, 15f)) - (player.velocity * 5f), DustID.HeatRay, -player.velocity.RotatedByRandom(MathHelper.ToRadians(10f)) * Main.rand.NextFloat(0.1f, 0.8f), 0, Color.Firebrick, Main.rand.NextFloat(1.8f, 2.8f));
 
-            if (Time % 2 == 0)
-            {
-                Vector2 dustVel = -player.velocity.RotatedBy(0.05f + MathHelper.Clamp(Time * 0.03f, 0, 0.55f)) * 0.75f;
-                Vector2 dustVel2 = -player.velocity.RotatedBy(-0.05f - MathHelper.Clamp(Time * 0.03f, 0, 0.55f)) * 0.75f;
+            // Angled, consistently placed sparks
+            Vector2 dustVel = -player.velocity.RotatedBy(0.05f + MathHelper.Clamp(Time * 0.03f, 0, 0.55f)) * 0.75f;
+            Vector2 dustVel2 = -player.velocity.RotatedBy(-0.05f - MathHelper.Clamp(Time * 0.03f, 0, 0.55f)) * 0.75f;
 
-                PointParticle spark = new PointParticle(player.Center + new Vector2(0, -15 * player.direction) + dustVel, dustVel, false, 8, 1.4f, (Main.rand.NextBool() ? Color.Firebrick : Color.OrangeRed) * 0.66f);
-                GeneralParticleHandler.SpawnParticle(spark);
-                PointParticle spark2 = new PointParticle(player.Center + new Vector2(0, 15 * player.direction) + dustVel2, dustVel2, false, 8, 1.4f, (Main.rand.NextBool() ? Color.Firebrick : Color.OrangeRed) * 0.66f);
-                GeneralParticleHandler.SpawnParticle(spark2);
-            }
+            PointParticle spark = new PointParticle(player.Center + new Vector2(0, -15 * player.direction) + dustVel, dustVel, false, 8, 1.25f, (Main.rand.NextBool() ? Color.Firebrick : Color.OrangeRed) * 0.66f);
+            GeneralParticleHandler.SpawnParticle(spark);
+            PointParticle spark2 = new PointParticle(player.Center + new Vector2(0, 15 * player.direction) + dustVel2, dustVel2, false, 8, 1.25f, (Main.rand.NextBool() ? Color.Firebrick : Color.OrangeRed) * 0.66f);
+            GeneralParticleHandler.SpawnParticle(spark2);
+
+            // Glow beam
+            float fadeInLerp = Utils.GetLerpValue(0, 12, Time, true);
+            Color primaryColor = Color.Lerp(Color.Firebrick, Color.OrangeRed, fadeInLerp);
+            Particle beamBody = new CustomSpark(player.Center, -player.velocity * 0.15f, "CalamityMod/Particles/BloomCircle", false, 7, 0.65f - 0.3f * fadeInLerp, primaryColor * 0.8f, new Vector2(1.1f - 0.4f * fadeInLerp, 0.8f + 0.6f * fadeInLerp), true, false, shrinkSpeed: 0.6f);
+            GeneralParticleHandler.SpawnParticle(beamBody);
+            Particle beamCore = new CustomSpark(player.Center, -player.velocity * 0.15f, "CalamityMod/Particles/BloomCircle", false, 5, 0.35f - 0.15f * fadeInLerp, Color.Lerp(primaryColor, Color.White, 0.6f), new Vector2(0.7f, 1.4f), true, false, shrinkSpeed: 0.6f);
+            GeneralParticleHandler.SpawnParticle(beamCore);
+
+            Dust dust = Dust.NewDustPerfect(player.Center + Main.rand.NextVector2Circular(6, 6) - player.velocity * 2, DustID.GoldFlame);
+            dust.velocity = -player.velocity * Main.rand.NextFloat(0.6f, 1.4f);
+            dust.scale = Main.rand.NextFloat(0.9f, 1.4f);
+            dust.noGravity = true;
+                Particle sparkler = new CustomSpark(player.Center + new Vector2(Main.rand.NextFloat(-6f, 6f), Main.rand.NextFloat(-15f, 15f)) - (player.velocity * 1.2f), -player.velocity.RotatedByRandom(MathHelper.ToRadians(10f)) * Main.rand.NextFloat(0.1f, 0.8f), "CalamityMod/Particles/ProvidenceMarkParticle", false, 17, Main.rand.NextFloat(1.15f, 1.25f), Main.rand.NextBool(4) ? Color.Khaki : Color.Orange, new Vector2(1.3f, 0.5f), true, false, 0, false, false, Main.rand.NextFloat(0.4f, 0.5f));
+                GeneralParticleHandler.SpawnParticle(sparkler);
+            
         }
     }
 }
