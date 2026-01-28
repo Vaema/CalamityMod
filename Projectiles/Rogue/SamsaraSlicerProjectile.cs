@@ -27,6 +27,8 @@ namespace CalamityMod.Projectiles.Rogue
 
         Vector2 oldVelocity;
 
+        int? npcTaggedTo = null;
+
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.TrailCacheLength[Type] = 10;
@@ -104,6 +106,15 @@ namespace CalamityMod.Projectiles.Rogue
                     }
                 }
             }
+            else
+            {
+                if (npcTaggedTo != null)
+                {
+                    NPC npc = Main.npc[npcTaggedTo.GetValueOrDefault(0)];
+                    if (npc.active)
+                        Projectile.Center += npc.velocity;
+                }
+            }
 
             // Frame pause
 
@@ -111,6 +122,8 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (Projectile.ai[0] == 0)
             {
+                npcTaggedTo = null;
+
                 Projectile.velocity = oldVelocity;
 
                 SoundEngine.PlaySound(SoundID.DD2_SkyDragonsFuryShot.WithPitchOffset(1f));
@@ -223,6 +236,8 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
+            npcTaggedTo = target.whoAmI;
+
             if (Projectile.velocity != Vector2.Zero)
             {
                 if (Projectile.ai[0] <= -200)
