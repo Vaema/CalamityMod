@@ -38,7 +38,7 @@ namespace CalamityMod.Projectiles.Healing
             if (finalUpdate)
             {
                     var p = BloodMetaball.SpawnParticle(Projectile.Center + Projectile.velocity, Main.rand.NextVector2Circular(-0.5f, -0.5f), Projectile.width);
-                    p.SizeScaling = 0.75f;
+                    p.SizeScaling = 0.85f;
                     p.ShrinkDelay = 1;
             }
 
@@ -83,7 +83,7 @@ namespace CalamityMod.Projectiles.Healing
                 Projectile.Kill();
             }
 
-            Projectile.velocity = (Projectile.velocity * 5 + (playerVector.SafeNormalize(Vector2.Zero) * 10)) / 6f; //Move towards player. Range is determined in the AI();
+            Projectile.velocity = (Projectile.velocity * 5 + (playerVector.SafeNormalize(Vector2.Zero) * 15)) / 6f; //Move towards player. Range is determined in the AI();
         }
 
         public static void Heal(Player player, int PotionTime)
