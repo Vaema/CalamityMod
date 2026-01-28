@@ -1,4 +1,5 @@
-﻿using CalamityMod.Graphics.Metaballs;
+﻿using System.Runtime.CompilerServices;
+using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -26,20 +27,22 @@ namespace CalamityMod.Projectiles.Healing
             Projectile.alpha = 255;
             Projectile.penetrate = 1;
             Projectile.tileCollide = false;
-            Projectile.extraUpdates = 3;
+            Projectile.extraUpdates = 1;
             Projectile.timeLeft = 60 * 5 * Projectile.MaxUpdates;
             spawnCooldown *= Projectile.MaxUpdates;
         }
 
         public override void AI()
         {
+            bool finalUpdate = Projectile.FinalExtraUpdate();
+            if (finalUpdate)
+            {
+                    var p = BloodMetaball.SpawnParticle(Projectile.Center + Projectile.velocity, Main.rand.NextVector2Circular(-0.5f, -0.5f), Projectile.width);
+                    p.SizeScaling = 0.75f;
+                    p.ShrinkDelay = 1;
+            }
 
-            var p = BloodMetaball.SpawnParticle(Projectile.Center + Projectile.velocity, Main.rand.NextVector2Circular(-0.5f, -0.5f), Projectile.width);
-            p.SizeScaling = 0.75f;
-            p.ShrinkDelay = 1;
-
-            Projectile.scale = MathHelper.Lerp(1, 1, 0.65f);
-            float maxDistance = 200f;
+            float maxDistanceSq = 200f * 200f;
             if (spawnCooldown > 0)
             {
                 PassiveBehavior();
@@ -49,15 +52,14 @@ namespace CalamityMod.Projectiles.Healing
             if (target < 0)
             {
                 PassiveBehavior();
-                if (Projectile.FinalExtraUpdate()) for (int playerIndex = 0; playerIndex < Main.maxPlayers; playerIndex++)
+                if (finalUpdate) for (int playerIndex = 0; playerIndex < Main.maxPlayers; playerIndex++)
                 {
                     Player player = Main.player[playerIndex];
-                    if (player.lifeMagnet) 
-                            maxDistance *= 1.5f; //Heartreach gives 50% more range
-                    float targetDist = Vector2.Distance(player.Center, Projectile.Center);
-                    if (targetDist < maxDistance)
+                    float perPlayerMaxDistanceSq = player.lifeMagnet ? maxDistanceSq * 2.25f : maxDistanceSq; //Heartreach gives 50% more range
+                    float targetDistSq = Vector2.DistanceSquared(player.Center, Projectile.Center);
+                    if (targetDistSq < perPlayerMaxDistanceSq)
                     {
-                        maxDistance = targetDist;
+                        maxDistanceSq = targetDistSq;
                         target = playerIndex;
                     }
                 }
@@ -69,7 +71,7 @@ namespace CalamityMod.Projectiles.Healing
         {
             Projectile.velocity *= 0.99f;
         }
-
+        
         public void HealHome()
         {
             Player player = Main.player[target];
@@ -81,7 +83,7 @@ namespace CalamityMod.Projectiles.Healing
                 Projectile.Kill();
             }
 
-            Projectile.velocity = (Projectile.velocity * 5 + (playerVector.SafeNormalize(Vector2.Zero) * 5)) / 6f; //Move towards player. Range is determined in the AI();
+            Projectile.velocity = (Projectile.velocity * 5 + (playerVector.SafeNormalize(Vector2.Zero) * 10)) / 6f; //Move towards player. Range is determined in the AI();
         }
 
         public static void Heal(Player player, int PotionTime)
