@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using CalamityMod.Graphics.Metaballs;
+﻿using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -27,20 +26,17 @@ namespace CalamityMod.Projectiles.Healing
             Projectile.alpha = 255;
             Projectile.penetrate = 1;
             Projectile.tileCollide = false;
-            Projectile.extraUpdates = 1;
+            Projectile.extraUpdates = 3;
             Projectile.timeLeft = 60 * 5 * Projectile.MaxUpdates;
             spawnCooldown *= Projectile.MaxUpdates;
         }
-
         public override void AI()
         {
             bool finalUpdate = Projectile.FinalExtraUpdate();
-            if (finalUpdate)
-            {
-                    var p = BloodMetaball.SpawnParticle(Projectile.Center + Projectile.velocity, Main.rand.NextVector2Circular(-0.5f, -0.5f), Projectile.width);
-                    p.SizeScaling = 0.85f;
-                    p.ShrinkDelay = 1;
-            }
+
+            var p = BloodMetaball.SpawnParticle(Projectile.Center + Projectile.velocity, Main.rand.NextVector2Circular(-0.5f, -0.5f), Projectile.width);
+            p.SizeScaling = 0.75f;
+            p.ShrinkDelay = 1;
 
             float maxDistanceSq = 200f * 200f;
             if (spawnCooldown > 0)
@@ -53,16 +49,16 @@ namespace CalamityMod.Projectiles.Healing
             {
                 PassiveBehavior();
                 if (finalUpdate) for (int playerIndex = 0; playerIndex < Main.maxPlayers; playerIndex++)
-                {
-                    Player player = Main.player[playerIndex];
-                    float perPlayerMaxDistanceSq = player.lifeMagnet ? maxDistanceSq * 2.25f : maxDistanceSq; //Heartreach gives 50% more range
-                    float targetDistSq = Vector2.DistanceSquared(player.Center, Projectile.Center);
-                    if (targetDistSq < perPlayerMaxDistanceSq)
                     {
-                        maxDistanceSq = targetDistSq;
-                        target = playerIndex;
+                        Player player = Main.player[playerIndex];
+                        float perPlayerMaxDistanceSq = player.lifeMagnet ? maxDistanceSq * 2.25f : maxDistanceSq; //Heartreach gives 50% more range
+                        float targetDistSq = Vector2.DistanceSquared(player.Center, Projectile.Center);
+                        if (targetDistSq < perPlayerMaxDistanceSq)
+                        {
+                            maxDistanceSq = targetDistSq;
+                            target = playerIndex;
+                        }
                     }
-                }
             }
             else HealHome();
         }
@@ -71,7 +67,7 @@ namespace CalamityMod.Projectiles.Healing
         {
             Projectile.velocity *= 0.99f;
         }
-        
+
         public void HealHome()
         {
             Player player = Main.player[target];
@@ -83,7 +79,7 @@ namespace CalamityMod.Projectiles.Healing
                 Projectile.Kill();
             }
 
-            Projectile.velocity = (Projectile.velocity * 5 + (playerVector.SafeNormalize(Vector2.Zero) * 15)) / 6f; //Move towards player. Range is determined in the AI();
+            Projectile.velocity = (Projectile.velocity * 5 + (playerVector.SafeNormalize(Vector2.Zero) * 5)) / 6f; //Move towards player. Range is determined in the AI();
         }
 
         public static void Heal(Player player, int PotionTime)
@@ -109,9 +105,9 @@ namespace CalamityMod.Projectiles.Healing
             {
                 player.lifeRegenTime += 3*PotionTime; //if Potion Sickness is full, each orb speeds up natural regen
             }
-            
+
                 Particle ring = new CustomPulse(player.Center, Vector2.Zero, new Color(255, 32, 32)*0.75f, "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, 0, 0.01f, 0.05f, 20);
-                GeneralParticleHandler.SpawnParticle(ring);
+            GeneralParticleHandler.SpawnParticle(ring);
         }
 
         public override bool PreDraw(ref Color lightColor)
