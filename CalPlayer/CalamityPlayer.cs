@@ -4774,13 +4774,22 @@ namespace CalamityMod.CalPlayer
             {
                 float baseRecoveryRate = Main.expertMode ? BalancingConstants.LifeStealRecoveryRate_Expert : BalancingConstants.LifeStealRecoveryRate_Classic;
                 float lifeStealRecoveryRateReduction = Main.expertMode ? BalancingConstants.LifeStealRecoveryRateReduction_Expert : BalancingConstants.LifeStealRecoveryRateReduction_Classic;
+                float lifeStealCap = Main.expertMode ? BalancingConstants.LifeStealCap_Expert: BalancingConstants.LifeStealCap_Classic;
 
                 float lifeStealRecoveryRate = baseRecoveryRate - lifeStealRecoveryRateReduction;
-                if (Player.lifeSteal < -lifeStealRecoveryRate)
+                
+                if (Player.lifeSteal < lifeStealCap)
                 {
-                    int duration = (int)Math.Ceiling(Math.Abs(Player.lifeSteal) / lifeStealRecoveryRate);
-                    if (!Player.HasCooldown(LifeSteal.ID) || (cooldowns[LifeSteal.ID].duration < duration))
-                        Player.AddCooldown(LifeSteal.ID, duration);
+
+                    if (Player.Calamity().cooldowns.TryGetValue(LifeSteal.ID, out var cooldown))
+                    {
+                        cooldown.timeLeft = (int)Math.Max(0,(lifeStealCap-Math.Abs(Player.lifeSteal)));
+                    }
+                    else
+                    {
+                        Player.AddCooldown(LifeSteal.ID, (int)lifeStealCap)
+                            .timeLeft = (int)Math.Max(0, (lifeStealCap - Math.Abs(Player.lifeSteal)));
+                    }
                 }
             }
             if (moonshine)
