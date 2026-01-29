@@ -3,6 +3,7 @@ using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent.UI;
 using Terraria.ID;
@@ -15,6 +16,8 @@ namespace CalamityMod.Items.Accessories
         public new string LocalizationCategory => "Items.Accessories";
 
         public static float DashDelayModifier = 2f;
+
+        public static SoundStyle DashSound = new("CalamityMod/Sounds/Item/V8Boost");
 
         public override void SetDefaults()
         {

@@ -55,6 +55,8 @@ namespace CalamityMod.CalPlayer.Dashes
                 dust2.noGravity = true;
                 dust2.fadeIn = 0.5f;
             }
+            SoundStyle sound = V8000Engine.DashSound;
+            SoundEngine.PlaySound(sound with { Volume = 0.5f, Pitch = Main.rand.NextFloat(-0.4f, -0.3f) }, player.Center);
         }
 
         public override void MidDashEffects(Player player, ref float dashSpeed, ref float dashSpeedDecelerationFactor, ref float runSpeedDecelerationFactor)

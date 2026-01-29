@@ -41,12 +41,14 @@ namespace CalamityMod.CalPlayer.Dashes
                 Color trailColor = Main.rand.NextBool(3) ? Color.Firebrick : Color.OrangeRed;
 
                 int dustStyle = ModContent.DustType<SquashDust>();
-                Dust dust2 = Dust.NewDustPerfect(trailPos, dustStyle, -player.velocity.SafeNormalize(Vector2.UnitX) * Main.rand.NextFloat(5, 15));
+                Dust dust2 = Dust.NewDustPerfect(trailPos, dustStyle, -player.velocity.SafeNormalize(Vector2.UnitX) * Main.rand.NextFloat(4, 13));
                 dust2.scale = Main.rand.NextFloat(0.75f, 1.2f);
                 dust2.color = trailColor;
                 dust2.noGravity = true;
                 dust2.fadeIn = 0.5f;
             }
+            SoundStyle sound = V8Engine.DashSound;
+            SoundEngine.PlaySound(sound with { Volume = 0.5f, Pitch = Main.rand.NextFloat(-0.4f, -0.3f) }, player.Center);
         }
 
         public override void MidDashEffects(Player player, ref float dashSpeed, ref float dashSpeedDecelerationFactor, ref float runSpeedDecelerationFactor)
@@ -71,13 +73,17 @@ namespace CalamityMod.CalPlayer.Dashes
             Particle beamCore = new CustomSpark(player.Center, -player.velocity * 0.15f, "CalamityMod/Particles/BloomCircle", false, 5, 0.35f - 0.15f * fadeInLerp, Color.Lerp(primaryColor, Color.White, 0.6f), new Vector2(0.7f, 1.4f), true, false, shrinkSpeed: 0.6f);
             GeneralParticleHandler.SpawnParticle(beamCore);
 
-            Dust dust = Dust.NewDustPerfect(player.Center + Main.rand.NextVector2Circular(6, 6) - player.velocity * 2, DustID.GoldFlame);
-            dust.velocity = -player.velocity * Main.rand.NextFloat(0.6f, 1.4f);
-            dust.scale = Main.rand.NextFloat(0.9f, 1.4f);
-            dust.noGravity = true;
+
+            for (int i = 0; i < 2; i++)
+            {
+                // Fruit loop particles, also used by Elysian Aegis
+                Dust dust = Dust.NewDustPerfect(player.Center + Main.rand.NextVector2Circular(6, 6) - player.velocity * 2.2f, DustID.GoldFlame);
+                dust.velocity = -player.velocity * Main.rand.NextFloat(0.66f, 1.8f);
+                dust.scale = Main.rand.NextFloat(0.4f, 1.3f);
+                dust.noGravity = true;
                 Particle sparkler = new CustomSpark(player.Center + new Vector2(Main.rand.NextFloat(-6f, 6f), Main.rand.NextFloat(-15f, 15f)) - (player.velocity * 1.2f), -player.velocity.RotatedByRandom(MathHelper.ToRadians(10f)) * Main.rand.NextFloat(0.1f, 0.8f), "CalamityMod/Particles/ProvidenceMarkParticle", false, 17, Main.rand.NextFloat(1.15f, 1.25f), Main.rand.NextBool(4) ? Color.Khaki : Color.Orange, new Vector2(1.3f, 0.5f), true, false, 0, false, false, Main.rand.NextFloat(0.4f, 0.5f));
                 GeneralParticleHandler.SpawnParticle(sparkler);
-            
+            }
         }
     }
 }
