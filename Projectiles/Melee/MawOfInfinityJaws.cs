@@ -18,6 +18,7 @@ namespace CalamityMod.Projectiles.Melee
         public new string LocalizationCategory => "Projectiles.Melee";
 
         public override string Texture => "CalamityMod/Particles/Jaws";
+        public int time = 0;
         public override void SetDefaults()
         {
             Projectile.width = 500;
@@ -93,6 +94,7 @@ namespace CalamityMod.Projectiles.Melee
                 GeneralParticleHandler.SpawnParticle(explosion2);
 
             }
+            time++;
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)
@@ -119,7 +121,7 @@ namespace CalamityMod.Projectiles.Melee
         public override bool PreDraw(ref Color lightColor)
         {
             var tex = TextureAssets.Projectile[Type].Value;
-            float jawScaleMult = 1f;
+            float jawScaleMult = 1f + (0.007f * time);
             jawScaleMult = MathF.Pow(jawScaleMult, 3);
             float rotationOff = 0.5f * MathHelper.Min(MathF.Pow(MathHelper.Clamp(1 - (Projectile.timeLeft - 5) / 30f,0,1),0.5f), MathF.Pow(MathHelper.Clamp((Projectile.timeLeft - 5) / 10f,0,1),0.5f));
             if (rotationOff < 0.01f)
