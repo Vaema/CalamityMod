@@ -15,13 +15,14 @@ namespace CalamityMod.Projectiles.Rogue
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/SamsaraSlicer";
 
-        public float ReboundVelocity => 20;
+        //These are the same number, but will be left as two seperate variables for future tuning purposes
+        public float ReboundVelocity => 30;
         public float StealthReboundVelocity => 30;
         public float StealthPauseTime => 55;
-        public int ReboundTime => 20;
+        public int ReboundTime => 30;
 
-        public int SmallDiskDamage => 8;
-        public int SmallDiskStealthDamage => 17;
+        public int SmallDiskDamage => 30;
+        public int SmallDiskStealthDamage => 19;
 
         public bool initialized = false;
 
