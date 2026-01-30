@@ -185,8 +185,9 @@ namespace CalamityMod.Projectiles.Magic
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             // it was GOING to have this but deus made it real bad
-            //damageMult = MathHelper.Clamp(Utils.GetLerpValue(5, 1, Projectile.numHits), 0.7f, 1);
-            //modifiers.SourceDamage *= damageMult;
+            // renabled and tested on deus, no noticable effect
+            damageMult = MathHelper.Clamp(Utils.GetLerpValue(5, 1, Projectile.numHits), 0.7f, 1);
+            modifiers.SourceDamage *= damageMult;
         }
         public override void OnKill(int timeLeft)
         {

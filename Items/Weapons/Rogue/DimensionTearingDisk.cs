@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.DamageType = RogueDamageClass.Instance;
             Item.useTime = Item.useAnimation = 24;
             Item.knockBack = 7f;
-            Item.damage = 725;
+            Item.damage = 980;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.autoReuse = true;

@@ -678,13 +678,10 @@ namespace CalamityMod.UI.DialogueDisplay
                 }
 
                 int textDelay = DialoguePage.TextDelay;
-                if (DialoguePage.TextDelay != -1)
-                    textDelay = DialoguePage.TextDelay;
+                int inPunctuationDelay = DialoguePage.InPunctuationDelay;
 
                 if (DialoguePage.Event != null && !DialoguePage.Event.IsOver)
-                {
                     DialoguePage.Event.UpdateEvent();
-                }
 
                 if (textIndex < Text.Length)
                 {
@@ -694,44 +691,30 @@ namespace CalamityMod.UI.DialogueDisplay
                     {
                         if (TextTimer == 0)
                         {
+                            bool shouldApplyDelay = false;
+
                             if (!lockDelay)
                             {
+                                char currentChar = Text[textIndex];
                                 PunctuationData data = new();
+
                                 if (DialoguePage.BasePunctuationDelay != null)
                                     data = DialoguePage.BasePunctuationDelay;
 
                                 if (DialoguePage.PunctuationDelays != null)
                                 {
-                                    if (DialoguePage.PunctuationDelays.TryGetValue(Text[textIndex].ToString(), out var value))
-                                        data = value;
-                                    else if (DialoguePage.PunctuationDelays.TryGetValue(Text[textIndex].ToString(), out value))
+                                    if (DialoguePage.PunctuationDelays.TryGetValue(currentChar.ToString(), out var value))
                                         data = value;
                                 }
 
-                                switch (Text[textIndex])
+                                shouldApplyDelay = IsStoppingPunctuation(currentChar, textIndex == 0 ? null : Text[textIndex - 1], textIndex == Text.Length - 1 ? null : Text[textIndex + 1]);
+
+                                if (shouldApplyDelay)
                                 {
-                                    case '.':
-                                    case '?':
-                                    case '!':
-                                    case ';':
-                                    case ':':
-                                    case ',':
-                                        if (data.ForceSet)
-                                            storedDelay = data.Delay;
-                                        else
-                                            storedDelay += data.Delay;
-                                        break;
-                                    case '-':
-                                    case '–':
-                                    case '—':
-                                        if (textIndex == Text.Length - 1 || Text[textIndex + 1] == ' ')
-                                        {
-                                            if (data.ForceSet)
-                                                storedDelay = data.Delay;
-                                            else
-                                                storedDelay += data.Delay;
-                                        }
-                                        break;
+                                    if (data.ForceSet)
+                                        storedDelay = data.Delay;
+                                    else
+                                        storedDelay += data.Delay;
                                 }
 
                                 if (data.Locks)
@@ -742,7 +725,9 @@ namespace CalamityMod.UI.DialogueDisplay
                                 storedDelay = (int)(pause * 60);
                         }
 
-                        delay = ((Text[textIndex] == ' ' || Text[textIndex] == '\n') && storedDelay > 0 ? textDelay + storedDelay : textDelay);
+                        int delayToUse = (IsPunctuation(Text[textIndex]) && textIndex > 0 && IsPunctuation(Text[textIndex - 1])) ? inPunctuationDelay : textDelay;
+
+                        delay = ((Text[textIndex] == ' ' || Text[textIndex] == '\n') && storedDelay > 0 ? delayToUse + storedDelay : delayToUse);
 
                         if (loopCounter == 0)
                             TextTimer++;
@@ -906,6 +891,27 @@ namespace CalamityMod.UI.DialogueDisplay
 
             DisplayEffects.PostDraw(spriteBatch, pageTop, TextSize, DialogueTimer, SwitchCounter);
         }
+    
+        private static bool IsStoppingPunctuation(char current, char? before, char? after)
+        {
+            if (IsPunctuation(current))
+            {
+                bool hasLetterBefore = before.HasValue && char.IsLetter(before.Value);
+                bool hasLetterAfter = after.HasValue && char.IsLetter(after.Value);
+                bool isMidWord = hasLetterBefore && hasLetterAfter;
+
+                if (!isMidWord)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static bool IsPunctuation(char c)
+        {
+            UnicodeCategory category = char.GetUnicodeCategory(c);
+            return category >= UnicodeCategory.ConnectorPunctuation && category <= UnicodeCategory.OtherPunctuation;
+        }
     }
 
     public class DialogueDisplaySystem : ModSystem
@@ -1034,6 +1040,8 @@ namespace CalamityMod.UI.DialogueDisplay
         {
             DialogueDisplayUI.DialoguesToRemove.Add(slot);
         }
+
+        public static bool ContainsDialogueKey(string key) => DialogueDisplayUI.Dialogues.Any(d => d.Value.name == key);
 
         /// <summary>
         /// Creates a dialogue instance in the world
@@ -1191,6 +1199,7 @@ namespace CalamityMod.UI.DialogueDisplay
         public Alignment AlignType { get; init; }
 
         public int TextDelay { get; init; }
+        public int InPunctuationDelay { get; init; }
         public PunctuationData BasePunctuationDelay { get; init; }
         public int PunctuationDelayCap { get; init; }
         public Dictionary<string, PunctuationData> PunctuationDelays { get; init; }
@@ -1201,7 +1210,7 @@ namespace CalamityMod.UI.DialogueDisplay
         public int Revision { get; init; }
 
         [JsonConstructor]
-        public DialogueTextData(DialoguePage[] Pages, int Page = 0, string DefaultColor = null, string DefaultSpeaker = null, int DefaultScale = 1, Alignment AlignType = 0, int TextDelay = 3, PunctuationData BasePunctuationDelay = null, int PunctuationDelayCap = 60, Dictionary<string, PunctuationData> PunctuationDelays = null)
+        public DialogueTextData(DialoguePage[] Pages, int Page = 0, string DefaultColor = null, string DefaultSpeaker = null, int DefaultScale = 1, Alignment AlignType = 0, int TextDelay = 3, int InPunctuationDelay = -1, PunctuationData BasePunctuationDelay = null, int PunctuationDelayCap = 60, Dictionary<string, PunctuationData> PunctuationDelays = null)
         {
             this.Pages = Pages;
             this.Page = Page;
@@ -1209,6 +1218,7 @@ namespace CalamityMod.UI.DialogueDisplay
             this.DefaultSpeaker = DefaultSpeaker;
             this.DefaultScale = DefaultScale;
             this.TextDelay = TextDelay;
+            this.InPunctuationDelay = InPunctuationDelay == -1 ? TextDelay : InPunctuationDelay;
             this.BasePunctuationDelay = BasePunctuationDelay ?? new();
             this.PunctuationDelayCap = PunctuationDelayCap;
             this.PunctuationDelays = PunctuationDelays ?? [];
@@ -1222,6 +1232,8 @@ namespace CalamityMod.UI.DialogueDisplay
                     p.TextScale = this.DefaultScale;
                 if (p.TextDelay == -1)
                     p.TextDelay = this.TextDelay;
+                if (p.InPunctuationDelay == -1)
+                    p.InPunctuationDelay = this.InPunctuationDelay;
                 if (p.AlignType == Alignment.None)
                     p.AlignType = this.AlignType;
                 p.BasePunctuationDelay ??= this.BasePunctuationDelay;
@@ -1244,8 +1256,8 @@ namespace CalamityMod.UI.DialogueDisplay
         public int TextScale { get; set; } = -1;
         public Alignment AlignType { get; set; } = Alignment.None;
 
-
         public int TextDelay { get; set; } = -1;
+        public int InPunctuationDelay { get; set; } = -1;
         public PunctuationData BasePunctuationDelay { get; set; } = null;
         public int PunctuationDelayCap { get; set; } = -1;
         public Dictionary<string, PunctuationData> PunctuationDelays { get; set; } = null;
