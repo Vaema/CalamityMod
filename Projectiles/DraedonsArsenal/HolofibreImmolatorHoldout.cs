@@ -82,7 +82,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * BulletSpeed;
                     if (Main.myPlayer == Projectile.owner)
                     {
-                        int charge2Damage = (int)(Projectile.damage * 2.5f);
+                        int charge2Damage = (int)(Projectile.damage * 4.5f);
                         float charge2KB = Projectile.knockBack * 3f;
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity * 2, ModContent.ProjectileType<ImmolationArrow>(), charge2Damage, charge2KB, Projectile.owner);
                     }
