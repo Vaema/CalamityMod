@@ -845,7 +845,15 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                         continue;
 
                     CreeperAI ai = creeper.AIOverride<CreeperAI>();
-                    Vector2 dir = Vector2.UnitX.RotatedBy(Main.rand.NextFloat(-MathHelper.TwoPi / 3f, MathHelper.TwoPi / 3f)) * (ai.evenID ? -1 : 1);
+                    int dirSign = ai.evenID ? -1 : 1;
+                    Vector2 dir = Vector2.UnitX.RotatedBy(Main.rand.NextFloat(-MathHelper.TwoPi / 3f, MathHelper.TwoPi / 3f)) * dirSign;
+                    if (Target.Center.Y / 16 < Main.worldSurface) //Makes creepers not go as high up when on the surface
+                    {
+                        float dirY = dir.Y;
+                        dir.Y -= dirY * 0.5f;
+                        dir.X += dirY * 0.5f * Math.Sign(dir.X);
+                        dir.SafeNormalize(Vector2.unitXVector * dirSign);
+                    }
                     ai.AttackAngle = dir.ToRotation();
                     float rayDist = CalamityUtils.PreciseDistanceToTileCollisionHit(NPC.Center, ai.AttackAngle, 800, 4);
                     ai.AttackPosition = NPC.Center + (dir * (rayDist - 64));
@@ -3181,5 +3189,4 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         AttackPosition = Vector2.Zero;
         AttackCounter = 0;
     }
-
 }
