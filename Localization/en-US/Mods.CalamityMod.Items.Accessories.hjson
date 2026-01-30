@@ -403,11 +403,10 @@ ChaosStone: {
 		'''
 		Disables automatic potion consumption
 		Items that consume mana can be used even without the required mana amount
-		Mana usage can overflow into negative mana, causing you to receive [Mana Burn]
+		Mana usage can overflow into negative mana, causing you to both receive and inflict [cbuff:CalamityMod/ManaBurn]
 		The lower your mana, the more intense the manafire burns
-		Attacks while you have [Mana Burn] inflict [Mana Burn] on enemies
-		Every 50 negative mana increases [Mana Burn] by 1% of the attack's damage
 		Negative Mana is capped at your maximum mana amount
+		Current maximum intensity with your maximum mana: -[REGEN] HP/s, and burns enemies for [DAMAGE]% of dealt damage
 		'''
 }
 
@@ -1114,7 +1113,7 @@ ManaPolarizer: {
 		Increases max mana by 50
 		Provides life regeneration and magic damage that scales based on how much mana you have
 		Lower mana means more life regeneration, but less magic damage
-		These scale from -2 to 2 HP/sec, and 5% to 15% damage
+		These scale from -2 to 2 HP/sec, and 15% to 5% damage
 		The provided regeneration is halved when under Mana Sickness
 		Magic projectiles steal enemy life while holding a magic weapon
 		'''

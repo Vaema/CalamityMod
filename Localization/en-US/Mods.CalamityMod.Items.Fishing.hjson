@@ -1,9 +1,10 @@
-// Quest fish tooltips
-CaughtInAstral: "'Caught in the Astral Infection'"
-CaughtInBrimstoneCrag: "'Caught in the Brimstone Crag'"
-CaughtInSnow: "'Caught in Tundra'"
-CaughtInSpace: "'Caught in Sky Lakes'"
-CaughtInSunkenSea: "'Caught in the Sunken Sea'"
+﻿// Quest fish tooltips
+CaughtInAstral: Caught in the Astral Infection
+CaughtInBrimstoneCrag: Caught in the Brimstone Crag
+CaughtInSnow: Caught in Tundra
+CaughtInSpace: Caught in Sky Lakes
+CaughtInSunkenSea: Caught in the Sunken Sea
+LocationTooltip: "'{0}'"
 
 // Astral Infection Catches
 AldebaranAlewife: {

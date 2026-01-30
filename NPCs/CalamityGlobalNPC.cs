@@ -873,6 +873,11 @@ namespace CalamityMod.NPCs
             {
                 ActiveWaterDebuffMultiplier += 1;
             }
+
+            if (npc.HasBuff<SearingLava>()) //Searing Lava is so hot it makes cold less strong
+            {
+                ActiveColdDebuffMultiplier -= 0.5f;
+            }
             if (VulnerableToHeat.HasValue)
             {
                 if (VulnerableToHeat.Value)
@@ -4703,9 +4708,9 @@ namespace CalamityMod.NPCs
                     dust.color = Color.Red;
                     dust.fadeIn = laserBurnStacks * 0.3f;
                 }
+                // If for some reason neither burn type is set
                 if (laserBurnType == 0)
                 {
-                    Main.NewText("No Burn Type Set", Color.OrangeRed);
                     laserBurnMarked = false;
                     laserBurnTimer = 0;
                 }
@@ -4883,6 +4888,7 @@ namespace CalamityMod.NPCs
             ("CalamityMod/Buffs/DamageOverTime/Plague", NPC => NPC.Calamity().plague),
             ("CalamityMod/Buffs/DamageOverTime/RiptideDebuff", NPC => NPC.Calamity().riptide),
             ("CalamityMod/Buffs/DamageOverTime/SagePoison", NPC => NPC.Calamity().sagePoison),
+            ("CalamityMod/Buffs/DamageOverTime/SearingLava", NPC => NPC.HasBuff<SearingLava>()),
             ("CalamityMod/Buffs/DamageOverTime/ShellfishClaps", NPC => NPC.Calamity().shellfishStaffDebuff),
             ("CalamityMod/Buffs/DamageOverTime/Shred", NPC => NPC.Calamity().somaShredStacks > 0),
             ("CalamityMod/Buffs/DamageOverTime/SnapClamDebuff", NPC => NPC.Calamity().snapClamDebuff),

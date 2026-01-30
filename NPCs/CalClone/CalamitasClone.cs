@@ -386,6 +386,14 @@ namespace CalamityMod.NPCs.CalClone
             // Target variable
             Player player = Main.player[NPC.target];
 
+
+            //Invincible outside of arena
+            if (ArenaBox is not null)
+            {
+                if (!Collision.CheckAABBvAABBCollision(ArenaBox.TopLeft,ArenaBox.Size,player.position,player.Size))
+                    NPC.dontTakeDamage = true;
+            }
+
             // Rotation
             Vector2 npcCenter = new Vector2(NPC.Center.X, NPC.position.Y + NPC.height - 59f);
             Vector2 lookAt = new Vector2(player.position.X - (player.width / 2), player.position.Y - (player.height / 2));

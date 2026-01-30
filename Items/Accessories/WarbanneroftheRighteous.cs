@@ -93,7 +93,7 @@ namespace CalamityMod.Items.Accessories
                     {
                         modNPC.warbannerBurnIntensity = intensity;
                         modNPC.warbannerBurnDirection = Utils.DirectionTo(player.Center, nPC.Center);
-                        int burnDamage = (int)player.GetBestClassDamage().ApplyTo(37 * damageMult); // There is up to a 3x multiplier on this damage depending on distance from the enemy
+                        int burnDamage = (int)player.GetBestClassDamage().ApplyTo(15 * damageMult); // There is up to a 3x multiplier on this damage depending on distance from the enemy
                         modNPC.warbannerBurnDamage = burnDamage;
                         modNPC.warbannerBurnStacks++;
                         modNPC.warbannerBurnTimer = 180;

@@ -263,6 +263,7 @@ namespace CalamityMod.NPCs
             "Lain", // <@!655201622863118337> (literallyadeerfr)
             "Hamis", // <@!608455754093035521> (haefer)
             "Brio Scarlet", // <@!358576903701004289> (brio_scarlet)
+            "Vanessa", // <@!638901548591611945> (mediocreking)
         ];
         private static readonly string[] TavernkeepNames =
         [

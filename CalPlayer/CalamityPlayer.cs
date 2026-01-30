@@ -93,6 +93,11 @@ namespace CalamityMod.CalPlayer
         #region Variables
 
         #region No Category
+        /// <summary>
+        /// Increments by 1 for every frame this player has existed.
+        /// </summary>
+        internal ulong universalFrameTimer = 0;
+
         /// <summary> If true, there is a boss NPC active in the world. Primary bool for checking effects that only occur if a boss is alive. </summary>
         public static bool areThereAnyDamnBosses = false;
         /// <summary> If true, there is an event actively occuring near the player. Solely used for preventing Silva Revive's cooldown from decreasing. </summary>
@@ -4348,6 +4353,9 @@ namespace CalamityMod.CalPlayer
         #region PreUpdate
         public override void PreUpdate()
         {
+            // Increment the universal frame timer.
+            ++universalFrameTimer;
+            
             //Infinite flight granted by some boss attacks
             if (infiniteFlight)
                 Player.wingTime = Player.wingTimeMax;

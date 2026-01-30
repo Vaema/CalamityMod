@@ -143,6 +143,7 @@ namespace CalamityMod.Projectiles.Magic
             Owner.heldProj = Projectile.whoAmI;
             Owner.ChangeDir(Math.Sign((Owner.Calamity().mouseWorld - Owner.Center).X));
             Owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, (Owner.Center - Owner.Calamity().mouseWorld).ToRotation() * Owner.gravDir + MathHelper.PiOver2);
+            Owner.SetDummyItemTime(2);
             Projectile.rotation = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld).ToRotation();
             Projectile.velocity = Vector2.Zero;
             Projectile.Center = Owner.Center;

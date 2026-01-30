@@ -30,16 +30,15 @@ namespace CalamityMod.Projectiles.Healing
             Projectile.timeLeft = 60 * 5 * Projectile.MaxUpdates;
             spawnCooldown *= Projectile.MaxUpdates;
         }
-
         public override void AI()
         {
+            bool finalUpdate = Projectile.FinalExtraUpdate();
 
             var p = BloodMetaball.SpawnParticle(Projectile.Center + Projectile.velocity, Main.rand.NextVector2Circular(-0.5f, -0.5f), Projectile.width);
             p.SizeScaling = 0.75f;
             p.ShrinkDelay = 1;
 
-            Projectile.scale = MathHelper.Lerp(1, 1, 0.65f);
-            float maxDistance = 200f;
+            float maxDistanceSq = 200f * 200f;
             if (spawnCooldown > 0)
             {
                 PassiveBehavior();
@@ -49,18 +48,17 @@ namespace CalamityMod.Projectiles.Healing
             if (target < 0)
             {
                 PassiveBehavior();
-                if (Projectile.FinalExtraUpdate()) for (int playerIndex = 0; playerIndex < Main.maxPlayers; playerIndex++)
-                {
-                    Player player = Main.player[playerIndex];
-                    if (player.lifeMagnet) 
-                            maxDistance *= 1.5f; //Heartreach gives 50% more range
-                    float targetDist = Vector2.Distance(player.Center, Projectile.Center);
-                    if (targetDist < maxDistance)
+                if (finalUpdate) for (int playerIndex = 0; playerIndex < Main.maxPlayers; playerIndex++)
                     {
-                        maxDistance = targetDist;
-                        target = playerIndex;
+                        Player player = Main.player[playerIndex];
+                        float perPlayerMaxDistanceSq = player.lifeMagnet ? maxDistanceSq * 2.25f : maxDistanceSq; //Heartreach gives 50% more range
+                        float targetDistSq = Vector2.DistanceSquared(player.Center, Projectile.Center);
+                        if (targetDistSq < perPlayerMaxDistanceSq)
+                        {
+                            maxDistanceSq = targetDistSq;
+                            target = playerIndex;
+                        }
                     }
-                }
             }
             else HealHome();
         }
@@ -107,9 +105,9 @@ namespace CalamityMod.Projectiles.Healing
             {
                 player.lifeRegenTime += 3*PotionTime; //if Potion Sickness is full, each orb speeds up natural regen
             }
-            
+
                 Particle ring = new CustomPulse(player.Center, Vector2.Zero, new Color(255, 32, 32)*0.75f, "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, 0, 0.01f, 0.05f, 20);
-                GeneralParticleHandler.SpawnParticle(ring);
+            GeneralParticleHandler.SpawnParticle(ring);
         }
 
         public override bool PreDraw(ref Color lightColor)

@@ -930,7 +930,7 @@ SamsaraSlicer: {
 	Tooltip:
 		'''
 		Throws a disk that has a chance to generate several disks if enemies are near it
-		Stealth strikes travel slower and are rapidly orbited by the smaller disks
+		Stealth strikes shred enemies and are rapidly orbited by the smaller disks
 		'''
 }
 

@@ -12,6 +12,7 @@ using CalamityMod.Items.Fishing.SunkenSeaCatches;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Pets;
 using CalamityMod.Items.Placeables.Abyss;
+using CalamityMod.Items.Placeables.FurnitureDriftwood;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.Tools.ClimateChange;
 using CalamityMod.Items.Weapons.Magic;
@@ -386,6 +387,8 @@ namespace CalamityMod.CalPlayer
                     itemDrop = ModContent.ItemType<Serpentuna>();
                 else if (attempt.uncommon || attempt.rare)
                     itemDrop = ModContent.ItemType<SunkenSailfish>();
+                else if (Main.rand.NextBool()) // 50% chance the common fish is replaced with driftwood
+                    itemDrop = ModContent.ItemType<Driftwood>();
                 else
                     itemDrop = ModContent.ItemType<PrismaticGuppy>();
                 return;
@@ -447,6 +450,10 @@ namespace CalamityMod.CalPlayer
         #region Modify Caught Fish
         public override void ModifyCaughtFish(Item fish)
         {
+            // Increases yeild of driftwood from the Sunken Sea
+            // ~7% chance that yeild is very high so that exhaustive fishing can allow for enough driftwood to make large builds
+            if (fish.type == ModContent.ItemType<Driftwood>())
+                fish.stack = ((Main.rand.NextBool(14) ? 20 : 1) * Main.rand.Next(8, 20 + 1));
             // Increases the yield of potion ingredient fish with Alluring Bait
             if (alluringBait)
             {
