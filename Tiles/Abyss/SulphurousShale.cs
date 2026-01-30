@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Systems;
 using CalamityMod.Tiles.Abyss.AbyssAmbient;
+using CalamityMod.Walls.UnsafeWalls;
 using CalamityMod.Waters;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -33,6 +34,15 @@ namespace CalamityMod.Tiles.Abyss
             this.RegisterBlendMergeWith(TileID.Dirt);
             this.RegisterBlendMergeWith(TileID.Stone);
             this.RegisterBlendMergeWith(ModContent.TileType<AbyssGravel>());
+        }
+        public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
+        {
+            var tile = Main.tile[i, j];
+            if (tile.WallType == ModContent.WallType<UnsafeAbyssGravelWall>() || tile.WallType == ModContent.WallType<UnsafeVoidstoneWall>() || tile.WallType == ModContent.WallType<Walls.PyreMantleWall>() || tile.WallType == ModContent.WallType<UnsafeSulphurousShaleWall>() || tile.WallType == ModContent.WallType<UnsafeVoidstoneWall>() || tile.WallType == ModContent.WallType<Walls.PyreMantleWall>() || tile.WallType == ModContent.WallType<UnsafeSulphurousSandstoneWall>())
+            {
+                tile.LiquidAmount = 255;
+                tile.LiquidType = LiquidID.Water;
+            }
         }
 
         public override void NearbyEffects(int i, int j, bool closer)

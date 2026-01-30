@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Systems;
 using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using CalamityMod.Walls;
+using CalamityMod.Walls.UnsafeWalls;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -46,6 +47,15 @@ namespace CalamityMod.Tiles.Abyss
         {
             num = fail ? 1 : 3;
         }
+        public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
+        {
+            var tile = Main.tile[i, j];
+            if (tile.WallType == ModContent.WallType<UnsafeAbyssGravelWall>() || tile.WallType == ModContent.WallType<UnsafeVoidstoneWall>() || tile.WallType == ModContent.WallType<Walls.PyreMantleWall>() || tile.WallType == ModContent.WallType<UnsafeSulphurousShaleWall>() || tile.WallType == ModContent.WallType<UnsafeVoidstoneWall>() || tile.WallType == ModContent.WallType<Walls.PyreMantleWall>() || tile.WallType == ModContent.WallType<UnsafeSulphurousSandstoneWall>())
+            {
+                tile.LiquidAmount = 255;
+                tile.LiquidType = LiquidID.Water;
+            }
+        }
 
         public override void AnimateIndividualTile(int type, int i, int j, ref int frameXOffset, ref int frameYOffset)
         {
@@ -80,7 +90,7 @@ namespace CalamityMod.Tiles.Abyss
                 if (!down.HasTile && down.TileType != (ushort)ModContent.TileType<ViperVines>())
                 {
                     if (down.LiquidAmount == 255 &&
-                        down.WallType == (ushort)ModContent.WallType<AbyssGravelWall>() &&
+                        down.WallType == (ushort)ModContent.WallType<SafeAbyssGravelWall>() &&
                         down.LiquidType != LiquidID.Lava)
                     {
                         bool canGrowVine = false;

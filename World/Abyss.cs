@@ -245,7 +245,7 @@ namespace CalamityMod.World
                                 else
                                 {
                                     tile.TileType = (ushort)ModContent.TileType<AbyssGravel>();
-                                    tile.WallType = (ushort)ModContent.WallType<AbyssGravelWall>();
+                                    tile.WallType = (ushort)ModContent.WallType<SafeAbyssGravelWall>();
                                 }
                             }
                             //basically places smaller clusters everywhere else?
@@ -301,7 +301,7 @@ namespace CalamityMod.World
                                 else
                                 {
                                     tile.TileType = (ushort)ModContent.TileType<AbyssGravel>();
-                                    tile.WallType = (ushort)ModContent.WallType<AbyssGravelWall>();
+                                    tile.WallType = (ushort)ModContent.WallType<SafeAbyssGravelWall>();
                                 }
                             }
                         }
