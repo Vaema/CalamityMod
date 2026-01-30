@@ -224,7 +224,11 @@ Laceration: {
 ManaBurn: {
 	DisplayName: Mana Burn
 	Description: The excess of mana sears your body and mind
-	ItemTooltip: ""
+	ItemTooltip:
+		'''
+		Typeless
+		Every 100 negative mana reduces your life regen by 4 HP/s, but burns enemies for 3% of dealt damage
+		'''
 }
 
 MiracleBlight: {
@@ -830,7 +834,7 @@ GreenJellyRegen: {
 
 HallowedRuneDefense: {
 	DisplayName: Hallowed Defense
-	Description: Increased defense by {0} and damage reduction by {1}%
+	Description: Increased defense by {0}
 }
 
 HallowedRunePower: {
@@ -873,7 +877,7 @@ PhantomicShield: {
 	DisplayName: Phantomic Shield
 	Description:
 		'''
-		Defense increased by {0} and damage reduction increased by {1}%
+		Increased defense by {0}
 		An ephemeral bulwark protects you
 		'''
 }

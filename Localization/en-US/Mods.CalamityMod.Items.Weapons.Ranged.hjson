@@ -1131,6 +1131,16 @@ Shroomer: {
 	Tooltip: Fires bullets and an extremely powerful homing mushroom
 }
 
+SlagfireDouser: {
+	DisplayName: Slagfire Douser
+	Tooltip:
+		'''
+		Lobs armor-penetrating lava in bursts
+		Armor-penetrating lava ignores 10 points of enemy defense
+		[c/FF9900:Capable of dousing townsfolk in lava too...]
+		'''
+}
+
 SlagMagnum: {
 	DisplayName: Slag Magnum
 	Tooltip: Converts musket balls into fossil shards that split into additional shards on impact
@@ -1196,7 +1206,6 @@ Starfleet: {
 		'''
 		<left> fires a spread of starshots
 		<right> fires a concussive short range starburst
-		Holding down <right> disables the recoil damper
 		Starshots can be accelerated by firing when the starburst goes off
 		Perfect timing reduces spread and increases damage
 		Imperfect timing still increases damage, but heavily increases spread
@@ -1211,7 +1220,6 @@ Starmada: {
 		'''
 		<left> fires a spread of starshots
 		<right> fires a concussive short range starburst
-		Holding down <right> disables the recoil damper
 		Starshots can be accelerated by firing when the starburst goes off
 		Perfect timing reduces spread, increases damage, and adds a stacking weapon power buff
 		Imperfect timing still increases damage, but heavily increases spread and reduces weapon power

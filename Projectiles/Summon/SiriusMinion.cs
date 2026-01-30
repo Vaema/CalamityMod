@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using CalamityMod.DataStructures;
@@ -52,22 +53,35 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.DamageType = DamageClass.Summon;
         }
 
+        public int MinionSlotsToAdd
+        {
+            get { return (int)Projectile.ai[1]; }
+            set { Projectile.ai[1] = value; }
+        }
+
         public override void AI()
         {
             NPC target = Projectile.Center.MinionHoming(5000f, Owner); // Constantly tries to find a target.
-            if (Projectile.ai[1] > 0) {
-                float consumedSlots = 0;
+            #region Add Minion Slots
+            if (MinionSlotsToAdd > 0)
+            {
+                float minionSlotsAvaliable = Owner.maxMinions;
                 foreach (var item in Main.ActiveProjectiles)
                 {
-                    if (item.type == Projectile.type && item.owner == Owner.whoAmI)
-                    {
-                        consumedSlots += item.minionSlots;
-                    }
+                    if (item.owner == Projectile.owner)
+                        minionSlotsAvaliable -= item.minionSlots;
                 }
-                if (Owner.maxMinions >= consumedSlots + 1)
+                while (minionSlotsAvaliable >= 1 && MinionSlotsToAdd > 0)
+                {
+
                     Projectile.minionSlots++;
-                Projectile.ai[1]--;
+                    minionSlotsAvaliable--;
+                    MinionSlotsToAdd--;
+                    Projectile.netUpdate = true;
+                }
+                MinionSlotsToAdd = 0;
             }
+            #endregion
             CheckMinionExistince(); // Checks if the minion can still exist.
             SpawnEffect(); // Does a dust spawn effect.
             ShootTarget(target); // If there's a target, shoot at the target.
@@ -116,6 +130,16 @@ namespace CalamityMod.Projectiles.Summon
             SpawnStar(8, new Vector2(-101f, -23f), 0.5f, 20); //head
             SpawnStar(9,new Vector2(46f, 59f),0.5f,100); // Front Leg
             SpawnStar(10,new Vector2(-49f, 166f), 0.5f,60); // belly
+        }
+
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.Write(Projectile.minionSlots);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            Projectile.minionSlots = reader.ReadSingle();
         }
 
         #region Methods

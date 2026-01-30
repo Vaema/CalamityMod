@@ -171,7 +171,8 @@ namespace CalamityMod.Projectiles.Ranged
         {
             float slowdown = (float)Math.Pow(Utils.GetLerpValue(recoilTimerMax / 2, recoilTimerMax, Math.Max(shootingCooldown, starburstCooldown), true), 4);
             Vector2 movement = recoilDirection * (recoilIntensity) * slowdown;
-            if (Collision.SolidCollision(Owner.Center + movement, (int)(Owner.width * 1.1f), (int)(Owner.height * 1.1f)) || !Owner.Calamity().mouseRight)
+            bool enableRecoil = false;
+            if (!enableRecoil || Collision.SolidCollision(Owner.Center + movement, (int)(Owner.width * 1.1f), (int)(Owner.height * 1.1f)) || !Owner.Calamity().mouseRight)
             {
                 recoilIntensity = 0;
                 return;

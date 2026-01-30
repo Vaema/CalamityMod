@@ -10,8 +10,6 @@ namespace CalamityMod.Packets
     {
         public static SwitchToDifficultyPacket Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.SwitchToDifficulty;
-
         public static void Send(DifficultyMode modeToSwitch, int toClient = -1, int ignoreClient = -1)
         {
             var packet = Instance.CreateBasePacket();
@@ -21,7 +19,7 @@ namespace CalamityMod.Packets
             packet.Send(toClient, ignoreClient);
         }
 
-        public override void HandlePacket(in BinaryReader packet, int sender)
+        public override void HandlePacket(BinaryReader packet, int sender)
         {
             var modeName = packet.ReadString();
             var difficulty = DifficultyModeSystem.Difficulties.SingleOrDefault(diff => diff.FullName.Equals(modeName));

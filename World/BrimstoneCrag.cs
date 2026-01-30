@@ -527,6 +527,7 @@ namespace CalamityMod.World
             else
             {
                 contents.Insert(0, new ChestItem(ModContent.ItemType<Items.Fishing.FishingRods.SlurperPole>(), 1));
+                contents.Insert(0, new ChestItem(ModContent.ItemType<Items.Weapons.Ranged.SlagfireDouser>(), 1));
             }
 
             for (int i = 0; i < contents.Count; i++)

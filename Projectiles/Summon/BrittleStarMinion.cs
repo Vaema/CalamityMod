@@ -120,7 +120,6 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.Center = Vector2.Lerp(Projectile.Center, idleDestination, 0.15f);
                 AITimer++;
 
-                Owner.statDefense += 4;
                 Projectile.rotation += MoveWidth * 0.2f;
             }
             if (!MinionBuffMode && !Reforming) // Minion when ramming

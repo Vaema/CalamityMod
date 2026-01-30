@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Packets.Entities;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -80,6 +81,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 Projectile.ai[1] = index;
                 Projectile.velocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(Projectile.Center, Main.npc[index], Projectile.velocity.Length(), Projectile.MaxUpdates);
+                Projectile.netUpdate = true;
             }
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
@@ -87,7 +89,13 @@ namespace CalamityMod.Projectiles.Rogue
             if (Projectile.Calamity().stealthStrike)
             {
                 if (!hasHit)
+                {
                     target.Calamity().glaiveShredTimer += 300;
+
+                    // Shred must be synced, because OnHitNPC is only run for the client that hit the NPC
+                    if (Main.netMode != NetmodeID.SinglePlayer)
+                        GlaiveShredPacket.Send(target);
+                }
                 hasHit = true;
             }
             Ricochet();

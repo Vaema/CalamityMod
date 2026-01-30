@@ -20,11 +20,8 @@ namespace CalamityMod.Items.Accessories
             Item.Calamity().donorItem = true;
         }
 
-        public override bool CanEquipAccessory(Player player, int slot, bool modded) => !player.Calamity().dodgeScarf;
-
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.GetDamage<TrueMeleeDamageClass>() += 0.15f;
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.dodgeScarf = true;
             modPlayer.evasionScarf = true;

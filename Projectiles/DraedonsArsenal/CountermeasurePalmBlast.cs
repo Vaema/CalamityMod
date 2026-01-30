@@ -15,6 +15,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public float fade => (float)Math.Pow(Utils.GetLerpValue(0, 13, Projectile.timeLeft, true), 4);
         public bool onSpawn = true;
         private NPC targeted = null;
+        public int lifetime = 18;
         public override void SetDefaults()
         {
             Projectile.width = 150;
@@ -22,7 +23,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 15;
+            Projectile.timeLeft = lifetime;
             Projectile.tileCollide = false;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
@@ -45,9 +46,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 Vector2 launchVel = Projectile.velocity.SafeNormalize(Vector2.UnitX);
                 float launchPower = 25;
                 targeted.MoveNPC(launchVel, launchPower, true);
-
-                Particle bloom = new CustomSpark(Projectile.Center, Projectile.velocity.SafeNormalize(Vector2.UnitX) * 10, "CalamityMod/Particles/BloomCircle", false, 12, 0.7f, Effects.ArsenalEffects.ArsenalLaserColor, new Vector2(1f, 3f), true, true, shrinkSpeed: -0.5f, extraRotation: MathHelper.PiOver2);
-                GeneralParticleHandler.SpawnParticle(bloom);
             }
             time++;
         }
@@ -73,13 +71,13 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             Texture2D beam = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomLineFade").Value;
             Texture2D bloom = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
-            float completion = Utils.GetLerpValue(15, 0, time);
+            float completion = Utils.GetLerpValue(lifetime, 0, time);
             for (int i = 0; i < 6; i++)
             {
                 Color orbColor = Color.Lerp(Effects.ArsenalEffects.ArsenalLaserColor, Color.White, i * 0.04f) with { A = 0 } * 0.8f;
                 float scale = Projectile.scale * (0.05f + i * 0.01f) * 3;
                 
-                Main.EntitySpriteDraw(beam, Projectile.Center - Main.screenPosition, null, orbColor, Projectile.rotation, new Vector2(beam.Width / 2, beam.Height), new Vector2(0.3f * fade, 2 * completion) * scale, SpriteEffects.None);
+                Main.EntitySpriteDraw(beam, Projectile.Center - Main.screenPosition, null, orbColor, Projectile.rotation, new Vector2(beam.Width / 2, beam.Height), new Vector2(0.3f * fade, 2) * scale, SpriteEffects.None);
                 Main.EntitySpriteDraw(bloom, Projectile.Center - Main.screenPosition, null, orbColor, Projectile.rotation + MathHelper.PiOver2, bloom.Size() * 0.5f, new Vector2(0.5f, 1 + 2 * completion) * scale * 3 * fade, SpriteEffects.None);
             }
 

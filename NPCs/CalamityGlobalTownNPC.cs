@@ -230,6 +230,7 @@ namespace CalamityMod.NPCs
             "Hael", // <@!641747280944431156> (kalebtull)
             "Yumesaki Mirrin", // <@!100235144744415232> (milinen)
             "Vela", // <@!208719047146209281> (nyxxynightstar)
+            "Misako Drevis", // <@!1103067115386323065> (threadsofmemory)
         ];
         private static readonly string[] SantaClausNames =
         [
@@ -262,6 +263,7 @@ namespace CalamityMod.NPCs
             "Lain", // <@!655201622863118337> (literallyadeerfr)
             "Hamis", // <@!608455754093035521> (haefer)
             "Brio Scarlet", // <@!358576903701004289> (brio_scarlet)
+            "Vanessa", // <@!638901548591611945> (mediocreking)
         ];
         private static readonly string[] TavernkeepNames =
         [
@@ -281,6 +283,7 @@ namespace CalamityMod.NPCs
             "Borgus", // <@!539127427482255376> (therealmeepman)
             "Postman Hiss", // <@!454638106122125312> (karinthefairy)
             "Cosmoec", // <@!793660591449309204> (cosmoecark)
+            "Junorism", // <@!740625002596008036> (hewhoshallnotbebaned)
         ];
         private static readonly string[] TruffleNames =
         [

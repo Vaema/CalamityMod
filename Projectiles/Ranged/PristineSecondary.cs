@@ -124,7 +124,10 @@ namespace CalamityMod.Projectiles.Ranged
         {
             if (Ignited)
             {
-                target.AddBuff(ModContent.BuffType<HolyFlames>(), 420);
+
+                //Doze - Flamethrowers in vanilla are long debuff infliction tools (20 seconds of their debuff).
+                //I am applying this as the base for Cal flamethrowers, with shorter times being the exception instead of the rule
+                target.AddBuff(ModContent.BuffType<HolyFlames>(), 1200);
             }
         }
 

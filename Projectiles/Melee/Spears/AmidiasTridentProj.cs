@@ -79,7 +79,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
                         {
                             for (int i = 0; i < 3; i++)
                             GeneralParticleHandler.SpawnParticle(new CustomPulse(Owner.Center, Vector2.Zero, SeaKingsAssurance.BaseColor,
-                                "CalamityMod/Particles/CircularSmearFire3", new Vector2(Owner.direction, 1), Projectile.rotation, 0.8f, 1.2f, 6));
+                                "CalamityMod/Particles/CircularSmearFire3", Vector2.One, Projectile.rotation, 0.8f, 1.2f, 6, effects: Owner.direction > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally));
                         }
 
                         glow = MathHelper.Lerp(glow, Projectile.ai[0] * 0.05f / 3f, 0.2f);

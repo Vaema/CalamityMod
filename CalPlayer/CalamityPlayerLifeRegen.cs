@@ -258,7 +258,7 @@ namespace CalamityMod.CalPlayer
 
             if (Player.statMana < 0)
             {
-                totalNegativeLifeRegen -= Player.statMana/10f;
+                totalNegativeLifeRegen -= Player.statMana/100f * Items.Accessories.ChaosStone.LostRegenPer100Mana;
             }
 
             //
@@ -566,12 +566,6 @@ namespace CalamityMod.CalPlayer
 
             if (trinketOfChi || chiRegen)
                 Player.lifeRegen += 2;
-
-            if (evolutionLifeRegenCounter > 0)
-            {
-                if (Player.lifeRegenTime < 3600f)
-                    Player.lifeRegenTime = 3600f;
-            }
 
             if (darkSunRing)
             {

@@ -1297,6 +1297,9 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
+            if (brittleStar && brittleStarBuffMode)
+                Player.statDefense += 4 * Player.ownedProjectileCounts[ModContent.ProjectileType<BrittleStarMinion>()];
+
             // Reduce the rate of recovery of the Lifesteal variable
             // Classic Mode: 36 HP/s to 12 HP/s
             // Expert Mode: 30 HP/s to 9 HP/s
@@ -1708,7 +1711,7 @@ namespace CalamityMod.CalPlayer
             }
             if (rOfResilienceEffect > 0)
             {
-                if (Player.Calamity().mouseRight && rOfResilienceCooldown == 0)
+                if (Player.Calamity().mouseRight && !Player.mouseInterface && rOfResilienceCooldown == 0)
                 {
                     int cooldownTime = (Player.Calamity().profanedSoulRelicBuff ? 300 : 600);
                     rOfResilienceCooldown = cooldownTime;
@@ -1784,9 +1787,10 @@ namespace CalamityMod.CalPlayer
 
                         if (p.type == ModContent.ProjectileType<TransformerBlob>() && p.owner == Player.whoAmI)
                         {
-                            float insanityValue = ((p.ai[1] % 10) + 1);
+                            int blobNum = Player.ownedProjectileCounts[ModContent.ProjectileType<TransformerBlob>()] + 1;
+                            float insanityValue = (p.ai[1] % 10);
                             if (p.ai[0] == layer)
-                                p.ai[2] = insanityValue / Player.ownedProjectileCounts[ModContent.ProjectileType<TransformerBlob>()] * (angleMax) - (angleMax) / 2f;
+                                p.ai[2] = (insanityValue / blobNum) * angleMax - angleMax / 2f;
 
                             p.netUpdate = true;
                         }
@@ -1835,9 +1839,10 @@ namespace CalamityMod.CalPlayer
 
                                 if (p.type == ModContent.ProjectileType<TransformerBlob>() && p.owner == Player.whoAmI)
                                 {
-                                    float insanityValue = (p.ai[1] % 10) + 1;
+                                    int blobNum = Player.ownedProjectileCounts[ModContent.ProjectileType<TransformerBlob>()] + 1;
+                                    float insanityValue = (p.ai[1] % 10);
                                     if (p.ai[0] == layer)
-                                        p.ai[2] = insanityValue / Player.ownedProjectileCounts[ModContent.ProjectileType<TransformerBlob>()] * angleMax - angleMax / 2f;
+                                        p.ai[2] = (insanityValue / blobNum) * angleMax - angleMax / 2f;
 
                                     p.netUpdate = true;
                                     index++;
@@ -2316,8 +2321,6 @@ namespace CalamityMod.CalPlayer
                 xerocDmg = 0f;
             if (hideOfDeusMeleeBoostTimer > 0)
                 hideOfDeusMeleeBoostTimer--;
-            if (evolutionLifeRegenCounter > 0)
-                evolutionLifeRegenCounter--;
             if (hurtSoundTimer > 0)
                 hurtSoundTimer--;
             if (wingProjectileCooldown > 0)

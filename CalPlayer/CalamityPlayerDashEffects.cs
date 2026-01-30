@@ -130,8 +130,8 @@ namespace CalamityMod.CalPlayer
                     dashDelayToApply = BalancingConstants.UniversalShieldSlamCooldown;
                 else if (UsedDash.CollisionType == DashCollisionType.ShieldBonk)
                     dashDelayToApply = BalancingConstants.UniversalShieldBonkCooldown;
-                if (DashID == DeepDiverDash.ID)
-                    dashDelayToApply = 23;
+                if (DashID == DeepDiverDash.ID || (evasionScarf && DashID == CounterScarfDash.ID))
+                    dashDelayToApply = (int)(dashDelayToApply * 0.75f);
                 if (DashID == StatisNinjaBeltDash.ID || DashID == StatisVoidSashDash.ID || Player.dashType == 1)
                     dashDelayToApply = BalancingConstants.UniversalSashDashCooldown;
 

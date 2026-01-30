@@ -82,7 +82,9 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<ElementalMix>(), 540);
+            //Doze - Flamethrowers in vanilla are long debuff infliction tools (20 seconds of their debuff).
+            //I am applying this as the base for Cal flamethrowers, with shorter times being the exception instead of the rule
+            target.AddBuff(ModContent.BuffType<ElementalMix>(), 1200);
 
             // Lose a bit of damage from repeated hits
             if ((StickToEnemies || StickToTiles) && Projectile.damage > 1)

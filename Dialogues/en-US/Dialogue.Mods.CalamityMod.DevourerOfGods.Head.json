@@ -1,4 +1,4 @@
-﻿{
+{
     "Revision": 1,
     "DefaultColor": "6383FF",
     "DefaultSpeaker": "DevourerOfGods",
@@ -82,7 +82,7 @@
         {
             "TextDelay": 0,
             "Lines": [
-                "[Shaking:[Scale(1.5):[Colors(2, 0.5, 00FFFF, FF00FF):BEGON!]]]"
+                "[Shaking:[Scale(1.5):[Colors(2, 0.5, 00FFFF, FF00FF):BEGONE!]]]"
             ]
         },
         {

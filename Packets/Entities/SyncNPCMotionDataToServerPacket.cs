@@ -8,8 +8,6 @@ namespace CalamityMod.Packets
     {
         public static SyncNPCMotionDataToServerPacket Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.SyncNPCMotionDataToServer;
-
         public static void Send(NPC npc, int toClient = -1, int ignoreClient = -1)
         {
             if (npc is null)
@@ -22,7 +20,7 @@ namespace CalamityMod.Packets
             packet.Send(toClient, ignoreClient);
         }
 
-        public override void HandlePacket(in BinaryReader packet, int sender)
+        public override void HandlePacket(BinaryReader packet, int sender)
         {
             var npc = packet.ReadNPC();
             var center = packet.ReadVector2();

@@ -39,7 +39,6 @@ namespace CalamityMod.Items.Accessories
             modPlayer.rBrain = true; // Handles shaderain cloud spawning on hit
             modPlayer.amalgam = true;
             player.brainOfConfusionItem = Item;
-            player.GetDamage<GenericDamageClass>() += 0.1f;
             modPlayer.HeatDebuffMultiplier += 2f;
             modPlayer.ColdDebuffMultiplier += 2f;
             modPlayer.SicknessDebuffMultiplier += 2f;

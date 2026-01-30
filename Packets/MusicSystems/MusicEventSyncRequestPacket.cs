@@ -8,8 +8,6 @@ namespace CalamityMod.Packets
     {
         public static MusicEventSyncRequestPacket Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.MusicEventSyncRequest;
-
         public static void Send(int toClient = -1, int ignoreClient = -1)
         {
             // Only MP Client should send request!
@@ -20,7 +18,7 @@ namespace CalamityMod.Packets
             packet.Send(toClient, ignoreClient);
         }
 
-        public override void HandlePacket(in BinaryReader packet, int sender)
+        public override void HandlePacket(BinaryReader packet, int sender)
         {
             // Only fulfill requests as the server host
             if (!Main.dedServ)

@@ -96,6 +96,8 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
             PixelTargets_AfterDusts = null;
             PixelTargets_AfterEverything = null;
 
+            
+
             ActivePixelatedDrawers_BeforeAllTiles = null;
             ActivePixelatedDrawers_BeforeSolidTiles = null;
             ActivePixelatedDrawers_BeforeNPCs = null;
@@ -111,6 +113,16 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
         {
             if (Main.dedServ)
                 return;
+
+            PixelTargets_BeforeAllTiles.Clear();
+            PixelTargets_BeforeSolidTiles.Clear();
+            PixelTargets_BeforeNPCs.Clear();
+            PixelTargets_AfterNPCs.Clear();
+            PixelTargets_BeforeProjectiles.Clear();
+            PixelTargets_AfterProjectiles.Clear();
+            PixelTargets_AfterPlayers.Clear();
+            PixelTargets_AfterDusts.Clear();
+            PixelTargets_AfterEverything.Clear();
 
             ActivePixelatedDrawers_BeforeAllTiles.Clear();
             ActivePixelatedDrawers_BeforeSolidTiles.Clear();

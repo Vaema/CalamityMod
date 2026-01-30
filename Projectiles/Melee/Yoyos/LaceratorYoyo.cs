@@ -11,6 +11,7 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using CalamityMod.Particles;
+using System.IO;
 
 namespace CalamityMod.Projectiles.Melee.Yoyos
 {
@@ -50,6 +51,15 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
         }
 
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.Write(chargeProgress);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            chargeProgress = reader.ReadInt32();
+        }
         public override void AI()
         {
             if (sawDir == 0)
@@ -114,6 +124,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             }
             var baseYoyo = Main.projectile.First(x => x.active && x.type == ModContent.ProjectileType<LaceratorYoyo>() && x.owner == Projectile.owner);
             baseYoyo.ModProjectile<LaceratorYoyo>().chargeProgress += (Main.player[Projectile.owner].yoyoGlove ? 0.05f : 0.1f);
+            Projectile.netUpdate = true;
             target.AddBuff(ModContent.BuffType<Laceration>(), 180);
         }
 

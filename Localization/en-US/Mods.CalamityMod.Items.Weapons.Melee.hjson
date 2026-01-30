@@ -314,6 +314,7 @@ CrescentMoon: {
 		Holding <left> spins the flail around you, generating Starbursts
 		With 20 Starbursts, hold <left> again after throwing the flail to cause it to explode
 		Instead of releasing moons, this explosion summons Scorpius to do immense damage and inflict [cbuff:CalamityMod/Voidfrost]
+		'Lunacy derived from genius'
 		'''
 }
 
@@ -365,7 +366,7 @@ DevilsDevastation: {
 		'''
 		[c/d13ca2:The perfect blade of the Underworld, wielding the power of Brimstone directly.]
 		[c/d13ca2:Humans understand this force as Havoc, the inevitable sundering of all order in fire.]
-		[c/d13ca2:Perhaps this is why the Brimstone Elemental had strength unrivaled by her sisters.]	
+		[c/d13ca2:Perhaps this is why the Brimstone Elemental had strength unrivaled by her sisters.]
 		'''
 }
 

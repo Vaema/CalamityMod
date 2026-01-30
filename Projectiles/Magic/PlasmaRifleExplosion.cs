@@ -26,13 +26,5 @@ namespace CalamityMod.Projectiles.Magic
         }
 
         public override void PostAI() => Lighting.AddLight(Projectile.Center, Color.Chartreuse.ToVector3() * Projectile.Opacity * 0.7f);
-
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
-            if (Projectile.numHits > 0)
-                Projectile.damage = (int)(Projectile.damage * 0.9f);
-            if (Projectile.damage < 1)
-                Projectile.damage = 1;
-        }
     }
 }

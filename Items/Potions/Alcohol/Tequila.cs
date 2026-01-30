@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Potions.Alcohol
         {
             Item.DefaultToFood(16, 34, ModContent.BuffType<TequilaBuff>(), CalamityUtils.MinutesToFrames(6), true);
 
-            Item.value = Item.sellPrice(silver: 30);
+            Item.value = Item.sellPrice(silver: 2);
             Item.rare = ItemRarityID.LightRed;
         }
 

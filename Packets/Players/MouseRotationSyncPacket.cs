@@ -9,8 +9,6 @@ namespace CalamityMod.Packets
     {
         public static MouseRotationSyncPacket Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.MouseRotationSync;
-
         public static void Send(CalamityPlayer player, int toClient = -1, int ignoreClient = -1)
         {
             if (player is null)
@@ -22,7 +20,7 @@ namespace CalamityMod.Packets
             packet.Send(toClient, ignoreClient);
         }
 
-        public override void HandlePacket(in BinaryReader packet, int sender)
+        public override void HandlePacket(BinaryReader packet, int sender)
         {
             var player = packet.ReadCalamityPlayer();
             var rotation = (float)packet.ReadHalf();
