@@ -22,6 +22,7 @@ namespace CalamityMod.Projectiles.Typeless
         public int CrystalsDrawTime = 40;
         public float MaxCrystalOffsetRadius = 80f;
         public float MaxDustOffsetRadius = 70f;
+        public float IncomingDamageMultiplier = 1.5f;
 
         private Player Owner => Main.player[Projectile.owner];
         public List<bool> healList = new List<bool>(new bool[Main.maxPlayers]);
