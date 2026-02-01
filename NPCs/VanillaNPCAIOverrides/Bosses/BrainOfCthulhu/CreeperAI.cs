@@ -113,7 +113,7 @@ public class CreeperAI : VanillaAIOverride
         ];
         useBossAIState = bossAIStatesToUse.Contains(bocAI.AIState) && bossCounter >= 0;
 
-        if (bocAI.AIState == BrainAIState.UndergroundSpawnAnimation || bocAI.AIState == BrainAIState.SurfaceSpawnAnimation)
+        if (bocAI.AIState == BrainAIState.UndergroundSpawnAnimation || bocAI.AIState == BrainAIState.SurfaceSpawnAnimation || bocAI.AIState == BrainAIState.Stunned)
             NPC.dontTakeDamage = true;
         else
             NPC.dontTakeDamage = false;
