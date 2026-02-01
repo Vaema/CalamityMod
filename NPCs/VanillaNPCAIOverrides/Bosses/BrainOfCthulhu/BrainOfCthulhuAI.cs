@@ -126,7 +126,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
     internal static int SpeedUpDelayTime => 120;
     internal static int SpeedUpExtensionTime => 120;
     internal static float TurnAroundRatio => 0.6f; //In the second creeper phase, the creeper spiral will turn around at this completion percentage of the attack;
-    internal static float TurnAroundDurationRatio => 0.125f; //The amount of time that it'll take for the creeper spiral to turn around
+    internal static float TurnAroundDurationRatio => CalamityWorld.death ? 0.1f : 0.125f; //The amount of time that it'll take for the creeper spiral to turn around
 
     #endregion
 
