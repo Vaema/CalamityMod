@@ -15,6 +15,7 @@ namespace CalamityMod.Projectiles.Magic
         public new string LocalizationCategory => "Projectiles.Magic";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
+        private int storedPenetrate;
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.TrailCacheLength[Type] = 20;
@@ -28,7 +29,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.ignoreWater = true;
-            Projectile.penetrate = 7;
+            storedPenetrate = Projectile.penetrate = 7;
             Projectile.MaxUpdates = 100;
             Projectile.timeLeft = 900;
             Projectile.usesLocalNPCImmunity = true;
@@ -62,22 +63,27 @@ namespace CalamityMod.Projectiles.Magic
 
             if (Projectile.ai[1] > 0)
             {
-                SoundStyle hitSound = new("CalamityMod/Sounds/NPCKilled/PerfLargeDeath");
-                SoundEngine.PlaySound(hitSound with { Volume = 0.5f }, Projectile.Center);
-                for (int i = 0; i <= 14; i++)
-                {
-                    BloodParticle blood = new BloodParticle(Projectile.Center, new Vector2(15, 15).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 0.9f) + new Vector2(0, -7), 60, Main.rand.NextFloat(0.4f, 0.65f), Color.Red);
-                    GeneralParticleHandler.SpawnParticle(blood);
-                }
-
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<VisceraBoom>(), (int)(Projectile.damage * 0.75f), Projectile.knockBack * 4, Projectile.owner, 0f, Projectile.ai[1]);
-
-                Particle bloodsplosion = new CustomPulse(Projectile.Center, Vector2.Zero, Color.DarkRed, "CalamityMod/Particles/DetailedExplosion", Vector2.One, Main.rand.NextFloat(-15f, 15f), 0.16f, 0.87f, (int)(Viscera.BoomLifetime * 0.38f), false);
-                GeneralParticleHandler.SpawnParticle(bloodsplosion);
-                Particle bloodsplosion2 = new CustomPulse(Projectile.Center, Vector2.Zero, new Color(255, 32, 32), "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, Main.rand.NextFloat(-15f, 15f), 0.03f, 0.155f, Viscera.BoomLifetime);
-                GeneralParticleHandler.SpawnParticle(bloodsplosion2);
             }
-            else
+
+            if (Projectile.ai[2] < 1)
+            { 
+                for (int i = 0; i < 2; i++)
+                    Projectile.NewProjectile(Projectile.GetSource_OnHit(target), Projectile.Center, -Projectile.velocity.SafeNormalize(Vector2.Zero).RotatedByRandom(0.5f) * Main.rand.NextFloat(3, 5), ModContent.ProjectileType<BloodstoneHealOrb>(), 5, 0f, Projectile.owner);
+                Projectile.ai[2]++;
+            }
+        }
+
+        public override void AI()
+        {
+            Player Owner = Main.player[Projectile.owner];
+            float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
+
+            if (Projectile.ai[1] > 0)
+                Projectile.penetrate = 1;
+
+            // On-hit effects of piercing beams
+            if (Projectile.ai[1] == 0f && Projectile.penetrate != storedPenetrate)
             {
                 SoundStyle hitSound = new("CalamityMod/Sounds/NPCHit/PerfLargeHit", 3);
                 SoundEngine.PlaySound(hitSound with { Volume = 0.7f }, Projectile.Center);
@@ -89,23 +95,8 @@ namespace CalamityMod.Projectiles.Magic
                     dust.velocity = Projectile.velocity.RotatedByRandom(0.5) * Main.rand.NextFloat(0.8f, 1.9f);
                     dust.noGravity = true;
                 }
+                storedPenetrate = Projectile.penetrate;
             }
-            if (Projectile.ai[2] < 1){ 
-            for (int i = 0; i < 2; i++) {
-                Projectile.NewProjectile(Projectile.GetSource_OnHit(target), Projectile.Center, -Projectile.velocity.SafeNormalize(Vector2.Zero).RotatedByRandom(0.5f) * Main.rand.NextFloat(3, 5), ModContent.ProjectileType<BloodstoneHealOrb>(), 5, 0f, Projectile.owner);
-            }
-            Projectile.ai[2]++;
-            }
-
-        }
-
-        public override void AI()
-        {
-            Player Owner = Main.player[Projectile.owner];
-            float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
-
-            if (Projectile.ai[1] > 0)
-                Projectile.penetrate = 1;
 
             Projectile.localAI[0] += 1f;
             if (Projectile.localAI[0] == 16f)
