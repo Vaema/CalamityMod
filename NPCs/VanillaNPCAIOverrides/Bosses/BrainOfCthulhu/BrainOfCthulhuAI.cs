@@ -84,7 +84,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
     #region Creeper Swipes
     internal static int SwipesStartupDuration => 120;
     internal int SwipeDuration => 60 + SwipeDelay;
-    internal int SwipeDelay => AttackFlag ? 30 : CalamityWorld.death ? 35 : 45;
+    internal int SwipeDelay => AttackFlag ? 30 : CalamityWorld.death ? 40 : 50;
     internal static int SwipeAmount => 4;
     internal int SwipeIchorDelay => 30 + SwipeDelay;
     #endregion
@@ -119,14 +119,14 @@ public class BrainOfCthulhuAI : VanillaAIOverride
     internal static float TendrilLength => 512;
     internal static float TendrilStartDistance => 64;
     internal static float MaxCreeperSway => 64;
-    internal static int StartingTimePerRevolutionMax => 270;
-    internal static int StartingTimePerRevolutionMin => 180;
-    internal static int EndingTimePerRevolutionMax => 210;
-    internal static int EndingTimePerRevolutionMin => 120;
+    internal static int StartingTimePerRevolutionMax => CalamityWorld.death ? 270 : 300;
+    internal static int StartingTimePerRevolutionMin => CalamityWorld.death ? 180 : 210;
+    internal static int EndingTimePerRevolutionMax => CalamityWorld.death ? 210 : 240;
+    internal static int EndingTimePerRevolutionMin => CalamityWorld.death ? 120 : 150;
     internal static int SpeedUpDelayTime => 120;
     internal static int SpeedUpExtensionTime => 120;
     internal static float TurnAroundRatio => 0.6f; //In the second creeper phase, the creeper spiral will turn around at this completion percentage of the attack;
-    internal static float TurnAroundDurationRatio => 0.1f; //The amount of time that it'll take for the creeper spiral to turn around
+    internal static float TurnAroundDurationRatio => 0.125f; //The amount of time that it'll take for the creeper spiral to turn around
 
     #endregion
 
