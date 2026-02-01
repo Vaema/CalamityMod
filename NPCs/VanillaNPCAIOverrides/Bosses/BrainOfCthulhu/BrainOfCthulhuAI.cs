@@ -1991,7 +1991,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                 }
             }
 
-            if (Time > SanguineAttackEndDelay + SanguineAttackEndDuration + 10)
+            if (Time > SanguineAttackEndDelay + SanguineAttackEndDuration + (CalamityWorld.death ? 20 : 40))
                 SetupForNextAttack();
         }
         #endregion
