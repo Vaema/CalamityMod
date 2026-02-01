@@ -72,6 +72,13 @@ public class CreeperAI : VanillaAIOverride
         NPC.damage = NPC.defDamage = 36; // 64 (1.8x expert scaling)
     }
 
+    public override void OnSpawn(Mod mod)
+    {
+        NPC.damage = 0;
+        NPC.netUpdate = true;
+    }
+
+
     public override bool AI(Mod mod)
     {
         #region Despawn
