@@ -123,6 +123,7 @@ public class CreeperAI : VanillaAIOverride
             {
                 case BrainAIState.UndergroundSpawnAnimation:
                 case BrainAIState.SurfaceSpawnAnimation:
+                    NPC.damage = 0;
                     SpawnAnimation();
                     break;
                 case BrainAIState.TelekineticOnslaught:
