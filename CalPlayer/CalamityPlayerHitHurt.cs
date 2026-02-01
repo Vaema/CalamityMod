@@ -836,7 +836,7 @@ namespace CalamityMod.CalPlayer
                 modifiers.FinalDamage *= 0.5f;
 
             if (Player.ownedProjectileCounts[ModContent.ProjectileType<RelicOfConvergenceCrystal>()] > 0 && Player.HeldItem.type == ModContent.ItemType<RelicOfConvergence>())
-                modifiers.FinalDamage *= 1.5f;
+                modifiers.FinalDamage *= RelicOfConvergence.IncomingDamageMultiplier;
 
             bool lifeAndShieldCondition = Player.statLife >= Player.statLifeMax2 && (!HasAnyEnergyShield || TotalEnergyShielding >= TotalMaxShieldDurability);
             if (theBee && theBeeCooldown <= 0 && lifeAndShieldCondition)
