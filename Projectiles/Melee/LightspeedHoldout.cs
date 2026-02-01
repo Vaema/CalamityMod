@@ -1,19 +1,18 @@
 ﻿using System;
-using System.IO;
-using System.Linq;
-using CalamityMod.Graphics.Primitives;
-using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Particles;
-using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
-using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static CalamityMod.CalamityUtils;
+using CalamityMod.Particles;
 using static Terraria.Player;
+using Microsoft.Xna.Framework.Graphics;
+using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Graphics.Primitives;
+using System.Linq;
+using Terraria.Graphics.Shaders;
+using static CalamityMod.CalamityUtils;
+using CalamityMod.Sounds;
 
 
 namespace CalamityMod.Projectiles.Melee
@@ -79,15 +78,6 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.ignoreWater = true;
             Projectile.penetrate = -1;
             Projectile.extraUpdates = 1;
-        }
-        public override void SendExtraAI(BinaryWriter writer)
-        {
-            writer.Write(bladeRot);
-        }
-
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
-            bladeRot = reader.ReadSingle();
         }
 
         public void Positioning(Vector2 toMouse) // Hand and holdout positioning
@@ -257,9 +247,6 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Owner.SetCompositeArmFront(true, Main.rand.NextBool() ? CompositeArmStretchAmount.ThreeQuarters : CompositeArmStretchAmount.Quarter, Owner.itemRotation);
             }
-
-            if (Main.myPlayer == Projectile.owner)
-                Projectile.netUpdate = true;
 
             stabSoundTimer++;
             if (stabSoundTimer % 3 == 0)
