@@ -2476,7 +2476,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             else if (startTime < 90 + IllusionDashSpinDuration + 30 + IllusionDashFakeoutTeleportDuration + 30)
             {
                 NPC.velocity *= 0.9f;
-                if (startTime % 15 == 0 && startTime > 45 + IllusionDashSpinDuration + 30 + IllusionDashFakeoutTeleportDuration + 30)
+                if (startTime % 15 == 0 && startTime > 45 + IllusionDashSpinDuration + 30 + IllusionDashFakeoutTeleportDuration)
                 {
                     for (int i = 0; i < 2; i++)
                     {
@@ -3186,8 +3186,6 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         }
 
         AIState = BrainAIState.Phase2Idle;
-
-        SoundEngine.PlaySound(Growl, NPC.Center);
     }
 
     private void ResetAttackValues()
