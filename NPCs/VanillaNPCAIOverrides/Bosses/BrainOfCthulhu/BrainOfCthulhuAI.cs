@@ -1514,11 +1514,13 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         }
         float startTimePerRev = MathHelper.Lerp(StartingTimePerRevolutionMax, StartingTimePerRevolutionMin, 1 - CreeperAmountRatio);
         float endTimePerRev = MathHelper.Lerp(EndingTimePerRevolutionMax, EndingTimePerRevolutionMin, 1 - CreeperAmountRatio);
-        float timePerRev = MathHelper.Lerp(startTimePerRev, endTimePerRev, MathHelper.Clamp((Time - SpeedUpDelayTime) / (SpiralDuration - SpeedUpDelayTime - SpeedUpExtensionTime), 0f, 1f));
+        float spinSpeedCompletion = MathHelper.Clamp((Time - SpeedUpDelayTime) / (SpiralDuration - SpeedUpDelayTime - SpeedUpExtensionTime), 0f, 1f);
+
+        float timePerRev = MathHelper.Lerp(startTimePerRev, endTimePerRev, spinSpeedCompletion);
         if (Time > SpiralDuration - 30)
-            timePerRev *= MathHelper.Lerp(1f, 10f, CalamityUtils.CircOutEasing((Time - (SpiralDuration - 30)) / 30f, 1));
+            timePerRev *= MathHelper.Lerp(1f, 10f, CalamityUtils.CircOutEasing(MathHelper.Clamp((Time - (SpiralDuration - 30)) / 30f, 0f, 1f), 1));
         else if (Time < SpiralSetupTime)
-            timePerRev *= MathHelper.Lerp(1f, 10f, CalamityUtils.CircInEasing(Time / SpiralSetupTime, 1));
+            timePerRev *= MathHelper.Lerp(1f, 10f, CalamityUtils.CircInEasing(MathHelper.Clamp(Time / SpiralSetupTime, 0f, 1f), 1));
 
         float rotToAdd = MathHelper.TwoPi / timePerRev * AttackSign;
         if (OnSecondCreeperPhase)
