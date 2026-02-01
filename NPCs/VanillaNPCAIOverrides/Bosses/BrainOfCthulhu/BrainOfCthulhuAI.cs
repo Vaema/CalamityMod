@@ -2733,10 +2733,10 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
         (float angle, Vector2 offset, int time)[] bloodGushingData = [
             (MathHelper.Pi / 6f, new(18, 12), 90),
-                    (MathHelper.Pi, new(-30, -10), 150),
-                    (-MathHelper.Pi / 4f, new(20, -40), 180),
-                    (MathHelper.Pi + MathHelper.Pi / 4f, new(-20, -40), 200),
-                    (MathHelper.Pi / 1.75f, new(-5, 22), 210)
+            (MathHelper.Pi, new(-30, -10), 150),
+            (-MathHelper.Pi / 4f, new(20, -40), 180),
+            (MathHelper.Pi + MathHelper.Pi / 4f, new(-20, -40), 200),
+            (MathHelper.Pi / 1.75f, new(-5, 22), 210)
         ];
 
         for (int i = 0; i < bloodGushingData.Length; i++)
@@ -2745,6 +2745,9 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             {
                 if (Time == bloodGushingData[i].time)
                 {
+                    if(i == 2)
+                        SoundEngine.PlaySound(Death, NPC.Center);
+
                     Vector2 bloodDir = bloodGushingData[i].angle.ToRotationVector2();
                     BloodParticle2 p2 = new(NPC.Center + bloodGushingData[i].offset.RotatedBy(NPC.rotation), bloodDir * 7.5f, 16, 0.5f, Color.Red);
                     GeneralParticleHandler.SpawnParticle(p2);
@@ -2792,7 +2795,6 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             }
 
             NPC.dontTakeDamage = false;
-            SoundEngine.PlaySound(Death, NPC.Center);
             if (Main.netMode != NetmodeID.MultiplayerClient)
                 NPC.StrikeInstantKill();
         }
