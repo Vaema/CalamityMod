@@ -859,6 +859,8 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                     ai.AttackPosition = NPC.Center + (dir * (rayDist - 64));
                     creeper.netUpdate = true;
                 }
+
+                NPC.netUpdate = true;
             }
             if (Time < 30)
             {
