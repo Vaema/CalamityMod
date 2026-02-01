@@ -45,7 +45,7 @@ public class FalseBrain : ModNPC, ILocalizedModType
         NPC.ShowNameOnHover = false;
         Music = MusicID.Boss3;
 
-        NPC.localAI[0] = Main.rand.Next(7);
+        NPC.localAI[0] = Main.rand.Next(6);
 
         if(BrainOfCthulhuSystem.IsBrainOfCthulhuTextureVanilla)
             NPC.localAI[1] = 1 + Main.rand.NextFloat(-0.25f, 0.25f);
