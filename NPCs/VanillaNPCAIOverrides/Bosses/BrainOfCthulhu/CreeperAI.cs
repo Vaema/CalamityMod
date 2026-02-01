@@ -753,7 +753,7 @@ public class CreeperAI : VanillaAIOverride
 
     public override void HitEffect(Mod mod, NPC.HitInfo hit)
     {
-        if (NPC.life <= 0)
+        if (!Main.dedServ && NPC.life <= 0)
         {
             List<VerletSimulatedSegment> verletTendril = BrainOfCthulhuSystem.VerletTendrils[CreeperID].tendril;
             verletTendril[^1].position = NPC.Center;
