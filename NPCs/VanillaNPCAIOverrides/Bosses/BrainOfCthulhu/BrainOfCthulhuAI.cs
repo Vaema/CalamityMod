@@ -140,6 +140,10 @@ public class BrainOfCthulhuAI : VanillaAIOverride
     internal static int ChaseTime => 160;
     internal static int MaxChases => 3;
     internal static int IdleTeleportDuration => CalamityWorld.death ? 36 : 44;
+    internal static float ChaseMinSpeed => 3;
+    internal static float ChaseMaxSpeed => CalamityWorld.death ? 18 : 15;
+
+
     #endregion
 
     #region Bloodletting
@@ -1654,7 +1658,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             float speedUp = MathHelper.Clamp((Time - 10) / 10f, 0f, 1f);
             float slowDown = 1 - MathHelper.Clamp((Time - (ChaseTime - 15)) / 15f, 0f, 1f);
             float angleChange = MathHelper.Lerp(MathHelper.Pi / 24f, 0f, MathHelper.Clamp(Time / (ChaseTime * 0.666f), 0f, 1f));
-            NPC.velocity = NPC.velocity.RotateDirectionTowards(NPC.DirectionTo(Target.Center).ToRotation(), angleChange) * (MathHelper.Lerp(3f, 18f, Time / ChaseTime) * speedUp * slowDown);
+            NPC.velocity = NPC.velocity.RotateDirectionTowards(NPC.DirectionTo(Target.Center).ToRotation(), angleChange) * (MathHelper.Lerp(ChaseMinSpeed, ChaseMaxSpeed, Time / ChaseTime) * speedUp * slowDown);
 
             if (Time == ChaseTime)
             {
