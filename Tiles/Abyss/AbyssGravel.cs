@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Systems;
 using CalamityMod.Tiles.Abyss.AbyssAmbient;
-using CalamityMod.Walls.UnsafeWalls;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -45,12 +44,7 @@ namespace CalamityMod.Tiles.Abyss
 
         public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
         {
-            var tile = Main.tile[i, j];
-            if (tile.WallType == ModContent.WallType<UnsafeAbyssGravelWall>() || tile.WallType == ModContent.WallType<UnsafeVoidstoneWall>() || tile.WallType == ModContent.WallType<Walls.PyreMantleWall>() || tile.WallType == ModContent.WallType<UnsafeSulphurousShaleWall>() || tile.WallType == ModContent.WallType<UnsafeVoidstoneWall>() || tile.WallType == ModContent.WallType<Walls.PyreMantleWall>() || tile.WallType == ModContent.WallType<UnsafeSulphurousSandstoneWall>())
-            {
-                tile.LiquidAmount = 255;
-                tile.LiquidType = LiquidID.Water;
-            }
+            World.Abyss.FillTileWithWater(i, j);
         }
 
         public override void RandomUpdate(int i, int j)

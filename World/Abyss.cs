@@ -1287,5 +1287,15 @@ namespace CalamityMod.World
                 }
             }
         }
+
+        public static void FillTileWithWater(int i, int j)
+        {
+            var tile = Main.tile[i, j];
+            if (CalamityTileSets.IsAbyssWall[tile.WallType])
+            {
+                tile.LiquidAmount = 255;
+                tile.LiquidType = LiquidID.Water;
+            }
+        }
     }
 }
