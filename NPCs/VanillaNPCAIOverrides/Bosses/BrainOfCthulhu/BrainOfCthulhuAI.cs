@@ -645,61 +645,45 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                 DisableMultiplayerSmoothing = true;
             }
 
-            if (SpawnDelay <= 0)
+            if(SpawnDelay == 1 && Main.netMode != NetmodeID.MultiplayerClient)
             {
                 bool targetLeft = AttackCounter % 2 == 0;
                 List<NPC> creepers = Main.npc.Where(n => n.active && n.type == NPCID.Creeper && n.AIOverride<CreeperAI>().Time == -1 && n.AIOverride<CreeperAI>().CreeperID % 2 == (targetLeft ? 0 : 1)).ToList();
-                int rand;
 
                 if (creepers.Count > 0)
                 {
-                    rand = Main.rand.Next(creepers.Count);
-                    foreach (NPC creeper in creepers)
-                        creeper.netUpdate = true;
+                    AttackTime = creepers[Main.rand.Next(creepers.Count)].whoAmI;
                 }
                 else
                 {
                     creepers = Main.npc.Where(n => n.active && n.type == NPCID.Creeper && n.AIOverride<CreeperAI>().Time == -1).ToList();
-                    foreach (NPC creeper in creepers)
-                        creeper.netUpdate = true;
-                    rand = Main.rand.Next(creepers.Count);
+                    AttackTime = creepers.Count == 0 ? -1 : creepers[Main.rand.Next(creepers.Count)].whoAmI;
                 }
 
-                if (creepers.Count > 0)
-                {
-                    NPC creeper = creepers[rand];
-                    creeper.AIOverride<CreeperAI>().Time = 0;
+                NPC.netUpdate = true;
+            }
 
+            if (SpawnDelay <= 0)
+            {
+                if (AttackTime != -1)
+                {
+                    NPC creeper = Main.npc[(int)AttackTime];
+                    creeper.AIOverride<CreeperAI>().Time = 1;
+                    creeper.netUpdate = true;
                     AttackCounter++;
 
                     if (SummonedViaItem)
                         SpawnDelay = 2;
                     else
-                        switch (AttackCounter)
+                        SpawnDelay = AttackCounter switch
                         {
-                            case 1:
-                                SpawnDelay = 90;
-                                break;
-                            case 2:
-                            case 3:
-                            case 4:
-                                SpawnDelay = 24;
-                                break;
-                            case 5:
-                                SpawnDelay = 60;
-                                break;
-                            case 6:
-                            case 7:
-                            case 8:
-                                SpawnDelay = 24;
-                                break;
-                            case 9:
-                                SpawnDelay = 60;
-                                break;
-                            default:
-                                SpawnDelay = 4;
-                                break;
-                        }
+                            1 => 90,
+                            2 or 3 or 4 => 24,
+                            5 => 60,
+                            6 or 7 or 8 => 24,
+                            9 => 60,
+                            _ => 4,
+                        };
                 }
                 else
                     SpawnTime = Time;
