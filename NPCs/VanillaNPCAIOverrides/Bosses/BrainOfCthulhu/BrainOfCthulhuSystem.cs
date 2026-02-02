@@ -345,7 +345,7 @@ public class BrainOfCthulhuSystem : ModSystem
                     Filters.Scene.Activate("CalamityMod:BrainOfCthulhuForcefield");
 
                 NPC target = Main.npc[NPC.crimsonBoss];
-                Vector2 targetPos = target.Center;
+                Vector2 targetPos = target.Center + target.netOffset;
                 float shieldOpacity = ai.ShieldOpacity;
                 float shieldScale = ai.ShieldScale;
                 targetPos = Vector2.Transform(targetPos - Main.screenPosition, Main.GameViewMatrix.ZoomMatrix) / Main.ScreenSize.ToVector2();
