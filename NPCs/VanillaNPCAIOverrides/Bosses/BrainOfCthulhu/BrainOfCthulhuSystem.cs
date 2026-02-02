@@ -239,7 +239,7 @@ public class BrainOfCthulhuSystem : ModSystem
                 {
                     NPC creeper = Main.npc[member.creeper];
 
-                    Vector2 startPoint = Main.npc[NPC.crimsonBoss].Center + Vector2.UnitY * 32;
+                    Vector2 startPoint = Main.npc[NPC.crimsonBoss].Center + Main.npc[NPC.crimsonBoss].netOffset + Vector2.UnitY * 32;
 
                     float creeperRatio = index / (float)BrainOfCthulhuAI.GetBrainOfCthuluCreepersCountRevDeath();
                     if (index % 2 == 0)
@@ -311,7 +311,7 @@ public class BrainOfCthulhuSystem : ModSystem
                             BrainOfCthulhuSystem.VerletTendrils[index].tendril.Add(new(creeper.Center));
                     }
 
-                    Vector2 endPoint = creeper.Center;
+                    Vector2 endPoint = creeper.Center + creeper.netOffset;
                     index++;
 
                     if (vTendril is null || vTendril.Count == 0)
