@@ -1,7 +1,9 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -73,7 +75,38 @@ namespace CalamityMod.Projectiles.Summon
             //Due to Sirius's high Starburst consumption, it inflicts long amounts of Voidfrost on hit
             target.AddBuff(ModContent.BuffType<Voidfrost>(), 600);
             float x4 = Main.rgbToHsl(new Color(103, 203, Main.DiscoB)).X;
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<SiriusExplosion>(), Projectile.damage, Projectile.knockBack, Projectile.owner, x4, Projectile.whoAmI);
+            if (Projectile.numHits == 0)
+            {
+                SoundStyle fire = new("CalamityMod/Sounds/Item/ScorpioNukeHit");
+                SoundEngine.PlaySound(fire with { Volume = 0.75f, Pitch = 0.6f, PitchVariance = 0.2f }, Projectile.Center);
+                float numberOfDusts = 156f;
+                float rotFactor = 360f / numberOfDusts;
+                for (int i = 0; i < numberOfDusts; i++)
+                {
+                    float rot = MathHelper.ToRadians(i * rotFactor);
+                    float intensity = Main.rand.NextFloat(0.2f, 0.5f);
+                    Vector2 offset = new Vector2(30f, 5.8f).RotatedBy(rot);
+                    Vector2 velOffset = new Vector2(40.8f, 10.5f).RotatedBy(rot);
+                    if (i % 2 == 0)
+                    {
+                        Particle orb = new CustomSpark(Projectile.Center + offset, velOffset * intensity * 0.7f, "CalamityMod/Particles/Sparkle", false, (int)(40 * intensity), intensity, Main.rand.NextBool(3) ? Color.DarkSlateBlue : Color.SlateBlue, new Vector2(1f, 2f), true, true);
+                        GeneralParticleHandler.SpawnParticle(orb);
+                    }
+                    else
+                    {
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, ModContent.DustType<LightDust>(), velOffset);
+                        dust.noGravity = true;
+                        dust.velocity = velOffset * intensity;
+                        dust.scale = Main.rand.NextFloat(2.5f, 2.8f) * intensity;
+                        dust.color = Main.rand.NextBool(3) ? Color.DarkSlateBlue : Color.SlateBlue;
+                    }
+                }
+
+                Particle bolt2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.DarkSlateBlue, "CalamityMod/Particles/BloomRing", new Vector2(0.6f, 0.8f), Projectile.velocity.ToRotation(), 0f, 3f, 25);
+                GeneralParticleHandler.SpawnParticle(bolt2);
+                Particle bolt3 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.SlateBlue, "CalamityMod/Particles/BloomRing", new Vector2(0.3f, 0.7f), Projectile.velocity.ToRotation(), 0f, 4f, 25);
+                GeneralParticleHandler.SpawnParticle(bolt3);
+            }
         }
     }
 }

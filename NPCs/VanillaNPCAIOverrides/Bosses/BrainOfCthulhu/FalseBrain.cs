@@ -44,9 +44,14 @@ public class FalseBrain : ModNPC, ILocalizedModType
         NPC.netAlways = true;
         NPC.ShowNameOnHover = false;
         Music = MusicID.Boss3;
+        SceneEffectPriority = SceneEffectPriority.BiomeLow;
 
-        NPC.localAI[0] = Main.rand.Next(5);
-        NPC.localAI[1] = 1 + Main.rand.NextFloat(-0.5f, 0.5f);
+        NPC.localAI[0] = Main.rand.Next(6);
+
+        if(BrainOfCthulhuSystem.IsBrainOfCthulhuTextureVanilla)
+            NPC.localAI[1] = 1 + Main.rand.NextFloat(-0.25f, 0.25f);
+        else
+            NPC.localAI[1] = 1 + (Main.rand.NextFloat(0.25f, 0.75f) * (Main.rand.NextBool() ? -1 : 1));
     }
     private int Variant => (int)NPC.localAI[0];
     private float Angle => NPC.ai[0];
@@ -133,7 +138,7 @@ public class FalseBrain : ModNPC, ILocalizedModType
             }
 
             BeenHit = true;
-            SoundEngine.PlaySound(SoundID.Zombie105, NPC.Center); //LC Laugh
+            SoundEngine.PlaySound(BrainOfCthulhuAI.Laugh, NPC.Center);
             fool.AddBuff(BuffID.Darkness, 900);
             fool.AddBuff(BuffID.Bleeding, 900);
             fool.AddBuff(BuffID.Confused, 60);
@@ -161,27 +166,65 @@ public class FalseBrain : ModNPC, ILocalizedModType
 
     internal void DrawSelf(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
     {
-        Texture2D tex = TextureAssets.Npc[Type].Value;
-
-        Rectangle frame = tex.Frame(5, 4, Variant, (int)NPC.frameCounter);
+        Texture2D tex;
+        Rectangle frame;
 
         Vector2 scaleDistort = new Vector2((float)Math.Cos(Main.GlobalTimeWrappedHourly * MathHelper.TwoPi * 2) / 2f, (float)Math.Sin(Main.GlobalTimeWrappedHourly * MathHelper.TwoPi * 2) / 2f);
-
+        Vector2 scaleAddition = Vector2.zeroVector;
         float endLerp = AttackTime / 60f;
         float startLerp = SpawnTime / 60f;
+
+        if (BrainOfCthulhuSystem.IsBrainOfCthulhuTextureVanilla)
+        {
+            tex = TextureAssets.Npc[Type].Value;
+            frame = tex.Frame(7, 4, Variant, (int)NPC.frameCounter);
+        }
+        else
+        {
+            tex = TextureAssets.Npc[NPCID.BrainofCthulhu].Value;
+            frame = tex.Frame(1, 8, 0, 4 + (int)NPC.frameCounter);
+
+            switch(Variant)
+            {
+                case 0:
+                    scaleAddition = new(-0.125f, 0.25f);
+                    break;
+                case 1:
+                    scaleAddition = new(0.25f, -0.125f);
+                    break;
+                case 2:
+                    drawColor = Color.Lerp(drawColor, Color.Red.MultiplyRGB(drawColor), 0.5f);
+                    break;
+                case 3:
+                    drawColor = Color.Lerp(drawColor, Color.Orange.MultiplyRGB(drawColor), 0.5f);
+                    break;
+                case 4:
+                    drawColor = Color.Lerp(drawColor, Color.Yellow.MultiplyRGB(drawColor), 0.5f);
+                    break;
+                case 5:
+                    scaleAddition = new(0.1625f, 0.1625f);
+                    break;
+                case 6:
+                    scaleAddition = new(-0.1625f, -0.1625f);
+                    break;
+
+            }
+        }
 
         if (SpawnTime > 0)
         {
             drawColor *= (1 - startLerp);
             scaleDistort *= startLerp;
         }
-        else
+        else if (AttackTime > 0)
         {
             drawColor = Color.Lerp(drawColor, Color.Red, endLerp) * (1 - endLerp);
             scaleDistort *= endLerp;
         }
+        else
+            scaleDistort = Vector2.Zero;
 
-        spriteBatch.Draw(tex, NPC.Center + (Vector2.UnitY * 16) - screenPos, frame, drawColor, NPC.rotation, frame.Size() * 0.5f, (Vector2.One + scaleDistort) * NPC.scale, 0, 0);
+        spriteBatch.Draw(tex, NPC.Center + (Vector2.UnitY * 16) - screenPos, frame, drawColor, NPC.rotation, frame.Size() * 0.5f, (Vector2.One + scaleAddition + scaleDistort) * NPC.scale, 0, 0);
     }
 
     public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor) => false;

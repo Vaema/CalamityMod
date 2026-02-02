@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses.BrainOfCthulhu;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -35,7 +36,7 @@ public class TelekineticBlast : ModProjectile, ILocalizedModType
     Player target => Main.player[(int)Projectile.ai[0]];
     float debuffMultiplier => Projectile.ai[1];
 
-    public override void OnSpawn(IEntitySource source)
+    public override void AI()
     {
         for (int i = 0; i < 6; i++)
         {
@@ -47,7 +48,7 @@ public class TelekineticBlast : ModProjectile, ILocalizedModType
             GeneralParticleHandler.SpawnParticle(pulse);
         }
 
-        SoundEngine.PlaySound(SoundID.Zombie105, Projectile.Center); //LC Laugh
+        SoundEngine.PlaySound(BrainOfCthulhuAI.Laugh, Projectile.Center);
         target.AddBuff(BuffID.Darkness, (int)Math.Round(900 * debuffMultiplier));
         target.AddBuff(BuffID.Bleeding, (int)Math.Round(900 * debuffMultiplier));
         target.AddBuff(BuffID.Confused, (int)Math.Round(60 * debuffMultiplier));
@@ -58,5 +59,6 @@ public class TelekineticBlast : ModProjectile, ILocalizedModType
         target.AddBuff(ModContent.BuffType<BurningBlood>(), timeToAdd);
 
         target.Calamity().adrenaline = 0;
+        Projectile.active = false;
     }
 }
