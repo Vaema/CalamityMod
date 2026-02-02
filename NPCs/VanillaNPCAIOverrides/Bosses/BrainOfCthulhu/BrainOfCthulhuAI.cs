@@ -321,8 +321,8 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
         AIState = onSurface ? BrainAIState.SurfaceSpawnAnimation : BrainAIState.UndergroundSpawnAnimation;
         PreviousAttack = BrainAIState.Phase1Idle;
-        SpawnDelay = SummonedViaItem ? 2 : 60;
-        if (SummonedViaItem)
+        SpawnDelay = (SummonedViaItem || BossRushEvent.BossRushActive) ? 2 : 60;
+        if (SummonedViaItem || BossRushEvent.BossRushActive)
             SpawnTime = -1;
 
         if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -371,43 +371,46 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
         #region Despawn
         // Despawn check
-        bool despawn = (Target.dead || !Target.ZoneCrimson) && !BossRushEvent.BossRushActive;
-        if(despawn)
+        if (!BossRushEvent.BossRushActive)
         {
-            var v = GetAllValidTargets(NPC.Center);
-            if(v.Count > 0)
+            bool despawn = (Target.dead || !Target.ZoneCrimson);
+            if (despawn)
             {
-                despawn = false;
-                NPC.target = v[0];
+                var v = GetAllValidTargets(NPC.Center);
+                if (v.Count > 0)
+                {
+                    despawn = false;
+                    NPC.target = v[0];
+                }
             }
-        }
 
-        // Despawn
-        if (despawn)
-        {
-            if (DespawnTime < 90)
-                DespawnTime += 1f;
-
-            if (DespawnTime == 90)
-                NPC.velocity.Y += 0.1f;
-        }
-        else if (DespawnTime > 0f)
-            DespawnTime -= 1f;
-
-        if (Main.netMode != NetmodeID.MultiplayerClient)
-        {
-            if (Target.DistanceSQ(NPC.Center) > DespawnRangeSQ)
+            // Despawn
+            if (despawn)
             {
-                NPC.active = false;
-                NPC.life = 0;
+                if (DespawnTime < 90)
+                    DespawnTime += 1f;
 
-                if (Main.dedServ)
-                    NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, NPC.whoAmI, 0f, 0f, 0f, 0, 0, 0);
+                if (DespawnTime == 90)
+                    NPC.velocity.Y += 0.1f;
             }
-        }
+            else if (DespawnTime > 0f)
+                DespawnTime -= 1f;
 
-        if(DespawnTime > 60)
-            return false;
+            if (Main.netMode != NetmodeID.MultiplayerClient)
+            {
+                if (Target.DistanceSQ(NPC.Center) > DespawnRangeSQ)
+                {
+                    NPC.active = false;
+                    NPC.life = 0;
+
+                    if (Main.dedServ)
+                        NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, NPC.whoAmI, 0f, 0f, 0f, 0, 0, 0);
+                }
+            }
+
+            if (DespawnTime > 60)
+                return false;
+        }
         #endregion
 
         #region Hit Sounds
@@ -672,7 +675,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                     creeper.netUpdate = true;
                     AttackCounter++;
 
-                    if (SummonedViaItem)
+                    if (SummonedViaItem || BossRushEvent.BossRushActive)
                         SpawnDelay = 2;
                     else
                         SpawnDelay = AttackCounter switch
