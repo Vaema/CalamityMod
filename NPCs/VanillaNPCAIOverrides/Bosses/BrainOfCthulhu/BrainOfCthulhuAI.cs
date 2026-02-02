@@ -1483,7 +1483,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                     creep.AIOverride<CreeperAI>().Time = -1;
             }
         }
-        else if (Time >= OrbitAttackInterval && Time < OrbitDuration && Time % OrbitAttackInterval == 0)
+        else if (Time >= OrbitAttackInterval && Time < OrbitDuration && Time % OrbitAttackInterval == 0 && Main.netMode != NetmodeID.MultiplayerClient)
         {
             List<NPC> mainOrbitMembers = Main.npc.Where(n => n.active && n.type == NPCID.Creeper && n.TryGetAIOverride<CreeperAI>(out var ai) && ai.CachedValue2 == -1).ToList();
             if (mainOrbitMembers.Count > 0)

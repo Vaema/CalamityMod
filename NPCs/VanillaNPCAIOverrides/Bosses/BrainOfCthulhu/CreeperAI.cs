@@ -534,7 +534,7 @@ public class CreeperAI : VanillaAIOverride
                 List<NPC> mainOrbitMembers = Main.npc.Where(n => n.active && n.type == NPCID.Creeper && n.TryGetAIOverride<CreeperAI>(out var ai) && ai.CachedValue2 == -1).ToList();
                 CachedValue1 = MathHelper.TwoPi / mainOrbitMembers.Count * mainOrbitMembers.IndexOf(NPC);
             }
-            else if (bossCounter == 0)
+            else if (bossCounter == 0 && Main.netMode != NetmodeID.MultiplayerClient)
             {
                 AttackPosition = NPC.Center;
                 AttackAngle = 0;
@@ -543,19 +543,23 @@ public class CreeperAI : VanillaAIOverride
         }
         float dist = OrbitStandardRadius + ((float)Math.Sin((CachedValue1 * 7) + bossCounter / 20f) * 24);
 
-        if (brainAI.AttackList.Contains((byte)NPC.whoAmI))
-        {
-            if (Time < 0)
+        if(Main.netMode != NetmodeID.MultiplayerClient)
+            if (brainAI.AttackList.Contains((byte)NPC.whoAmI))
             {
-                Time = 0;
-                NPC.netUpdate = true;
+                if (Time < 0)
+                {
+                    Time = 0;
+                    NPC.netUpdate = true;
+                }
             }
-        }
-        else
-        {
-            if (Time >= 0)
-                Time = -1;
-        }
+            else
+            {
+                if (Time >= 0)
+                {
+                    Time = -1;
+                    NPC.netUpdate = true;
+                }
+            }
 
         if (Time >= 0)
         {
@@ -587,16 +591,16 @@ public class CreeperAI : VanillaAIOverride
         if (bossCounter < OrbitSetupDuration)
         {
             NPC.damage = 0;
-
             NPC.Center = Vector2.Lerp(AttackPosition, bocAI.AttackPosition + rotation, CalamityUtils.SineOutEasing(bossCounter / OrbitSetupDuration, 1));
-            DisableMultiplayerSmoothing = true;
         }
         else
         {
             NPC.damage = NPC.defDamage;
             NPC.Center = bocAI.AttackPosition + rotation;
-            DisableMultiplayerSmoothing = true;
         }
+
+        DisableMultiplayerSmoothing = true;
+
     }
 
     private void CreeperSpiral()
