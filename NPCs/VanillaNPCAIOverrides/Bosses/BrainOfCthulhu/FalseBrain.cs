@@ -44,6 +44,7 @@ public class FalseBrain : ModNPC, ILocalizedModType
         NPC.netAlways = true;
         NPC.ShowNameOnHover = false;
         Music = MusicID.Boss3;
+        SceneEffectPriority = SceneEffectPriority.BiomeLow;
 
         NPC.localAI[0] = Main.rand.Next(6);
 

@@ -54,6 +54,7 @@ public class BrainIllusion : ModNPC, ILocalizedModType
         NPC.npcSlots = 0f;
         NPC.netAlways = true;
         Music = MusicID.Boss3;
+        SceneEffectPriority = SceneEffectPriority.BiomeLow;
     }
 
     public override void OnSpawn(IEntitySource source)
