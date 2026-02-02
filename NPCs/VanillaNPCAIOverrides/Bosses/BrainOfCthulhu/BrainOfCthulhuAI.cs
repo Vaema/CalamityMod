@@ -702,37 +702,40 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         BrainOfCthulhuSystem.ScreenBlurStrength = 0f;
 
         #region Attack Selection
-        if (CreeperHPRatio <= DesperateOnslaughtCreeperHealthGate)
+        if (Main.netMode != NetmodeID.MultiplayerClient)
         {
-            Time = -1;
-            AIState = BrainAIState.TelekineticOnslaught;
-            AttackSign = Main.rand.NextBool() ? -1 : 1;
-            NPC.netUpdate = true;
-        }
-        else if (Time > IdlePeriodDuration)
-        {
-            Time = -1;
-
-            ResetAttackValues();
-
-            if (availableAttacks.Count == 0)
+            if (CreeperHPRatio <= DesperateOnslaughtCreeperHealthGate)
             {
-                availableAttacks = [BrainAIState.CreeperSwipes, BrainAIState.CreeperSwings, BrainAIState.CreeperOrbit, BrainAIState.CreeperSpiral];
-                if (PreviousAttack != BrainAIState.Phase1Idle)
-                    availableAttacks.Remove(PreviousAttack);
+                Time = -1;
+                AIState = BrainAIState.TelekineticOnslaught;
+                AttackSign = Main.rand.NextBool() ? -1 : 1;
+                NPC.netUpdate = true;
             }
+            else if (Time > IdlePeriodDuration)
+            {
+                Time = -1;
 
-            int pick = Main.rand.Next(availableAttacks.Count);
-            AIState = availableAttacks[pick];
-            availableAttacks.RemoveAt(pick);
-            PreviousAttack = AIState;
+                ResetAttackValues();
 
-            foreach (NPC creep in Main.npc.Where(n => n.active && n.type == NPCID.Creeper))
-                creep.AIOverride<CreeperAI>().Time = -1;
+                if (availableAttacks.Count == 0)
+                {
+                    availableAttacks = [BrainAIState.CreeperSwipes, BrainAIState.CreeperSwings, BrainAIState.CreeperOrbit, BrainAIState.CreeperSpiral];
+                    if (PreviousAttack != BrainAIState.Phase1Idle)
+                        availableAttacks.Remove(PreviousAttack);
+                }
 
-            SoundEngine.PlaySound(Growl, NPC.Center);
+                int pick = Main.rand.Next(availableAttacks.Count);
+                AIState = availableAttacks[pick];
+                availableAttacks.RemoveAt(pick);
+                PreviousAttack = AIState;
 
-            NPC.netUpdate = true;
+                foreach (NPC creep in Main.npc.Where(n => n.active && n.type == NPCID.Creeper))
+                    creep.AIOverride<CreeperAI>().Time = -1;
+
+                SoundEngine.PlaySound(Growl, NPC.Center);
+
+                NPC.netUpdate = true;
+            }
         }
         #endregion
 
@@ -827,28 +830,31 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             {
                 SoundEngine.PlaySound(Roar, NPC.Center);
 
-                foreach(NPC creeper in Main.ActiveNPCs)
+                if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    if (creeper.type != NPCID.Creeper)
-                        continue;
-
-                    CreeperAI ai = creeper.AIOverride<CreeperAI>();
-                    int dirSign = ai.evenID ? -1 : 1;
-                    Vector2 dir = Vector2.UnitX.RotatedBy(Main.rand.NextFloat(-MathHelper.TwoPi / 3f, MathHelper.TwoPi / 3f)) * dirSign;
-                    if (Target.Center.Y / 16 < Main.worldSurface) //Makes creepers not go as high up when on the surface
+                    foreach (NPC creeper in Main.ActiveNPCs)
                     {
-                        float dirY = dir.Y;
-                        dir.Y -= dirY * 0.5f;
-                        dir.X += dirY * 0.5f * Math.Sign(dir.X);
-                        dir.SafeNormalize(Vector2.unitXVector * dirSign);
-                    }
-                    ai.AttackAngle = dir.ToRotation();
-                    float rayDist = CalamityUtils.PreciseDistanceToTileCollisionHit(NPC.Center, ai.AttackAngle, 800, 4);
-                    ai.AttackPosition = NPC.Center + (dir * (rayDist - 64));
-                    creeper.netUpdate = true;
-                }
+                        if (creeper.type != NPCID.Creeper)
+                            continue;
 
-                NPC.netUpdate = true;
+                        CreeperAI ai = creeper.AIOverride<CreeperAI>();
+                        int dirSign = ai.evenID ? -1 : 1;
+                        Vector2 dir = Vector2.UnitX.RotatedBy(Main.rand.NextFloat(-MathHelper.TwoPi / 3f, MathHelper.TwoPi / 3f)) * dirSign;
+                        if (Target.Center.Y / 16 < Main.worldSurface) //Makes creepers not go as high up when on the surface
+                        {
+                            float dirY = dir.Y;
+                            dir.Y -= dirY * 0.5f;
+                            dir.X += dirY * 0.5f * Math.Sign(dir.X);
+                            dir.SafeNormalize(Vector2.unitXVector * dirSign);
+                        }
+                        ai.AttackAngle = dir.ToRotation();
+                        float rayDist = CalamityUtils.PreciseDistanceToTileCollisionHit(NPC.Center, ai.AttackAngle, 800, 4);
+                        ai.AttackPosition = NPC.Center + (dir * (rayDist - 64));
+                        creeper.netUpdate = true;
+                    }
+
+                    NPC.netUpdate = true;
+                }
             }
             if (Time < 30)
             {
@@ -1109,9 +1115,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                         GeneralParticleHandler.SpawnParticle(p);
                     }
                     BloodParticle2 p2 = new(spawnPos, dir * 10f, 16, 0.5f, Color.Red);
-                    GeneralParticleHandler.SpawnParticle(p2);
-
-                    
+                    GeneralParticleHandler.SpawnParticle(p2);           
 
                     AttackCounter--;
                     if (AttackCounter <= -1)
@@ -1127,7 +1131,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
     private void CreeperSwipes()
     {
         //Hand Size check to determine if 1 hand variant should be used
-        if (Time == 0)
+        if (Time == 0 && Main.netMode != NetmodeID.MultiplayerClient)
         {
             int leftAmt = 0;
             int rightAmt = 0;
@@ -1196,7 +1200,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
                 NPC.netUpdate = true;
             }
-            else if (wrappedCount == SwipeDuration)
+            else if (wrappedCount == SwipeDuration && Main.netMode != NetmodeID.MultiplayerClient)
             {
                 AttackSign *= -1;
                 AttackList.Clear();
@@ -1229,7 +1233,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                 if (wrappedCount > SwipeIchorDelay && wrappedCount <= SwipeDuration && Time % 2 == 0)
                     Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center + new Vector2(Main.rand.NextFloat(-72, 72), 56), Vector2.UnitY.RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 4f, MathHelper.Pi / 4f)) * 4f, ProjectileID.GoldenShowerHostile, IchorShotDamage, 0.5f);
 
-            if (Time >= SwipesStartupDuration + ((SwipeDuration + SwipeDelay) * SwipeAmount))
+            if (Time >= SwipesStartupDuration + ((SwipeDuration + SwipeDelay) * SwipeAmount) && Main.netMode != NetmodeID.MultiplayerClient)
             {
                 Time = 0;
                 AIState = BrainAIState.Phase1Idle;
@@ -1314,7 +1318,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             if (Time < delay + attackDur && Time % attackDelay == 0)
             {
                 List<NPC> creepers = Main.npc.Where(n => n.active && n.type == NPCID.Creeper && n.AIOverride<CreeperAI>().Time == -1 && !AttackList.Contains((byte)n.whoAmI)).ToList();
-                if (creepers.Count > 1)
+                if (creepers.Count > 1 && Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     float rotation;
                     if (!OnSecondCreeperPhase)
@@ -1348,9 +1352,9 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
                     if (Main.netMode != NetmodeID.SinglePlayer)
                         SelectNewTarget();
-                }
 
-                NPC.netUpdate = true;
+                    NPC.netUpdate = true;
+                }
             }
 
             if (Time > delay + attackDur + attackDelay)
@@ -1375,7 +1379,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             NPC.velocity = NPC.DirectionTo(goalPos).SafeNormalize(Vector2.Zero) * (2 + (2f * (distSQ / 14400)));
         #endregion
 
-        if (Time == 0)
+        if (Time == 0 && Main.netMode != NetmodeID.MultiplayerClient)
         {
             AttackSign = Main.rand.NextBool() ? -1 : 1;
             AttackPosition = Target.Center;
@@ -1490,7 +1494,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
     private void CreeperSpiral()
     {
-        if (Time == 0)
+        if (Time == 0 && Main.netMode != NetmodeID.MultiplayerClient)
         {
             AttackSign = Main.rand.NextBool() ? -1 : 1;
             AttackRotation = 0;
@@ -1554,6 +1558,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                 AIState = BrainAIState.Phase2TransitionOpen;
                 PreviousAttack = BrainAIState.Phase1Idle;
                 availableAttacks.Clear();
+                NPC.netUpdate = true;
 
                 SoundEngine.PlaySound(SoundID.NPCHit1, NPC.Center);
 
@@ -1692,7 +1697,6 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             }
             else if (Time == ChaseTime + (TeleportDuration / 2f) && !AttackFlag)
             {
-                Vector2 start = NPC.Center;
                 NPC.Center = endPoint;
                 DisableMultiplayerSmoothing = true;
                 AttackFlag = true;
@@ -2351,9 +2355,9 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
             if (startTime == 0)
             {
-                AttackPosition = NPC.Center;
-                TeleportTime = 0;
-                AttackFlag = false;
+                    AttackPosition = NPC.Center;
+                    TeleportTime = 0;
+                    AttackFlag = false;
 
                 BoCAfterImages = [];
                 NPC.Opacity = 1f;

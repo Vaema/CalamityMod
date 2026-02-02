@@ -96,11 +96,14 @@ public class BrainIllusion : ModNPC, ILocalizedModType
         {
             if (Time == 30)
             {
-                OldPos = NPC.Center;
-                TeleportTime = 0;
-                AttackValue = 0;
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    OldPos = NPC.Center;
+                    TeleportTime = 0;
+                    AttackValue = 0;
+                    NPC.netUpdate = true;
+                }
                 NPC.Opacity = 1f;
-                NPC.netUpdate = true;
             }
             if (Time < 60)
             {

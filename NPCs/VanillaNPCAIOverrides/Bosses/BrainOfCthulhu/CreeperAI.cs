@@ -351,7 +351,8 @@ public class CreeperAI : VanillaAIOverride
             {
                 Time = 0;
                 NPC.netUpdate = true;
-                AttackPosition = NPC.Center;
+                if(Main.netMode != NetmodeID.MultiplayerClient)
+                    AttackPosition = NPC.Center;
             }
         }
         else
@@ -607,7 +608,7 @@ public class CreeperAI : VanillaAIOverride
     {
         int tendrilID = (CreeperID % TendrilCount) + 1;
 
-        if (bossCounter == 0)
+        if (bossCounter == 0 && Main.netMode != NetmodeID.MultiplayerClient)
         {
             AttackPosition = NPC.Center;
             List<NPC> myGroup = Main.npc.Where(n => n.active && n.type == NPCID.Creeper && (n.ai[0] % TendrilCount) + 1 == tendrilID).ToList();
