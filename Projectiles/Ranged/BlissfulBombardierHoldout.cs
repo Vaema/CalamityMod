@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
@@ -32,10 +33,21 @@ namespace CalamityMod.Projectiles.Ranged
         public ref float shootingTimer => ref Projectile.ai[0];
         public ref float PostFireCooldown => ref Projectile.ai[1];
         public bool hasFired = false;
+
+        public override void SendExtraAIHoldout(BinaryWriter writer)
+        {
+            writer.Write(shootingTimer);
+        }
+        public override void ReceiveExtraAIHoldout(BinaryReader reader)
+        {
+            shootingTimer = reader.ReadSingle();
+        }
+
         public override void KillHoldoutLogic()
         {
 
         }
+
         public override void ManageHoldout()
         {
             // The center of the player, taking into account if they have a mount or not.

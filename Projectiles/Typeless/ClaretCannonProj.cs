@@ -37,6 +37,7 @@ namespace CalamityMod.Projectiles.Typeless
         {
             Collision.HitTiles(Projectile.position, Projectile.velocity, Projectile.width, Projectile.height);
             SoundEngine.PlaySound(SoundID.Dig, Projectile.position);
+            Projectile.netUpdate = true;
             return true;
         }
 
@@ -51,6 +52,7 @@ namespace CalamityMod.Projectiles.Typeless
             GeneralParticleHandler.SpawnParticle(bloodsplosion);
             Particle bloodsplosion2 = new CustomPulse(Projectile.Center, Vector2.Zero, new Color(255, 32, 32), "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, Main.rand.NextFloat(-15f, 15f), 0.03f * particleScale / 5f, 0.155f * particleScale / 5f, 40);
             GeneralParticleHandler.SpawnParticle(bloodsplosion2);
+            Projectile.netUpdate = true;
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
@@ -72,6 +74,8 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.timeLeft = 2;
             Projectile.velocity *= 0;
             Projectile.damage /= 2;
+            Projectile.netUpdate = true;
+
         }
     }
 }
