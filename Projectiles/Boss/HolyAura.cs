@@ -31,7 +31,14 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.timeLeft = 210;
         }
 
-        public override void AI() => Projectile.Center = Main.npc[CalamityGlobalNPC.holyBoss].Center;
+        public override void AI()
+        {
+            int provIndex = CalamityGlobalNPC.holyBoss;
+            if (provIndex < 0 || provIndex >= Main.maxNPCs || !Main.npc[provIndex].active)
+                return;
+
+            Projectile.Center = Main.npc[provIndex].Center;
+        }
 
         public override bool PreDraw(ref Color lightColor)
         {
