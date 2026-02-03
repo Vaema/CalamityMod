@@ -400,6 +400,8 @@ namespace CalamityMod.NPCs
             "Bear", // <@!183424826407518208> (lilac_vrt_olligoci)
             "Storm", // <@!620383533516718085> (airwaveslr)
             "Hognar the Wicked", // <@!766511001356468237> (xzier_tengal)
+            "Saffie", // <@!319753595161411584> (CDMusic)
+            "Willow", // <@!319753595161411584> (CDMusic)
         ];
         private static readonly string[] TownCatOrangeTabbyNames =
         [
