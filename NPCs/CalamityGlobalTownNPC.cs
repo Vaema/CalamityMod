@@ -275,6 +275,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] TaxCollectorNames =
         [
             "Emmett",
+            "Bagman", // <@!701831892990820383> (supportcrispy)
         ];
         private static readonly string[] TravelingMerchantNames =
         [
