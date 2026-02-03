@@ -5,6 +5,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Walls.UnsafeWalls
 {
+
+    [LegacyName("AbyssGravelWall")]
     public class UnsafeAbyssGravelWall : ModWall
     {
         public override string Texture => "CalamityMod/Walls/AbyssGravelWall";

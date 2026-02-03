@@ -496,9 +496,16 @@ namespace CalamityMod.CalPlayer
         public float rogueStealthMax = 0f;
         /// <summary>
         /// Temporarily provides stealth even without Rogue armor.
-        /// Max stealth is set to 10 if it's 0.
+        /// Max stealth is set to temporaryStealthMax if it's 0.
         /// </summary>
         public int temporaryStealthTimer = 0;
+        /// <summary>
+        /// Amount of temporary max stealth provided by gear
+        /// 1f = 100 max steatlh
+        /// Duration is temporaryStealthTimer
+        /// Resets to 0.1f whenever timer ends
+        /// </summary>
+        public float temporaryStealthMax = 0.1f;
         /// <summary> A multiplier to the player's stealth generation when standing still. </summary>
         public float stealthGenStandstill = 1f;
         /// <summary> A multiplier to the player's stealth generation when moving. </summary>
@@ -5785,14 +5792,16 @@ namespace CalamityMod.CalPlayer
 
             if (temporaryStealthTimer > 0)
                 temporaryStealthTimer--;
+            else
+                temporaryStealthMax = 0.1f;
         }
 
         public void UpdateRogueStealth()
         {
             if (temporaryStealthTimer > 0)
             {
-                if (rogueStealthMax < 0.1f)
-                    rogueStealthMax = 0.1f;
+                if (rogueStealthMax < temporaryStealthMax)
+                    rogueStealthMax = temporaryStealthMax;
                 wearingRogueArmor = true;
             }
 
