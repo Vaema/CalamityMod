@@ -393,6 +393,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] TownCatSiameseNames =
         [
             "Conductor", // <@!555512087711973390> (grayaeternum)
+            "Vivian", // <@!338315261352476682> (TYESKI)
         ];
         private static readonly string[] TownCatBlackNames =
         [
@@ -406,6 +407,7 @@ namespace CalamityMod.NPCs
             "Tardo", // <@!739343546867384391> (midnight295)
             "Dali", // <@!460238880436781061> (darthlego)
             "Kiba", // <@!852348657072340992> (jollydragonslayer)
+            "Monkey", // <@!338315261352476682> (TYESKI)
         ];
         private static readonly string[] TownCatRussianBlueNames = null;
         private static readonly string[] TownCatSilverNames =
