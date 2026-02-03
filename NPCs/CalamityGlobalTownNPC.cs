@@ -369,6 +369,7 @@ namespace CalamityMod.NPCs
         [
             "Kendra", // <@!237247188005158912> (lordmetarex)
             "Libby", // <@!338315261352476682> (tyeski)
+            "Myles", // <@!658760860722004017> (apotofkoolaid)
         ];
         private static readonly string[] TownDogCorgiNames = null;
         private static readonly string[] TownDogDalmatianNames = null;
@@ -398,6 +399,8 @@ namespace CalamityMod.NPCs
             "Conductor", // <@!555512087711973390> (grayaeternum)
             "Vivian", // <@!338315261352476682> (TYESKI)
             "Pudum", // <@!731141759484297226> (trianglepixel)
+            "Snickers", // <@!658760860722004017> (apotofkoolaid)
+            "Mr. Kitten", // <@!658760860722004017> (apotofkoolaid)
         ];
         private static readonly string[] TownCatBlackNames =
         [
@@ -415,6 +418,7 @@ namespace CalamityMod.NPCs
             "Dali", // <@!460238880436781061> (darthlego)
             "Kiba", // <@!852348657072340992> (jollydragonslayer)
             "Monkey", // <@!338315261352476682> (TYESKI)
+            "Percy", // <@!658760860722004017> (apotofkoolaid)
         ];
         private static readonly string[] TownCatRussianBlueNames = null;
         private static readonly string[] TownCatSilverNames =
