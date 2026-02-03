@@ -219,6 +219,7 @@ namespace CalamityMod.NPCs
             "Yarrim", // <@!290061123137306624> (borb9834)
             "Hector Barbossa", // <@!615704209303797790> (thatrockisfullamagic)
             "Blunderbeard", // <@!1039460813490102293> (parmiigianoreggiano)
+            "Vergil Cyrus", // <@!732350101619605584> (cyver1)
         ];
         private static readonly string[] PrincessNames =
         [
@@ -357,6 +358,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] TownDogLabradorNames =
         [
             "Riley", // <@!260875558592708619> (potionpal)
+            "Silvie", // <@!979862425211912242> (goldsockz2)
         ];
         private static readonly string[] TownDogPitBullNames =
         [
