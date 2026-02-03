@@ -359,6 +359,7 @@ namespace CalamityMod.NPCs
         [
             "Riley", // <@!260875558592708619> (potionpal)
             "Silvie", // <@!979862425211912242> (goldsockz2)
+            "Madison", // <@!338315261352476682> (tyeski)
         ];
         private static readonly string[] TownDogPitBullNames =
         [
@@ -367,12 +368,14 @@ namespace CalamityMod.NPCs
         private static readonly string[] TownDogBeagleNames =
         [
             "Kendra", // <@!237247188005158912> (lordmetarex)
+            "Libby", // <@!338315261352476682> (tyeski)
         ];
         private static readonly string[] TownDogCorgiNames = null;
         private static readonly string[] TownDogDalmatianNames = null;
         private static readonly string[] TownDogHuskyNames =
         [
             "Yoshi", // <@!541127291426832384> (gregthespinarak)
+            "Franklin", // <@!338315261352476682> (tyeski)
         ];
 
         private const int TownCatSiameseVanillaNames = 12;
@@ -394,6 +397,7 @@ namespace CalamityMod.NPCs
         [
             "Conductor", // <@!555512087711973390> (grayaeternum)
             "Vivian", // <@!338315261352476682> (TYESKI)
+            "Pudum", // <@!731141759484297226> (trianglepixel)
         ];
         private static readonly string[] TownCatBlackNames =
         [
@@ -402,6 +406,7 @@ namespace CalamityMod.NPCs
             "Hognar the Wicked", // <@!766511001356468237> (xzier_tengal)
             "Saffie", // <@!319753595161411584> (CDMusic)
             "Willow", // <@!319753595161411584> (CDMusic)
+            "Maine", // <@!731141759484297226> (trianglepixel)
         ];
         private static readonly string[] TownCatOrangeTabbyNames =
         [
