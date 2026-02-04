@@ -698,6 +698,9 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
             void UpdateArena(ArenaWallSystem.Box box)
             {
+                if (Main.dedServ)
+                    return;
+
                 var x = 1f / TextureAssets.MagicPixel.Height();
                 var p = ScalArenaMetaball.SpawnParticle((box.TopLeft + box.BottomLeft) * 0.5f - new Vector2(box.borderThickness * 0.5f + 2, 0), Vector2.Zero, 1);
                 p.SizeScaling = 0;
