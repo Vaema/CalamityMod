@@ -112,7 +112,13 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.velocity = Owner.velocity * 0f;
 
             var SiriusPos = Projectile.Center + Projectile.velocity;
-            var SiriusScale = 0.055f + (0.001f * moddedOwner.AvaliableStarburst);
+            var value = 0f;
+            //Count the value of starbursts in Sirius firing animation
+            if (Projectile.ai[2] > 2) foreach (var item in starburstsToFire)
+            {
+                value += item.value;
+            }
+            var SiriusScale = 0.055f + (0.001f * (moddedOwner.AvaliableStarburst + value));
             void SpawnStar(float SlotRequirement, Vector2 offset, float intensity, int flashOffset = 0, int flashMod = 100)
             {
                 if (SlotRequirement > 0 && Projectile.minionSlots < SlotRequirement)
@@ -228,7 +234,6 @@ namespace CalamityMod.Projectiles.Summon
                     //Animate the starbursts in the animation
                     foreach (var star in starburstsToFire)
                     {
-
                         star.Center = Vector2.Lerp(star.Center, Projectile.Center + Projectile.velocity, Projectile.ai[2] / 15f);
                         star.AICooldown = 2;
                     }
