@@ -44,7 +44,7 @@ namespace CalamityMod.Projectiles.Melee
             var modPlayer = player.Calamity();
 
             // Refund 20 energy if dash hits. Can get energy from multiple enemies.
-            modPlayer.elementalMastery += 20;
+            modPlayer.elementalMastery += 30;
             modPlayer.elementalMastery = Math.Min(modPlayer.elementalMastery, Lightspeed.MaxEnergy);
 
             // On-hit cut FX
