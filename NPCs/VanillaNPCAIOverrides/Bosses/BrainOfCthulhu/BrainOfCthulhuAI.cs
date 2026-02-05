@@ -548,6 +548,9 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         NPC.oldVelocity = NPC.velocity;
         Time++;
 
+        if(AIState != BrainAIState.DeathAnimation && NPC.lifeRegen < 0 && Math.Abs(NPC.lifeRegen) >= NPC.life)
+            TriggerDeathAnimation();
+
         return false;
     }
 
@@ -2894,17 +2897,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
     {
         if (AIState != BrainAIState.DeathAnimation && (NPC.life + 1) <= hit.Damage)
         {
-            NPC.life = 1;
-            NPC.BossBar = null;
-            NPC.dontTakeDamage = true;
-
-            if (AIState == BrainAIState.Stunned)
-                TeleportTime = 0;
-
-            AIState = BrainAIState.DeathAnimation;
-            ResetAttackValues();
-            Time = 0;
-            NPC.netUpdate = true;
+            TriggerDeathAnimation();
             return;
         }
 
@@ -2913,6 +2906,30 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             AttackFlag = true;
             NPC.netUpdate = true;
         }
+    }
+
+    private void TriggerDeathAnimation()
+    {
+        NPC.life = 1;
+        NPC.lifeRegen = 0;
+        NPC.BossBar = null;
+        NPC.dontTakeDamage = true;
+
+        if (AIState == BrainAIState.Stunned || AIState == BrainAIState.IllusionTrick)
+            TeleportTime = 0;
+
+        foreach (NPC n in Main.ActiveNPCs)
+        {
+            if (n.type != ModContent.NPCType<FalseBrain>())
+                continue;
+
+            n.ModNPC<FalseBrain>().BeenHit = true;
+        }
+
+        AIState = BrainAIState.DeathAnimation;
+        ResetAttackValues();
+        Time = 0;
+        NPC.netUpdate = true;
     }
 
     public override bool PreKill(Mod mod) => AIState == BrainAIState.DeathAnimation && !NPC.dontTakeDamage;
@@ -3041,6 +3058,8 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                 {
                     if (n.ModNPC is FalseBrain falseBrain)
                         falseBrain.DrawSelf(spriteBatch, screenPos, Lighting.GetColor(n.Center.ToTileCoordinates()));
+                    else if (AIState == BrainAIState.DeathAnimation)
+                        drawBrain = true;
                     else
                         DrawBrainLikeFakes(spriteBatch, n);
                 }
