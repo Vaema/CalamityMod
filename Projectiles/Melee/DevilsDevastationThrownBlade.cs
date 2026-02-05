@@ -45,6 +45,9 @@ namespace CalamityMod.Projectiles.Melee
         public int bounces = 0;
         public Vector2 tipPosition = Vector2.Zero;
         public bool fadingOut => Projectile.timeLeft <= (Lifetime - fadeOutTime);
+        private bool visualChargeInitialized = false;
+        private int visualChargeTimer = 0;
+        private int visualChargeTime = 0;
 
         private Vector2 GetAimDirection()
         {
@@ -76,6 +79,16 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.noEnchantmentVisuals = true;
         }
 
+        public override void OnSpawn(Terraria.DataStructures.IEntitySource source)
+        {
+            if (Main.myPlayer == Projectile.owner)
+            {
+                Vector2 toMouse = (Owner.Calamity().mouseWorld - Owner.Center).SafeNormalize(Vector2.UnitX * Owner.direction);
+                Projectile.localAI[1] = toMouse.ToRotation();
+                Projectile.netUpdate = true;
+            }
+        }
+
         public override bool ShouldUpdatePosition()
         {
             return (ChargeProgress >= 1 && !stuckInGround && !stuckInTarget);
@@ -84,10 +97,25 @@ namespace CalamityMod.Projectiles.Melee
         //Swing animation keys
         public CurveSegment pullback = new CurveSegment(EasingType.PolyOut, 0f, 0f, MathHelper.PiOver4 * -1.2f, 2);
         public CurveSegment throwout = new CurveSegment(EasingType.PolyOut, 0.7f, MathHelper.PiOver4 * -1.2f, MathHelper.PiOver4 * 1.2f + MathHelper.PiOver2, 3);
-        internal float ArmAnticipationMovement() => PiecewiseAnimation(ChargeProgress, new CurveSegment[] { pullback, throwout });
+        internal float ArmAnticipationMovement(float progress) => PiecewiseAnimation(progress, new CurveSegment[] { pullback, throwout });
 
         public override void AI()
         {
+            bool isOwner = Main.myPlayer == Projectile.owner;
+            if (!visualChargeInitialized && !isOwner)
+            {
+                int fallbackCharge = (int)MathHelper.Clamp((Owner.HeldItem.useTime / 2.8f), 1, 100);
+                visualChargeTime = (int)(Projectile.localAI[2] > 0f ? Projectile.localAI[2] : fallbackCharge);
+                visualChargeTimer = visualChargeTime;
+                visualChargeInitialized = true;
+            }
+
+            if (!thrown && ChargeProgress >= 1f)
+                thrown = true;
+
+            if (thrown && !stuckInGround && !stuckInTarget && !exitedTarget)
+                Projectile.extraUpdates = 3;
+
             float rate = (Main.GlobalTimeWrappedHourly + time * 3) * 2;
             List<Color> eColors = new List<Color>()
             {
@@ -214,9 +242,16 @@ namespace CalamityMod.Projectiles.Melee
             }
 
             //Anticipation animation. Make the player look like they're holding the item
-            if (ChargeProgress < 1)
+            float chargeProgress = ChargeProgress;
+            bool canVisualCharge = !isOwner && Projectile.velocity.LengthSquared() < 0.01f && visualChargeTimer > 0;
+            if (canVisualCharge)
             {
-                throwAnimation();
+                chargeProgress = 1f - (visualChargeTimer / (float)visualChargeTime);
+                visualChargeTimer--;
+            }
+            if (chargeProgress < 1f)
+            {
+                throwAnimation(chargeProgress);
                 if (ChargeProgress >= 0.6f && time == 0)
                 {
                     SoundStyle swing = new("CalamityMod/Sounds/Item/DemonSwordSwing", 2);
@@ -228,6 +263,7 @@ namespace CalamityMod.Projectiles.Melee
             else
                 time++;
         }
+
         public void fadeOutEffect()
         {
             Projectile.tileCollide = false;
@@ -247,12 +283,12 @@ namespace CalamityMod.Projectiles.Melee
                 dust.velocity += Projectile.velocity;
             }
         }
-        public void throwAnimation()
+        public void throwAnimation(float chargeProgress)
         {
             Vector2 aimDirection = GetAimDirection();
             Owner.ChangeDir(MathF.Sign(aimDirection.X));
 
-            float armRotation = ArmAnticipationMovement() * Owner.direction;
+            float armRotation = ArmAnticipationMovement(chargeProgress) * Owner.direction;
 
             Owner.heldProj = Projectile.whoAmI;
             Projectile.spriteDirection = Owner.direction;
