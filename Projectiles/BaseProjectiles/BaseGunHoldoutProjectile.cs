@@ -251,12 +251,25 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         {
             Texture2D texture = TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
-            float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);
             Vector2 rotationPoint = texture.Size() * 0.5f;
-            SpriteEffects flipSprite = (Projectile.spriteDirection * Owner.gravDir == -1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            float drawRotation = Projectile.rotation;
 
-            Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(lightColor), drawRotation, rotationPoint, Projectile.scale * Owner.gravDir, flipSprite);
+            SpriteEffects flipSprite = SpriteEffects.None;
 
+            if (Owner.gravDir == 1f)
+            {
+                if (Projectile.spriteDirection == -1)
+                    flipSprite = SpriteEffects.FlipVertically;
+            }
+            else
+            {
+                rotationPoint.Y = texture.Height - rotationPoint.Y;
+
+                if (Projectile.spriteDirection == 1)
+                    flipSprite = SpriteEffects.FlipVertically;
+            }
+
+            Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(lightColor), drawRotation, rotationPoint, Projectile.scale, flipSprite, 0);
             return false;
         }
 

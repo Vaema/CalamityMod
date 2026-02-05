@@ -217,7 +217,7 @@ namespace CalamityMod.Projectiles.Ranged
             Texture2D texture2 = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/BlissfulBombardierGlow").Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Color drawColor = Projectile.GetAlpha(lightColor);
-            float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);
+            float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f) - (Owner.gravDir == -1 ? MathHelper.Pi * Owner.direction : 0f);
             Vector2 rotationPoint = texture.Size() * 0.5f;
             SpriteEffects flipSprite = (Projectile.spriteDirection * Owner.gravDir == -1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
