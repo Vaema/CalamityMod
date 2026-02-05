@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Cooldowns;
 using CalamityMod.Dusts;
@@ -51,8 +52,10 @@ namespace CalamityMod.Projectiles.Melee
         public bool willDie = false;
         public bool hasLaunchedBlades = false;
         public bool swooshFade = false;
+        private int lastSwingId;
 
         public NPC lastHitTarget = null;
+        private int lastHitTargetIndex = -1;
         public int postSwingCooldownMax => (int)(useAnim * 0.65f);
         public override void SetDefaults()
         {
@@ -82,6 +85,7 @@ namespace CalamityMod.Projectiles.Melee
             aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
             useAnim = (int)(Owner.HeldItem.useAnimation / Owner.GetTotalAttackSpeed<MeleeDamageClass>());
             postSwingCooldown = postSwingCooldownMax / 2;
+            lastSwingId = (int)Projectile.ai[0];
 
             if (mousePos.X < Owner.Center.X) Owner.direction = -1;
             else Owner.direction = 1;
@@ -117,32 +121,58 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override void UseStyle()
         {
+            bool isOwner = Main.myPlayer == Projectile.owner;
             bool hasKillMode = Owner.Calamity().cooldowns.TryGetValue(KillMode.ID, out CooldownInstance killModeCD);
 
-            if (SoundEngine.TryGetActiveSound(SoundSlot, out var Sound) && Sound.IsPlaying && lastHitTarget != null)
-                Sound.Position = lastHitTarget.Center;
+            if (lastHitTargetIndex >= 0)
+            {
+                NPC syncedTarget = Main.npc[lastHitTargetIndex];
+                if (syncedTarget != null && syncedTarget.active && syncedTarget.life > 0)
+                    lastHitTarget = syncedTarget;
+            }
 
-            if ((Main.mouseLeft || (hasKillMode && killModeCD.timeLeft == KillMode.cooldownMax + 1)) && holding && postSwingCooldown == 0)
+            if (isOwner)
+            {
+                bool shouldStartSwing = (Main.mouseLeft || (hasKillMode && killModeCD.timeLeft == KillMode.cooldownMax + 1)) && holding && postSwingCooldown == 0;
+                if (shouldStartSwing)
+                {
+                    Projectile.ai[0] += 1f;
+                    Projectile.netUpdate = true;
+                }
+            }
+
+            int swingId = (int)Projectile.ai[0];
+            if (swingId != lastSwingId && holding && postSwingCooldown == 0)
             {
                 Animation = (int)(useAnim * 0.7f);
                 holding = false;
-                killModeCD.timeLeft = KillMode.cooldownMax;
-                Owner.Calamity().killModeCooldown = KillMode.cooldownMax - 1;
+                if (isOwner)
+                {
+                    killModeCD.timeLeft = KillMode.cooldownMax;
+                    Owner.Calamity().killModeCooldown = KillMode.cooldownMax - 1;
+                }
                 swingCount++;
+                lastSwingId = swingId;
             }
+
+            if (SoundEngine.TryGetActiveSound(SoundSlot, out var Sound) && Sound.IsPlaying && lastHitTarget != null)
+                Sound.Position = lastHitTarget.Center;
             if (postSwingCooldown > 0)
                 postSwingCooldown--;
             else if (willDie)
             {
-                if (hasKillMode)
-                    killModeCD.timeLeft = KillMode.cooldownMax;
-                Owner.Calamity().killModeCooldown = KillMode.cooldownMax;
+                if (isOwner)
+                {
+                    if (hasKillMode)
+                        killModeCD.timeLeft = KillMode.cooldownMax;
+                    Owner.Calamity().killModeCooldown = KillMode.cooldownMax;
+                    Owner.Calamity().demonSwordKillMode = false;
+                }
                 DrawUnconditionally = false;
                 Projectile.Kill();
-                Owner.Calamity().demonSwordKillMode = false;
                 return;
             }
-            if (killModeCD.timeLeft < KillMode.cooldownMax)
+            if (isOwner && killModeCD.timeLeft < KillMode.cooldownMax)
             {
                 killModeCD.timeLeft = KillMode.cooldownMax;
                 Owner.Calamity().killModeCooldown = KillMode.cooldownMax;
@@ -187,8 +217,10 @@ namespace CalamityMod.Projectiles.Melee
                 finalFlip = false;
                 playSwingSound = true;
                 hasLaunchedBlades = false;
-                if (!Owner.Calamity().demonSwordKillMode && postSwingCooldown == 0)
+                if (isOwner && !Owner.Calamity().demonSwordKillMode && postSwingCooldown == 0)
                 {
+                    if (!willDie)
+                        Projectile.netUpdate = true;
                     willDie = true;
                     if (lastHitTarget != null)
                     {
@@ -256,7 +288,8 @@ namespace CalamityMod.Projectiles.Melee
                         SoundStyle swing2 = new("CalamityMod/Sounds/Item/HeavySwing");
                         SoundEngine.PlaySound(swing2 with { Volume = 0.65f, Pitch = Main.rand.NextFloat(0.2f, 0.3f) }, Projectile.Center);
                         playSwingSound = false;
-                        Owner.Calamity().demonSwordKillMode = false;
+                        if (isOwner)
+                            Owner.Calamity().demonSwordKillMode = false;
                     }
                     if (time > (int)(timeMax * 0.2f) && time < (int)(timeMax * 0.9f))
                         CanHit = true;
@@ -306,7 +339,12 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.numHits -= 1;
 
             if (target != null && target.life > 0 && target.active)
+            {
                 lastHitTarget = target;
+                lastHitTargetIndex = target.whoAmI;
+                if (Main.myPlayer == Projectile.owner)
+                    Projectile.netUpdate = true;
+            }
 
             bool hasKillMode = Owner.Calamity().cooldowns.TryGetValue(KillMode.ID, out CooldownInstance killModeCD);
 
@@ -437,6 +475,22 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override void ResetStyle()
         {
+        }
+
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.Write(willDie);
+            writer.Write7BitEncodedInt(useAnim);
+            writer.Write7BitEncodedInt(lastHitTargetIndex);
+            writer.Write7BitEncodedInt(postSwingCooldown);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            willDie = reader.ReadBoolean();
+            useAnim = reader.Read7BitEncodedInt();
+            lastHitTargetIndex = reader.Read7BitEncodedInt();
+            postSwingCooldown = reader.Read7BitEncodedInt();
         }
     }
 }
