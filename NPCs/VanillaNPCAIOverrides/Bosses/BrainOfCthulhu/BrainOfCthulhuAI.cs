@@ -41,6 +41,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
     private static SoundStyle Growl = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Growl", 2) with { PauseBehavior = PauseBehavior.PauseWithGame };
     private static SoundStyle Death = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Death_Roar") with { PauseBehavior = PauseBehavior.PauseWithGame };
     private static SoundStyle Blood = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Blood", 3);
+    private static SoundStyle BloodExplosion = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Explosion", 2);
 
 
     internal static bool SummonedViaItem = false;
@@ -547,6 +548,9 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
         NPC.oldVelocity = NPC.velocity;
         Time++;
+
+        if(AIState != BrainAIState.DeathAnimation && NPC.lifeRegen < 0 && Math.Abs(NPC.lifeRegen) >= NPC.life)
+            TriggerDeathAnimation();
 
         return false;
     }
@@ -2069,12 +2073,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
                     if (AttackCounter <= SanguineTeleportCount)
                     {
-                        SoundStyle explosion = new("CalamityMod/Sounds/Custom/Ravager/RavagerMissileExplosion")
-                        {
-                            Volume = 0.5f
-                        };
-                        SoundEngine.PlaySound(explosion, NPC.Center);
-                        SoundEngine.PlaySound(Blood, NPC.Center);
+                        SoundEngine.PlaySound(BloodExplosion, NPC.Center);
 
                         for (int i = 0; i < SanguineScytheCount; i++)
                         {
@@ -2255,10 +2254,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
                 if (Time == CrimsonEyeAttackIdleDuration)
                 {
-                    SoundStyle explosion = new("CalamityMod/Sounds/Custom/Ravager/RavagerMissileExplosion");
-                    explosion.Volume = 0.5f;
-
-                    SoundEngine.PlaySound(explosion, NPC.Center);
+                    SoundEngine.PlaySound(BloodExplosion, NPC.Center);
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         float projCount = 10;
@@ -2749,9 +2745,8 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                     GeneralParticleHandler.SpawnParticle(p2);
                     NPC.velocity = bloodDir * -4f;
 
-                    SoundStyle explosion = new("CalamityMod/Sounds/Custom/Ravager/RavagerMissileExplosion")
+                    SoundStyle explosion = BloodExplosion with
                     {
-                        Volume = 0.5f,
                         Pitch = i / (float)(bloodGushingData.Length - 1)
                     };
                     SoundEngine.PlaySound(explosion, NPC.Center);
@@ -2770,8 +2765,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
         if (Time >= 215)
         {
-            SoundStyle explosion = new("CalamityMod/Sounds/Custom/Ravager/RavagerMissileExplosion");
-            SoundEngine.PlaySound(explosion, NPC.Center);
+            SoundEngine.PlaySound(BloodExplosion, NPC.Center);
 
             Main.LocalPlayer.SetScreenshake(2f);
 
@@ -2894,17 +2888,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
     {
         if (AIState != BrainAIState.DeathAnimation && (NPC.life + 1) <= hit.Damage)
         {
-            NPC.life = 1;
-            NPC.BossBar = null;
-            NPC.dontTakeDamage = true;
-
-            if (AIState == BrainAIState.Stunned)
-                TeleportTime = 0;
-
-            AIState = BrainAIState.DeathAnimation;
-            ResetAttackValues();
-            Time = 0;
-            NPC.netUpdate = true;
+            TriggerDeathAnimation();
             return;
         }
 
@@ -2913,6 +2897,30 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             AttackFlag = true;
             NPC.netUpdate = true;
         }
+    }
+
+    private void TriggerDeathAnimation()
+    {
+        NPC.life = 1;
+        NPC.lifeRegen = 0;
+        NPC.BossBar = null;
+        NPC.dontTakeDamage = true;
+
+        if (AIState == BrainAIState.Stunned || AIState == BrainAIState.IllusionTrick)
+            TeleportTime = 0;
+
+        foreach (NPC n in Main.ActiveNPCs)
+        {
+            if (n.type != ModContent.NPCType<FalseBrain>())
+                continue;
+
+            n.ModNPC<FalseBrain>().BeenHit = true;
+        }
+
+        AIState = BrainAIState.DeathAnimation;
+        ResetAttackValues();
+        Time = 0;
+        NPC.netUpdate = true;
     }
 
     public override bool PreKill(Mod mod) => AIState == BrainAIState.DeathAnimation && !NPC.dontTakeDamage;
@@ -3041,6 +3049,8 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                 {
                     if (n.ModNPC is FalseBrain falseBrain)
                         falseBrain.DrawSelf(spriteBatch, screenPos, Lighting.GetColor(n.Center.ToTileCoordinates()));
+                    else if (AIState == BrainAIState.DeathAnimation)
+                        drawBrain = true;
                     else
                         DrawBrainLikeFakes(spriteBatch, n);
                 }

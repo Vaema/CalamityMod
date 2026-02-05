@@ -73,6 +73,15 @@ public class BrainIllusion : ModNPC, ILocalizedModType
             return;
         }
         NPC brain = Main.npc[NPC.crimsonBoss];
+
+        if (brain.AIOverride<BrainOfCthulhuAI>().AIState == BrainOfCthulhuAI.BrainAIState.DeathAnimation)
+        {
+            NPC.damage = 0;
+            NPC.Opacity -= 0.1f;
+            if (NPC.Opacity <= 0)
+                NPC.active = false;
+        }
+
         Player target = Main.player[NPC.target];
         NPC.GivenName = brain.GivenOrTypeName + $": {brain.life}/{brain.lifeMax}";
 
