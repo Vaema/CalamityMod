@@ -140,7 +140,7 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
                 {
                     for (var i = 0; i < 10; i++)
                         GeneralParticleHandler.SpawnParticle(new SparkParticle(Projectile.Center, (Projectile.rotation-MathHelper.PiOver4).ToRotationVector2().RotatedByRandom(0.4f) * -Main.rand.Next(10,20), false, 30, 2, new Color(69, 69, 200)));
-                    Projectile.damage *= 19;
+                    Projectile.damage = (int)(Projectile.damage*17.5f);
                     Projectile.Damage();
                     Owner.Calamity().StratusStarburst -= 10;
                     for (int i = 0; i < 3; i++)
@@ -184,7 +184,7 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
                 Projectile.damage = Projectile.originalDamage;
                 if (Owner.Calamity().AvaliableStarburst >= 20)
                 {
-                    Projectile.damage *= 38;
+                    Projectile.damage *= 35;
                     Owner.SetImmuneTimeForAllTypes(Owner.longInvince ? 40 : 20);
                     Owner.Calamity().StratusStarburst -= 20;
                     SoundEngine.PlaySound(SoundID.DD2_MonkStaffGroundImpact, Owner.Center);
