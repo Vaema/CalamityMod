@@ -146,7 +146,7 @@ namespace CalamityMod.Graphics.Metaballs
                 // Load render targets.
                 int layerCount = Layers.Count();
                 for (int i = 0; i < layerCount; i++)
-                    LayerTargets.Add(ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice));
+                    LayerTargets.Add(RenderTargetPool.Shared.Rent(Main.instance.GraphicsDevice, Main.screenWidth+4, Main.screenHeight+4));
             });
         }
 

@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Armor.Astral
 
         public static int MaxManaBoost = 80;
         public static float AmmoReduction = 0.75f;
-        public static float DamageBoost = 0.07f;
+        public static float DamageBoost = 0.1f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MaxManaBoost, DamageBoost.ToPercent(), (1f - AmmoReduction).ToPercent());
 
         public override void SetDefaults()
