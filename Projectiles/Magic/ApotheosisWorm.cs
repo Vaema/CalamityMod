@@ -2,7 +2,7 @@
 using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
+using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -12,6 +12,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
+    [PierceResistException]
     public class ApotheosisWorm : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
@@ -177,7 +178,7 @@ namespace CalamityMod.Projectiles.Magic
             // This variant of segment attachment incorporates rotation.
             // Given the fact that all segments will execute this code is succession, the
             // result across the entire worm will exponentially decay over each segment,
-            // allowing for smooth rotations. This code is what the stardust dragon and mechworm use for their segmenting.
+            // allowing for smooth rotations. This code is what the stardust dragon and Void Eater Marionette use for their segmenting.
             if (aheadSegmentRotation != Segments[segmentIndex].Rotation)
             {
                 float offsetAngle = MathHelper.WrapAngle(aheadSegmentRotation - Segments[segmentIndex].Rotation);
@@ -200,7 +201,7 @@ namespace CalamityMod.Projectiles.Magic
                 }
 
                 if (Main.rand.NextBool(10))
-                    SoundEngine.PlaySound(GaussRifle.FireSound, Projectile.Center);
+                    SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/MechGaussRifle"), Projectile.Center);
             }
 
             float idealFlyAcceleration = 0.18f;
@@ -272,8 +273,8 @@ namespace CalamityMod.Projectiles.Magic
             Vector2 jawOrigin = jawTexture.Size() * 0.5f;
 
             // Segment drawing.
-            Texture2D bodyTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/DevourerofGods/DevourerofGodsBodyS").Value;
-            Texture2D tailTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/DevourerofGods/DevourerofGodsTailS").Value;
+            Texture2D bodyTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/DevourerofGods/DevourerofGodsBody_P2").Value;
+            Texture2D tailTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/DevourerofGods/DevourerofGodsTail_P2").Value;
 
             // Not white to differentiate itself slightly from regular DoG when fighting Boss Rush.
             Color baseColor = Color.Lerp(Color.White, Color.Fuchsia, 0.15f);

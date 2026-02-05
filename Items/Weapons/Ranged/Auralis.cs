@@ -2,10 +2,10 @@
 using CalamityMod.Items.Potions;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
-using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -14,6 +14,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 {
     public class Auralis : ModItem, ILocalizedModType
     {
+        public static readonly SoundStyle HeavyShotSound = new("CalamityMod/Sounds/Item/PlasmaRifleMain");
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public static readonly Color blueColor = new Color(0, 77, 255);
         public static readonly Color greenColor = new Color(0, 255, 77);
@@ -33,11 +34,10 @@ namespace CalamityMod.Items.Weapons.Ranged
 
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
-            Item.UseSound = CommonCalamitySounds.PlasmaBlastSound;
+            Item.UseSound = HeavyShotSound with { Volume = 0.8f };
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.Calamity().donorItem = true;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override void ModifyWeaponDamage(Player player, ref StatModifier damage)
@@ -61,8 +61,6 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void HoldItem(Player player) => player.scope = true;
 
-        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.Next(100) >= 50;
-
         public override void AddRecipes()
         {
             CreateRecipe().
@@ -70,7 +68,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient<UelibloomBar>(5).
                 AddIngredient<AureusCell>(5).
                 AddIngredient<StarblightSoot>(50).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

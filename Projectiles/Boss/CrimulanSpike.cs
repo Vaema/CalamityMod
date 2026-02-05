@@ -1,13 +1,6 @@
-﻿using System;
-using System.IO;
-using CalamityMod.Events;
-using CalamityMod.NPCs;
-using CalamityMod.Sounds;
-using CalamityMod.World;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -25,7 +18,6 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetDefaults()
         {
-            Projectile.Calamity().DealsDefenseDamage = true;
             Projectile.width = 20;
             Projectile.height = 20;
             Projectile.hostile = true;
@@ -52,29 +44,20 @@ namespace CalamityMod.Projectiles.Boss
             {
                 Color dustColor = Color.Crimson;
                 dustColor.A = 150;
-                int redSpiky = Dust.NewDust(Projectile.position - Projectile.velocity * 3f, Projectile.width, Projectile.height, DustID.SparksMech, 0f, 0f, 50, dustColor, 1.2f);
+                int redSpiky = Dust.NewDust(Projectile.position - Projectile.velocity * 3f, Projectile.width, Projectile.height, DustID.TintableDust);
                 Main.dust[redSpiky].velocity *= 0.3f;
                 Main.dust[redSpiky].velocity += Projectile.velocity * 0.3f;
+                Main.dust[redSpiky].color = dustColor;
+                Main.dust[redSpiky].scale = 1.4f;
                 Main.dust[redSpiky].noGravity = true;
             }
         }
 
         public override bool CanHitPlayer(Player target) => Projectile.Opacity == 1f;
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (info.Damage <= 0 || Projectile.Opacity != 1f)
-                return;
-
-            target.AddBuff(BuffID.Darkness, 180);
-        }
-
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D texture = Projectile.ai[2] > 0f ? ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/CrimulanSpike" + ((int)Projectile.ai[2] + 1)).Value : TextureAssets.Projectile[Projectile.type].Value;
-            lightColor.R = (byte)(255 * Projectile.Opacity);
-            lightColor.G = (byte)(255 * Projectile.Opacity);
-            lightColor.B = (byte)(255 * Projectile.Opacity);
             CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1, texture);
             return false;
         }

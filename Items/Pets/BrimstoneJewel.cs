@@ -3,7 +3,6 @@ using CalamityMod.Projectiles.Pets;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Pets
@@ -15,7 +14,7 @@ namespace CalamityMod.Items.Pets
         {
             Item.DefaultToVanitypet(ModContent.ProjectileType<SCalPet>(), ModContent.BuffType<ClassicSCalPetBuff>());
             Item.value = Item.sellPrice(gold: 20);
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.Calamity().donorItem = true;
         }
 

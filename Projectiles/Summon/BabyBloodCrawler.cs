@@ -9,12 +9,13 @@ namespace CalamityMod.Projectiles.Summon
     public class BabyBloodCrawler : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Summon";
-        public static int bloodCooldown = 0;
+        public int bloodCooldown = 0;
         public float dust = 0f;
 
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 11;
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
@@ -36,13 +37,27 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.DamageType = DamageClass.Summon;
             Projectile.MaxUpdates = 2;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 33 * Projectile.MaxUpdates;
+            Projectile.localNPCHitCooldown = 30 * Projectile.MaxUpdates;
         }
 
         public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
         {
             fallThrough = false;
             return true;
+        }
+
+        private bool _hadSpiderMinion = false;
+        public override bool PreAI()
+        {
+            var owner = Main.player[Projectile.owner];
+            _hadSpiderMinion = owner.spiderMinion;
+            owner.spiderMinion = false;
+            return true;
+        }
+
+        public override void PostAI()
+        {
+            Main.player[Projectile.owner].spiderMinion = _hadSpiderMinion;
         }
 
         public override void AI()
@@ -52,19 +67,6 @@ namespace CalamityMod.Projectiles.Summon
 
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
-
-            foreach (Projectile proj in Main.ActiveProjectiles)
-            {
-                // Short circuits to make the loop as fast as possible
-                if (proj.owner != Projectile.owner || !proj.minion || proj.Calamity().lineColor != 1)
-                    continue;
-                if (proj.type == Projectile.type)
-                {
-                    proj.Calamity().lineColor = 2;
-                }
-            }
-            if (Projectile.Calamity().lineColor == 0)
-                Projectile.Calamity().lineColor = 1;
 
             if (dust == 0f)
             {
@@ -96,23 +98,20 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
+        public override bool MinionContactDamage() => true;
+
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => OnHitEffects(target.Center);
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => OnHitEffects(target.Center);
-
-        private void OnHitEffects(Vector2 targetPos)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => OnHitEffects(target);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => OnHitEffects(target);
+        private void OnHitEffects(Entity target)
         {
             if (bloodCooldown == 0)
             {
-                bloodCooldown = 17;
-                int projAmt = 2;
-                var source = Projectile.GetSource_FromThis();
-                for (int n = 0; n < projAmt; n++)
-                {
-                    CalamityUtils.ProjectileRain(source, targetPos, 400f, 100f, 400f, 700f, 29f, ModContent.ProjectileType<BloodRain>(), Projectile.damage, Projectile.knockBack * Main.rand.NextFloat(0.7f, 1f), Projectile.owner);
-                }
+                bloodCooldown = 15;
+                Vector2 spawnPos = target.Center + Vector2.UnitX * Main.rand.NextFloat(-100f, 100f) - Vector2.UnitY * Main.rand.NextFloat(400f, 700f);
+                Vector2 velocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(spawnPos, target, 25f, 2);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnPos, velocity, ModContent.ProjectileType<BloodRain>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner);
             }
         }
     }

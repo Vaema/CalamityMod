@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using CalamityMod.Graphics.Metaballs;
+﻿using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -37,7 +36,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.MaxUpdates = 2;
             Projectile.timeLeft = 150 * Projectile.MaxUpdates;
             Projectile.DamageType = DamageClass.Ranged;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
         }
@@ -96,7 +94,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             if (Main.rand.NextBool(20) && !DashShot && !PostHit)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 192);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.Ghost);
                 dust.noLight = true;
                 dust.noGravity = false;
                 dust.scale = 1.2f;
@@ -124,7 +122,7 @@ namespace CalamityMod.Projectiles.Ranged
                     GeneralParticleHandler.SpawnParticle(spark2);
                 }
 
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 192);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.Ghost);
                 dust.noLight = true;
                 dust.noGravity = false;
                 dust.scale = Main.rand.NextFloat(1.3f, 1.5f);
@@ -136,7 +134,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 for (int i = 0; i <= 10; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, 192, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(30f)) * Main.rand.NextFloat(0.4f, 1.2f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.Ghost, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(30f)) * Main.rand.NextFloat(0.4f, 1.2f));
                     dust.noGravity = true;
                     dust.color = ColorUsed;
                     dust.alpha = Main.rand.Next(40, 90);
@@ -148,7 +146,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 for (int i = 0; i <= 7; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, 192, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(PostDashShot ? 13f : 23f)) * Main.rand.NextFloat(0.4f, 1.2f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.Ghost, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(PostDashShot ? 13f : 23f)) * Main.rand.NextFloat(0.4f, 1.2f));
                     dust.noGravity = true;
                     dust.color = ColorUsed;
                     dust.alpha = Main.rand.Next(40, 90);
@@ -188,7 +186,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 for (int i = 0; i <= 8; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(7, 7), 192, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(20f)) * Main.rand.NextFloat(0.05f, 0.45f), 0, default, Main.rand.NextFloat(0.6f, 1.2f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(7, 7), DustID.Ghost, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(20f)) * Main.rand.NextFloat(0.05f, 0.45f), 0, default, Main.rand.NextFloat(0.6f, 1.2f));
                     dust.noLight = true;
                     dust.noGravity = false;
                     dust.color = GetColor(Projectile.ai[0]);
@@ -237,11 +235,11 @@ namespace CalamityMod.Projectiles.Ranged
         public static Color GetColor(float type) => type == 0 ? Color.Aqua : type == 1 ? Color.Blue : type == 2 ? Color.Fuchsia : type == 3 ? Color.Lime : Color.Yellow;
 
         public override Color? GetAlpha(Color drawColor) => GetColor(Projectile.ai[0]) * drawColor.A * Projectile.Opacity;
-        internal float WidthFunction(float completionRatio) => (1f - completionRatio) * Projectile.scale * 6f;
-        internal Color ColorFunction(float completionRatio) => GetColor(Projectile.ai[0]) * Projectile.Opacity;
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos) => (1f - completionRatio) * Projectile.scale * 6f;
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos) => GetColor(Projectile.ai[0]) * Projectile.Opacity;
         public override bool PreDraw(ref Color lightColor)
         {
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f), 20);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_,_) => Projectile.Size * 0.5f), 20);
             return true;
         }
     }

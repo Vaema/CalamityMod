@@ -19,6 +19,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.PrimordialWyrmHead.DisplayName");
         public override void SetStaticDefaults()
         {
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
             this.HideFromBestiary();
             if (!Main.dedServ)
             {
@@ -28,7 +29,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
 
         public override void SetDefaults()
         {
-            NPC.damage = 100;
+            NPC.damage = 0;
             NPC.width = 100;
             NPC.height = 120;
             NPC.defense = 0;
@@ -52,8 +53,6 @@ namespace CalamityMod.NPCs.PrimordialWyrm
 
         public override void AI()
         {
-            NPC.damage = 0;
-
             // Difficulty modes
             bool death = CalamityWorld.death;
             bool revenge = CalamityWorld.revenge;
@@ -137,8 +136,14 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             center += vector * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture, center, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
 
+            // this math is so incredibly scuffed. please someone fix it i dont even know what any of this actually does
+            float brightness = 1f;
+            float nameWasTooLong = Main.GameUpdateCount * 0.01f;
+            float saneVelocity = MathHelper.Clamp((int)PrimordialWyrmHead.PWHeadVelocity, 6f, 8f);
+            brightness = MathF.Sin(nameWasTooLong * (6f + saneVelocity) - NPC.whoAmI);
+            brightness = MathHelper.Clamp(brightness, 0.25f, 1f);
             texture = GlowTexture.Value;
-            spriteBatch.Draw(texture, center, NPC.frame, Color.White * NPC.Opacity, NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
+            spriteBatch.Draw(texture, center, NPC.frame, Color.White * (NPC.Opacity * brightness), NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
 
             return false;
         }

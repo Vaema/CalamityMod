@@ -3,7 +3,6 @@ using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
 using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -40,7 +39,7 @@ namespace CalamityMod.Items.Weapons.Magic
             CreateRecipe().
                 AddIngredient<PlasmaRod>().
                 AddIngredient<TwistingNether>(3).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

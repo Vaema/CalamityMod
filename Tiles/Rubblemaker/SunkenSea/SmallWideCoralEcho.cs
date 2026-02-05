@@ -10,12 +10,14 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
     public class SmallWideCoralEcho : ModTile
     {
         public override string Texture => "CalamityMod/Tiles/SunkenSea/Ambient/SmallWideCoral";
+
         public override void SetStaticDefaults()
         {
             Main.tileFrameImportant[Type] = true;
             Main.tileLavaDeath[Type] = true;
             Main.tileWaterDeath[Type] = false;
             Main.tileNoAttach[Type] = true;
+            Main.tileLighted[Type] = true;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x1);
             TileObjectData.newTile.DrawYOffset = 2;
             TileObjectData.addTile(Type);
@@ -26,9 +28,24 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
 
             base.SetStaticDefaults();
         }
+
+        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
+        {
+            r = 0.32f;
+            g = 0.37f;
+            b = 0.15f;
+        }
     }
+
     public class SmallWideCoral2Echo : SmallWideCoralEcho
     {
         public override string Texture => "CalamityMod/Tiles/SunkenSea/Ambient/SmallWideCoral2";
+
+        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
+        {
+            r = 0.33f;
+            g = 0.2f;
+            b = 0.29f;
+        }
     }
 }

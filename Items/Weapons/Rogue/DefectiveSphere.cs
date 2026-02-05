@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Items.Weapons.Rogue
@@ -16,7 +15,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 42;
             Item.height = 44;
-            Item.damage = 116;
+            Item.damage = 85;
             Item.knockBack = 5f;
             Item.useAnimation = 13;
             Item.useTime = 13;
@@ -37,21 +36,8 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override bool CanUseItem(Player player)
         {
-            if (player.Calamity().StealthStrikeAvailable())
-            {
-                return true;
-            }
-            else if ((player.ownedProjectileCounts[Item.shoot] + player.ownedProjectileCounts[ProjectileType<SphereBladed>()] + player.ownedProjectileCounts[ProjectileType<SphereYellow>()] + player.ownedProjectileCounts[ProjectileType<SphereBlue>()]) >= 5)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            return player.Calamity().StealthStrikeAvailable() || (player.ownedProjectileCounts[Item.shoot] + player.ownedProjectileCounts[ProjectileType<SphereBladed>()] + player.ownedProjectileCounts[ProjectileType<SphereYellow>()] + player.ownedProjectileCounts[ProjectileType<SphereBlue>()]) <= 4;
         }
-
-        public override float StealthDamageMultiplier => 0.9f;
 
         public override void ModifyStatsExtra(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
@@ -72,13 +58,13 @@ namespace CalamityMod.Items.Weapons.Rogue
             {
                 // This is done to allow looping when creating projectiles, instead of having to create many projectile/velocity variables all at once,
                 // which this shoot code used to do.
-                int[] projectilesToShoot = new int[]
-                {
+                int[] projectilesToShoot =
+                [
                     ProjectileType<SphereSpiked>(),
                     ProjectileType<SphereBladed>(),
                     ProjectileType<SphereYellow>(),
                     ProjectileType<SphereBlue>()
-                };
+                ];
 
                 foreach (int projectileType in projectilesToShoot)
                 {

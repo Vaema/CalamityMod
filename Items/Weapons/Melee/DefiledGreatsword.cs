@@ -1,5 +1,4 @@
-﻿using CalamityMod.Buffs.StatBuffs;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -119,14 +118,12 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
-            player.AddBuff(ModContent.BuffType<BrutalCarnage>(), 300);
             target.AddBuff(BuffID.Venom, 360);
             target.AddBuff(BuffID.OnFire3, 360);
         }
 
         public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
         {
-            player.AddBuff(ModContent.BuffType<BrutalCarnage>(), 300);
             target.AddBuff(BuffID.Venom, 360);
             target.AddBuff(BuffID.OnFire3, 360);
         }
@@ -137,7 +134,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient<BlightedCleaver>().
                 AddIngredient<CoreofCalamity>().
                 AddIngredient<UelibloomBar>(15).
-                AddTile(TileID.DemonAltar).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

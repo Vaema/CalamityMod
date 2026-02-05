@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useTurn = false;
             Item.useAmmo = AmmoID.Arrow;
             Item.autoReuse = true;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override bool AltFunctionUse(Player player)

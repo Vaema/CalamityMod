@@ -14,12 +14,12 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.width = 46;
             Item.height = 50;
-            Item.damage = 125;
+            Item.damage = 75;
             Item.mana = 10;
             Item.DamageType = DamageClass.Summon;
             Item.sentry = true;
             Item.autoReuse = true;
-            Item.useAnimation = Item.useTime = 20;
+            Item.useAnimation = Item.useTime = 30;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 4f;

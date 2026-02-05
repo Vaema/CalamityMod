@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
-using CalamityMod.Items.Potions.Alcohol;
-using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -26,12 +24,14 @@ namespace CalamityMod.Items.Accessories
             Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.accessory = true;
+            Item.expert = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.flameLickedShell = true;
+            player.noKnockback = true;
         }
 
         public static void handleParry(Player player)

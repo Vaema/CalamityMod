@@ -47,11 +47,6 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
             Item.shoot = ModContent.ProjectileType<PlasmaCasterShot>();
             Item.shootSpeed = 5f;
-
-            modItem.UsesCharge = true;
-            modItem.MaxCharge = 190f;
-            modItem.ChargePerUse = 0.32f;
-            modItem.ChargePerAltUse = 0.12f; // turbo mode is more energy inefficient
         }
 
         public override bool AltFunctionUse(Player player) => true;
@@ -108,7 +103,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
                 AddIngredient<UelibloomBar>(8).
                 AddIngredient(ItemID.LunarBar, 4).
                 AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(4, out Func<bool> condition), condition).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

@@ -23,6 +23,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public static int AftershotCooldownFrames = 9;
         public static int Charge1Frames = 156;
         public static int Charge2Frames = 308;
+        public static Color mainColor = new Color(116, 225, 0);
 
         public new string LocalizationCategory => "Items.Weapons.Ranged";
 
@@ -32,7 +33,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 58;
             Item.height = 28;
-            Item.damage = 172;
+            Item.damage = 125;
             Item.DamageType = DamageClass.Ranged;
             Item.useAnimation = Item.useTime = AftershotCooldownFrames;
             Item.noMelee = true;
@@ -46,7 +47,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.autoReuse = false;
             Item.shoot = ModContent.ProjectileType<ArcNovaDiffuserHoldout>();
             Item.shootSpeed = 12f;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
@@ -66,8 +66,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             CreateRecipe().
                 AddIngredient<OpalStriker>().
                 AddIngredient<MagnaCannon>().
-                AddIngredient<LifeAlloy>(3).
-                AddIngredient(ItemID.MartianConduitPlating, 15).
+                AddIngredient<CoreofCalamity>().
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

@@ -11,7 +11,6 @@ using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
@@ -59,7 +58,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void KillHoldoutLogic()
         {
-            if (HeldItem.type != Owner.ActiveItem().type)
+            if (HeldItem.type != Owner.HeldItem.type || Owner.dead || !Owner.active)
             {
                 Projectile.Kill();
                 Projectile.netUpdate = true;
@@ -74,44 +73,45 @@ namespace CalamityMod.Projectiles.Ranged
             if (SoundEngine.TryGetActiveSound(ChargeIdle, out var Idle) && Idle.IsPlaying)
                 Idle.Position = GunTipPosition;
 
-            // Handle the right-click dash (holds priority over left-click)
+            // Handle the right-click dash (only works when not used from left-click)
             if (Owner.Calamity().mouseRight && !Owner.HasCooldown(SuperradiantSawBoost.ID))
             {
-                Owner.AddCooldown(SuperradiantSawBoost.ID, SuperradiantSlaughterer.DashCooldown);
-                Owner.Calamity().sBlasterDashActivated = true;
-                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/MeatySlash"), GunTipPosition);
-
-                // Throws a lingering saw at the cursor that deals 3x damage (since the holdout already deals 2x)
-                float clampedMouseDist = MathHelper.Clamp(Vector2.Distance(GunTipPosition, Owner.Calamity().mouseWorld), 0f, 960f);
-                float adjustedMouseDist = clampedMouseDist / 21f;
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitY) * adjustedMouseDist, ModContent.ProjectileType<SuperradiantSawLingering>(), (int)(Projectile.damage * 1.5f), Projectile.knockBack, Projectile.owner);
-
-                // Special case: right-clicking while not holding left-click
-                // This is to keep it friendly to use both fires at the same time, but end the animation early if not
                 if (Projectile.ai[1] >= 2f)
                 {
+                    Owner.AddCooldown(SuperradiantSawBoost.ID, SuperradiantSlaughterer.DashCooldown);
+                    SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/MeatySlash"), GunTipPosition);
+
+                    // Throws a lingering saw at the cursor that deals 3x damage (since the holdout already deals 2x)
+                    if (Main.myPlayer == Projectile.owner)
+                    {
+                        float clampedMouseDist = MathHelper.Clamp(Vector2.Distance(GunTipPosition, Owner.Calamity().mouseWorld), 0f, 960f);
+                        float adjustedMouseDist = clampedMouseDist / 21f;
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitY) * adjustedMouseDist, ModContent.ProjectileType<SuperradiantSawLingering>(), (int)(Projectile.damage * 1.5f), Projectile.knockBack, Projectile.owner);
+                    }
+
+                    // End animation early
                     NoSawOnHoldout = true;
                     OffsetLengthFromArm -= 16f;
-                    Projectile.timeLeft = Owner.ActiveItem().useAnimation;
+                    Projectile.timeLeft = Owner.HeldItem.useAnimation;
                     KeepRefreshingLifetime = false;
                     Idle?.Stop();
-                }
 
-                // If moving, make particle effects when the dash activates
-                if (Owner.velocity != Vector2.Zero)
-                {
-                    int particleAmt = 7;
-                    for (int c = 0; c < particleAmt; c++)
+                    // If moving, make particle effects when the dash activates
+                    if (Owner.velocity != Vector2.Zero)
                     {
-                        Color sparkColor = Color.Lerp(new Color(122, 240, 58), new Color(32, 186, 171), c / (particleAmt - 1));
-                        Particle spark = new CritSpark(Owner.Center, Owner.velocity.RotatedByRandom(MathHelper.ToRadians(13f)) * Main.rand.NextFloat(-2.1f, -4.5f), Color.White, sparkColor, 2f, 45, 2.25f, 2f);
-                        GeneralParticleHandler.SpawnParticle(spark);
-                    }
-                    for (int e = 0; e < particleAmt * 2; e++)
-                    {
-                        Color sparkColor2 = Color.Lerp(new Color(122, 240, 58), new Color(32, 186, 171), e / (particleAmt - 1));
-                        Particle spark2 = new NanoParticle(Owner.Center, Owner.velocity.RotatedByRandom(MathHelper.ToRadians(-MathHelper.PiOver4)) * Main.rand.NextFloat(2.5f, 4.5f), sparkColor2, 1f, 45, Main.rand.NextBool(3));
-                        GeneralParticleHandler.SpawnParticle(spark2);
+                        int particleAmt = 7;
+                        for (int c = 0; c < particleAmt; c++)
+                        {
+                            Color sparkColor = Color.Lerp(new Color(122, 240, 58), new Color(32, 186, 171), c / (particleAmt - 1));
+                            Particle spark = new CritSpark(Owner.Center, Owner.velocity.RotatedByRandom(MathHelper.ToRadians(13f)) * Main.rand.NextFloat(-2.1f, -4.5f), Color.White, sparkColor, 2f, 45, 2.25f, 2f);
+                            GeneralParticleHandler.SpawnParticle(spark);
+                        }
+                        for (int e = 0; e < particleAmt * 2; e++)
+                        {
+                            Color sparkColor2 = Color.Lerp(new Color(122, 240, 58), new Color(32, 186, 171), e / (particleAmt - 1));
+                            Particle spark2 = new NanoParticle(Owner.Center, Owner.velocity.RotatedByRandom(MathHelper.ToRadians(-MathHelper.PiOver4)) * Main.rand.NextFloat(2.5f, 4.5f), sparkColor2, 1f, 45, Main.rand.NextBool(3));
+                            GeneralParticleHandler.SpawnParticle(spark2);
+                        }
                     }
                 }
             }
@@ -121,7 +121,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Idle?.Stop();
 
                 Projectile.ai[1] = 1f;
-                Projectile.timeLeft = Owner.ActiveItem().useAnimation;
+                Projectile.timeLeft = Owner.HeldItem.useAnimation;
                 SoundStyle ShootSound = new("CalamityMod/Sounds/Item/SawShot", 2) { PitchVariance = 0.1f, Volume = 0.4f + SawPower * 0.5f };
                 SoundEngine.PlaySound(ShootSound, GunTipPosition);
 
@@ -130,7 +130,8 @@ namespace CalamityMod.Projectiles.Ranged
                 int sawLevel = (SawPower >= 1f).ToInt() + (SawPower >= 0.25f).ToInt();
 
                 // ai[0] determines which slashes are drawn. ai[1] is the saw's timer variable. ai[2] stores the saw's pierce.
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitY) * SuperradiantSlaughterer.ShootSpeed, ModContent.ProjectileType<SuperradiantSaw>(), (int)(Projectile.damage * sawDamageMult), Projectile.knockBack, Projectile.owner, sawLevel, 0f, sawPierce);
+                if (Main.myPlayer == Projectile.owner)
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitY) * SuperradiantSlaughterer.ShootSpeed, ModContent.ProjectileType<SuperradiantSaw>(), (int)(Projectile.damage * sawDamageMult), Projectile.knockBack, Projectile.owner, sawLevel, 0f, sawPierce);
 
                 NoSawOnHoldout = true;
                 OffsetLengthFromArm -= 4f + 12f * SawPower;

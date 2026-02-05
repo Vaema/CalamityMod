@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using CalamityMod.Graphics.Primitives;
+using CalamityMod.NPCs;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -15,6 +16,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
+    [PierceResistException]
     public class Teslabeam : BaseLaserbeamProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
@@ -99,7 +101,7 @@ namespace CalamityMod.Projectiles.Magic
                 return false;
             }
             // Do we still have enough mana? If not, we kill the projectile because we cannot use it anymore
-            if (Owner.miscCounter % 10 == 0 && !Owner.CheckMana(Owner.ActiveItem(), -1, true))
+            if (Owner.miscCounter % 10 == 0 && !Owner.CheckMana(Owner.HeldItem, -1, true))
             {
                 Projectile.Kill();
                 return false;
@@ -131,19 +133,19 @@ namespace CalamityMod.Projectiles.Magic
             return true;
         }
 
-        internal float WidthFunction(float completionRatio)
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos)
         {
             return MathHelper.Clamp(completionRatio * 15, 1, 1.5f);
         }
 
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             return new Color(174, 227, 244); // directly color picked from the source material
         }
 
-        internal float BackgroundWidthFunction(float completionRatio) => WidthFunction(completionRatio) * 4f;
+        internal float BackgroundWidthFunction(float completionRatio, Vector2 vertexPos) => WidthFunction(completionRatio, vertexPos) * 4f;
 
-        internal Color BackgroundColorFunction(float completionRatio)
+        internal Color BackgroundColorFunction(float completionRatio, Vector2 vertexPos)
         {
             return new Color(92, 144, 245) * 0.6f; // directly color picked from the source material
         }

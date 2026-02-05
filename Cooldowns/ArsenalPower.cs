@@ -2,7 +2,6 @@
 using Terraria;
 using Terraria.Audio;
 using Terraria.Localization;
-using static CalamityMod.CalamityUtils;
 
 namespace CalamityMod.Cooldowns
 {
@@ -15,7 +14,13 @@ namespace CalamityMod.Cooldowns
         public override Color OutlineColor => Color.White;
         public override Color CooldownStartColor => Color.Sienna;
         public override Color CooldownEndColor => Color.LightSlateGray;
+        public override void Tick()
+        {
+            if (Main.zenithWorld)
+                instance.timeLeft = -1;
+            
+        }
 
-        public override SoundStyle? EndSound => new("CalamityMod/Sounds/Item/ArsenalOffCooldown");
+        public override SoundStyle? EndSound => (Main.zenithWorld ? null : new("CalamityMod/Sounds/Item/ArsenalOffCooldown"));
     }
 }

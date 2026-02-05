@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
-using Terraria.ModLoader.Core;
 
 namespace CalamityMod.Projectiles.BaseProjectiles
 {
@@ -33,7 +31,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         {
             foreach (int itemID in ItemProjectileRelationship.Keys)
             {
-                Item heldItem = player.ActiveItem();
+                Item heldItem = player.HeldItem;
                 if (heldItem.type != itemID)
                     continue;
 
@@ -60,7 +58,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         public sealed override void AI()
         {
             CheckForEveryHoldout(Owner);
-            if (Owner.ActiveItem().type != AssociatedItemID || Owner.CCed || !Owner.active || Owner.dead || Owner.Calamity().profanedCrystalBuffs)
+            if (Owner.HeldItem.type != AssociatedItemID || Owner.CCed || !Owner.active || Owner.dead || Owner.Calamity().profanedCrystalBuffs)
             {
                 Projectile.Kill();
                 return;

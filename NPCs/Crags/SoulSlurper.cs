@@ -1,6 +1,5 @@
 ﻿using System;
 using CalamityMod.BiomeManagers;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.Materials;
@@ -40,10 +39,9 @@ namespace CalamityMod.NPCs.Crags
             NPC.width = 40;
             NPC.height = 40;
             NPC.defense = 30;
-            NPC.DR_NERD(0.15f);
             NPC.lifeMax = 80;
             NPC.knockBackResist = 0.65f;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(silver: 5);
             NPC.noGravity = true;
             NPC.lavaImmune = true;
             NPC.HitSound = SoundID.NPCHit4;
@@ -60,10 +58,6 @@ namespace CalamityMod.NPCs.Crags
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToWater = true;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<BrimstoneCragsBiome>().Type };
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -304,12 +298,6 @@ namespace CalamityMod.NPCs.Crags
             LeadingConditionRule postProv = npcLoot.DefineConditionalDropSet(DropHelper.PostProv());
             hardmode.Add(ModContent.ItemType<EssenceofHavoc>(), 2);
             postProv.Add(ModContent.ItemType<Bloodstone>(), 4);
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 60, true);
         }
 
         public override void HitEffect(NPC.HitInfo hit)

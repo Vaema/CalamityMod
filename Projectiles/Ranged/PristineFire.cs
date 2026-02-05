@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Dusts;
-using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
@@ -62,7 +57,7 @@ namespace CalamityMod.Projectiles.Ranged
                 for (int x = 0; x < Main.maxProjectiles; x++)
                 {
                     Projectile projectile = Main.projectile[x];
-                    if (Vector2.Distance(Projectile.Center, projectile.Center) <= 100 && projectile.active && projectile.type == ModContent.ProjectileType<PristineSecondary>() && projectile.Opacity > 0.5f)
+                    if (Vector2.Distance(Projectile.Center, projectile.Center) <= 100 && projectile.active && projectile.type == ModContent.ProjectileType<PristineSecondary>() && projectile.Opacity > 0.7f)
                     {
                         if (projectile.ai[2] == 0)
                         {
@@ -81,6 +76,10 @@ namespace CalamityMod.Projectiles.Ranged
             time--;
         }
 
+        
+        //Doze - Flamethrowers in vanilla are long debuff infliction tools (20 seconds of their debuff).
+        //I am applying this as the base for Cal flamethrowers, with shorter times being the exception instead of the rule
+        //On Pristine Fury, the full 20 seconds is limited to the ignition of the secondary.
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<HolyFlames>(), 240);
 
         public override void OnKill(int timeLeft)

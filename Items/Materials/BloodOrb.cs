@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Materials
             Item.height = 28;
             Item.maxStack = Item.CommonMaxStack;
             Item.value = Item.sellPrice(copper: 40);
-            Item.rare = ItemRarityID.Blue;
+            Item.rare = ItemRarityID.Green;
         }
 
         public override void Update(ref float gravity, ref float maxFallSpeed)
@@ -29,14 +29,6 @@ namespace CalamityMod.Items.Materials
             float brightness = Main.rand.Next(90, 111) * 0.01f;
             brightness *= Main.essScale;
             Lighting.AddLight((int)((Item.position.X + (Item.width / 2)) / 16f), (int)((Item.position.Y + (Item.height / 2)) / 16f), 0.75f * brightness, 0f, 0f);
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe(10).
-                AddIngredient(ItemID.BloodMoonStarter).
-                Register()
-                .DisableDecraft();
         }
     }
 }

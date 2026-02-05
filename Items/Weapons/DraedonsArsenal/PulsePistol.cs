@@ -22,11 +22,12 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.width = 54;
             Item.height = 38;
             Item.DamageType = DamageClass.Magic;
-            Item.damage = 70;
+            Item.damage = 42;
             Item.knockBack = 3f;
-            Item.useTime = Item.useAnimation = 44;
+            Item.useTime = 64;
+            Item.useAnimation = 64;
             Item.autoReuse = true;
-            Item.mana = 3;
+            Item.mana = 15;
 
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = PulseRifle.FireSound with { Pitch = 0.3f, Volume = 0.7f };
@@ -36,16 +37,12 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.rare = ItemRarityID.Orange;
 
             Item.shoot = ModContent.ProjectileType<PulsePistolShot>();
-            Item.shootSpeed = 8.2f;
-
-            modItem.UsesCharge = true;
-            modItem.MaxCharge = 50f;
-            modItem.ChargePerUse = 0.01f;
+            Item.shootSpeed = 8f;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, position + velocity * 4, velocity, ModContent.ProjectileType<PulsePistolShot>(), damage, knockback, player.whoAmI, 0f, 3f);
+            Projectile.NewProjectile(source, position + velocity * 4, velocity, ModContent.ProjectileType<PulsePistolShot>(), damage, knockback, player.whoAmI);
             return false;
         }
         public override void UseStyle(Player player, Rectangle heldItemFrame)

@@ -52,7 +52,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient<ArchAmaryllis>().
                 AddIngredient<DivineGeode>(15).
                 AddIngredient<UnholyEssence>(10).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

@@ -1,4 +1,4 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -41,21 +41,10 @@ namespace CalamityMod.Items.Weapons.Rogue
                 if (stealth.WithinBounds(Main.maxProjectiles))
                 {
                     Main.projectile[stealth].Calamity().stealthStrike = true;
-                    Main.projectile[stealth].usesLocalNPCImmunity = true;
                 }
                 return false;
             }
             return true;
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.DemoniteBar, 4).
-                AddIngredient<RottenMatter>(12).
-                AddIngredient(ItemID.RottenChunk, 4).
-                AddTile(TileID.DemonAltar).
-                Register();
         }
     }
 }

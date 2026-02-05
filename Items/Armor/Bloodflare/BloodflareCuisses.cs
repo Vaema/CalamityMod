@@ -2,6 +2,7 @@
 using CalamityMod.Rarities;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Bloodflare
@@ -10,20 +11,26 @@ namespace CalamityMod.Items.Armor.Bloodflare
     public class BloodflareCuisses : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PostMoonLord";
+
+        public static float DamageBoost = 0.1f;
+        public static int CritBoost = 7;
+        public static float MoveSpeedBoost = 0.17f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(), CritBoost, MoveSpeedBoost.ToPercent());
+
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
-            Item.defense = 29;
+            Item.defense = 28;
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.moveSpeed += 0.17f;
-            player.GetDamage<GenericDamageClass>() += 0.1f;
-            player.GetCritChance<GenericDamageClass>() += 7;
+            player.GetDamage<GenericDamageClass>() += DamageBoost;
+            player.GetCritChance<GenericDamageClass>() += CritBoost;
+            player.moveSpeed += MoveSpeedBoost;
         }
 
         public override void AddRecipes()
@@ -31,7 +38,7 @@ namespace CalamityMod.Items.Armor.Bloodflare
             CreateRecipe().
                 AddIngredient<BloodstoneCore>(13).
                 AddIngredient<RuinousSoul>(3).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

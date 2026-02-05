@@ -1,7 +1,9 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.World;
+﻿using System.Collections.Generic;
+using CalamityMod.CalPlayer;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.PermanentBoosters
@@ -23,7 +25,26 @@ namespace CalamityMod.Items.PermanentBoosters
             Item.rare = ItemRarityID.Red;
         }
 
-        public override bool CanUseItem(Player player) => !(Main.masterMode && player.extraAccessory) && !player.Calamity().extraAccessoryML;
+        public static bool HasConsumedBefore(Player player)
+        {
+            return (Main.masterMode && player.extraAccessory) || player.Calamity().extraAccessoryML;
+        }
+
+        public override bool CanUseItem(Player player)
+        {
+            if (HasConsumedBefore(player))
+            {
+                if (player.whoAmI == Main.myPlayer)
+                {
+                    string key = "Mods.CalamityMod.Misc.CelestialOnionText";
+                    Color messageColor = Color.LightSlateGray;
+                    Main.NewText(Language.GetTextValue(key), messageColor);
+                }
+                return false;
+            }
+
+            return true;
+        }
 
         public override bool? UseItem(Player player)
         {
@@ -45,20 +66,11 @@ namespace CalamityMod.Items.PermanentBoosters
             }
             return true;
         }
-    }
 
-    public class CelestialOnionAccessorySlot : ModAccessorySlot
-    {
-        // Celestial Onion does not work in Master Mode.
-        public override bool IsEnabled()
+        public override void ModifyTooltips(List<TooltipLine> list)
         {
-            // GetModPlayer will throw an index error in this step of the loading process for whatever reason
-            // We prematurely stop it from getting to that point
-            if (!Player.active || Main.masterMode)
-                return false;
-
-            return Player.Calamity().extraAccessoryML;
+            if (HasConsumedBefore(Main.LocalPlayer))
+                list.AddConsumedTooltip();
         }
-        public override bool IsHidden() => IsEmpty && !IsEnabled();
     }
 }

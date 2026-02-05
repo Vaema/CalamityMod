@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent;
-using Terraria.Localization;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -17,10 +17,10 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
             Main.tileNoAttach[Type] = true;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
             TileObjectData.addTile(Type);
-            DustType = 253;
+            DustType = DustID.TsunamiInABottle;
             AddMapEntry(new Color(36, 61, 111));
-            RegisterItemDrop(ModContent.ItemType<Navystone>());
-            FlexibleTileWand.RubblePlacementSmall.AddVariations(ModContent.ItemType<Navystone>(), Type, 0);
+            RegisterItemDrop(ModContent.ItemType<HardenedEutrophicSand>());
+            FlexibleTileWand.RubblePlacementSmall.AddVariations(ModContent.ItemType<HardenedEutrophicSand>(), Type, 0);
 
             base.SetStaticDefaults();
         }

@@ -1,14 +1,9 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Cooldowns;
+﻿using CalamityMod.Cooldowns;
 using CalamityMod.Dusts;
-using CalamityMod.Items.BaseItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
-using CalamityMod.Projectiles.Rogue;
-using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
-using Mono.Cecil;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -25,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 74;
             Item.height = 74;
-            Item.damage = 44;
+            Item.damage = 58;
             Item.useAnimation = Item.useTime = 50;
 
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -48,7 +43,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void HoldItem(Player player)
         {
             player.Calamity().mouseWorldListener = true;
-            if (player.Calamity().mouseRight && player.Calamity().killModeCooldown == 0 && !Main.mapFullscreen && !Main.blockMouse)
+            if (player.Calamity().mouseRight && !player.mouseInterface && player.Calamity().killModeCooldown == 0 && !Main.mapFullscreen && !Main.blockMouse)
             {
                 SoundStyle buff = new("CalamityMod/Sounds/Item/DemonSwordKillMode");
                 SoundEngine.PlaySound(buff with { Volume = 0.95f }, player.Center);
@@ -75,7 +70,7 @@ namespace CalamityMod.Items.Weapons.Melee
             }
             if (player.Calamity().demonSwordKillMode && player.ownedProjectileCounts[ModContent.ProjectileType<ForbiddenOathbladeHoldout>()] <= 0 && player.Calamity().killModeCooldown == KillMode.cooldownMax + KillMode.buffMax)
             {
-                Projectile blade = Projectile.NewProjectileDirect(player.GetSource_FromThis(), player.MountedCenter,Vector2.Zero, ModContent.ProjectileType<ForbiddenOathbladeHoldout>(), Item.damage * 12, Item.knockBack, player.whoAmI, 0, throwCount);
+                Projectile blade = Projectile.NewProjectileDirect(player.GetSource_FromThis(), player.MountedCenter,Vector2.Zero, ModContent.ProjectileType<ForbiddenOathbladeHoldout>(), Item.damage * 10, Item.knockBack, player.whoAmI, 0, throwCount); // This used to be 12x damage.
             }
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

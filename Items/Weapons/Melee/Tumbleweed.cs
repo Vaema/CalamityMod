@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee.MaceFlails;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -35,8 +34,8 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CreateRecipe().
                 AddIngredient(ItemID.Sunfury).
+                AddIngredient(ItemID.AncientCloth, 5).
                 AddIngredient<GrandScale>().
-                AddIngredient(ItemID.SoulofMight, 5).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

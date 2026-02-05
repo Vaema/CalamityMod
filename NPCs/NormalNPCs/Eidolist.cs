@@ -43,7 +43,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.height = 80;
             NPC.lifeMax = 5000;
             NPC.knockBackResist = 0.5f;
-            NPC.value = Item.buyPrice(0, 0, 30, 0);
+            NPC.value = Item.buyPrice(silver: 30);
             NPC.Opacity = 0f;
             NPC.noGravity = true;
             NPC.noTileCollide = false;
@@ -57,10 +57,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[2] { ModContent.GetInstance<AbyssLayer3Biome>().Type, ModContent.GetInstance<AbyssLayer4Biome>().Type };
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -316,7 +312,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            // waffles% stipulation: eidolists are accessible by beating cal clone, even without beating WoF
+            // Waffles% stipulation: Eidolists are accessible by beating Cal Clone, even without beating WoF
             bool hardmodeOrCalClone = Main.hardMode || DownedBossSystem.downedCalamitasClone;
             if (!hardmodeOrCalClone || !spawnInfo.Player.InAbyss())
                 return 0f;
@@ -324,7 +320,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             // Keep this as a separate if check, because it's a loop and we don't want to be checking it constantly.
             if (NPC.AnyNPCs(NPC.type))
                 return 0f;
-
+            
             if (spawnInfo.Player.Calamity().ZoneAbyssLayer3 && spawnInfo.Water)
                 return Main.remixWorld ? 2.25f : 0.25f;
 

@@ -1,10 +1,7 @@
 ﻿using CalamityMod.Items.Accessories.Vanity;
-using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.GameContent;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -60,10 +57,14 @@ namespace CalamityMod.CalPlayer.DrawLayers
             {
                 for (int j = TopRange; j <= BottomRange; j++)
                 {
+                    Tile tile = Main.tile[i, j];
+                    if (!tile.HasTile || !TileID.Sets.IsAContainer[tile.TileType] || TileID.Sets.BasicDresser[tile.TileType])
+                        continue;
+
                     int PotentialChest = Chest.FindChestByGuessing(i, j);
-                    if (PotentialChest != -1 && !TileID.Sets.BasicDresser[Main.tile[i, j].TileType])
+                    if (PotentialChest != -1)
                     {
-                        // Adjust position ot the center of the chest
+                        // Adjust position to the center of the chest
                         Chest chest = Main.chest[PotentialChest];
                         Vector2 chestCenter = new Vector2(chest.x + 1, chest.y + 1) * 16f;
                         float distance = Vector2.Distance(chestCenter, drawPlayer.MountedCenter);

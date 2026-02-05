@@ -36,14 +36,14 @@ namespace CalamityMod.NPCs.PlagueEnemies
             NPC.damage = 37;
             NPC.width = 36;
             NPC.height = 30;
-            NPC.defense = 20;
+            NPC.defense = 32;
             NPC.scale *= 0.5f;
-            NPC.lifeMax = 250;
+            NPC.lifeMax = 720;
             NPC.aiStyle = NPCAIStyleID.Flying;
             AIType = NPCID.Bee;
             NPC.knockBackResist = 0.4f;
             AnimationType = NPCID.Bee;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(silver: 5);
             NPC.HitSound = SoundID.NPCHit4;
             NPC.noGravity = true;
             NPC.noTileCollide = false;
@@ -51,10 +51,6 @@ namespace CalamityMod.NPCs.PlagueEnemies
             BannerItem = ModContent.ItemType<PlagueChargerBanner>();
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -137,7 +133,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<Plague>(), 60, true);
+                target.AddBuff(ModContent.BuffType<Plague>(), 120);
         }
 
         public override void HitEffect(NPC.HitInfo hit)

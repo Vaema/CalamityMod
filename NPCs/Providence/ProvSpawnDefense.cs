@@ -2,7 +2,6 @@
 using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.NPCs.ProfanedGuardians;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -29,7 +28,6 @@ namespace CalamityMod.NPCs.Providence
         public override void SetDefaults()
         {
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
-            NPC.Calamity().canBreakPlayerDefense = true;
             NPC.npcSlots = 1f;
             NPC.aiStyle = -1;
             NPC.damage = 0;
@@ -52,10 +50,6 @@ namespace CalamityMod.NPCs.Providence
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void FindFrame(int frameHeight)

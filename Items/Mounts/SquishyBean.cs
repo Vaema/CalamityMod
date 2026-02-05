@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Buffs.Mounts;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Mounts
@@ -85,7 +84,6 @@ namespace CalamityMod.Items.Mounts
                 player.gravity = 1f;
                 player.maxFallSpeed = 20f;
             }
-            player.noFallDmg = true;
         }
     }
 }

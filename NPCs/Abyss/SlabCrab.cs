@@ -55,12 +55,12 @@ namespace CalamityMod.NPCs.Abyss
             NPC.height = 30;
 
             NPC.damage = BaseAttack;
-            NPC.lifeMax = 375;
+            NPC.lifeMax = 300;
 
             NPC.aiStyle = AIType = -1;
 
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 0, 2, 0);
+            NPC.value = Item.buyPrice(silver: 2);
             NPC.lavaImmune = true;
             NPC.noGravity = false;
             NPC.noTileCollide = false;
@@ -77,10 +77,6 @@ namespace CalamityMod.NPCs.Abyss
             NPC.Calamity().VulnerableToWater = false;
             NPC.GravityIgnoresLiquid = true;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<AbyssLayer1Biome>().Type };
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -303,6 +299,7 @@ namespace CalamityMod.NPCs.Abyss
                 return false;
             return null;
         }
+
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
             if (spawnInfo.Player.Calamity().ZoneAbyssLayer1 && spawnInfo.Water)
@@ -384,6 +381,7 @@ namespace CalamityMod.NPCs.Abyss
                     break;
             }
         }
+
         // the crab is invincible while hiding
         public override bool? CanBeHitByItem(Player player, Item item) => CurrentPhase > (int)AIState.IdleAnim;
 
@@ -462,11 +460,13 @@ namespace CalamityMod.NPCs.Abyss
                 }                
             }
         }
+
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 90);
+                target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 120);
         }
+
         public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             if (!NPC.IsABestiaryIconDummy)

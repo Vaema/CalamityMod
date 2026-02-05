@@ -1,17 +1,16 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Ranged;
+﻿using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
     public class Shredder : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+
         public override void SetStaticDefaults()
         {
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
@@ -21,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 56;
             Item.height = 24;
-            Item.damage = 45;
+            Item.damage = 48;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 4;
             Item.useAnimation = 32;
@@ -37,7 +36,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ProjectileID.Bullet;
             Item.shootSpeed = 5f;
             Item.useAmmo = AmmoID.Bullet;
-            Item.Calamity().canFirePointBlankShots = true;
+            Item.consumeAmmoOnLastShotOnly = true;
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-5, 0);
@@ -53,13 +52,12 @@ namespace CalamityMod.Items.Weapons.Ranged
             {
                 Projectile.NewProjectile(source, newPosition, (velocity * Main.rand.NextFloat(0.9f, 1.1f)).RotatedByRandom(0.2f), shotType, damage, knockback, player.whoAmI);
             }
+
+            // Reset altFunctionUse to zero to prevent blank frame appear between shots on Alt-fire
+            if (player.itemAnimation <= 1)
+                player.altFunctionUse = 0;
+
             return false;
-        }
-        public override bool CanConsumeAmmo(Item ammo, Player player)
-        {
-            if (Main.rand.Next(0, 100) < 60)
-                return false;
-            return true;
         }
 
         public override void AddRecipes()
@@ -68,7 +66,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient<FrostbiteBlaster>().
                 AddIngredient<BulletFilledShotgun>().
                 AddIngredient(ItemID.LunarBar, 5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

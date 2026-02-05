@@ -40,6 +40,8 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.penetrate = 100;
             Projectile.extraUpdates = 1;
             Projectile.timeLeft = 450;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override bool PreAI()
@@ -71,7 +73,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override float DetermineLaserLength()
         {
             if (Projectile.penetrate == 100)
-                return DetermineLaserLength_CollideWithTiles(8);
+                return DetermineLaserLength_CollideWithTiles();
             return LaserLength;
         }
 

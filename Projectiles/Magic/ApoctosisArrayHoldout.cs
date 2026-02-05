@@ -70,7 +70,7 @@ namespace CalamityMod.Projectiles.Magic
                 return;
             }
 
-            if (HeldItem.type != Owner.ActiveItem().type)
+            if (HeldItem.type != Owner.HeldItem.type)
             {
                 if (manaPower > 0)
                     shootingTimer = -75;
@@ -216,7 +216,7 @@ namespace CalamityMod.Projectiles.Magic
             float manaPercent = ((float)Owner.statMana / (float)Owner.statManaMax2);
             Vector2 shootDirection = Projectile.velocity.SafeNormalize(Vector2.Zero);
             Vector2 firingVelocity = (shootDirection * 4);
-            float damageBoost = Math.Max((manaPower * 55) * (manaPower >= 1 ? 1.3f : 1f), 1);
+            float damageBoost = Math.Max((manaPower * 60) * (manaPower >= 1 ? 1.5f : 1f), 1);
 
             if (big)
             {
@@ -232,7 +232,7 @@ namespace CalamityMod.Projectiles.Magic
                 SoundStyle fire2 = new("CalamityMod/Sounds/Item/PulseRifleFire");
                 SoundEngine.PlaySound(fire2 with { Volume = 0.75f, Pitch = (manaPower >= 1 ? 0.7f : 0.5f) }, Projectile.Center);
 
-                Owner.Calamity().GeneralScreenShakePower = 12f * manaPower;
+                Owner.SetScreenshake(12f * manaPower);
                 float projSpeedMult = (manaPower + 0.4f) * (manaPower >= 1 ? 3f : 2f);
 
                 float variance = Main.rand.NextFloat(-0.8f, 0.8f);

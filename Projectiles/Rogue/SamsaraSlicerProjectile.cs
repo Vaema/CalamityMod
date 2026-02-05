@@ -1,8 +1,6 @@
-﻿using System;
-using CalamityMod.Particles;
+﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoMod.Core.Utils;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
@@ -17,17 +15,20 @@ namespace CalamityMod.Projectiles.Rogue
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/SamsaraSlicer";
 
-        public float ReboundVelocity => 20;
+        //These are the same number, but will be left as two seperate variables for future tuning purposes
+        public float ReboundVelocity => 30;
         public float StealthReboundVelocity => 30;
         public float StealthPauseTime => 55;
-        public int ReboundTime => 20;
+        public int ReboundTime => 30;
 
-        public int SmallDiskDamage => 8;
-        public int SmallDiskStealthDamage => 17;
+        public int SmallDiskDamage => 30;
+        public int SmallDiskStealthDamage => 19;
 
         public bool initialized = false;
 
         Vector2 oldVelocity;
+
+        int? npcTaggedTo = null;
 
         public override void SetStaticDefaults()
         {
@@ -54,7 +55,6 @@ namespace CalamityMod.Projectiles.Rogue
         {
             width = 20;
             height = 20;
-
             return base.TileCollideStyle(ref width, ref height, ref fallThrough, ref hitboxCenterFrac);
         }
 
@@ -107,6 +107,15 @@ namespace CalamityMod.Projectiles.Rogue
                     }
                 }
             }
+            else
+            {
+                if (npcTaggedTo != null)
+                {
+                    NPC npc = Main.npc[npcTaggedTo.GetValueOrDefault(0)];
+                    if (npc.active)
+                        Projectile.Center += npc.velocity;
+                }
+            }
 
             // Frame pause
 
@@ -114,6 +123,8 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (Projectile.ai[0] == 0)
             {
+                npcTaggedTo = null;
+
                 Projectile.velocity = oldVelocity;
 
                 SoundEngine.PlaySound(SoundID.DD2_SkyDragonsFuryShot.WithPitchOffset(1f));
@@ -219,8 +230,6 @@ namespace CalamityMod.Projectiles.Rogue
             }
             else
             {
-                //Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Rogue/SamsaraSlicerGlow").Value, Projectile.Center - Main.screenPosition + randVec, tex.Frame(), new Color(0f, 1f, 0f, 0f), Projectile.rotation, tex.Frame().Center(), 1f, SpriteEffects.None);
-
                 Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Rogue/SamsaraSlicerGlow").Value, Projectile.Center - Main.screenPosition + randVec, tex.Frame(), new Color(0f, 1f, 0f, 0f), Projectile.rotation, tex.Frame().Center(), 1f, SpriteEffects.None);
             }
             return false;
@@ -228,6 +237,8 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
+            npcTaggedTo = target.whoAmI;
+
             if (Projectile.velocity != Vector2.Zero)
             {
                 if (Projectile.ai[0] <= -200)

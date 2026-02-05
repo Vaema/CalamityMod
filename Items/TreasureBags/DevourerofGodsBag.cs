@@ -2,7 +2,7 @@
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Pets;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.FurnitureCosmilite;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
@@ -70,21 +70,20 @@ namespace CalamityMod.Items.TreasureBags
             itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<DevourerofGodsHead>()));
 
             // Materials
-            itemLoot.Add(ModContent.ItemType<CosmiliteBar>(), 1, 55, 65);
+            itemLoot.Add(ModContent.ItemType<CosmiliteBar>(), 1, 75, 90);
             itemLoot.Add(ModContent.ItemType<CosmiliteBrick>(), 1, 200, 320);
 
             // Weapons
             itemLoot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, new int[]
             {
-                ModContent.ItemType<Excelsus>(),
+                ModContent.ItemType<MawOfInfinity>(),
                 ModContent.ItemType<TheObliterator>(),
-                ModContent.ItemType<Deathwind>(),
-                ModContent.ItemType<DeathhailStaff>(),
-                ModContent.ItemType<StaffoftheMechworm>(),
-                ModContent.ItemType<Eradicator>()
+                ModContent.ItemType<ThreadOfEradication>(),
+                ModContent.ItemType<HyperdeathRiftScepter>(),
+                ModContent.ItemType<VoidEaterMarionette>(),
+                ModContent.ItemType<DimensionTearingDisk>()
             }));
             itemLoot.Add(ModContent.ItemType<CosmicDischarge>(), 10);
-            itemLoot.Add(ModContent.ItemType<Norfleet>(), 10);
 
             // Equipment
             itemLoot.Add(ModContent.ItemType<NebulousCore>());

@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Placeables.FurnitureStratus
                 AddIngredient<StratusBricks>(4).
                 AddIngredient(ItemID.Torch, 4).
                 AddIngredient(ItemID.Chain).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile<Tiles.Furniture.CraftingStations.VoidCondenser>().
                 Register();
         }
     }

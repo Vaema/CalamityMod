@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -11,10 +12,9 @@ namespace CalamityMod.Items.Potions.Alcohol
     {
         public new string LocalizationCategory => "Items.Potions";
 
-        public static int RegenBoost = 2;
-        public static float MoveSpeedBoost = 0.1f;
-        public static float DefenseLossPercent = 0.05f;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RegenBoost.ToRegenPerSecond(), MoveSpeedBoost.ToPercent(), DefenseLossPercent.ToPercent());
+        public static float NonMinionBoost = 1.15f;
+        public static float MinionBoost = 0.85f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs((NonMinionBoost-1).ToPercent(), (1- MinionBoost).ToPercent());
 
         public override void SetStaticDefaults()
         {
@@ -28,10 +28,18 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(24, 26, ModContent.BuffType<RumBuff>(), CalamityUtils.MinutesToFrames(8), true);
-            // Cirrus overcharges: 10% sell value instead of 20%
-            Item.value = Item.sellPrice(silver: 30);
+            Item.DefaultToFood(24, 26, ModContent.BuffType<RumBuff>(), CalamityUtils.MinutesToFrames(6), true);
+
+            Item.value = Item.sellPrice(silver: 2);
             Item.rare = ItemRarityID.LightRed;
+        }
+        public override void AddRecipes()
+        {
+            CreateRecipe(10).
+                AddIngredient(ItemID.Bottle, 10).
+                AddIngredient(ItemID.SpiderFang, 3).
+                AddTile(TileID.Kegs).
+                Register();
         }
     }
 }

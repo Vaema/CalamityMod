@@ -29,10 +29,14 @@ namespace CalamityMod.Tiles.Abyss
             MineResist = 3f;
             MinPick = 65;
             HitSound = MineSound;
-            DustType = 33;
-            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
-            this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
-            this.RegisterUniversalMerge(ModContent.TileType<AbyssGravel>(), "CalamityMod/Tiles/Merges/AbyssGravelMerge");
+            DustType = DustID.Water;
+            this.RegisterBlendMergeWith(TileID.Dirt);
+            this.RegisterBlendMergeWith(TileID.Stone);
+            this.RegisterBlendMergeWith(ModContent.TileType<AbyssGravel>());
+        }
+        public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
+        {
+            World.Abyss.FillTileWithWater(i, j);
         }
 
         public override void NearbyEffects(int i, int j, bool closer)
@@ -117,7 +121,7 @@ namespace CalamityMod.Tiles.Abyss
             Tile up2 = Main.tile[i, j - 2];
 
             // Place sulphur tentacle corals
-            if (WorldGen.genRand.NextBool(10)&& !up.HasTile && !up2.HasTile && up.LiquidAmount > 0 && up2.LiquidAmount > 0 && !tile.LeftSlope && !tile.RightSlope && !tile.IsHalfBlock)
+            if (WorldGen.genRand.NextBool(10) && !up.HasTile && !up2.HasTile && up.LiquidAmount > 0 && up2.LiquidAmount > 0 && !tile.LeftSlope && !tile.RightSlope && !tile.IsHalfBlock)
             {
                 up.TileType = (ushort)ModContent.TileType<SulphurTentacleCorals>();
                 up.HasTile = true;

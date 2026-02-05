@@ -7,7 +7,7 @@ namespace CalamityMod.ExtraJumps
 {
     public class StatigelJump : ExtraJump
     {
-        public override Position GetDefaultPosition() => BeforeBottleJumps;
+        public override Position GetDefaultPosition() => new Before(BlizzardInABottle);
         public override float GetDurationMultiplier(Player player) => 1.25f;
 
         // Values equivalent to the Fart in a Jar

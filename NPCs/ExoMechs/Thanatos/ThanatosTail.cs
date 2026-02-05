@@ -17,6 +17,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.ExoMechs.Thanatos
 {
+    [HasPierceResist]
     [LongDistanceNetSync(SyncWith = typeof(ThanatosHead))]
     public class ThanatosTail : ModNPC
     {
@@ -63,8 +64,8 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 120; // 240
             NPC.npcSlots = 5f;
-            NPC.GetNPCDamage();
             NPC.width = 76;
             NPC.height = 110;
             NPC.defense = 100;
@@ -86,9 +87,6 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void BossHeadSlot(ref int index)
@@ -139,10 +137,9 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
                 NPC.life = Main.npc[(int)NPC.ai[1]].life;
 
             // Difficulty modes
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             // Check if other segments are still alive, if not, die
             bool shouldDespawn = !NPC.AnyNPCs(ModContent.NPCType<ThanatosHead>());
@@ -252,7 +249,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
                 if (NPC.Calamity().newAI[0] == 0f)
                     NPC.ai[3] += 1f;
 
-                double numSegmentsAbleToFire = bossRush ? 42D : death ? 36D : revenge ? 34D : expertMode ? 30D : 24D;
+                double numSegmentsAbleToFire = death ? 36D : revenge ? 34D : expertMode ? 30D : 24D;
                 if (shouldGetBuffedByBerserkPhase)
                     numSegmentsAbleToFire *= 1.25;
 
@@ -304,10 +301,9 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
                                 {
                                     // Normal laser
                                     int type = ModContent.ProjectileType<ThanatosLaser>();
-                                    int damage = NPC.GetProjectileDamage(type);
 
                                     if (Main.netMode != NetmodeID.MultiplayerClient)
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, targetCenterArray[i], type, damage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
+                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, targetCenterArray[i], type, ThanatosHead.LaserDamage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
                                 }
                             }
                         }
@@ -362,12 +358,11 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
                                     }
                                 }
 
-                                float predictionAmt = bossRush ? 24f : death ? 20f : revenge ? 18f : expertMode ? 16f : 12f;
+                                float predictionAmt = death ? 20f : revenge ? 18f : expertMode ? 16f : 12f;
                                 if (NPC.ai[0] % 3f == 0f)
                                     predictionAmt *= 0.5f;
 
                                 int type = ModContent.ProjectileType<ThanatosLaser>();
-                                int damage = NPC.GetProjectileDamage(type);
                                 SoundEngine.PlaySound(CommonCalamitySounds.ExoLaserShootSound, NPC.Center);
                                 for (int i = 0; i < numProjectiles; i++)
                                 {
@@ -376,7 +371,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
                                     {
                                         // Normal laser
                                         if (Main.netMode != NetmodeID.MultiplayerClient)
-                                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, targetCenterArray[i], type, damage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
+                                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, targetCenterArray[i], type, ThanatosHead.LaserDamage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
                                     }
                                     else
                                     {
@@ -384,18 +379,18 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
                                         if (shouldGetBuffedByBerserkPhase && NPC.ai[0] % 3f == 0f)
                                         {
                                             if (Main.netMode != NetmodeID.MultiplayerClient)
-                                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, targetCenterArray[i], type, damage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
+                                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, targetCenterArray[i], type, ThanatosHead.LaserDamage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
                                         }
 
                                         // Predictive laser
                                         Vector2 projectileDestination = targetCenterArray[i] + Main.player[whoAmIArray[i]].velocity * predictionAmt;
                                         if (Main.netMode != NetmodeID.MultiplayerClient)
-                                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileDestination, type, damage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
+                                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileDestination, type, ThanatosHead.LaserDamage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
 
                                         // Opposite laser
                                         projectileDestination = targetCenterArray[i] - Main.player[whoAmIArray[i]].velocity * predictionAmt;
                                         if (Main.netMode != NetmodeID.MultiplayerClient)
-                                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileDestination, type, damage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
+                                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileDestination, type, ThanatosHead.LaserDamage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
                                     }
                                 }
                             }
@@ -441,7 +436,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
             NPC.chaseable = vulnerable;
 
             // Adjust DR based on vulnerable
-            NPC.Calamity().DR = vulnerable ? 0.15f : 0.9999f;
+            NPC.Calamity().DR = vulnerable ? 0.1f : 0.9999f;
             NPC.Calamity().unbreakableDR = !vulnerable;
 
             // Vent noise and steam
@@ -522,7 +517,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
             }
 
             // Velocity and turn speed values
-            float baseVelocityMult = (shouldGetBuffedByBerserkPhase ? 0.15f : 0f) + (bossRush ? 1.25f : death ? 1.2f : revenge ? 1.175f : expertMode ? 1.15f : 1.1f);
+            float baseVelocityMult = (shouldGetBuffedByBerserkPhase ? 0.15f : 0f) + (death ? 1.2f : revenge ? 1.175f : expertMode ? 1.15f : 1.1f);
             float baseVelocity = 10f * baseVelocityMult;
 
             // Increase top velocity if target is dead or if Thanatos is uncoiling
@@ -533,20 +528,6 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
 
             if (Main.getGoodWorld)
                 baseVelocity *= 1.15f;
-
-            // Calculate contact damage based on velocity
-            float minimalContactDamageVelocity = baseVelocity * 0.25f;
-            float minimalDamageVelocity = baseVelocity * 0.5f;
-            float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
-            if (bodyAndTailVelocity <= minimalContactDamageVelocity)
-            {
-                NPC.damage = 0;
-            }
-            else
-            {
-                float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
-            }
         }
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)
@@ -693,7 +674,6 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
     }
 }

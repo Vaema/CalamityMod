@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -53,7 +52,7 @@ namespace CalamityMod.Items.Weapons.Rogue
                 if (Main.myPlayer == player.whoAmI)
                     player.HealEffect(-6);
                 if (player.statLife <= 0)
-                    player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.CorpusAvertor").Format(player.name)), 1000.0, 0, false);
+                    player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.CorpusAvertor").ToNetworkText(player.name)), 1000.0, 0, false);
                 return false;
             }
             return true;

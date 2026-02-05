@@ -1,12 +1,12 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityMod.Projectiles.Healing;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -195,19 +195,9 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     if (Projectile.Hitbox.Intersects(player.Hitbox))
                     {
-                        if (!Main.player[Projectile.owner].moonLeech)
+                        if (improvedHeal)
                         {
-                            int bonusHeal = Main.rand.NextBool(3) ? 5 : 3;
-                            int heal = improvedHeal ? bonusHeal : 2;
-
-                            if (Main.LocalPlayer.lifeSteal <= 0f)
-                            {
-                                Projectile.Kill();
-                                return;
-                            }
-
-                            Main.LocalPlayer.lifeSteal -= heal;
-                            player.HealPlayer(heal);
+                            BloodstoneHealOrb.Heal(player, 6);
                         }
 
                         Projectile.Kill();
@@ -218,8 +208,11 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<BurningBlood>(), 360);
-            target.AddBuff(ModContent.BuffType<Laceration>(), 360);
+
+            //Doze - Flamethrowers in vanilla are long debuff infliction tools (20 seconds of their debuff).
+            //I am applying this as the base for Cal flamethrowers, with shorter times being the exception instead of the rule
+            target.AddBuff(ModContent.BuffType<BurningBlood>(), 1200);
+            target.AddBuff(ModContent.BuffType<Laceration>(), 1200);
             improvedHeal = true;
         }
 

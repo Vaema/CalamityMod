@@ -13,9 +13,9 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 22;
             Item.height = 28;
-            Item.damage = 37;
+            Item.damage = 31;
             Item.DamageType = RogueDamageClass.Instance;
-            Item.useAnimation = Item.useTime = 28;
+            Item.useAnimation = Item.useTime = 25;
             Item.knockBack = 5.75f;
             Item.shootSpeed = 4f;
 
@@ -30,8 +30,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.rare = ItemRarityID.Green;
             Item.shoot = ModContent.ProjectileType<MeteorFistProj>();
         }
-
-        public override float StealthDamageMultiplier => 1.15f;
 
         public override void HoldItem(Player player) => player.Calamity().mouseWorldListener = true;
 

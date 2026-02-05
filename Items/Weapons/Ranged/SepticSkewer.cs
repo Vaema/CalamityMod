@@ -6,9 +6,8 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using System;
-using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Projectiles.Boss;
 using Terraria.Audio;
+using CalamityMod.Items.Weapons.Magic;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
@@ -25,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 46;
             Item.height = 24;
-            Item.damage = 1303;
+            Item.damage = 933;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 30;
             Item.useAnimation = 30;
@@ -59,7 +58,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 SoundStyle fire = new("CalamityMod/Sounds/Item/GunShotMid");
                 SoundEngine.PlaySound(fire with { Volume = 0.7f, Pitch = Main.rand.NextFloat(0.7f, 0.8f) }, position);
                 if (pulled)
-                    player.Calamity().GeneralScreenShakePower = 5.5f;
+                    player.SetScreenshake(5.5f);
             }
             else
             {

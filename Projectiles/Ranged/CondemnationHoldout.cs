@@ -2,8 +2,10 @@
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -23,6 +25,7 @@ namespace CalamityMod.Projectiles.Ranged
         private float storedVelocity = 1f;
         public const float velocityMultiplier = 1.2f;
         public bool homing = false;
+        public bool playShootSound = true;
 
         public override void KillHoldoutLogic()
         {
@@ -34,6 +37,12 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     Projectile.Kill();
                     return;
+                }
+                if (homing && playShootSound)
+                {
+                    SoundEngine.PlaySound(SoundID.DD2_BallistaTowerShot with { Pitch = 0.2f, MaxInstances = 2 }, Projectile.Center);
+                    SoundEngine.PlaySound(SoundID.DD2_BallistaTowerShot with { Pitch = -0.4f, MaxInstances = 2 }, Projectile.Center);
+                    playShootSound = false;
                 }
 
                 // Fire one charged arrow every frame until you're out of arrows. 
@@ -59,7 +68,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             // If no arrows are loaded, spawn a bit of dust to indicate it's not ready yet.
             // Spawn the same dust if the max number of arrows have been loaded or the player ran out of ammos to load.
-            if (ArrowsLoaded <= 0f || ArrowsLoaded >= Condemnation.MaxLoadedArrows || !Owner.HasAmmo(Owner.ActiveItem()))
+            if (ArrowsLoaded <= 0f || ArrowsLoaded >= Condemnation.MaxLoadedArrows || !Owner.HasAmmo(Owner.HeldItem))
                 SpawnCannotLoadArrowsDust(GunTipPosition);
 
             if (Owner.HasAmmo(HeldItem))
@@ -84,11 +93,13 @@ namespace CalamityMod.Projectiles.Ranged
                     FramesToLoadNextArrow = MathHelper.Clamp(FramesToLoadNextArrow--, 1f, HeldItem.useAnimation);
 
                     // Play a sound for additional notification that an arrow has been loaded.
-                    var loadSound = SoundEngine.PlaySound(SoundID.Item108 with { Volume = SoundID.Item108.Volume * 0.3f });
+                    var loadSound = SoundEngine.PlaySound(SoundID.Item108 with { Volume = SoundID.Item108.Volume * 0.4f, Pitch = -0.3f + ArrowsLoaded * 0.1f });
 
                     if (ArrowsLoaded >= Condemnation.MaxLoadedArrows)
                     {
-                        SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/AbilitySounds/BrimflameRecharge"));
+                        SoundStyle fire = new("CalamityMod/Sounds/Custom/AbilitySounds/BrimflameRecharge");
+                        for (int i = 0; i < 3; i++)
+                            SoundEngine.PlaySound(fire with { Volume = 0.8f, Pitch = i * 0.25f, MaxInstances = 3 });
                         homing = true;
                     }
                 }
@@ -112,7 +123,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Vector2 end = nextAngle.ToRotationVector2();
                     for (int j = 0; j < 40; j++)
                     {
-                        Dust starDust = Dust.NewDustPerfect(GunTipPosition, 267);
+                        Dust starDust = Dust.NewDustPerfect(GunTipPosition, DustID.RainbowMk2);
                         starDust.scale = 2.5f;
                         starDust.velocity = Vector2.Lerp(start, end, j / 40f) * 16f;
                         starDust.color = Color.Crimson;
@@ -124,7 +135,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             for (int i = 0; i < 36; i++)
             {
-                Dust chargeMagic = Dust.NewDustPerfect(GunTipPosition, 267);
+                Dust chargeMagic = Dust.NewDustPerfect(GunTipPosition, DustID.RainbowMk2);
                 chargeMagic.velocity = (MathHelper.TwoPi * i / 36f).ToRotationVector2() * 5f + Owner.velocity;
                 chargeMagic.scale = Main.rand.NextFloat(1f, 1.5f);
                 chargeMagic.color = Color.Violet;
@@ -139,7 +150,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             for (int i = 0; i < 2; i++)
             {
-                Dust chargeMagic = Dust.NewDustPerfect(GunTipPosition + Main.rand.NextVector2Circular(20f, 20f), 267);
+                Dust chargeMagic = Dust.NewDustPerfect(GunTipPosition + Main.rand.NextVector2Circular(20f, 20f), DustID.RainbowMk2);
                 chargeMagic.velocity = (GunTipPosition - chargeMagic.position) * 0.1f + Owner.velocity;
                 chargeMagic.scale = Main.rand.NextFloat(1f, 1.5f);
                 chargeMagic.color = Projectile.GetAlpha(Color.White);
@@ -154,9 +165,32 @@ namespace CalamityMod.Projectiles.Ranged
 
             Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * storedVelocity;
             int ArrowType = homing ? ModContent.ProjectileType<CondemnationArrowHoming>() : ModContent.ProjectileType<CondemnationArrow>();
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ArrowType, Projectile.damage, Projectile.knockBack, Projectile.owner);
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ArrowType, (int)(Projectile.damage * 1.35f), Projectile.knockBack, Projectile.owner);
         }
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Texture2D texture = TextureAssets.Projectile[Type].Value;
+            Vector2 drawPosition = Projectile.Center - Main.screenPosition + new Vector2(0, -3);
 
+            float randSize = Main.rand.NextFloat(0.9f, 1f);
+            Color drawColor = Projectile.GetAlpha(lightColor);
+            float drawRotation = Projectile.rotation + (Projectile.direction == -1 ? MathHelper.Pi : 0f);
+            Vector2 rotationPoint = texture.Size() * 0.5f;
+            SpriteEffects flipSprite = Projectile.direction == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+
+            if (homing)
+            {
+                for (int i = 0; i < 22; i++)
+                {
+                    Color auraColor = Color.Lerp(Color.Red, Color.White, i * 0.01f) with { A = 0 } * 0.6f;
+                    Vector2 drawOffset = ((MathHelper.TwoPi * i / 22f).ToRotationVector2() * 5) + Main.rand.NextVector2Circular(7, 7);
+                    Main.EntitySpriteDraw(texture, drawPosition + drawOffset, null, auraColor, drawRotation, rotationPoint, Projectile.scale * Main.rand.NextFloat(0.7f, 1.1f), flipSprite);
+                }
+            }
+            Main.EntitySpriteDraw(texture, drawPosition, null, drawColor, drawRotation, rotationPoint, Projectile.scale, flipSprite);
+            
+            return false;
+        }
         public override void SendExtraAIHoldout(BinaryWriter writer)
         {
             writer.Write(FramesToLoadNextArrow);

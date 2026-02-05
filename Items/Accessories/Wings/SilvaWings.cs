@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Armor.Silva;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
@@ -21,8 +20,6 @@ namespace CalamityMod.Items.Accessories.Wings
         public override float MaxAscentSpeed => 3.2f;
         public override float BaseAscent => 0.145f;
 
-        public const int LifeRegenTimerMax = 900;
-
         public override void SetStaticDefaults() => ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(270, 10.5f, 2.8f);
 
         public override void SetDefaults()
@@ -31,13 +28,11 @@ namespace CalamityMod.Items.Accessories.Wings
             Item.width = 22;
             Item.height = 20;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.Calamity().silvaWings = true;
-
             if (player.controlJump && player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
             {
                 int dustXOffset = 4;
@@ -54,7 +49,6 @@ namespace CalamityMod.Items.Accessories.Wings
                 }
                 Main.dust[flightDust].shader = GameShaders.Armor.GetSecondaryShader(player.cWings, player);
             }
-            player.noFallDmg = true;
         }
 
         public override void AddRecipes()

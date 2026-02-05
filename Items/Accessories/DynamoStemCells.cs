@@ -1,6 +1,4 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.CalPlayer;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
@@ -13,7 +11,7 @@ namespace CalamityMod.Items.Accessories
     public class DynamoStemCells : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
-        public const int MiniSwamerCooldown = 180;
+        public const int MiniSwarmerCooldown = 180;
         public static int MiniSwamerDamage = 1000;
         public override void SetStaticDefaults()
         {
@@ -28,6 +26,7 @@ namespace CalamityMod.Items.Accessories
             Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.accessory = true;
+            Item.expert = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)

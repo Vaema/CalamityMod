@@ -1,10 +1,5 @@
-﻿using System;
-using CalamityMod.Dusts;
-using CalamityMod.Particles;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -31,21 +26,19 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
         }
-
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.OnFire3, 240);
-
-            //Particle pulse = new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Color.OrangeRed, new Vector2(2f, 2f), Main.rand.NextFloat(12f, 25f), 0f, Main.rand.NextFloat(0.8f, 1.1f), 20);
-            //GeneralParticleHandler.SpawnParticle(pulse);
-            //Particle pulse2 = new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Color.DarkOrange, new Vector2(2f, 2f), Main.rand.NextFloat(12f, 25f), 0f, Main.rand.NextFloat(0.6f, 0.9f), 20);
-            //GeneralParticleHandler.SpawnParticle(pulse2);
         }
-
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, ExplosionRadius, targetHitbox);
         public override bool? CanDamage() => base.CanDamage();
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
+            float minMult = 0.3f;
+            int hitsToMinMult = 8;
+            float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+            modifiers.SourceDamage *= damageMult;
+
             Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
             target.MoveNPC(launchVel, 15, true);
         }

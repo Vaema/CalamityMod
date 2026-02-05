@@ -13,6 +13,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Perforator
 {
+    [HasPierceResist]
     [LongDistanceNetSync(SyncWith = typeof(PerforatorHeadSmall))]
     public class PerforatorTailSmall : ModNPC
     {
@@ -33,12 +34,12 @@ namespace CalamityMod.NPCs.Perforator
 
         public override void SetDefaults()
         {
-            NPC.GetNPCDamage();
+            NPC.damage = 10; // 20
             NPC.width = 40;
             NPC.height = 34;
             NPC.defense = 8;
 
-            NPC.LifeMaxNERB(1200, 1440, 50000);
+            NPC.LifeMaxNERB(900, 1150, 50000);
             if (Main.zenithWorld)
                 NPC.lifeMax *= 4;
 
@@ -54,9 +55,7 @@ namespace CalamityMod.NPCs.Perforator
             NPC.netAlways = true;
             NPC.dontCountMe = true;
 
-            if (BossRushEvent.BossRushActive)
-                NPC.scale *= 1.25f;
-            else if (CalamityWorld.death)
+            if (CalamityWorld.death || BossRushEvent.BossRushActive)
                 NPC.scale *= 1.2f;
             else if (CalamityWorld.revenge)
                 NPC.scale *= 1.15f;
@@ -66,10 +65,6 @@ namespace CalamityMod.NPCs.Perforator
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position)
@@ -99,13 +94,6 @@ namespace CalamityMod.NPCs.Perforator
                 NPC.HitEffect(0, 10.0);
                 NPC.checkDead();
                 NPC.active = false;
-            }
-
-            if (Main.npc[(int)NPC.ai[1]].alpha < 128)
-            {
-                NPC.alpha -= 42;
-                if (NPC.alpha < 0)
-                    NPC.alpha = 0;
             }
 
             if (Main.player[NPC.target].dead)
@@ -149,20 +137,30 @@ namespace CalamityMod.NPCs.Perforator
                     NPC.spriteDirection = -1;
             }
 
-            // Calculate contact damage based on velocity
-            // This worm requires more velocity to deal damage with the body because it doesn't have spikes or metal bits or etc.
-            float maxChaseSpeed = 16f;
-            float minimalContactDamageVelocity = maxChaseSpeed * 0.4f;
-            float minimalDamageVelocity = maxChaseSpeed * 0.8f;
-            float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
-            if (bodyAndTailVelocity <= minimalContactDamageVelocity)
+            if (Main.npc[(int)NPC.ai[1]].alpha >= 85)
             {
-                NPC.damage = 0;
+                if (NPC.alpha > 0 && NPC.life > 0)
+                {
+                    for (int dustIndex = 0; dustIndex < 2; dustIndex++)
+                    {
+                        int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 2f);
+                        Main.dust[dust].noGravity = true;
+                        Main.dust[dust].noLight = true;
+                    }
+                }
+
+                if ((NPC.position - NPC.oldPosition).Length() > 2f)
+                {
+                    NPC.alpha -= 42;
+                    if (NPC.alpha < 0)
+                        NPC.alpha = 0;
+                }
             }
-            else
+            else if (NPC.alpha > 0)
             {
-                float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
+                NPC.alpha -= 42;
+                if (NPC.alpha < 0)
+                    NPC.alpha = 0;
             }
         }
 
@@ -215,7 +213,7 @@ namespace CalamityMod.NPCs.Perforator
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<BurningBlood>(), 60, true);
+                target.AddBuff(ModContent.BuffType<BurningBlood>(), 120, true);
         }
     }
 }

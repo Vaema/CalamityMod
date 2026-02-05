@@ -5,8 +5,6 @@ using Terraria.ObjectData;
 using Terraria.DataStructures;
 using Terraria.Enums;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Humanizer;
 
 namespace CalamityMod.Tiles.SunkenSea.Ambient
 {
@@ -17,9 +15,10 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             Main.tileFrameImportant[Type] = true;
             Main.tileSolid[Type] = false;
             Main.tileLighted[Type] = true;
+            TileObjectData.newTile.UsesCustomCanPlace = true;
             TileObjectData.newTile.Width = 2;
             TileObjectData.newTile.Height = 3;
-            TileObjectData.newTile.Origin = new Point16(1, 2);
+            TileObjectData.newTile.Origin = new Point16(0, 2);
             TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16, 16 };
             TileObjectData.newTile.StyleWrapLimit = 36;
             TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop | AnchorType.SolidSide, TileObjectData.newTile.Width, 0);
@@ -28,14 +27,15 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             TileObjectData.newTile.DrawYOffset = 3;
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(113, 80, 28));
-            DustType = 155;
+            DustType = DustID.Ambient_DarkBrown;
             HitSound = SoundID.Dig;
         }
+
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 244f / 450f;
-            g = 238f / 450f;
-            b = 162f / 450f;
+            r = 0.542f;
+            g = 0.529f;
+            b = 0.36f;
         }
     }
 
@@ -46,9 +46,10 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             Main.tileFrameImportant[Type] = true;
             Main.tileSolid[Type] = false;
             Main.tileLighted[Type] = true;
+            TileObjectData.newTile.UsesCustomCanPlace = true;
             TileObjectData.newTile.Width = 4;
             TileObjectData.newTile.Height = 4;
-            TileObjectData.newTile.Origin = new Point16(2, 3);
+            TileObjectData.newTile.Origin = new Point16(1, 3);
             TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16, 16, 16 };
             TileObjectData.newTile.StyleWrapLimit = 36;
             TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop | AnchorType.SolidSide, TileObjectData.newTile.Width, 0);
@@ -57,14 +58,15 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             TileObjectData.newTile.DrawYOffset = 3;
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(113, 80, 28));
-            DustType = 155;
+            DustType = DustID.Ambient_DarkBrown;
             HitSound = SoundID.Dig;
         }
+
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 244f / 400f;
-            g = 238f / 400f;
-            b = 162f / 400f;
+            r = 0.61f;
+            g = 0.595f;
+            b = 0.405f;
         }
     }
 }

@@ -1,11 +1,8 @@
-﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Cooldowns;
+﻿using CalamityMod.Cooldowns;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
-using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -24,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 88;
             Item.height = 88;
-            Item.damage = 95;
+            Item.damage = 90;
             Item.useAnimation = Item.useTime = 45;
 
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -47,7 +44,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void HoldItem(Player player)
         {
             player.Calamity().mouseWorldListener = true;
-            if (player.Calamity().mouseRight && player.Calamity().killModeCooldown == 0 && !Main.mapFullscreen && !Main.blockMouse)
+            if (player.Calamity().mouseRight && !player.mouseInterface && player.Calamity().killModeCooldown == 0 && !Main.mapFullscreen && !Main.blockMouse)
             {
                 SoundStyle buff = new("CalamityMod/Sounds/Item/DemonSwordKillMode");
                 SoundEngine.PlaySound(buff with { Volume = 0.95f }, player.Center);
@@ -74,7 +71,7 @@ namespace CalamityMod.Items.Weapons.Melee
             }
             if (player.Calamity().demonSwordKillMode && player.ownedProjectileCounts[ModContent.ProjectileType<ExaltedOathbladeHoldout>()] <= 0 && player.Calamity().killModeCooldown == KillMode.cooldownMax + KillMode.buffMax)
             {
-                Projectile blade = Projectile.NewProjectileDirect(player.GetSource_FromThis(), player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<ExaltedOathbladeHoldout>(), Item.damage * 23, Item.knockBack, player.whoAmI, 0, throwCount);
+                Projectile.NewProjectile(player.GetSource_FromThis(), player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<ExaltedOathbladeHoldout>(), Item.damage * 14, Item.knockBack, player.whoAmI, 0, throwCount); //This used to be 23x damage.
             }
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

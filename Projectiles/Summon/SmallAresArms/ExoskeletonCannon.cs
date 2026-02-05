@@ -69,6 +69,8 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
             Projectile.timeLeft = 900000;
             Projectile.scale = 1f;
             Projectile.DamageType = DamageClass.Summon;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void SendExtraAI(BinaryWriter writer)

@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -22,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.height = 48;
             Item.damage = 25;
             Item.mana = 10;
-            Item.useAnimation = Item.useTime = 24;
+            Item.useAnimation = Item.useTime = 36;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noMelee = true;
             Item.knockBack = 3f;
@@ -30,23 +31,17 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.rare = ItemRarityID.LightRed;
             Item.UseSound = SoundID.Item60;
             Item.autoReuse = true;
+            Item.buffType = ModContent.BuffType<HauntedDishesBuff>();
             Item.shoot = ModContent.ProjectileType<HauntedDishes>();
-            Item.shootSpeed = 10f;
             Item.DamageType = DamageClass.Summon;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.altFunctionUse != 2)
-            {
-                position = player.ClampedMouseWorld();
-                velocity.X = 0;
-                velocity.Y = 0;
-                int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 30f);
-                if (Main.projectile.IndexInRange(p))
-                    Main.projectile[p].originalDamage = Item.damage;
-                //projectile.ai[1] is attack cooldown.  Setting it here prevents immediate attacks
-            }
+            player.AddBuff(Item.buffType, 2);
+            var minion = Projectile.NewProjectileDirect(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI, 0f, 30f);
+            minion.originalDamage = Item.damage;
+            //projectile.ai[1] is attack cooldown.  Setting it here prevents immediate attacks
             return false;
         }
 

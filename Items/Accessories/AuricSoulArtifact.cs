@@ -3,8 +3,8 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Items.Placeables.Plates;
 using CalamityMod.Rarities;
+using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Accessories
             Item.width = 28;
             Item.height = 28;
             Item.accessory = true;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
         }
 
@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<YharonSoulFragment>(5).
                 AddIngredient<Plagueplate>(25).
                 AddIngredient<ExodiumCluster>(25).
-                AddTile(TileID.DemonAltar).
+                AddTile<CosmicAnvil>().
                 Register();
         }
     }

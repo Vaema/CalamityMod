@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -32,27 +33,25 @@ namespace CalamityMod.Items.Weapons.Summon
         public static int Ariane_AoESize = 1050;
         public static float Ariane_AoEDMGMultiplier = 0.4f;
 
-        // Do not change this number, ever. - Fabsol
-        public const int TheNumber = 512;
-
         #endregion
 
         public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 2f;
 
         public override void SetDefaults()
         {
-            Item.damage = TheNumber;
+            Item.damage = 512;
             Item.DamageType = DamageClass.Summon;
+            Item.buffType = ModContent.BuffType<LiliesOfFinalityBuff>();
             Item.shoot = ProjectileType<LiliesOfFinalityElster>();
             Item.knockBack = 5f;
 
             Item.mana = 10;
-            Item.useAnimation = Item.useTime = 15;
+            Item.useAnimation = Item.useTime = 24;
             Item.width = 36;
             Item.height = 50;
             Item.noMelee = true;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = RarityType<Violet>();
+            Item.rare = RarityType<BurnishedAuric>();
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.UseSound = new("CalamityMod/Sounds/Item/LiliesOfFinalitySummonSpawn");
         }
@@ -61,9 +60,12 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            player.AddBuff(Item.buffType, 2);
             Vector2 mouse = player.ClampedMouseWorld();
-            Projectile.NewProjectile(source, mouse, new Vector2(-1f, -1f) * 3f, type, damage, knockback, player.whoAmI);
-            Projectile.NewProjectile(source, mouse, new Vector2(1f, -1f) * 3f, ProjectileType<LiliesOfFinalityAriane>(), damage, knockback, player.whoAmI);
+            var elster = Projectile.NewProjectileDirect(source, mouse, new Vector2(-1f, -1f) * 3f, type, damage, knockback, player.whoAmI);
+            elster.originalDamage = Item.damage;
+            var ariane = Projectile.NewProjectileDirect(source, mouse, new Vector2(1f, -1f) * 3f, ProjectileType<LiliesOfFinalityAriane>(), damage, knockback, player.whoAmI);
+            ariane.originalDamage = Item.damage;
 
             if (Main.dedServ)
                 return false;

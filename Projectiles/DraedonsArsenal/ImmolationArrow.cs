@@ -1,4 +1,6 @@
-﻿using CalamityMod.Items.Weapons.DraedonsArsenal;
+﻿using System;
+using CalamityMod.Dusts;
+using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -15,7 +17,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public new string LocalizationCategory => "Projectiles.Misc";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public ref float time => ref Projectile.ai[0];
-        public Color mainColor = Color.Lerp(Color.Chartreuse, Color.White, 0.35f);
 
         public NPC chosenTarget;
         public bool stuckInTarget = false;
@@ -43,7 +44,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.timeLeft = 180;
-            Projectile.extraUpdates = 2;
+            Projectile.extraUpdates = 4;
             Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
@@ -70,6 +71,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
             if (stuckInGround)
             {
+                Projectile.extraUpdates = 2;
                 Projectile.rotation = storedVelocity.ToRotation() + MathHelper.PiOver2;
                 stuckTimer--;
 
@@ -86,38 +88,31 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 {
                     if (Main.rand.NextBool(3) && canStick)
                     {
-                        Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(6) ? 278 : 263, -Projectile.velocity);
-                        dust.scale = dust.type == 278 ? Main.rand.NextFloat(0.3f, 0.6f) : Main.rand.NextFloat(0.6f, 1.4f);
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center, Effects.ArsenalEffects.ArsenalPlasmaDust, -Projectile.velocity);
+                        dust.scale = Main.rand.NextFloat(0.6f, 1.4f);
                         dust.velocity = -Projectile.velocity.RotatedByRandom(0.3f) * Main.rand.NextFloat(0.1f, 0.7f);
                         dust.noGravity = true;
-                        dust.color = mainColor;
+                        dust.color = Effects.ArsenalEffects.ArsenalPlasmaColor;
                     }
                     
                     if (targetDist < 1400f)
                     {
-                        Particle spark = new SparkParticle(Projectile.Center, -Projectile.velocity, false, 6, 1.3f, mainColor * 0.7f);
+                        Particle spark = new SparkParticle(Projectile.Center, -Projectile.velocity, false, 13, 1.3f, Effects.ArsenalEffects.ArsenalPlasmaColor * 0.7f);
                         GeneralParticleHandler.SpawnParticle(spark);
 
                         if (Main.rand.NextBool(6))
                         {
                             Vector2 placement = Projectile.Center + Main.rand.NextVector2Circular(12, 12);
                             float speed = Main.rand.NextFloat(0.2f, 0.7f);
-                            Particle spark2 = new GlowOrbParticle(placement, -Projectile.velocity * speed, false, 7, Main.rand.NextFloat(0.4f, 0.7f), mainColor);
+                            Particle spark2 = new GlowOrbParticle(placement, -Projectile.velocity * speed, false, 7, Main.rand.NextFloat(0.4f, 0.7f), Effects.ArsenalEffects.ArsenalPlasmaColor);
                             GeneralParticleHandler.SpawnParticle(spark2);
                         }
-                    }
-                    if (closestTarget != null && Projectile.numHits < 1 && closestTarget.CanBeChasedBy(Projectile))
-                    {
-                        Vector2 moveTotarget = (closestTarget.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                        if (Projectile.velocity.Length() < 20)
-                            Projectile.velocity = Projectile.velocity * 0.95f + moveTotarget * 0.28f;
-                        else
-                            Projectile.velocity *= 0.8f;
                     }
                 }
             }
             else if (stuckInTarget)
             {
+                Projectile.extraUpdates = 2;
                 Projectile.rotation = (storedVelocity).SafeNormalize(Vector2.UnitX).ToRotation() + MathHelper.PiOver2;
 
                 placementCenter = chosenTarget.Center + placementVelocity * placementDistance;
@@ -139,16 +134,16 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 if (Main.rand.NextBool(8))
                 { 
                     float speed = Main.rand.NextFloat(0.2f, 1.5f);
-                    Particle spark = new SparkParticle(Projectile.Center, -storedVelocity * speed, false, 23, 0.7f * speed, mainColor * 0.7f);
+                    Particle spark = new SparkParticle(Projectile.Center, -storedVelocity * speed, false, 23, 0.7f * speed, Effects.ArsenalEffects.ArsenalPlasmaColor * 0.7f);
                     GeneralParticleHandler.SpawnParticle(spark);
                 }
                 if (Main.rand.NextBool())
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(6) ? 278 : 263, -Projectile.velocity);
-                    dust.scale = dust.type == 278 ? Main.rand.NextFloat(0.3f, 0.6f) : Main.rand.NextFloat(0.6f, 1.4f);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<SquashDust>(), -Projectile.velocity);
+                    dust.scale = Main.rand.NextFloat(0.6f, 1.4f);
                     dust.velocity = (new Vector2(35, 35).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 0.7f)) * Utils.GetLerpValue(90, 0, stuckTimer);
                     dust.noGravity = true;
-                    dust.color = mainColor;
+                    dust.color = Effects.ArsenalEffects.ArsenalPlasmaColor;
                 }
             }
             time++;
@@ -166,7 +161,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 collideWithTiles = false;
                 SoundStyle sound2 = new("CalamityMod/Sounds/Item/ImmolatorPreExplode");
                 SoundEngine.PlaySound(sound2 with { Volume = 0.3f, Pitch = 0.5f }, Projectile.Center);
-                SoundEngine.PlaySound(HolofiberImmolator.PlasmaSound with { Volume = 0.8f, Pitch = Main.rand.NextFloat(-0.3f, -0.4f) }, Projectile.Center);
+                SoundEngine.PlaySound(HolofibreImmolator.PlasmaSound with { Volume = 0.8f, Pitch = Main.rand.NextFloat(-0.3f, -0.4f) }, Projectile.Center);
             }
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
@@ -189,30 +184,43 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 stuckInTarget = true;
                 storedVelocity = Projectile.velocity;
                 Projectile.velocity = Vector2.Zero;
-                for (int i = 0; i <= 11; i++)
+                for (int i = 0; i < 12; i++)
                 {
-                    int dustStyle = Main.rand.NextBool() ? 66 : 263;
+                    int dustStyle = Effects.ArsenalEffects.ArsenalPlasmaDust;
                     Dust dust = Dust.NewDustPerfect(Projectile.Center + storedVelocity.SafeNormalize(Vector2.UnitX) * 38 + Main.rand.NextVector2Circular(12, 12), dustStyle, Projectile.velocity);
-                    dust.scale = Main.rand.NextFloat(0.7f, 1.1f);
-                    dust.velocity = storedVelocity.RotatedByRandom(0.2f) * Main.rand.NextFloat(0.8f, 2.1f);
-                    dust.noGravity = true;
-                    dust.color = mainColor;
+                    dust.scale = Main.rand.NextFloat(0.7f, 1.3f);
+                    dust.velocity = storedVelocity.RotatedByRandom(0.2f) * Main.rand.NextFloat(0.4f, 1.5f);
+                    dust.noGravity = false;
+                    dust.color = Effects.ArsenalEffects.ArsenalPlasmaColor;
+                    dust.fadeIn = 1.5f;
                 }
                 SoundStyle sound = new("CalamityMod/Sounds/Item/ImmolatorPreExplode");
                 SoundEngine.PlaySound(sound with { Volume = 0.3f, Pitch = 0.5f }, Projectile.Center);
-                SoundEngine.PlaySound(HolofiberImmolator.PlasmaSound with { Volume = 0.8f, Pitch = Main.rand.NextFloat(-0.3f, -0.4f) }, Projectile.Center);
+                SoundEngine.PlaySound(HolofibreImmolator.PlasmaSound with { Volume = 0.8f, Pitch = Main.rand.NextFloat(-0.3f, -0.4f) }, Projectile.Center);
             }
         }
         public override void OnKill(int timeLeft)
         {
-            float bonus = (stuckInGround ? 2f : 1);
+            float bonus = (stuckInGround ? 3f : 1.5f);
             float explosionDamage = (stuckInGround ? 2.3f : 0.5f);
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<ImmolationBurst>(), (int)(Projectile.damage * explosionDamage), Projectile.knockBack * 2, Projectile.owner, 0, bonus != 1 ? 1 : 0);
-            Particle bolt2 = new CustomPulse(Projectile.Center, Vector2.Zero, mainColor * 0.75f, "CalamityMod/Particles/BloomRing", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 1.2f * bonus, 26);
+            Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<ImmolationBurst>(), (int)(Projectile.damage * explosionDamage), Projectile.knockBack * 2, Projectile.owner, 0, stuckInGround ? 1 : 0);
+            blast.scale = (stuckInGround ? 2 : 1);
+            Particle bolt2 = new CustomPulse(Projectile.Center, Vector2.Zero, Effects.ArsenalEffects.ArsenalPlasmaColor * 0.75f, "CalamityMod/Particles/BloomRing", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 1.2f * bonus, 26);
             GeneralParticleHandler.SpawnParticle(bolt2);
 
-            Particle bolt3 = new CustomPulse(Projectile.Center, Vector2.Zero, mainColor * 0.75f, "CalamityMod/Particles/PlasmaExplosion", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.07f * bonus, 14);
+            Particle bolt3 = new CustomPulse(Projectile.Center, Vector2.Zero, Effects.ArsenalEffects.ArsenalPlasmaColor * 0.75f, "CalamityMod/Particles/WaterFoam", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.77f * bonus, 16);
             GeneralParticleHandler.SpawnParticle(bolt3);
+
+            for (int i = 0; i < (int)(15 * bonus); i++)
+            {
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, stuckInGround ? ModContent.DustType<SquashDust>() : Effects.ArsenalEffects.ArsenalPlasmaDust, -Projectile.velocity);
+                dust.scale = Main.rand.NextFloat(0.9f, 1.8f);
+                dust.velocity = (new Vector2(35, 35).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 0.7f)) * Utils.GetLerpValue(90, 0, stuckTimer);
+                dust.noGravity = false;
+                dust.color = Effects.ArsenalEffects.ArsenalPlasmaColor;
+                if (dust.type == Effects.ArsenalEffects.ArsenalPlasmaDust)
+                    dust.fadeIn = 2f;
+            }
 
             SoundStyle sound = new("CalamityMod/Sounds/Item/PlasmaBig");
             SoundEngine.PlaySound(sound with { Volume = 1f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, Projectile.Center);
@@ -224,21 +232,17 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 return false;
 
             Asset<Texture2D> tex = ModContent.Request<Texture2D>("CalamityMod/Projectiles/DraedonsArsenal/ImmolationArrow");
+            Asset<Texture2D> bloom = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
 
-            if (!stuckInGround && !stuckInTarget && false)
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], mainColor with { A = 0 }, 1, tex.Value);
+            float randSize = Main.rand.NextFloat(0.9f, 1f);
+            float fadeIn = (float)Math.Pow(Utils.GetLerpValue(90, 5, stuckTimer, true), 3);
+            for (int i = 0; i < 6; i++)
+                Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition - (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2() * 6 * i, null, Color.Lerp(Color.White, Effects.ArsenalEffects.ArsenalPlasmaColor, i * 0.35f) with { A = 0 } * 0.5f, Projectile.rotation, tex.Size() * 0.5f, new Vector2(0.7f - 0.15f * i, 0.7f + 0.15f * i) * randSize * (0.6f + 0.25f * i) * 2, SpriteEffects.None);
 
-            float randSize = Main.rand.NextFloat(0.7f, 1.2f);
             for (int i = 0; i < 3; i++)
-            {
-                Vector2 scale = Projectile.scale * new Vector2(0.5f * (1 - i * 0.25f), 1) * 1.5f * (1 - i * 0.3f) * randSize;
-                Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition, null, mainColor with { A = 0 } * 0.5f, Projectile.rotation, tex.Size() * 0.5f, scale, SpriteEffects.None);
-            }
-            if (stuckInTarget || stuckInGround)
-            {
-                Vector2 scale = 1.1f * new Vector2(0.5f, 1) * 1.5f * randSize;
-                Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition, null, Color.White with { A = 0 } * Utils.GetLerpValue(90, 30, stuckTimer, true), Projectile.rotation, tex.Size() * 0.5f, scale, SpriteEffects.None);
-            }
+                Main.EntitySpriteDraw(bloom.Value, Projectile.Center - Main.screenPosition + (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2() * 3, null, Color.Lerp(Color.White, Effects.ArsenalEffects.ArsenalPlasmaColor, 0.5f * i) with { A = 0 } * fadeIn * 0.3f, Projectile.rotation, bloom.Size() * 0.5f, new Vector2(1f - 0.2f * i, 1f + 0.35f * i) * randSize * (0.5f + 0.15f * i), SpriteEffects.None);
+
+            Vector2 scale2 = 1.1f * new Vector2(0.5f, 1) * 1.5f * randSize;
             return false;
         }
     }

@@ -53,7 +53,7 @@ namespace CalamityMod.Projectiles.Melee
                 }
                 if (time % 5 == 0)
                 {
-                    Dust dust = Dust.NewDustPerfect(pos, 278, new Vector2(2, 2).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1f), 0, default, Main.rand.NextFloat(0.45f, 0.6f));
+                    Dust dust = Dust.NewDustPerfect(pos, DustID.FireworksRGB, new Vector2(2, 2).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1f), 0, default, Main.rand.NextFloat(0.45f, 0.6f));
                     dust.noGravity = true;
                     dust.color = usedColor;
                 }
@@ -75,9 +75,19 @@ namespace CalamityMod.Projectiles.Melee
                 Particle spark2 = new BoltParticle(Projectile.Center, Projectile.velocity.RotatedByRandom(0.6f) * Main.rand.NextFloat(0.3f, 1.9f), false, 13, Main.rand.NextFloat(0.3f, 0.35f), Main.rand.NextBool() ? Color.Orchid : Color.Cyan, new Vector2(1.8f, 0.8f), true, true, false, 0.9f);
                 GeneralParticleHandler.SpawnParticle(spark2);
             }
-            
+
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 25, targetHitbox);
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
+        {
+            Player Owner = Main.player[Projectile.owner];
+            if (time <= 1)
+            {
+                float _ = float.NaN;
+                return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, Owner.Center, 25, ref _);
+            }
+            else
+                return CalamityUtils.CircularHitboxCollision(Projectile.Center, 25, targetHitbox);
+        }
         public override bool? CanCutTiles() => false;
     }
 }

@@ -85,8 +85,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<WulfrumMetalScrap>(12).
-                AddIngredient<EnergyCore>().
+                AddIngredient<WulfrumMetalScrap>(10).
                 AddTile(TileID.Anvils).
                 Register();
         }
@@ -94,7 +93,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void Update(ref float gravity, ref float maxFallSpeed) => ScrewStored = false;
         public override void UpdateInventory(Player player)
         {
-            if (player.ActiveItem() != Item)
+            if (player.HeldItem != Item)
                 ScrewStored = false;
         }
 
@@ -166,7 +165,7 @@ namespace CalamityMod.Items.Weapons.Melee
 
             Player myPlayer = Main.LocalPlayer;
 
-            if (myPlayer.ActiveItem() != Item || !myPlayer.active || myPlayer.dead)
+            if (myPlayer.HeldItem != Item || !myPlayer.active || myPlayer.dead)
                 return;
 
             spriteBatch.End();

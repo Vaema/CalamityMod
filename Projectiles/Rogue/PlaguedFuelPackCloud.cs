@@ -8,28 +8,39 @@ namespace CalamityMod.Projectiles.Rogue
     public class PlaguedFuelPackCloud : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
+        public int dir = 0;
+        public float intensity = 0;
+        public override void SetStaticDefaults()
+        {
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+        }
         public override void SetDefaults()
         {
             Projectile.width = 28;
             Projectile.height = 24;
             Projectile.friendly = true;
             Projectile.alpha = 0;
-            Projectile.penetrate = -1;
-            Projectile.tileCollide = true;
+            Projectile.penetrate = 1;
+            Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
-            Projectile.timeLeft = 120;
+            Projectile.timeLeft = 390;
+            Projectile.extraUpdates = 2;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 6;
+            Projectile.localNPCHitCooldown = -1;
             Projectile.DamageType = RogueDamageClass.Instance;
-            Projectile.ArmorPenetration = 5;
+            Projectile.ArmorPenetration = 10;
         }
 
         public override void AI()
         {
             if (Projectile.timeLeft < 50)
                 Projectile.alpha += 5;
-            if (Projectile.timeLeft < 75)
-                Projectile.velocity *= 0.95f;
+            if (dir == 0)
+            {
+                Projectile.timeLeft -= Main.rand.Next(5, 20 + 1);
+                dir = Main.rand.NextBool() ? -1 : 1;
+                intensity = Main.rand.NextFloat(0.2f, 1.2f);
+            }
 
             if (Main.rand.NextBool(150))
             {
@@ -38,6 +49,11 @@ namespace CalamityMod.Projectiles.Rogue
                 Main.dust[dust].velocity *= 1.2f;
                 Main.dust[dust].velocity.Y -= 0.15f;
             }
+
+            if (Projectile.timeLeft < 290)
+                CalamityUtils.HomeInOnSelectedNPC(Projectile, Projectile.Center.ClosestNPCAt(1000), true, 0.65f * intensity, 6, 0.98f, 0.995f, true);
+            else
+                Projectile.velocity = Projectile.velocity.RotatedBy(0.006f * dir * intensity) * Main.rand.NextFloat(0.985f, 1f);
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Plague>(), 240);

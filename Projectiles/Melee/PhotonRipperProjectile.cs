@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -10,6 +11,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
+    [PierceResistException]
     public class PhotonRipperProjectile : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
@@ -59,7 +61,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             // Recalculate damage every frame for balance reasons, as this is a long-lasting holdout.
             // This is important because you could start using it while benefitting from Auric Tesla standstill bonus, for example.
-            Projectile.damage = Owner.ActiveItem() is null ? 0 : Owner.GetWeaponDamage(Owner.ActiveItem());
+            Projectile.damage = Owner.HeldItem is null ? 0 : Owner.GetWeaponDamage(Owner.HeldItem);
             DetermineDamage();
 
             PlayChainsawSounds();
@@ -194,7 +196,7 @@ namespace CalamityMod.Projectiles.Melee
                 // spawn too far from the blade.
                 spawnPosition += Main.rand.NextVector2CircularEdge(9f, 35f).RotatedBy(Projectile.velocity.ToRotation() + MathHelper.PiOver2);
 
-                Dust rainbowSpark = Dust.NewDustPerfect(spawnPosition, 261);
+                Dust rainbowSpark = Dust.NewDustPerfect(spawnPosition, DustID.AncientLight);
                 rainbowSpark.velocity = Projectile.velocity * 3f + Main.rand.NextVector2CircularEdge(1.5f, 1.5f);
                 rainbowSpark.noGravity = true;
                 rainbowSpark.color = Main.hslToRgb((Time / 40f + Main.rand.NextFloat(-0.1f, 0.1f)) % 1f, 0.95f, 0.8f);
@@ -215,7 +217,7 @@ namespace CalamityMod.Projectiles.Melee
 
             // Incorporate item shoot speed into the range of the crystals.
             // This means that projectile speed boosts will improve the range of the chainsaw.
-            shootReach *= Owner.ActiveItem().shootSpeed;
+            shootReach *= Owner.HeldItem.shootSpeed;
 
             // 15NOV2024: Ozzatron: clamped mouse position unnecessary, the result is separately capped
             float distanceFromMouse = Owner.Distance(Main.MouseWorld);

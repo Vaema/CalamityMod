@@ -1,6 +1,6 @@
-﻿using CalamityMod.NPCs.BrimstoneElemental;
+﻿using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.NPCs.BrimstoneElemental;
 using CalamityMod.Projectiles.Magic;
-using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;

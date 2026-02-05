@@ -51,7 +51,6 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             CreateRecipe().
                 AddIngredient(ItemID.PlatinumBar, 12).
-                AddIngredient(ItemID.ThrowingKnife, 250).
                 AddTile(TileID.Anvils).
                 Register();
         }

@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -26,7 +24,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.height = 16;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Melee;
-            Projectile.penetrate = -1;
+            Projectile.penetrate = 2;
             Projectile.tileCollide = false;
             Projectile.timeLeft = TimeLeft;
             Projectile.usesLocalNPCImmunity = true;

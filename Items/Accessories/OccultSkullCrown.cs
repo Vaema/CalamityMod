@@ -32,8 +32,8 @@ namespace CalamityMod.Items.Accessories
             Item.width = 82;
             Item.height = 62;
             Item.defense = 5;
-            Item.rare = ModContent.RarityType<DarkBlue>();
-            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
+            Item.rare = ModContent.RarityType<Turquoise>();
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.accessory = true;
             Item.SetRevExclusive();
         }
@@ -53,7 +53,7 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<Laudanum>().
                 AddIngredient<StressPills>().
                 AddIngredient<TwistingNether>(3).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

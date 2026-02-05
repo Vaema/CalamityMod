@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
@@ -24,20 +25,19 @@ namespace CalamityMod.Projectiles.Ranged
         public ref float shootingTimer => ref Projectile.ai[2]; // Dual functions for rapid fire shooting cooldown and recoil
         public bool isTired => cooldownTimer > 0;
         public float revSpeed = 1;
-        public bool secondShot = true;
         public int maxFrames = 420;
         public int initialFireTime = 45;
         public float shineScale = 0;
 
         public override void KillHoldoutLogic()
         {
-            if (!isTired && (Owner.CantUseHoldout(false) || HeldItem.type != Owner.ActiveItem().type))
+            if (!isTired && (Owner.CantUseHoldout(false) || HeldItem.type != Owner.HeldItem.type))
                 Projectile.Kill();
         }
 
         public override void HoldoutAI()
         {
-            if (!isTired && (Owner.CantUseHoldout() || HeldItem.type != Owner.ActiveItem().type))
+            if (!isTired && (Owner.CantUseHoldout() || HeldItem.type != Owner.HeldItem.type))
                 cooldownTimer = (int)(Utils.Remap(revFrames, 0, 350, 40, 180, true));
             if (isTired)
             {
@@ -46,38 +46,30 @@ namespace CalamityMod.Projectiles.Ranged
             }
 
             revSpeed = Utils.Remap(revFrames, 0, maxFrames - 120, 1, 20, true);
-            if (shootingTimer >= initialFireTime && revFrames < maxFrames && secondShot)
+            if (shootingTimer >= initialFireTime && revFrames < maxFrames)
             {
-                Owner.PickAmmo(Owner.ActiveItem(), out int bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out _, !Main.rand.NextBool(4));
+                Owner.PickAmmo(Owner.HeldItem, out int bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out _);
                 
                 SoundStyle fire = new("CalamityMod/Sounds/Item/GunShotSmallAlt");
                 SoundEngine.PlaySound(fire with { Volume = 0.7f, Pitch = -0.1f + revSpeed * 0.01f }, Projectile.Center);
 
                 Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 19;
 
-                float spread = 0.045f * Utils.GetLerpValue(0, maxFrames, revFrames, true);
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, (shootVelocity).RotatedByRandom(spread), bulletAMMO, Projectile.damage / 2, Projectile.knockBack, Projectile.owner);
+                if (Main.myPlayer == Projectile.owner)
+                {
+                    float spread = 0.045f * Utils.GetLerpValue(0, maxFrames, revFrames, true);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, (shootVelocity).RotatedByRandom(spread), bulletAMMO, Projectile.damage, Projectile.knockBack, Projectile.owner);
+                }
                 
                 for (int i = 0; i <= 3; i++)
                 {
                     Dust dust = Dust.NewDustPerfect(GunTipPosition - Projectile.velocity * 5, Main.rand.NextBool(5) ? 28 : 215, shootVelocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.2f, 1.5f), 0, default, Main.rand.NextFloat(0.6f, 1.4f));
                     dust.noGravity = true;
                 }
-                //GenericSparkle sparker = new GenericSparkle(GunTipPosition, Vector2.Zero, Color.DarkGoldenrod, Color.Gold, Main.rand.NextFloat(1.1f, 1.8f), 2, Main.rand.NextFloat(-0.01f, 0.01f), 2.68f);
-                //GeneralParticleHandler.SpawnParticle(sparker);
 
                 OffsetLengthFromArm -= 5f;
-                secondShot = false;
                 shineScale = 1;
-            }
-            if (shootingTimer >= 60 && revFrames < maxFrames)
-            {
-                Owner.PickAmmo(Owner.ActiveItem(), out int bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out _, !Main.rand.NextBool(4));
-                Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 19;
-                float spread = 0.045f * Utils.GetLerpValue(0, maxFrames, revFrames, true);
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, (shootVelocity).RotatedByRandom(spread).RotatedByRandom(0.04f), bulletAMMO, Projectile.damage / 2, Projectile.knockBack, Projectile.owner);
                 shootingTimer = 0;
-                secondShot = true;
             }
 
             shootingTimer += revSpeed;
@@ -86,7 +78,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             if (revFrames >= maxFrames && !isTired || (Owner.Calamity().mouseRight && revFrames > 2 ))
             {
-                Owner.Calamity().GeneralScreenShakePower = 6.5f;
+                Owner.SetScreenshake(6.5f);
                 OffsetLengthFromArm -= 35f;
                 cooldownTimer = (int)MathHelper.Lerp((int)(Utils.Remap(revFrames, 0, 350, 40, 180, true)), 180, 0.7f);
                 SoundStyle bigShot = new("CalamityMod/Sounds/Custom/Perforator/PerfHiveIchorShoot");
@@ -105,20 +97,20 @@ namespace CalamityMod.Projectiles.Ranged
                 Particle pulse = new CustomPulse(GunTipPosition, Projectile.velocity * 9f, Color.Chartreuse * 0.7f, "CalamityMod/Particles/FlameExplosion", new Vector2(0.4f, 1f), Projectile.velocity.ToRotation(), 0.25f, 0, 34);
                 GeneralParticleHandler.SpawnParticle(pulse);
                 
-                float velBonus = 1.1f;
-                for (int i = 0; i <= 5; i++)
+                if (Main.myPlayer == Projectile.owner)
                 {
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedBy(-0.03f * i * velBonus) * (1 - i * 0.08f) * velBonus, ModContent.ProjectileType<EmesisGore>(), chunkDamage, Projectile.knockBack * 3, Projectile.owner, -i, 0, velBonus);
+                    float velBonus = 1.1f;
+                    for (int i = 0; i <= 5; i++)
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedBy(-0.03f * i * velBonus) * (1 - i * 0.08f) * velBonus, ModContent.ProjectileType<EmesisGore>(), chunkDamage, Projectile.knockBack * 3, Projectile.owner, -i, 0, velBonus);
+                    for (int j = 0; j <= 5; j++)
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedBy(0.03f * j * velBonus) * (1 - j * 0.08f) * velBonus, ModContent.ProjectileType<EmesisGore>(), chunkDamage, Projectile.knockBack * 3, Projectile.owner, j, 0, velBonus);
+
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity * velBonus, ModContent.ProjectileType<EmesisGore>(), chunkDamage, Projectile.knockBack * 3, Projectile.owner, 20, 0, velBonus);
                 }
-                for (int j = 0; j <= 5; j++)
-                {
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedBy(0.03f * j * velBonus) * (1 - j * 0.08f) * velBonus, ModContent.ProjectileType<EmesisGore>(), chunkDamage, Projectile.knockBack * 3, Projectile.owner, j, 0, velBonus);
-                }
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity * velBonus, ModContent.ProjectileType<EmesisGore>(), chunkDamage, Projectile.knockBack * 3, Projectile.owner, 20, 0, velBonus);
 
                 for (int i = 0; i <= 18; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(GunTipPosition, 66, shootVelocity.RotatedByRandom(0.3f) * Main.rand.NextFloat(0.1f, 1.5f), 0, default, Main.rand.NextFloat(0.6f, 1.4f));
+                    Dust dust = Dust.NewDustPerfect(GunTipPosition, DustID.RainbowTorch, shootVelocity.RotatedByRandom(0.3f) * Main.rand.NextFloat(0.1f, 1.5f), 0, default, Main.rand.NextFloat(0.6f, 1.4f));
                     dust.noGravity = true;
                     dust.color = Color.Chartreuse;
                 }
@@ -139,7 +131,7 @@ namespace CalamityMod.Projectiles.Ranged
                     SoundEngine.PlaySound(tired with { Pitch = -0.2f }, Projectile.Center);
                     for (int i = 0; i <= 12; i++)
                     {
-                        Dust dust = Dust.NewDustPerfect(GunTipPosition, 303, smokeVel.RotatedByRandom(0.4f) * Main.rand.NextFloat(0.2f, 1f), 80, default, Main.rand.NextFloat(0.4f, 1.3f));
+                        Dust dust = Dust.NewDustPerfect(GunTipPosition, DustID.SteampunkSteam, smokeVel.RotatedByRandom(0.4f) * Main.rand.NextFloat(0.2f, 1f), 80, default, Main.rand.NextFloat(0.4f, 1.3f));
                         dust.noGravity = false;
                         dust.color = Color.White;
                     }

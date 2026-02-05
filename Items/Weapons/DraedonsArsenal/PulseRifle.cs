@@ -19,17 +19,18 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
         public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
         public static readonly SoundStyle FireSound = new("CalamityMod/Sounds/Item/PulseRifleFire") { Volume = 0.8f };
 
-        private int BaseDamage = 990;
         public int FiringTimer = 30;
 
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
+        }
         public override void SetDefaults()
         {
-            CalamityGlobalItem modItem = Item.Calamity();
-
             Item.width = 100;
             Item.height = 32;
             Item.DamageType = DamageClass.Ranged;
-            Item.damage = BaseDamage;
+            Item.damage = 530;
             Item.useAnimation = Item.useTime = 55;
             Item.knockBack = 0.25f;
             Item.shoot = ModContent.ProjectileType<PulseRifleShot>();
@@ -41,16 +42,43 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.noMelee = true;
 
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
-
-            modItem.UsesCharge = true;
-            modItem.MaxCharge = 250f;
-            modItem.ChargePerUse = 0.24f;
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
         {
             Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/DraedonsArsenal/PulseRifleGlow").Value);
+        }
+        public override void UseStyle(Player player, Rectangle heldItemFrame)
+        {
+            player.ChangeDir(Math.Sign((player.Calamity().mouseWorld - player.Center).X));
+            float itemRotation = player.compositeFrontArm.rotation + MathHelper.PiOver2 * player.gravDir;
+
+            float pullback = 13f;
+
+
+            float animProgress = 0.5f - player.itemTime / (float)player.itemTimeMax;
+            float rotation = (player.Center - player.Calamity().mouseWorld).ToRotation() * player.gravDir + MathHelper.PiOver2;
+            if (animProgress < 0.8f)
+                pullback -= (5.75f) * (float)Math.Pow((0.85f - animProgress) / 0.85f, 2);
+
+            Vector2 itemPosition = player.MountedCenter + itemRotation.ToRotationVector2() * pullback;
+            Vector2 itemSize = new Vector2(100, 32);
+            Vector2 itemOrigin = new Vector2(-44, 4);
+
+            CalamityUtils.CleanHoldStyle(player, itemRotation, itemPosition, itemSize, itemOrigin);
+
+            base.UseStyle(player, heldItemFrame);
+        }
+
+        public override void UseItemFrame(Player player)
+        {
+            player.ChangeDir(Math.Sign((player.Calamity().mouseWorld - player.Center).X));
+
+            float animProgress = 0.5f - player.itemTime / (float)player.itemTimeMax;
+            float rotation = (player.Center - player.Calamity().mouseWorld).ToRotation() * player.gravDir + MathHelper.PiOver2;
+
+            player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, rotation);
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-15, 0);

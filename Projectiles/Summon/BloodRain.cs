@@ -27,6 +27,8 @@ namespace CalamityMod.Projectiles.Summon
             AIType = ProjectileID.RainFriendly;
             Projectile.extraUpdates = 1;
             Projectile.DamageType = DamageClass.Summon;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()

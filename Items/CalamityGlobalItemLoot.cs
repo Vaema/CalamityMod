@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Fishing;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.PermanentBoosters;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
-using CalamityMod.Items.Placeables.Ores;
-using CalamityMod.Items.Potions;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
@@ -31,17 +30,17 @@ namespace CalamityMod.Items
             {
                 #region Boss Treasure Bags
                 case ItemID.KingSlimeBossBag:
-                    loot.DefineConditionalDropSet(DropHelper.NotRemix).Add(ItemID.Katana, 3); // 33% Katana
-                    loot.DefineConditionalDropSet(DropHelper.Remix).Add(ItemID.Keybrand, 3); // 33% Keybrand in Remix
+                    loot.DefineConditionalDropSet(DropHelper.NotRemix).Add(ItemID.Katana, DropHelper.BagWeaponDropRateInt); // 33% Katana
+                    loot.DefineConditionalDropSet(DropHelper.Remix).Add(ItemID.Keybrand, DropHelper.BagWeaponDropRateInt); // 33% Keybrand in Remix
 
-                    loot.Add(new CommonDrop(ModContent.ItemType<CrownJewel>(), 10)); // 10% Crown Jewel
+                    loot.Add(ModContent.ItemType<CrownJewel>(), DropHelper.BagWeaponDropRateFraction); // 33% Crown Jewel
                     loot.AddRevBagAccessories();
                     loot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
                     break;
 
                 case ItemID.EyeOfCthulhuBossBag:
-                    loot.Add(ModContent.ItemType<DeathstareRod>(), DropHelper.BagWeaponDropRateInt); // 33% Deathstare Rod
-                    loot.Add(ModContent.ItemType<TeardropCleaver>(), 10); // 10% Teardrop Cleaver
+                    loot.Add(ModContent.ItemType<DeathstareRod>(), DropHelper.BagWeaponDropRateFraction); // 33% Deathstare Rod
+                    loot.Add(ModContent.ItemType<TeardropCleaver>(), DropHelper.BagWeaponDropRateFraction); // 33% Teardrop Cleaver
                     loot.AddRevBagAccessories();
                     loot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
                     break;
@@ -51,8 +50,8 @@ namespace CalamityMod.Items
                 // We don't care.
                 case ItemID.EaterOfWorldsBossBag:
                     var eowRevLCR = loot.DefineConditionalDropSet(DropHelper.If(() => CalamityWorld.revenge));
-                    eowRevLCR.Add(ItemID.DemoniteOre, 1, 90, 135); // 100% 90-135 Demonite Ore
-                    eowRevLCR.Add(ItemID.ShadowScale, 1, 35, 55); // 100% 35-55 Shadow Scale
+                    eowRevLCR.Add(ItemID.DemoniteOre, 1, 70, 90); // 100% 70-90 Demonite Ore
+                    eowRevLCR.Add(ItemID.ShadowScale, 1, 20, 30); // 100% 20-30 Shadow Scale
                     loot.AddRevBagAccessories();
                     loot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
                     break;
@@ -62,11 +61,9 @@ namespace CalamityMod.Items
                 // This can theoretically be exploited by killing the boss on Expert, then turning on Rev to open the bags.
                 // We don't care.
                 case ItemID.BrainOfCthulhuBossBag:
-                    // BoC drops less partial loot than EoW
-                    // However, sell price is overall higher despite the lower yield
                     var bocRevLCR = loot.DefineConditionalDropSet(DropHelper.If(() => CalamityWorld.revenge));
-                    bocRevLCR.Add(ItemID.CrimtaneOre, 1, 80, 120); // 100% 80-120 Crimtane Ore
-                    bocRevLCR.Add(ItemID.TissueSample, 1, 25, 40); // 100% 25-40 Tissue Sample
+                    bocRevLCR.Add(ItemID.CrimtaneOre, 1, 70, 90); // 100% 70-90 Crimtane Ore
+                    bocRevLCR.Add(ItemID.TissueSample, 1, 20, 30); // 100% 20-30 Tissue Sample
                     loot.AddRevBagAccessories();
                     loot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
                     break;
@@ -95,7 +92,7 @@ namespace CalamityMod.Items
                         ModContent.ItemType<HardenedHoneycomb>(),
                     };
                     loot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, queenBeeWeapons));
-                    loot.Add(ModContent.ItemType<TheBee>(), 10); // 10% The Bee
+                    loot.Add(ModContent.ItemType<TheBee>(), DropHelper.BagWeaponDropRateFraction); // 33% The Bee
                     loot.Add(ItemID.Stinger, 1, 8, 12); // 100% 8-12 Stinger
                     loot.AddRevBagAccessories();
                     loot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
@@ -107,6 +104,7 @@ namespace CalamityMod.Items
                     int[] wofWeapons = new int[]
                     {
                         ItemID.BreakerBlade,
+                        ModContent.ItemType<Carnage>(),
                         ItemID.ClockworkAssaultRifle,
                         ModContent.ItemType<Meowthrower>(),
                         ItemID.LaserRifle,
@@ -115,7 +113,6 @@ namespace CalamityMod.Items
                         ModContent.ItemType<BlastBarrel>()
                     };
                     loot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, wofWeapons));
-                    loot.Add(ModContent.ItemType<Carnage>(), 10); // 10% Carnage
 
                     int[] emblems = new int[]
                     {
@@ -147,7 +144,6 @@ namespace CalamityMod.Items
                 case ItemID.TwinsBossBag:
                     loot.Remove(FindHallowedBars(loot));
                     loot.AddIf(DropHelper.HallowedBarsCondition, ItemID.HallowedBar, 1, 20, 35);
-                    loot.Add(ModContent.ItemType<Arbalest>(), 10); // 10% Arbalest
                     loot.AddRevBagAccessories();
                     loot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
                     break;
@@ -174,7 +170,7 @@ namespace CalamityMod.Items
                     loot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, planteraWeapons));
                     loot.Add(ModContent.ItemType<BlossomFlux>(), 10); // 10% Blossom Flux
                     loot.Add(ModContent.ItemType<BloomStone>(), DropHelper.BagWeaponDropRateFraction);
-                    loot.Add(ModContent.ItemType<LivingShard>(), 1, 30, 35);
+                    loot.Add(ModContent.ItemType<LivingShard>(), 1, 40, 50);
                     loot.AddRevBagAccessories();
                     loot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
                     break;
@@ -236,7 +232,6 @@ namespace CalamityMod.Items
                         ItemID.FairyQueenRangedItem, // Eventide
                         ItemID.FairyQueenMagicItem, // Nightglow
                         ItemID.SparkleGuitar, // Stellar Tune
-                        ItemID.EmpressBlade, // Terraprisma
                         ItemID.RainbowWhip, // Kaleidoscope
                         ItemID.RainbowWings, // Empress Wings have a pathetically low drop rate.
                     };
@@ -282,23 +277,34 @@ namespace CalamityMod.Items
                     loot.AddHardmodeOresToCrates(HardmodeCrateType.Mythril);
                     break;
 
-                // Non-crafted underground Gold Chest loot @ 20%; Individually 5%
                 case ItemID.GoldenCrate:
-                    loot.Add(new OneFromOptionsNotScaledWithLuckDropRule(5, 1,
-                    ItemID.FlareGun,
-                    ItemID.Mace,
-                    ItemID.BandofRegeneration,
-                    ItemID.ShoeSpikes)); // Climbing Claws is in Wooden/Pearlwood (vanilla) in case you're curious
+                    RemoveBaitFromGoldenCrates(loot);
+                    loot.Add(NewGoldenCrateBaitRule);
+                    loot.Add(UndergroundChestLootRule);
                     break;
 
                 case ItemID.GoldenCrateHard:
                     RemoveHardmodeOresFromStandardCrates(loot);
                     loot.AddHardmodeOresToCrates(HardmodeCrateType.Titanium);
-                    loot.Add(new OneFromOptionsNotScaledWithLuckDropRule(5, 1,
-                    ItemID.FlareGun,
-                    ItemID.Mace,
-                    ItemID.BandofRegeneration,
-                    ItemID.ShoeSpikes));
+                    RemoveBaitFromGoldenCrates(loot);
+                    loot.Add(NewGoldenCrateBaitRule);
+                    loot.Add(UndergroundChestLootRule);
+                    break;
+
+                // 2-5 Essences of Eleum @ 50%
+                // This is our equivalent to Souls of Light/Night
+                case ItemID.FrozenCrateHard:
+                    RemoveHardmodeOresFromBiomeCrates(loot);
+                    loot.AddHardmodeOresToCrates(HardmodeCrateType.Biome);
+                    loot.Add(ModContent.ItemType<EssenceofEleum>(), 2, 2, 5);
+                    break;
+
+                // 2-5 Essences of Sunlight @ 50%
+                // This is our equivalent to Souls of Light/Night
+                case ItemID.FloatingIslandFishingCrateHard:
+                    RemoveHardmodeOresFromBiomeCrates(loot);
+                    loot.AddHardmodeOresToCrates(HardmodeCrateType.Biome);
+                    loot.Add(ModContent.ItemType<EssenceofSunlight>(), 2, 2, 5);
                     break;
 
                 case ItemID.CorruptFishingCrateHard:
@@ -306,8 +312,6 @@ namespace CalamityMod.Items
                 case ItemID.HallowedFishingCrateHard:
                 case ItemID.DungeonFishingCrateHard:
                 case ItemID.JungleFishingCrateHard:
-                case ItemID.FloatingIslandFishingCrateHard:
-                case ItemID.FrozenCrateHard:
                 case ItemID.LavaCrateHard:
                 case ItemID.OasisCrateHard:
                 case ItemID.OceanCrateHard:
@@ -541,6 +545,34 @@ namespace CalamityMod.Items
                 }
             }
         }
+
+        private static void RemoveBaitFromGoldenCrates(ItemLoot loot)
+        {
+            List<IItemDropRule> rules = loot.Get(false);
+            IItemDropRule toRemove = null;
+
+            foreach (IItemDropRule rule in rules)
+                if (rule is CommonDrop c && c.itemId == ItemID.MasterBait)
+                    toRemove = c;
+
+            if (toRemove is not null)
+                loot.Remove(toRemove);
+        }
+
+        // Replaced bait rules for Golden/Titanium Crates
+        // Vanilla: 3-7 Master Bait @ 66.67%
+        // Calamity: 3-7 Master Bait @ 33.33% OR 3-7 Grand Marquis Bait @ 16.67%
+        private static IItemDropRule NewGoldenCrateBaitRule => ItemDropRule.SequentialRulesNotScalingWithLuck(2,
+                ItemDropRule.NotScalingWithLuck(ModContent.ItemType<GrandMarquisBait>(), 3, 3, 7),
+                ItemDropRule.NotScalingWithLuck(ItemID.MasterBait, 1, 3, 7));
+
+        // Non-crafted underground Gold Chest loot for Golden/Titanium Crates @ 25%; Individually 5%
+        private static IItemDropRule UndergroundChestLootRule => new OneFromOptionsNotScaledWithLuckDropRule(4, 1,
+                ItemID.FlareGun,
+                ItemID.Mace,
+                ItemID.BandofRegeneration,
+                ItemID.ShoeSpikes,
+                ModContent.ItemType<EnchantedKnifeStaff>()); // Climbing Claws is in Wooden/Pearlwood (vanilla) in case you're curious
         #endregion
 
         #region Goodie Bag Bat Hook

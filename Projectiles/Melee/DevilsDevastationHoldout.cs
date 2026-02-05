@@ -1,14 +1,13 @@
 ﻿using System;
+using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Cooldowns;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.NPCs;
 using CalamityMod.Packets.Entities;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
-using CalamityMod.Projectiles.Ranged;
-using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -23,6 +22,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
+    [PierceResistException]
     public class DevilsDevastationHoldout : BaseCustomUseStyleProjectile, ILocalizedModType
     {
         public override int AssignedItemID => ModContent.ItemType<DevilsDevastation>();
@@ -52,8 +52,10 @@ namespace CalamityMod.Projectiles.Melee
         public bool willDie = false;
         public bool hasLaunchedBlades = false;
         public bool swooshFade = false;
+        private int lastSwingId;
 
         public NPC lastHitTarget = null;
+        private int lastHitTargetIndex = -1;
         public int postSwingCooldownMax => (int)(useAnim * 0.65f);
         public override void SetDefaults()
         {
@@ -61,6 +63,14 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
             Projectile.DamageType = TrueMeleeDamageClass.Instance;
+        }
+        public override void OnSpawn(IEntitySource source)
+        {
+            base.OnSpawn(source);
+            // This is needed because EntitySource_ItemUse always sets Projectile.originalDamage to the item's damage,
+            // regardless of the value passed into the damage argument of NewProjectile.
+            // This results in continuous updating damage resetting the damage.
+            Projectile.originalDamage *= 15;
         }
         public override void WhenSpawned()
         {
@@ -70,11 +80,26 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.knockBack = 0;
             Projectile.scale = 1.15f;
             Projectile.ai[1] = -1;
+            bool isOwner = Main.myPlayer == Projectile.owner;
             // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
-            mousePos = Owner.Calamity().mouseWorld;
-            aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
+            if (isOwner)
+            {
+                mousePos = Owner.Calamity().mouseWorld;
+                aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
+                Projectile.netUpdate = true;
+            }
+            else
+            {
+                Vector2 syncedDelta = Owner.Calamity().mouseWorldDeltaFromPlayer;
+                if (syncedDelta.LengthSquared() > 0.001f)
+                    aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65f;
+                else
+                    aimVel = Vector2.UnitX * Owner.direction * 65f;
+                mousePos = Owner.Center - aimVel;
+            }
             useAnim = (int)(Owner.HeldItem.useAnimation / Owner.GetTotalAttackSpeed<MeleeDamageClass>());
             postSwingCooldown = postSwingCooldownMax / 2;
+            lastSwingId = (int)Projectile.ai[0];
 
             if (mousePos.X < Owner.Center.X) Owner.direction = -1;
             else Owner.direction = 1;
@@ -86,7 +111,7 @@ namespace CalamityMod.Projectiles.Melee
             Owner.Calamity().demonSwordKillMode = false;
             if (lastHitTarget != null && lastHitTarget.life > 0 && lastHitTarget.active && Owner.HeldItem.type == AssignedItemID && Main.myPlayer == Projectile.owner)
             {
-                Owner.Calamity().GeneralScreenShakePower = 12.5f;
+                Owner.SetScreenshake(12.5f);
                 Particle blastRing = new CustomPulse(lastHitTarget.Center, Vector2.Zero, clr, "CalamityMod/Particles/HighResHollowCircleHardEdge", Vector2.One, Main.rand.NextFloat(-10, 10), 0.05f, 0.6f, 20, true);
                 GeneralParticleHandler.SpawnParticle(blastRing);
                 for (int i = 0; i < 4; i++)
@@ -94,11 +119,12 @@ namespace CalamityMod.Projectiles.Melee
                     Vector2 vel = (MathHelper.TwoPi * i / 4f).ToRotationVector2() * 2;
                     Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), lastHitTarget.Center, vel.RotatedBy(MathHelper.ToRadians(45)), ModContent.ProjectileType<DevilsStrike>(), 0, 0f, Owner.whoAmI, 1, 0);
                 }
-                Projectile strike = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), lastHitTarget.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), (int)(Projectile.damage * 2.5f), 0f, Owner.whoAmI, lastHitTarget.whoAmI, 0);
+                Projectile strike = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), lastHitTarget.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), (int)(Projectile.damage * 1.5f), 0f, Owner.whoAmI, lastHitTarget.whoAmI, 0);
+                strike.DamageType = DamageClass.Melee;
                 SoundStyle dieSound = new("CalamityMod/Sounds/Item/LanceofDestinyStrong");
                 SoundEngine.PlaySound(dieSound with { Volume = 0.9f, Pitch = 0.3f }, lastHitTarget.Center);
 
-                int bonusDamage = 4500;
+                int bonusDamage = 4000;
                 if (lastHitTarget.Calamity().demonicFlamesBonusDamage <= bonusDamage)
                 {
                     lastHitTarget.Calamity().demonicFlamesBonusDamage = bonusDamage;
@@ -109,32 +135,66 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override void UseStyle()
         {
+            bool isOwner = Main.myPlayer == Projectile.owner;
             bool hasKillMode = Owner.Calamity().cooldowns.TryGetValue(KillMode.ID, out CooldownInstance killModeCD);
 
-            if (SoundEngine.TryGetActiveSound(SoundSlot, out var Sound) && Sound.IsPlaying && lastHitTarget != null)
-                Sound.Position = lastHitTarget.Center;
+            if (!isOwner)
+            {
+                Vector2 syncedDelta = Owner.Calamity().mouseWorldDeltaFromPlayer;
+                if (syncedDelta.LengthSquared() > 0.001f)
+                    aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65f;
+            }
 
-            if ((Main.mouseLeft || (hasKillMode && killModeCD.timeLeft == KillMode.cooldownMax + 1)) && holding && postSwingCooldown == 0)
+            if (lastHitTargetIndex >= 0)
+            {
+                NPC syncedTarget = Main.npc[lastHitTargetIndex];
+                if (syncedTarget != null && syncedTarget.active && syncedTarget.life > 0)
+                    lastHitTarget = syncedTarget;
+            }
+
+            if (isOwner)
+            {
+                bool shouldStartSwing = (Main.mouseLeft || (hasKillMode && killModeCD.timeLeft == KillMode.cooldownMax + 1)) && holding && postSwingCooldown == 0;
+                if (shouldStartSwing)
+                {
+                    aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
+                    Projectile.ai[0] += 1f;
+                    Projectile.netUpdate = true;
+                }
+            }
+
+            int swingId = (int)Projectile.ai[0];
+            if (swingId != lastSwingId && holding && postSwingCooldown == 0)
             {
                 Animation = (int)(useAnim * 0.7f);
                 holding = false;
-                killModeCD.timeLeft = KillMode.cooldownMax;
-                Owner.Calamity().killModeCooldown = KillMode.cooldownMax - 1;
+                if (isOwner)
+                {
+                    killModeCD.timeLeft = KillMode.cooldownMax;
+                    Owner.Calamity().killModeCooldown = KillMode.cooldownMax - 1;
+                }
                 swingCount++;
+                lastSwingId = swingId;
             }
+
+            if (SoundEngine.TryGetActiveSound(SoundSlot, out var Sound) && Sound.IsPlaying && lastHitTarget != null)
+                Sound.Position = lastHitTarget.Center;
             if (postSwingCooldown > 0)
                 postSwingCooldown--;
             else if (willDie)
             {
-                if (hasKillMode)
-                    killModeCD.timeLeft = KillMode.cooldownMax;
-                Owner.Calamity().killModeCooldown = KillMode.cooldownMax;
+                if (isOwner)
+                {
+                    if (hasKillMode)
+                        killModeCD.timeLeft = KillMode.cooldownMax;
+                    Owner.Calamity().killModeCooldown = KillMode.cooldownMax;
+                    Owner.Calamity().demonSwordKillMode = false;
+                }
                 DrawUnconditionally = false;
                 Projectile.Kill();
-                Owner.Calamity().demonSwordKillMode = false;
                 return;
             }
-            if (killModeCD.timeLeft < KillMode.cooldownMax)
+            if (isOwner && killModeCD.timeLeft < KillMode.cooldownMax)
             {
                 killModeCD.timeLeft = KillMode.cooldownMax;
                 Owner.Calamity().killModeCooldown = KillMode.cooldownMax;
@@ -147,11 +207,14 @@ namespace CalamityMod.Projectiles.Melee
 
             AnimationProgress = Animation % useAnim;
 
+            if (isOwner && !holding && Main.netMode != NetmodeID.SinglePlayer && (int)Animation % 3 == 0)
+                Projectile.netUpdate = true;
+
             if (CanHit || postSwing)
                 mousePos = Owner.Center - aimVel;
             else
             {
-                mousePos = Owner.Calamity().mouseWorld;
+                mousePos = isOwner ? Owner.Calamity().mouseWorld : (Owner.Center - aimVel);
             }
 
             if (CanHit && !swooshFade)
@@ -169,8 +232,15 @@ namespace CalamityMod.Projectiles.Melee
 
                 Projectile.numHits = 0;
                 // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
-                mousePos = Owner.Calamity().mouseWorld;
-                aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
+                if (isOwner)
+                {
+                    mousePos = Owner.Calamity().mouseWorld;
+                    aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
+                }
+                else
+                {
+                    mousePos = Owner.Center - aimVel;
+                }
                 CanHit = false;
                 if (mousePos.X < Owner.Center.X) Owner.direction = -1;
                 else Owner.direction = 1;
@@ -179,8 +249,10 @@ namespace CalamityMod.Projectiles.Melee
                 finalFlip = false;
                 playSwingSound = true;
                 hasLaunchedBlades = false;
-                if (!Owner.Calamity().demonSwordKillMode && postSwingCooldown == 0)
+                if (isOwner && !Owner.Calamity().demonSwordKillMode && postSwingCooldown == 0)
                 {
+                    if (!willDie)
+                        Projectile.netUpdate = true;
                     willDie = true;
                     if (lastHitTarget != null)
                     {
@@ -226,7 +298,8 @@ namespace CalamityMod.Projectiles.Melee
                 if (holding)
                 {
                     // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
-                    aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
+                    if (isOwner)
+                        aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
                     CanHit = false;
                     postSwing = false;
                     RotationOffset = MathHelper.Lerp(RotationOffset, MathHelper.ToRadians(120f * Projectile.ai[1] * Owner.direction * (1 + (Utils.GetLerpValue(useAnim * 0.7f, useAnim, Animation, true)) * 0.35f)), 0.2f);
@@ -248,7 +321,8 @@ namespace CalamityMod.Projectiles.Melee
                         SoundStyle swing2 = new("CalamityMod/Sounds/Item/HeavySwing");
                         SoundEngine.PlaySound(swing2 with { Volume = 0.65f, Pitch = Main.rand.NextFloat(0.2f, 0.3f) }, Projectile.Center);
                         playSwingSound = false;
-                        Owner.Calamity().demonSwordKillMode = false;
+                        if (isOwner)
+                            Owner.Calamity().demonSwordKillMode = false;
                     }
                     if (time > (int)(timeMax * 0.2f) && time < (int)(timeMax * 0.9f))
                         CanHit = true;
@@ -298,11 +372,16 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.numHits -= 1;
 
             if (target != null && target.life > 0 && target.active)
+            {
                 lastHitTarget = target;
+                lastHitTargetIndex = target.whoAmI;
+                if (Main.myPlayer == Projectile.owner)
+                    Projectile.netUpdate = true;
+            }
 
             bool hasKillMode = Owner.Calamity().cooldowns.TryGetValue(KillMode.ID, out CooldownInstance killModeCD);
 
-            int bonusDamage = 4500;
+            int bonusDamage = 4000;
             if (target.Calamity().demonicFlamesBonusDamage <= bonusDamage)
             {
                 target.Calamity().demonicFlamesBonusDamage = bonusDamage;
@@ -363,7 +442,7 @@ namespace CalamityMod.Projectiles.Melee
 
             if (Projectile.numHits == 0)
             {
-                Owner.Calamity().GeneralScreenShakePower = 12f;
+                Owner.SetScreenshake(12f);
                 for (int i = 0; i < 5; i++)
                     GeneralParticleHandler.SpawnParticle(new CustomSpark(target.Center + launchVel * 15, launchVel.RotatedBy((0.15f - 0.05f * i) * (i % 2 == 0 ? -1 : 1)) * (10 + 10 * i), "CalamityMod/Particles/DemonSigilParticle", false, 11, 0.7f - 0.15f * i, Main.rand.NextBool() ? clr : Color.MediumOrchid, new Vector2(1.5f, 1), extraRotation: MathHelper.ToRadians(i % 2 == 0 ? 90 : 0), shrinkSpeed: (i % 2 == 0 ? -0.8f : 0.8f)));
 
@@ -387,7 +466,7 @@ namespace CalamityMod.Projectiles.Melee
             float minMult = 0.35f;
             int hitsToMinMult = 8;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
-            modifiers.SourceDamage *= damageMult * (Owner.Calamity().mouseRight ? 2.5f : 1);
+            modifiers.SourceDamage *= damageMult;
         }
         public override bool PreDraw(ref Color lightColor)
         {
@@ -429,6 +508,27 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override void ResetStyle()
         {
+        }
+
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.Write(willDie);
+            writer.Write7BitEncodedInt(useAnim);
+            writer.Write7BitEncodedInt(lastHitTargetIndex);
+            writer.Write7BitEncodedInt(postSwingCooldown);
+            writer.WriteVector2(aimVel);
+            writer.Write(Animation);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            willDie = reader.ReadBoolean();
+            useAnim = reader.Read7BitEncodedInt();
+            lastHitTargetIndex = reader.Read7BitEncodedInt();
+            postSwingCooldown = reader.Read7BitEncodedInt();
+            aimVel = reader.ReadVector2();
+            Animation = reader.ReadSingle();
+            mousePos = Owner.Center - aimVel;
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using CalamityMod.Dusts;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.CeaselessVoid;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -32,7 +31,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.penetrate = -1;
             Projectile.Opacity = 0f;
 
-            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+            if (Main.zenithWorld)
                 Projectile.extraUpdates = 1;
         }
 

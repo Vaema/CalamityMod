@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 36;
             Item.height = 40;
-            Item.damage = 143;
+            Item.damage = 130;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 38;
             Item.useTime = 50;
@@ -33,6 +33,8 @@ namespace CalamityMod.Items.Weapons.Magic
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            if (player.velocity.Length() <= 12)
+                player.velocity += -velocity.SafeNormalize(Vector2.UnitX) * 5f;
             bool MaxMana = player.statMana >= (player.statManaMax2 - ((int)(Item.mana * player.manaCost))) && !player.HasBuff(BuffID.ManaSickness);
             Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 0f, MaxMana ? 1f : 0f);
             

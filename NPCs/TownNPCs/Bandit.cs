@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using CalamityMod.Items;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Pets;
+using CalamityMod.Items.Tools;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Packets;
 using CalamityMod.Projectiles.Rogue;
@@ -70,6 +70,9 @@ namespace CalamityMod.NPCs.TownNPCs
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.knockBackResist = 0.5f;
             AnimationType = NPCID.PartyGirl;
+            NPC.Calamity().VulnerableToCold = true;
+            NPC.Calamity().VulnerableToHeat = true;
+            NPC.Calamity().VulnerableToSickness = true;
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -105,7 +108,7 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override List<string> SetNPCNameList() => new List<string>()
         {
-            // Patron names
+            // Dedicated names
             "Xplizzy", // <@!98826096237109248> (whitegiraffe)
             "Freakish", // <@!750363283520749598> (freak5650)
             "Calder", // <@!601897959176798228> (hardlightcaster)
@@ -114,6 +117,10 @@ namespace CalamityMod.NPCs.TownNPCs
             "Jackson", // <@!525827730646892549> (chowchow360)
             "Altarca", // <@!1140673052108128337> (altarca_27226_49175)
             "Jackie", // <@!353241811717718016> (jackalchan)
+            "Ishmael", // <@!840416568000381046> (vanillaoyster)
+            "Ariallis", // <@!518231218806980609> (ariallis)
+            "Shade", // <@!613133259563466755> (shade__storm)
+            "Orion", // <@!119164557657636865> (canacx)
 
             // Original names
             this.GetLocalizedValue("Name.Laura"),
@@ -160,11 +167,6 @@ namespace CalamityMod.NPCs.TownNPCs
             int witch = NPC.FindFirstNPC(ModContent.NPCType<BrimstoneWitch>());
             if (witch != -1)
                 dialogue.Add(this.GetLocalization("Chat.BrimstoneWitch").Format(Main.npc[witch].GivenName));
-
-            //please help me I'm stuck in a children's video game - Fabsol
-            int cirrusIndex = NPC.FindFirstNPC(ModContent.NPCType<Cirrus>());
-            if (cirrusIndex != -1)
-                dialogue.Add(this.GetLocalization("Chat.DrunkPrincess").Format(Main.npc[cirrusIndex].GivenName));
 
             int merchantIndex = NPC.FindFirstNPC(NPCID.Merchant);
             if (merchantIndex != -1)
@@ -300,26 +302,23 @@ namespace CalamityMod.NPCs.TownNPCs
         }
         public override void AddShops()
         {
-            Condition downedCalclone = CalamityConditions.DownedCalamitasClone;
-            Condition downedDoG = CalamityConditions.DownedDevourerOfGods;
-            Condition downedYharon = CalamityConditions.DownedYharon;
 
             NPCShop shop = new(Type);
-            shop.AddWithCustomValue(ModContent.ItemType<Cinquedea>(), Item.buyPrice(gold: 9))
-                .AddWithCustomValue(ModContent.ItemType<Glaive>(), Item.buyPrice(gold: 9))
-                .AddWithCustomValue(ModContent.ItemType<SlickCane>(), Item.buyPrice(gold: 40))
-                .AddWithCustomValue(ModContent.ItemType<OldDie>(), Item.buyPrice(gold: 40))
+            shop.Add<Cinquedea>()
+                .Add<Glaive>()
+                .Add<SlickCane>()
+                .Add<OldDie>()
                 .Add(ItemID.TigerClimbingGear)
-                .Add(ModContent.ItemType<ThiefsDime>(), Condition.DownedPirates)
-                .AddWithCustomValue(ModContent.ItemType<MomentumCapacitor>(), Item.buyPrice(gold: 60), Condition.DownedMechBossAll)
-                .Add(ModContent.ItemType<DeepWounder>(), downedCalclone)
-                .Add(ModContent.ItemType<GloveOfPrecision>(), Condition.DownedPlantera)
-                .Add(ModContent.ItemType<GloveOfRecklessness>(), Condition.DownedPlantera)
-                .AddWithCustomValue(ModContent.ItemType<EtherealExtorter>(), Item.buyPrice(1), Condition.DownedGolem)
-                .AddWithCustomValue(ModContent.ItemType<CelestialReaper>(), Item.buyPrice(2), Condition.DownedMoonLord)
-                .AddWithCustomValue(ModContent.ItemType<VeneratedLocket>(), Item.buyPrice(25), downedDoG)
-                .AddWithCustomValue(ModContent.ItemType<DragonScales>(), Item.buyPrice(40), downedYharon)
-                .Add(ModContent.ItemType<BearsEye>()) //:BearWatchingYou:
+                .Add<ThiefsDime>(Condition.DownedPirates)
+                .Add<MomentumCapacitor>(Condition.DownedMechBossAll)
+                .Add<DeepWounder>(CalamityConditions.DownedCalamitasClone)
+                .Add<GloveOfPrecision>(Condition.DownedPlantera)
+                .Add<GloveOfRecklessness>(Condition.DownedPlantera)
+                .Add<EtherealExtorter>(Condition.DownedGolem)
+                .Add<CelestialReaper>(Condition.DownedMoonLord)
+                .Add<VeneratedLocket>(CalamityConditions.DownedDevourerOfGods)
+                .Add<DragonScales>(CalamityConditions.DownedYharon)
+                .Add<BearsEye>() //:BearWatchingYou:
                 .Register();
         }
 

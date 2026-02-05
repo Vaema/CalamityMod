@@ -3,6 +3,7 @@ using System.IO;
 using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
 using CalamityMod.Systems;
+using CalamityMod.Systems.Mechanic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -115,19 +116,19 @@ namespace CalamityMod.Items.Tools
 
                 for (int i = 0; i < sparkCount; i++)
                 {
-                    Dust.NewDustPerfect(centerPosition, 226, Main.rand.NextVector2Circular(18f, 18f), Scale: Main.rand.NextFloat(0.4f, 1f));
+                    Dust.NewDustPerfect(centerPosition, DustID.Electric, Main.rand.NextVector2Circular(18f, 18f), Scale: Main.rand.NextFloat(0.4f, 1f));
                 }
             }
         }
 
         public override bool CanUseItem(Player player)
         {
-            return !(TilePingerSystem.tileEffects["WulfrumPing"].Active);
+            return !WulfrumPingTileEffect.Instance.Active;
         }
 
         public override bool? UseItem(Player player)
         {
-            if (TilePingerSystem.AddPing("WulfrumPing", player.Center, player))
+            if (!Main.dedServ && TilePingerSystem.AddPing(WulfrumPingTileEffect.Instance, player.Center, player))
             {
                 if (player.name != "John Wulfrum")
                     usesLeft--;
@@ -281,7 +282,7 @@ namespace CalamityMod.Items.Tools
         {
             //Intentionally craftable anywhere.
             CreateRecipe().
-                AddIngredient<WulfrumMetalScrap>(6).
+                AddIngredient<WulfrumMetalScrap>(5).
                 Register()
                 .DisableDecraft();
         }

@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
-using Terraria.GameContent;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
@@ -34,6 +34,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.hide = true;
             Projectile.ownerHitCheck = true;
             Projectile.DamageType = TrueMeleeNoSpeedDamageClass.Instance;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override bool ShouldUpdatePosition() => false;
@@ -74,7 +76,7 @@ namespace CalamityMod.Projectiles.Melee
                     // 15NOV2024: Ozzatron: clamped mouse position unnecessary, result is clamped later
                     Vector2 newVelocity = Owner.Calamity().mouseWorld - Owner.MountedCenter;
 
-                    if (Main.tile[Player.tileTargetX, Player.tileTargetY].WallType != 0)
+                    if (Main.tile[Player.tileTargetX, Player.tileTargetY].WallType != WallID.None)
                     {
                         newVelocity = new Vector2(Player.tileTargetX, Player.tileTargetY) * 16f + Vector2.One * 8f - Owner.MountedCenter;
                         MoveInIntervals = 2f;

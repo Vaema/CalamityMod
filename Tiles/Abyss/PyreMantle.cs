@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using CalamityMod.Sounds;
 using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -13,8 +9,6 @@ namespace CalamityMod.Tiles.Abyss
 {
     public class PyreMantle : ModTile
     {
-        public static readonly SoundStyle MineSound = new("CalamityMod/Sounds/Custom/VoidstoneMine", 3) { Volume = 0.4f };
-        
         public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
@@ -25,14 +19,19 @@ namespace CalamityMod.Tiles.Abyss
             CalamityUtils.MergeWithAbyss(Type);
 
             TileID.Sets.ChecksForMerge[Type] = true;
-            HitSound = MineSound;
+            HitSound = CommonCalamitySounds.VoidstoneMine;
             MineResist = 10f;
             MinPick = 180;
             AddMapEntry(new Color(43, 40, 40));
 
-            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
-            this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
-            this.RegisterUniversalMerge(ModContent.TileType<AbyssGravel>(), "CalamityMod/Tiles/Merges/AbyssGravelMerge");
+            this.RegisterBlendMergeWith(TileID.Dirt);
+            this.RegisterBlendMergeWith(TileID.Stone);
+            this.RegisterBlendMergeWith(ModContent.TileType<AbyssGravel>());
+        }
+
+        public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
+        {
+            World.Abyss.FillTileWithWater(i, j);
         }
 
         public override bool CreateDust(int i, int j, ref int type)

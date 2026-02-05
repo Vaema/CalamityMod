@@ -31,31 +31,44 @@ namespace CalamityMod.Scenes.MusicScenes
 
             // (Tile range * Pixels per tile)^2
             double labRadius = Math.Pow(80f * 16f, 2);
-
+            
             // Checks if the player is behind any wall that naturally generates in Bio Labs
             bool behindLabWall =
-                backWall.WallType == WallID.ObsidianBrick ||
-                backWall.WallType == WallID.Glass ||
-                backWall.WallType == WallID.SnowWallUnsafe ||
-                backWall.WallType == WallID.IceUnsafe ||
-                backWall.WallType == WallID.Waterfall ||
-                backWall.WallType == WallID.Lavafall ||
+                backWall.WallType == WallID.AmberGemspark ||
+                backWall.WallType == WallID.AncientSilverBrickWall ||
+                backWall.WallType == WallID.CopperPlating ||
+                backWall.WallType == WallID.EmeraldGemspark ||
+                backWall.WallType == WallID.Granite ||
+                backWall.WallType == WallID.GrayBrick ||
+                backWall.WallType == WallID.IridescentBrick ||
                 backWall.WallType == WallID.IronBrick ||
-                backWall.WallType == ModContent.WallType<AstralIceWall>() ||
-                backWall.WallType == ModContent.WallType<AstralSnowWall>() ||
-                backWall.WallType == ModContent.WallType<HavocplateWall>() ||
+                backWall.WallType == WallID.Lavafall ||
+                backWall.WallType == WallID.LavaMossBlockWall ||
+                backWall.WallType == WallID.LeadBrick ||
+                backWall.WallType == WallID.ObsidianBrick ||
+                backWall.WallType == WallID.RubyGemspark ||
+                backWall.WallType == WallID.SapphireGemspark ||
+                backWall.WallType == WallID.SilverBrick ||
+                backWall.WallType == WallID.StoneSlab ||
+                backWall.WallType == WallID.TinPlating ||
+                backWall.WallType == WallID.TopazGemspark ||
+                backWall.WallType == WallID.Waterfall ||
                 backWall.WallType == ModContent.WallType<CinderplateWall>() ||
                 backWall.WallType == ModContent.WallType<ElumplateWall>() ||
+                backWall.WallType == ModContent.WallType<EutrophicGlassWall>() ||
+                backWall.WallType == ModContent.WallType<HavocplateWall>() ||
                 backWall.WallType == ModContent.WallType<HazardChevronWall>() ||
                 backWall.WallType == ModContent.WallType<LaboratoryPanelWall>() ||
                 backWall.WallType == ModContent.WallType<LaboratoryPlateBeam>() ||
                 backWall.WallType == ModContent.WallType<LaboratoryPlatePillar>() ||
                 backWall.WallType == ModContent.WallType<LaboratoryPlatingWall>() ||
                 backWall.WallType == ModContent.WallType<NavyplateWall>() ||
+                backWall.WallType == ModContent.WallType<OnyxplateWall>() ||
                 backWall.WallType == ModContent.WallType<PlagueContainmentCellsWall>() ||
                 backWall.WallType == ModContent.WallType<PlaguedPlateWall>() ||
                 backWall.WallType == ModContent.WallType<RustedPlatePillar>() ||
-                backWall.WallType == ModContent.WallType<RustedPlatingWall>();
+                backWall.WallType == ModContent.WallType<RustedPlatingWall>() ||
+                backWall.WallType == ModContent.WallType<ShellstoneSlabWall>();
 
             // Checks if the player is within a specified range from the center point of any Bio Lab
             bool nearBioLabPoint =

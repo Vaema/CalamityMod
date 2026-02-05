@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -41,11 +42,12 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.height = 50;
             Item.damage = 58;
             Item.DamageType = DamageClass.Summon;
+            Item.buffType = ModContent.BuffType<PlantationStaffBuff>();
             Item.shoot = ModContent.ProjectileType<PlantationStaffSummon>();
             Item.knockBack = 1f;
 
             Item.mana = 10;
-            Item.useAnimation = Item.useTime = 20;
+            Item.useAnimation = Item.useTime = 36;
             Item.noMelee = true;
             Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
@@ -57,7 +59,9 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, player.ClampedMouseWorld(), Main.rand.NextVector2Circular(2f, 2f), type, damage, knockback, player.whoAmI);
+            player.AddBuff(Item.buffType, 2);
+            var minion = Projectile.NewProjectileDirect(source, player.ClampedMouseWorld(), Main.rand.NextVector2Circular(2f, 2f), type, damage, knockback, player.whoAmI);
+            minion.originalDamage = Item.damage;
             return false;
         }
 
@@ -70,7 +74,6 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             CreateRecipe().
                 AddIngredient<EyeOfNight>().
-                AddIngredient(ItemID.Smolstar). // Blade Staff.
                 AddIngredient<LivingShard>(12).
                 AddTile(TileID.MythrilAnvil).
                 Register();

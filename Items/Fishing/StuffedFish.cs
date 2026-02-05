@@ -111,7 +111,7 @@ namespace CalamityMod.Items.Fishing
                 itemLoot.Add(marineKelpSeeds.Type, 10, seedMin, seedMax);
             }
             else
-                CalamityMod.Instance.Logger.Warn("Could not find either Marine Kelp or Marine Kelp Seeds from Thorium. These items will not be added to Stuffed Fish.");
+                CalamityMod.Log.Warn("Could not find either Marine Kelp or Marine Kelp Seeds from Thorium. These items will not be added to Stuffed Fish.");
 
             // Ozzatron 30DEC2022: It is unlikely SoA will ever be ported to 1.4 and beyond. Commenting this out indefinitely.
             /*
@@ -133,7 +133,7 @@ namespace CalamityMod.Items.Fishing
                 }
                 catch
                 {
-                    CalamityMod.Instance.Logger.Debug("One of the items in this file got renamed internally. Please report this in the #bugs-read-pins channel of the official Calamity discord server.");
+                    CalamityMod.Log.Debug("One of the items in this file got renamed internally. Please report this in the #bugs-read-pins channel of the official Calamity discord server.");
                 }
             }
             */

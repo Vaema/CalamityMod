@@ -45,7 +45,6 @@ namespace CalamityMod.Items.SummonItems
             {
                 switch (npc.type)
                 {
-                    case NPCID.CultistTablet:
                     case NPCID.CultistBoss:
                     case NPCID.LunarTowerSolar:
                     case NPCID.LunarTowerVortex:

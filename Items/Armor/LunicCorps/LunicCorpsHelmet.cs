@@ -2,6 +2,7 @@
 using CalamityMod.CalPlayer;
 using CalamityMod.DataStructures;
 using CalamityMod.Items.Materials;
+using CalamityMod.Utilities.Daybreak;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -10,6 +11,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.Graphics.Effects;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.LunicCorps
@@ -25,8 +27,12 @@ namespace CalamityMod.Items.Armor.LunicCorps
         public static readonly SoundStyle ActivationSound = new("CalamityMod/Sounds/Custom/RoverDriveActivate") { Volume = 0.85f };
         public static readonly SoundStyle BreakSound = new("CalamityMod/Sounds/Custom/RoverDriveBreak") { Volume = 0.75f };
 
-        public static int ShieldDurabilityMax = 50;
+        public static float NonArrowDamageBoost = 0.15f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(NonArrowDamageBoost.ToPercent());
 
+        // Set Bonus
+        public static float SetBonusJumpSpeedBoost = 1f;
+        public static int ShieldDurabilityMax = 50;
         // The following two values taken directly from Halo 3:
         // https://www.halopedia.org/Energy_shielding#Gameplay
         public static int ShieldRechargeDelay = CalamityUtils.SecondsToFrames(5);
@@ -72,29 +78,25 @@ namespace CalamityMod.Items.Armor.LunicCorps
             Item.Calamity().donorItem = true;
         }
 
-        public override bool IsArmorSet(Item head, Item body, Item legs)
-        {
-            return body.type == ModContent.ItemType<LunicCorpsVest>() && legs.type == ModContent.ItemType<LunicCorpsBoots>();
-        }
+        public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ModContent.ItemType<LunicCorpsVest>() && legs.type == ModContent.ItemType<LunicCorpsBoots>();
 
         public override void UpdateArmorSet(Player player)
         {
             var modPlayer = player.Calamity();
             modPlayer.lunicCorpsSet = true;
 
+            Color AbilityBriefColor = Color.Lerp(new Color(240, 207, 60), new Color(70, 205, 251), 0.5f + 0.5f * MathF.Sin(Main.GlobalTimeWrappedHourly * 3f));
             // The localization is formatted strangely, but attempting to put the {0} on its own line will leave a blank space if given an empty string
             string adrenTooltip = CalamityWorld.revenge ? "\n" + this.GetLocalizedValue("ShieldAdren") : "";
-            player.setBonus = this.GetLocalization("SetBonus").Format(adrenTooltip);
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusJumpSpeedBoost.ToJumpSpeedPercent(), AbilityBriefColor.Hex3(), ShieldDurabilityMax, adrenTooltip, ShieldRechargeDelay.FramesToSeconds(), TotalShieldRechargeTime.FramesToSeconds());
 
-            player.bulletDamage += 0.15f;
-            player.specialistDamage += 0.15f;
-
-            player.jumpSpeedBoost += 1f;
+            player.jumpSpeedBoost += SetBonusJumpSpeedBoost;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<RangedDamageClass>() += 0.15f;
+            player.bulletDamage += NonArrowDamageBoost;
+            player.specialistDamage += NonArrowDamageBoost;
             player.nightVision = true;
             player.detectCreature = true;
         }
@@ -169,14 +171,16 @@ namespace CalamityMod.Items.Armor.LunicCorps
             shieldEffect.Parameters["shieldColor"].SetValue(shieldColor.ToVector3());
             shieldEffect.Parameters["shieldEdgeColor"].SetValue(edgeColor.ToVector3());
 
-            Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, shieldEffect, Matrix.Identity, () =>
+            using (spriteBatch.Scope())
             {
+                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, shieldEffect, Main.Transform);
                 // Fetch shield noise overlay texture (this is the polygons fed to the shader)
                 NoiseTex ??= ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/VoronoiShapes2");
                 Vector2 pos = player.MountedCenter + player.gfxOffY * Vector2.UnitY - Main.screenPosition;
                 Texture2D tex = NoiseTex.Value;
                 spriteBatch.Draw(tex, pos, null, Color.White, 0, tex.Size() / 2f, scale, 0, 0);
-            });
+                spriteBatch.End();
+            }
 
             modPlayer.drawnAnyShieldThisFrame = true;
         }

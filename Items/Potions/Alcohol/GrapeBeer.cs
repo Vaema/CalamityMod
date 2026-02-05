@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -11,13 +12,12 @@ namespace CalamityMod.Items.Potions.Alcohol
     {
         public new string LocalizationCategory => "Items.Potions";
 
-        public static float DefenseLossPercent = 0.03f;
-        public static int SecondDuration = 15;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DefenseLossPercent.ToPercent(), SecondDuration);
+        public static float CritLoss = 75;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(CritLoss);
 
         public override void SetStaticDefaults()
         {
-            Item.ResearchUnlockCount = 30;
+            Item.ResearchUnlockCount = 20;
             ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
                 new Color(36, 2, 41),
                 new Color(56, 0, 64),
@@ -27,15 +27,19 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetDefaults()
         {
-            Item.DefaultToHealingPotion(12, 28, 100);
-            // Cirrus overcharges: 10% sell value instead of 20%
-            Item.value = Item.sellPrice(silver: 3);
+            Item.DefaultToFood(12, 28, ModContent.BuffType<GrapeBeerBuff>(), CalamityUtils.MinutesToFrames(6), true);
+
+            Item.value = Item.sellPrice(silver: 2);
             Item.rare = ItemRarityID.LightRed;
         }
 
-        public override void OnConsumeItem(Player player)
+        public override void AddRecipes()
         {
-            player.AddBuff(ModContent.BuffType<GrapeBeerBuff>(), CalamityUtils.SecondsToFrames(SecondDuration));
+            CreateRecipe(10).
+                AddIngredient(ItemID.Bottle, 10).
+                AddIngredient(ItemID.Grapes).
+                AddTile(TileID.Kegs).
+                Register();
         }
     }
 }

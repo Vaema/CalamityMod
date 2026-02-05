@@ -1,6 +1,6 @@
 ﻿using CalamityMod.Dusts.WaterSplash;
 using CalamityMod.Gores.WaterDroplet;
-using CalamityMod.Systems;
+using CalamityMod.Systems.Graphic.LiquidSystem;
 using CalamityMod.Tiles.Abyss;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -9,9 +9,12 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Waters
 {
-    public class BasaltGullyWaterflow : ModWaterfallStyle { }
+    public class BasaltGullyWaterflow : ModWaterfallStyle, IWaterfallStyleModifyColor
+    {
+        public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor) => WaterStyleCommon.ModifyTransparentWaterColor(x, y, ref liquidColor, false);
+    }
 
-    public class BasaltGullyWater : CalamityModWaterStyle
+    public class BasaltGullyWater : ModWaterStyle, IWaterStyleModifyColor, IWaterStyleModifyLight
     {
         public static int Type;
 
@@ -19,15 +22,15 @@ namespace CalamityMod.Waters
 
         public override void SetStaticDefaults() => Type = Slot;
 
-        public override void ModifyLight(ref readonly Tile tile, int i, int j, ref float r, ref float g, ref float b)
+        public void ModifyLight(in Tile tile, int i, int j, ref float r, ref float g, ref float b)
         {
             Vector3 outputColor = new Vector3(r, g, b);
             if (outputColor == Vector3.One || outputColor == new Vector3(0.25f, 0.25f, 0.25f) || outputColor == new Vector3(0.5f, 0.5f, 0.5f))
                 return;
 
-            if (tile.TileType != RustyChestTile.Type)
+            if (tile.TileType != RustyChestTile.TileType)
             {
-                CalamityUtils.SunkenSeaWaterLighting(i, j, WaterGlowColor, ref outputColor.X, ref outputColor.Y, ref outputColor.Z);
+                WaterStyleCommon.ModifySunkenSeaWaterLight(i, j, WaterGlowColor, ref outputColor.X, ref outputColor.Y, ref outputColor.Z);
             }
 
             r = outputColor.X;
@@ -35,7 +38,7 @@ namespace CalamityMod.Waters
             b = outputColor.Z;
         }
 
-        public override void DrawColor(int x, int y, ref VertexColors liquidColor, bool isSlope) => ILEditing.ILChanges.SelectSulphuricWaterColor(x, y, ref liquidColor, isSlope);
+        public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor, bool isSlope) => WaterStyleCommon.ModifyTransparentWaterColor(x, y, ref liquidColor, isSlope);
 
         public override int ChooseWaterfallStyle() => ModContent.Find<ModWaterfallStyle>("CalamityMod/BasaltGullyWaterflow").Slot;
         public override int GetSplashDust() => ModContent.DustType<BasaltGullySplash>();

@@ -1,19 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using CalamityMod.TileEntities;
-using Terraria.DataStructures;
 
 namespace CalamityMod.Packets
 {
-    public sealed class TEUpdateCodebreakerDecryptCountdownPacket : CalamityPacket
+    internal sealed class TEUpdateCodebreakerDecryptCountdownPacket : CalamityPacket
     {
         public static TEUpdateCodebreakerDecryptCountdownPacket Instance { get; private set; }
-
-        public override byte MessageType => (byte)CalamityModMessageType.UpdateCodebreakerDecryptCountdown;
 
         public static void Send(TECodebreaker codeBreaker, int toClient = -1, int ignoreClient = -1)
         {
@@ -26,7 +18,7 @@ namespace CalamityMod.Packets
             packet.Send(toClient, ignoreClient);
         }
 
-        public override void HandlePacket(in BinaryReader packet, int sender)
+        public override void HandlePacket(BinaryReader packet, int sender)
         {
             var codeBreaker = packet.ReadTileEntity<TECodebreaker>();
             int countdown = packet.ReadInt32();

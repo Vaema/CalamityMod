@@ -80,7 +80,7 @@ namespace CalamityMod.Projectiles.Ranged
             Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 15;
 
             int bulletAMMO = ProjectileID.Bullet;
-            Owner.PickAmmo(Owner.ActiveItem(), out bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out int _);
+            Owner.PickAmmo(Owner.HeldItem, out bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out int _);
 
             // Fire Auric Bullets if the owner stops channeling or otherwise cannot use the weapon.
             if (Owner.CantUseHoldout() || discharging)
@@ -89,16 +89,16 @@ namespace CalamityMod.Projectiles.Ranged
                 if (fullRev && fullRevShots > 0)
                 {
                     Projectile.timeLeft = 2;
-                    Dust dust2 = Dust.NewDustPerfect(tipPosition - Projectile.velocity * 68, 87, Projectile.velocity.RotatedBy((8.6f * Main.rand.NextFloat(0.975f, 1.025f)) * -Projectile.direction) * Main.rand.NextFloat(5.5f, 7f) + Owner.velocity * 0.5f);
+                    Dust dust2 = Dust.NewDustPerfect(tipPosition - Projectile.velocity * 68, DustID.GemTopaz, Projectile.velocity.RotatedBy((8.6f * Main.rand.NextFloat(0.975f, 1.025f)) * -Projectile.direction) * Main.rand.NextFloat(5.5f, 7f) + Owner.velocity * 0.5f);
                     dust2.noGravity = false;
                     dust2.scale = Main.rand.NextFloat(0.8f, 0.9f);
                     Dust dust3 = Dust.NewDustPerfect(tipPosition - Projectile.velocity * 5, Main.rand.NextBool(4) ? 169 : 162, (Projectile.velocity * Main.rand.NextFloat(4f, 15.5f)).RotatedByRandom(0.3f));
                     dust3.noGravity = true;
                     dust3.scale = Main.rand.NextFloat(1.3f, 2.2f);
-                    Owner.Calamity().GeneralScreenShakePower = 1.85f;
+                    Owner.SetScreenshake(1.85f);
                     //recoil
                     Owner.velocity += -Projectile.velocity * fullRevShots * (Main.zenithWorld ? 0.028f : 0.013f);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), tipPosition + Projectile.velocity * 5 + Main.rand.NextVector2Circular(7, 7), shootVelocity.RotatedByRandom(MathHelper.ToRadians(4f)), ModContent.ProjectileType<AuricBullet>(), (int)(Projectile.damage * 0.9f), Projectile.knockBack, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), tipPosition + Projectile.velocity * 5 + Main.rand.NextVector2Circular(7, 7), shootVelocity.RotatedByRandom(MathHelper.ToRadians(4f)), ModContent.ProjectileType<AuricBullet>(), (int)(Projectile.damage), Projectile.knockBack, Projectile.owner);
                     SoundStyle fire = new("CalamityMod/Sounds/Item/GunShotSmall");
                     if (fullRevShots % 2 == 0)
                         SoundEngine.PlaySound(fire with { Volume = 0.7f }, Projectile.Center);
@@ -122,7 +122,7 @@ namespace CalamityMod.Projectiles.Ranged
                     fullRev = true;
                     if (framesBetweenShots == 0)
                     {
-                        Dust dust2 = Dust.NewDustPerfect(tipPosition - Projectile.velocity * 68, 87, Projectile.velocity.RotatedBy((8.6f * Main.rand.NextFloat(0.985f, 1.015f)) * -Projectile.direction) * Main.rand.NextFloat(4, 5) + Owner.velocity * 0.5f);
+                        Dust dust2 = Dust.NewDustPerfect(tipPosition - Projectile.velocity * 68, DustID.GemTopaz, Projectile.velocity.RotatedBy((8.6f * Main.rand.NextFloat(0.985f, 1.015f)) * -Projectile.direction) * Main.rand.NextFloat(4, 5) + Owner.velocity * 0.5f);
                         dust2.noGravity = false;
                         dust2.scale = Main.rand.NextFloat(0.8f, 0.9f);
                         for (int i = 0; i <= 2; i++)
@@ -153,7 +153,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                 float interpolant = Utils.GetLerpValue(0f, 55f, Owner.Distance(Main.MouseWorld), true);
                 Vector2 oldVelocity = Projectile.velocity;
-                Projectile.velocity = Vector2.Lerp(Projectile.velocity, Projectile.SafeDirectionTo(Main.MouseWorld), 0.185f).SafeNormalize(Vector2.UnitY);
+                Projectile.velocity = Vector2.Lerp(Projectile.velocity, Projectile.SafeDirectionTo(Main.MouseWorld), (discharging ? 0.2f : 0.45f)).SafeNormalize(Vector2.UnitY);
                 if (Projectile.velocity != oldVelocity)
                     Projectile.ForceNetUpdate();
             }

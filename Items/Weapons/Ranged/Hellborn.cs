@@ -1,10 +1,9 @@
 ﻿using System.Linq;
 using CalamityMod.Cooldowns;
-using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -23,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 62;
             Item.height = 34;
-            Item.damage = 320;
+            Item.damage = 423;
             Item.DamageType = DamageClass.Ranged;
             Item.useAnimation = Item.useTime = 30;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -51,11 +50,11 @@ namespace CalamityMod.Items.Weapons.Ranged
 
             if (player.Calamity().cooldowns.TryGetValue(HellbornShots.ID, out var cooldown))
             {
-                cooldown.timeLeft = 8 - player.Calamity().hellbornShots;
+                cooldown.timeLeft = 12 - player.Calamity().hellbornShots;
             }
             else
             {
-                player.AddCooldown(HellbornShots.ID, 8);
+                player.AddCooldown(HellbornShots.ID, 12);
             }
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

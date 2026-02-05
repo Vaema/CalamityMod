@@ -1,8 +1,12 @@
-﻿using CalamityMod.Systems;
+﻿using CalamityMod.Projectiles.Typeless;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.GameContent.Metadata;
 using Terraria.ID;
 using Terraria.ModLoader;
+
+
 
 namespace CalamityMod.Tiles.SunkenSea
 {
@@ -13,7 +17,7 @@ namespace CalamityMod.Tiles.SunkenSea
             TileID.Sets.GeneralPlacementTiles[Type] = false;
 
             Main.tileSolid[Type] = true;
-            Main.tileBlockLight[Type] = true;
+            Main.tileBlockLight[Type] = false;
 
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeWithDesert(Type);
@@ -21,14 +25,23 @@ namespace CalamityMod.Tiles.SunkenSea
             TileID.Sets.HasSlopeFrames[Type] = true;
             TileID.Sets.ChecksForMerge[Type] = true;
             TileID.Sets.CanBeDugByShovel[Type] = true;
-            Main.tileShine2[Type] = true;
 
-            DustType = 147;
-            AddMapEntry(new Color(221, 180, 182));
+            DustType = DustID.Ice_Red;
+            AddMapEntry(new Color(215, 170, 170));
 
-            this.RegisterUniversalMerge(TileID.Sandstone, "CalamityMod/Tiles/Merges/SandstoneMerge");
-            this.RegisterUniversalMerge(TileID.Sand, "CalamityMod/Tiles/Merges/SandMerge");
-            this.RegisterUniversalMerge(TileID.HardenedSand, "CalamityMod/Tiles/Merges/HardenedSandMerge");
+            Main.tileSand[Type] = true;
+            TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Sand"]);
+            TileID.Sets.Suffocate[Type] = true;
+            TileID.Sets.CanBeDugByShovel[Type] = true;
+            TileID.Sets.Conversion.Sand[Type] = true;
+            TileID.Sets.ForAdvancedCollision.ForSandshark[Type] = true;
+            TileID.Sets.Falling[Type] = true;
+            TileID.Sets.FallingBlockProjectile[Type] = new TileID.Sets.FallingBlockProjectileInfo(ModContent.ProjectileType<PolypSandBallFalling>(), 10);
+
+            this.RegisterBlendMergeWith(ModContent.TileType<Shellstone>());
+            this.RegisterBlendMergeWith(TileID.Sandstone);
+            this.RegisterBlendMergeWith(TileID.Sand);
+            this.RegisterBlendMergeWith(TileID.HardenedSand);
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)

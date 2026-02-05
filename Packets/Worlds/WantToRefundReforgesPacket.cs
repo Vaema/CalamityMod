@@ -1,21 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using CalamityMod.NPCs.TownNPCs;
-using CalamityMod.World;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Packets
 {
-    public sealed class WantToRefundReforgesPacket : CalamityPacket
+    internal sealed class WantToRefundReforgesPacket : CalamityPacket
     {
         public static WantToRefundReforgesPacket Instance { get; private set; }
-
-        public override byte MessageType => (byte)CalamityModMessageType.WantToRefundReforges;
 
         public static void Send(int toClient = -1, int ignoreClient = -1)
         {
@@ -23,7 +15,7 @@ namespace CalamityMod.Packets
             packet.Send(toClient, ignoreClient);
         }
 
-        public override void HandlePacket(in BinaryReader packet, int sender)
+        public override void HandlePacket(BinaryReader packet, int sender)
         {
             // Only Server should handle this action!
             if (!Main.dedServ)

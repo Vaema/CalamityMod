@@ -1,5 +1,6 @@
 ﻿using Terraria;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Rogue
 {
     public class DuststormCloud : ModProjectile, ILocalizedModType

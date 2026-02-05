@@ -1,6 +1,6 @@
-﻿using CalamityMod.Particles;
+﻿using CalamityMod.DataStructures;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -10,12 +10,17 @@ namespace CalamityMod.Buffs.DamageOverTime
 {
     public class HeavyBleeding : ModBuff
     {
+        public static DebuffData debuffData = new DebuffData()
+        {
+            EnemyLostRegen = 80
+        };
         public override void SetStaticDefaults()
         {
             Main.debuff[Type] = true;
             Main.pvpBuff[Type] = true;
             Main.buffNoSave[Type] = true;
             BuffID.Sets.LongerExpertDebuff[Type] = true;
+            BuffDatasets.DebuffDataset[Type] = debuffData;
         }
 
         public override void Update(Player player, ref int buffIndex)
@@ -25,10 +30,7 @@ namespace CalamityMod.Buffs.DamageOverTime
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            if (npc.Calamity().heavybleeding < npc.buffTime[buffIndex])
-                npc.Calamity().heavybleeding = npc.buffTime[buffIndex];
-            npc.DelBuff(buffIndex);
-            buffIndex--;
+            npc.Calamity().heavyBleeding = true;
         }
         internal static void DrawEffects(PlayerDrawSet drawInfo)
         {
@@ -38,7 +40,7 @@ namespace CalamityMod.Buffs.DamageOverTime
             if (Main.rand.NextBool(3))
             {
                 Vector2 randVel = new Vector2(5, 5).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 1f);
-                Dust dust = Dust.NewDustPerfect(modPlayer.RandomDebuffVisualSpot, 5, randVel * Main.rand.NextFloat(0.1f, 0.8f), 100, default, Main.rand.NextFloat(0.6f, 0.9f));
+                Dust dust = Dust.NewDustPerfect(modPlayer.RandomDebuffVisualSpot, DustID.Blood, randVel * Main.rand.NextFloat(0.1f, 0.8f), 100, default, Main.rand.NextFloat(0.6f, 0.9f));
                 dust.noGravity = false;
                 Particle spark = new AltSparkParticle(modPlayer.RandomDebuffVisualSpot, randVel + new Vector2(0, -4), true, 12, Main.rand.NextFloat(0.25f, 0.6f), Color.DarkRed * 0.5f);
                 GeneralParticleHandler.SpawnParticle(spark);
@@ -61,7 +63,7 @@ namespace CalamityMod.Buffs.DamageOverTime
             }
             else
             {
-                Dust dust = Dust.NewDustPerfect(npcSize, 5, randVel * Main.rand.NextFloat(0.1f, 0.8f), 100, default, Main.rand.NextFloat(0.2f, 0.6f));
+                Dust dust = Dust.NewDustPerfect(npcSize, DustID.Blood, randVel * Main.rand.NextFloat(0.1f, 0.8f), 100, default, Main.rand.NextFloat(0.2f, 0.6f));
                 dust.noGravity = false;
             }
             if (Main.rand.NextBool(8))

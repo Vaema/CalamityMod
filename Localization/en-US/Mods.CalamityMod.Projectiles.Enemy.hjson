@@ -1,5 +1,8 @@
+AnglerFlash.DisplayName: Angler Flash
 AstralMeteorProj.DisplayName: Astral Meteor
 BelchingCoralSpike.DisplayName: Spike
+CarrionPus.DisplayName: Carrion Pus
+ClamBubbleBlast.DisplayName: Clam Bubble Blast
 CrabBoulder.DisplayName: Boulder
 CragmawAcidDrop.DisplayName: Acid
 CragmawBeam.DisplayName: Gamma Ray
@@ -15,6 +18,7 @@ FlameBurstHostile.DisplayName: Burst
 GammaAcid.DisplayName: Acid
 GammaBeam.DisplayName: Gamma Ray
 GammaRayBurst.DisplayName: G-FUEL BEAM
+GhostBellShock.DisplayName: Electrical Field
 HorsPoisonBlast.DisplayName: Poisonous Spit
 HorsWaterBlast.DisplayName: Water
 IceClasperEnemyProjectile.DisplayName: Ice Shard
@@ -31,8 +35,15 @@ NuclearToadGoo.DisplayName: Goop
 OrthoceraStream.DisplayName: Acid Stream
 PearlBurst.DisplayName: Pearl Burst
 PearlRain.DisplayName: Pearl Rain
+PodobooSpit.DisplayName: Podoboo Spit
+PodobooSpitHoming.DisplayName: Psychic Podoboo Spit
+PodobooSpitSplitting.DisplayName: Loose Podoboo Spit
+PodobooSpitUltima.DisplayName: Ultima Podoboo Spit
+PrismBackCrystal.DisplayName: Prism-Back Shard
 PufferExplosion.DisplayName: Explosion
 SharkoonExplosion.DisplayName: Sharkoon Explosion
+ShoreskipperTackle.DisplayName: Shoreskipper Tackle
+StormlionSentryBullet.DisplayName: Stormlion Sentry Bullet
 StormMarkHostile.DisplayName: Mark
 SulphuricAcidBubble.DisplayName: Acid Bubble
 SulphuricAcidMist.DisplayName: Acid Mist

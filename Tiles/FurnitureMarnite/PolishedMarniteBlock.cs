@@ -12,7 +12,6 @@ namespace CalamityMod.Tiles.FurnitureMarnite
         public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
-            Main.tileMergeDirt[Type] = true;
             Main.tileBlockLight[Type] = true;
             TileID.Sets.HasSlopeFrames[Type] = true;
             Main.tileShine[Type] = 3500;

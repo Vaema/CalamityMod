@@ -24,7 +24,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.height = 90;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.tileCollide = true;
+            Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.arrow = true;
             Projectile.extraUpdates = 2;
@@ -64,7 +64,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             for (int i = 0; i < 10; i++)
             {
-                Dust fire = Dust.NewDustPerfect(Projectile.Center, 267);
+                Dust fire = Dust.NewDustPerfect(Projectile.Center, DustID.RainbowMk2);
                 fire.velocity = Main.rand.NextVector2Circular(2f, 2f);
                 fire.color = Color.Lerp(Color.Red, Color.Purple, Main.rand.NextFloat());
                 fire.scale = Main.rand.NextFloat(1f, 1.1f);

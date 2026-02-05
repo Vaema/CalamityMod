@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -9,6 +10,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
+    [PierceResistException]
     public class DevilsSunriseCyclone : ModProjectile, ILocalizedModType
     {
         public static readonly SoundStyle HitSound = new SoundStyle("CalamityMod/Sounds/Item/MantisSwipe", 2) with { Pitch = 1.25f, PitchVariance = 0.15f };
@@ -139,9 +141,7 @@ namespace CalamityMod.Projectiles.Melee
             SoundEngine.PlaySound(HitSound, target.Center);
             target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 180);
             // Heals on each hit
-            Player own = Main.player[Projectile.owner];
-            if (!own.moonLeech)
-                own.HealPlayer(1);
+            Main.player[Projectile.owner].DoLifestealDirect(target, 1, 0.75f);
 
             // Start slicing the hit enemy if not doing so already
             if (State != 2f)

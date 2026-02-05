@@ -58,12 +58,12 @@ namespace CalamityMod.Projectiles.Ranged
                     dust.velocity += Projectile.velocity * Utils.Remap(Time, 0f, Fadetime * 0.75f, 1f, 0.1f) * Utils.Remap(Time, 0f, Fadetime * 0.1f, 0.1f, 1f);
                 }
 
-                if (Main.rand.NextBool(17))
+                if (Main.rand.NextBool(19))
                 {
                     bool LowVel = Main.rand.NextBool() ? false : true;
-                    FlameParticle fire = new FlameParticle(Projectile.Center, 20, MathHelper.Clamp(Time * 0.05f, 0.15f, 1.75f), 0.05f, Color.BlueViolet * (LowVel ? 1.2f : 0.5f), Color.DarkBlue * (LowVel ? 1.2f : 0.5f));
-                    fire.Velocity = new Vector2(Projectile.velocity.X * 0.8f, -10).RotatedByRandom(0.005f) * (LowVel ? Main.rand.NextFloat(0.4f, 0.65f) : Main.rand.NextFloat(0.8f, 1f));
-                    GeneralParticleHandler.SpawnParticle(fire);
+                    float size = Utils.Remap(Utils.GetLerpValue(0f, Lifetime, Time), 0.2f, 0.5f, 0.25f, 1f);
+                    Particle trail = new CustomSpark(Projectile.Center, Projectile.velocity + Vector2.UnitY * Main.rand.NextFloat(-10, -24) * size, "CalamityMod/Particles/BloomCircle", false, 14, 0.9f * size, (Main.rand.NextBool() ? Color.DarkBlue : Color.BlueViolet) * 0.5f, new Vector2(Main.rand.NextFloat(2, 3), 1f), true, true, shrinkSpeed: 0.3f, glowOpacity: 0.5f);
+                    GeneralParticleHandler.SpawnParticle(trail);
                 }
             }
             else if (Time == 5f)
@@ -86,7 +86,9 @@ namespace CalamityMod.Projectiles.Ranged
             hitbox.Inflate(size, size);
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 360);
+        //Doze - Flamethrowers in vanilla are long debuff infliction tools (20 seconds of their debuff).
+        //I am applying this as the base for Cal flamethrowers, with shorter times being the exception instead of the rule
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 1200);
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (Projectile.numHits > 0)

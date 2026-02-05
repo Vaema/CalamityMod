@@ -1,7 +1,4 @@
-﻿using CalamityMod.Tiles.Furniture.CraftingStations;
-using CalamityMod.Tiles.FurnitureMarnite;
-using Terraria;
-using Terraria.ID;
+﻿using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.FurnitureMarnite
@@ -19,7 +16,6 @@ namespace CalamityMod.Items.Placeables.FurnitureMarnite
         {
             CreateRecipe().
                 AddIngredient<PolishedMarniteBlock>(4).
-                AddTile(TileID.WorkBenches).
                 Register();
         }
     }

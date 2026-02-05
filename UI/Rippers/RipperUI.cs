@@ -146,7 +146,7 @@ namespace CalamityMod.UI.Rippers
                     changed = true;
                 }
                 if (changed)
-                    CalamityClientConfig.SaveConfig();
+                    CalamityClientConfig.Instance.SaveChanges();
             }
 
             if (modPlayer.AdrenalineEnabled)
@@ -165,7 +165,7 @@ namespace CalamityMod.UI.Rippers
                     changed = true;
                 }
                 if (changed)
-                    CalamityClientConfig.SaveConfig();
+                    CalamityClientConfig.Instance.SaveChanges();
             }
 
             #region Mouse Interaction
@@ -222,10 +222,10 @@ namespace CalamityMod.UI.Rippers
                 }
 
                 // When the mouse is released, save the config and destroy the drag offset.
-                if (ms.LeftButton == ButtonState.Released)
+                if (rageDragOffset.HasValue && ms.LeftButton == ButtonState.Released)
                 {
                     rageDragOffset = null;
-                    CalamityClientConfig.SaveConfig();
+                    CalamityClientConfig.Instance.SaveChanges();
                 }
             }
             else if (adrenHover)
@@ -264,10 +264,10 @@ namespace CalamityMod.UI.Rippers
                 }
 
                 // When the mouse is released, save the config and destroy the drag offset.
-                if (ms.LeftButton == ButtonState.Released)
+                if (adrenDragOffset.HasValue && ms.LeftButton == ButtonState.Released)
                 {
                     adrenDragOffset = null;
-                    CalamityClientConfig.SaveConfig();
+                    CalamityClientConfig.Instance.SaveChanges();
                 }
             }
             #endregion

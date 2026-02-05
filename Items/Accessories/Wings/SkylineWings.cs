@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Items.Materials;
-using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -18,11 +17,6 @@ namespace CalamityMod.Items.Accessories.Wings
             Item.height = 20;
             Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
-        }
-
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
-            player.noFallDmg = true;
         }
 
         public override void AddRecipes()

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using CalamityMod.CalPlayer;
 using CalamityMod.DataStructures;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Items.Placeables.Plates;
 using CalamityMod.Rarities;
+using CalamityMod.Utilities.Daybreak;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -16,7 +16,6 @@ using Terraria.DataStructures;
 using Terraria.Graphics.Effects;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static CalamityMod.Items.Accessories.ProfanedSoulCrystal;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -106,7 +105,7 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<DivineGeode>(5).
                 AddIngredient<Havocplate>(25).
                 AddIngredient<ExodiumCluster>(25).
-                AddTile(TileID.DemonAltar).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
 
@@ -168,8 +167,9 @@ namespace CalamityMod.Items.Accessories
             shieldEffect.Parameters["shieldColor"].SetValue(shieldColor.ToVector3());
             shieldEffect.Parameters["shieldEdgeColor"].SetValue(edgeColor.ToVector3());
 
-            Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, shieldEffect, Matrix.Identity, () =>
+            using (Main.spriteBatch.Scope())
             {
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, shieldEffect, Main.Transform);
                 // Fetch shield heat overlay texture (this is the neutrons fed to the shader)
                 HeatTex ??= ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons2");
                 Vector2 pos = player.MountedCenter + player.gfxOffY * Vector2.UnitY - Main.screenPosition;
@@ -183,13 +183,13 @@ namespace CalamityMod.Items.Accessories
                 Vector2 origin = shieldFrame.Size() * 0.5f;
                 Main.spriteBatch.End();
 
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Matrix.Identity);
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.Transform);
                 Main.spriteBatch.Draw(shieldTexture, pos, shieldFrame, shieldColor * 0.5f, player.fullRotation, origin, shieldScale, SpriteEffects.None, 0f);
                 Main.spriteBatch.Draw(shieldTexture, pos, shieldFrame, secondaryEdgeColor * 0.5f, player.fullRotation, origin, shieldScale * 0.95f, SpriteEffects.None, 0f);
                 Main.spriteBatch.Draw(shieldTexture, pos, shieldFrame, shieldColor * 0.5f, player.fullRotation, origin, shieldScale, SpriteEffects.None, 0f);
                 Main.spriteBatch.Draw(shieldTexture, pos, shieldFrame, secondaryEdgeColor * 0.5f, player.fullRotation, origin, shieldScale * 0.95f, SpriteEffects.None, 0f);
                 Main.spriteBatch.End();
-            });
+            }
             modPlayer.drawnAnyShieldThisFrame = true;
         }
     }

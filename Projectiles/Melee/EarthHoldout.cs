@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.ConstrainedExecution;
+﻿using System.Collections.Generic;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
@@ -10,12 +9,13 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
+    [PierceResistException]
     public class EarthHoldout : BaseCustomUseStyleProjectile, ILocalizedModType
     {
         public override int AssignedItemID => ModContent.ItemType<Earth>();
@@ -41,6 +41,7 @@ namespace CalamityMod.Projectiles.Melee
         public bool playSwingSound = true;
         public bool allowSecondHit = true;
         public float bladeFade = 0;
+        public int armoredHits = 0;
         public override void SetDefaults()
         {
             base.SetDefaults();
@@ -133,6 +134,7 @@ namespace CalamityMod.Projectiles.Melee
 
                 doSwing = true;
                 finalFlip = false;
+                armoredHits = 0;
             }
             else
             {
@@ -238,7 +240,7 @@ namespace CalamityMod.Projectiles.Melee
                             GenericSparkle sparker = new GenericSparkle(Owner.Center + (new Vector2(270 * (1 + bladeFade * 0.6f), 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), Vector2.Zero, Color.White, mainColor, Main.rand.NextFloat(0.5f, 0.7f), 11, Main.rand.NextFloat(-0.1f, 0.1f), 2.68f);
                             GeneralParticleHandler.SpawnParticle(sparker);
 
-                            Dust dust2 = Dust.NewDustPerfect(Owner.Center + (new Vector2(270 * (1 + bladeFade * 0.6f), 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), 278, dustVel);
+                            Dust dust2 = Dust.NewDustPerfect(Owner.Center + (new Vector2(270 * (1 + bladeFade * 0.6f), 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), DustID.FireworksRGB, dustVel);
                             dust2.scale = Main.rand.NextFloat(0.65f, 1.05f);
                             dust2.noGravity = true;
                             dust2.color = Color.Lerp(Color.White, mainColor, 0.5f);
@@ -253,8 +255,10 @@ namespace CalamityMod.Projectiles.Melee
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<MiracleBlight>(), 600);
-            if ((damageDone <= 2 || (target.life <= 0 && target.realLife == -1)) && Projectile.numHits > 0)
+            if ((target.life <= 0 && target.realLife == -1) && Projectile.numHits > 0)
                 Projectile.numHits -= 1;
+            if (damageDone <= 2)
+                armoredHits++;
 
             Vector2 launchVel = (Projectile.ai[1] != 1 ? Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld) : Utils.DirectionTo(Owner.Center, target.Center));
             target.MoveNPC(launchVel, 37, true);
@@ -296,11 +300,11 @@ namespace CalamityMod.Projectiles.Melee
                 spawnBoom = false;
             }
 
-            int healPower = (Projectile.ai[1] == -1 ? 100 : 85);
-            int heal = (int)(MathHelper.Clamp(healPower - Projectile.numHits * 75, 1, healPower));
+            int healPower = Projectile.ai[1] == -1 ? 60 : 50;
+            int heal = (int)(MathHelper.Clamp(healPower - Projectile.numHits * 35, 1, healPower));
             if (Projectile.numHits < 10)
             {
-                Owner.HealPlayer(heal);
+                Owner.DoLifestealDirect(target, heal, 0.2f);
             }
 
             if (Projectile.numHits <= 2)
@@ -328,7 +332,7 @@ namespace CalamityMod.Projectiles.Melee
                 for (int i = 0; i < MathHelper.Clamp(10 - Projectile.numHits * 2, 2, 10); i++)
                 {
                     float power = Main.rand.NextFloat(0.2f, 0.8f);
-                    Dust dust2 = Dust.NewDustPerfect(target.Center, 278, (Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld)).RotatedByRandom(power) * (Main.rand.NextFloat(10f, 35f) * ( 1 - power)));
+                    Dust dust2 = Dust.NewDustPerfect(target.Center, DustID.FireworksRGB, (Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld)).RotatedByRandom(power) * (Main.rand.NextFloat(10f, 35f) * ( 1 - power)));
                     dust2.scale = Main.rand.NextFloat(0.55f, 0.85f) * scaleFactor;
                     dust2.noGravity = true;
                     dust2.color = Color.Lerp(Color.White, mainColor, 0.5f);
@@ -339,7 +343,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             float minMult = 1f;
             int hitsToMinMult = 1;
-            float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+            float damageMult = Utils.Remap(Projectile.numHits - armoredHits, 0, hitsToMinMult, 1, minMult, true);
             modifiers.SourceDamage *= damageMult;
         }
         public override bool PreDraw(ref Color lightColor)

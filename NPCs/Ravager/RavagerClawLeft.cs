@@ -1,6 +1,5 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Events;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -13,6 +12,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Ravager
 {
+    [HasPierceResist]
     public class RavagerClawLeft : ModNPC
     {
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.RavagerBody.DisplayName");
@@ -24,9 +24,9 @@ namespace CalamityMod.NPCs.Ravager
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 75; // 150
             NPC.lavaImmune = true;
             NPC.aiStyle = -1;
-            NPC.GetNPCDamage();
             NPC.width = 80;
             NPC.height = 40;
             NPC.defense = 40;
@@ -51,10 +51,6 @@ namespace CalamityMod.NPCs.Ravager
             }
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void AI()
@@ -66,7 +62,6 @@ namespace CalamityMod.NPCs.Ravager
 
                 return;
             }
-            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
             if (NPC.timeLeft < 1800)
             {
                 NPC.timeLeft = 1800;
@@ -97,17 +92,17 @@ namespace CalamityMod.NPCs.Ravager
                     NPC.rotation = 0f;
                     NPC.Center = Main.npc[CalamityGlobalNPC.scavenger].Center + new Vector2(-120f, 50f);
                     NPC.ai[1] += 1f;
-                    if (NPC.life < NPC.lifeMax / 2 || death)
+                    if (NPC.life < NPC.lifeMax / 2)
                     {
                         NPC.ai[1] += 1f;
                     }
-                    if (NPC.life < NPC.lifeMax / 3 || death)
+                    if (NPC.life < NPC.lifeMax / 3)
                     {
                         NPC.ai[1] += 1f;
                     }
-                    if (NPC.life < NPC.lifeMax / 5 || death)
+                    if (NPC.life < NPC.lifeMax / 5)
                     {
-                        NPC.ai[1] += 5f;
+                        NPC.ai[1] += 2f;
                     }
                     if (NPC.ai[1] >= 60f)
                     {
@@ -147,17 +142,17 @@ namespace CalamityMod.NPCs.Ravager
                 NPC.collideX = false;
                 NPC.collideY = false;
                 float clawSpeed = 12f;
-                if (NPC.life < NPC.lifeMax / 2 || death)
+                if (NPC.life < NPC.lifeMax / 2)
                 {
                     clawSpeed += 2f;
                 }
-                if (NPC.life < NPC.lifeMax / 3 || death)
+                if (NPC.life < NPC.lifeMax / 3)
                 {
                     clawSpeed += 2f;
                 }
-                if (NPC.life < NPC.lifeMax / 5 || death)
+                if (NPC.life < NPC.lifeMax / 5)
                 {
-                    clawSpeed += 5f;
+                    clawSpeed += 4f;
                 }
                 Vector2 npcCenterAttack = new Vector2(NPC.Center.X, NPC.Center.Y);
                 float targetX = Main.player[NPC.target].Center.X - npcCenterAttack.X;
@@ -204,7 +199,7 @@ namespace CalamityMod.NPCs.Ravager
                 bodyReturnYDist += 40f;
                 bodyReturnXDist -= 110f;
                 float bodyReturnDistance = (float)Math.Sqrt(bodyReturnXDist * bodyReturnXDist + bodyReturnYDist * bodyReturnYDist);
-                if ((bodyReturnDistance > (death ? 900f : 700f) || NPC.collideX || NPC.collideY) | NPC.justHit)
+                if ((bodyReturnDistance > 700f || NPC.collideX || NPC.collideY) | NPC.justHit)
                 {
                     // Avoid cheap bullshit
                     NPC.damage = 0;
@@ -313,11 +308,11 @@ namespace CalamityMod.NPCs.Ravager
             {
                 if (DownedBossSystem.downedProvidence)
                 {
-                    target.AddBuff(ModContent.BuffType<Laceration>(), 240, true);
+                    target.AddBuff(ModContent.BuffType<Laceration>(), 240);
                 }
                 else
                 {
-                    target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 240, true);
+                    target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 240);
                 }
             }
         }

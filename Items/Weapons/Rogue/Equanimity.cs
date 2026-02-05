@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -51,8 +49,8 @@ namespace CalamityMod.Items.Weapons.Rogue
                 AddIngredient<FishboneBoomerang>().
                 AddIngredient(ItemID.DarkShard).
                 AddIngredient(ItemID.LightShard).
-                AddIngredient(ItemID.SoulofNight, 7).
                 AddIngredient(ItemID.SoulofLight, 7).
+                AddIngredient(ItemID.SoulofNight, 7).
                 AddTile(TileID.Anvils).
                 Register();
         }

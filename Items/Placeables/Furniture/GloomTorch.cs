@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Placeables.Furniture
             Vector2 position = player.RotatedRelativePoint(new Vector2(player.itemLocation.X + 12f * player.direction + player.velocity.X, player.itemLocation.Y - 14f + player.velocity.Y), true);
 
             if (!killTorch)
-                Lighting.AddLight(position, 0.9f, 1.2f, 0.3f);
+                Lighting.AddLight(position, 0.5f, 0.75f, 1.2f);
         }
 
         public override void PostUpdate()

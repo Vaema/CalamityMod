@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.damage = 24;
             Item.knockBack = 2f;
             Item.mana = 10;
-            Item.useAnimation = Item.useTime = 24;
+            Item.useAnimation = Item.useTime = 36;
             Item.autoReuse = true;
 
             Item.useStyle = ItemUseStyleID.HoldUp;
@@ -36,11 +36,6 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
             Item.shoot = ModContent.ProjectileType<MountedScannerSummon>();
             Item.shootSpeed = 1f;
-
-            modItem.UsesCharge = true;
-            modItem.MaxCharge = 85f;
-            modItem.ChargePerUse = 0.85f;
-            modItem.ChargePerAltUse = 0f;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

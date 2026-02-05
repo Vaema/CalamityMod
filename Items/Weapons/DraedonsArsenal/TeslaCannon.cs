@@ -21,15 +21,12 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
         public override void SetDefaults()
         {
-            CalamityGlobalItem modItem = Item.Calamity();
-
             Item.width = 78;
             Item.height = 28;
             Item.DamageType = DamageClass.Magic;
-            Item.damage = 1220;
+            Item.damage = 1200;
             Item.knockBack = 10f;
-            Item.useTime = 90;
-            Item.useAnimation = 90;
+            Item.useTime = Item.useAnimation = 90;
             Item.autoReuse = true;
             Item.mana = 60;
 
@@ -38,14 +35,10 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.noMelee = true;
 
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
 
             Item.shoot = ModContent.ProjectileType<TeslaCannonShot>();
             Item.shootSpeed = 5f;
-
-            modItem.UsesCharge = true;
-            modItem.MaxCharge = 250f;
-            modItem.ChargePerUse = 0.75f;
         }
 
         public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)

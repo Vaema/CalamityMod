@@ -64,7 +64,7 @@ namespace CalamityMod.Projectiles.Ranged
                 if (rainDownTimer >= 80)
                 {
                     bool isClusterRocket = (RocketID == ItemID.ClusterRocketI || RocketID == ItemID.ClusterRocketII);
-                    if (rainDownTimer % 15 == 0)
+                    if (rainDownTimer % 15 == 0 && Main.myPlayer == Projectile.owner)
                     {
                         SoundStyle fire = new("CalamityMod/Sounds/Custom/Providence/ProvidenceHolyBlastShoot");
                         SoundEngine.PlaySound(fire with { Volume = 0.45f, Pitch = (0 - 0.3f * Utils.GetLerpValue(0, 300, rainDownTimer, true)) }, Projectile.Center);
@@ -190,7 +190,7 @@ namespace CalamityMod.Projectiles.Ranged
                 }
                 else
                 {
-                    Dust l = Dust.NewDustPerfect(Projectile.Center, 278);
+                    Dust l = Dust.NewDustPerfect(Projectile.Center, DustID.FireworksRGB);
                     l.velocity = new Vector2(5, 5).RotatedByRandom(100) * blastRadiusVisual * Main.rand.NextFloat(0.4f, 1f);
                     l.scale = Main.rand.NextFloat(0.6f, 0.8f) * blastRadiusVisual * 0.2f * (i % 2 == 0 ? 2.2f : 1.8f);
                     l.noGravity = false;

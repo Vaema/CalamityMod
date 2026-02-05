@@ -1,8 +1,8 @@
-author = Fabsol and the Dev Team
-version = 2.0.4.006
+author = The Calamity Dev Team
+version = 2.1
 displayName = Calamity Mod
 modReferences = CalamityModMusic
-homepage = https://discord.gg/calamity
+homepage = https://calamitymod.com
 buildIgnore = .vs\*, Properties\*, *.csproj, *.user, obj\*, bin\*, *.config, .git\*, .github\*, LICENSE, README.md, .editorconfig, .gitignore, .gitattributes, Effects\Compiler\*
 hideCode = false
 hideResources = true

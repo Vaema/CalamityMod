@@ -16,7 +16,7 @@ namespace CalamityMod.Buffs.StatBuffs
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.Calamity().omegaBlueHentai = true;
+            player.Calamity().omegaBlueAbyssalMadness = true;
         }
     }
 }

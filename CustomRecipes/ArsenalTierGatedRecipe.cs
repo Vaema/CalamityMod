@@ -1,5 +1,4 @@
 ﻿using System;
-using Terraria;
 using Terraria.Localization;
 
 namespace CalamityMod.CustomRecipes

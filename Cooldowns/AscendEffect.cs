@@ -1,8 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
-using Terraria;
 using Terraria.Audio;
 using Terraria.Localization;
-using static CalamityMod.CalamityUtils;
 
 namespace CalamityMod.Cooldowns
 {

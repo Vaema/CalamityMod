@@ -3,7 +3,7 @@ using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
+using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -28,17 +28,15 @@ namespace CalamityMod.NPCs.SulphurousSea
         public override void SetDefaults()
         {
             NPC.noGravity = true;
-            NPC.Calamity().canBreakPlayerDefense = true;
             NPC.damage = 25;
             NPC.width = 50;
             NPC.height = 36;
             NPC.defense = 30;
-            NPC.DR_NERD(0.15f);
             NPC.lifeMax = 50;
             NPC.knockBackResist = 0.25f;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 0, 60);
+            NPC.value = Item.buyPrice(copper: 60);
             NPC.HitSound = SoundID.NPCHit50;
             NPC.DeathSound = SoundID.NPCDeath54;
             NPC.chaseable = false;
@@ -49,10 +47,6 @@ namespace CalamityMod.NPCs.SulphurousSea
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<SulphurousSeaBiome>().Type };
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

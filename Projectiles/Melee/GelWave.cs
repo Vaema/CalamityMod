@@ -1,7 +1,5 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -10,6 +8,8 @@ namespace CalamityMod.Projectiles.Melee
     public class GelWave : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
+
+
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.TrailCacheLength[Type] = 10;
@@ -32,11 +32,6 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
-            if (Projectile.localAI[0] == 0f)
-            {
-                SoundEngine.PlaySound(SoundID.Item92, Projectile.position);
-                Projectile.localAI[0] += 1f;
-            }
             Lighting.AddLight(Projectile.Center, Color.Blue.ToVector3());
             Projectile.rotation = Projectile.velocity.ToRotation();
             if (Main.rand.NextBool(10))
@@ -56,7 +51,7 @@ namespace CalamityMod.Projectiles.Melee
             }
             if (Projectile.timeLeft > 60)
             {
-                Dust disgustingtrail = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity, 119, -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.4f));
+                Dust disgustingtrail = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity, DustID.Ice_Pink, -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.4f));
                 disgustingtrail.noGravity = true;
                 disgustingtrail.scale = 1.2f;
             }

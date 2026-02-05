@@ -1,5 +1,5 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Materials;
+using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Projectiles.Melee;
 using Terraria;
 using Terraria.ID;
@@ -36,15 +36,6 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
         {
             target.AddBuff(ModContent.BuffType<BurningBlood>(), 300);
-        }
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.CrimtaneBar, 5).
-                AddIngredient<BloodSample>(15).
-                AddIngredient(ItemID.Vertebrae, 5).
-                AddTile(TileID.DemonAltar).
-                Register();
         }
     }
 }

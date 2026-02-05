@@ -25,7 +25,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         // 15NOV2024: Ozzatron: clamped mouse position unnecessary. All uses are direction only.
         public Vector2 MousePosition => Owner.Calamity().mouseWorld - Owner.MountedCenter;
-        public const float WeaponLength = 52f;
+        public const float WeaponLength = 62f;
         public const float MaxSightAngle = MathHelper.Pi * (2f / 3f);
 
         public Color ScopeColor => Color.White;
@@ -107,7 +107,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                     // Apply some recoil to the player
                     Owner.velocity += direction * (ChargePercent * -5f);
-                    Owner.Calamity().GeneralScreenShakePower = 4f * ChargePercent;
+                    Owner.SetScreenshake(4f * ChargePercent);
 
                     // Spawn the laser
                     int shotDamage = (int)(Projectile.damage * ChargePercent);

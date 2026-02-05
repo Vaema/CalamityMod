@@ -1,4 +1,6 @@
 ﻿using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Items.Materials;
+using CalamityMod.Items.Potions.Food;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -11,14 +13,13 @@ namespace CalamityMod.Items.Potions.Alcohol
     {
         public new string LocalizationCategory => "Items.Potions";
 
-        public static int HealValue = 200;
-        public static int RegenLoss = 1;
-        public static int SecondDuration = 15;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RegenLoss.ToRegenPerSecond(), SecondDuration);
+        public static float VerticalSpeedBoost = 0.1f;
+        public static float FlightTimeLoss = 0.25f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(VerticalSpeedBoost.ToPercent(), FlightTimeLoss.ToPercent());
 
         public override void SetStaticDefaults()
         {
-            Item.ResearchUnlockCount = 30;
+            Item.ResearchUnlockCount = 20;
             ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
                 new Color(54, 5, 21),
                 new Color(82, 9, 36),
@@ -28,20 +29,18 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetDefaults()
         {
-            Item.DefaultToHealingPotion(14, 48, HealValue);
-            // Cirrus overcharges: 10% sell value instead of 20%
-            Item.value = Item.sellPrice(silver: 30);
-            Item.rare = ItemRarityID.LightRed;
-        }
+            Item.DefaultToFood(14, 48, ModContent.BuffType<RedWineBuff>(), CalamityUtils.MinutesToFrames(6));
 
-        public override void GetHealLife(Player player, bool quickHeal, ref int healValue)
-        {
-            healValue = player.Calamity().baguette ? Baguette.RedWineBuffedHealValue : HealValue;
+            Item.value = Item.sellPrice(silver: 2);
+            Item.rare = ItemRarityID.Pink;
         }
-
-        public override void OnConsumeItem(Player player)
+        public override void AddRecipes()
         {
-            player.AddBuff(ModContent.BuffType<RedWineBuff>(), CalamityUtils.SecondsToFrames(SecondDuration));
+            CreateRecipe(20).
+                AddIngredient(ItemID.Bottle, 20).
+                AddIngredient(ItemID.FireFeather).
+                AddTile(TileID.Kegs).
+                Register();
         }
     }
 }

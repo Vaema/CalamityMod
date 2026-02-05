@@ -53,7 +53,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient<Needler>().
                 AddIngredient(ItemID.Stynger).
                 AddIngredient<UelibloomBar>(5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

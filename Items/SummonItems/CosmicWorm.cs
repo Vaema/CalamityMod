@@ -2,7 +2,6 @@
 using CalamityMod.Items.Materials;
 using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Rarities;
-using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -40,11 +39,11 @@ namespace CalamityMod.Items.SummonItems
 
         public override bool? UseItem(Player player)
         {
-            string key = "Mods.CalamityMod.Status.Boss.EdgyBossText7";
-            Color messageColor = Color.Cyan;
-            CalamityUtils.DisplayLocalizedText(key, messageColor);
+            // Server literally do nothing here.
+            if (Main.dedServ)
+                return true;
 
-            CalamityUtils.SpawnBossUsingItem<DevourerofGodsHead>(player, DevourerofGodsHead.SpawnSound);
+            NPC n = CalamityUtils.SpawnBossOnPosUsingItem<DevourerofGodsHead>(player, (int)player.Center.X, (int)player.Center.Y - 1600, DevourerofGodsHead.SpawnSound);
             return true;
         }
 
@@ -54,7 +53,7 @@ namespace CalamityMod.Items.SummonItems
                 AddIngredient<ArmoredShell>().
                 AddIngredient<TwistingNether>().
                 AddIngredient<DarkPlasma>().
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register()
                 .DisableDecraft();
 
@@ -63,9 +62,8 @@ namespace CalamityMod.Items.SummonItems
                 AddIngredient(ItemID.LunarBar, 40).
                 AddIngredient<GalacticaSingularity>(10).
                 AddIngredient<Necroplasm>(40).
-                AddTile(TileID.LunarCraftingStation).
-                Register()
-                .DisableDecraft();
+                AddTile(TileID.MythrilAnvil).
+                Register();
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Security.Policy;
-using CalamityMod.CalPlayer;
+﻿using CalamityMod.CalPlayer;
 using CalamityMod.Events;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Systems;
@@ -64,27 +63,32 @@ namespace CalamityMod.BiomeManagers
         public override bool IsBiomeActive(Player player)
         {
             Point point = player.Center.ToTileCoordinates();
+            return BiomeTileCounterSystem.SulphurTiles >= 300 || IsInBiomePosition(point) && !player.Calamity().ZoneAbyss;
+        }
+
+        public static bool IsInBiomePosition(Point tilePos)
+        {
             bool sulphurPosX = false;
 
             if (Abyss.AtLeftSideOfWorld)
             {
-                if (point.X < 435)
+                if (tilePos.X < 435)
                 {
                     sulphurPosX = true;
                 }
             }
             else
             {
-                if (point.X > Main.maxTilesX - 435)
+                if (tilePos.X > Main.maxTilesX - 435)
                 {
                     sulphurPosX = true;
                 }
             }
 
             if (Main.remixWorld)
-                return (BiomeTileCounterSystem.SulphurTiles >= 300 || (point.Y > SulphurousSea.YStart && point.Y < Main.UnderworldLayer && sulphurPosX && !WeakReferenceSupport.InAnySubworld())) && !player.Calamity().ZoneAbyss;
+                return tilePos.Y > SulphurousSea.YStart && tilePos.Y < Main.UnderworldLayer && sulphurPosX && !WeakReferenceSupport.InAnySubworld();
 
-            return (BiomeTileCounterSystem.SulphurTiles >= 300 || (point.Y < (Main.rockLayer - Main.maxTilesY / 13) && sulphurPosX && !WeakReferenceSupport.InAnySubworld())) && !player.Calamity().ZoneAbyss;
+            return tilePos.Y < (Main.rockLayer - Main.maxTilesY / 13) && sulphurPosX && !WeakReferenceSupport.InAnySubworld();
         }
 
         public override void SpecialVisuals(Player player, bool isActive)

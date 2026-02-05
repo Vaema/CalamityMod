@@ -1,5 +1,5 @@
-﻿using CalamityMod.Projectiles.Melee.Shortswords;
-using Terraria;
+﻿using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Projectiles.Melee.Shortswords;
 using Terraria.ID;
 using Terraria.ModLoader;
 

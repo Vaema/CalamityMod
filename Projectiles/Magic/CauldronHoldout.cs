@@ -37,7 +37,7 @@ namespace CalamityMod.Projectiles.Magic
             float rotoffset = MathHelper.PiOver4;
             Vector2 playerpos = player.RotatedRelativePoint(player.MountedCenter, true);
             bool shouldBeHeld = !player.CantUseHoldout();
-            Projectile.damage = player.ActiveItem() is null ? 0 : player.GetWeaponDamage(player.ActiveItem());
+            Projectile.damage = player.HeldItem is null ? 0 : player.GetWeaponDamage(player.HeldItem);
             if (Projectile.ai[0] > 0f)
             {
                 Projectile.ai[0] -= 1f;
@@ -46,7 +46,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 if (shouldBeHeld)
                 {
-                    float holdscale = player.ActiveItem().shootSpeed * Projectile.scale;
+                    float holdscale = player.HeldItem.shootSpeed * Projectile.scale;
                     Vector2 playerpos2 = playerpos;
                     Vector2 going = Main.screenPosition + new Vector2((float)Main.mouseX, (float)Main.mouseY) - Projectile.Center;
                     if (player.gravDir == -1f)
@@ -67,7 +67,7 @@ namespace CalamityMod.Projectiles.Magic
 
                     if (Projectile.ai[0] <= 0)
                     {
-                        bool manaCostPaid = player.CheckMana(player.ActiveItem(), -1, true, false);
+                        bool manaCostPaid = player.CheckMana(player.HeldItem, -1, true, false);
                         if (manaCostPaid)
                         {
                             SoundEngine.PlaySound(SoundID.DD2_BetsyFireballShot, Projectile.Center);
@@ -75,11 +75,7 @@ namespace CalamityMod.Projectiles.Magic
                             int projType = ModContent.ProjectileType<CauldronProj>();
                             int projDamage = Projectile.damage;
                             float speedscale = 18f;
-                            Vector2 shotSpeed = Vector2.Normalize(Projectile.velocity) * speedscale;
-                            if (float.IsNaN(shotSpeed.X) || float.IsNaN(shotSpeed.Y))
-                            {
-                                shotSpeed = -Vector2.UnitY;
-                            }
+                            Vector2 shotSpeed = Projectile.velocity.SafeNormalize(-Vector2.UnitY) * speedscale;
                             Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, shotSpeed, projType, projDamage, Projectile.knockBack, player.whoAmI);
 
                             for (int i = 0; i < 6; i++)

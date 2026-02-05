@@ -1,4 +1,4 @@
-using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Projectiles.Summon;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.Summon
@@ -7,6 +7,6 @@ namespace CalamityMod.Buffs.Summon
     {
         protected override int MinionProjectileType => ModContent.ProjectileType<ViridVanguardBlade>();
 
-        protected override ref bool MinionBool => ref BuffModdedOwner.ViridVanguard;
+        protected override ref bool MinionBool => ref BuffModdedOwner.viridVanguard;
     }
 }

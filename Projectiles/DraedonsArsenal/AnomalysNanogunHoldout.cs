@@ -1,7 +1,6 @@
 ﻿using System;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -104,7 +103,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 }
 
                 // Make it POWERFUL
-                Owner.Calamity().GeneralScreenShakePower = MPFBScreenShakePower;
+                Owner.SetScreenshake(MPFBScreenShakePower);
                 float playerSpeed = Owner.velocity.Length();
                 Vector2 pushback = Projectile.velocity.SafeNormalize(Vector2.UnitX) * -MPFBPushback;
                 Vector2 newPlayerVelocity = Owner.velocity + pushback;

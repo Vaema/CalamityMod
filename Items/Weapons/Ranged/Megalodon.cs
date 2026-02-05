@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 72;
             Item.height = 32;
-            Item.damage = 41;
+            Item.damage = 29;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 6;
             Item.useAnimation = 6;
@@ -33,7 +33,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ModContent.ProjectileType<MegalodonShot>();
             Item.shootSpeed = 16f;
             Item.useAmmo = AmmoID.Bullet;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-5, 0);
@@ -42,11 +41,11 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             // Reposition to the gun's tip + add some inaccuracy
             Vector2 newPos = position + new Vector2(64f, player.direction * (Math.Abs(velocity.SafeNormalize(Vector2.Zero).X) < 0.02f ? -2f : -8f)).RotatedBy(velocity.ToRotation());
-            Vector2 newVel = velocity.RotatedByRandom(MathHelper.ToRadians(5f));
+            Vector2 newVel = velocity.RotatedByRandom(MathHelper.ToRadians(3f));
 
             // Fire either the bullet or the water jet, depending on cadence.
             int projectileToFire = fireWater ? Item.shoot : type;
-            Projectile.NewProjectile(source, newPos, newVel, projectileToFire, (int)(damage * 0.8f), knockback, player.whoAmI);
+            Projectile.NewProjectile(source, newPos, newVel, projectileToFire, damage, knockback, player.whoAmI);
 
             // Always fires a close range water blast.
             // It goes in the same direction as the main shot but has a minor velocity variation to be less monotonous.

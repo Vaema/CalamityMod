@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Potions
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(24, 28, ModContent.BuffType<Zen>(), CalamityUtils.MinutesToFrames(15), true);
+            Item.DefaultToFood(24, 28, ModContent.BuffType<Zen>(), CalamityUtils.MinutesToFrames(12), true);
             Item.value = Item.sellPrice(silver: 2);
             Item.rare = ItemRarityID.LightRed;
         }
@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Potions
                 AddIngredient<PurifiedGel>(2).
                 AddIngredient(ItemID.Daybloom, 3).
                 AddTile(TileID.AlchemyTable).
-                AddConsumeItemCallback(Recipe.ConsumptionRules.Alchemy).
+                AddConsumeIngredientCallback(Recipe.IngredientQuantityRules.Alchemy).
                 Register();
 
             CreateRecipe().

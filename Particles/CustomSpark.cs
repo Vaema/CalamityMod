@@ -21,13 +21,14 @@ namespace CalamityMod.Particles
         public float ShrinkSpeed = 0;
         public bool FlipHorizontal = false;
         public bool NoShrink = false;
+        public float Spin = 0;
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public bool AltVisual = true;
         public override bool UseAdditiveBlend => AltVisual;
         public override bool SetLifetime => true;
         public override bool UseCustomDraw => true;
 
-        public CustomSpark(Vector2 relativePosition, Vector2 velocity, string texture, bool affectedByGravity, int lifetime, float scale, Color color, Vector2 stretch, bool useAddativeBlend = true, bool glowCenter = false, float extraRotation = 0, bool fadeIn = false, bool affectedByLight = false, float shrinkSpeed = 0, float glowCenterScale = 1, float glowOpacity = 1, bool flipHorizontal = false, bool noShrink = false)
+        public CustomSpark(Vector2 relativePosition, Vector2 velocity, string texture, bool affectedByGravity, int lifetime, float scale, Color color, Vector2 stretch, bool useAddativeBlend = true, bool glowCenter = false, float extraRotation = 0, bool fadeIn = false, bool affectedByLight = false, float shrinkSpeed = 0, float glowCenterScale = 1, float glowOpacity = 1, bool flipHorizontal = false, bool noShrink = false, float spin = 0)
         {
             Position = relativePosition;
             Velocity = velocity;
@@ -53,6 +54,7 @@ namespace CalamityMod.Particles
 
             if (FadeIn)
                 Scale = 0f;
+            Spin = spin;
         }
 
         public override void Update()
@@ -80,6 +82,7 @@ namespace CalamityMod.Particles
                 Velocity.X *= 0.94f;
                 Velocity.Y += 0.25f;
             }
+            ExtraRotation += Spin;
             Rotation = Velocity.ToRotation() + MathHelper.PiOver2 + ExtraRotation;
 
             Stretch.X *= (1 - 0.2f * ShrinkSpeed);
@@ -91,6 +94,19 @@ namespace CalamityMod.Particles
             Vector2 scale = Stretch * Scale;
             Texture2D texture = ModContent.Request<Texture2D>(NewTexture).Value;
 
+            float scaleMult = 1;
+            if (Main.zenithWorld)
+            {
+                DateTime day = DateTime.Now;
+                if (day.DayOfWeek == DayOfWeek.Tuesday)
+                {
+                    Texture2D joke = ModContent.Request<Texture2D>("CalamityMod/Particles/MammothParticle").Value;
+                    scaleMult = (MathHelper.Lerp(texture.Size().X / joke.Size().X, texture.Size().Y / joke.Size().Y, 0.5f));
+                    texture = joke;
+                    AltVisual = true;
+                }
+            }
+
             Color col = Color;
 
             if (AffectedByLight)
@@ -98,9 +114,9 @@ namespace CalamityMod.Particles
                 col = Lighting.GetColor((Position / 16).ToPoint()).MultiplyRGB(Color);
             }
 
-            spriteBatch.Draw(texture, Position - Main.screenPosition, null, col, Rotation, texture.Size() * 0.5f, scale, FlipHorizontal ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color.Lerp(col, Color.Transparent, (float)Math.Pow(LifetimeCompletion, 3D)), Rotation, texture.Size() * 0.5f, scale * scaleMult, FlipHorizontal ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
             if (GlowCenter)
-                spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color.Lerp(col, Color.White, 0.8f) * GlowOpacity, Rotation, texture.Size() * 0.5f, scale * 0.8f * GlowCenterScale, FlipHorizontal ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+                spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color.Lerp(Color.Lerp(col, Color.White, 0.8f), Color.Transparent, (float)Math.Pow(LifetimeCompletion, 3D)) * GlowOpacity, Rotation, texture.Size() * 0.5f, scale * 0.8f * GlowCenterScale * scaleMult, FlipHorizontal ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
         }
     }
 }

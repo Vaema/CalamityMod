@@ -25,9 +25,6 @@ namespace CalamityMod.Projectiles.Melee
         public const float LungeSpeed = 16;
         public ref float CanBounce => ref Projectile.localAI[0];
 
-        public override void SetStaticDefaults()
-        {
-        }
         public override void SetDefaults()
         {
             Projectile.DamageType = DamageClass.Melee;
@@ -37,6 +34,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.friendly = true;
             Projectile.penetrate = -1;
             Projectile.extraUpdates = 1;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
@@ -89,20 +88,14 @@ namespace CalamityMod.Projectiles.Melee
             Owner.velocity = direction.SafeNormalize(Vector2.UnitX * Owner.direction) * LungeSpeed;
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => OnHitEffects(Main.player[Projectile.owner].moonLeech);
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => OnHitEffects(Main.player[Projectile.owner].moonLeech);
-
-        private void OnHitEffects(bool cannotLifesteal)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Projectile.ForceNetUpdate();
 
             if (Main.myPlayer != Owner.whoAmI || CanBounce == 0f)
                 return;
 
-            if (!cannotLifesteal) //trolled
-            {
-                Owner.HealPlayer(BrokenBiomeBlade.EvilAttunement_Lifesteal); //Idk if its too much or what but at the same time its close range as fuck
-            }
+            Owner.DoLifestealDirect(target, BrokenBiomeBlade.EvilAttunement_Lifesteal, 1.25f); //Idk if its too much or what but at the same time its close range as fuck
 
             // Bounce off
             float bounceStrength = LungeSpeed / 2f;

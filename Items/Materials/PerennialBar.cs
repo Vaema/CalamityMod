@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Items.Placeables.Ores;
-using CalamityMod.Tiles;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

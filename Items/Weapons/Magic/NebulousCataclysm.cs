@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
+using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -17,11 +18,10 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 120;
             Item.height = 124;
-            Item.damage = 510;
+            Item.damage = 530;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 60;
-            Item.useTime = 30;
-            Item.useAnimation = 30;
+            Item.mana = 70;
+            Item.useTime = Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = null;
             Item.noMelee = true;
@@ -29,16 +29,14 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.channel = true;
             Item.knockBack = 6f;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.Calamity().donorItem = true;
             Item.shoot = ModContent.ProjectileType<NebulousCataclysm_Held>();
-            Item.shootSpeed = 3f;
+            Item.shootSpeed = 5f;
         }
 
         public override void OnConsumeMana(Player player, int manaConsumed) => player.statMana += manaConsumed;
-
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
-
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
@@ -52,7 +50,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient(ItemID.NebulaBlaze).
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<NightmareFuel>(20).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile<CosmicAnvil>().
                 Register();
         }
     }

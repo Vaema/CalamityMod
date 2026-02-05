@@ -4,7 +4,6 @@ using CalamityMod.NPCs.Yharon;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -27,7 +26,7 @@ namespace CalamityMod.Items.SummonItems
             Item.useTime = 10;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.consumable = false;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
@@ -56,7 +55,7 @@ namespace CalamityMod.Items.SummonItems
             CreateRecipe().
                 AddIngredient<LifeAlloy>(10).
                 AddIngredient<EffulgentFeather>(15).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

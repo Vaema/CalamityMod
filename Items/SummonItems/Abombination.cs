@@ -54,8 +54,7 @@ namespace CalamityMod.Items.SummonItems
         {
             CreateRecipe().
                 AddIngredient<PlagueCellCanister>(20).
-                AddRecipeGroup("IronBar", 8).
-                AddIngredient<MysteriousCircuitry>(8).
+                AddIngredient<MysteriousCircuitry>(12).
                 AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(3, out Func<bool> condition), condition).
                 AddTile(TileID.MythrilAnvil).
                 Register();

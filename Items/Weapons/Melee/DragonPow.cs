@@ -37,7 +37,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.channel = true;
 
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.Calamity().donorItem = true;
 
             Item.shoot = ModContent.ProjectileType<DragonPowFlail>();

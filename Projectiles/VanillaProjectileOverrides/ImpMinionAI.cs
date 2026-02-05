@@ -15,7 +15,7 @@ namespace CalamityMod.Projectiles.VanillaProjectileOverrides
 
         private static float EnemyDistanceDetection { get => Target is null ? MinEnemyDistanceDetection : MaxEnemyDistanceDetection; }
 
-        private const int FireRate = 75;
+        private const int FireRate = 60;
         private const float ProjectileVelocity = 20f;
         private static NPC Target { get; set; }
 
@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.VanillaProjectileOverrides
                 shootTimer += Main.rand.NextBool(20) ? 2 : 1;
                 if (shootTimer >= FireRate && proj.owner == Main.myPlayer)
                 {
-                    Vector2 toTargetDirection = CalamityUtils.CalculatePredictiveAimToTarget(proj.Center, Target, ProjectileVelocity);
+                    Vector2 toTargetDirection = Utils.DirectionTo(proj.Center, Target.Center) * ProjectileVelocity;
 
                     Projectile fireball = Projectile.NewProjectileDirect(proj.GetSource_FromThis(),
                         proj.Center,

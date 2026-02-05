@@ -1,5 +1,5 @@
 ﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.Placeables.FurnitureAbyss;
+using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Systems;
 using CalamityMod.Waters;
 using CalamityMod.World;
@@ -22,7 +22,7 @@ namespace CalamityMod.BiomeManagers
         }
 
         public override ModWaterStyle WaterStyle => VoidWater.Instance;
-        public override int BiomeTorchItemType => ModContent.ItemType<AbyssTorch>();
+        public override int BiomeTorchItemType => ModContent.ItemType<VoidTorch>();
         public override SceneEffectPriority Priority => SceneEffectPriority.Environment;
         public override string BestiaryIcon => "CalamityMod/BiomeManagers/AbyssLayer4Icon";
         public override string BackgroundPath => "CalamityMod/Backgrounds/MapBackgrounds/AbyssBGLayer4";

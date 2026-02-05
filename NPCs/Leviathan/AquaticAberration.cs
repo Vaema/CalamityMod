@@ -1,6 +1,5 @@
 ﻿using System;
 using CalamityMod.Events;
-using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -8,7 +7,6 @@ using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.Utilities;
 
 namespace CalamityMod.NPCs.Leviathan
 {
@@ -36,9 +34,8 @@ namespace CalamityMod.NPCs.Leviathan
 
         public override void SetDefaults()
         {
-            NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 50; // 100
             NPC.aiStyle = -1;
-            NPC.GetNPCDamage();
             NPC.width = 50;
             NPC.height = 50;
             NPC.defense = 14;
@@ -56,10 +53,6 @@ namespace CalamityMod.NPCs.Leviathan
 
             if (Main.getGoodWorld)
                 NPC.scale *= 1.3f;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -96,10 +89,9 @@ namespace CalamityMod.NPCs.Leviathan
             // Avoid cheap bullshit
             NPC.damage = 0;
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             NPC.TargetClosest(false);
 
@@ -128,13 +120,13 @@ namespace CalamityMod.NPCs.Leviathan
                     sirenAlive = false;
             }
 
-            float inertia = bossRush ? 24f : death ? 26f : revenge ? 27f : expertMode ? 28f : 30f;
+            float inertia = death ? 26f : revenge ? 27f : expertMode ? 28f : 30f;
             if (!sirenAlive || leviathanInPhase4)
                 inertia *= 0.75f;
 
             if (NPC.ai[0] == 0f)
             {
-                float lungeSpeed = bossRush ? 14f : death ? 12f : revenge ? 11f : expertMode ? 10f : 8f;
+                float lungeSpeed = death ? 12f : revenge ? 11f : expertMode ? 10f : 8f;
                 if (!sirenAlive || leviathanInPhase4)
                     lungeSpeed *= 1.25f;
 
@@ -277,12 +269,6 @@ namespace CalamityMod.NPCs.Leviathan
                     }
                 }
             }
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Bleeding, 240, true);
         }
 
         public override void HitEffect(NPC.HitInfo hit)

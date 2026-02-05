@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,6 +13,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
+    [PierceResistException]
     public class ArtifactOfResilienceShards : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
@@ -135,7 +137,7 @@ namespace CalamityMod.Projectiles.Typeless
                             int projNum = Owner.ownedProjectileCounts[ModContent.ProjectileType<ArtifactOfResilienceShards>()] - 4;
 
                             Projectile.velocity = ((MathHelper.TwoPi * Projectile.ai[2] / projNum).ToRotationVector2()) * 15 * speedMult;
-                            Owner.Calamity().GeneralScreenShakePower = 5f;
+                            Owner.SetScreenshake(5f);
 
                             if (Projectile.ai[2] == 1)
                             {
@@ -174,6 +176,10 @@ namespace CalamityMod.Projectiles.Typeless
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
+            bool crit = Main.rand.Next(0, 100 + 1) < Owner.GetTotalCritChance(Owner.GetBestClass());
+            if (crit)
+                modifiers.SetCrit();
+
             modifiers.SourceDamage *= (isAttacking ? 1 : 0.45f);
             if (isAttacking)
                 target.AddBuff(ModContent.BuffType<ProfanedWeakness>(), 520);

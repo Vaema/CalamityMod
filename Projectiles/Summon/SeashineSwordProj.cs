@@ -26,7 +26,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public Vector2 tipPosition;
         public Vector2 savedTipPos = Vector2.Zero;
-        public bool attackMode => Owner.HeldItem.type == ModContent.ItemType<SeashineSword>(); // If not holding the weapon, the blades won't charge (no whips for you)
+        public bool attackMode => Owner.HeldItem.type == ModContent.ItemType<SeashineHilt>(); // If not holding the weapon, the blades won't charge (no whips for you)
 
         // Values stored to create blade swing arc
         public Vector2 startPos;
@@ -255,7 +255,7 @@ namespace CalamityMod.Projectiles.Summon
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Summon/SeashineSword").Value;
+            Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Summon/SeashineHilt").Value;
             Texture2D tex2 = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowBlade").Value;
             Texture2D tex3 = ModContent.Request<Texture2D>("CalamityMod/Particles/FullStar").Value;
 
@@ -316,6 +316,6 @@ namespace CalamityMod.Projectiles.Summon
             float _ = float.NaN;
             return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, tipPosition, 30 * Projectile.scale, ref _);
         }
-        public override bool? CanDamage() => (isAttacking && attackTimer > bladeValue && Projectile.ai[0] != 0) ? null : false;
+        public override bool? CanDamage() => isAttacking && attackTimer > bladeValue && Projectile.ai[0] != 0;
     }
 }

@@ -1,54 +1,57 @@
 // Damageable
-ArtifactOfResilienceBulwark.DisplayName: Artifact of Resilience
 MarniteRepulsionHitbox.DisplayName: Repulsion Matrix
 // Draedon's Arsenal
+AerialTrackerLaser.DisplayName: Laser
+AerialTrackerProjectile.DisplayName: Aerial Tracker
 AnomalysNanogunHoldout.DisplayName: The Anomaly's Nanogun
 AnomalysNanogunMPFBBoom.DisplayName: MPFB Explosion
 AnomalysNanogunMPFBDevastator.DisplayName: MPFB Devastator
 AnomalysNanogunPlasmaBeam.DisplayName: Plasma Beam
-FrequencyManipulatorEnergy.DisplayName: Pulse Energy
-FrequencyManipulatorProjectile.DisplayName: Frequency Manipulator
-GatlingLaserShot.DisplayName: Gatling Laser
+AqueousHunterDroneSummon.DisplayName: Plasma Shrimp
+AugerHoldout.DisplayName: P-GSS Auger
+AugerSlash.DisplayName: Auger Slash
+AugerPull.DisplayName: Auger Pull
+CountermeasurePalmBlast.DisplayName: Palm Blast
 GaussEnergy.DisplayName: Gauss Energy
 GaussFlux.DisplayName: Gauss Flux
-GaussPistolShot.DisplayName: Gauss Shot
-GaussRifleBlast.DisplayName: Gauss Blast
-GaussRifleExplosion.DisplayName: Gauss Explosion
 ImmolationArrow.DisplayName: Immolation Arrow
 ImmolationBurst.DisplayName: Immolation Burst
 ImmolationSpray.DisplayName: Immolation Spray
-LaserRifleShot.DisplayName: Laser Rifle
 MassivePlasmaExplosion.DisplayName: Plasma Explosion
 MountedScannerLaser.DisplayName: Deathray
 MountedScannerSummon.DisplayName: Mounted Scanner
+NidhoggRailgunBigShot.DisplayName: Nidhogg Railgun
+NidhoggRailgunBlast.DisplayName: Nidhogg Beam
+NidhoggExplosion.DisplayName: Magnetic Implosion
+PhalanxSurgeLance.DisplayName: Laser Lance
+PhalanxSurgeLaser.DisplayName: Phalanx Laser
 PhaseslayerBeam.DisplayName: Light Blade
 PlasmaCasterShot.DisplayName: Plasma Bolt
 PlasmaGrenadeProjectile.DisplayName: Plasma Grenade
 PlasmaGrenadeSmallExplosion.DisplayName: Plasma Explosion
 PoleWarperSummon.DisplayName: Pole Warper
 PulseDragonProjectile.DisplayName: Pulse Dragon
+PulseGrenadeProjectile.DisplayName: Pulse Grenade
+PulseGrenadeOrb.DisplayName: Pulse Orb
 PulsePistolShot.DisplayName: Pulse Bolt
 PulseRifleShot.DisplayName: Pulse Bolt
 PulseTurret.DisplayName: Pulse Turret
 PulseTurretShot.DisplayName: Pulse Bolt
-ScattershotLance.DisplayName: Laser Lance
-ScattershotLaser.DisplayName: Scattershot Laser
+ShortCircuitHook.DisplayName: Short Circuit Hook
+ShrimpPlasmaMissile.DisplayName: Plasma Shrimp Missile
 SnakeEyesSummon.DisplayName: Snake Eyes
 SnakeEyesProjectile.DisplayName: Inescapable Bolt
-StarSwallowerAcid.DisplayName: Acid
-StarSwallowerSummon.DisplayName: Pet Froge
 SystemBaneLightning.DisplayName: Lightning
 SystemBaneProjectile.DisplayName: System Bane
-TaserHook.DisplayName: Taser
 TeslaCannonShot.DisplayName: Tesla Beam
-TrackingDiskLaser.DisplayName: Laser
-TrackingDiskProjectile.DisplayName: Tracking Disk
-UnstableMatter.DisplayName: Unstable Matter
 VoltageStream.DisplayName: Voltage Stream
+VulcanProjectile.DisplayName: Vulcan Shot
+VulcanSpear.DisplayName: Vulcan Harpoon
 WavePounderBoom.DisplayName: Explosion
 WavePounderProjectile.DisplayName: Wave Pounder
 // Environmental
 AcidDrop.DisplayName: Acid
+BarrelCactusProjectile.DisplayName: Barrel Cactus
 BrimstoneGeyser.DisplayName: Smoke
 GeyserTelegraph.DisplayName: Geyser
 HotSteam.DisplayName: Steam

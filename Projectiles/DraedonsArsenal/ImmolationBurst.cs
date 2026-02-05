@@ -10,7 +10,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public override void SetDefaults()
         {
-            Projectile.width = Projectile.height = 150;
+            Projectile.width = Projectile.height = 235;
             Projectile.friendly = true;
             Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Ranged;
@@ -26,10 +26,10 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if (Projectile.numHits > 0)
-                Projectile.damage = (int)(Projectile.damage * 0.88f);
-            if (Projectile.damage < 1)
-                Projectile.damage = 1;
+            float minMult = 0.25f;
+            int hitsToMinMult = (int)(5 * Projectile.scale);
+            float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+            modifiers.SourceDamage *= damageMult;
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, Projectile.width * 0.5f * Projectile.scale, targetHitbox);
     }

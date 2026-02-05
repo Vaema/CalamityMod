@@ -22,6 +22,8 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.timeLeft = 300;
             AIType = ProjectileID.WoodenBoomerang;
             Projectile.DamageType = RogueDamageClass.Instance;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -35,12 +37,8 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 if (Projectile.timeLeft % 15 == 0 && Projectile.owner == Main.myPlayer)
                 {
-                    Vector2 vector62 = Main.player[Projectile.owner].Center - Projectile.Center;
-                    Vector2 vector63 = vector62 * -1f;
-                    vector63.Normalize();
-                    vector63 *= (float)Main.rand.Next(45, 65) * 0.1f;
-                    vector63 = vector63.RotatedBy((Main.rand.NextDouble() - 0.5) * 1.5707963705062866, default);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, vector63.X, vector63.Y, ModContent.ProjectileType<ShroomerangSpore>(), (int)(Projectile.damage * 0.1), Projectile.knockBack * 0.2f, Projectile.owner, -10f, 0f);
+                    Vector2 sporeVel = Utils.DirectionFrom(Projectile.Center, Main.player[Projectile.owner].Center).RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(4.5f, 6.5f);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, sporeVel, ModContent.ProjectileType<ShroomerangSpore>(), (int)(Projectile.damage * 0.3f), 1f, Projectile.owner, -10f, 1f);
                 }
             }
         }

@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public static float MaxThrowReach = 760;
         public static float SnapDamageMultiplier = 1.2f; //Extra damage from making the scissors snap
 
-        public static float MaxCharge = 15f; // Maximum charge value AKA how much charge you get from a parry
+        public static float MaxCharge = 16f; // Maximum charge value AKA how much charge you get from a parry
         public static float chargeDamageMultiplier = 1.35f; //Extra damage from charge
         public static float chainDamageMultiplier = 0.1f;
         public static float SnapBoltsDamageMultiplier = 0.1f;
@@ -76,7 +76,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void SetDefaults()
         {
             Item.width = Item.height = 136;
-            Item.damage = 1700;
+            Item.damage = 1800;
             Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -90,7 +90,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.shoot = ProjectileID.PurificationPowder;
             Item.shootSpeed = 28f;
-            Item.rare = RarityType<Violet>();
+            Item.rare = RarityType<BurnishedAuric>();
         }
 
         // Terraria seems to really dislike high crit values in SetDefaults
@@ -127,10 +127,11 @@ namespace CalamityMod.Items.Weapons.Melee
                 // If it has been less than N frames since the last alt function use, this is a double right click.
                 bool rightMouseDoubleClick = rmbFrames > 0;
 
-                // Check if a parry holdout is already present.
+                // Check if a parry holdout or blast is already present.
                 Projectile parrier = Main.projectile.FirstOrDefault(p => p.active && p.owner == player.whoAmI && p.type == ProjectileType<ArkoftheCosmosParryHoldout>(), null);
+                Projectile blast = Main.projectile.FirstOrDefault(p => p.active && p.owner == player.whoAmI && p.type == ProjectileType<ArkoftheCosmosBlast>(), null);
 
-                bool canExecuteBlast = rightMouseDoubleClick && Charge > 0;
+                bool canExecuteBlast = rightMouseDoubleClick && Charge > 0 && blast is null;
                 bool canExecuteParry = parrier is null && !canExecuteBlast;
 
                 // The blast is checked first, so that it overrides the first right click triggering a parry. Blasts delete any active parry holdouts on use.
@@ -141,8 +142,8 @@ namespace CalamityMod.Items.Weapons.Melee
                     Projectile.NewProjectile(source, player.Center + angle.ToRotationVector2() * 90f, velocity, ProjectileType<ArkoftheCosmosBlast>(), (int)(damage * BlastDamageMultiplier), 0, player.whoAmI, Charge);
                     Charge = 0;
 
-                    // If the parry holdout has existed for very few frames and hasn't parried something, just delete it.
-                    if (parrier is not null && parrier.timeLeft > ArkoftheCosmosParryHoldout.MaxTime - DoubleRightClickFrames && parrier.ai[1] <= 0f)
+                    // If the parry holdout has existed for very few frames, just delete it.
+                    if (parrier is not null && parrier.timeLeft > ArkoftheCosmosParryHoldout.MaxTime - DoubleRightClickFrames)
                     {
                         parrier.active = false;
                         parrier.netUpdate = true;
@@ -235,7 +236,7 @@ namespace CalamityMod.Items.Weapons.Melee
             var barBG = Request<Texture2D>("CalamityMod/UI/MiscTextures/GenericBarBack").Value;
             var barFG = Request<Texture2D>("CalamityMod/UI/MiscTextures/GenericBarFront").Value;
 
-            float barScale = 3f;
+            float barScale = 4f;
             Vector2 barOrigin = barBG.Size() * 0.5f;
             float yOffset = 50f;
             Vector2 drawPos = position + Vector2.UnitY * scale * (frame.Height - yOffset);

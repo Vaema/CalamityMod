@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.CustomRecipes;
-using CalamityMod.Items.DraedonMisc;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Rarities;
@@ -52,7 +51,7 @@ namespace CalamityMod.Items.DraedonMisc
                     meleeDisplay.OverrideColor = new Color(201, 41, 255);
                     list.Insert(insertIndex + 1, meleeDisplay);
 
-                    int rangedItem = ModContent.ItemType<ScattershotSkewer>();
+                    int rangedItem = ModContent.ItemType<PhalanxSurge>();
                     TooltipLine rangedDisplay = new TooltipLine(this.Mod, "CalamityMod:RangedDisplay", $"[i:{rangedItem}] {CalamityUtils.GetItemName(rangedItem)}");
                     rangedDisplay.OverrideColor = new Color(255, 64, 31);
                     list.Insert(insertIndex + 2, rangedDisplay);

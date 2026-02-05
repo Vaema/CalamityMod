@@ -29,7 +29,7 @@ namespace CalamityMod.NPCs.Leviathan
         private int frameUsed = 0;
         public bool HasBegunSummoningLeviathan = false;
         private int DrawProjectileTelegraphTimer = 0;
-        private int LegendaryModeAttackChosen = 0;
+        private int GetGoodAttackChosen = 0;
         public static Asset<Texture2D> ChargeTexture;
         public bool WaitingForLeviathan
         {
@@ -59,21 +59,26 @@ namespace CalamityMod.NPCs.Leviathan
             }
         }
 
+        public static float DashDamageMult = 1.5f; // 150
+        public static int SpearDamage = 27; // 108
+        public static int MistDamage = 24; // 96
+        public static int SongDamage = 30; // 120
+
         public override void SetDefaults()
         {
-            NPC.GetNPCDamage();
+            NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 50; // 100
             NPC.npcSlots = 16f;
             NPC.width = 100;
             NPC.height = 100;
             NPC.defense = 20;
-            NPC.DR_NERD(0.2f);
-            NPC.LifeMaxNERB(35000, 42000, 260000);
+            NPC.LifeMaxNERB(25000, 42000, 260000);
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.boss = true;
             NPC.BossBar = ModContent.GetInstance<LeviathanAnahitaBossBar>();
-            NPC.value = Item.buyPrice(0, 12, 50, 0);
+            NPC.value = Item.buyPrice(gold: 7, silver: 50);
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.HitSound = HitSound;
@@ -88,9 +93,6 @@ namespace CalamityMod.NPCs.Leviathan
 
             if (Main.zenithWorld)
                 NPC.scale *= 4f;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -141,9 +143,6 @@ namespace CalamityMod.NPCs.Leviathan
             if (HasBegunSummoningLeviathan && CalamityGlobalNPC.LeviAndAna == -1)
                 CalamityGlobalNPC.LeviAndAna = NPC.whoAmI;
 
-            // Set to false so she doesn't do it constantly
-            NPC.Calamity().canBreakPlayerDefense = false;
-
             // Light
             Lighting.AddLight((int)(NPC.Center.X / 16f), (int)(NPC.Center.Y / 16f), 0f, 0.5f, 0.3f);
 
@@ -162,15 +161,13 @@ namespace CalamityMod.NPCs.Leviathan
 
             // Variables
             Player player = Main.player[NPC.target];
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
-            bool masterMode = Main.masterMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
             bool notOcean = player.position.Y < 800f || player.position.Y > Main.worldSurface * 16.0 || (player.position.X > 6400f && player.position.X < (Main.maxTilesX * 16 - 6400));
 
             // Enrage
-            if (notOcean && !bossRush)
+            if (notOcean && !BossRushEvent.BossRushActive)
             {
                 if (biomeEnrageTimer > 0)
                     biomeEnrageTimer--;
@@ -178,12 +175,12 @@ namespace CalamityMod.NPCs.Leviathan
             else
                 biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
 
-            bool biomeEnraged = biomeEnrageTimer <= 0 || bossRush;
+            bool biomeEnraged = biomeEnrageTimer <= 0;
 
             float enrageScale = 0f;
             if (biomeEnraged)
             {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
+                NPC.Calamity().CurrentlyEnraged = true;
                 enrageScale += 1.5f;
             }
 
@@ -194,8 +191,6 @@ namespace CalamityMod.NPCs.Leviathan
             if (!leviAlive)
                 bubbleVelocity += 2f * (1f - lifeRatio);
             if (Main.getGoodWorld)
-                bubbleVelocity *= 1.15f;
-            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
                 bubbleVelocity *= 2f;
 
             // Phases
@@ -240,7 +235,7 @@ namespace CalamityMod.NPCs.Leviathan
 
                     NPC.rotation = NPC.rotation.AngleTowards(idealRotation, 0.08f);
 
-                    if (bossRush || Collision.WetCollision(NPC.position, NPC.width, NPC.height) || NPC.position.Y > (Main.worldSurface - 125f) * 16f)
+                    if (BossRushEvent.BossRushActive || Collision.WetCollision(NPC.position, NPC.width, NPC.height) || NPC.position.Y > (Main.worldSurface - 125f) * 16f)
                     {
                         int oldAlpha = NPC.alpha;
                         NPC.alpha = Utils.Clamp(NPC.alpha + 9, 0, 255);
@@ -316,6 +311,7 @@ namespace CalamityMod.NPCs.Leviathan
                     NPC.dontTakeDamage = true;
             }
 
+            NPC.canDisplayBuffs = true;
             // Hover near the target, invisible if the Leviathan is present and not sufficiently injured.
             if ((phase3 || death) && WaitingForLeviathan && !Main.zenithWorld)
             {
@@ -343,6 +339,7 @@ namespace CalamityMod.NPCs.Leviathan
                 }
 
                 NPC.dontTakeDamage = true;
+                NPC.canDisplayBuffs = false;
 
                 if (NPC.ai[0] != -1f)
                 {
@@ -448,6 +445,9 @@ namespace CalamityMod.NPCs.Leviathan
 
                 NPC.rotation = NPC.velocity.X * 0.02f;
                 NPC.spriteDirection = NPC.direction;
+
+                // Remove projectile telegraph
+                DrawProjectileTelegraphTimer = 0;
 
                 Vector2 anahitaPos = NPC.Center;
                 float playerXDist = player.position.X + (player.width / 2) - anahitaPos.X;
@@ -654,17 +654,17 @@ namespace CalamityMod.NPCs.Leviathan
                         int totalTelegraphs = 8;
                         float telegraphDist = 500f;
 
-                        // In Legendary, the projectiles she fires is randomized
-                        if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                        // In FTW, the projectiles she fires is randomized
+                        if (Main.getGoodWorld)
                         {
-                            LegendaryModeAttackChosen = Main.rand.Next(3);
-                            if (LegendaryModeAttackChosen == 2)
+                            GetGoodAttackChosen = Main.rand.Next(3);
+                            if (GetGoodAttackChosen == 2)
                                 telegraphDist -= 50f;
 
                             for (int i = 0; i < totalTelegraphs; i++)
                             {
                                 Vector2 spawnVector = player.Center - Vector2.UnitY.RotatedBy(MathHelper.TwoPi / totalTelegraphs * i) * telegraphDist;
-                                int tele = Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, Vector2.Zero, ModContent.ProjectileType<AnahitaTelegraph>(), 0, 0f, Main.myPlayer, player.whoAmI, LegendaryModeAttackChosen);
+                                int tele = Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, Vector2.Zero, ModContent.ProjectileType<AnahitaTelegraph>(), 0, 0f, Main.myPlayer, player.whoAmI, GetGoodAttackChosen);
                                 Main.projectile[tele].netUpdate = true;
                                     
                             }
@@ -709,13 +709,13 @@ namespace CalamityMod.NPCs.Leviathan
                         int totalProjectiles = 8;
                         int projectileDistance = 600;
                         int type = ModContent.ProjectileType<WaterSpear>();
-                        if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                        int damage = SpearDamage;
+                        if (Main.getGoodWorld)
                         {
                             float radians = MathHelper.TwoPi / totalProjectiles;
-                            int damage = NPC.GetProjectileDamage(type);
                             for (int i = 0; i < totalProjectiles; i++)
                             {
-                                switch (LegendaryModeAttackChosen)
+                                switch (GetGoodAttackChosen)
                                 {
                                     case 0:
                                         SoundEngine.PlaySound(SoundID.Item21, player.Center);
@@ -723,11 +723,13 @@ namespace CalamityMod.NPCs.Leviathan
 
                                     case 1:
                                         type = ModContent.ProjectileType<FrostMist>();
+                                        damage = MistDamage;
                                         SoundEngine.PlaySound(SoundID.Item30, player.Center);
                                         break;
 
                                     case 2:
                                         type = ModContent.ProjectileType<SirenSong>();
+                                        damage = SongDamage;
                                         float soundPitch = (Main.rand.NextFloat() - 0.5f) * 0.5f;
                                         Main.musicPitch = soundPitch;
                                         SoundEngine.PlaySound(SoundID.Item26, player.Center);
@@ -751,15 +753,16 @@ namespace CalamityMod.NPCs.Leviathan
                                 case 1:
                                     totalProjectiles = 3;
                                     type = ModContent.ProjectileType<FrostMist>();
+                                    damage = MistDamage;
                                     SoundEngine.PlaySound(SoundID.Item30, player.Center);
                                     break;
 
                                 case 2:
                                     totalProjectiles = 6;
                                     type = ModContent.ProjectileType<SirenSong>();
-                                    float soundPitch = (Main.rand.NextFloat() - 0.5f) * 0.5f;
-                                    Main.musicPitch = soundPitch;
-                                    SoundEngine.PlaySound(SoundID.Item26, player.Center);
+                                    damage = SongDamage;
+                                    SoundStyle song = new("CalamityMod/Sounds/Item/HarpEnd");
+                                    SoundEngine.PlaySound(song with { Volume = 0.6f }, player.Center);
                                     break;
                             }
                             NPC.localAI[3] += 1f;
@@ -770,7 +773,6 @@ namespace CalamityMod.NPCs.Leviathan
                                 totalProjectiles += totalProjectiles / 2;
 
                             float radians = MathHelper.TwoPi / totalProjectiles;
-                            int damage = NPC.GetProjectileDamage(type);
                             for (int i = 0; i < totalProjectiles; i++)
                             {
                                 Vector2 spawnVector = player.Center + Vector2.Normalize(new Vector2(0f, -projectileVelocity).RotatedBy(radians * i)) * projectileDistance;
@@ -788,12 +790,8 @@ namespace CalamityMod.NPCs.Leviathan
                     NPC.spriteDirection = NPC.direction;
                 }
 
-                float phaseTimer = 300f;
-                phaseTimer -= 50f * enrageScale;
-                if (!leviAlive || phase4)
-                    phaseTimer -= 150f * (1f - lifeRatio);
-
-                if (NPC.ai[1] >= phaseTimer)
+                // End behavior after attacking twice
+                if (NPC.ai[1] > attackDivisor * 2)
                 {
                     NPC.ai[0] = -1f;
                     NPC.ai[1] = 2f;
@@ -827,9 +825,11 @@ namespace CalamityMod.NPCs.Leviathan
 
                     if (revenge)
                         chargeVelocity += 2f + (death ? 6f * (1f - lifeRatio) : 4f * (1f - lifeRatio));
-
                     if (Main.getGoodWorld)
                         chargeVelocity *= 1.15f;
+                    // Stunt velocity at the end of the charge attack to prevent her flying off
+                    if (NPC.ai[0] == -1f)
+                        chargeVelocity *= 0.3f;
 
                     NPC.velocity = Vector2.Normalize(player.Center - NPC.Center) * chargeVelocity;
                     NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X);
@@ -851,10 +851,9 @@ namespace CalamityMod.NPCs.Leviathan
             // Charge
             else if (NPC.ai[0] == 4f)
             {
-                NPC.Calamity().canBreakPlayerDefense = true;
-                NPC.damage = (int)Math.Round(NPC.defDamage * 1.5);
+                NPC.damage = (int)Math.Round(NPC.defDamage * DashDamageMult);
 
-                if (CalamityWorld.LegendaryMode && CalamityWorld.revenge && NPC.ai[1] % 5f == 0f)
+                if (Main.zenithWorld && NPC.ai[1] % 5f == 0f)
                 {
                     SoundEngine.PlaySound(SoundID.Item85, NPC.Center);
                     Vector2 bubbleSpawnPos = new Vector2(NPC.position.X + (NPC.width / 2) + (15 * NPC.direction * NPC.scale), NPC.position.Y + 30 * NPC.scale);
@@ -981,7 +980,7 @@ namespace CalamityMod.NPCs.Leviathan
             if (DrawProjectileTelegraphTimer > 0)
             {
                 Color telegraphColor = Color.Black;
-                switch (CalamityWorld.LegendaryMode && CalamityWorld.revenge ? LegendaryModeAttackChosen : (int)NPC.localAI[3])
+                switch (Main.getGoodWorld ? GetGoodAttackChosen : (int)NPC.localAI[3])
                 {
                     case 0:
                         telegraphColor = new Color(55, 70, 240);
@@ -1022,7 +1021,7 @@ namespace CalamityMod.NPCs.Leviathan
             //200x636
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ItemID.GreaterHealingPotion;
         }
@@ -1049,7 +1048,6 @@ namespace CalamityMod.NPCs.Leviathan
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
     }
 }

@@ -6,19 +6,19 @@ using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.TreasureBags;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Summon;
-using CalamityMod.NPCs.CalamityAIs.CalamityBossAIs;
-using CalamityMod.Sounds;
+using CalamityMod.Projectiles.Boss;
 using CalamityMod.UI.VanillaBossBars;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
+using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -26,6 +26,7 @@ using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.NPCs.CeaselessVoid
 {
@@ -38,6 +39,8 @@ namespace CalamityMod.NPCs.CeaselessVoid
         public static Asset<Texture2D> GlowTexture;
 
         public bool playedbuildsound = false;
+
+        public bool madeItToLocation = true;
 
         public override void SetStaticDefaults()
         {
@@ -52,34 +55,33 @@ namespace CalamityMod.NPCs.CeaselessVoid
             NPCID.Sets.MPAllowedEnemies[Type] = true;
             if (!Main.dedServ)
             {
-                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+                GlowTexture = Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
             }
         }
 
+        public static int BeamPortalDamage = 60; // 240
+        public static int DarkEnergyProjectileDamage = 60; // 240
+
         public override void SetDefaults()
         {
-            NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 180; // 360
             NPC.npcSlots = 36f;
             NPC.width = 100;
             NPC.height = 100;
             NPC.defense = 80;
-            CalamityGlobalNPC global = NPC.Calamity();
-            global.DR = 0.5f;
-            NPC.LifeMaxNERB(65000, 78000, 72000);
-            NPC.value = Item.buyPrice(1, 0, 0, 0);
+            NPC.Calamity().DR = 0.5f;
+            NPC.LifeMaxNERB(50000, 78000, 72000);
+            NPC.value = Item.buyPrice(gold: 50);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.boss = true;
-            NPC.BossBar = ModContent.GetInstance<CeaselessVoidBossBar>();
+            NPC.BossBar = GetInstance<CeaselessVoidBossBar>();
             NPC.DeathSound = DeathSound;
+            NPC.Calamity().canBreakPlayerDefense = true;
             NPC.Calamity().VulnerableToSickness = false;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -125,7 +127,530 @@ namespace CalamityMod.NPCs.CeaselessVoid
 
         public override void AI()
         {
-            CeaselessVoidAI.VanillaCeaselessVoidAI(NPC, Mod);
+            CalamityGlobalNPC calamityGlobalNPC = NPC.Calamity();
+            CalamityGlobalNPC.voidBoss = NPC.whoAmI;
+
+            // Percent life remaining
+            double lifeRatio = NPC.life / (double)NPC.lifeMax;
+
+            // Difficulty modes
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+
+            // Phases
+            bool phase2 = lifeRatio <= 0.7;
+            bool phase3 = lifeRatio <= 0.4;
+            bool phase4 = lifeRatio <= 0.1;
+            bool theBigSucc = NPC.life / (double)NPC.lifeMax <= 0.1;
+            bool succSoHardThatYouDie = NPC.life / (double)NPC.lifeMax <= 0.005;
+
+            // Spawn Dark Energies
+            int darkEnergyAmt = death ? 6 : revenge ? 5 : expertMode ? 4 : 3;
+            if (phase2)
+                darkEnergyAmt += 1;
+            if (phase3)
+                darkEnergyAmt += 1;
+            if (phase4)
+                darkEnergyAmt += 1;
+
+            if (Main.getGoodWorld)
+                darkEnergyAmt *= 2;
+
+            // Spawn a few Dark Energies as soon as the fight starts
+            int spacing = 360 / darkEnergyAmt;
+            int distance2 = 10;
+            if (NPC.ai[2] == 0f)
+            {
+                NPC.ai[2] = 1f;
+                for (int i = 0; i < darkEnergyAmt; i++)
+                {
+                    for (int j = 0; j < 3; j++)
+                        NPC.NewNPC(NPC.GetSource_FromAI(), (int)(NPC.Center.X + (Math.Sin(i * spacing) * distance2)), (int)(NPC.Center.Y + (Math.Cos(i * spacing) * distance2)), NPCType<DarkEnergy>(), NPC.whoAmI, i * spacing, j);
+                }
+                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)(NPC.Center.Y + distance2), NPCType<DarkEnergy>(), NPC.whoAmI, 0f, 0.5f);
+                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)(NPC.Center.Y + distance2), NPCType<DarkEnergy>(), NPC.whoAmI, 0f, 1.5f);
+            }
+
+            // If there are any Dark Energies alive, change AI and don't take damage
+            bool anyDarkEnergies = NPC.AnyNPCs(NPCType<DarkEnergy>());
+            bool movingDuringSuccPhase = NPC.ai[3] == 0f;
+            NPC.dontTakeDamage = anyDarkEnergies || theBigSucc || movingDuringSuccPhase;
+
+            // Get a target
+            if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
+                NPC.TargetClosest();
+
+            // Despawn safety, make sure to target another player if the current player target is too far away
+            if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > CalamityGlobalNPC.CatchUpDistance200Tiles)
+                NPC.TargetClosest();
+
+            Player player = Main.player[NPC.target];
+
+            // Despawn
+            if (!player.active || player.dead || Vector2.Distance(player.Center, NPC.Center) > 5600f || (player.position.Y < Main.worldSurface * 16.0 && !BossRushEvent.BossRushActive))
+            {
+                NPC.TargetClosest(false);
+                player = Main.player[NPC.target];
+                if (!player.active || player.dead || Vector2.Distance(player.Center, NPC.Center) > 5600f || (player.position.Y < Main.worldSurface * 16.0 && !BossRushEvent.BossRushActive))
+                {
+                    if (NPC.velocity.Y > 3f)
+                        NPC.velocity.Y = 3f;
+                    NPC.velocity.Y -= 0.1f;
+                    if (NPC.velocity.Y < -12f)
+                        NPC.velocity.Y = -12f;
+
+                    if (NPC.timeLeft > 60)
+                        NPC.timeLeft = 60;
+
+                    return;
+                }
+            }
+            else if (NPC.timeLeft < 1800)
+                NPC.timeLeft = 1800;
+
+            // Increase projectile fire rate based on number of nearby active tiles
+            float projectileFireRateMultiplier = Main.getGoodWorld ? 0.5f : 1.5f;
+
+            // Decides whether Ceaseless moves closer to its target or not
+            float distanceRequiredToMove = Main.getGoodWorld ? 300f : 720f;
+            bool move = Vector2.Distance(NPC.Center, player.Center) > distanceRequiredToMove || !Collision.CanHit(NPC.Center, 1, 1, player.Center, 1, 1);
+
+            // Succ attack
+            if (!anyDarkEnergies)
+            {
+                // This is here because it's used in multiple places
+                float suckDistance = death ? 1600f : revenge ? 1440f : expertMode ? 1280f : 1040f;
+
+                // Move closer to the target before trying to succ
+                if (movingDuringSuccPhase)
+                {
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
+
+                    if (move)
+                        Movement(true);
+                    else
+                        NPC.ai[3] = 1f;
+                }
+                else
+                {
+                    // Set damage
+                    NPC.damage = NPC.defDamage;
+
+                    // Use this to generate more and more dust in final phase
+                    float finalPhaseDustRatio = 1f;
+                    if (succSoHardThatYouDie)
+                    {
+                        finalPhaseDustRatio = 5f;
+                    }
+                    else if (theBigSucc)
+                    {
+                        float amount = (10f - (float)(NPC.life / (double)NPC.lifeMax) * 100f) / 10f;
+                        finalPhaseDustRatio += MathHelper.Lerp(0f, 2f, amount);
+                    }
+
+                    // Slow down
+                    if (NPC.velocity.Length() > 0.5f)
+                        NPC.velocity *= 0.8f;
+                    else
+                        NPC.velocity = Vector2.Zero;
+
+                    // Move towards target again if they get outside the succ radius
+                    float moveCloserGateValue = suckDistance * 0.8f;
+                    if (Vector2.Distance(NPC.Center, player.Center) > moveCloserGateValue)
+                        NPC.ai[3] = 0f;
+
+                    // Ceaseless Void sucks in dark energy in different patterns
+                    // This attack also sucks in all players that are within reach of the succ
+                    for (int h = 0; h < 3; h++)
+                    {
+                        float distanceDivisor = h + 1f;
+                        float dustDistance = suckDistance / distanceDivisor;
+                        int numDust = (int)(0.1f * MathHelper.TwoPi * dustDistance);
+                        Vector2 dustOffset = Vector2.UnitX.RotatedByRandom(MathHelper.Pi) * dustDistance;
+
+                        int var = (int)(dustDistance / finalPhaseDustRatio);
+                        float dustVelocity = 24f / distanceDivisor * finalPhaseDustRatio;
+                        for (int i = 0; i < numDust; i++)
+                        {
+                            if (Main.rand.NextBool(var))
+                            {
+                                dustOffset = dustOffset.RotatedBy(MathHelper.TwoPi / numDust);
+                                Vector2 dustSpawn = NPC.Center + dustOffset;
+                                Dust dust = Dust.NewDustPerfect(dustSpawn, DustType<CeaselessDust>(), Utils.DirectionTo(dustSpawn, NPC.Center) * dustVelocity, Scale: 3 - h);
+                                dust.fadeIn = 1f;
+                            }
+                        }
+                    }
+
+                    float succPower = 0.125f + finalPhaseDustRatio * 0.125f;
+                    for (int i = 0; i < Main.maxPlayers; i++)
+                    {
+                        float distance = Vector2.Distance(Main.player[i].Center, NPC.Center);
+                        if (distance < suckDistance && Main.player[i].grappling[0] == -1)
+                        {
+                            if (Collision.CanHit(NPC.Center, 1, 1, Main.player[i].Center, 1, 1))
+                            {
+                                float distanceRatio = distance / suckDistance;
+                                float multiplier = 1f - distanceRatio;
+
+                                if (Main.player[i].Center.X < NPC.Center.X)
+                                    Main.player[i].velocity.X += succPower * multiplier;
+                                else
+                                    Main.player[i].velocity.X -= succPower * multiplier;
+                            }
+                        }
+                    }
+
+                    // Slowly die in final phase and then implode
+                    // This phase lasts 20 seconds, 60 seconds in GFB
+                    if (theBigSucc && calamityGlobalNPC.newAI[1] % 60f == 0f)
+                    {
+                        int damageIncrement = NPC.lifeMax / (Main.zenithWorld ? 600 : 200);
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        {
+                            NPC.life -= damageIncrement;
+                            NPC.DamageEffect(damageIncrement);
+                        }
+
+                        if (NPC.life <= (damageIncrement * 5) && !playedbuildsound)
+                        {
+                            SoundEngine.PlaySound(BuildupSound, NPC.Center);
+                            playedbuildsound = true;
+                        }
+
+                        if (NPC.life <= 0)
+                        {
+                            NPC.life = 0;
+                            NPC.HitEffect();
+                            NPC.checkDead();
+                        }
+
+                        NPC.netUpdate = true;
+                    }
+
+                    // Beam Portals
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        if (calamityGlobalNPC.newAI[1] == 0f)
+                        {
+                            int numBeamPortals = revenge ? 3 : 2;
+                            float degrees = 360 / numBeamPortals;
+                            float beamPortalDistance = death ? 400f : revenge ? 420f : expertMode ? 440f : 480f;
+                            int type = ProjectileType<DoGBeamPortal>();
+                            for (int i = 0; i < numBeamPortals; i++)
+                            {
+                                float ai1 = i * degrees;
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X + (float)(Math.Sin(i * degrees) * beamPortalDistance), player.Center.Y + (float)(Math.Cos(i * degrees) * beamPortalDistance), 0f, 0f, type, BeamPortalDamage, 0f, Main.myPlayer, ai1, 0f);
+                            }
+                        }
+                    }
+
+                    // Use this timer to lessen Dark Energy projectile rate of fire while Beam Portals are active
+                    float beamPortalTimeLeft = 600f;
+                    bool summonLessDarkEnergies = false;
+                    if (calamityGlobalNPC.newAI[1] < beamPortalTimeLeft)
+                    {
+                        calamityGlobalNPC.newAI[1] += 1f;
+                        summonLessDarkEnergies = true;
+                    }
+                    else if (theBigSucc)
+                        calamityGlobalNPC.newAI[1] += 1f;
+
+                    // Suck in Dark Energy projectiles from far away
+                    calamityGlobalNPC.newAI[3] += 1f;
+                    float darkEnergySpiralGateValue = (summonLessDarkEnergies ? 24f : 12f) * projectileFireRateMultiplier;
+                    if (calamityGlobalNPC.newAI[3] >= darkEnergySpiralGateValue)
+                    {
+                        calamityGlobalNPC.newAI[3] = 0f;
+
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        {
+                            int type = ProjectileType<DarkEnergyBall>();
+                            bool normalSpread = NPC.localAI[0] % 2f == 0f;
+                            float speed = 0.5f;
+                            int totalProjectiles = 4;
+                            Vector2 spinningPoint = new Vector2(normalSpread ? 0f : -speed, -speed);
+                            float radialOffset = MathHelper.ToRadians(NPC.localAI[1]);
+                            for (int i = 0; i < totalProjectiles; i++)
+                            {
+                                Vector2 spawnVector = NPC.Center + Vector2.Normalize(spinningPoint.RotatedBy(MathHelper.TwoPi / totalProjectiles * i + radialOffset)) * suckDistance;
+                                Vector2 velocity = Vector2.Normalize(NPC.Center - spawnVector) * speed;
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, velocity, type, DarkEnergyProjectileDamage, 0f, Main.myPlayer);
+                            }
+                        }
+
+                        NPC.localAI[1] += 10f;
+                    }
+
+                    // Summon some extra projectiles in Expert Mode
+                    if (phase2 && expertMode)
+                    {
+                        NPC.localAI[2] += 1f;
+                        if (NPC.localAI[2] >= 60f * projectileFireRateMultiplier)
+                        {
+                            NPC.localAI[2] = 0f;
+
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            {
+                                int type = ProjectileType<DarkEnergyBall2>();
+                                bool normalSpread = NPC.localAI[0] % 2f != 0f;
+                                float speed = 2f;
+                                int totalProjectiles = 2;
+                                float radians = MathHelper.TwoPi / totalProjectiles;
+                                double angleA = radians * 0.5;
+                                double angleB = MathHelper.ToRadians(90f) - angleA;
+                                float velocityX = (float)(speed * Math.Sin(angleA) / Math.Sin(angleB));
+                                Vector2 spinningPoint = new Vector2(normalSpread ? 0f : -velocityX, -speed);
+                                float radialOffset = MathHelper.ToRadians(NPC.localAI[1] * 0.25f);
+                                for (int i = 0; i < totalProjectiles; i++)
+                                {
+                                    Vector2 spawnVector = NPC.Center + Vector2.Normalize(spinningPoint.RotatedBy(radians * i + radialOffset)) * suckDistance;
+                                    Vector2 velocity = Vector2.Normalize(NPC.Center - spawnVector) * speed;
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, velocity, type, DarkEnergyProjectileDamage, 0f, Main.myPlayer);
+                                }
+                            }
+                        }
+                    }
+
+                    // Summon some extra projectiles in Revengeance Mode
+                    if (phase4 && revenge)
+                    {
+                        NPC.localAI[3] += 1f;
+                        if (NPC.localAI[3] >= 90f * projectileFireRateMultiplier)
+                        {
+                            NPC.localAI[3] = 0f;
+
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            {
+                                int type = ProjectileType<DarkEnergyBall2>();
+                                bool normalSpread = NPC.localAI[0] % 2f == 0f;
+                                float speed = 4f;
+                                int totalProjectiles = 2;
+                                float radians = MathHelper.TwoPi / totalProjectiles;
+                                double angleA = radians * 0.5;
+                                double angleB = MathHelper.ToRadians(90f) - angleA;
+                                float velocityX = (float)(speed * Math.Sin(angleA) / Math.Sin(angleB));
+                                Vector2 spinningPoint = new Vector2(normalSpread ? 0f : -velocityX, -speed);
+                                float radialOffset = MathHelper.ToRadians(NPC.localAI[1] * 0.25f);
+                                for (int i = 0; i < totalProjectiles; i++)
+                                {
+                                    Vector2 spawnVector = NPC.Center + Vector2.Normalize(spinningPoint.RotatedBy(radians * i + radialOffset)) * suckDistance;
+                                    Vector2 velocity = Vector2.Normalize(NPC.Center - spawnVector) * speed;
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, velocity, type, DarkEnergyProjectileDamage, 0f, Main.myPlayer);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+                if (move)
+                {
+                    madeItToLocation = false;
+                }
+                if (!madeItToLocation)
+                {
+                    Movement(false);
+                }
+                else
+                {
+                    // Slow down
+                    if (NPC.velocity.Length() > 0.5f)
+                        NPC.velocity *= 0.8f;
+                    else
+                        NPC.velocity = Vector2.Zero;
+                }
+
+                // Count up all Dark Energy HP values
+                int totalDarkEnergyHP = 0;
+                for (int i = 0; i < Main.maxNPCs; i++)
+                {
+                    NPC darkEnergy = Main.npc[i];
+                    if (darkEnergy.active && darkEnergy.type == NPCType<DarkEnergy>())
+                        totalDarkEnergyHP += darkEnergy.life;
+                }
+
+                // Destroy all Dark Energies if their total HP is below 20%
+                int darkEnergyMaxHP = BossRushEvent.BossRushActive ? DarkEnergy.MaxBossRushHP : DarkEnergy.MaxHP;
+                //These are still needed so that CV Dark energy despawn works properly
+                double HPBoost = CalamityServerConfig.Instance.BossHealthBoost * 0.01;
+                darkEnergyMaxHP += (int)(darkEnergyMaxHP * HPBoost);
+
+                int totalDarkEnergiesSpawned = darkEnergyAmt * 3 + 2;
+                int totalDarkEnergyMaxHP = darkEnergyMaxHP * totalDarkEnergiesSpawned;
+                int succPhaseGateValue = (int)(totalDarkEnergyMaxHP * 0.2);
+                if (totalDarkEnergyHP < succPhaseGateValue)
+                {
+                    SoundEngine.PlaySound(SoundID.NPCDeath44, NPC.Center);
+
+                    // Kill all Dark Energies
+                    for (int i = 0; i < Main.maxNPCs; i++)
+                    {
+                        NPC darkEnergy = Main.npc[i];
+                        if (darkEnergy.active && darkEnergy.type == NPCType<DarkEnergy>())
+                        {
+                            darkEnergy.HitEffect();
+                            darkEnergy.active = false;
+                            darkEnergy.netUpdate = true;
+                        }
+                    }
+
+                    // Generate a dust explosion
+                    int dustAmt = 30;
+                    int random = 3;
+                    for (int j = 0; j < 10; j++)
+                    {
+                        random += j * 2;
+                        for (int d = 0; d < dustAmt; d++)
+                        {
+                            Vector2 dustVelocity = new Vector2(Main.rand.Next(-random, random), Main.rand.Next(-random, random));
+                            dustVelocity = Vector2.Normalize(dustVelocity) * random * 2f;
+                            Dust realDust = Dust.NewDustPerfect(NPC.Center + Main.rand.NextVector2CircularEdge(10f, 10f), (int)CalamityDusts.PurpleCosmilite, dustVelocity, 100, default, 5f);
+                            realDust.noGravity = true;
+                        }
+                    }
+                }
+            }
+
+            // Basic movement towards a location
+            void Movement(bool succ)
+            {
+                float velocity = ((expertMode ? 7.5f : 6f) + (float)(death ? 2f * (1D - lifeRatio) : 0f));
+                float acceleration = (death ? 0.2f : expertMode ? 0.16f : 0.12f) + (float)(death ? 0.04f * (1D - lifeRatio) : 0f);
+
+                // Increase speed dramatically in succ phase
+                if (succ)
+                {
+                    velocity *= 2f;
+                    acceleration *= 2f;
+                }
+
+                if (!madeItToLocation)
+                {
+
+                    velocity *= 2f;
+                    acceleration *= 5f;
+                }
+
+                if (Main.getGoodWorld)
+                {
+                    velocity *= 1.15f;
+                    acceleration *= 1.15f;
+                }
+
+                Vector2 destination = player.Center;
+
+                // Move between 8 different positions around the player, in order
+                float maxDistance = 320f;
+                Vector2 moveToOffset = succ ? Vector2.Zero : Main.getGoodWorld ? new Vector2(0f, -maxDistance) : Vector2.Zero;
+                if ((!succ && Main.getGoodWorld) || !madeItToLocation)
+                {
+                    // Move to a new location every few seconds
+                    calamityGlobalNPC.newAI[2] += 1f;
+                    float newPositionGateValue = death ? 180f : revenge ? 210f : expertMode ? 240f : 300f;
+                    if (calamityGlobalNPC.newAI[2] > newPositionGateValue)
+                    {
+                        calamityGlobalNPC.newAI[2] = 0f;
+
+                        NPC.ai[0] += 1f;
+                        if (NPC.ai[0] > 7f)
+                            NPC.ai[0] = 0f;
+                    }
+                    moveToOffset += new Vector2(maxDistance, 0).RotatedBy(NPC.ai[0] / 8f * MathHelper.TwoPi);
+                }
+
+                destination += moveToOffset;
+
+                // How far Ceaseless Void is from where it's supposed to be
+                Vector2 distanceFromDestination = destination - NPC.Center;
+
+                // Movement
+                if (NPC.Distance(destination) > maxDistance || succ || (!Main.getGoodWorld && !madeItToLocation))
+                    CalamityUtils.SmoothMovement(NPC, 0f, distanceFromDestination, velocity, acceleration, true);
+                if (NPC.Distance(destination) < 80)
+                {
+                    madeItToLocation = true;
+                }
+            }
+
+            // Spawn more Dark Energies as the fight progresses
+            if (calamityGlobalNPC.newAI[0] == 0f && NPC.life > 0)
+                calamityGlobalNPC.newAI[0] = 1f;
+
+            if (NPC.life > 0)
+            {
+                int healthGateValue = (int)(NPC.lifeMax * 0.3);
+                if (((NPC.life + healthGateValue) / (float)NPC.lifeMax) < calamityGlobalNPC.newAI[0])
+                {
+                    NPC.TargetClosest();
+                    calamityGlobalNPC.newAI[0] -= 0.3f;
+                    calamityGlobalNPC.newAI[1] = 0f;
+                    calamityGlobalNPC.newAI[2] = 0f;
+                    calamityGlobalNPC.newAI[3] = 0f;
+                    NPC.ai[3] = 0f;
+                    NPC.localAI[0] += 1f;
+                    NPC.localAI[1] = 0f;
+                    NPC.localAI[2] = 0f;
+                    NPC.localAI[3] = 0f;
+
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        if (phase4)
+                        {
+                            madeItToLocation = false;
+                            for (int i = 0; i < darkEnergyAmt; i++)
+                            {
+                                for (int j = 0; j < 3; j++)
+                                    NPC.NewNPC(NPC.GetSource_FromAI(), (int)(NPC.Center.X + (Math.Sin(i * spacing) * distance2)), (int)(NPC.Center.Y + (Math.Cos(i * spacing) * distance2)), NPCType<DarkEnergy>(), NPC.whoAmI, i * spacing, j * 2f);
+                            }
+                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)(NPC.Center.Y + distance2), NPCType<DarkEnergy>(), NPC.whoAmI, 0f, 1f);
+                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)(NPC.Center.Y + distance2), NPCType<DarkEnergy>(), NPC.whoAmI, 0f, 3f);
+                        }
+                        else if (phase3)
+                        {
+                            madeItToLocation = false;
+                            for (int i = 0; i < darkEnergyAmt; i++)
+                            {
+                                for (int j = 0; j < 3; j++)
+                                    NPC.NewNPC(NPC.GetSource_FromAI(), (int)(NPC.Center.X + (Math.Sin(i * spacing) * distance2)), (int)(NPC.Center.Y + (Math.Cos(i * spacing) * distance2)), NPCType<DarkEnergy>(), NPC.whoAmI, i * spacing, j * 1.5f);
+                            }
+                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)(NPC.Center.Y + distance2), NPCType<DarkEnergy>(), NPC.whoAmI, 0f, 0.5f);
+                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)(NPC.Center.Y + distance2), NPCType<DarkEnergy>(), NPC.whoAmI, 0f, 2f);
+                        }
+                        else
+                        {
+                            madeItToLocation = false;
+                            for (int i = 0; i < darkEnergyAmt; i++)
+                            {
+                                for (int j = 0; j < 3; j++)
+                                    NPC.NewNPC(NPC.GetSource_FromAI(), (int)(NPC.Center.X + (Math.Sin(i * spacing) * distance2)), (int)(NPC.Center.Y + (Math.Cos(i * spacing) * distance2)), NPCType<DarkEnergy>(), NPC.whoAmI, i * spacing, j);
+                            }
+                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)(NPC.Center.Y + distance2), NPCType<DarkEnergy>(), NPC.whoAmI, 0f, 1.5f);
+                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)(NPC.Center.Y + distance2), NPCType<DarkEnergy>(), NPC.whoAmI, 0f, 2.5f);
+                        }
+                    }
+
+                    // Despawn potentially hazardous projectiles when entering a new phase
+                    for (int i = 0; i < Main.maxProjectiles; i++)
+                    {
+                        Projectile projectile = Main.projectile[i];
+                        if (projectile.active)
+                        {
+                            if (projectile.type == ProjectileType<DoGBeamPortal>() || projectile.type == ProjectileType<DoGBeam>() ||
+                                projectile.type == ProjectileType<DarkEnergyBall>() || projectile.type == ProjectileType<DarkEnergyBall2>())
+                            {
+                                if (projectile.timeLeft > 30)
+                                    projectile.timeLeft = 30;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)
@@ -219,7 +744,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(ItemDropRule.BossBag(ModContent.ItemType<CeaselessVoidBag>()));
+            npcLoot.Add(ItemDropRule.BossBag(ItemType<CeaselessVoidBag>()));
 
             // Normal drops: Everything that would otherwise be in the bag
             LeadingConditionRule normalOnly = new LeadingConditionRule(new Conditions.NotExpert());
@@ -228,40 +753,41 @@ namespace CalamityMod.NPCs.CeaselessVoid
                 // Weapons
                 int[] weapons = new int[]
                 {
-                    ModContent.ItemType<MirrorBlade>(),
-                    ModContent.ItemType<VoidConcentrationStaff>(),
+                    ItemType<MirrorBlade>(),
+                    ItemType<VoidConcentrationStaff>(),
                 };
                 normalOnly.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, weapons));
 
                 // Materials
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<DarkPlasma>(), 1, 5, 7));
+                normalOnly.Add(DropHelper.PerPlayer(ItemType<DarkPlasma>(), 1, 10, 12));
 
                 // Equipment
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<TheEvolution>()));
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(DropHelper.PerPlayer(ItemType<TheEvolution>()));
 
                 // Vanity
-                normalOnly.Add(ModContent.ItemType<CeaselessVoidMask>(), 7);
-                var godSlayerVanity = ItemDropRule.Common(ModContent.ItemType<AncientGodSlayerHelm>(), 20);
-                godSlayerVanity.OnSuccess(ItemDropRule.Common(ModContent.ItemType<AncientGodSlayerChestplate>()));
-                godSlayerVanity.OnSuccess(ItemDropRule.Common(ModContent.ItemType<AncientGodSlayerLeggings>()));
+                normalOnly.Add(ItemType<CeaselessVoidMask>(), 7);
+                var godSlayerVanity = ItemDropRule.Common(ItemType<AncientGodSlayerHelm>(), 20);
+                godSlayerVanity.OnSuccess(ItemDropRule.Common(ItemType<AncientGodSlayerChestplate>()));
+                godSlayerVanity.OnSuccess(ItemDropRule.Common(ItemType<AncientGodSlayerLeggings>()));
                 normalOnly.Add(godSlayerVanity);
-                normalOnly.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
+                normalOnly.Add(ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
             }
 
-            npcLoot.Add(ModContent.ItemType<CeaselessVoidTrophy>(), 10);
+            npcLoot.Add(ItemType<CeaselessVoidTrophy>(), 10);
 
             // Relic
-            npcLoot.DefineConditionalDropSet(DropHelper.RevAndMaster).Add(ModContent.ItemType<CeaselessVoidRelic>());
+            npcLoot.DefineConditionalDropSet(DropHelper.RevAndMaster).Add(ItemType<CeaselessVoidRelic>());
 
             // GFB Eclipse Mirror and Nucleogenesis drop
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
-                GFBOnly.Add(ModContent.ItemType<EclipseMirror>(), hideLootReport: true);
-                GFBOnly.Add(ModContent.ItemType<Nucleogenesis>(), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemType<EclipseMirror>()), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemType<Nucleogenesis>()), hideLootReport: true);
             }
 
             // Lore
-            npcLoot.AddConditionalPerPlayer(() => !DownedBossSystem.downedCeaselessVoid, ModContent.ItemType<LoreCeaselessVoid>(), desc: DropHelper.FirstKillText);
+            npcLoot.AddConditionalPerPlayer(() => !DownedBossSystem.downedCeaselessVoid, ItemType<LoreCeaselessVoid>(), desc: DropHelper.FirstKillText);
         }
 
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
@@ -269,9 +795,9 @@ namespace CalamityMod.NPCs.CeaselessVoid
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
-            potionType = ModContent.ItemType<SupremeHealingPotion>();
+            potionType = ItemType<SupremeHealingPotion>();
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -279,12 +805,8 @@ namespace CalamityMod.NPCs.CeaselessVoid
             if (NPC.soundDelay == 0 && NPC.life >= NPC.lifeMax * 0.05f)
             {
                 NPC.soundDelay = 8;
-                float pitchVar = 0;
-                if (Main.zenithWorld)
-                {
-                    pitchVar = Main.rand.Next(-60, 41) * 0.01f;
-                }
-                SoundEngine.PlaySound(CommonCalamitySounds.OtherwordlyHitSound with { Pitch = CommonCalamitySounds.OtherwordlyHitSound.Pitch + pitchVar }, NPC.Center);
+                float pitchVar = Main.zenithWorld ? 0.4f : 0;
+                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/NPCHit/OtherworldlyHit") with { PitchVariance = pitchVar }, NPC.Center);
             }
 
             for (int k = 0; k < 5; k++)

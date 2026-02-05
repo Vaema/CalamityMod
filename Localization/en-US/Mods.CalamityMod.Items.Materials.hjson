@@ -53,11 +53,6 @@ BloodOrb: {
 	Tooltip: ""
 }
 
-BloodSample: {
-	DisplayName: Blood Sample
-	Tooltip: ""
-}
-
 Bloodstone: {
 	DisplayName: Bloodstone
 	Tooltip: ""
@@ -247,11 +242,6 @@ ReaperTooth: {
 	Tooltip: Sharp enough to cut diamonds
 }
 
-RottenMatter: {
-	DisplayName: Rotten Matter
-	Tooltip: ""
-}
-
 RuinousSoul: {
 	DisplayName: Ruinous Soul
 	Tooltip: A shard of the distant past
@@ -330,4 +320,14 @@ WulfrumMetalScrap: {
 YharonSoulFragment: {
 	DisplayName: Yharon Soul Fragment
 	Tooltip: A shard of a draconic Auric Soul
+}
+
+AnodizedWulfrumMetal: {
+	DisplayName: Anodized Wulfrum Metal
+	Tooltip: ""
+}
+
+WillOWisp: {
+	DisplayName: Will O Wisp
+	Tooltip: ""
 }

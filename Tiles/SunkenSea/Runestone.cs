@@ -21,19 +21,33 @@ namespace CalamityMod.Tiles.SunkenSea
 
             TileID.Sets.ChecksForMerge[Type] = true;
             HitSound = SoundID.Tink;
-            DustType = 22;
-            AddMapEntry(new Color(152, 89, 78));
-            Main.tileShine2[Type] = true;
+            DustType = DustID.Pot;
+            AddMapEntry(new Color(162, 98, 85));
+            Main.tileShine2[Type] = false;
 
             TileID.Sets.CanBeDugByShovel[Type] = true;
 
-            // 02JUN2024: Ozzatron: RuneSand has no merge
-            // TileFraming.SetUpUniversalMerge(Type, ModContent.TileType<RuneSand>(), out tileAdjacency);
-            // 02JUN2024: Ozzatron: Shellstone has no merge tile sheet defined
-            // TileFraming.SetUpUniversalMerge(Type, ModContent.TileType<Shellstone>(), out secondTileAdjacency);
+            //Stone merges
+            this.RegisterBlendMergeWith(ModContent.TileType<Shellstone>());
+            this.RegisterBlendMergeWith(ModContent.TileType<Navystone>());
+            this.RegisterBlendMergeWith(ModContent.TileType<Runestone>());
 
-            this.RegisterUniversalMerge(ModContent.TileType<EutrophicSand>(), "CalamityMod/Tiles/Merges/EutrophicSandMerge");
-            this.RegisterUniversalMerge(ModContent.TileType<Navystone>(), "CalamityMod/Tiles/Merges/NavystoneMerge");
+            //Sand merges
+            this.RegisterBlendMergeWith(ModContent.TileType<PolypSand>());
+            this.RegisterBlendMergeWith(ModContent.TileType<Dunesand>());
+            this.RegisterBlendMergeWith(ModContent.TileType<ScarletSeaGrassTile>());
+            this.RegisterBlendMergeWith(ModContent.TileType<EutrophicSand>());
+            this.RegisterBlendMergeWith(ModContent.TileType<VolcanicSand>());
+            this.RegisterBlendMergeWith(ModContent.TileType<AridSoil>());
+            this.RegisterBlendMergeWith(TileID.Sandstone);
+            this.RegisterBlendMergeWith(TileID.Sand);
+            this.RegisterBlendMergeWith(TileID.HardenedSand);
+
+            //Normal merges
+            this.RegisterBlendMergeWith(TileID.Stone);
+            this.RegisterBlendMergeWith(TileID.Dirt);
+            this.RegisterBlendMergeWith(TileID.Ash);
+            this.RegisterBlendMergeWith(TileID.Mud);
         }
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)

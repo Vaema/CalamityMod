@@ -9,7 +9,7 @@ using Terraria.UI;
 
 namespace CalamityMod.UI.DebuffSystem
 {
-    public class BestiaryDebuffInfo : IBestiaryInfoElement
+    public class BestiaryDebuffInfo : IBestiaryInfoElement, IBestiaryPrioritizedElement, ICategorizedBestiaryInfoElement
     {
         public string[] elements;
 
@@ -17,6 +17,11 @@ namespace CalamityMod.UI.DebuffSystem
         {
             this.elements = elements;
         }
+
+        // Below base stats (damage/defense/etc)
+        public float OrderPriority => -1f;
+
+        public UIBestiaryEntryInfoPage.BestiaryInfoCategory ElementCategory => UIBestiaryEntryInfoPage.BestiaryInfoCategory.Stats;
 
         public UIElement ProvideUIElement(BestiaryUICollectionInfo info)
         {

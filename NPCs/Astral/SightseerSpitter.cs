@@ -1,5 +1,4 @@
 ﻿using System;
-using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
@@ -42,30 +41,25 @@ namespace CalamityMod.NPCs.Astral
             NPC.width = 64;
             NPC.height = 56;
             NPC.damage = 50;
-            NPC.defense = 20;
-            NPC.DR_NERD(0.15f);
-            NPC.lifeMax = 540;
+            NPC.defense = 35;
+            NPC.lifeMax = 500;
             NPC.DeathSound = CommonCalamitySounds.AstralNPCDeathSound;
             NPC.noGravity = true;
             NPC.knockBackResist = 0.8f;
-            NPC.value = Item.buyPrice(0, 0, 8, 0);
+            NPC.value = Item.buyPrice(silver: 8);
             NPC.aiStyle = -1;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<SightseerSpitterBanner>();
             if (DownedBossSystem.downedAstrumAureus)
             {
                 NPC.damage = 85;
-                NPC.defense = 30;
+                NPC.defense = 45;
                 NPC.knockBackResist = 0.7f;
-                NPC.lifeMax = 810;
+                NPC.lifeMax = 750;
             }
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<BiomeManagers.AstralInfectionBiome>().Type };
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -121,9 +115,12 @@ namespace CalamityMod.NPCs.Astral
                 {
                     NPC.ai[1] = 0f;
 
-                    int n = NPC.NewNPC(NPC.GetSource_FromAI(), (int)spawnPoint.X, (int)spawnPoint.Y, ModContent.NPCType<AstralSeekerSpit>());
-                    Main.npc[n].Center = spawnPoint;
-                    Main.npc[n].velocity = vector * (CalamityWorld.death ? 12f : CalamityWorld.revenge ? 11f : 10f);
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        int n = NPC.NewNPC(NPC.GetSource_FromAI(), (int)spawnPoint.X, (int)spawnPoint.Y, ModContent.NPCType<AstralSeekerSpit>());
+                        Main.npc[n].Center = spawnPoint;
+                        Main.npc[n].velocity = vector * (CalamityWorld.death ? 12f : CalamityWorld.revenge ? 11f : 10f);
+                    }
                 }
                 else if (NPC.ai[1] >= 140f) //oozin dust at the "mouth"
                 {
@@ -181,7 +178,7 @@ namespace CalamityMod.NPCs.Astral
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 45, true);
+                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 180, true);
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
@@ -275,7 +272,7 @@ namespace CalamityMod.NPCs.Astral
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 45, true);
+                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 180);
         }
 
         private void DoKillDust()

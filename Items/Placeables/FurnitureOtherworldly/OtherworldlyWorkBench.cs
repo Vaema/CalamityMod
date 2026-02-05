@@ -1,5 +1,4 @@
 ﻿using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurnitureOtherworldly
 {
@@ -17,7 +16,6 @@ namespace CalamityMod.Items.Placeables.FurnitureOtherworldly
         {
             CreateRecipe().
                 AddIngredient<OtherworldlyStone>(10).
-                AddTile(TileID.LunarCraftingStation).
                 Register();
         }
     }

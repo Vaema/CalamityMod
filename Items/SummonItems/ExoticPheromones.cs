@@ -34,12 +34,12 @@ namespace CalamityMod.Items.SummonItems
 
         public override bool CanUseItem(Player player)
         {
-            return player.ZoneJungle && !NPC.AnyNPCs(ModContent.NPCType<Bumblefuck>()) && !BossRushEvent.BossRushActive;
+            return player.ZoneJungle && !NPC.AnyNPCs(ModContent.NPCType<Dragonfolly>()) && !BossRushEvent.BossRushActive;
         }
 
         public override bool? UseItem(Player player)
         {
-            CalamityUtils.SpawnBossUsingItem<Bumblefuck>(player, SoundID.Roar);
+            CalamityUtils.SpawnBossUsingItem<Dragonfolly>(player, SoundID.Roar);
             return true;
         }
 

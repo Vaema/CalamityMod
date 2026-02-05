@@ -1,10 +1,7 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Potions.Alcohol;
-using CalamityMod.Projectiles.Typeless;
+﻿using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -18,10 +15,11 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 20;
             Item.height = 22;
-            Item.defense = 15; // Why did this give 30 defense? This thing really needs a rework lol
+            Item.defense = 12;
             Item.accessory = true;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
+            Item.expert = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -29,6 +27,7 @@ namespace CalamityMod.Items.Accessories
             var source = player.GetSource_Accessory(Item);
             player.moveSpeed += 0.15f;
             player.GetDamage<GenericDamageClass>() += 0.15f;
+            player.noKnockback = true;
             if (!player.StandingStill())
             {
                 dragonTimer--;

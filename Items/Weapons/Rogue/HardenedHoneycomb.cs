@@ -9,11 +9,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class HardenedHoneycomb : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 30;
@@ -45,15 +40,6 @@ namespace CalamityMod.Items.Weapons.Rogue
                 return false;
             }
             return true;
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.Hive, 10).
-                AddIngredient(ItemID.BeeWax, 8).
-                AddTile(TileID.Anvils).
-                Register();
         }
     }
 }

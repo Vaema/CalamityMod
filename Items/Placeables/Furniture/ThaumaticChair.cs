@@ -5,7 +5,7 @@ using CalamityMod.Items.Placeables.FurnitureAncient;
 using CalamityMod.Items.Placeables.FurnitureAshen;
 using CalamityMod.Items.Placeables.FurnitureBotanic;
 using CalamityMod.Items.Placeables.FurnitureCosmilite;
-using CalamityMod.Items.Placeables.FurnitureEutrophic;
+using CalamityMod.Items.Placeables.FurnitureNavystone;
 using CalamityMod.Items.Placeables.FurnitureExo;
 using CalamityMod.Items.Placeables.FurnitureMarnite;
 using CalamityMod.Items.Placeables.FurnitureMonolith;
@@ -22,7 +22,6 @@ using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.Furniture
@@ -34,7 +33,7 @@ namespace CalamityMod.Items.Placeables.Furniture
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<ThaumaticChairTile>());
             Item.value = Item.sellPrice(gold: 10);
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.Calamity().donorItem = true;
         }
 
@@ -47,7 +46,7 @@ namespace CalamityMod.Items.Placeables.Furniture
             AddIngredient<AshenChair>().
             AddIngredient<BotanicChair>().
             AddIngredient<CosmiliteChair>().
-            AddIngredient<EutrophicChair>().
+            AddIngredient<NavystoneChair>().
             AddIngredient<ExoChair>().
             AddIngredient<MarniteChair>().
             AddIngredient<MonolithChair>().

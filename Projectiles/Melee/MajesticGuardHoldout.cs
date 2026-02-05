@@ -1,5 +1,5 @@
-﻿using System;
-using CalamityMod.Items.Weapons.Melee;
+﻿using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
@@ -7,12 +7,13 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
+    [PierceResistException]
     public class MajesticGuardHoldout : BaseCustomUseStyleProjectile, ILocalizedModType
     {
         public override int AssignedItemID => ModContent.ItemType<MajesticGuard>();
@@ -34,6 +35,7 @@ namespace CalamityMod.Projectiles.Melee
         public int swingCount;
         public bool finalFlip = false;
         public bool playSwingSound = true;
+        public int armoredHits = 0;
         public override void SetDefaults()
         {
             base.SetDefaults();
@@ -92,6 +94,7 @@ namespace CalamityMod.Projectiles.Melee
 
                 doSwing = true;
                 finalFlip = false;
+                armoredHits = 0;
             }
             else
             {
@@ -163,7 +166,7 @@ namespace CalamityMod.Projectiles.Melee
                     {
                         for (int i = 0; i < 2; i++)
                         {
-                            Dust dust2 = Dust.NewDustPerfect(Owner.Center + (new Vector2(150, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), 278, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 2));
+                            Dust dust2 = Dust.NewDustPerfect(Owner.Center + (new Vector2(150, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), DustID.FireworksRGB, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 2));
                             dust2.scale = Main.rand.NextFloat(0.55f, 0.85f);
                             dust2.noGravity = true;
                             dust2.color = Main.rand.NextBool() ? Color.Silver : Color.Gold;
@@ -177,8 +180,10 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if ((damageDone <= 2 || (target.life <= 0 && target.realLife == -1)) && Projectile.numHits > 0)
+            if ((target.life <= 0 && target.realLife == -1) && Projectile.numHits > 0)
                 Projectile.numHits -= 1;
+            if (damageDone <= 2)
+                armoredHits++;
 
             SoundStyle fire = new("CalamityMod/Sounds/Item/CursedDaggerThrow");
             SoundEngine.PlaySound(fire with { Volume = 0.65f, Pitch = 0.8f }, Projectile.Center);
@@ -188,7 +193,7 @@ namespace CalamityMod.Projectiles.Melee
             int heal = (int)(MathHelper.Clamp(7 - Projectile.numHits * 5, 1, 7));
             if (Projectile.numHits < 5)
             {
-                Owner.HealPlayer(heal);
+                Owner.DoLifestealDirect(target, heal);
             }
 
             Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
@@ -209,7 +214,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             float minMult = 0.3f;
             int hitsToMinMult = 5;
-            float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+            float damageMult = Utils.Remap(Projectile.numHits - armoredHits, 0, hitsToMinMult, 1, minMult, true);
             modifiers.SourceDamage *= damageMult;
         }
         public override bool PreDraw(ref Color lightColor)

@@ -1,11 +1,10 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Graphics.Primitives;
-using CalamityMod.Particles;
+using CalamityMod.NPCs;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using Steamworks;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
@@ -15,6 +14,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
+    [PierceResistException]
     public class PrismaticRay : BaseLaserbeamProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
@@ -46,7 +46,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.tileCollide = false;
             Projectile.timeLeft = 360;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 6;
+            Projectile.localNPCHitCooldown = 9;
             Projectile.hide = true;
         }
 
@@ -83,9 +83,7 @@ namespace CalamityMod.Projectiles.Melee
         public override void ExtraBehavior()
         {
             Projectile.rotation = Projectile.velocity.ToRotation();
-
-            if (Owner.Calamity().GeneralScreenShakePower < 3f)
-                Owner.Calamity().GeneralScreenShakePower = 3f;
+            Owner.SetScreenshake(3f);
 
             if (HitSoundCooldown > 0)
                 HitSoundCooldown--;
@@ -98,13 +96,13 @@ namespace CalamityMod.Projectiles.Melee
             if (HitSoundCooldown == 0)
             {
                 SoundEngine.PlaySound(HitSound, target.Center);
-                HitSoundCooldown = 10;
+                HitSoundCooldown = 9;
             }
         }
 
 
-        public float LaserWidthFunction(float _) => Projectile.scale * Projectile.width;
-        public Color LaserColorFunction(float completionRatio) => Main.DiscoColor;
+        public float LaserWidthFunction(float _, Vector2 vertexPos) => Projectile.scale * Projectile.width;
+        public Color LaserColorFunction(float completionRatio, Vector2 vertexPos) => Main.DiscoColor;
         public override bool PreDraw(ref Color lightColor)
         {
             // This should never happen, but just in case...

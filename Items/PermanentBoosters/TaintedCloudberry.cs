@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
@@ -39,7 +38,28 @@ namespace CalamityMod.Items.PermanentBoosters
             Item.rare = ModContent.RarityType<Turquoise>();
         }
 
-        public override bool CanUseItem(Player player) => player.ConsumedLifeFruit == Player.LifeFruitMax;
+        public static bool HasConsumedBefore(Player player) => player.Calamity().tCloudberry;
+
+        public override bool CanUseItem(Player player)
+        {
+            if (player.ConsumedLifeFruit != Player.LifeFruitMax)
+            {
+                return false;
+            }
+
+            if (HasConsumedBefore(player))
+            {
+                if (player.whoAmI == Main.myPlayer)
+                {
+                    string key = "Mods.CalamityMod.Misc.TaintedCloudberryText";
+                    Color messageColor = Color.Turquoise;
+                    Main.NewText(Language.GetTextValue(key), messageColor);
+                }
+                return false;
+            }
+
+            return true;
+        }
 
         public override bool? UseItem(Player player)
         {
@@ -49,9 +69,6 @@ namespace CalamityMod.Items.PermanentBoosters
                 player.itemTime = Item.useTime;
                 if (modPlayer.tCloudberry)
                 {
-                    string key = "Mods.CalamityMod.Misc.TaintedCloudberryText";
-                    Color messageColor = Color.Turquoise;
-                    CalamityUtils.DisplayLocalizedText(key, messageColor);
                     return null;
                 }
 
@@ -63,19 +80,17 @@ namespace CalamityMod.Items.PermanentBoosters
 
         public override void ModifyTooltips(List<TooltipLine> list)
         {
-            TooltipLine line = list.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Tooltip1");
-
-            if (line != null && Main.LocalPlayer.Calamity().tCloudberry)
-                line.Text += "\n" + CalamityUtils.GetTextValue("Misc.GenericConsumedText");
+            if (HasConsumedBefore(Main.LocalPlayer))
+                list.AddConsumedTooltip();
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.LifeFruit, 5).
+                AddIngredient(ItemID.LifeFruit).
                 AddIngredient<UelibloomBar>(10).
                 AddIngredient<DivineGeode>(8).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

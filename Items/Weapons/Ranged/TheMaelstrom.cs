@@ -32,7 +32,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ModContent.ProjectileType<MaelstromHoldout>();
             Item.shootSpeed = 20f;
             Item.useAmmo = AmmoID.Arrow;
-            Item.Calamity().canFirePointBlankShots = true;
             Item.Calamity().donorItem = true;
         }
 
@@ -49,7 +48,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient<ReaperTooth>(3).
                 AddIngredient<DivineGeode>(20).
                 AddIngredient<Voidstone>(50).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

@@ -6,6 +6,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
@@ -28,6 +29,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         public static readonly float RightClickCopperMultiplier = 0.04f;
         public static readonly float RightClickSilverMultiplier = 0.08f;
         public static readonly float RightClickGoldMultiplier = 0.16f;
+        public static int RightClickAmmoSavedPercent = 80;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RightClickAmmoSavedPercent);
 
         public static readonly float DoublesMultiplier = 1f; // Unfortunately doubles can't be doubles. Balancing!
         public static readonly float TriplesCherryMultiplier = 1f;
@@ -67,10 +70,10 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override bool? UseItem(Player player)
         {
-            // Right click has a 20% chance to consume money
+            // Right click has a chance to save money
             if (player.altFunctionUse == 2)
             {
-                bool consumeCoin = Main.rand.NextFloat() > 0.8f;
+                bool consumeCoin = Main.rand.Next(100) >= RightClickAmmoSavedPercent;
                 long coinCount = Utils.CoinsCount(out bool overflow, player.inventory);
                 int price;
 
@@ -169,12 +172,11 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddIngredient(ItemID.CoinGun).
-                AddIngredient<ClockGatlignum>().
                 AddIngredient(ItemID.PlatinumCoin, 7).
                 AddIngredient(ItemID.GoldCoin, 77).
                 AddIngredient(ItemID.LunarBar, 12).
                 AddIngredient<TwistingNether>(3).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

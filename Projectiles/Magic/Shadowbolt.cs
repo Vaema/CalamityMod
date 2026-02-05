@@ -1,7 +1,6 @@
 ﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using rail;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -75,10 +74,10 @@ namespace CalamityMod.Projectiles.Magic
                 if (reflectionTimer <= 0)
                 {
                     SoundStyle bounce = new("CalamityMod/Sounds/Item/ShadowboltReflect");
-                    SoundEngine.PlaySound(bounce with { Volume = 0.6f, Pitch = 0f }, platPosWall);
+                    SoundEngine.PlaySound(bounce with { Volume = 0.6f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f), MaxInstances = -1 }, platPosWall);
                     for (int i = 0; i < Main.maxNPCs; i++)
                         Projectile.localNPCImmunity[i] = 0;
-                    Projectile.velocity = (targetCenter - platPosCenter).SafeNormalize(Vector2.UnitX) * 5;
+                    Projectile.velocity = (targetCenter - platPosCenter).SafeNormalize(Vector2.UnitX) * 12;
                     reflecting = false;
                     hasReboundOffPlat = true;
                     time = 10;
@@ -121,13 +120,13 @@ namespace CalamityMod.Projectiles.Magic
                     GeneralParticleHandler.SpawnParticle(blastRing);
 
                     SoundStyle wall = new("CalamityMod/Sounds/Item/ShadowboltWallHit");
-                    SoundEngine.PlaySound(wall with { Volume = 0.5f, Pitch = 0f }, platPosWall);
+                    SoundEngine.PlaySound(wall with { Volume = 0.5f, Pitch = 0f, MaxInstances = -1 }, platPosWall);
                     reflecting = true;
                     Projectile.extraUpdates = 0;
                 }
             }
             
-            if (!hasReboundOffPlat && Projectile.numHits == 0 && !hasSetPlatSpawn && (Collision.SolidCollision(Projectile.Center, 20, 20) || time > 90))
+            if (!hasReboundOffPlat && Projectile.numHits == 0 && !hasSetPlatSpawn && time > 70)
             {
                 hasSetPlatSpawn = true;
                 spawnPlat = true;
@@ -140,7 +139,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    Dust chargefull = Dust.NewDustPerfect(Projectile.Center, 267);
+                    Dust chargefull = Dust.NewDustPerfect(Projectile.Center, DustID.RainbowMk2);
                     chargefull.velocity = new Vector2(3, 3).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 0.8f);
                     chargefull.scale = Main.rand.NextFloat(0.35f, 0.8f);
                     chargefull.noGravity = true;
@@ -151,6 +150,8 @@ namespace CalamityMod.Projectiles.Magic
             {
                 if (time == 14)
                 {
+                    SoundEngine.PlaySound(SoundID.Item72 with { Volume = 0.8f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f), MaxInstances = -1 }, Projectile.Center);
+                    Projectile.velocity = Projectile.velocity.RotatedByRandom(0.15f);
                     for (int i = 0; i < 2; i++)
                     {
                         Particle blastRing = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Indigo, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 0.3f, 0.75f, 12, true);
@@ -160,7 +161,7 @@ namespace CalamityMod.Projectiles.Magic
                     }
                     for (int i = 0; i < 6; i++)
                     {
-                        Dust chargefull = Dust.NewDustPerfect(Projectile.Center, 278);
+                        Dust chargefull = Dust.NewDustPerfect(Projectile.Center, DustID.FireworksRGB);
                         chargefull.velocity = Projectile.velocity.RotatedByRandom(0.25f) * Main.rand.NextFloat(0.6f, 2f);
                         chargefull.scale = Main.rand.NextFloat(0.65f, 0.9f);
                         chargefull.noGravity = true;
@@ -176,12 +177,12 @@ namespace CalamityMod.Projectiles.Magic
                     }
                     if (time > 22 && time % 3 == 0)
                     {
-                        Particle spark = new GlowSparkParticle(Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.UnitX) * 10, -Projectile.velocity * 0.1f, false, 18, 0.05f * (hasReboundOffPlat ? 1.1f : 0.5f), Color.Lerp(Color.Indigo, Color.Orchid, 0.25f), new Vector2(0.7f, 1f), true, false, 0.3f);
+                        Particle spark = new GlowSparkParticle(Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.UnitX) * 10, -Projectile.velocity * 0.1f, false, 18, 0.05f * (hasReboundOffPlat ? 1.1f : 0.5f), Color.Lerp(Color.Indigo, Color.Orchid, 0.25f), new Vector2(0.7f, 2f), true, false, 0.3f);
                         GeneralParticleHandler.SpawnParticle(spark);
                     }
                     if (time > 30 && Main.rand.NextBool(12))
                     {
-                        Dust chargefull = Dust.NewDustPerfect(Projectile.Center, 267);
+                        Dust chargefull = Dust.NewDustPerfect(Projectile.Center, DustID.RainbowMk2);
                         chargefull.velocity = Projectile.velocity * Main.rand.NextFloat(-2, 2);
                         chargefull.scale = Main.rand.NextFloat(0.95f, 1.4f);
                         chargefull.noGravity = true;
@@ -195,15 +196,13 @@ namespace CalamityMod.Projectiles.Magic
             float minMult = 0.25f;
             int hitsToMinMult = 7;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
-            modifiers.SourceDamage *= (hasReboundOffPlat ? 2.5f : 1) * damageMult;
+            modifiers.SourceDamage *= (hasReboundOffPlat ? 2.5f : 0.8f) * damageMult;
 
             if (!hasReboundOffPlat && Projectile.numHits == 0 && !hasSetPlatSpawn)
             {
                 spawnPlat = true;
                 hasSetPlatSpawn = true;
             }
-            //if (!hasReboundOffPlat)
-                //Projectile.extraUpdates = 10;
         }
         public override bool? CanDamage() => reflecting ? false : null;
         public override bool PreDraw(ref Color lightColor)

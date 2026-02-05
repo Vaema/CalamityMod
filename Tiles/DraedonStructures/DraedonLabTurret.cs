@@ -3,6 +3,7 @@ using CalamityMod.Items.Materials;
 using CalamityMod.TileEntities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent.ObjectInteractions;
@@ -21,6 +22,8 @@ namespace CalamityMod.Tiles.DraedonStructures
         public const int OriginOffsetY = 1;
         public const int SheetSquare = 18;
 
+        public Asset<Texture2D> GlowTexture;
+
         public override string Texture => "CalamityMod/Tiles/PlayerTurrets/PlayerLabTurret";
         public override void SetStaticDefaults()
         {
@@ -32,6 +35,7 @@ namespace CalamityMod.Tiles.DraedonStructures
 
             // Various data sets to protect this tile from unintentional death
             TileID.Sets.PreventsTileRemovalIfOnTopOfIt[Type] = true;
+            TileID.Sets.PreventsTileHammeringIfOnTopOfIt[Type] = true;
             TileID.Sets.PreventsTileReplaceIfOnTopOfIt[Type] = true;
             TileID.Sets.PreventsSandfall[Type] = true;
 
@@ -98,7 +102,9 @@ namespace CalamityMod.Tiles.DraedonStructures
                     drawColor.B = 50;
             }
 
-            Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Projectiles/DraedonsArsenal/PulseTurret").Value;
+            GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/DraedonsArsenal/PulseTurret");
+            Texture2D tex = GlowTexture.Value;
+
             Vector2 screenOffset = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + screenOffset;
             drawOffset.Y -= 2f;

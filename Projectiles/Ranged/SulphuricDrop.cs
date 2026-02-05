@@ -2,7 +2,6 @@
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -28,7 +27,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.ignoreWater = false;
             Projectile.penetrate = 3;
             Projectile.timeLeft = 840;
-            Projectile.extraUpdates = 1;
+            Projectile.extraUpdates = 2;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 15;
             Projectile.DamageType = DamageClass.Ranged;
@@ -37,7 +36,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             if (Main.rand.NextBool(3))
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 278);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.FireworksRGB);
                 dust.noGravity = false;
                 dust.scale = Main.rand.NextFloat(0.4f, 0.65f);
                 dust.velocity = -Projectile.velocity * 0.4f;

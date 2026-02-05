@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Placeables.Ores;
-using CalamityMod.World;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -30,7 +29,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.lifeMax = 75;
             NPC.knockBackResist = 0.8f;
             AnimationType = NPCID.Slimer;
-            NPC.value = Item.buyPrice(0, 0, 1, 0);
+            NPC.value = Item.buyPrice(silver: 1);
             NPC.alpha = 50;
             NPC.lavaImmune = false;
             NPC.noGravity = false;
@@ -41,10 +40,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             BannerItem = ModContent.ItemType<AeroSlimeBanner>();
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

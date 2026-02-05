@@ -1,6 +1,4 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
-using CalamityMod.Projectiles.Ranged;
+﻿using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -62,7 +60,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient(ItemID.PiranhaGun).
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient(ItemID.SharkFin, 2).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

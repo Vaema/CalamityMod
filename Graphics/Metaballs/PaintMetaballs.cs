@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Effects;
+using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -64,7 +65,7 @@ namespace CalamityMod.Graphics.Metaballs
 
         public override bool AnythingToDraw => Particles.Any();
 
-        public override MetaballDrawLayer DrawContext => MetaballDrawLayer.AfterProjectiles;
+        public override GeneralDrawLayer DrawLayer => GeneralDrawLayer.AfterProjectiles;
 
         public override IEnumerable<Texture2D> Layers
         {
@@ -86,12 +87,12 @@ namespace CalamityMod.Graphics.Metaballs
             Vector2 screenSize = new(Main.screenWidth, Main.screenHeight);
 
             // Supply shader parameter values.
-            metaballShader.Parameters["screenArea"]?.SetValue(screenSize);
-            metaballShader.Parameters["layerOffset"]?.SetValue(Vector2.Zero);
-            metaballShader.Parameters["singleFrameScreenOffset"]?.SetValue(Vector2.Zero);
+            metaballShader.Value.Parameters["screenArea"]?.SetValue(screenSize);
+            metaballShader.Value.Parameters["layerOffset"]?.SetValue(Vector2.Zero);
+            metaballShader.Value.Parameters["singleFrameScreenOffset"]?.SetValue(Vector2.Zero);
 
             // Apply the metaball shader.
-            metaballShader.CurrentTechnique.Passes[0].Apply();
+            metaballShader.Value.CurrentTechnique.Passes[0].Apply();
         }
 
         public void SpawnParticle(Vector2 position, float size) =>
@@ -110,7 +111,7 @@ namespace CalamityMod.Graphics.Metaballs
         {
             // Draw with additive blending.
             Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.Default, Main.Rasterizer, null, Matrix.Identity);
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.Default, Main.Rasterizer, null, Main.Transform);
         }
 
         public override void DrawInstances()

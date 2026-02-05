@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -110,7 +111,7 @@ namespace CalamityMod.Projectiles.Rogue
                         GeneralParticleHandler.SpawnParticle(spark2);
                         if (Main.rand.NextBool() && !Projectile.Calamity().stealthStrike)
                         {
-                            Dust dust = Dust.NewDustPerfect(Projectile.Center, 278);
+                            Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.FireworksRGB);
                             dust.noGravity = true;
                             dust.velocity = Projectile.velocity * randVel;
                             dust.scale = Main.rand.NextFloat(0.6f, 0.8f);

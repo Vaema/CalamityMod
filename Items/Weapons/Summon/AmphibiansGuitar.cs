@@ -12,12 +12,13 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override void SetDefaults()
         {
-            Item.damage = 200;
+            Item.width = 72;
+            Item.height = 64;
+            Item.damage = 54;
             Item.DamageType = DamageClass.Summon;
             Item.shoot = ModContent.ProjectileType<AmphibiansGuitarHoldout>();
 
-            (Item.width, Item.height) = (72, 64);
-            Item.useAnimation = Item.useTime = 15;
+            Item.useAnimation = Item.useTime = 36;
             Item.mana = 10;
             Item.noMelee = true;
             Item.autoReuse = true;

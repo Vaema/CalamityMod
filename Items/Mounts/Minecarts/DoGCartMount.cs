@@ -28,10 +28,11 @@ namespace CalamityMod.Items.Mounts.Minecarts
             MountData.idleFrameDelay = 10;
             MountData.idleFrameStart = 0;
 
-            // These are more powerful than the Cart Upgrade Kit (20f and 0.1f respectively) and using it will reduce the cart speed to that
-            // We can IL edit this now but we can also wait for TML to add support for the kit (copefully soon)
-            MountData.runSpeed = 22f;
-            MountData.acceleration = 0.16f;
+            // Stat balancing
+            MountData.runSpeed = 20.0f;
+            MountData.acceleration = 0.1f;
+            MountData.MinecartUpgradeRunSpeed = 22.0f;
+            MountData.MinecartUpgradeAcceleration = 0.16f;
 
             if (!Main.dedServ)
             {
@@ -46,7 +47,7 @@ namespace CalamityMod.Items.Mounts.Minecarts
             offsetDirection *= new Vector2(Main.rand.NextBool().ToDirectionInt(), 1f) * 13f;
             dustPosition += offsetDirection;
 
-            Dust spark = Dust.NewDustPerfect(dustPosition, 234);
+            Dust spark = Dust.NewDustPerfect(dustPosition, DustID.BoneTorch);
             spark.velocity = Main.rand.NextVector2Circular(4f, 4f);
             spark.velocity.X *= Main.rand.NextFloat(0.25f, 1f);
             spark.velocity.Y -= Main.rand.NextFloat(1.25f, 3f);

@@ -3,7 +3,6 @@ using CalamityMod.Projectiles.BaseProjectiles;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
-using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee.Spears
 {
@@ -22,6 +21,8 @@ namespace CalamityMod.Projectiles.Melee.Spears
             Projectile.ignoreWater = true;
             Projectile.penetrate = -1;
             Projectile.ownerHitCheck = true;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override float InitialSpeed => 3f;

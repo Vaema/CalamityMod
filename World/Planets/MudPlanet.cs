@@ -1,10 +1,7 @@
-﻿
-using CalamityMod.Items.Potions;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.Generation;
 using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.WorldBuilding;
 
 namespace CalamityMod.World.Planets
@@ -212,8 +209,8 @@ namespace CalamityMod.World.Planets
 
         private int[] BarLoot = new int[]
         {
-            GenVars.copperBar == TileID.Copper ? ItemID.CopperBar : ItemID.TinBar,
-            GenVars.ironBar == TileID.Iron ? ItemID.IronBar : ItemID.LeadBar
+            GenVars.copper == TileID.Copper ? ItemID.CopperBar : ItemID.TinBar,
+            GenVars.iron == TileID.Iron ? ItemID.IronBar : ItemID.LeadBar
         };
 
         private void FillChest(int id)
@@ -222,13 +219,14 @@ namespace CalamityMod.World.Planets
             int index = 0;
 
             //Focus loot
-            chest.item[index++].SetDefaults(_random.Next(FocusLoot));
+            chest.item[index].SetDefaults(_random.Next(FocusLoot));
+            chest.item[index++].Prefix(-1);
 
             //Bars
             if (_random.Next(3) <= 1)
             {
                 chest.item[index].SetDefaults(_random.Next(BarLoot));
-                chest.item[index].SetDefaults(_random.Next(7, 15));
+                chest.item[index++].stack = _random.Next(7, 15);
             }
             else
             {

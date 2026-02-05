@@ -11,7 +11,6 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
-using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -98,15 +97,16 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Type] = 12;
+            Main.projFrames[Type] = 24;
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 26;
-            Projectile.height = 32;
+            Projectile.width = 86;
+            Projectile.height = 44;
             Projectile.netImportant = true;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
@@ -118,6 +118,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.minion = true;
             Projectile.DamageType = DamageClass.Summon;
             Initialized = 0f;
+            BuffModeBuffer = 15;
         }
 
         //Returns the npc if targetable, returns null if not
@@ -149,7 +150,7 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     Vector2 direction = Main.rand.NextVector2CircularEdge(1f, 1f);
 
-                    Dust wishyDust = Dust.NewDustPerfect(Projectile.Center + direction * Main.rand.NextFloat(1f, 8f), 229, Alpha : 100, Scale: Main.rand.NextFloat(1f, 1.4f));
+                    Dust wishyDust = Dust.NewDustPerfect(Projectile.Center + direction * Main.rand.NextFloat(1f, 8f), DustID.Vortex, Alpha : 100, Scale: Main.rand.NextFloat(1f, 1.4f));
                     wishyDust.noGravity = true;
                     wishyDust.noLight = true;
                     wishyDust.velocity = direction * Main.rand.NextFloat(2f, 4);
@@ -164,35 +165,64 @@ namespace CalamityMod.Projectiles.Summon
 
             if (Owner.Calamity().mouseRight && Owner.HeldItem.type == ModContent.ItemType<WulfrumController>())
             {
-                if (BuffModeBuffer > 0)
+                if (Owner.itemTime == Owner.itemTimeMax)
+                {
+                    if (BuffModeBuffer == 15)
+                        BuffModeBuffer--;
+                    if (BuffModeBuffer == -15)
+                        BuffModeBuffer++;
+                }
+                if (BuffModeBuffer < 15 && BuffModeBuffer >= 0)
                 {
                     BuffModeBuffer--;
-                    Projectile.netUpdate = true;
+                        if (BuffModeBuffer == 0)
+                            BuffModeBuffer = -15;
                 }
+                if (BuffModeBuffer > -15 && BuffModeBuffer <= 0)
+                {
+                    BuffModeBuffer++;
+                    if (BuffModeBuffer == 0)
+                        BuffModeBuffer = 15;
+                }
+                Projectile.netUpdate = true;
             }
 
-            else if (BuffModeBuffer < 15)
-                BuffModeBuffer = 15;
+            else if (BuffModeBuffer > 0 && BuffModeBuffer < 15)
+            {
+                BuffModeBuffer++;
+            }
+            else if (BuffModeBuffer < 0 && BuffModeBuffer > -15)
+            {
+                BuffModeBuffer--;
+            }
+
 
             bool buffMode = BuffModeBuffer <= 0;
 
             //Do frame stuff i guess
-            Projectile.frame = Projectile.frame % (Main.projFrames[Type] / 2);
-
             Projectile.frameCounter++;
-            if (Projectile.frameCounter > 8)
-            {
-                Projectile.frame++;
-                Projectile.frameCounter = 0;
-            }
-            if (Projectile.frame >= Main.projFrames[Type] / 2)
-            {
-                Projectile.frame = 0;
-            }
-
             if (buffMode)
-                Projectile.frame += Main.projFrames[Type] / 2;
-
+            {
+                Projectile.frame = (int)MathHelper.Clamp(Projectile.frame, 8, 15);
+                if (Projectile.frameCounter >= 6)
+                {
+                    Projectile.frame++;
+                    Projectile.frameCounter = 0;
+                }
+                if (Projectile.frame > 15)
+                    Projectile.frame = 8;
+            }
+            else
+            {
+                Projectile.frame = (int)MathHelper.Clamp(Projectile.frame, 0, 7);
+                if (Projectile.frameCounter >= 6)
+                {
+                    Projectile.frame++;
+                    Projectile.frameCounter = 0;
+                }
+                if (Projectile.frame > 7)
+                    Projectile.frame = 0;
+            }
 
             //Buff stuff
             player.AddBuff(ModContent.BuffType<WulfrumDroidBuff>(), 3600);
@@ -332,7 +362,7 @@ namespace CalamityMod.Projectiles.Summon
                         {
                             Vector2 direction = Main.rand.NextVector2CircularEdge(1f, 1f);
 
-                            Dust wishyDust = Dust.NewDustPerfect(playerToBuff.Center + direction * Main.rand.NextFloat(4f, 9f), 229, Alpha: 100, Scale: Main.rand.NextFloat(1f, 1.4f));
+                            Dust wishyDust = Dust.NewDustPerfect(playerToBuff.Center + direction * Main.rand.NextFloat(4f, 9f), DustID.Vortex, Alpha: 100, Scale: Main.rand.NextFloat(1f, 1.4f));
                             wishyDust.noGravity = true;
                             wishyDust.noLight = true;
                             wishyDust.velocity = direction * Main.rand.NextFloat(2f, 4);
@@ -368,8 +398,7 @@ namespace CalamityMod.Projectiles.Summon
                         {
                             ShootTimer = ShootDelay;
 
-                            // 1/3 chance to directly recharge the Rover Drive shield by 1 point
-                            if (Main.rand.NextBool(3) && modPlayer.roverDrive && modPlayer.RoverDriveShieldDurability < RoverDrive.ShieldDurabilityMax)
+                            if (modPlayer.roverDrive && modPlayer.RoverDriveShieldDurability < RoverDrive.ShieldDurabilityMax)
                             {
                                 CalamityPlayer buffedCalPlayer = playerToBuff.Calamity();
                                 buffedCalPlayer.RoverDriveShieldDurability++;
@@ -401,23 +430,30 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.rotation = Projectile.velocity.X * 0.05f;
             Projectile.spriteDirection = Projectile.direction = Math.Sign(Projectile.velocity.X);
 
-            if (!buffMode)
+            if (!buffMode && targetCache != null)
                 ChargeUpAndFire(targetCache);
         }
 
         public void ChargeUpAndFire(NPC targetCache)
         {
-            //Decrease the timer by a random number
-            ShootTimer -= Main.rand.Next(1, 4);
-
-
-            if (ShootTimer <= 0)
+            if (ShootTimer <= 20)
             {
-                ShootTimer = ShootDelay;
-                Projectile.netUpdate = true;
+                Projectile.frame = (int)Utils.Remap(ShootTimer, 20, 4, 20, 23);
+                ShootTimer -= 2;
 
-                //Don't shoot if no target.
-                if (targetCache == null)
+                // If the target is lost or player is switching to defense mode then immediately reset the delay and do not shoot
+                if (ShootTimer <= 0 || targetCache == null || BuffModeBuffer < 15)
+                {
+                    ShootTimer = ShootDelay;
+                    Projectile.frame = 0;
+                    Projectile.netUpdate = true;
+                    return;
+                }
+
+                Projectile.rotation = Utils.Remap(ShootTimer, 18, 4, Projectile.AngleTo(targetCache.Center) + (Projectile.direction == 1 ? 0 : Projectile.Center.Y < targetCache.Center.Y ? -MathHelper.Pi : MathHelper.Pi), Projectile.rotation);
+
+                // Shoot at this exact time (the remaining timer is used to finish the firing animation)
+                if (ShootTimer != 18)
                     return;
 
                 NuzzleFlashTime = 20f;
@@ -428,7 +464,6 @@ namespace CalamityMod.Projectiles.Summon
                 velocity *= 10f;
                 Projectile.velocity += velocity * -0.3f;
 
-
                 if (Main.myPlayer == Projectile.owner)
                 {
                     int bolt = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<WulfrumEnergyBurst>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
@@ -437,9 +472,37 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.netUpdate = true;
                 }
             }
+            else if (ShootTimer <= 36)
+            {
+                // From this point on, decrease the timer by a consistent number for the animation
+                Projectile.frame = (int)Utils.Remap(ShootTimer, 36, 20, 16, 20);
+                ShootTimer -= 2;
+
+                // If the target is lost or player is switching to defense mode then de-transition immediately
+                if (targetCache == null || BuffModeBuffer < 15)
+                {
+                    ShootTimer = ShootDelay;
+                    Projectile.frame -= 16;
+                    Projectile.netUpdate = true;
+                    return;
+                }
+
+                Projectile.rotation = Utils.Remap(ShootTimer, 34, 20, Projectile.rotation, Projectile.AngleTo(targetCache.Center) + (Projectile.direction == 1 ? 0 : Projectile.Center.Y < targetCache.Center.Y ? -MathHelper.Pi : MathHelper.Pi));
+
+                if (ShootTimer < 20)
+                    ShootTimer = 20;
+            }
+            else
+            {
+                //Decrease the timer by a random number
+                ShootTimer -= Main.rand.Next(1, 4);
+
+                if (ShootTimer < 36)
+                    ShootTimer = 36;
+            }
         }
 
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float fadeOpacity = 0.4f + 0.4f * ((float)Math.Sin(Main.GlobalTimeWrappedHourly * 6f + completionRatio * -12f) * 0.5f + 0.5f);
 
@@ -448,7 +511,7 @@ namespace CalamityMod.Projectiles.Summon
             return Color.CornflowerBlue.MultiplyRGB(PrimColorMult) * fadeOpacity;
         }
 
-        internal float WidthFunction(float completionRatio)
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos)
         {
             return (3.4f + 4f * ((float)Math.Sin(Main.GlobalTimeWrappedHourly * 6f + completionRatio * -12f) * 0.5f + 0.5f)) * 2f;
         }
@@ -471,7 +534,7 @@ namespace CalamityMod.Projectiles.Summon
                 CalamityUtils.DrawChromaticAberration(Vector2.UnitX, 1.8f, delegate (Vector2 offset, Color colorMod)
                 {
                     PrimColorMult = colorMod;
-                    PrimitiveRenderer.RenderTrail(drawPos, new(WidthFunction, ColorFunction, (_) => offset, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 30);
+                    PrimitiveRenderer.RenderTrail(drawPos, new(WidthFunction, ColorFunction, (_,_) => offset, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 30);
                 });
 
                 Main.spriteBatch.End();
@@ -507,8 +570,6 @@ namespace CalamityMod.Projectiles.Summon
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
             }
         }
-
-        public override bool? CanDamage() => false;
 
         public override void SendExtraAI(BinaryWriter writer)
         {

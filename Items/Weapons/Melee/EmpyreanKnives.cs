@@ -2,7 +2,6 @@
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
-using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -28,8 +27,8 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 3f;
             Item.UseSound = SoundID.Item39;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
+            Item.rare = ModContent.RarityType<Turquoise>();
             Item.shoot = ModContent.ProjectileType<EmpyreanKnife>();
             Item.shootSpeed = 15f;
         }
@@ -98,7 +97,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient(ItemID.VampireKnives).
                 AddIngredient<MonstrousKnives>().
                 AddIngredient<TwistingNether>(3).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

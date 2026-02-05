@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.shoot = ModContent.ProjectileType<SeraphimProjectile>();
             Item.shootSpeed = SeraphimProjectile.InitialSpeed;
             Item.DamageType = RogueDamageClass.Instance;

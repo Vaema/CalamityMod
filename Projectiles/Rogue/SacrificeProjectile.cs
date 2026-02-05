@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -6,6 +7,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
+    [PierceResistException]
     public class SacrificeProjectile : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
@@ -53,20 +55,8 @@ namespace CalamityMod.Projectiles.Rogue
                 // Heal the player and disappear when touching them.
                 if (Projectile.Hitbox.Intersects(Owner.Hitbox))
                 {
-                    if (!Owner.moonLeech && AbleToHealOwner)
-                    {
-                        int heal = Projectile.Calamity().stealthStrike ? 40 : 3;
-
-                        if (Main.LocalPlayer.lifeSteal <= 0f)
-                        {
-                            Projectile.Kill();
-                            return;
-                        }
-
-                        Main.LocalPlayer.lifeSteal -= heal;
-                        Owner.HealPlayer(heal);
-                    }
-
+                    if (AbleToHealOwner)
+                        Owner.DoLifestealDirect(null, Projectile.Calamity().stealthStrike ? 40 : 3, 0.4f);
                     Projectile.Kill();
                 }
             }
@@ -76,7 +66,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 for (int i = 0; i < 60; i++)
                 {
-                    Dust blood = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(50f, 50f), 267);
+                    Dust blood = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(50f, 50f), DustID.RainbowMk2);
                     blood.velocity = Main.rand.NextVector2Circular(3f, 3f);
                     blood.noGravity = true;
                     blood.color = Color.Lerp(Color.Red, Color.DarkRed, Main.rand.NextFloat(0.25f, 1f));

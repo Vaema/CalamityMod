@@ -88,7 +88,7 @@ IL_6899:
 
         public override bool PreAI()
         {
-            Projectile.type = 319; //tricks AI 26 into thinking this is a black cat, makes it act like black cat
+            Projectile.type = ProjectileID.BlackCat; //tricks AI 26 into thinking this is a black cat, makes it act like black cat
             Player player = Main.player[Projectile.owner];
             player.blackCat = false; //ensure doesnt interact weird with actual black cat
             return true;
@@ -219,7 +219,7 @@ IL_6899:
                     }
                     else
                     {
-                        player.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ChibiiDoggo").Format(player.name)), 500, 0);
+                        player.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ChibiiDoggo").ToNetworkText(player.name)), 500, 0);
                     }
                     player.RemoveAllIFrames();
                 }

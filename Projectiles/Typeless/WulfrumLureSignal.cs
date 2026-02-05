@@ -1,14 +1,10 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Tools;
-using CalamityMod.NPCs.AstrumDeus;
 using CalamityMod.NPCs.NormalNPCs;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
-using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -18,6 +14,14 @@ namespace CalamityMod.Projectiles.Typeless
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+
+        public static List<int> LureSpawnPool => new List<int>()
+        {
+            ModContent.NPCType<WulfrumDrone>(),
+            ModContent.NPCType<WulfrumGyrator>(),
+            ModContent.NPCType<WulfrumHovercraft>(),
+            ModContent.NPCType<WulfrumRover>()
+        };
 
         public ref float Time => ref Projectile.ai[0];
 
@@ -77,12 +81,12 @@ namespace CalamityMod.Projectiles.Typeless
 
                     if (tries < 500)
                     {
-                        int npcToSpawn = Main.rand.NextBool() ? ModContent.NPCType<WulfrumDrone>() : Main.rand.NextBool() ? ModContent.NPCType<WulfrumHovercraft>() : ModContent.NPCType<WulfrumGyrator>();
+                        int npcToSpawn = LureSpawnPool[Main.rand.Next(LureSpawnPool.Count)];
                         int index = NPC.NewNPC(Projectile.GetSource_FromAI(), (int)spawnPosition.X, (int)spawnPosition.Y, npcToSpawn, Target: player.whoAmI);
 
                         for (int iy = 0; iy < 16; iy++)
                         {
-                            Dust zapDust = Dust.NewDustPerfect(spawnPosition + Main.rand.NextVector2Circular(1f, 1f) * 20f, 226, Main.rand.NextVector2Circular(1f, 1f) * Main.rand.NextFloat(1f, 2.3f) - Vector2.UnitY * 6f);
+                            Dust zapDust = Dust.NewDustPerfect(spawnPosition + Main.rand.NextVector2Circular(1f, 1f) * 20f, DustID.Electric, Main.rand.NextVector2Circular(1f, 1f) * Main.rand.NextFloat(1f, 2.3f) - Vector2.UnitY * 6f);
                             zapDust.noGravity = true;
                         }
                     }
@@ -95,7 +99,7 @@ namespace CalamityMod.Projectiles.Typeless
                 for (int i = 0; i < dustCount; i++)
                 {
                     float angle = MathHelper.TwoPi * i / dustCount;
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, 229);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.Vortex);
                     dust.position = Projectile.Center + angle.ToRotationVector2() * 300;
                     dust.scale = 0.7f;
                     dust.noGravity = true;

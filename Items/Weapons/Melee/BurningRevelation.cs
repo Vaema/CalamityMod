@@ -2,7 +2,6 @@
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -29,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void SetDefaults()
         {
             Item.width = 40;
-            Item.height = 38;
+            Item.height = 48;
             Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.damage = 300;
             Item.knockBack = 7.5f;

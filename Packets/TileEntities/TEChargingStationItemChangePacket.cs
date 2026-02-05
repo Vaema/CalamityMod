@@ -1,22 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using CalamityMod.TileEntities;
 using Terraria;
-using Terraria.DataStructures;
-using Terraria.ID;
 using Terraria.ModLoader.IO;
 
 namespace CalamityMod.Packets
 {
-    public sealed class TEChargingStationItemChangePacket : CalamityPacket
+    internal sealed class TEChargingStationItemChangePacket : CalamityPacket
     {
         public static TEChargingStationItemChangePacket Instance { get; private set; }
-
-        public override byte MessageType => (byte)CalamityModMessageType.ChargingStationItemChange;
 
         public static void Send(TEChargingStation chargingStn, Item pluggedItem, int toClient = -1, int ignoreClient = -1)
         {
@@ -29,7 +20,7 @@ namespace CalamityMod.Packets
             packet.Send(toClient, ignoreClient);
         }
 
-        public override void HandlePacket(in BinaryReader packet, int sender)
+        public override void HandlePacket(BinaryReader packet, int sender)
         {
             var chargingStn = packet.ReadTileEntity<TEChargingStation>();
             Item thePlug = ItemIO.Receive(packet, readStack: true, readFavorite: true);

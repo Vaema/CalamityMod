@@ -5,6 +5,7 @@ using CalamityMod.DataStructures;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
+using CalamityMod.Utilities.Daybreak;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -15,6 +16,7 @@ using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.Graphics.Effects;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -32,13 +34,11 @@ namespace CalamityMod.Items.Accessories
         public static readonly SoundStyle ActivationSound = new("CalamityMod/Sounds/Custom/RoverDriveActivate") { Volume = 0.85f };
         public static readonly SoundStyle BreakSound = new("CalamityMod/Sounds/Custom/RoverDriveBreak") { Volume = 0.75f };
 
-        public static int ShieldDurabilityMax = 180;
-        public static int ShieldRechargeDelay = CalamityUtils.SecondsToFrames(9); // was 6
-        public static int TotalShieldRechargeTime = CalamityUtils.SecondsToFrames(6);
-
-        // While active, The Sponge gives 30 defense and 10% DR
-        public static int ShieldActiveDefense = 30;
+        public static int ShieldDurabilityMax = 120;
         public static float ShieldActiveDamageReduction = 0.1f;
+        public static int ShieldRechargeDelay = CalamityUtils.SecondsToFrames(8); // Was 6, then was 9
+        public static int TotalShieldRechargeTime = CalamityUtils.SecondsToFrames(10); // Was 6
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(ShieldDurabilityMax, ShieldActiveDamageReduction.ToPercent(), ShieldRechargeDelay.FramesToSeconds(), TotalShieldRechargeTime.FramesToSeconds());
 
         public int OwnerPlayer { get; set; }
         public float RenderDepth => IDyeableShaderRenderer.SpongeShieldDepth;
@@ -80,20 +80,18 @@ namespace CalamityMod.Items.Accessories
             Item.height = 20;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.accessory = true;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.sponge = true;
+            player.noKnockback = true;
             modPlayer.spongeShieldVisible = !hideVisual;
 
             if (modPlayer.SpongeShieldDurability > 0)
-            {
-                player.statDefense += ShieldActiveDefense;
                 player.endurance += ShieldActiveDamageReduction;
-            }
         }
 
         // In vanity, provides a visual shield but no actual functionality
@@ -234,14 +232,16 @@ namespace CalamityMod.Items.Accessories
             shieldEffect.Parameters["shieldColor"].SetValue(shieldColor.ToVector3());
             shieldEffect.Parameters["shieldEdgeColor"].SetValue(edgeColor.ToVector3());
 
-            Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, shieldEffect, Matrix.Identity, () =>
+            using (Main.spriteBatch.Scope())
             {
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, shieldEffect, Main.Transform);
                 // Fetch shield noise overlay texture (this is the polygons fed to the shader)
                 NoiseTex ??= ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons");
                 Vector2 pos = player.MountedCenter + player.gfxOffY * Vector2.UnitY - Main.screenPosition;
                 Texture2D tex = NoiseTex.Value;
                 Main.spriteBatch.Draw(tex, pos, null, Color.White, 0, tex.Size() / 2f, scale, 0, 0);
-            });
+                Main.spriteBatch.End();
+            }
 
             modPlayer.drawnAnyShieldThisFrame = true;
         }

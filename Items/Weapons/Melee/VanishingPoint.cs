@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System.Collections.Generic;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee.Spears;
 using Terraria;
 using Terraria.ID;
@@ -37,6 +38,8 @@ namespace CalamityMod.Items.Weapons.Melee
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
+        public override void ModifyTooltips(List<TooltipLine> tooltips) => tooltips.FindAndReplace("[GFB]", this.GetLocalizedValue(Main.zenithWorld ? "TooltipGFB" : "TooltipNormal"));
+        public override float UseSpeedMultiplier(Player player) => Main.zenithWorld ? 2f : 1f;
 
         public override void AddRecipes()
         {
@@ -45,7 +48,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<LifeAlloy>(5).
                 AddIngredient(ItemID.FragmentSolar, 5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

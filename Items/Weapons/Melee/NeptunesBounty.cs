@@ -1,10 +1,6 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
-using Microsoft.Xna.Framework;
-using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -42,7 +38,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient<AbyssBlade>().
                 AddIngredient<ReaperTooth>(6).
                 AddIngredient<RuinousSoul>(5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

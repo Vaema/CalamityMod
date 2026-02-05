@@ -60,9 +60,8 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.ai[0] = 0f;
 
             bool shoot = CurrentFrame == ShootFrame && Projectile.ai[0] == 0f;
-            bool ableToShoot = true;
+            bool ableToShoot = false;
             bool weaponInUse = !Owner.CantUseHoldout();
-            int manaCost = (int)(30f * Owner.manaCost);
             Vector2 halvedSize = Projectile.Size / 2f;
             Vector2 staffOffset = halvedSize + new Vector2(24f, 24f);
 
@@ -72,51 +71,29 @@ namespace CalamityMod.Projectiles.Magic
 
                 if (weaponInUse)
                 {
-                    if (Owner.statMana < manaCost)
-                    {
-                        if (Owner.manaFlower)
-                        {
-                            Owner.QuickMana();
-                            if (Owner.statMana >= manaCost)
-                            {
-                                Owner.manaRegenDelay = (int)Owner.maxRegenDelay;
-                                Owner.statMana -= manaCost;
-                            }
-                            else
-                            {
-                                Projectile.Kill();
-                                ableToShoot = false;
-                            }
-                        }
-                        else
-                        {
-                            Projectile.Kill();
-                            ableToShoot = false;
-                        }
-                    }
+                    if (Owner.CheckMana(Owner.HeldItem.mana))
+                        ableToShoot = true;
                     else
-                    {
-                        if (Owner.statMana >= manaCost)
-                        {
-                            Owner.statMana -= manaCost;
-                            Owner.manaRegenDelay = (int)Owner.maxRegenDelay;
-                        }
-                    }
+                        Projectile.Kill();
 
                     if (ableToShoot)
                         SoundEngine.PlaySound(SoundID.Item117, Projectile.Center);
                 }
+                else
+                    Projectile.Kill();
 
                 if (Main.myPlayer == Projectile.owner && ableToShoot)
                 {
+                    Owner.CheckMana(Owner.HeldItem.mana, true);
+
                     int projectileType = ModContent.ProjectileType<NebulaCloudCore>();
                     float coreVelocity = 8f;
-                    int weaponDamage = Owner.GetWeaponDamage(Owner.ActiveItem());
-                    float weaponKnockback = Owner.ActiveItem().knockBack;
+                    int weaponDamage = Owner.GetWeaponDamage(Owner.HeldItem);
+                    float weaponKnockback = Owner.HeldItem.knockBack;
                     if (weaponInUse)
                     {
-                        weaponKnockback = Owner.GetWeaponKnockback(Owner.ActiveItem(), weaponKnockback);
-                        float scaleFactor = Owner.ActiveItem().shootSpeed * Projectile.scale;
+                        weaponKnockback = Owner.GetWeaponKnockback(Owner.HeldItem, weaponKnockback);
+                        float scaleFactor = Owner.HeldItem.shootSpeed * Projectile.scale;
                         Vector2 projectileSpawnPosition = Owner.RotatedRelativePoint(Owner.MountedCenter, true);
                         Vector2 projectileDestination = Main.screenPosition + new Vector2(Main.mouseX, Main.mouseY) - projectileSpawnPosition;
 

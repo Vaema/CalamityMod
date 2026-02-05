@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.DamageType = RogueDamageClass.Instance;
         }
 
-        public override float StealthDamageMultiplier => 1.85f;
+        public override float StealthDamageMultiplier => 1.4f;
         public override float StealthVelocityMultiplier => 0.9f;
         public override float StealthKnockbackMultiplier => 0.5f;
 
@@ -35,9 +35,9 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             if (player.Calamity().StealthStrikeAvailable())
             {
-                for (int i = -1; i <= 1; i++)
+                for (float i = -1.5f; i <= 1.5f; i++)
                 {
-                    Vector2 perturbedSpeed = velocity.RotatedBy(MathHelper.ToRadians(i * 9f));
+                    Vector2 perturbedSpeed = velocity.RotatedBy(MathHelper.ToRadians(i * 7f));
                     int stealth = Projectile.NewProjectile(source, position, perturbedSpeed, ModContent.ProjectileType<CobaltEnergy>(), damage, knockback, player.whoAmI);
                     if (stealth.WithinBounds(Main.maxProjectiles))
                         Main.projectile[stealth].Calamity().stealthStrike = true;

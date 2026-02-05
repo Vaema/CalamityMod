@@ -1,8 +1,6 @@
 ﻿using CalamityMod.Tiles.Ores;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
-using Terraria.GameContent.Generation;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.WorldBuilding;
@@ -34,7 +32,7 @@ namespace CalamityMod.World
                     // 2. The original tile must not be empty air.
                     // 3. A random dice-roll must land correctly, to ensure that patches of ore are occasional.
                     // If any of these conditions are not met, this loop iteration is skipped.
-                    if (!(tile.TileType == TileID.Cloud || tile.TileType == TileID.LesionBlock || tile.TileType == TileID.FleshBlock) || !tile.HasTile || !WorldGen.genRand.NextBool(CloudOreConversionChance))
+                    if (!(tile.TileType == TileID.Cloud || ((tile.TileType == TileID.LesionBlock || tile.TileType == TileID.FleshBlock) && WorldGen.remixWorldGen)) || !tile.HasTile || !WorldGen.genRand.NextBool(CloudOreConversionChance))
                         continue;
 
                     int radius = (int)(WorldGen.genRand.Next(3, 5) * WorldGen.genRand.NextFloat(0.74f, 0.82f));

@@ -21,12 +21,14 @@ namespace CalamityMod.Buffs.StatBuffs
             if (modPlayer.abyssalDivingSuitPrevious)
             {
                 if (player.IsUnderwater())
+                {
+                    if (player.maxFallSpeed < 9f)
+                        player.maxFallSpeed = 9f;
                     player.gills = true;
-                modPlayer.abyssalDivingSuitPower = true;
+                }
                 modPlayer.depthCharm = true;
                 modPlayer.jellyfishNecklace = true;
                 modPlayer.anechoicPlating = true;
-                modPlayer.ironBoots = true;
                 player.arcticDivingGear = true;
                 player.accFlipper = true;
                 player.accDivingHelm = true;

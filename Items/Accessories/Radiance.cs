@@ -1,4 +1,5 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.Collections.Generic;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
@@ -11,7 +12,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Accessories
 {
     [LegacyName("AstralArcanum", "Purity")]
-    public class Radiance : ModItem, ILocalizedModType
+    public class Radiance : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetStaticDefaults()
@@ -24,28 +25,40 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 18;
             Item.height = 44;
-            Item.defense = 8;
+            Item.defense = 5;
             Item.accessory = true;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
             player.statLifeMax2 += 70;
+            if (!player.HasBuff(BuffID.Honey))
+                player.AddBuff(BuffID.Honey, 2);
 
             // Abyss light, debuff near-immunity, life regen effects, and massively enhances debuff halving
             modPlayer.purity = true;
 
             // Inherits effects from Honey Dew and Living Dew
-            modPlayer.alwaysHoneyRegen = true;
             modPlayer.honeyDewHalveDebuffs = true;
             modPlayer.livingDewHalveDebuffs = true;
 
             // Add light if the other accessories aren't equipped and visibility is turned on
             if (!(modPlayer.rOoze || modPlayer.aAmpoule) && !hideVisual)
                 Lighting.AddLight(player.Center, new Vector3(1.32f, 1.32f, 1.82f));
+        }
+
+
+        public override void ModifyTooltips(List<TooltipLine> list)
+        {
+            var player = Main.LocalPlayer;
+            if (player != null)
+            {
+                list.FindAndReplace("[REGEN]", player.Calamity().purityRegen.ToString("0.##"));
+                list.FindAndReplace("[DEFENSE]", player.Calamity().jewelBonusDefense.ToString());
+            }
         }
 
         public override void AddRecipes()

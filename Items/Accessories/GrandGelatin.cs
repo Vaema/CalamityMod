@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.CalPlayer;
+﻿using CalamityMod.CalPlayer;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -14,7 +13,7 @@ namespace CalamityMod.Items.Accessories
         public static float MoveSpeedBoost = 0.12f;
         public static float JumpSpeedBoost = 0.6f; // Both 12% so we only need just one in the tooltip
         public static int AuraLifetime = 1800;
-        public static int AuraRegenBoost = 6;
+        public static int AuraRegenBoost = 4;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MoveSpeedBoost.ToPercent(), AuraLifetime.FramesToSeconds(), AuraRegenBoost.ToRegenPerSecond());
 
         public override void SetDefaults()

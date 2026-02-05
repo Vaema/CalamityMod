@@ -15,9 +15,9 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 130;
             Item.height = 58;
-            Item.damage = 69;
+            Item.damage = 40;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 7;
+            Item.mana = 14;
             Item.useAnimation = 5;
             Item.useTime = 5;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -57,7 +57,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient<IonBlaster>().
-                AddIngredient(ItemID.FragmentSolar, 6).
+                AddIngredient(ItemID.FragmentSolar, 12).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

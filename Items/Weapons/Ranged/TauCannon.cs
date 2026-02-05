@@ -1,9 +1,7 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
-using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -15,8 +13,6 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void SetDefaults()
         {
-            CalamityGlobalItem modItem = Item.Calamity();
-
             Item.damage = 620;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = Item.useAnimation = 180;
@@ -32,12 +28,9 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
             Item.useStyle = ItemUseStyleID.Shoot;
-
-            modItem.UsesCharge = true;
-            modItem.MaxCharge = 200f;
         }
 
-        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] == 0 && Item.Calamity().Charge > 0;
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] == 0;
 
         public override void HoldItem(Player player) => player.Calamity().mouseRotationListener = true;
 
@@ -49,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient<DubiousPlating>(15).
                 AddIngredient<AstralBar>(10).
                 AddIngredient<RuinousSoul>(2).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

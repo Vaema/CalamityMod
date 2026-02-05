@@ -1,9 +1,6 @@
 ﻿using CalamityMod.CalPlayer;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -13,7 +10,7 @@ namespace CalamityMod.Items.Accessories
     {
         public new string LocalizationCategory => "Items.Accessories";
         // The percentage of a full Rage bar that is gained every second with Heart of Darkness equipped.
-        public const float RagePerSecond = 0.01f;
+        public const float RagePerSecond = 0.02f;
 
         public override void SetStaticDefaults()
         {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using CalamityMod.Balancing;
@@ -6,15 +7,15 @@ using CalamityMod.CalPlayer;
 using CalamityMod.DataStructures;
 using CalamityMod.Enums;
 using CalamityMod.Events;
-using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.OldDuke;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.NPCs.SlimeGod;
+using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.NPCs.Yharon;
 using CalamityMod.Packets;
-using CalamityMod.Projectiles.Boss;
+using CalamityMod.Systems.Collections;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -88,6 +89,9 @@ namespace CalamityMod
         //
         // Generally this doesn't need to be set to true, as bosses will never have collideX or collideY set to true.
         public bool forceNetUpdate = false;
+
+        // Player indexes put into this list will not be considered for targetting.
+        public HashSet<int> excludedPlayers = [];
 
         public CalamityTargetingParameters()
         {
@@ -223,7 +227,7 @@ namespace CalamityMod
         /// <param name="normal">The value DR will be set to in normal mode.</param>
         /// <param name="revengeance">The value DR will be set to in Revegeneance mode.</param>
         /// <param name="bossRush">The value DR will be set to during the Boss Rush.</param>
-        public static void DR_NERD(this NPC npc, float normal, float? revengeance = null, float? death = null, float? bossRush = null, bool? customDR = null)
+        public static void DR_NERD(this NPC npc, float normal, float? revengeance = null, float? death = null, float? bossRush = null)
         {
             npc.Calamity().DR = normal;
 
@@ -235,9 +239,6 @@ namespace CalamityMod
             {
                 npc.Calamity().DR = CalamityWorld.death ? death.Value : revengeance.Value;
             }
-
-            if (customDR.HasValue)
-                npc.Calamity().customDR = true;
         }
         #endregion
 
@@ -267,8 +268,10 @@ namespace CalamityMod
             // do not generate rage.
             if (npc.lifeMax <= BalancingConstants.TinyHealthThreshold || ((npc.defDamage <= BalancingConstants.TinyDamageThreshold && checkDamage) && npc.lifeMax <= BalancingConstants.NoContactDamageHealthThreshold))
                 return false;
-            // Also explicitly exclude dummies and anything with a ridiculous health pool (dummies from Fargo's for example).
-            if (npc.type == NPCID.TargetDummy || npc.type == NPCType<SuperDummyNPC>() || npc.lifeMax > BalancingConstants.UnreasonableHealthThreshold)
+
+            // Exclude NPCs that specified to not be counted as enemy
+            // This includes: TargetDummy, SuperDummy by Default
+            if (CalamityNPCSets.DontCountAsEnemy[npc.type])
                 return false;
 
             // Anything else is considered a valid enemy target.
@@ -346,19 +349,6 @@ namespace CalamityMod
         {
             SyncNPCPosAndRotOnlyPacket.Send(npc);
         }
-
-        /// <summary>
-        /// Syncs <see cref="CalamityGlobalNPC.destroyerLaserColor"/>. This exists to sync the Destroyer's lasers so that the telegraphs and segment colors display properly.
-        /// </summary>
-        /// <param name="npc"></param>
-        public static void SyncDestroyerLaserColor(this NPC npc)
-        {
-            // Don't bother attempting to send packets in singleplayer.
-            if (Main.netMode == NetmodeID.SinglePlayer)
-                return;
-
-            SyncDestroyerLaserColorPacket.Send(npc);
-        }
         #endregion
 
         #region Smooth Movement
@@ -410,7 +400,7 @@ namespace CalamityMod
             // change the options on the spot to valid default / intended default parameters.
             if (options == default)
                 options = new CalamityTargetingParameters();
-            
+
             float distance = 0f;
             // float realDist = 0f; // Defined but not used by vanilla. Commented out here.
             bool anyTargetAvailable = false;
@@ -424,9 +414,10 @@ namespace CalamityMod
                     continue;
 
                 // ForceSwitch targeting. If the same player from last time is iterated over, just ignore them.
+                // Player exclusion. If the player is to be excluded, do not consider them.
                 bool sameTargetAsLastTime = p.whoAmI == npc.oldTarget;
                 bool notSinglePlayer = Main.netMode != NetmodeID.SinglePlayer;
-                if (options.targetType == NPCTargetType.ForceSwitch && notSinglePlayer && sameTargetAsLastTime)
+                if (notSinglePlayer && (options.excludedPlayers.Contains(p.whoAmI) || (options.targetType == NPCTargetType.ForceSwitch && sameTargetAsLastTime)))
                     continue;
 
                 //
@@ -525,7 +516,7 @@ namespace CalamityMod
             else
             {
                 bool shouldFaceTarget = options.faceTarget;
-                
+
                 // Sanitize targeted player index
                 if (npc.target < 0 || npc.target >= Main.maxPlayers)
                     npc.target = 0;
@@ -678,7 +669,7 @@ namespace CalamityMod
 
                 if (angle <= wantedHalfCone)
                 {
-                    angle = wantedHalfCone; 
+                    angle = wantedHalfCone;
                     distance = checkDist; // We are within the cone. Now npcs are further narrowed down by distance
                     closestTarget = npc;
                 }
@@ -764,9 +755,68 @@ namespace CalamityMod
                 Vector2 launchVel = direction.SafeNormalize(Vector2.UnitX) * strength;
                 float knockbackMult = Utils.Remap(target.knockBackResist, 0, 1, 0.5f, 1f, false);
                 target.velocity = launchVel * (knockbackMult > 1 ? (float)Math.Pow(knockbackMult, 10) : knockbackMult);
+                target.SyncMotionToServer();
             }
-            target.SyncMotionToServer();
         }
+
+        /// <summary>
+        /// Allows grounded NPCs to step up blocks
+        /// </summary>
+        /// <param name="npc"></param>
+        public static void StepUpBlocks(this NPC npc)
+        {
+            Vector2 position = npc.position;
+            position.X += npc.velocity.X;
+            int x = (int)((position.X + (float)(npc.width / 2) + (float)((npc.width / 2 + 1)) * npc.direction) / 16f);
+            int y = (int)((position.Y + (float)npc.height - 1f) / 16f);
+
+            if ((float)(x * 16) >= position.X + (float)npc.width || (float)(x * 16 + 16) <= position.X)
+                return;
+
+            bool nextTileValid = Main.tile[x, y].HasUnactuatedTile && !Main.tile[x, y].TopSlope && !Main.tile[x, y - 1].TopSlope && Main.tileSolid[(int)Main.tile[x, y].TileType] && !Main.tileSolidTop[(int)Main.tile[x, y].TileType];
+            bool aboveTileHalfBlock = Main.tile[x, y - 1].IsHalfBlock && Main.tile[x, y - 1].HasUnactuatedTile;
+            bool aboveTileHasRoom = Main.tile[x, y - 1].IsHalfBlock && IsPassableTile(x, y - 4);
+            bool aboveTileEmpty = !Main.tile[x, y - 1].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[x, y - 1].TileType] || Main.tileSolidTop[(int)Main.tile[x, y - 1].TileType] || aboveTileHasRoom;
+            bool tile3AbovePassable = !Main.tile[x - npc.direction, y - 3].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[x - npc.direction, y - 3].TileType];
+
+            if ((nextTileValid || aboveTileHalfBlock) && aboveTileEmpty && IsPassableTile(x, y - 2) && IsPassableTile(x, y - 3) && tile3AbovePassable)
+            {
+                float npcBottom = (float)(y * 16);
+                if (Main.tile[x, y].IsHalfBlock)
+                {
+                    npcBottom += 8f;
+                }
+                if (Main.tile[x, y - 1].IsHalfBlock)
+                {
+                    npcBottom -= 8f;
+                }
+                if (npcBottom < position.Y + (float)npc.height)
+                {
+                    float percentageTileRisen = position.Y + (float)npc.height - npcBottom;
+                    if (percentageTileRisen <= 16.1f)
+                    {
+                        npc.gfxOffY += npc.position.Y + (float)npc.height - npcBottom;
+                        npc.position.Y = npcBottom - (float)npc.height;
+                        if (percentageTileRisen < 9f)
+                        {
+                            npc.stepSpeed = 1f;
+                        }
+                        else
+                        {
+                            npc.stepSpeed = 2f;
+                        }
+                    }
+                }
+            }
+        }
+
+        public static bool IsPassableTile(int x, int y)
+        {
+            return (!Main.tile[x, y].HasUnactuatedTile ||
+                !Main.tileSolid[(int)Main.tile[x, y].TileType] || Main.tileSolidTop[(int)Main.tile[x, y].TileType]);
+        }
+
+
         public static void Inflict246DebuffsNPC(NPC target, int buff, float timeBase = 2f)
         {
             if (Main.rand.NextBool(4))
@@ -819,6 +869,39 @@ namespace CalamityMod
                 }
             }
             npc.position -= npc.netOffset;
+        }
+
+        /// <summary>
+        /// Spawns gores. Automatically accounts for multiplayer.
+        /// </summary>
+        /// <param name="entity">The Entity in question. Usuaully used for NPCs but also applicable for other Entities.</param>
+        /// <param name="suffix">The name of the gore.</param>
+        /// <param name="variants">How many variants there are, defaults to 1.</param>
+        /// <param name="startFrom">What number should the variant names start counting from? A default of -1 means the first gore has no number, while the rest start from 2 and increment by 1.</param>
+        /// <param name="deathCheck">Check if the entity in question is a dead NPC. Defaults to true.</param>
+        public static void SpawnGores(Entity entity, string suffix, int variants = 1, int startFrom = -1, bool deathCheck = true)
+        {
+            if (!Main.dedServ)
+            {
+                bool isADeadNPC = true;
+                if (entity is NPC n && deathCheck)
+                {
+                    if (n.life > 0)
+                        isADeadNPC = false;
+                }
+                if (isADeadNPC)
+                {
+                    for (int i = 0; i < variants; i++)
+                    {
+                        int? idx = startFrom == -1 ? null : startFrom;
+                        if (i > 0)
+                        {
+                            idx = startFrom == -1 ? (i + 1) : (idx + i + 1);
+                        }
+                        Gore.NewGore(entity.GetSource_Death(), entity.position, entity.velocity, CalamityMod.Instance.Find<ModGore>(suffix + idx).Type, 1f);
+                    }
+                }
+            }
         }
 
         public static NPCShop AddWithCustomValue(this NPCShop shop, int itemType, int customValue, params Condition[] conditions)
@@ -897,7 +980,7 @@ namespace CalamityMod
                 // If two are passed in, alternate between them
                 // If more are passed in, each iteration must correspond to a texture
                 Texture2D toUse = bodyTextures.Length == 1 ? bodyTextures[0] : bodyTextures.Length == 2 ? (i % 2 == 0 ? bodyTextures[0] : bodyTextures[1]) : bodyTextures[i - 1];
-                spriteBatch.Draw(toUse, npc.position + new Vector2(startX + bodyOffset, MathF.Sin((wormTimer + offset * i) * animationSpeed) * range + startY), toUse.Frame(1, 1, 0, 0), npc.GetAlpha(drawColor), npc.rotation - MathHelper.PiOver2 - MathF.Cos((wormTimer + offset * i) * animationSpeed) * MathHelper.PiOver4 * rotationStrength, toUse.Size () / 2, npc.scale, fx, 0f);
+                spriteBatch.Draw(toUse, npc.position + new Vector2(startX + bodyOffset, MathF.Sin((wormTimer + offset * i) * animationSpeed) * range + startY), toUse.Frame(1, 1, 0, 0), npc.GetAlpha(drawColor), npc.rotation - MathHelper.PiOver2 - MathF.Cos((wormTimer + offset * i) * animationSpeed) * MathHelper.PiOver4 * rotationStrength, toUse.Size() / 2, npc.scale, fx, 0f);
             }
             // Draw the head
             spriteBatch.Draw(headTexture, npc.position + new Vector2(startX + headOffset, MathF.Sin((wormTimer - headSpeedOffset) * animationSpeed) * range + startY), npc.frame, npc.GetAlpha(drawColor), npc.rotation - MathHelper.PiOver2 - MathF.Cos((wormTimer - headSpeedOffset) * animationSpeed) * MathHelper.PiOver4 * rotationStrength, new Vector2(headTexture.Width * 0.5f, headTexture.Height), npc.scale, fx, 0f);
@@ -906,6 +989,65 @@ namespace CalamityMod
         }
 
         public static bool HasSight(this NPC npc, Vector2 target) => Collision.CanHit(npc.Center, 1, 1, target, 1, 1);
+
+
+        /// <summary>
+        /// Attempts to find a tile of a given type within a given radius
+        /// </summary>
+        /// <param name="npc">The NPC to center it on</param>
+        /// <param name="tileType">The tile type to check for</param>
+        /// <param name="radius">The radius of the check area in pixels</param>
+        /// <param name="usesSunkenSeaValidity">Whether or not SunkenSeaTileValidity should be used</param>
+        /// <returns>The position of the tile, or null if unsuccessful</returns>
+        public static Vector2? NPCTileDetection(NPC npc, int tileType, float radius, bool usesSunkenSeaValidity = false)
+        {
+            Vector2? tileFoundPosition = null;
+            int? tileIndexFound = null;
+            for (int i = 0; i < 360 && tileFoundPosition == null; i += 15)
+            {
+                var points = GetIntersectingPointsInLine(npc.Center, npc.Center - Vector2.UnitY.RotatedBy(MathHelper.ToRadians(i)) * radius);
+                for (int j = points.Count - 1; j >= 0; j--)
+                {
+                    if (Main.tile[points[j]].TileType == tileType)
+                    {
+                        if (usesSunkenSeaValidity)
+                        {
+                            tileIndexFound = j;
+                        }
+                        else
+                        {
+                            tileFoundPosition = points[j].ToWorldCoordinates();
+                        }
+                        break;
+                    }
+                }
+
+                if (usesSunkenSeaValidity)
+                {
+                    if (tileIndexFound == null)
+                        continue;
+
+                    for (int k = tileIndexFound.Value; k >= 0; k--)
+                    {
+                        Vector2 worldPos = points[k].ToWorldCoordinates();
+                        if (npc.HasSight(worldPos) && SunkenSeaNPC.SunkenSeaTileValidity(npc, points[k]))
+                        {
+                            tileFoundPosition = worldPos;
+                            break;
+                        }
+                    }
+
+                    tileIndexFound = null;
+                }
+            }
+
+
+
+            if (tileFoundPosition.HasValue)
+                return tileFoundPosition.Value;
+
+            return null;
+        }
 
         #region Boss Spawning
         /// <summary>
@@ -1015,10 +1157,13 @@ namespace CalamityMod
         {
             SoundEngine.PlaySound(spawnSound, player.Center);
 
-            // SP or SERVER: Spawn Boss Immediately
-            // This will ensure NPC to be spawned only once on Item.UseItem
-            if (Main.netMode != NetmodeID.MultiplayerClient)
+            // This will ensure the NPC is spawned only once on Item.UseItem
+            if (player.whoAmI != Main.myPlayer)
+                return null;
+
+            if (Main.netMode == NetmodeID.SinglePlayer)
             {
+                // SP: Spawn Boss Immediately
                 int spawnedNPCIdx = NPC.NewNPC(new EntitySource_BossSpawn(target: player), worldX, worldY, npcType, Start: 1);
 
                 // 200 is invalid Index
@@ -1028,16 +1173,13 @@ namespace CalamityMod
                 BossAwakenMessage(spawnedNPCIdx);
                 NPC npc = Main.npc[spawnedNPCIdx];
                 npc.timeLeft *= 20;
-                
-                // Server Exclusive: Sync NPC Data
-                if (Main.dedServ)
-                {
-                    NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, spawnedNPCIdx);
-                }
-
                 return npc;
             }
-
+            else
+            {
+                // MP CLIENT: send syncing net message instead
+                SpawnBossOnPositionPacket.Send(worldX, worldY, npcType, player);
+            }
             return null;
         }
 

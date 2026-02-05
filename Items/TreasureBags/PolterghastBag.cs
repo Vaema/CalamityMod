@@ -2,7 +2,7 @@
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.PermanentBoosters;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
@@ -65,7 +65,7 @@ namespace CalamityMod.Items.TreasureBags
             itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<Polterghast>()));
 
             // Materials
-            itemLoot.Add(ModContent.ItemType<RuinousSoul>(), 1, 10, 20);
+            itemLoot.Add(ModContent.ItemType<RuinousSoul>(), 1, 25, 30);
             itemLoot.Add(ModContent.ItemType<Necroplasm>(), 1, 40, 50);
 
             // Weapons

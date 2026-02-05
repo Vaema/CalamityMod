@@ -57,7 +57,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient(ItemID.LaserRifle).
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<LifeAlloy>(5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 20;
             Item.height = 20;
-            Item.damage = 60;
+            Item.damage = 50;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.autoReuse = true;
@@ -44,7 +44,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<IceStar>(100).
+                AddIngredient<IceStar>().
                 AddIngredient<Avalanche>().
                 AddIngredient<HoarfrostBow>().
                 AddIngredient<Icebreaker>().

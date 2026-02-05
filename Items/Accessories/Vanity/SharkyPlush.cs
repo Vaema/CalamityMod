@@ -1,39 +1,19 @@
-﻿using System;
-using Terraria;
+﻿using CalamityMod.Items.BaseItems;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories.Vanity
 {
-    public class SharkyPlush : ModItem, ILocalizedModType
+    public class SharkyPlush : TransformationAccessory, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
 
-        public override void Load()
-        {
-            if (!Main.dedServ)
-            {
-                EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/Vanity/Shark_Head", EquipType.Head, this);
-                EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/Vanity/Shark_Body", EquipType.Body, this);
-                EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/Vanity/Shark_Legs", EquipType.Legs, this);
-            }
-        }
-
-        public override void SetStaticDefaults()
-        {
-            if (Main.dedServ)
-                return;
-
-            int equipSlotHead = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
-            ArmorIDs.Head.Sets.DrawHead[equipSlotHead] = false;
-
-            int equipSlotBody = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
-            ArmorIDs.Body.Sets.HidesTopSkin[equipSlotBody] = true;
-            ArmorIDs.Body.Sets.HidesArms[equipSlotBody] = true;
-
-            int equipSlotLegs = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Legs);
-            ArmorIDs.Legs.Sets.HidesBottomSkin[equipSlotLegs] = true;
-        }
+        public override (EquipType, string, string)[] EquipSlots =>
+        [
+            (EquipType.Head, "Shark", null),
+            (EquipType.Body, "Shark", null),
+            (EquipType.Legs, "Shark", null),
+        ];
 
         public override void SetDefaults()
         {
@@ -44,39 +24,6 @@ namespace CalamityMod.Items.Accessories.Vanity
             Item.rare = ItemRarityID.Blue;
             Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.Calamity().devItem = true;
-        }
-
-        public override void UpdateVanity(Player player)
-        {
-            player.GetModPlayer<SharkyPlushPlayer>().vanityEquipped = true;
-        }
-
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
-            if (!hideVisual)
-            {
-                player.GetModPlayer<SharkyPlushPlayer>().vanityEquipped = true;
-            }
-        }
-    }
-
-    public class SharkyPlushPlayer : ModPlayer
-    {
-        public bool vanityEquipped = false;
-
-        public override void ResetEffects()
-        {
-            vanityEquipped = false;
-        }
-
-        public override void FrameEffects()
-        {
-            if (vanityEquipped)
-            {
-                Player.legs = EquipLoader.GetEquipSlot(Mod, "SharkyPlush", EquipType.Legs);
-                Player.body = EquipLoader.GetEquipSlot(Mod, "SharkyPlush", EquipType.Body);
-                Player.head = EquipLoader.GetEquipSlot(Mod, "SharkyPlush", EquipType.Head);
-            }
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using CalamityMod.CalPlayer;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 using static Terraria.ID.ContentSamples.CreativeHelper;

@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Dusts;
-using CalamityMod.Items.Armor.Tarragon;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -20,7 +19,7 @@ namespace CalamityMod.Items.Accessories.Wings
         public override float MaxAscentSpeed => 3f;
         public override float BaseAscent => 0.135f;
 
-        public override void SetStaticDefaults() => ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(250, 9.5f, 2.5f);
+        public override void SetStaticDefaults() => ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(270, 9.5f, 2.5f);
 
         public override void SetDefaults()
         {
@@ -33,9 +32,6 @@ namespace CalamityMod.Items.Accessories.Wings
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.statDefense += 15;
-            player.lifeRegen += 2;
-
             if (player.controlJump && player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
             {
                 int dustXOffset = 4;
@@ -52,7 +48,6 @@ namespace CalamityMod.Items.Accessories.Wings
                 }
                 Main.dust[flightDust].shader = GameShaders.Armor.GetSecondaryShader(player.cWings, player);
             }
-            player.noFallDmg = true;
         }
 
         public override void AddRecipes()
@@ -60,7 +55,7 @@ namespace CalamityMod.Items.Accessories.Wings
             CreateRecipe().
                 AddIngredient(ItemID.SoulofFlight, 20).
                 AddIngredient<UelibloomBar>(5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

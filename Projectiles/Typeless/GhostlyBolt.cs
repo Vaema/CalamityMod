@@ -1,5 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Terraria;
+﻿using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -18,10 +17,8 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.friendly = true;
             Projectile.alpha = 255;
             Projectile.penetrate = 1;
-            Projectile.extraUpdates = 1;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 6;
-            Projectile.timeLeft = 900;
+            Projectile.MaxUpdates = 2;
+            Projectile.timeLeft = 180 * Projectile.MaxUpdates;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
         }

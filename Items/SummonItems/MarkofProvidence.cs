@@ -84,7 +84,7 @@ namespace CalamityMod.Items.SummonItems
                 AddIngredient(ItemID.LunarBar, 3).
                 AddIngredient<UnholyEssence>(40).
                 AddIngredient(ItemID.FragmentSolar, 5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

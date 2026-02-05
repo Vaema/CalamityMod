@@ -1,12 +1,12 @@
-﻿using CalamityMod.Cooldowns;
-using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Armor.Wulfrum;
+﻿using CalamityMod.Items.Accessories;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static CalamityMod.CalamityUtils;
 
 namespace CalamityMod.Items.Materials
 {
@@ -14,6 +14,10 @@ namespace CalamityMod.Items.Materials
     public class WulfrumMetalScrap : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Materials";
+
+        public int textureVariant = 0;
+
+        public static Asset<Texture2D> altTexture = null;
 
         public override void SetStaticDefaults()
         {
@@ -35,10 +39,34 @@ namespace CalamityMod.Items.Materials
             itemGroup = ContentSamples.CreativeHelper.ItemGroup.Material;
         }
 
+        public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
+        {
+            if (textureVariant == 0)
+                return true;
+            else
+            {
+                spriteBatch.Draw(altTexture.Value, Item.Center - Main.screenPosition, null, lightColor, rotation, altTexture.Size() / 2, scale, SpriteEffects.None, 0);
+                return false;
+            }    
+        }
+
+        public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+        {
+            if (textureVariant == 0)
+                return true;
+            else
+            {
+                spriteBatch.Draw(altTexture.Value, position, null, drawColor, 0, altTexture.Size() / 2, scale, SpriteEffects.None, 0);
+                return false;
+            }
+        }
+
         public override void OnSpawn(IEntitySource source)
         {
             if (source is EntitySource_Loot)
             {
+                textureVariant = Main.rand.NextBool().ToInt();
+
                 if (Main.rand.NextBool())
                     return;
 
@@ -67,7 +95,11 @@ namespace CalamityMod.Items.Materials
             }
         }
 
-        public override void Load() => Terraria.On_Item.CanFillEmptyAmmoSlot += AvoidDefaultingToAmmoSlot;
+        public override void Load()
+        {
+            Terraria.On_Item.CanFillEmptyAmmoSlot += AvoidDefaultingToAmmoSlot;
+            altTexture = ModContent.Request<Texture2D>(Texture + "2");
+        }
 
         private bool AvoidDefaultingToAmmoSlot(Terraria.On_Item.orig_CanFillEmptyAmmoSlot orig, Item self)
         {

@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -29,7 +28,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.extraUpdates = 1;
             Projectile.aiStyle = ProjAIStyleID.Arrow;
             Projectile.alpha = 255;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override void AI()

@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Tiles.Furniture;
 using Terraria;
 using Terraria.ID;
@@ -27,7 +26,7 @@ namespace CalamityMod.Items.Placeables.Furniture
         {
             CreateRecipe().
             AddIngredient<WulfrumMetalScrap>(5).
-            AddIngredient<WulfrumBattery>().
+            AddIngredient<EnergyCore>().
             AddTile(TileID.Anvils).
             Register();
         }

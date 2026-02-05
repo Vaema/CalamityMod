@@ -38,7 +38,10 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
         }
-
+        public override bool? CanHitNPC(NPC target)
+        {
+            return target.CanBeChasedBy() ? null : false;
+        }
         public override void AI()
         {
             if (TargetShot is not null && TargetShot.active)
@@ -78,7 +81,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             for (int i = 0; i < 15; i++)
             {
-                Dust deathDust = Dust.NewDustPerfect(Projectile.Center, 109, Projectile.velocity.SafeNormalize(Vector2.Zero).RotatedByRandom(MathHelper.PiOver4) * Main.rand.NextFloat(3f, 7f), Scale: Main.rand.NextFloat(0.5f, 1.5f), Alpha: 127);
+                Dust deathDust = Dust.NewDustPerfect(Projectile.Center, DustID.Asphalt, Projectile.velocity.SafeNormalize(Vector2.Zero).RotatedByRandom(MathHelper.PiOver4) * Main.rand.NextFloat(3f, 7f), Scale: Main.rand.NextFloat(0.5f, 1.5f), Alpha: 127);
                 deathDust.noGravity = true;
                 deathDust.noLight = true;
             }

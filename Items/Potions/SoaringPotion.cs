@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Potions
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(30, 30, ModContent.BuffType<Soaring>(), CalamityUtils.MinutesToFrames(6), true);
+            Item.DefaultToFood(30, 30, ModContent.BuffType<Soaring>(), CalamityUtils.MinutesToFrames(8), true);
             Item.value = Item.sellPrice(silver: 2);
             Item.rare = ItemRarityID.LightRed;
         }
@@ -40,7 +40,7 @@ namespace CalamityMod.Items.Potions
                 AddIngredient<SunkenSailfish>().
                 AddIngredient(ItemID.SoulofFlight).
                 AddTile(TileID.AlchemyTable).
-                AddConsumeItemCallback(Recipe.ConsumptionRules.Alchemy).
+                AddConsumeIngredientCallback(Recipe.IngredientQuantityRules.Alchemy).
                 Register();
 
             CreateRecipe().

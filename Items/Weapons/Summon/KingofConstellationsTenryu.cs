@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
@@ -23,10 +24,10 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.mana = 10;
             Item.damage = 187;
             Item.useStyle = ItemUseStyleID.HoldUp;
-            Item.shootSpeed = 10f;
+            Item.buffType = ModContent.BuffType<KingofConstellationsBuff>();
             Item.shoot = ModContent.ProjectileType<BlackDragonHead>();
             Item.UseSound = Flare.FlareSound;
-            Item.useAnimation = Item.useTime = 25;
+            Item.useAnimation = Item.useTime = 24;
 
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
@@ -38,10 +39,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.autoReuse = true;
         }
 
-        public override Vector2? HoldoutOffset()
-        {
-            return new Vector2(-20, 0);
-        }
+        public override Vector2? HoldoutOffset() => new Vector2(-20, 0);
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0 && player.maxMinions >= 4;
 
@@ -49,20 +47,23 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Vector2 spawnPos = new Vector2(player.position.X - 200, player.position.Y - 200);
             Vector2 spawnPos2 = new Vector2(player.position.X + 200, player.position.Y - 200);
-            SpawnDragon(ModContent.ProjectileType<WhiteDragonHead>(), ModContent.ProjectileType<WhiteDragonBody>(), ModContent.ProjectileType<WhiteDragonTail>(), spawnPos2, player, source, damage, knockback);
-            SpawnDragon(ModContent.ProjectileType<BlackDragonHead>(), ModContent.ProjectileType<BlackDragonBody>(), ModContent.ProjectileType<BlackDragonTail>(), spawnPos, player, source, damage, knockback);
+            player.AddBuff(Item.buffType, 2);
+            SpawnDragon(ModContent.ProjectileType<WhiteDragonHead>(), ModContent.ProjectileType<WhiteDragonBody>(), ModContent.ProjectileType<WhiteDragonTail>(), spawnPos2, player, source, damage, Item.damage, knockback);
+            SpawnDragon(ModContent.ProjectileType<BlackDragonHead>(), ModContent.ProjectileType<BlackDragonBody>(), ModContent.ProjectileType<BlackDragonTail>(), spawnPos, player, source, damage, Item.damage, knockback);
             return false;
         }
 
-        public static void SpawnDragon(int head, int body, int tail, Vector2 spawnPos, Player player, EntitySource_ItemUse_WithAmmo source, int damage, float knockback)
+        public static void SpawnDragon(int headType, int bodyType, int tailType, Vector2 spawnPos, Player player, EntitySource_ItemUse_WithAmmo source, int damage, int originalDamage, float knockback)
         {
             // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
-            Projectile.NewProjectile(source, spawnPos, player.DirectionTo(Main.MouseWorld) * 3, head, damage, knockback, player.whoAmI);
-            // okay but seriously why are you multiplying zero by three
-            Projectile.NewProjectile(source, spawnPos, Vector2.Zero * 3, tail, damage, knockback, player.whoAmI);
+            var head = Projectile.NewProjectileDirect(source, spawnPos, player.DirectionTo(Main.MouseWorld) * 3, headType, damage, knockback, player.whoAmI);
+            head.originalDamage = originalDamage;
+            var tail = Projectile.NewProjectileDirect(source, spawnPos, Vector2.Zero, tailType, damage, knockback, player.whoAmI);
+            tail.originalDamage = originalDamage;
             for (var i = 0; i < 20; i++)
             {
-                Projectile.NewProjectile(source, spawnPos, Vector2.Zero * 3, body, damage, knockback, player.whoAmI);
+                var body = Projectile.NewProjectileDirect(source, spawnPos, Vector2.Zero, bodyType, damage, knockback, player.whoAmI);
+                body.originalDamage = originalDamage;
             }
         }
 
@@ -73,7 +74,7 @@ namespace CalamityMod.Items.Weapons.Summon
                 AddIngredient(ItemID.DarkShard).
                 AddIngredient(ItemID.LightShard).
                 AddIngredient<TwistingNether>(3).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.Bookcases).
                 Register();
         }
     }

@@ -21,11 +21,10 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 36;
             Item.height = 42;
-            Item.damage = 210;
+            Item.damage = 205;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 48;
-            Item.useTime = 68;
-            Item.useAnimation = 68;
+            Item.useTime = Item.useAnimation = 68;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 10;
@@ -38,10 +37,14 @@ namespace CalamityMod.Items.Weapons.Magic
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            if (player.velocity.Length() <= 14)
+                player.velocity += -velocity.SafeNormalize(Vector2.UnitX) * 6f;
+
+            Vector2 staticSpeed = Utils.DirectionTo(player.Center, player.Calamity().mouseWorld) * Utils.Distance(player.Center, player.ClampedMouseWorld()) * 0.008f;
             bool MaxMana = player.statMana >= (player.statManaMax2 - ((int)(Item.mana * player.manaCost))) && !player.HasBuff(BuffID.ManaSickness);
             float rotation = 0.4f;
-            Projectile.NewProjectile(source, position, velocity.RotatedBy(-rotation), type, damage / 2, knockback, player.whoAmI, 0f, 1f, MaxMana ? 1f : 0f);
-            Projectile.NewProjectile(source, position, velocity.RotatedBy(rotation), type, damage / 2, knockback, player.whoAmI, 0f, 0f, MaxMana ? 1f : 0f);
+            Projectile.NewProjectile(source, position, staticSpeed.RotatedBy(-rotation), type, damage / 2, knockback, player.whoAmI, 0f, 1f, MaxMana ? 1f : 0f);
+            Projectile.NewProjectile(source, position, staticSpeed.RotatedBy(rotation), type, damage / 2, knockback, player.whoAmI, 0f, 0f, MaxMana ? 1f : 0f);
 
             return false;
         }

@@ -1,22 +1,17 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.GameContent.Metadata;
 using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.ObjectData;
 
 namespace CalamityMod.Tiles
 {
     public class GiantPlanteraBulb : GlowMaskTile
     {
-        public override string GlowMaskAsset => $"{Texture}Glow";
-
         public override void SetupStatic()
         {
             GlowMaskPaintInteraction = PaintColorTint.None;
@@ -30,9 +25,9 @@ namespace CalamityMod.Tiles
 
             // Various data sets to protect this tile from premature death
             TileID.Sets.PreventsTileRemovalIfOnTopOfIt[Type] = true;
+            TileID.Sets.PreventsTileHammeringIfOnTopOfIt[Type] = true;
             TileID.Sets.PreventsTileReplaceIfOnTopOfIt[Type] = true;
             TileID.Sets.PreventsSandfall[Type] = true;
-            // CalamityGlobalTile.PreventsAnchorTileChanges.Add(Type);
 
             // Object data
             TileObjectData.newTile.Width = 5;

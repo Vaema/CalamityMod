@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Typeless;
+﻿using CalamityMod.CalPlayer;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -28,7 +29,6 @@ namespace CalamityMod.Items.Fishing.FishingRods
             Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
         }
-
         public override void ModifyFishingLine(Projectile bobber, ref Vector2 lineOriginOffset, ref Color lineColor)
         {
             lineOriginOffset = new Vector2(45f, -43f);

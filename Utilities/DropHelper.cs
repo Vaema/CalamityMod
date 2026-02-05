@@ -2,15 +2,12 @@
 using System.Collections.Generic;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Potions;
-using CalamityMod.NPCs.SulphurousSea;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.Utilities;
 
@@ -339,11 +336,11 @@ namespace CalamityMod
                 ItemDropRule.NotScalingWithLuck(ItemID.ManaPotion, 1, 5, 17)
             }));
 
-            // 2-6 Bait @ 50%; 25% Master 25% Apprentice
+            // 2-6 Bait @ 50%; 25% Master 25% Journeyman
             loot.Add(new OneFromRulesRule(2, new IItemDropRule[2]
             {
                 ItemDropRule.NotScalingWithLuck(ItemID.MasterBait, 1, 2, 6),
-                ItemDropRule.NotScalingWithLuck(ItemID.ApprenticeBait, 1, 2, 6)
+                ItemDropRule.NotScalingWithLuck(ItemID.JourneymanBait, 1, 2, 6)
             }));
 
             // 5-12 Gold Coin @ 25%
@@ -831,25 +828,6 @@ namespace CalamityMod
             // With the player identified, return whether or not they have the full Tarragon Armor set equipped.
             return p.Calamity().tarraSet;
         });
-
-        internal const float TrasherEatDistance = 96f;
-        public static IItemDropRuleCondition AnglerFedToTrasherCondition = If((info) =>
-        {
-            bool trasherNearby = false;
-            foreach (NPC nearby in Main.ActiveNPCs)
-            {
-                if (nearby.type != ModContent.NPCType<Trasher>())
-                    continue;
-                if (info.npc.Distance(nearby.Center) < TrasherEatDistance)
-                {
-                    trasherNearby = true;
-                    break;
-                }
-            }
-            return trasherNearby;
-        });
-        // The text is a separate rule so it doesn't show up on the non-Trasher Fishing Rod drop which only occurs if the Angler is not fed to a Trasher
-        public static IItemDropRuleCondition TrasherText => CalamityConditions.TrasherTextCondition.ToDropCondition(ShowItemDropInUI.Always);
 
         // Remix seed drop rules
         public static IItemDropRuleCondition Remix => Condition.RemixWorld.ToDropCondition(ShowItemDropInUI.WhenConditionSatisfied);

@@ -7,5 +7,6 @@ namespace CalamityMod.BiomeManagers.BestiaryCategories
         public override string BestiaryIcon => "CalamityMod/BiomeManagers/AstralCaveDesertIcon";
 
         public override string MapBackground => "CalamityMod/Backgrounds/MapBackgrounds/AstralBG";
+        public override string BackgroundPath => "CalamityMod/Backgrounds/MapBackgrounds/AstralBG";
     }
 }

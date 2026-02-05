@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Placeables.FurnitureOtherworldly
                 AddIngredient<OtherworldlyStone>(4).
                 AddIngredient(ItemID.Torch, 4).
                 AddIngredient(ItemID.Chain).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.Anvils).
                 Register();
         }
     }

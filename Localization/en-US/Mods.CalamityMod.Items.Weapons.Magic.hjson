@@ -29,7 +29,20 @@ AethersWhisper: {
 
 AlulaAustralis: {
 	DisplayName: Alula Australis
-	Tooltip: Fires a beautiful aurora trailed by a star shower
+	Tooltip: Fires a beautiful aurora that inflicts [cbuff:CalamityMod/AstralInfectionDebuff] trailed by a star shower
+}
+
+AlphaDraconis: {
+	DisplayName: Alpha Draconis
+	Tooltip:
+		'''
+		Calls down a meteor shower towards the cursor
+		Successful hits sometimes create Starbursts that can be picked up
+		<right> with enough Starbursts to summon Draco to protect you
+		Draco burns Starbursts over time, and can be disspelled with <right>
+		Draco inflicts [cbuff:CalamityMod/Voidfrost]
+		'An imitation of insanity'
+		'''
 }
 
 AnahitasArpeggio: {
@@ -38,7 +51,8 @@ AnahitasArpeggio: {
 	TooltipNormal:
 		'''
 		Holding <left> casts up to 6 treble clefs that orbit the player
-		Releasing <left> causes the treble clefs to fade away, then converge at the cursor
+		Releasing <left> causes the treble clefs to converge at the cursor
+		After converging, treble clefs seek your cursor
 		'''
 	TooltipGFB:
 		'''
@@ -106,33 +120,19 @@ ArtAttack: {
 		'''
 }
 
-AsteroidStaff: {
-	DisplayName: Asteroid Staff
-	Tooltip: "[GFB]"
-	TooltipNormal: Summons asteroids from the sky
-	TooltipGFB:
-		'''
-		Core Keeper Chaos Staff
-		bottom text
-		'''
-}
-
 AstralachneaStaff: {
 	DisplayName: Astralachnea Staff
-	Tooltip: Fires a spread of homing astral spider fangs
+	Tooltip: Fires a spread of homing astral spider fangs that inflict [cbuff:CalamityMod/AstralInfectionDebuff]
 }
 
 AstralStaff: {
 	DisplayName: Astral Staff
-	Tooltip: Summons a large crystal from the sky that has a large area of effect on impact
+	Tooltip: Summons a large crystal from the sky that has a large area of effect on impact and inflicts [cbuff:CalamityMod/AstralInfectionDebuff]
 }
 
 Atlantis: {
 	DisplayName: Atlantis
-	Tooltip: "[GFB]"
-	TooltipNormal: Casts aquatic spears that split as they travel
-	TooltipGFB: A cosmic serpent prevents this weapon's true potential from shining...
-	TooltipGFBDoG: Take good care of my weapon, or else... -CIT
+	Tooltip: Casts aquatic spears that split as they travel
 }
 
 AuguroftheVoid: {
@@ -191,15 +191,6 @@ ChronomancersScythe: {
 		'''
 }
 
-ClamorNoctus: {
-	DisplayName: Clamor Noctus
-	Tooltip:
-		'''
-		Fires night wyverns and stars from the sky that stick to enemies and tiles and explode
-		'Let the sky fall'
-		'''
-}
-
 ClothiersWrath: {
 	DisplayName: Clothier's Wrath
 	Tooltip: Shoots 3 shadowflame skulls
@@ -242,28 +233,14 @@ DarkSpark: {
 		'''
 }
 
-DeathhailStaff: {
-	DisplayName: Deathhail Staff
-	Tooltip:
-		'''
-		Casts a storm of nebula lasers from the sky
-		'Rain death upon your foes!'
-		'''
-}
-
 DeathValleyDuster: {
 	DisplayName: Death Valley Duster
 	Tooltip:
 		'''
 		Casts an enchanted blast of sand that passes through enemies and tiles
 		Casting this spell at max mana while without mana sickness will cause it to give you and any player it hits the Sand's Wind Buff
-		The Sand's Wind Buff increases your defense by 10 and damage by 12%
+		The Sand's Wind Buff increases your defense by 10, damage by 12%, and greatly buffs mana regen
 		'''
-}
-
-DivineRetribution: {
-	DisplayName: Divine Retribution
-	Tooltip: Mage is superior to rogue; look, we got a donor weapon to prove it!
 }
 
 Downpour: {
@@ -322,11 +299,6 @@ EventHorizon: {
 EvergladeSpray: {
 	DisplayName: Everglade Spray
 	Tooltip: Fires a stream of burning green ichor
-}
-
-Fabstaff: {
-	DisplayName: Fabstaff
-	Tooltip: Casts a bouncing beam that splits when enemies are near it
 }
 
 FaceMelter: {
@@ -462,6 +434,11 @@ Heresy: {
 		'''
 }
 
+HyperdeathRiftScepter: {
+	DisplayName: Hyperdeath Rift Scepter
+	Tooltip: Tears space in two with [c/ff00ff:Hyperdeath Rift Ripper]
+}
+
 HyphaeRod: {
 	DisplayName: Hyphae Rod
 	Tooltip: Creates mushroom spores near the player
@@ -509,7 +486,8 @@ Keelhaul: {
 	DisplayName: Keelhaul
 	Tooltip:
 		'''
-		Summons a geyser upon hitting an enemy
+		Summons a lingering geyser upon hitting an enemy
+		Only one geyser can exist at a time
 		'Crumple 'em like paper'
 		'''
 }
@@ -675,7 +653,7 @@ PrimordialAncient: {
 		'''
 		Casts five primordial sand blasts that converge at your cursor after a moment and create a giant explosion
 		Casting this spell at max mana while without mana sickness will cause it to give you and any player it hits the {$Buffs.AeolianEarthBuff.DisplayName} buff
-		The {$Buffs.AeolianEarthBuff.DisplayName} buff increases your damage reduction by {0}% and damage by {1}%
+		The {$Buffs.AeolianEarthBuff.DisplayName} buff increases your damage reduction by {0}%, damage by {1}%, and massively buffs mana regen
 		'''
 }
 
@@ -685,7 +663,7 @@ PrimordialEarth: {
 		'''
 		Casts two enchanted blasts of sand that coverge with each other and explode
 		Casting this spell at max mana while without mana sickness will cause it to give you and any player it hits the {$Buffs.SandsWindBuff.DisplayName} buff
-		The {$Buffs.SandsWindBuff.DisplayName} buff increases your defense by {0} and damage by {1}%
+		The {$Buffs.SandsWindBuff.DisplayName} buff increases your defense by {0}, damage by {1}%, and greatly buffs mana regen
 		'''
 }
 
@@ -749,7 +727,12 @@ SandstreamScepter: {
 
 SanguineFlare: {
 	DisplayName: Sanguine Flare
-	Tooltip: Fires a blast of sanguine flares that drain enemy life
+	Tooltip:
+		'''
+		Charges up a sanguine flare that gains power over time
+		When striking an enemy, this flare causes a bloodsplosion and splits into blood orbs
+		Picking up these blood orbs reduces the duration of [cbuff:PotionSickness]
+		'''
 }
 
 SeethingDischarge: {
@@ -796,11 +779,21 @@ SHPC: {
 	TooltipNormal:
 		'''
 		Consumes Souls as ammo
-		Fires orbs of unstable, concentrated soulpower that linger after ejection
-		Orbs create a large explosion and emit seeking souls after collapse
+		Ejects orbs of unstable, concentrated soulpower that linger and explode
+		Orbs emit seeking souls and lingering pickup souls after collapse
 		Orbs have varying effects depending on Soul type used
-		Press Right Click to discharge all soulpower in the weapon as weak energy beams
+		{0}
+		Press <right> to use the machine as a vacuum, pulling in lingering souls
+		Once released, a torrent of soul lasers is discharged scaling with the number of souls pulled in
 		'''
+	// These are the soul effect descriptions, the number is the item ID of the soul
+	NoSoul: "[c/808080:There is currently no soul type injected into the weapon]"
+	SoulDesc520: "[c/F01DC4:Light-infused orbs create larger explosions]"
+	SoulDesc521: "[c/7B1DDC:Night-infused orbs create longer lasting explosions]"
+	SoulDesc575: "[c/6AF0FA:Flight-infused orbs travel faster and restore flight time on direct hits]"
+	SoulDesc548: "[c/0433DE:Might-infused orbs apply mighty knockback to enemies]"
+	SoulDesc549: "[c/4FFF7C:Sight-infused orbs seek out nearby enemies]"
+	SoulDesc547: "[c/FF6014:Fright-infused orbs deal extra flat damage with their hatred]"
 	LegendaryText:
 		'''
 		'Though soul-powered machines were a near failure, potential remained in souls as a form of fuel.
@@ -854,6 +847,15 @@ SubsumingVortex: {
 		When enemies are near the vortex, it sends multiple fast-moving smaller vortices towards them
 		Releasing <right> fires the vortex towards the mouse if enough time has passed
 		Damage scales based on how long the vortex was held out
+		'''
+}
+
+Sylvestaff: {
+	DisplayName: Sylvestaff
+	Tooltip:
+		'''
+		Casts a bouncing beam that splits when enemies are near it
+		'Also known as the Karma Staff!'
 		'''
 }
 
@@ -947,6 +949,29 @@ UndinesRetribution: {
 	Tooltip: Casts a swarm of homing spears
 }
 
+UnstableCastersGauntlet: {
+	DisplayName: Unstable Caster's Gauntlet
+	Tooltip:
+		'''
+		<left> to fire piercing needles
+		<right> to summon a ring of sigils, each representing a primordial element
+		Hold <left> with sigils available to consume random sigils, each unleashing an attack
+		<right> again while the elemental ring is out to replace all empty slots with [c/DD84E8:Warped] sigils
+		[c/DD84E8:Warped] sigils automatically fire barrages of inaccurate purple blasts
+		All actions require sufficient [c/EADAF5:Vis] to use
+		[c/EADAF5:Vis] is restored over time
+		'''
+	HoldShiftTooltip:
+		'''
+		[c/DBD7CA:Ordo] sigils always land critical strikes and pierce infinitely
+		[c/ABB6D4:Perdito] sigils ignore 25 points of enemy defense
+		[c/E89B8E:Ignis] sigils inflict Daybroken
+		[c/8ECBE8:Aqua] sigils inflict Crush Depth
+		[c/E1E88E:Aer] sigils boast substantial knockback
+		[c/ACCF9F:Terra] sigils split into sharp rocks
+		'''
+}
+
 ValkyrieRay: {
 	DisplayName: Valkyrie Ray
 	Tooltip: Casts a devastating ray of holy power
@@ -984,7 +1009,9 @@ Viscera: {
 	DisplayName: Viscera
 	Tooltip:
 		'''
-		Fires a rapid barrage of piercing blood beams that heal you on enemy hit
+		Fires a rapid barrage of piercing blood beams
+		The first enemy struck by each beam will burst into blood orbs
+		Picking up these blood orbs reduces the duration of [cbuff:PotionSickness]
 		Each successive beam in the barrage deals more damage
 		The last beam of the barrage instead explodes upon hitting an enemy
 		'''

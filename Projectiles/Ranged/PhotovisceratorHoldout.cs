@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using static CalamityMod.Items.Weapons.Ranged.Photoviscerator;
@@ -117,7 +118,7 @@ namespace CalamityMod.Projectiles.Ranged
                 return;
 
             // Immediately killed if ammo is out            
-            if (!Owner.HasAmmo(Owner.ActiveItem()))
+            if (!Owner.HasAmmo(Owner.HeldItem))
             {
                 Projectile.Kill();
                 return;
@@ -150,7 +151,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Sound3.Pitch = 0 - (PhotoTimer * 0.002f);
 
             // Consume ammo and retrieve projectile stats; has a chance to not consume ammo
-            Owner.PickAmmo(Owner.ActiveItem(), out _, out float shootSpeed, out int damage, out float knockback, out _, Main.rand.NextFloat() <= AmmoNotConsumeChance);
+            Owner.PickAmmo(Owner.HeldItem, out _, out float shootSpeed, out int damage, out float knockback, out _, Main.rand.Next(100) < AmmoSavedPercent);
 
             var source = Projectile.GetSource_FromThis();
             Vector2 position = armPosition + Projectile.velocity * 55f - verticalOffset * 10f;
@@ -173,11 +174,11 @@ namespace CalamityMod.Projectiles.Ranged
                 SoundEngine.PlaySound(DeadSunsWind.ShootSound with { Volume = 1.9f }, Owner.MountedCenter);
             }
 
-            Dust dust = Dust.NewDustPerfect(position, 263, (Projectile.velocity * 10).RotatedByRandom(0.6f) * Main.rand.NextFloat(0.3f, 1.6f));
+            Dust dust = Dust.NewDustPerfect(position, DustID.PortalBolt, (Projectile.velocity * 10).RotatedByRandom(0.6f) * Main.rand.NextFloat(0.3f, 1.6f));
             dust.noGravity = true;
             dust.scale = Main.rand.NextFloat(1.3f, 1.8f) - PhotoTimer * 0.02f;
             dust.color = sparkColorSmooth;
-            Dust dust2 = Dust.NewDustPerfect(position, 263, (Projectile.velocity * 15).RotatedByRandom(0.25f) * Main.rand.NextFloat(0.3f, 1.6f));
+            Dust dust2 = Dust.NewDustPerfect(position, DustID.PortalBolt, (Projectile.velocity * 15).RotatedByRandom(0.25f) * Main.rand.NextFloat(0.3f, 1.6f));
             dust2.noGravity = true;
             dust2.scale = Main.rand.NextFloat(1.3f, 1.8f) - PhotoTimer * 0.02f;
             dust2.color = sparkColorSmooth;
@@ -193,7 +194,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.NewProjectile(source, position, velocity.RotatedByRandom(0.005f), ProjectileType<ExoFire>(), (int)(damage * (1 - PhotoTimer / 59.9f)), knockback, Projectile.owner, Main.rand.NextFloat(0f, 3f));
 
             // Shoots light bombs every once in a while, rate of which equals to the item's use time
-            if (ShootTimer >= Owner.ActiveItem().useTime * 10 && PhotoTimer == 0)
+            if (ShootTimer >= Owner.HeldItem.useTime * 10 && PhotoTimer == 0)
             {
                 ShootTimer = 0f;
 
@@ -212,11 +213,11 @@ namespace CalamityMod.Projectiles.Ranged
         public void RightClickAttack(Vector2 armPosition, Vector2 verticalOffset)
         {
             // Multiplied by the ratio of attack speed gained from modifiers
-            ShootTimer = (RightClickCooldown * Owner.ActiveItem().useTime / (float)LightBombCooldown) - 1f;
+            ShootTimer = (RightClickCooldown * Owner.HeldItem.useTime / (float)LightBombCooldown) - 1f;
             ForcedLifespan = ShootTimer;
 
             // Consume ammo and retrieve projectile stats
-            Owner.PickAmmo(Owner.ActiveItem(), out _, out float shootSpeed, out int damage, out float knockback, out _);
+            Owner.PickAmmo(Owner.HeldItem, out _, out float shootSpeed, out int damage, out float knockback, out _);
 
             var source = Projectile.GetSource_FromThis();
             Vector2 position = armPosition + Projectile.velocity * 55f - verticalOffset * 10f;
@@ -234,7 +235,7 @@ namespace CalamityMod.Projectiles.Ranged
                 GeneralParticleHandler.SpawnParticle(pulse);
                 DirectionalPulseRing pulse2 = new DirectionalPulseRing(position, (Projectile.velocity * 10).RotatedByRandom(0.1f) * Main.rand.NextFloat(0.8f, 3.1f), sparkColor, new Vector2(1, 1), 0, Main.rand.NextFloat(0.2f, 0.35f), 0f, 40);
                 GeneralParticleHandler.SpawnParticle(pulse2);
-                Dust dust = Dust.NewDustPerfect(position, 263, (Projectile.velocity * 10).RotatedByRandom(0.6f) * Main.rand.NextFloat(0.3f, 1.6f));
+                Dust dust = Dust.NewDustPerfect(position, DustID.PortalBolt, (Projectile.velocity * 10).RotatedByRandom(0.6f) * Main.rand.NextFloat(0.3f, 1.6f));
                 dust.noGravity = true;
                 dust.scale = Main.rand.NextFloat(1.3f, 1.8f);
                 dust.color = sparkColor;

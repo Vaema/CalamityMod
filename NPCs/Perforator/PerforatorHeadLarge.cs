@@ -12,11 +12,13 @@ using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Perforator
 {
     [AutoloadBossHead]
+    [HasPierceResist]
     [LongDistanceNetSync]
     public class PerforatorHeadLarge : ModNPC
     {
@@ -24,8 +26,6 @@ namespace CalamityMod.NPCs.Perforator
         public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/PerfLargeDeath");
 
         public static Asset<Texture2D> GlowTexture;
-
-        private int biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
         private bool TailSpawned = false;
 
         public override void SetStaticDefaults()
@@ -47,17 +47,20 @@ namespace CalamityMod.NPCs.Perforator
             }
         }
 
+        // GFB exclusive
+        public static int LaserWallDamage = 10; // 40
+
         public override void SetDefaults()
         {
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 40; // 80
             NPC.npcSlots = 5f;
             NPC.width = 70;
             NPC.height = 84;
             NPC.defense = 4;
 
-            NPC.LifeMaxNERB(2700, 3240, 80000);
+            NPC.LifeMaxNERB(2000, 2600, 80000);
             if (Main.zenithWorld)
                 NPC.lifeMax *= 4;
 
@@ -72,9 +75,7 @@ namespace CalamityMod.NPCs.Perforator
             NPC.DeathSound = DeathSound;
             NPC.netAlways = true;
 
-            if (BossRushEvent.BossRushActive)
-                NPC.scale *= 1.25f;
-            else if (CalamityWorld.death)
+            if (CalamityWorld.death || BossRushEvent.BossRushActive)
                 NPC.scale *= 1.2f;
             else if (CalamityWorld.revenge)
                 NPC.scale *= 1.15f;
@@ -84,10 +85,6 @@ namespace CalamityMod.NPCs.Perforator
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -105,24 +102,21 @@ namespace CalamityMod.NPCs.Perforator
 
         public override void SendExtraAI(BinaryWriter writer)
         {
-            writer.Write(biomeEnrageTimer);
             for (int i = 0; i < 4; i++)
                 writer.Write(NPC.Calamity().newAI[i]);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
-            biomeEnrageTimer = reader.ReadInt32();
             for (int i = 0; i < 4; i++)
                 NPC.Calamity().newAI[i] = reader.ReadSingle();
         }
 
         public override void AI()
         {
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Get a target
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
@@ -134,43 +128,102 @@ namespace CalamityMod.NPCs.Perforator
 
             Player player = Main.player[NPC.target];
 
-            // Enrage
-            if ((!player.ZoneCrimson || (NPC.position.Y / 16f) < Main.worldSurface) && !bossRush)
-            {
-                if (biomeEnrageTimer > 0)
-                    biomeEnrageTimer--;
-            }
-            else
-                biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
-
-            bool biomeEnraged = biomeEnrageTimer <= 0 || bossRush;
-
-            float enrageScale = bossRush ? 1f : 0f;
-            if (biomeEnraged && (!player.ZoneCrimson || bossRush))
-                enrageScale += 1f;
-            if (biomeEnraged && ((NPC.position.Y / 16f) < Main.worldSurface || bossRush))
-                enrageScale += 1f;
-
             // Percent life remaining
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
-            float speed = 0.09f;
-            float turnSpeed = 0.06f;
+            float speed = 0.1f;
+            float turnSpeed = 0.07f;
 
             if (expertMode)
             {
-                float velocityScale = (death ? 0.12f : 0.1f) * enrageScale;
+                float velocityScale = death ? 0.1f : 0.07f;
                 speed += velocityScale * (1f - lifeRatio);
-                float accelerationScale = (death ? 0.12f : 0.1f) * enrageScale;
+                float accelerationScale = death ? 0.07f : 0.05f;
                 turnSpeed += accelerationScale * (1f - lifeRatio);
             }
 
             if (NPC.ai[2] > 0f)
                 NPC.realLife = (int)NPC.ai[2];
 
-            NPC.alpha -= 42;
-            if (NPC.alpha < 0)
-                NPC.alpha = 0;
+            // Spit attack in Rev
+            // Spit ichor blobs in Death
+            float spitDistance = 960f;
+            float tooCloseToSpitDistance = 320f;
+            bool isInRangeToSpit = NPC.Distance(player.Center) <= spitDistance && NPC.Distance(player.Center) > tooCloseToSpitDistance;
+            bool headIsTurnedTowardsTarget = (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation();
+            bool canHitTarget = Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height);
+            bool alwaysAbleToSpit = NPC.Calamity().newAI[1] == 1f;
+            bool canSpit = (isInRangeToSpit && headIsTurnedTowardsTarget && canHitTarget) || alwaysAbleToSpit;
+
+            if (canSpit)
+            {
+                float spitGateValue = 120f;
+                if (NPC.Calamity().newAI[0] < spitGateValue)
+                    NPC.Calamity().newAI[0] += 1f;
+
+                // Only spit if all the conditions are met, in order to make the attack actually dangerous
+                bool spit = NPC.Calamity().newAI[0] >= spitGateValue && isInRangeToSpit && headIsTurnedTowardsTarget && canHitTarget;
+
+                // Telegraph for half a second, or for however long it takes for the spit conditions to be met
+                float telegraphSpitGateValue = spitGateValue - 30f;
+                bool telegraphSpit = NPC.Calamity().newAI[0] >= telegraphSpitGateValue;
+
+                // Spit from the mouth hole thing...yeah
+                Vector2 spitLocation = NPC.Center + NPC.velocity.SafeNormalize(Vector2.UnitY) * 20f;
+                if (telegraphSpit)
+                {
+                    NPC.Calamity().newAI[1] = 1f;
+                    int dustType = Main.rand.NextBool() ? DustID.Ichor : DustID.Blood;
+                    for (int k = 0; k < 10; k++)
+                    {
+                        int dust = Dust.NewDust(spitLocation, 1, 1, dustType);
+                        Main.dust[dust].position = spitLocation + Main.rand.NextVector2CircularEdge(25f, 25f);
+                        Main.dust[dust].velocity = (spitLocation - Main.dust[dust].position).SafeNormalize(Vector2.UnitY) * 2f;
+                        Main.dust[dust].scale = dustType == DustID.Ichor ? 1f : 2f;
+                        Main.dust[dust].noGravity = true;
+                    }
+                }
+
+                if (spit)
+                {
+                    NPC.Calamity().newAI[0] = 0f;
+                    NPC.Calamity().newAI[1] = 0f;
+
+                    SoundEngine.PlaySound(SoundID.NPCDeath13, spitLocation);
+
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        int spitProjectileAmount = 8;
+                        float spitProjectileBaseVelocity = 16f;
+                        float spitProjectileRandomVelocityLimit = 3f;
+                        for (int i = 0; i < spitProjectileAmount; i++)
+                        {
+                            int type = Main.rand.NextBool() ? ModContent.ProjectileType<IchorShot>() : ModContent.ProjectileType<BloodGeyser>();
+                            int damage = type == ModContent.ProjectileType<IchorShot>() ? PerforatorHive.IchorShotDamage : PerforatorHive.BloodGeyserDamage;
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(),
+                                spitLocation + Main.rand.NextVector2CircularEdge(8f, 8f),
+                                NPC.velocity.SafeNormalize(Vector2.UnitY) * spitProjectileBaseVelocity + Main.rand.NextVector2CircularEdge(spitProjectileRandomVelocityLimit, spitProjectileRandomVelocityLimit),
+                                type, damage, 0f, Main.myPlayer, 0f, player.Center.Y);
+                        }
+
+                        // Spit blobs
+                        if (death)
+                        {
+                            int spitBlobAmount = 3;
+                            float spitBlobBaseVelocity = 8f;
+                            float spitBlobRandomVelocityLimit = 2f;
+                            for (int i = 0; i < spitBlobAmount; i++)
+                            {
+                                int type = ModContent.ProjectileType<IchorBlob>();
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(),
+                                    spitLocation + Main.rand.NextVector2CircularEdge(8f, 8f),
+                                    NPC.velocity.SafeNormalize(Vector2.UnitY) * spitBlobBaseVelocity + Main.rand.NextVector2CircularEdge(spitBlobRandomVelocityLimit, spitBlobRandomVelocityLimit),
+                                    type, PerforatorHive.IchorShotDamage, 0f, Main.myPlayer, 0f, player.Center.Y);
+                            }
+                        }
+                    }
+                }
+            }
 
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
@@ -282,31 +335,32 @@ namespace CalamityMod.NPCs.Perforator
             }
 
             // This is possibly the best or worst idea ever conceived
-            float laserOffset = 1500f;
-            float laserVelocity = 4f;
-            int type = ModContent.ProjectileType<DoGDeath>();
-            int damage = NPC.GetProjectileDamage(type);
-
             if (Main.zenithWorld)
-                NPC.Calamity().newAI[3]++;
-
-            if (NPC.Calamity().newAI[3] > 180f) // Effectively 10 seconds but give a little headstart in case players kill it too fast
             {
-                if (NPC.Calamity().newAI[3] % 60 == 59)
-                {
-                    SoundEngine.PlaySound(SoundID.Item12, player.Center);
-                    for (int i = -7; i < 8; i++) // 15 lasers
-                    {
-                        float laserGap = (i * 128f);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X + laserOffset, player.Center.Y + laserGap, -laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X - laserOffset, player.Center.Y + laserGap, laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X + laserGap, player.Center.Y + laserOffset, 0f, -laserVelocity, type, damage, 0f, Main.myPlayer);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X + laserGap, player.Center.Y + laserOffset, 0f, laserVelocity, type, damage, 0f, Main.myPlayer);
-                    }
-                }
+                float laserOffset = 1500f;
+                float laserVelocity = 4f;
+                int type = ModContent.ProjectileType<DoGDeath>();
+                int damage = LaserWallDamage;
 
-                if (NPC.Calamity().newAI[3] >= 300f)
-                    NPC.Calamity().newAI[3] = -300f;
+                NPC.Calamity().newAI[3]++;
+                if (NPC.Calamity().newAI[3] > 180f) // Effectively 10 seconds but give a little headstart in case players kill it too fast
+                {
+                    if (NPC.Calamity().newAI[3] % 60 == 59)
+                    {
+                        SoundEngine.PlaySound(SoundID.Item12, player.Center);
+                        for (int i = -7; i < 8; i++) // 15 lasers
+                        {
+                            float laserGap = (i * 128f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X + laserOffset, player.Center.Y + laserGap, -laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X - laserOffset, player.Center.Y + laserGap, laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X + laserGap, player.Center.Y + laserOffset, 0f, -laserVelocity, type, damage, 0f, Main.myPlayer);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X + laserGap, player.Center.Y + laserOffset, 0f, laserVelocity, type, damage, 0f, Main.myPlayer);
+                        }
+                    }
+
+                    if (NPC.Calamity().newAI[3] >= 300f)
+                        NPC.Calamity().newAI[3] = -300f;
+                }
             }
 
             float speedCopy = speed;
@@ -386,127 +440,77 @@ namespace CalamityMod.NPCs.Perforator
                 if (((NPC.velocity.X > 0f && playerX > 0f) || (NPC.velocity.X < 0f && playerX < 0f)) && ((NPC.velocity.Y > 0f && targettingPosition > 0f) || (NPC.velocity.Y < 0f && targettingPosition < 0f)))
                 {
                     if (NPC.velocity.X < playerX)
-                    {
                         NPC.velocity.X = NPC.velocity.X + turnSpeedCopy;
-                    }
                     else if (NPC.velocity.X > playerX)
-                    {
                         NPC.velocity.X = NPC.velocity.X - turnSpeedCopy;
-                    }
 
                     if (NPC.velocity.Y < targettingPosition)
-                    {
                         NPC.velocity.Y = NPC.velocity.Y + turnSpeedCopy;
-                    }
                     else if (NPC.velocity.Y > targettingPosition)
-                    {
                         NPC.velocity.Y = NPC.velocity.Y - turnSpeedCopy;
-                    }
                 }
                 if ((NPC.velocity.X > 0f && playerX > 0f) || (NPC.velocity.X < 0f && playerX < 0f) || (NPC.velocity.Y > 0f && targettingPosition > 0f) || (NPC.velocity.Y < 0f && targettingPosition < 0f))
                 {
                     if (NPC.velocity.X < playerX)
-                    {
                         NPC.velocity.X = NPC.velocity.X + speedCopy;
-                    }
                     else if (NPC.velocity.X > playerX)
-                    {
                         NPC.velocity.X = NPC.velocity.X - speedCopy;
-                    }
 
                     if (NPC.velocity.Y < targettingPosition)
-                    {
                         NPC.velocity.Y = NPC.velocity.Y + speedCopy;
-                    }
                     else if (NPC.velocity.Y > targettingPosition)
-                    {
                         NPC.velocity.Y = NPC.velocity.Y - speedCopy;
-                    }
 
                     if ((double)Math.Abs(targettingPosition) < (double)maxChargeSpeed * 0.2 && ((NPC.velocity.X > 0f && playerX < 0f) || (NPC.velocity.X < 0f && playerX > 0f)))
                     {
                         if (NPC.velocity.Y > 0f)
-                        {
                             NPC.velocity.Y = NPC.velocity.Y + speedCopy * 2f;
-                        }
                         else
-                        {
                             NPC.velocity.Y = NPC.velocity.Y - speedCopy * 2f;
-                        }
                     }
 
                     if ((double)Math.Abs(playerX) < (double)maxChargeSpeed * 0.2 && ((NPC.velocity.Y > 0f && targettingPosition < 0f) || (NPC.velocity.Y < 0f && targettingPosition > 0f)))
                     {
                         if (NPC.velocity.X > 0f)
-                        {
                             NPC.velocity.X = NPC.velocity.X + speedCopy * 2f;
-                        }
                         else
-                        {
                             NPC.velocity.X = NPC.velocity.X - speedCopy * 2f;
-                        }
                     }
                 }
                 else if (absoluteTargetX > absoluteTargetPos)
                 {
                     if (NPC.velocity.X < playerX)
-                    {
                         NPC.velocity.X = NPC.velocity.X + speedCopy * 1.1f;
-                    }
                     else if (NPC.velocity.X > playerX)
-                    {
                         NPC.velocity.X = NPC.velocity.X - speedCopy * 1.1f;
-                    }
 
                     if ((double)(Math.Abs(NPC.velocity.X) + Math.Abs(NPC.velocity.Y)) < (double)maxChargeSpeed * 0.5)
                     {
                         if (NPC.velocity.Y > 0f)
-                        {
                             NPC.velocity.Y = NPC.velocity.Y + speedCopy;
-                        }
                         else
-                        {
                             NPC.velocity.Y = NPC.velocity.Y - speedCopy;
-                        }
                     }
                 }
                 else
                 {
                     if (NPC.velocity.Y < targettingPosition)
-                    {
                         NPC.velocity.Y = NPC.velocity.Y + speedCopy * 1.1f;
-                    }
                     else if (NPC.velocity.Y > targettingPosition)
-                    {
                         NPC.velocity.Y = NPC.velocity.Y - speedCopy * 1.1f;
-                    }
 
                     if ((double)(Math.Abs(NPC.velocity.X) + Math.Abs(NPC.velocity.Y)) < (double)maxChargeSpeed * 0.5)
                     {
                         if (NPC.velocity.X > 0f)
-                        {
                             NPC.velocity.X = NPC.velocity.X + speedCopy;
-                        }
                         else
-                        {
                             NPC.velocity.X = NPC.velocity.X - speedCopy;
-                        }
                     }
                 }
             }
 
-            // Calculate contact damage based on velocity
-            float minimalContactDamageVelocity = maxChargeSpeed * 0.25f;
-            float minimalDamageVelocity = maxChargeSpeed * 0.5f;
-            if (NPC.velocity.Length() <= minimalContactDamageVelocity)
-            {
-                NPC.damage = (int)Math.Round(NPC.defDamage * 0.5);
-            }
-            else
-            {
-                float velocityDamageScalar = MathHelper.Clamp((NPC.velocity.Length() - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp((float)Math.Round(NPC.defDamage * 0.5), NPC.defDamage, velocityDamageScalar);
-            }
+            if (NPC.Distance(player.Center) > 1280f)
+                NPC.velocity += (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY) * turnSpeed;
 
             NPC.rotation = (float)Math.Atan2((double)NPC.velocity.Y, (double)NPC.velocity.X) + MathHelper.PiOver2;
 
@@ -527,6 +531,23 @@ namespace CalamityMod.NPCs.Perforator
 
             if (((NPC.velocity.X > 0f && NPC.oldVelocity.X < 0f) || (NPC.velocity.X < 0f && NPC.oldVelocity.X > 0f) || (NPC.velocity.Y > 0f && NPC.oldVelocity.Y < 0f) || (NPC.velocity.Y < 0f && NPC.oldVelocity.Y > 0f)) && !NPC.justHit)
                 NPC.netUpdate = true;
+
+            if (NPC.alpha > 0 && NPC.life > 0)
+            {
+                for (int dustIndex = 0; dustIndex < 2; dustIndex++)
+                {
+                    int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 2f);
+                    Main.dust[dust].noGravity = true;
+                    Main.dust[dust].noLight = true;
+                }
+            }
+
+            if ((NPC.position - NPC.oldPosition).Length() > 2f)
+            {
+                NPC.alpha -= 42;
+                if (NPC.alpha < 0)
+                    NPC.alpha = 0;
+            }
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -557,23 +578,18 @@ namespace CalamityMod.NPCs.Perforator
             return false;
         }
 
-        public override bool CheckActive()
-        {
-            return false;
-        }
+        public override bool CheckActive() => false;
 
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 5; k++)
-            {
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
-            }
+
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 10; k++)
-                {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
-                }
+
                 if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("LargePerf").Type, NPC.scale);
@@ -582,11 +598,8 @@ namespace CalamityMod.NPCs.Perforator
             }
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
-        {
-            name = CalamityUtils.GetTextValue("NPCs.PerforatorLarge");
-            potionType = ItemID.HealingPotion;
-        }
+        public override LocalizedText DeathMessage => CalamityUtils.GetText("NPCs.PerforatorLarge");
+        public override void BossLoot(ref int potionType) => potionType = ItemID.HealingPotion;
 
         public override bool SpecialOnKill()
         {
@@ -608,7 +621,7 @@ namespace CalamityMod.NPCs.Perforator
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<BurningBlood>(), 300, true);
+                target.AddBuff(ModContent.BuffType<BurningBlood>(), 300);
         }
     }
 }

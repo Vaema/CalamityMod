@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void SetDefaults()
         {
-            Item.width = 38;
+            Item.width = 36;
             Item.height = 34;
             Item.damage = 35;
             Item.DamageType = DamageClass.Ranged;
@@ -58,9 +58,9 @@ namespace CalamityMod.Items.Weapons.Ranged
                     Happy = false;
                     player.itemTime = 200;
                     player.itemAnimation = 200;
-                    player.Calamity().GeneralScreenShakePower = 26f;
+                    player.SetScreenshake(26f);
                     player.AddBuff(BuffID.Obstructed, 600);
-                    Main.NewText("Too much love...", 255, 0, 0);
+                    Main.NewText(CalamityUtils.GetTextValue("Misc.Polaris0"), 255, 0, 0);
                     SoundEngine.PlaySound(Squeak with { Pitch = -1f }, player.Center);
                     SoundStyle roar = new("CalamityMod/Sounds/Custom/CeaselessVoidDeathBuild");
                     SoundEngine.PlaySound(roar with { Pitch = 0.5f }, player.Center);

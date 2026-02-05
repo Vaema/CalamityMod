@@ -1,8 +1,6 @@
 ﻿using System;
 using System.IO;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.NPCs.CalClone;
-using CalamityMod.Projectiles.Magic;
+using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -11,6 +9,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
+    [PierceResistException]
     public class StarmageddonBinaryStarCenter : ModProjectile, ILocalizedModType
     {
         private const float TimeBeforeHoming = 30f;

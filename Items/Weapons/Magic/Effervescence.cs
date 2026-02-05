@@ -1,7 +1,7 @@
-﻿using CalamityMod.Items.Placeables;
-using CalamityMod.Projectiles.Magic;
+﻿using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -11,6 +11,10 @@ namespace CalamityMod.Items.Weapons.Magic
     public class Effervescence : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
+        public static readonly SoundStyle FireSound = new("CalamityMod/Sounds/Item/EffervescenceFire") { PitchVariance = 0.1f };
+        public static readonly SoundStyle BurstSound = new("CalamityMod/Sounds/Item/EffervescenceBurst") { PitchVariance = 0.1f };
+        public static readonly SoundStyle PopSound = new("CalamityMod/Sounds/Item/EffervescencePop") { PitchVariance = 0.1f };
+
         public override void SetDefaults()
         {
             Item.width = 56;
@@ -25,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.knockBack = 3.75f;
             Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
-            Item.UseSound = SoundID.Item95;
+            Item.UseSound = FireSound;
             Item.autoReuse = true;
             Item.shootSpeed = 13f;
             Item.shoot = ModContent.ProjectileType<UberBubble>();
@@ -37,9 +41,8 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             for (int randomBullets = 0; randomBullets < 4; randomBullets++)
             {
-                float SpeedX = velocity.X + Main.rand.Next(-25, 26) * 0.05f;
-                float SpeedY = velocity.Y + Main.rand.Next(-25, 26) * 0.05f;
-                Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, damage, knockback, player.whoAmI);
+                Vector2 newVel = velocity.RotatedByRandom(MathHelper.ToRadians(10f)) * Main.rand.NextFloat(0.85f, 1.2f);
+                Projectile.NewProjectile(source, position, newVel, type, damage, knockback, player.whoAmI);
             }
             return false;
         }
@@ -50,7 +53,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient(ItemID.BubbleGun).
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient(ItemID.ShimmerBlock, 5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

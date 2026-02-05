@@ -42,7 +42,8 @@ namespace CalamityMod.Items.Accessories
             Item.width = Item.height = 32;
             Item.accessory = true;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
+            Item.expert = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -62,6 +63,7 @@ namespace CalamityMod.Items.Accessories
             // Health boost intentionally stacks with Blood Pact.
             // This accessory's bleedout buffer clearing effect intentionally stacks with Blood Pact's healing potion boost.
             modPlayer.chaliceOfTheBloodGod = true;
+            modPlayer.chaliceHeartStyle = !hideVisual;
         }
 
         public override void AddRecipes()
@@ -99,7 +101,7 @@ namespace CalamityMod.Items.Accessories
                     // If this reduces the player's health to zero, make sure they actually die.
                     if (player.statLife <= 0)
                     {
-                        player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ChaliceOfTheBloodGod" + Main.rand.Next(1, 18 + 1)).Format(player.name)), modPlayer.chaliceBleedoutBuffer, 0, false);
+                        player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ChaliceOfTheBloodGod" + Main.rand.Next(1, 18 + 1)).ToNetworkText(player.name)), modPlayer.chaliceBleedoutBuffer, 0, false);
                     }
                 }
 
@@ -137,7 +139,7 @@ namespace CalamityMod.Items.Accessories
                     {
                         // Death message changes depending on whether it was the last few drips of an "honored" bleed, or attempting to cheat by removing the accessory.
                         string deathMessageKey = modPlayer.chaliceOfTheBloodGod ? "Status.Death.ChaliceOfTheBloodGodClose" : "Status.Death.ChaliceOfTheBloodGodUnequip";
-                        player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText(deathMessageKey).Format(player.name)), modPlayer.chaliceBleedoutBuffer, 0, false);
+                        player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText(deathMessageKey).ToNetworkText(player.name)), modPlayer.chaliceBleedoutBuffer, 0, false);
                     }
                 }
 

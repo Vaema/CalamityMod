@@ -7,7 +7,6 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.Localization;
@@ -46,7 +45,6 @@ namespace CalamityMod.Projectiles.Melee
         {
             Projectile.knockBack = 0;
             Projectile.scale = 1;
-            Projectile.ai[1] = -1;
 
             mousePos = Owner.Calamity().mouseWorld;
             aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
@@ -76,9 +74,7 @@ namespace CalamityMod.Projectiles.Melee
 
             if (!doSwing)
             {
-                for (int i = 0; i < Main.maxNPCs; i++)
-                    Projectile.localNPCImmunity[i] = 0;
-
+                Projectile.ResetLocalNPCHitImmunity();
                 Projectile.numHits = 0;
                 mousePos = Owner.Calamity().mouseWorld;
                 aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65f;
@@ -116,7 +112,7 @@ namespace CalamityMod.Projectiles.Melee
                     {
                         doSwing = false;
                     }
-                    RotationOffset = RotationOffset.AngleLerp(MathHelper.ToRadians(45f * Projectile.ai[1] * Owner.direction), 0.2f);
+                    RotationOffset = RotationOffset.AngleLerp(MathHelper.ToRadians(-30f * Owner.direction), 0.12f);
                 }
                 else
                 {
@@ -137,27 +133,24 @@ namespace CalamityMod.Projectiles.Melee
 
                     if (time > (int)(timeMax * 0.66f))
                     {
-                        RotationOffset = MathHelper.Lerp(RotationOffset, MathHelper.ToRadians(MathHelper.Lerp(-45f * Projectile.ai[1] * Owner.direction, 1125f * -Projectile.ai[1] * Owner.direction, CalamityUtils.ExpInOutEasing(time * 3f / timeMax, 1))), 0.125f);
+                        RotationOffset = MathHelper.Lerp(RotationOffset, MathHelper.ToRadians(MathHelper.Lerp(765f * Owner.direction, 1125f * Owner.direction, CalamityUtils.ExpInOutEasing(time * 3f / timeMax, 1))), 0.1f * Owner.GetAttackSpeed<MeleeDamageClass>());
                         if (!SecondIFrameReset)
                         {
                             SecondIFrameReset = true;
-                            for (int i = 0; i < Main.maxNPCs; i++)
-                                Projectile.localNPCImmunity[i] = 0;
+                            Projectile.ResetLocalNPCHitImmunity();
                         }
                     }
                     else if (time > (int)(timeMax * 0.33f))
                     {
-                        RotationOffset = MathHelper.Lerp(RotationOffset, MathHelper.ToRadians(MathHelper.Lerp(-45f * Projectile.ai[1] * Owner.direction, 765f * -Projectile.ai[1] * Owner.direction, CalamityUtils.ExpInOutEasing(time * 3f / timeMax, 1))), 0.125f);
+                        RotationOffset = MathHelper.Lerp(RotationOffset, MathHelper.ToRadians(MathHelper.Lerp(405f * Owner.direction, 765f * Owner.direction, CalamityUtils.ExpInOutEasing(time * 3f / timeMax, 1))), 0.1f * Owner.GetAttackSpeed<MeleeDamageClass>());
                         if (!FirstIFrameReset)
                         {
                             FirstIFrameReset = true;
-                            for (int i = 0; i < Main.maxNPCs; i++)
-                                Projectile.localNPCImmunity[i] = 0;
+                            Projectile.ResetLocalNPCHitImmunity();
                         }
                     }
                     else
-                        RotationOffset = MathHelper.Lerp(RotationOffset, MathHelper.ToRadians(MathHelper.Lerp(-45f * Projectile.ai[1] * Owner.direction, 405f * -Projectile.ai[1] * Owner.direction, CalamityUtils.ExpInOutEasing(time * 3f / timeMax, 1))), 0.125f);
-
+                        RotationOffset = MathHelper.Lerp(RotationOffset, MathHelper.ToRadians(MathHelper.Lerp(45f * Owner.direction, 405f * Owner.direction, CalamityUtils.ExpInOutEasing(time * 3f / timeMax, 1))), 0.1f * Owner.GetAttackSpeed<MeleeDamageClass>());
 
                     if (time >= (int)(timeMax * 0.98f))
                         doSwing = false;

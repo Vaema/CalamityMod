@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using CalamityMod.Events;
+﻿using CalamityMod.Events;
 using CalamityMod.Items.Materials;
 using CalamityMod.NPCs.ProfanedGuardians;
 using Terraria;
@@ -50,7 +49,7 @@ namespace CalamityMod.Items.SummonItems
             CreateRecipe().
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<UnholyEssence>(25).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

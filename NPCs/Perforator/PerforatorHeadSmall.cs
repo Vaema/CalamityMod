@@ -1,8 +1,6 @@
 ﻿using System;
-using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Events;
-using CalamityMod.NPCs.Abyss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,11 +10,13 @@ using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Perforator
 {
     [AutoloadBossHead]
+    [HasPierceResist]
     [LongDistanceNetSync]
     public class PerforatorHeadSmall : ModNPC
     {
@@ -24,9 +24,6 @@ namespace CalamityMod.NPCs.Perforator
         public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/PerfSmallDeath");
 
         public static Asset<Texture2D> GlowTexture;
-
-        private int biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
-        private const int MsgType = 23;
         private bool TailSpawned = false;
 
         public override void SetStaticDefaults()
@@ -52,12 +49,12 @@ namespace CalamityMod.NPCs.Perforator
         {
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 22; // 44
             NPC.npcSlots = 5f;
             NPC.width = 42;
             NPC.height = 62;
 
-            NPC.LifeMaxNERB(1200, 1440, 50000);
+            NPC.LifeMaxNERB(900, 1150, 50000);
             if (Main.zenithWorld)
                 NPC.lifeMax *= 4;
 
@@ -72,9 +69,7 @@ namespace CalamityMod.NPCs.Perforator
             NPC.DeathSound = DeathSound;
             NPC.netAlways = true;
 
-            if (BossRushEvent.BossRushActive)
-                NPC.scale *= 1.25f;
-            else if (CalamityWorld.death)
+            if (CalamityWorld.death || BossRushEvent.BossRushActive)
                 NPC.scale *= 1.2f;
             else if (CalamityWorld.revenge)
                 NPC.scale *= 1.15f;
@@ -84,10 +79,6 @@ namespace CalamityMod.NPCs.Perforator
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -103,51 +94,23 @@ namespace CalamityMod.NPCs.Perforator
             });
         }
 
-        public override void SendExtraAI(BinaryWriter writer)
-        {
-            writer.Write(biomeEnrageTimer);
-        }
-
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
-            biomeEnrageTimer = reader.ReadInt32();
-        }
-
         public override void AI()
         {
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
-
-            // Enrage
-            if ((!Main.player[NPC.target].ZoneCrimson || (NPC.position.Y / 16f) < Main.worldSurface) && !bossRush)
-            {
-                if (biomeEnrageTimer > 0)
-                    biomeEnrageTimer--;
-            }
-            else
-                biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
-
-            bool biomeEnraged = biomeEnrageTimer <= 0 || bossRush;
-
-            float enrageScale = bossRush ? 1f : 0f;
-            if (biomeEnraged && (!Main.player[NPC.target].ZoneCrimson || bossRush))
-                enrageScale += 1f;
-            if (biomeEnraged && ((NPC.position.Y / 16f) < Main.worldSurface || bossRush))
-                enrageScale += 1f;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Percent life remaining
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
-            float speed = 0.15f;
-            float turnSpeed = 0.1f;
+            float speed = revenge ? 0.2f : 0.15f;
+            float turnSpeed = revenge ? 0.15f : 0.1f;
 
             if (expertMode)
             {
-                float velocityScale = (death ? 0.15f : 0.1f) * enrageScale;
+                float velocityScale = death ? 0.2f : 0.14f;
                 speed += velocityScale * (1f - lifeRatio);
-                float accelerationScale = (death ? 0.12f : 0.1f) * enrageScale;
+                float accelerationScale = death ? 0.15f : 0.1f;
                 turnSpeed += accelerationScale * (1f - lifeRatio);
             }
 
@@ -163,10 +126,6 @@ namespace CalamityMod.NPCs.Perforator
                 NPC.TargetClosest();
 
             Player player = Main.player[NPC.target];
-
-            NPC.alpha -= 42;
-            if (NPC.alpha < 0)
-                NPC.alpha = 0;
 
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
@@ -186,7 +145,7 @@ namespace CalamityMod.NPCs.Perforator
                         Main.npc[lol].ai[2] = NPC.whoAmI;
                         Main.npc[lol].ai[1] = Previous;
                         Main.npc[Previous].ai[0] = lol;
-                        NetMessage.SendData(MsgType, -1, -1, null, lol, 0f, 0f, 0f, 0);
+                        NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, lol, 0f, 0f, 0f, 0);
                         Previous = lol;
                     }
 
@@ -454,18 +413,8 @@ namespace CalamityMod.NPCs.Perforator
                 }
             }
 
-            // Calculate contact damage based on velocity
-            float minimalContactDamageVelocity = maxChargeSpeed * 0.25f;
-            float minimalDamageVelocity = maxChargeSpeed * 0.5f;
-            if (NPC.velocity.Length() <= minimalContactDamageVelocity)
-            {
-                NPC.damage = (int)Math.Round(NPC.defDamage * 0.5);
-            }
-            else
-            {
-                float velocityDamageScalar = MathHelper.Clamp((NPC.velocity.Length() - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp((float)Math.Round(NPC.defDamage * 0.5), NPC.defDamage, velocityDamageScalar);
-            }
+            if (NPC.Distance(player.Center) > 1280f)
+                NPC.velocity += (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY) * turnSpeed;
 
             NPC.rotation = (float)Math.Atan2((double)NPC.velocity.Y, (double)NPC.velocity.X) + MathHelper.PiOver2;
 
@@ -486,6 +435,23 @@ namespace CalamityMod.NPCs.Perforator
 
             if (((NPC.velocity.X > 0f && NPC.oldVelocity.X < 0f) || (NPC.velocity.X < 0f && NPC.oldVelocity.X > 0f) || (NPC.velocity.Y > 0f && NPC.oldVelocity.Y < 0f) || (NPC.velocity.Y < 0f && NPC.oldVelocity.Y > 0f)) && !NPC.justHit)
                 NPC.netUpdate = true;
+
+            if (NPC.alpha > 0 && NPC.life > 0)
+            {
+                for (int dustIndex = 0; dustIndex < 2; dustIndex++)
+                {
+                    int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 2f);
+                    Main.dust[dust].noGravity = true;
+                    Main.dust[dust].noLight = true;
+                }
+            }
+
+            if ((NPC.position - NPC.oldPosition).Length() > 2f)
+            {
+                NPC.alpha -= 42;
+                if (NPC.alpha < 0)
+                    NPC.alpha = 0;
+            }
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -540,11 +506,8 @@ namespace CalamityMod.NPCs.Perforator
             }
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
-        {
-            name = CalamityUtils.GetTextValue("NPCs.PerforatorSmall");
-            potionType = ItemID.HealingPotion;
-        }
+        public override LocalizedText DeathMessage => CalamityUtils.GetText("NPCs.PerforatorSmall");
+        public override void BossLoot(ref int potionType) => potionType = ItemID.HealingPotion;
 
         public override bool SpecialOnKill()
         {
@@ -566,7 +529,7 @@ namespace CalamityMod.NPCs.Perforator
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<BurningBlood>(), 180, true);
+                target.AddBuff(ModContent.BuffType<BurningBlood>(), 240);
         }
     }
 }

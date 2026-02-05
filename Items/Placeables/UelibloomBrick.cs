@@ -1,7 +1,6 @@
 ﻿using CalamityMod.Items.Placeables.FurnitureBotanic;
 using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Items.Placeables.Walls;
-using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables
@@ -21,7 +20,7 @@ namespace CalamityMod.Items.Placeables
             CreateRecipe(50).
                 AddRecipeGroup("AnyStoneBlock", 50).
                 AddIngredient<UelibloomOre>().
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.AdamantiteForge).
                 Register();
             CreateRecipe().
                 AddIngredient<UelibloomBrickWall>(4).

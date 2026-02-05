@@ -4,7 +4,6 @@ using CalamityMod.Schematics;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.WorldBuilding;
 using static CalamityMod.Schematics.SchematicManager;
 
@@ -17,27 +16,95 @@ namespace CalamityMod.World
             string mapKey = MechanicShedKey;
             var schematic = TileMaps[mapKey];
 
-            int placementPositionX = WorldGen.genRand.Next(GenVars.snowOriginLeft + 100, GenVars.snowOriginRight - 100);
-            int placementPositionY = (int)Main.worldSurface - (Main.maxTilesY / 12);
+            int leftLimit = GenVars.snowOriginLeft + 100;
+            int rightLimit = GenVars.snowOriginRight - 100;
+            int placementPositionX = WorldGen.genRand.Next(leftLimit, rightLimit);
+            int placementPositionY = (int)Main.worldSurface - 50;
+
+            int distanceToCheckForSnowTilesX = 30;
+            int distanceToCheckForSnowTilesY = 5;
+            int snowTilesRequired = 100;
+            int emptyTilesRequired = 100;
 
             bool foundValidGround = false;
             int attempts = 0;
-            while (!foundValidGround && attempts++ < 100000)
+            int maxAttempts = 100000;
+            while (!foundValidGround && attempts <= maxAttempts)
             {
-                while (!WorldGen.SolidTile(placementPositionX, placementPositionY) && placementPositionY <= Main.worldSurface)
+                attempts++;
+
+                // Check if there are enough snow tiles on the bottom of the shed's gen location
+                // 150 tiles checked in total
+                int snowTileCount = 0;
+                bool enoughSnowTilesOnBottom = false;
+                for (int shedTileCheckIndexX = placementPositionX - 15; shedTileCheckIndexX < placementPositionX - 15 + distanceToCheckForSnowTilesX; shedTileCheckIndexX++)
                 {
-                    placementPositionY++;
+                    if (enoughSnowTilesOnBottom)
+                        break;
+
+                    for (int shedTileCheckIndexY = placementPositionY - 5; shedTileCheckIndexY < placementPositionY - 5 + distanceToCheckForSnowTilesY; shedTileCheckIndexY++)
+                    {
+                        if (Main.tile[shedTileCheckIndexX, shedTileCheckIndexY] != null)
+                        {
+                            if (Main.tile[shedTileCheckIndexX, shedTileCheckIndexY].HasTile)
+                            {
+                                if (Main.tile[shedTileCheckIndexX, shedTileCheckIndexY].TileType == TileID.SnowBlock)
+                                {
+                                    snowTileCount++;
+                                    if (snowTileCount >= snowTilesRequired)
+                                    {
+                                        enoughSnowTilesOnBottom = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
 
-                if (Main.tile[placementPositionX, placementPositionY].HasTile || Main.tile[placementPositionX, placementPositionY].WallType > 0)
+                // Check if there are enough empty tiles on the top of the shed's gen location
+                // 150 tiles checked in total
+                int emptyTileCount = 0;
+                bool enoughEmptyTilesOnTop = false;
+                for (int shedTileCheckIndexX = placementPositionX - 15; shedTileCheckIndexX < placementPositionX - 15 + distanceToCheckForSnowTilesX; shedTileCheckIndexX++)
                 {
-                    foundValidGround = true;
+                    if (enoughEmptyTilesOnTop)
+                        break;
+
+                    for (int shedTileCheckIndexY = placementPositionY - 20; shedTileCheckIndexY < placementPositionY - 20 + distanceToCheckForSnowTilesY; shedTileCheckIndexY++)
+                    {
+                        if ((Main.tile[shedTileCheckIndexX, shedTileCheckIndexY] == null ||
+                            !Main.tile[shedTileCheckIndexX, shedTileCheckIndexY].HasTile) &&
+                            Main.tile[shedTileCheckIndexX, shedTileCheckIndexY].WallType == WallID.None)
+                        {
+                            emptyTileCount++;
+                            if (emptyTileCount >= emptyTilesRequired)
+                            {
+                                enoughEmptyTilesOnTop = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (enoughSnowTilesOnBottom && enoughEmptyTilesOnTop)
+                {
+                    break;
+                }
+                else
+                {
+                    placementPositionX += 5;
+                    if (placementPositionX > rightLimit)
+                        placementPositionX = leftLimit;
+
+                    if (!enoughEmptyTilesOnTop)
+                        placementPositionY -= 5;
+                    else if (!enoughSnowTilesOnBottom)
+                        placementPositionY += 5;
                 }
             }
 
-            Point placementPoint = new Point(placementPositionX, placementPositionY + 5);
-
-            Vector2 schematicSize = new Vector2(schematic.GetLength(0), schematic.GetLength(1));
+            Point placementPoint = new Point(placementPositionX, placementPositionY);
             SchematicAnchor anchorType = SchematicAnchor.BottomCenter;
 
             bool place = true;
@@ -62,6 +129,7 @@ namespace CalamityMod.World
             for (int i = 0; i < contents.Count; i++)
             {
                 chest.item[i].SetDefaults(contents[i].Type);
+                chest.item[i].Prefix(-1);
                 chest.item[i].stack = contents[i].Stack;
             }
         }

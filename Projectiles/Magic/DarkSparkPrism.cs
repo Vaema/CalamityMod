@@ -29,6 +29,8 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.ignoreWater = true;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -59,7 +61,7 @@ namespace CalamityMod.Projectiles.Magic
             if (Projectile.ai[0] > 480f)
                 hitCooldown = 5f;
 
-            Projectile.damage = player.ActiveItem() is null ? 0 : player.GetWeaponDamage(player.ActiveItem());
+            Projectile.damage = player.HeldItem is null ? 0 : player.GetWeaponDamage(player.HeldItem);
 
             Projectile.ai[0] += 1f;
             Projectile.ai[1] += 1f;
@@ -88,7 +90,7 @@ namespace CalamityMod.Projectiles.Magic
 
                 if (Main.myPlayer == Projectile.owner)
                 {
-                    float scaleFactor5 = player.ActiveItem().shootSpeed * Projectile.scale;
+                    float scaleFactor5 = player.HeldItem.shootSpeed * Projectile.scale;
                     Vector2 projRotation = playerRotation;
                     Vector2 gravityAdjustedRotation = Main.screenPosition + new Vector2(Main.mouseX, Main.mouseY) - projRotation;
                     if (player.gravDir == -1f)
@@ -125,7 +127,7 @@ namespace CalamityMod.Projectiles.Magic
 
             if (shouldHitChargedUp && Main.myPlayer == Projectile.owner)
             {
-                bool hasMana = !shouldHitNotCharged || player.CheckMana(player.ActiveItem(), -1, true, false);
+                bool hasMana = !shouldHitNotCharged || player.CheckMana(player.HeldItem, -1, true, false);
                 if (!player.CantUseHoldout() && hasMana)
                 {
                     if (Projectile.ai[0] == 1f)

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
@@ -38,7 +37,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 88;
             Item.height = 34;
-            Item.damage = 387;
+            Item.damage = 445;
             Item.DamageType = DamageClass.Ranged;
             Item.useAnimation = Item.useTime = 8;
             Item.noMelee = true;
@@ -55,15 +54,12 @@ namespace CalamityMod.Items.Weapons.Ranged
         }
         public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 25;
         public override bool AltFunctionUse(Player player) => true;
-
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
-
         public override void HoldItem(Player player)
         {
             if (Main.myPlayer == player.whoAmI)
                 player.Calamity().rightClickListener = true;
         }
-
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             // Only one out at a time
@@ -74,11 +70,15 @@ namespace CalamityMod.Items.Weapons.Ranged
 
             if (player.Calamity().mouseRight && player.whoAmI == Main.myPlayer && !Main.mapFullscreen && !Main.blockMouse)
             {
-                Projectile holdout2 = Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, Item.shoot, player.ActiveItem().damage, 0f, player.whoAmI, 0, 0, 10 + (shotType ? 5 : 0));
+                int aiType = 10 + (shotType ? 5 : 0);
+                if (!player.Calamity().despoilerNerf)
+                    aiType = 20;
+                Projectile holdout2 = Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, Item.shoot, player.HeldItem.damage, 0f, player.whoAmI, 0, 0, aiType);
                 holdout2.velocity = (player.Calamity().mouseWorld - player.MountedCenter).SafeNormalize(Vector2.Zero);
                 SoundStyle fire = new("CalamityMod/Sounds/Item/DudFire");
-                SoundEngine.PlaySound(fire with { Volume = 0.7f, Pitch = -0.5f + (shotType ? 0.5f : 0) }, player.Center);
-                shotType = !shotType;
+                SoundEngine.PlaySound(fire with { Volume = 0.7f, Pitch = aiType == 20 ? -0.7f : (-0.5f + (shotType ? 0.5f : 0)) }, player.Center);
+                if (aiType != 20)
+                    shotType = !shotType;
             }
             else
             {
@@ -87,39 +87,13 @@ namespace CalamityMod.Items.Weapons.Ranged
             }
             return false;
         }
-        public override void ModifyTooltips(List<TooltipLine> list)
-        {
-            Player Owner = Main.LocalPlayer;
-            if (Owner is null)
-                return;
-            float rate = (Main.GlobalTimeWrappedHourly * 3);
-            List<Color> eColors = new List<Color>()
-                {
-                    Owner.shirtColor,
-                    Color.Lerp(Owner.shirtColor, Color.Black, 0.3f),
-                    Color.Lerp(Owner.shirtColor, Color.White, 0.2f),
-                    Color.Lerp(Owner.shirtColor, Color.White, 0.4f)
-            };
-            int colorIndex = (int)(rate / 2 % eColors.Count);
-            Color currentColor = eColors[colorIndex];
-            Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
-            Color eTooltipColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
-            if (Owner.shirtColor == Color.White)
-                eTooltipColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB);
-
-            TooltipLine line = list.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Tooltip7");
-            if (line != null)
-                line.OverrideColor = Color.Lerp(eTooltipColor, Color.White, 0.2f);
-        }
-
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient<ArcNovaDiffuser>().
                 AddIngredient<NullificationPistol>().
-                AddIngredient<DarkPlasma>(2).
-                AddIngredient<CoreofCalamity>().
-                AddTile(TileID.LunarCraftingStation).
+                AddIngredient<DarkPlasma>(3).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

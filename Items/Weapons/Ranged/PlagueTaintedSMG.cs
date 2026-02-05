@@ -1,9 +1,6 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Projectiles.Ranged;
-using CalamityMod.Rarities;
-using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -42,7 +39,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 12f;
             Item.useAmmo = AmmoID.Bullet;
             Item.shoot = ModContent.ProjectileType<PlagueTaintedProjectile>();
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-20, 5);

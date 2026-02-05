@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
-using CalamityMod.Items;
+using CalamityMod.Items.Tools;
 using CalamityMod.Projectiles.Magic;
+using CalamityMod.Systems.Collections;
 using CalamityMod.UI.CalamitasEnchants;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.Events;
 using Terraria.GameContent.Personalities;
@@ -65,6 +65,9 @@ namespace CalamityMod.NPCs.TownNPCs
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath6;
             NPC.knockBackResist = 0.8f;
+            NPC.Calamity().VulnerableToHeat = false;
+            NPC.Calamity().VulnerableToCold = true;
+            NPC.Calamity().VulnerableToSickness = true;
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -673,10 +676,6 @@ namespace CalamityMod.NPCs.TownNPCs
                 }
             }
 
-            int cirrus = NPC.FindFirstNPC(NPCType<Cirrus>());
-            if (cirrus != -1 && ChildSafety.Disabled)
-                dialogue.Add(this.GetLocalization("Chat.DrunkPrincess").Format(Main.npc[cirrus].GivenName), 1.45);
-
             if (NPC.AnyNPCs(NPCType<SeaKing>()))
                 dialogue.Add(this.GetLocalizedValue("Chat.SeaKing"), 1.45);
 
@@ -686,7 +685,11 @@ namespace CalamityMod.NPCs.TownNPCs
             return dialogue;
         }
 
-        public override void SetChatButtons(ref string button, ref string button2) => button = this.GetLocalizedValue("EnchantButton");
+        public override void SetChatButtons(ref string button, ref string button2)
+        {
+            button = this.GetLocalizedValue("EnchantButton");
+            button2 = this.GetLocalizedValue("DonorButton");
+        }
 
         public override void OnChatButtonClicked(bool firstButton, ref string shopName)
         {
@@ -702,6 +705,29 @@ namespace CalamityMod.NPCs.TownNPCs
                     Main.LocalPlayer.Calamity().GivenBrimstoneLocus = true;
                 }
             }
+            else
+            {
+                Main.npcChatText = GetRandomDonors(25);
+            }
+        }
+
+        /// <summary>
+        /// Returns 25 random donator usernames.
+        /// </summary>
+        public string GetRandomDonors(int numDonors)
+        {
+            IList<string> pickingList = [..DonatorsNameList.List];
+
+            string[] pickedDonors = new string[numDonors];
+            for (int i = 0; i < numDonors; ++i)
+            {
+                int idxSelected = Main.rand.Next(pickingList.Count);
+                pickedDonors[i] = pickingList[idxSelected];
+                pickingList.RemoveAt(idxSelected);
+            }
+
+            string text = this.GetLocalization("DonorShoutout").Format(pickedDonors);
+            return text;
         }
 
         // Make this Town NPC teleport to the Queen statue when triggered.

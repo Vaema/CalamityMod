@@ -11,6 +11,7 @@ namespace CalamityMod.Projectiles.Magic
         public int time = 0;
         public float dustRotation = 0;
         public bool launched = false;
+        public NPC targeted;
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 4;
@@ -63,11 +64,11 @@ namespace CalamityMod.Projectiles.Magic
                     Projectile.penetrate = 1;
                     launched = true;
                 }
+                if (targeted == null || targeted.life <= 0)
+                    targeted = Projectile.Center.ClosestNPCAt(950);
+                CalamityUtils.HomeInOnSelectedNPC(Projectile, targeted, true, 0.15f, 6, 0.98f, accelerate: true);
 
-                NPC target = Projectile.Center.ClosestNPCAt(700);
-                CalamityUtils.HomeInOnSelectedNPC(Projectile, target, true, 0.15f, 6, 0.98f, accelerate: true);
-
-                if (time < 550 && target == null)
+                if (time < 550 && targeted == null)
                 {
                     // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     if (Projectile.velocity.Length() < 6)
@@ -89,7 +90,7 @@ namespace CalamityMod.Projectiles.Magic
             if (time > 5)
             {
                 Vector2 dustPos = Projectile.Center + (MathHelper.Pi + dustRotation + MathHelper.PiOver2).ToRotationVector2() * 10f * Projectile.scale;
-                Dust dust = Dust.NewDustPerfect(dustPos, 175, (MathHelper.Pi + dustRotation * Math.Sign(Projectile.velocity.Length())).ToRotationVector2() * 2);
+                Dust dust = Dust.NewDustPerfect(dustPos, DustID.SpectreStaff, (MathHelper.Pi + dustRotation * Math.Sign(Projectile.velocity.Length())).ToRotationVector2() * 2);
                 dust.noGravity = false;
                 dust.scale = Main.rand.NextFloat(0.75f, 1.2f);
                 dust.alpha = Main.rand.Next(100, 170 + 1);
@@ -99,19 +100,25 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            modifiers.SourceDamage *= (launched ? 1f : 0.4f);
+            modifiers.SourceDamage *= (launched ? 1f : 0.3f);
 
             Player Owner = Main.player[Projectile.owner];
 
             Vector2 launchVel = (Owner.Center - target.Center).SafeNormalize(Vector2.UnitY) * -10 * (launched ? 0.5f : 1);
             target.MoveNPC(launchVel, 10 * (launched ? 0.5f : 1), true);
         }
-
+        public override bool? CanHitNPC(NPC target)
+        {
+            if (targeted != null)
+                return (target == targeted ? null : false);
+            else
+                return null;
+        }
         public override void OnKill(int timeLeft)
         {
             for (int i = 0; i <= 3; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 175, (Projectile.velocity * 6).RotatedByRandom(0.4f) * Main.rand.NextFloat(0.1f, 0.8f), 100, default, Main.rand.NextFloat(1.2f, 1.8f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.SpectreStaff, (Projectile.velocity * 6).RotatedByRandom(0.4f) * Main.rand.NextFloat(0.1f, 0.8f), 100, default, Main.rand.NextFloat(1.2f, 1.8f));
                 dust.noGravity = true;
                 Dust chargefull = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(4) ? 278 : 267);
                 chargefull.velocity = Projectile.velocity.RotatedByRandom(0.25f) * Main.rand.NextFloat(1f, 4);

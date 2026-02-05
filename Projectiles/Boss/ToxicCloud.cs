@@ -1,7 +1,5 @@
 ﻿using System;
 using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Events;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -36,8 +34,7 @@ namespace CalamityMod.Projectiles.Boss
         {
             Lighting.AddLight(Projectile.Center, 0.1f, 0.7f, 0f);
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            if (Projectile.velocity.Length() < (bossRush ? 6.25f : 5f))
+            if (Projectile.velocity.Length() < 5f)
                 Projectile.velocity *= 1.01f;
 
             Projectile.ai[0] += 1f;
@@ -88,9 +85,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(BuffID.Poisoned, 240);
-            target.AddBuff(BuffID.Venom, 240);
-            target.AddBuff(ModContent.BuffType<Irradiated>(), 240);
+            target.AddBuff(ModContent.BuffType<Irradiated>(), 480);
         }
     }
 }

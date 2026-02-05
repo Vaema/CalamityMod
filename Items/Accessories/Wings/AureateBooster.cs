@@ -19,6 +19,10 @@ namespace CalamityMod.Items.Accessories.Wings
         public override float MaxAscentSpeed => 2.5f;
         public override float BaseAscent => 0.125f;
 
+        // How powerful the acceleration increase is while pressing UP
+        // This also affects the flight time tick rate
+        public static float BoostPower = 1.5f;
+
         public override void SetStaticDefaults() => ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(120, 8f, 1.5f);
 
         public override void SetDefaults()
@@ -32,6 +36,8 @@ namespace CalamityMod.Items.Accessories.Wings
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
+            player.DisableWingFlapSound();
+
             if (player.controlJump && player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
             {
                 player.rocketDelay2--;
@@ -81,7 +87,19 @@ namespace CalamityMod.Items.Accessories.Wings
                     }
                 }
             }
-            player.noFallDmg = true;
+        }
+
+        public override void AdditionalFlightMovement(Player player, ref float ascentWhenFalling, ref float ascentWhenRising, ref float maxCanAscendMultiplier, ref float maxAscentMultiplier, ref float constantAscend)
+        {
+            if (player.TryingToHoverUp)
+            {
+                ascentWhenFalling *= BoostPower;
+                ascentWhenRising *= BoostPower;
+                maxCanAscendMultiplier *= BoostPower;
+                maxAscentMultiplier *= BoostPower;
+                constantAscend *= BoostPower;
+                player.wingTime -= BoostPower - 1f;
+            }
         }
 
         public override void AddRecipes()

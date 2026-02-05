@@ -11,7 +11,6 @@ using Terraria.Enums;
 using Terraria.GameContent;
 using Terraria.GameContent.ObjectInteractions;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -134,11 +133,12 @@ namespace CalamityMod.Tiles.DraedonStructures
             frameXPos += frameIndex / FramesPerColumn * (Width * SheetSquare);
             frameYPos += frameIndex % FramesPerColumn * (Height * SheetSquare);
 
-            Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Tiles/DraedonStructures/PowerCellFactory").Value;
+
+            Texture2D tex = TextureAssets.Tile[Type].Value;
             Vector2 offset = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + offset;
             Color drawColor = Lighting.GetColor(i, j);
-            
+
 
             if (!t.IsHalfBlock && t.Slope == 0)
                 spriteBatch.Draw(tex, drawOffset, new Rectangle(frameXPos, frameYPos, 16, 16), drawColor, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
@@ -146,11 +146,9 @@ namespace CalamityMod.Tiles.DraedonStructures
                 spriteBatch.Draw(tex, drawOffset + Vector2.UnitY * 8f, new Rectangle(frameXPos, frameYPos, 16, 16), drawColor, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
 
             // Draws the Smart Cursor Highlight. Not 100% accurate, but its close enough
-            bool actuallySelected;
             Color highlightColor;
-            Texture2D texhighlight = ModContent.Request<Texture2D>(HighlightTexture).Value;
-            if (Main.InSmartCursorHighlightArea(i, j, out actuallySelected))
-            {   
+            if (TileID.Sets.HasOutlines[Type] && Main.InSmartCursorHighlightArea(i, j, out var actuallySelected))
+            {
                 if (actuallySelected)
                 {
                     highlightColor = new Color(252, 252, 84);
@@ -159,10 +157,10 @@ namespace CalamityMod.Tiles.DraedonStructures
                 {
                     highlightColor = new Color(125, 125, 125);
                 }
-                spriteBatch.Draw(texhighlight, drawOffset, new Rectangle(frameXPos, frameYPos, 16, 16), highlightColor, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                spriteBatch.Draw(TextureAssets.HighlightMask[Type].Value, drawOffset, new Rectangle(frameXPos, frameYPos, 16, 16), highlightColor, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
             }
-            
-           
+
+
 
             return false;
         }

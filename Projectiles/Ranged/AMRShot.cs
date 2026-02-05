@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.Buffs.StatDebuffs;
+﻿using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -24,18 +23,16 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.ignoreWater = true;
             Projectile.penetrate = 1;
             Projectile.timeLeft = 600;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override void AI()
         {
-            float num107 = (float)Math.Sqrt(Projectile.velocity.X * Projectile.velocity.X + Projectile.velocity.Y * Projectile.velocity.Y);
             if (Projectile.alpha > 0)
-                Projectile.alpha -= (byte)(num107 * 0.9);
+                Projectile.alpha -= (int)(Projectile.velocity.Length() * 0.9f);
             if (Projectile.alpha < 0)
                 Projectile.alpha = 0;
 
-            Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + MathHelper.PiOver2;
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
         }
 
         public override Color? GetAlpha(Color lightColor)
@@ -76,12 +73,12 @@ namespace CalamityMod.Projectiles.Ranged
             if (crit)
             {
                 var source = Projectile.GetSource_FromThis();
-                extraProjectileAmt = 5;
+                extraProjectileAmt = 4;
                 for (int x = 0; x < extraProjectileAmt; x++)
                 {
                     if (Projectile.owner == Main.myPlayer)
                     {
-                        fromRight = x > 3;
+                        fromRight = x >= 2;
                         CalamityUtils.ProjectileBarrage(source, Projectile.Center, targetPos, fromRight, 500f, 500f, 0f, 500f, 10f, ModContent.ProjectileType<AMR2>(), (int)(Projectile.damage * 0.15), Projectile.knockBack * 0.1f, Projectile.owner);
                     }
                 }

@@ -14,13 +14,13 @@ namespace CalamityMod.Buffs.StatBuffs
             Main.debuff[Type] = true;
             Main.pvpBuff[Type] = true;
             Main.buffNoSave[Type] = false;
+            Main.buffNoTimeDisplay[Type] = true; // Consistency with Rage (Look at the bar instead)
             BuffID.Sets.NurseCannotRemoveDebuff[Type] = true;
         }
 
         public override void Update(Player player, ref int buffIndex)
         {
             player.Calamity().adrenalineModeActive = true;
-            player.Calamity().AdrenalineTrail = true;
         }
 
         public override void ModifyBuffText(ref string buffName, ref string tip, ref int rare)

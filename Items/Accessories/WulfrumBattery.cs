@@ -65,7 +65,7 @@ namespace CalamityMod.Items.Accessories
     {
         public override void AI(Projectile projectile)
         {
-            if (!projectile.npcProj && !projectile.trap && projectile.minion && !ProjectileID.Sets.MinionShot[projectile.type] && Main.player[projectile.owner].GetModPlayer<WulfrumBatteryPlayer>().battery)
+            if (!projectile.npcProj && !projectile.trap && (projectile.minion||projectile.sentry) && !ProjectileID.Sets.MinionShot[projectile.type] && !ProjectileID.Sets.SentryShot[projectile.type] && Main.player[projectile.owner].GetModPlayer<WulfrumBatteryPlayer>().battery)
             {
                 float lightMult = 1f;
                 if (Lighting.UpdateEveryFrame) //The light loks wayyy too bright in retro/trippy
@@ -79,7 +79,7 @@ namespace CalamityMod.Items.Accessories
                 {
                     float size = (projectile.Hitbox.Size() / 2f).Length();
 
-                    Dust zapDust = Dust.NewDustPerfect(projectile.Center + Main.rand.NextVector2Circular(1f, 1f) * size, 66, Main.rand.NextVector2Circular(1f, 1f) * Main.rand.NextFloat(0.5f, 1.3f));
+                    Dust zapDust = Dust.NewDustPerfect(projectile.Center + Main.rand.NextVector2Circular(1f, 1f) * size, DustID.RainbowTorch, Main.rand.NextVector2Circular(1f, 1f) * Main.rand.NextFloat(0.5f, 1.3f));
                     zapDust.noGravity = true;
                     zapDust.color = Main.rand.NextBool() ? Color.SkyBlue : Color.LightGreen;
                     zapDust.velocity = projectile.velocity * 0.2f;

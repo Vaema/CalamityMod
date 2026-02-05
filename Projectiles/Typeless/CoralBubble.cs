@@ -1,5 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -63,7 +63,16 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override bool PreDraw(ref Color lightColor)
         {
+            Vector3 lightCol = new(85f / 255f, 151f / 255f, 196f / 255f);
+            float brightness = 0.7f;
+            float declareThisHereToPreventRunningTheSameCalculationMultipleTimes = Main.GameUpdateCount * 0.01f;
+            brightness *= (float)MathF.Sin(8f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
+            brightness += 0.4f;
+            brightness = MathHelper.Clamp(brightness, 0.1f, 0.5f);
+            lightCol *= brightness;
+
             CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
+            Lighting.AddLight(Projectile.position, lightCol);
             return false;
         }
 

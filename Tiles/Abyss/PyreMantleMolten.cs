@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using CalamityMod.Systems;
+using CalamityMod.Sounds;
 using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
-using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -15,9 +11,7 @@ namespace CalamityMod.Tiles.Abyss
 {
     public class PyreMantleMolten : GlowMaskTile
     {
-        public static readonly SoundStyle MineSound = new("CalamityMod/Sounds/Custom/VoidstoneMine", 3) { Volume = 0.4f };
-
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/PyreMantleMolten_Glowmask";
+        public override string GlowMaskAsset => $"{Texture}_Glowmask";
 
         public override void SetupStatic()
         {
@@ -30,15 +24,15 @@ namespace CalamityMod.Tiles.Abyss
             CalamityUtils.MergeWithAbyss(Type);
 
             TileID.Sets.ChecksForMerge[Type] = true;
-            HitSound = MineSound;
+            HitSound = CommonCalamitySounds.VoidstoneMine;
             MineResist = 10f;
             MinPick = 180;
             AddMapEntry(new Color(113, 49, 16));
 
-            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
-            this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
-            this.RegisterUniversalMerge(ModContent.TileType<AbyssGravel>(), "CalamityMod/Tiles/Merges/AbyssGravelMerge");
-            this.RegisterUniversalMerge(ModContent.TileType<PyreMantle>(), "CalamityMod/Tiles/Merges/PyreMantleMerge");
+            this.RegisterBlendMergeWith(TileID.Dirt);
+            this.RegisterBlendMergeWith(TileID.Stone);
+            this.RegisterBlendMergeWith(ModContent.TileType<AbyssGravel>());
+            this.RegisterBlendMergeWith(ModContent.TileType<PyreMantle>());
         }
 
         public override bool CreateDust(int i, int j, ref int type)
@@ -52,6 +46,10 @@ namespace CalamityMod.Tiles.Abyss
             return false;
         }
 
+        public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
+        {
+            World.Abyss.FillTileWithWater(i, j);
+        }
         public override void RandomUpdate(int i, int j)
         {
             Tile tile = Main.tile[i, j];

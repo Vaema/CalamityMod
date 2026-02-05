@@ -34,6 +34,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.timeLeft = (int)MaxTime;
             Projectile.DamageType = DamageClass.Melee;
             Projectile.tileCollide = false;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
@@ -70,7 +72,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.Kill();
         }
 
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float fadeToEnd = MathHelper.Lerp(0.65f, 1f, (float)Math.Cos(-Main.GlobalTimeWrappedHourly * 3f) * 0.5f + 0.5f);
             float fadeOpacity = Utils.GetLerpValue(1f, 0.64f, completionRatio, true) * Projectile.Opacity;
@@ -79,13 +81,13 @@ namespace CalamityMod.Projectiles.Melee
             return Color.Lerp(Color.White, endColor, fadeToEnd) * fadeOpacity;
         }
 
-        internal float WidthFunction(float completionRatio)
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos)
         {
             float expansionCompletion = (float)Math.Pow(1 - completionRatio, 2);
             return MathHelper.Lerp(0f, 14f * Projectile.scale, expansionCompletion);
         }
 
-        public Vector2 OffsetFunction(float completionRatio) => Projectile.Size * 0.5f - Utils.SafeNormalize(Projectile.velocity, Vector2.Zero) * 30.5f;
+        public Vector2 OffsetFunction(float completionRatio, Vector2 vertexPos) => Projectile.Size * 0.5f - Utils.SafeNormalize(Projectile.velocity, Vector2.Zero) * 30.5f;
 
         public override bool PreDraw(ref Color lightColor)
         {

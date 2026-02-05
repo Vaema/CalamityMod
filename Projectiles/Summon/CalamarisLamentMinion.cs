@@ -54,13 +54,13 @@ namespace CalamityMod.Projectiles.Summon
             }
             else
             {
-                if (Main.rand.NextBool(600))
+                if (Main.rand.NextBool(800))
                 {
                     SoundStyle glubNoise = Main.rand.NextBool() ? SoundID.Zombie35 : SoundID.Zombie34;
                     SoundStyle trollBirdChirpingSound = SoundID.Zombie16;
 
-                    // 1/200th chance to do a bird chirping sound.
-                    SoundEngine.PlaySound(Main.rand.NextBool(200) ? trollBirdChirpingSound : glubNoise, Projectile.Center);
+                    // 1/2000th chance to do a bird chirping sound.
+                    SoundEngine.PlaySound(Main.rand.NextBool(2000) ? trollBirdChirpingSound : glubNoise, Projectile.Center);
                 }
             }
 
@@ -130,7 +130,7 @@ namespace CalamityMod.Projectiles.Summon
                     // Flavor dust effect.
                     for (int i = 0; i < 15; i++)
                     {
-                        Dust shootDust = Dust.NewDustPerfect(Projectile.Center + (Projectile.rotation + MathHelper.PiOver2).ToRotationVector2() * Projectile.height / 2, 109, toTargetDirection.RotatedByRandom(MathHelper.PiOver4) * Main.rand.NextFloat(3f, 7f), Scale: Main.rand.NextFloat(0.5f, 1.5f), Alpha: 127);
+                        Dust shootDust = Dust.NewDustPerfect(Projectile.Center + (Projectile.rotation + MathHelper.PiOver2).ToRotationVector2() * Projectile.height / 2, DustID.Asphalt, toTargetDirection.RotatedByRandom(MathHelper.PiOver4) * Main.rand.NextFloat(3f, 7f), Scale: Main.rand.NextFloat(0.5f, 1.5f), Alpha: 127);
                         shootDust.noGravity = true;
                     }
 
@@ -198,7 +198,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 float angle = MathHelper.TwoPi / dustAmount * dustIndex;
                 Vector2 velocity = angle.ToRotationVector2() * 8f;
-                Dust spawnDust = Dust.NewDustPerfect(Projectile.Center, 109, velocity);
+                Dust spawnDust = Dust.NewDustPerfect(Projectile.Center, DustID.Asphalt, velocity);
                 spawnDust.noGravity = true;
                 spawnDust.noLight = true;
             }

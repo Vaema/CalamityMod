@@ -1,8 +1,7 @@
 ﻿using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
-using CalamityMod.Items.Materials;
 using CalamityMod.Items.Pets;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
@@ -60,7 +59,6 @@ namespace CalamityMod.Items.TreasureBags
             itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<PerforatorHive>()));
 
             // Materials
-            itemLoot.Add(ModContent.ItemType<BloodSample>(), 1, 30, 40);
             itemLoot.Add(ItemID.CrimtaneBar, 1, 15, 20);
             itemLoot.Add(ItemID.Vertebrae, 1, 15, 20);
             itemLoot.AddIf(() => Main.hardMode, ItemID.Ichor, 1, 25, 30);

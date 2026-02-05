@@ -1,7 +1,4 @@
-﻿using CalamityMod.Buffs.Potions;
-using CalamityMod.Items.DraedonMisc;
-using CalamityMod.TileEntities;
-using CalamityMod.UI;
+﻿using CalamityMod.TileEntities;
 using CalamityMod.UI.DraedonSummoning;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,7 +9,6 @@ using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.GameContent.ObjectInteractions;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -65,7 +61,7 @@ namespace CalamityMod.Tiles.DraedonSummoner
 
             // Various data sets to protect this tile from unintentional death
             TileID.Sets.PreventsTileRemovalIfOnTopOfIt[Type] = true;
-            //TileID.Sets.PreventsTileReplaceIfOnTopOfIt[Type] = true; Since this is a furniture item this may be unnecessary?
+            TileID.Sets.PreventsTileHammeringIfOnTopOfIt[Type] = true;
             TileID.Sets.PreventsSandfall[Type] = true;
 
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x2);

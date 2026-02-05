@@ -96,9 +96,22 @@ namespace CalamityMod.Particles
                 col = Lighting.GetColor((Position / 16).ToPoint()).MultiplyRGB(Color);
             }
 
-            spriteBatch.Draw(texture, Position - Main.screenPosition, null, col, Rotation, texture.Size() * 0.5f, scale, 0, 0f);
+            float scaleMult = 1;
+            if (Main.zenithWorld)
+            {
+                DateTime day = DateTime.Now;
+                if (day.DayOfWeek == DayOfWeek.Tuesday)
+                {
+                    Texture2D joke = ModContent.Request<Texture2D>("CalamityMod/Particles/MammothParticle").Value;
+                    scaleMult = (MathHelper.Lerp(texture.Size().X / joke.Size().X, texture.Size().Y / joke.Size().Y, 0.5f));
+                    texture = joke;
+                    AltVisual = true;
+                }
+            }
+
+            spriteBatch.Draw(texture, Position - Main.screenPosition, null, col, Rotation, texture.Size() * 0.5f, scale * scaleMult, 0, 0f);
             if (GlowCenter)
-                spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color.Lerp(col, Color.White, 0.8f), Rotation, texture.Size() * 0.5f, scale * 0.8f, 0, 0f);
+                spriteBatch.Draw(texture, Position - Main.screenPosition, null, Color.Lerp(Color.Lerp(col, Color.White, 0.8f), Color.Transparent, (float)Math.Pow(LifetimeCompletion, 3D)), Rotation, texture.Size() * 0.5f, scale * 0.8f * scaleMult, 0, 0f);
         }
     }
 }

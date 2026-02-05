@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -11,6 +12,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
+    [PierceResistException]
     public class DevilsSunriseProj : ModProjectile
     {
         public static readonly SoundStyle HitSound = new SoundStyle("CalamityMod/Sounds/Item/MantisSwipe", 2) with { Pitch = 0.8f };
@@ -88,8 +90,8 @@ namespace CalamityMod.Projectiles.Melee
                 else
                 {
                     float velocityScale = 1f;
-                    if (Owner.ActiveItem().shoot == Projectile.type)
-                        velocityScale = Owner.ActiveItem().shootSpeed * Projectile.scale;
+                    if (Owner.HeldItem.shoot == Projectile.type)
+                        velocityScale = Owner.HeldItem.shootSpeed * Projectile.scale;
 
                     // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     Vector2 slashDirection = Main.MouseWorld - Owner.RotatedRelativePoint(Owner.MountedCenter, true);

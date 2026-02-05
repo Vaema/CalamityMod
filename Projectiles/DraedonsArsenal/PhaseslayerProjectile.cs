@@ -6,6 +6,7 @@ using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.NPCs;
 using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -18,31 +19,25 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
+    [PierceResistException]
     public class PhaseslayerProjectile : ModProjectile
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<Phaseslayer>();
         public override string Texture => "CalamityMod/Items/Weapons/DraedonsArsenal/Phaseslayer";
 
         // The "average" or "expected" swing speed which the sword's damage balance is based off of.
-        // This is rotation EVERY FRAME. The "average" swing speed is 360 degrees in one second, aka pi/30 radians per frame.
-        public const float StandardSwingSpeed = MathHelper.Pi / 30f;
+        // This is rotation EVERY FRAME. The "average" swing speed is 180 degrees in one second, aka pi/60 radians per frame.
+        public const float StandardSwingSpeed = MathHelper.Pi / 60f;
 
         // How quickly the sword's damage updates to reflect its current speed. Higher values make it change damage more quickly.
         public const float DamageUpdateResponsiveness = 0.08f;
 
         public const int SwordBeamCooldown = 15;
-        public const float SwordBeamDamageMultiplier = 0.15f;
+        public const float SwordBeamDamageMultiplier = 0.2f;
         private const float MaximumMouseRange = 360f;
         private const float ProjCenterOffset = 36f;
 
-        public bool IsSmall
-        {
-            get
-            {
-                CalamityGlobalItem swordItem = Main.player[Projectile.owner].ActiveItem().Calamity();
-                return swordItem.ChargeRatio < Phaseslayer.SizeChargeThreshold;
-            }
-        }
+        public bool IsSmall => false; //Phaseslayer no longer uses charge so no longer gets small. I don't care to redo the code to remove this entirely so it's just being set to false.
 
         // ai[0] wrapper. Stores a rolling lerped average of angular momentum which is used as the swing speed damage multiplier.
         public float AngularDamageFactor
@@ -78,7 +73,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
             Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 13;
+            Projectile.localNPCHitCooldown = 10;
         }
 
         // Vanilla Terraria doesn't sync projectile rotation, but it does sync velocity.
@@ -90,7 +85,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public override void AI()
         {
             Player player = Main.player[Projectile.owner];
-            CalamityGlobalItem modItem = player.ActiveItem().Calamity();
+            CalamityGlobalItem modItem = player.HeldItem.Calamity();
 
             // Angles are wrapped to be 0 to 2pi instead of -pi to pi for convenience with absolute values.
             float rotationAdjusted = MathHelper.WrapAngle(Projectile.rotation) + MathHelper.Pi;
@@ -114,12 +109,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             AdjustCurrentDamage(player, deltaAngle);
             ManipulateFrames();
             HandleSwordBeams(player, modItem, deltaAngle);
-
-            // Because sword beams (or just holding the sword while it's fizzling) can take energy even when the sword's at zero energy,
-            // this is here to ensure the sword item's charge never goes below zero.
-            if (modItem.Charge < 0f)
-                modItem.Charge = 0f;
-
             HandleFadeout();
         }
 
@@ -128,8 +117,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             if (Main.myPlayer == player.whoAmI)
             {
                 // In addition to typical channel cancellation criteria, the sword fizzles out if it runs out of charge.
-                Item playerItem = player.ActiveItem();
-                bool hasCharge = modItem.Charge > 0f;
+                Item playerItem = player.HeldItem;
+                bool hasCharge = true; // Phaseslayer no longer uses charge so always true.
                 if (!player.CantUseHoldout() && playerItem.type == ModContent.ItemType<Phaseslayer>() && hasCharge)
                 {
                     // 14NOV2024: Ozzatron: clamped mouse position unnecessary, the effect is capped separately
@@ -139,7 +128,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
                     // This formula ensures that the sword has a sudden and extremely harsh responsiveness penalty when the mouse is close to the player.
                     // Otherwise it controls perfectly fine.
-                    float aimResponsiveness = 0.035f + 0.3f * (float)Math.Pow(distRatio, 1D/3);
+                    float aimResponsiveness = 0.035f + 0.3f * MathF.Pow(distRatio, 1 / 3f);
 
                     // Update the sword's angle with the responsiveness determined by mouse position.
                     // Also flag for netcode sync if applicable (this is the only way the sword can rotate in multiplayer).
@@ -193,17 +182,17 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             // Update the rolling "blade angular momentum" average by gently lerping in the newest data point.
             AngularDamageFactor = MathHelper.Lerp(AngularDamageFactor, deltaAngle, DamageUpdateResponsiveness);
 
-            // 0x   expected speed gives you  53.5% damage.
-            // 1x   expected speed gives you 100.0% damage.
-            // 1.5x expected speed gives you 116.6% damage.
-            // 2x   expected speed gives you 130.6% damage.
-            // 3x   expected speed gives you 153.5% damage.
-            // 4x   expected speed gives you 171.7% damage.
-            // 5x   expected speed gives you 187.0% damage.
-            float speedDamageScalar = 0.166f + (float)Math.Log(AngularDamageFactor / StandardSwingSpeed + 1.5f, 3f);
+            // 0x   expected speed gives you 100.0% damage.
+            // 1x   expected speed gives you 126.2% damage.
+            // 1.5x expected speed gives you 136.9% damage.
+            // 2x   expected speed gives you 146.5% damage.
+            // 3x   expected speed gives you 163.1% damage.
+            // 4x   expected speed gives you 177.1% damage.
+            // 5x   expected speed gives you 189.3% damage.
+            float speedDamageScalar = MathF.Log(AngularDamageFactor / StandardSwingSpeed + 3f, 3f);
 
             // Get the underlying sword item's current damage. This takes into account the player's stats and the sword's current charge.
-            int damageWithChargeAndStats = player.GetWeaponDamage(player.ActiveItem());
+            int damageWithChargeAndStats = player.GetWeaponDamage(player.HeldItem);
             float sizeDamageScalar = IsSmall ? Phaseslayer.SmallDamageMultiplier : 1f;
             Projectile.damage = (int)(damageWithChargeAndStats * speedDamageScalar * sizeDamageScalar);
         }
@@ -249,9 +238,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 {
                     Vector2 velocity = Projectile.rotation.ToRotationVector2() * 20f;
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<PhaseslayerBeam>(), (int)(Projectile.damage * SwordBeamDamageMultiplier), 0f, player.whoAmI);
-
-                    // Actually consume energy to fire the sword beam.
-                    modItem.Charge -= Phaseslayer.SwordBeamChargeUse;
                 }
 
                 // The sound delay doubles as the sword beam's cooldown.
@@ -270,14 +256,14 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             }
         }
 
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float averageRotation = Projectile.oldRot.Take(20).Average(angle => MathHelper.WrapAngle(angle) + MathHelper.Pi);
             float deltaAngle = Math.Abs(averageRotation - (MathHelper.WrapAngle(Projectile.rotation) + MathHelper.Pi));
             float opacity = Projectile.Opacity;
             opacity *= Utils.GetLerpValue(StandardSwingSpeed * 0.7f, StandardSwingSpeed, AngularDamageFactor, true);
-            opacity *= (float)Math.Pow(Utils.GetLerpValue(1f, 0.45f, completionRatio, true), 4D);
-            opacity *= (float)Math.Pow(Utils.GetLerpValue(0.9f, 1.1f, deltaAngle, true), 2D);
+            opacity *= MathF.Pow(Utils.GetLerpValue(1f, 0.45f, completionRatio, true), 4f);
+            opacity *= MathF.Pow(Utils.GetLerpValue(0.9f, 1.1f, deltaAngle, true), 2f);
 
             float rotationAdjusted = MathHelper.WrapAngle(Projectile.rotation) + MathHelper.Pi;
             float oldRotationAdjusted = MathHelper.WrapAngle(Projectile.oldRot[1]) + MathHelper.Pi;
@@ -289,7 +275,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             return Color.Lerp(Color.Red, Color.PaleVioletRed * completionRatio, MathHelper.Clamp(completionRatio * 0.8f, 0f, 1f)) * opacity;
         }
 
-        internal float WidthFunction(float completionRatio) => (IsSmall ? 101f : 127f) * (1f - completionRatio) * 0.8f;
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos) => (IsSmall ? 101f : 127f) * (1f - completionRatio) * 0.8f;
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -322,7 +308,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 float angularTurn = i * swingAngularDirection * -0.09f;
                 drawPoints[i] = Projectile.position + perpendicularDirection.RotatedBy(angularTurn) * offsetFactor;
             }
-            PrimitiveRenderer.RenderTrail(drawPoints, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f + bladeOffset, shader: GameShaders.Misc["CalamityMod:PhaseslayerRipEffect"]), 50);
+            PrimitiveRenderer.RenderTrail(drawPoints, new(WidthFunction, ColorFunction, (_,_) => Projectile.Size * 0.5f + bladeOffset, shader: GameShaders.Misc["CalamityMod:PhaseslayerRipEffect"]), 50);
 
             Main.EntitySpriteDraw(bladeTexture, Projectile.Center + bladeOffset - Main.screenPosition, frame, Color.White, Projectile.rotation + MathHelper.PiOver2, origin, Projectile.scale, SpriteEffects.None, 0);
             Main.EntitySpriteDraw(hiltTexture, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation + MathHelper.PiOver2, hiltTexture.Size() * 0.5f, Projectile.scale, SpriteEffects.None, 0);

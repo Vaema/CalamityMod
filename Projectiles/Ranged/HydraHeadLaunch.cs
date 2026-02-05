@@ -3,6 +3,7 @@ using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
@@ -22,7 +23,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.MaxUpdates = 3;
             Projectile.penetrate = 1;
             Projectile.DamageType = DamageClass.Ranged;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         //Normal hitbox size for explosion, rotated otherwise
@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Vector2 end = nextAngle.ToRotationVector2();
                 for (int j = 0; j < 30; j++)
                 {
-                    Dust starDust = Dust.NewDustPerfect(Projectile.Center, 267);
+                    Dust starDust = Dust.NewDustPerfect(Projectile.Center, DustID.RainbowMk2);
                     starDust.scale = 1.5f;
                     starDust.velocity = Vector2.Lerp(start, end, j / 30f) * 12f;
                     starDust.color = Color.Orchid;

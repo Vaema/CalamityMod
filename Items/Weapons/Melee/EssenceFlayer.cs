@@ -19,11 +19,10 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 100;
             Item.height = 78;
-            Item.damage = 225;
+            Item.damage = 220;
             Item.DamageType = DamageClass.Melee;
-            Item.useAnimation = 19;
+            Item.useTime = Item.useAnimation = 19;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 19;
             Item.useTurn = true;
             Item.knockBack = 8f;
             Item.UseSound = SoundID.Item71;
@@ -31,7 +30,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.shoot = ModContent.ProjectileType<EssenceScythe>();
             Item.shootSpeed = 21f;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)

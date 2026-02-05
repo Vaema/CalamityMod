@@ -39,7 +39,9 @@ namespace CalamityMod.Items.Weapons.Rogue
                     Main.projectile[stealth].Calamity().stealthStrike = true;
                     Main.projectile[stealth].aiStyle = -1;
                     Main.projectile[stealth].tileCollide = false;
+                    Main.projectile[stealth].usesIDStaticNPCImmunity = false;
                     Main.projectile[stealth].usesLocalNPCImmunity = true;
+                    Main.projectile[stealth].localNPCHitCooldown = 10;
                 }
                 return false;
             }

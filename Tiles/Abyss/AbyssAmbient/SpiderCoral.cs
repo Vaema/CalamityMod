@@ -1,20 +1,13 @@
-﻿using System;
-using CalamityMod.Dusts;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.GameContent.Metadata;
 using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.ObjectData;
 
 namespace CalamityMod.Tiles.Abyss.AbyssAmbient
 {
     public class SpiderCoral1 : GlowMaskTile
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/SpiderCoral1Glow";
-
         public override void SetupStatic()
         {
             Main.tileLighted[Type] = true;
@@ -23,7 +16,7 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(82, 49, 27));
-            DustType = 32;
+            DustType = DustID.Sand;
         }
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
@@ -39,23 +32,11 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
         }
     }
 
-    public class SpiderCoral2 : SpiderCoral1
-    {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/SpiderCoral2Glow";
-    }
+    public class SpiderCoral2 : SpiderCoral1;
 
-    public class SpiderCoral3 : SpiderCoral1
-    {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/SpiderCoral3Glow";
-    }
+    public class SpiderCoral3 : SpiderCoral1;
 
-    public class SpiderCoral4 : SpiderCoral1
-    {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/SpiderCoral4Glow";
-    }
+    public class SpiderCoral4 : SpiderCoral1;
 
-    public class SpiderCoral5 : SpiderCoral1
-    {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/SpiderCoral5Glow";
-    }
+    public class SpiderCoral5 : SpiderCoral1;
 }

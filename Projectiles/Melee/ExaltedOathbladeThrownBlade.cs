@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Packets.Entities;
@@ -11,7 +10,6 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.IO;
 using static CalamityMod.CalamityUtils;
 
 namespace CalamityMod.Projectiles.Melee
@@ -226,7 +224,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            int bonusDamage = 120;
+            int bonusDamage = 100;
             if (target.Calamity().demonicFlamesBonusDamage <= bonusDamage)
             {
                 target.Calamity().demonicFlamesBonusDamage = bonusDamage;
@@ -312,7 +310,7 @@ namespace CalamityMod.Projectiles.Melee
                         Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * 8;
                     Projectile.velocity.Y *= 0.85f;
                     Projectile.velocity = Projectile.velocity.RotatedByRandom(0.2f);
-                    SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/CeramicImpact", 2) { Volume = 0.35f, Pitch = Main.rand.NextFloat(-0.4f, -0.5f) }, Projectile.Center);
+                    SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/CeramicImpact", 2) { Volume = 0.35f, Pitch = Main.rand.NextFloat(-0.4f, -0.5f) }, Projectile.Center);
                     bounces++;
                     Projectile.timeLeft = Lifetime;
                 }

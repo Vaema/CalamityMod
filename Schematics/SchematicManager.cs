@@ -13,6 +13,69 @@ namespace CalamityMod.Schematics
 {
     public sealed class SchematicManager : ModSystem
     {
+        internal const string ShimmerShrineKey = "Shimmer Shrine Key";
+        internal const string ShimmerShrineFilename = "Schematics/Shimmer_Shrine.csch";
+
+        internal const string BrimstoneAtriumType1Key = "Brimstone Atrium Type 1 Key";
+        internal const string BrimstoneAtriumType1Filename = "Schematics/Brimstone_Atrium1.csch";
+
+        internal const string BrimstoneAtriumType2Key = "Brimstone Atrium Type 2 Key";
+        internal const string BrimstoneAtriumType2Filename = "Schematics/Brimstone_Atrium2.csch";
+
+        internal const string BrimstoneAtriumType3Key = "Brimstone Atrium Type 3 Key";
+        internal const string BrimstoneAtriumType3Filename = "Schematics/Brimstone_Atrium3.csch";
+
+        internal const string BonescrapperCacheType1Key = "Bonescrapper Cache Type 1 Key";
+        internal const string BonescrapperCacheType1Filename = "Schematics/Bonescrapper_Cache1.csch";
+
+        internal const string BonescrapperCacheType2Key = "Bonescrapper Cache Type 2 Key";
+        internal const string BonescrapperCacheType2Filename = "Schematics/Bonescrapper_Cache2.csch";
+
+        internal const string BonescrapperCacheType3Key = "Bonescrapper Cache Type 3 Key";
+        internal const string BonescrapperCacheType3Filename = "Schematics/Bonescrapper_Cache3.csch";
+
+        internal const string BonescrapperCacheType4Key = "Bonescrapper Cache Type 4 Key";
+        internal const string BonescrapperCacheType4Filename = "Schematics/Bonescrapper_Cache4.csch";
+
+        internal const string BonescrapperCacheType5Key = "Bonescrapper Cache Type 5 Key";
+        internal const string BonescrapperCacheType5Filename = "Schematics/Bonescrapper_Cache5.csch";
+
+        internal const string BonescrapperCacheType6Key = "Bonescrapper Cache Type 6 Key";
+        internal const string BonescrapperCacheType6Filename = "Schematics/Bonescrapper_Cache6.csch";
+
+        internal const string SanctumofOblivionType1Key = "Sanctum of Oblivion Type 1 Key";
+        internal const string SanctumofOblivionType1Filename = "Schematics/Sanctum_of_Oblivion1.csch";
+
+        internal const string SanctumofOblivionType2Key = "Sanctum of Oblivion Type 2 Key";
+        internal const string SanctumofOblivionType2Filename = "Schematics/Sanctum_of_Oblivion2.csch";
+
+        internal const string SanctumofOblivionType3Key = "Sanctum of Oblivion Type 3 Key";
+        internal const string SanctumofOblivionType3Filename = "Schematics/Sanctum_of_Oblivion3.csch";
+
+        internal const string HellstoneStrongholdType1Key = "Hellstone Stronghold Type 1 Key";
+        internal const string HellstoneStrongholdType1Filename = "Schematics/Hellstone_Stronghold1.csch";
+
+        internal const string HellstoneStrongholdType2Key = "Hellstone Stronghold Type 2 Key";
+        internal const string HellstoneStrongholdType2Filename = "Schematics/Hellstone_Stronghold2.csch";
+
+        internal const string DemonicDungeonType1Key = "Demonic Dungeon Type 1 Key";
+        internal const string DemonicDungeonType1Filename = "Schematics/Demonic_Dungeon1.csch";
+
+        internal const string DemonicDungeonType2Key = "Demonic Dungeon Type 2 Key";
+        internal const string DemonicDungeonType2Filename = "Schematics/Demonic_Dungeon2.csch";
+
+        internal const string BarbedStockadeType1Key = "Barbed Stockade Type 1 Key";
+        internal const string BarbedStockadeType1Filename = "Schematics/Barbed_Stockade1.csch";
+
+        internal const string BarbedStockadeType2Key = "Barbed Stockade Type 2 Key";
+        internal const string BarbedStockadeType2Filename = "Schematics/Barbed_Stockade2.csch";
+
+        internal const string BarbedStockadeType3Key = "Barbed Stockade Type 3 Key";
+        internal const string BarbedStockadeType3Filename = "Schematics/Barbed_Stockade3.csch";
+
+        internal const string BarbedStockadeType4Key = "Barbed Stockade Type 4 Key";
+        internal const string BarbedStockadeType4Filename = "Schematics/Barbed_Stockade4.csch";
+
         internal const string RustedWorkshopKey = "Rusted Workshop";
         internal const string RustedWorkshopFilename = "Schematics/RustedWorkshop.csch";
 
@@ -20,22 +83,22 @@ namespace CalamityMod.Schematics
         internal const string ResearchOutpostFilename = "Schematics/ResearchOutpost.csch";
 
         internal const string SunkenSeaLabKey = "Sunken Sea Laboratory";
-        internal const string SunkenSeaLabFilename = "Schematics/DraedonsLab_SunkenSea.csch";
+        internal const string SunkenSeaLabFilename = "Schematics/Arsenal_Lab_Sunken.csch";
 
         internal const string PlanetoidLabKey = "Planetoid Laboratory";
-        internal const string PlanetoidLabFilename = "Schematics/DraedonsLab_Planetoid.csch";
+        internal const string PlanetoidLabFilename = "Schematics/Arsenal_Lab_Planetoid.csch";
 
         internal const string PlagueLabKey = "Plague Laboratory";
-        internal const string PlagueLabFilename = "Schematics/DraedonsLab_Plague.csch";
+        internal const string PlagueLabFilename = "Schematics/Arsenal_Lab_Plague.csch";
 
         internal const string HellLabKey = "Hell Laboratory";
-        internal const string HellLabFilename = "Schematics/DraedonsLab_Hell.csch";
+        internal const string HellLabFilename = "Schematics/Arsenal_Lab_Underworld.csch";
 
         internal const string IceLabKey = "Ice Laboratory";
-        internal const string IceLabFilename = "Schematics/DraedonsLab_Ice.csch";
+        internal const string IceLabFilename = "Schematics/Arsenal_Lab_Ice.csch";
 
         internal const string CavernLabKey = "Cavern Laboratory";
-        internal const string CavernLabFilename = "Schematics/DraedonsLab_Cavern.csch";
+        internal const string CavernLabFilename = "Schematics/Arsenal_Lab_Onyx.csch";
 
         internal const string CorruptionShrineKey = "Corruption Shrine";
         internal const string CorruptionShrineFilename = "Schematics/Shrine_Corruption.csch";
@@ -106,6 +169,31 @@ namespace CalamityMod.Schematics
             PilePlacementMaps = new Dictionary<string, PilePlacementFunction>();
             TileMaps = new Dictionary<string, SchematicMetaTile[,]>
             {
+                // Shimmer Shrine
+                [ShimmerShrineKey] = CalamitySchematicIO.LoadSchematic(ShimmerShrineFilename),
+
+                // Underworld structures
+                [BrimstoneAtriumType1Key] = CalamitySchematicIO.LoadSchematic(BrimstoneAtriumType1Filename),
+                [BrimstoneAtriumType2Key] = CalamitySchematicIO.LoadSchematic(BrimstoneAtriumType2Filename),
+                [BrimstoneAtriumType3Key] = CalamitySchematicIO.LoadSchematic(BrimstoneAtriumType3Filename),
+                [BonescrapperCacheType1Key] = CalamitySchematicIO.LoadSchematic(BonescrapperCacheType1Filename),
+                [BonescrapperCacheType2Key] = CalamitySchematicIO.LoadSchematic(BonescrapperCacheType2Filename),
+                [BonescrapperCacheType3Key] = CalamitySchematicIO.LoadSchematic(BonescrapperCacheType3Filename),
+                [BonescrapperCacheType4Key] = CalamitySchematicIO.LoadSchematic(BonescrapperCacheType4Filename),
+                [BonescrapperCacheType5Key] = CalamitySchematicIO.LoadSchematic(BonescrapperCacheType5Filename),
+                [BonescrapperCacheType6Key] = CalamitySchematicIO.LoadSchematic(BonescrapperCacheType6Filename),
+                [SanctumofOblivionType1Key] = CalamitySchematicIO.LoadSchematic(SanctumofOblivionType1Filename),
+                [SanctumofOblivionType2Key] = CalamitySchematicIO.LoadSchematic(SanctumofOblivionType2Filename),
+                [SanctumofOblivionType3Key] = CalamitySchematicIO.LoadSchematic(SanctumofOblivionType3Filename),
+                [HellstoneStrongholdType1Key] = CalamitySchematicIO.LoadSchematic(HellstoneStrongholdType1Filename),
+                [HellstoneStrongholdType2Key] = CalamitySchematicIO.LoadSchematic(HellstoneStrongholdType2Filename),
+                [DemonicDungeonType1Key] = CalamitySchematicIO.LoadSchematic(DemonicDungeonType1Filename),
+                [DemonicDungeonType2Key] = CalamitySchematicIO.LoadSchematic(DemonicDungeonType2Filename),
+                [BarbedStockadeType1Key] = CalamitySchematicIO.LoadSchematic(BarbedStockadeType1Filename),
+                [BarbedStockadeType2Key] = CalamitySchematicIO.LoadSchematic(BarbedStockadeType2Filename),
+                [BarbedStockadeType3Key] = CalamitySchematicIO.LoadSchematic(BarbedStockadeType3Filename),
+                [BarbedStockadeType4Key] = CalamitySchematicIO.LoadSchematic(BarbedStockadeType4Filename),
+
                 // Draedon's Arsenal world gen structures
                 [RustedWorkshopKey] = CalamitySchematicIO.LoadSchematic(RustedWorkshopFilename),
                 [ResearchOutpostKey] = CalamitySchematicIO.LoadSchematic(ResearchOutpostFilename),
@@ -184,7 +272,7 @@ namespace CalamityMod.Schematics
             // If no schematic exists with this name, cancel with a helpful log message.
             if (!TileMaps.TryGetValue(name, out SchematicMetaTile[,] schematic))
             {
-                CalamityMod.Instance.Logger.Warn($"Tried to place a schematic with name \"{name}\". No matching schematic file found.");
+                CalamityMod.Log.Warn($"Tried to place a schematic with name \"{name}\". No matching schematic file found.");
                 return;
             }
 
@@ -243,7 +331,7 @@ namespace CalamityMod.Schematics
             // Make sure that all four corners of the target area are actually in the world.
             if (!WorldGen.InWorld(cornerX, cornerY) || !WorldGen.InWorld(cornerX + width, cornerY + height))
             {
-                CalamityMod.Instance.Logger.Warn("Schematic failed to place: Part of the target location is outside the game world.");
+                CalamityMod.Log.Warn("Schematic failed to place: Part of the target location is outside the game world.");
                 return;
             }
 

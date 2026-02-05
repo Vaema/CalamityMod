@@ -1,6 +1,10 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.NPCs.OldDuke;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -34,6 +38,9 @@ namespace CalamityMod.Projectiles.Boss
             {
                 Projectile.velocity.Y += 0.15f;
             }
+
+            if (Main.rand.NextBool(3))
+                GeneralParticleHandler.SpawnParticle(new MediumMistParticle(Projectile.Center, -(Projectile.velocity / 4f).RotatedBy(Main.rand.NextFloat(-MathHelper.PiOver4, MathHelper.PiOver4)), OldDuke.GlowColor, Color.DarkSlateGray, Main.rand.NextFloat(0.5f, 1.5f), 150f));
         }
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
@@ -75,7 +82,9 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], new Color(255, 255, 255, 127), 2);
+            Asset<Texture2D> tex = ModContent.Request<Texture2D>(Texture);
+
+            Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition, tex.Frame(), Color.White, Projectile.rotation, tex.Frame().Bottom(), new Vector2(1f, 1f / tex.Height() * (Projectile.velocity.Length() * 3 + 6)), SpriteEffects.None);
             return false;
         }
     }

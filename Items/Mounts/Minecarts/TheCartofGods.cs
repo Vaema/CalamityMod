@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Mounts.Minecarts
             Item.mountType = ModContent.MountType<DoGCartMount>();
 
             Item.value = Item.sellPrice(gold: 30);
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.Calamity().donorItem = true;
         }
 

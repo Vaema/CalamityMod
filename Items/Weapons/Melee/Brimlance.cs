@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Melee.Spears;
+﻿using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Projectiles.Melee.Spears;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -12,7 +13,6 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             ItemID.Sets.Spears[Type] = true;
         }
-
         public override void SetDefaults()
         {
             Item.width = 56;

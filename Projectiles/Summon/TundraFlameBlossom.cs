@@ -21,6 +21,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
@@ -74,7 +75,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 for (int i = 0; i < 36; i++)
                 {
-                    Dust spawnEffect = Dust.NewDustPerfect(Projectile.Center, 179);
+                    Dust spawnEffect = Dust.NewDustPerfect(Projectile.Center, DustID.BubbleBurst_Purple);
                     spawnEffect.noGravity = true;
                     spawnEffect.velocity = Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(2f, 7f);
                 }
@@ -108,8 +109,6 @@ namespace CalamityMod.Projectiles.Summon
             FlowerShootTimer = MathHelper.Clamp(FlowerShootTimer, 0f, 101f);
             Projectile.netUpdate = true;
         }
-
-        public override bool? CanDamage() => false;
 
         #endregion
     }

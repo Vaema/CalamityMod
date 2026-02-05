@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Buffs.StatBuffs;
-using CalamityMod.Items.Pets;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
@@ -9,7 +8,6 @@ using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Projectiles.Rogue;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.Personalities;
 using Terraria.ID;
@@ -61,6 +59,10 @@ namespace CalamityMod.NPCs.TownNPCs
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.knockBackResist = 0.65f;
             AnimationType = NPCID.Guide;
+            NPC.Calamity().VulnerableToElectricity = true;
+            NPC.Calamity().VulnerableToHeat = false;
+            NPC.Calamity().VulnerableToSickness = true;
+            NPC.Calamity().VulnerableToWater = false;
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -103,20 +105,15 @@ namespace CalamityMod.NPCs.TownNPCs
                 dialogue.Add(this.GetLocalizedValue("Chat.Night3"));
             }
 
-            int lilBitch = NPC.FindFirstNPC(NPCID.Angler);
-            if (lilBitch != -1)
+            int angler = NPC.FindFirstNPC(NPCID.Angler);
+            if (angler != -1)
             {
-                dialogue.Add(this.GetLocalization("Chat.Angler1").Format(Main.npc[lilBitch].GivenName));
-                dialogue.Add(this.GetLocalization("Chat.Angler2").Format(Main.npc[lilBitch].GivenName));
+                dialogue.Add(this.GetLocalization("Chat.Angler").Format(Main.npc[angler].GivenName));
             }
 
             int witch = NPC.FindFirstNPC(ModContent.NPCType<BrimstoneWitch>());
             if (witch != -1)
                 dialogue.Add(this.GetLocalizedValue("Chat.BrimstoneWitch"));
-
-            int cirrus = NPC.FindFirstNPC(ModContent.NPCType<Cirrus>());
-            if (cirrus != -1)
-                dialogue.Add(this.GetLocalization("Chat.DrunkPrincess").Format(Main.npc[cirrus].GivenName));
 
             int partyGirl = NPC.FindFirstNPC(NPCID.PartyGirl);
             if (partyGirl != -1)
@@ -199,20 +196,16 @@ namespace CalamityMod.NPCs.TownNPCs
         }
         public override void AddShops()
         {
-            Condition downedOldDuke = CalamityConditions.DownedOldDuke;
-
             NPCShop shop = new(Type);
-            shop.Add(ModContent.ItemType<Shellshooter>())
-                .Add(ModContent.ItemType<SnapClam>())
-                .Add(ModContent.ItemType<SandDollar>())
-                .Add(ModContent.ItemType<Waywasher>())
-                .Add(ModContent.ItemType<AmidiasTrident>())
-                .Add(ModContent.ItemType<EnchantedConch>())
-                .Add(ModContent.ItemType<PolypLauncher>())
-                .AddWithCustomValue(ItemID.TruffleWorm, Item.buyPrice(gold: 20), Condition.Hardmode)
-                .AddWithCustomValue(ModContent.ItemType<BloodwormItem>(), Item.buyPrice(gold: 40), downedOldDuke)
-                .AddWithCustomValue(ItemID.ShrimpPoBoy, Item.buyPrice(gold: 2, silver: 50), Condition.HappyEnoughToSellPylons, Condition.InBeach)
-                .AddWithCustomValue(ItemID.Fries, Item.buyPrice(gold: 2), Condition.HappyEnoughToSellPylons, Condition.InBeach, Condition.DownedEyeOfCthulhu)
+            shop.Add<Shellshooter>()
+                .Add<SnapClam>()
+                .Add<SandDollar>()
+                .Add<Waywasher>()
+                .Add<AmidiasTrident>()
+                .Add<EnchantedConch>()
+                .Add<PolypLauncher>()
+                .AddWithCustomValue(ItemID.TruffleWorm, Item.buyPrice(gold: 25), Condition.Hardmode)
+                .AddWithCustomValue<BloodwormItem>(Item.buyPrice(platinum: 1), CalamityConditions.DownedOldDuke)
                 .Register();
         }
 

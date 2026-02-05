@@ -1,5 +1,5 @@
 ﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.Placeables.FurnitureAbyss;
+using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Systems;
 using CalamityMod.Waters;
 using CalamityMod.World;
@@ -17,12 +17,17 @@ namespace CalamityMod.BiomeManagers
             {
                 if (CalamityPlayer.areThereAnyDamnBosses)
                     return Main.curMusic;
-                return CalamityMod.Instance.GetMusicFromMusicMod("AbyssLayer3") ?? MusicID.Hell;
+
+                int? musicSlot = CalamityClientConfig.Instance.AbyssLayer3Alt ? 
+                    CalamityMod.Instance.GetMusicFromMusicMod("AbyssLayer3Alt") : 
+                    CalamityMod.Instance.GetMusicFromMusicMod("AbyssLayer3");
+                    
+                return musicSlot ?? MusicID.Hell;
             }
         }
 
         public override ModWaterStyle WaterStyle => MiddleAbyssWater.Instance;
-        public override int BiomeTorchItemType => ModContent.ItemType<AbyssTorch>();
+        public override int BiomeTorchItemType => ModContent.ItemType<ThermalTorch>();
         public override SceneEffectPriority Priority => SceneEffectPriority.Environment;
         public override string BestiaryIcon => "CalamityMod/BiomeManagers/AbyssLayer3Icon";
         public override string BackgroundPath => "CalamityMod/Backgrounds/MapBackgrounds/AbyssBGLayer23";

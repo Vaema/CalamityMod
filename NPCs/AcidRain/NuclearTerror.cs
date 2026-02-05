@@ -8,7 +8,6 @@ using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Projectiles.Enemy;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -113,8 +112,7 @@ namespace CalamityMod.NPCs.AcidRain
             NPC.defense = 50;
             NPC.damage = 135;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 20, 0, 0);
-            NPC.DR_NERD(0.3f);
+            NPC.value = Item.buyPrice(gold: 20);
             NPC.lavaImmune = false;
             NPC.noGravity = false;
             NPC.noTileCollide = false;
@@ -514,8 +512,7 @@ Continue:
                     }
                 }
                 float screenShakePower = 20 * Utils.GetLerpValue(1300f, 0f, NPC.Distance(Main.LocalPlayer.Center), true);
-                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < screenShakePower)
-                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = screenShakePower;
+                Main.LocalPlayer.SetScreenshake(screenShakePower);
             }
             else if (DeathrayTime >= 630f)
             {

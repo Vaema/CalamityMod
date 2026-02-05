@@ -1,6 +1,5 @@
-﻿using CalamityMod.Items.Placeables.FurnitureEutrophic;
+﻿using CalamityMod.Items.Placeables.FurnitureNavystone;
 using CalamityMod.Items.Placeables.Walls;
-using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.SunkenSea
@@ -19,13 +18,13 @@ namespace CalamityMod.Items.Placeables.SunkenSea
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<NavystoneWallSafe>(4).
+                AddIngredient<NavystoneWall>(4).
                 AddTile(TileID.WorkBenches).
                 DisableDecraft().
                 Register();
 
             CreateRecipe().
-                AddIngredient<EutrophicPlatform>(2).
+                AddIngredient<NavystonePlatform>(2).
                 DisableDecraft().
                 Register();
         }

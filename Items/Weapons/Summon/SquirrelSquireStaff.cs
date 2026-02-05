@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -28,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.shoot = ModContent.ProjectileType<SquirrelSquireMinion>();
             Item.knockBack = 0.5f;
 
-            Item.useAnimation = Item.useTime = 15;
+            Item.useAnimation = Item.useTime = 30;
             Item.mana = 10;
             Item.width = 46;
             Item.height = 52;
@@ -48,23 +47,16 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             // Find the base farthest position
             Vector2 initialSpawn = player.GetFarthestSpawnPositionOnLine(position, velocity.X, velocity.Y);
+            int dontLoopForever = 0;
 
-            // Push the squirrel away from collision in all directions if applicable
-            while (!Collision.CanHit(initialSpawn, 0, 0, initialSpawn + Vector2.UnitX * 20f, 0, 0) ||
+            // Move the squirrel towards the player if the position does not have line of sight on all edges
+            while ((!Collision.CanHit(initialSpawn, 0, 0, initialSpawn + Vector2.UnitX * 20f, 0, 0) ||
                 !Collision.CanHit(initialSpawn, 0, 0, initialSpawn - Vector2.UnitX * 20f, 0, 0) ||
                 !Collision.CanHit(initialSpawn, 0, 0, initialSpawn + Vector2.UnitY * 24f, 0, 0) ||
-                !Collision.CanHit(initialSpawn, 0, 0, initialSpawn - Vector2.UnitY * 24f, 0, 0)) 
+                !Collision.CanHit(initialSpawn, 0, 0, initialSpawn - Vector2.UnitY * 24f, 0, 0)) && dontLoopForever < 200) 
             {
-                if (!Collision.CanHit(initialSpawn, 0, 0, initialSpawn + Vector2.UnitX * 20f, 0, 0))
-                    initialSpawn.X -= 1f;
-                // Be sure to not infinite loop
-                if (!Collision.CanHit(initialSpawn, 0, 0, initialSpawn - Vector2.UnitX * 20f, 0, 0) && Collision.CanHit(initialSpawn, 0, 0, initialSpawn + Vector2.UnitX * 20f, 0, 0))
-                    initialSpawn.X += 1f;
-                if (!Collision.CanHit(initialSpawn, 0, 0, initialSpawn + Vector2.UnitY * 24f, 0, 0))
-                    initialSpawn.Y -= 1f;
-                // Be sure to not infinite loop
-                if (!Collision.CanHit(initialSpawn, 0, 0, initialSpawn - Vector2.UnitY * 24f, 0, 0) && Collision.CanHit(initialSpawn, 0, 0, initialSpawn + Vector2.UnitY * 24f, 0, 0))
-                    initialSpawn.Y += 1f;
+                initialSpawn = Vector2.Lerp(player.Center, initialSpawn, 0.99f);
+                dontLoopForever++;
             }
 
             Projectile.NewProjectile(source, initialSpawn, Vector2.Zero, type, damage, knockback, player.whoAmI);

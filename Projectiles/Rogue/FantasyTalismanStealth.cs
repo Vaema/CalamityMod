@@ -1,10 +1,12 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.NPCs;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
+    [PierceResistException]
     public class FantasyTalismanStealth : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
@@ -43,16 +45,13 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.StickyProjAI(4);
             if (Projectile.ai[0] == 1f)
             {
-                if (Projectile.timeLeft % 4 == 0)
+                if (Projectile.timeLeft % 20 == 0)
                 {
-                    if (Main.rand.NextBool(3))
+                    Projectile ghost = CalamityUtils.SpawnOrb(Projectile, (int)(Projectile.damage * 0.3f), ProjectileID.SpectreWrath, 1000f, 4f);
+                    if (ghost.whoAmI.WithinBounds(Main.maxProjectiles))
                     {
-                        Projectile ghost = CalamityUtils.SpawnOrb(Projectile, (int)(Projectile.damage * 0.2f), ProjectileID.SpectreWrath, 1000f, 4f);
-                        if (ghost.whoAmI.WithinBounds(Main.maxProjectiles))
-                        {
-                            ghost.DamageType = RogueDamageClass.Instance;
-                            ghost.penetrate = 1;
-                        }
+                        ghost.DamageType = RogueDamageClass.Instance;
+                        ghost.penetrate = 1;
                     }
                 }
             }
@@ -64,7 +63,7 @@ namespace CalamityMod.Projectiles.Rogue
             return false;
         }
 
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => Projectile.ModifyHitNPCSticky(9);
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => Projectile.ModifyHitNPCSticky(6);
 
         public override void OnKill(int timeLeft)
         {
@@ -72,7 +71,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 for (int j = 0; j <= 3; j++)
                 {
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Main.rand.NextVector2Circular(12f, 12f), ModContent.ProjectileType<LostSoulFriendly>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0f);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Main.rand.NextVector2Circular(12f, 12f), ModContent.ProjectileType<LostSoulFriendly>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner, 0f, 0f);
                 }
             }
         }

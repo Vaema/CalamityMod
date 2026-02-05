@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using CalamityMod.BiomeManagers;
+using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Critters;
 using CalamityMod.Items.Fishing.SunkenSeaCatches;
@@ -20,37 +21,50 @@ using Terraria.ModLoader.Utilities;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
-    public class BabyGhostBell : ModNPC
+    public class BabyGhostBell : SunkenSeaNPC
     {
         public bool hasBeenHit = false;
-        public static Texture2D RadiantTexture;
-        public static Texture2D VoltaicTexture;
-        public static Texture2D RedTexture;
-        public static Texture2D GreenTexture;
-        public static Texture2D GoldTexture;
+        public static Asset<Texture2D> RadiantTexture;
+        public static Asset<Texture2D> VoltaicTexture;
+        public static Asset<Texture2D> PinkTexture;
+        public static Asset<Texture2D> GreenTexture;
+        public static Asset<Texture2D> GoldTexture;
         public ref float Variant => ref NPC.ai[1];
         public enum JellyColor
         {
             Blue = 0,
             Green = 1,
-            Red = 2,
+            Pink = 2,
             Radiant = 3,
             Voltaic = 4,
             Gold = 5
         }
 
-        public static Asset<Texture2D> GlowTexture;
+        /// <summary>
+        /// The squish of this NPC while drawing.
+        /// </summary>
+        private Vector2 ScaleSquish = Vector2.One;
+
+        // keeps track of the number of hops between a flip
+        public int flipCounter;
+
+        protected override List<int> PreyIDs => new List<int>();
+
+        protected override List<int> PredatorIDs => new List<int>();
+
+        protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.GleamingBurrows;
+
+        public override void Load()
+        {
+            RadiantTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/BabyGhostBellRadiant");
+            VoltaicTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/BabyGhostBellVoltaic");
+            GreenTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/BabyGhostBellGreen");
+            PinkTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/BabyGhostBellPink");
+            GoldTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/BabyGhostBellGold");
+        }
 
         public override void SetStaticDefaults()
         {
-            if (!Main.dedServ)
-            {
-                RadiantTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/BabyGhostBellRadiant", AssetRequestMode.ImmediateLoad).Value;
-                VoltaicTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/BabyGhostBellVoltaic", AssetRequestMode.ImmediateLoad).Value;
-                GreenTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/BabyGhostBellGreen", AssetRequestMode.ImmediateLoad).Value;
-                RedTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/BabyGhostBellRed", AssetRequestMode.ImmediateLoad).Value;
-                GoldTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/BabyGhostBellGold", AssetRequestMode.ImmediateLoad).Value;
-            }
             Main.npcFrameCount[Type] = 6;
             Main.npcCatchable[Type] = true;
             NPCID.Sets.CountsAsCritter[Type] = true;
@@ -61,6 +75,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.npcSlots = 0.1f;
             NPC.noGravity = true;
             NPC.chaseable = false;
+            NPC.dontTakeDamageFromHostiles = true;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.damage = 0;
@@ -69,13 +84,12 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.defense = 0;
             NPC.lifeMax = 5;
             NPC.knockBackResist = 1f;
-            NPC.alpha = 100;
+            NPC.alpha = 75;
             NPC.HitSound = SoundID.NPCHit25;
             NPC.DeathSound = SoundID.NPCDeath28;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<BabyGhostBellBanner>();
             NPC.catchItem = (short)ModContent.ItemType<BabyGhostBellItem>();
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -105,7 +119,7 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 return;
             }
-            Variant = Main.rand.Next(1, 4);
+            Variant = Main.rand.Next(0, 3);
             if (Main.rand.NextBool(30))
             {
                 Variant = (int)JellyColor.Radiant;
@@ -126,8 +140,8 @@ namespace CalamityMod.NPCs.SunkenSea
                 case (int)JellyColor.Green:
                     NPC.catchItem = ModContent.ItemType<BabyGhostBellGreenItem>();
                     break;
-                case (int)JellyColor.Red:
-                    NPC.catchItem = ModContent.ItemType<BabyGhostBellRedItem>();
+                case (int)JellyColor.Pink:
+                    NPC.catchItem = ModContent.ItemType<BabyGhostBellPinkItem>();
                     break;
                 case (int)JellyColor.Radiant:
                     {
@@ -173,19 +187,58 @@ namespace CalamityMod.NPCs.SunkenSea
                     Main.dust[dust].scale *= 0.5f;
                 }
             }
-            // Quick lil hops in random directions for movement
+
+            // Reset any squish that is done to the Ghost Bells, and clamps its upper limit to prevent it from becoming too tall
+            if (ScaleSquish.Y > 1f)
+                ScaleSquish.Y = MathHelper.Clamp(ScaleSquish.Y, 1f, 1.5f);
+            ScaleSquish.Y = Math.Max(1f, ScaleSquish.Y - 0.025f);
+
+            // Quick lil hops in semi-random directions for movement. its thursday
             if (NPC.wet)
             {
                 NPC.height = (int)(36 * NPC.scale);
-                if (NPC.velocity.Length() < 1f)
+                if (NPC.velocity.Length() < 0.5f)
                 {
-                    NPC.velocity = Main.rand.NextVector2CircularEdge(8, 8);
+                    // stretch a bit for  ~ effect ~
+                    ScaleSquish.Y += 0.4f;
+
+                    // get a semi-random float that is equivalent to +- X (normalised) degrees around the current rotation
+                    float semiRandomAngle = Main.rand.NextFloat(-0.7f, 0.7f);
+                    // multiply velocity by a random amount to break up cycles and appear more natural
+                    NPC.velocity *= Main.rand.NextFloat(12f, 15f);
+                    // check if the velocity lands itself into a tile
+                    bool bonk = CalamityUtils.DistanceToTileCollisionHit(NPC.position, NPC.velocity, 9) != null;
+
+                    // random chance if the last direction flip was 3+ hops ago OR if the ghost bell is about to bonk a tile
+                    if ((flipCounter >= 3 && Main.rand.NextBool(6)) || bonk)
+                    {
+                        // send it in the opposite direction
+                        NPC.velocity *= -1;
+                        NPC.velocity = NPC.velocity.RotatedBy(semiRandomAngle);
+                        flipCounter = 0; // reset the counter
+                        //Main.NewText("flip! " + flipCounter + " " + NPC.velocity + " " + NPC.rotation);
+                    }
+                    else
+                    {
+                        // send it in a random direction
+                        NPC.velocity = NPC.velocity.RotatedBy(semiRandomAngle);
+                        ++flipCounter; // add to the counter
+                        //Main.NewText("swim, " + flipCounter + " " + NPC.velocity + " " + NPC.rotation);
+                    }
                 }
                 NPC.velocity *= 0.95f;
                 NPC.rotation = MathHelper.Lerp(NPC.rotation, NPC.velocity.ToRotation() + MathHelper.PiOver2, 0.5f);
+                
+                if (NPC.velocity == Vector2.Zero)
+                {
+                    // failsafe. turns out they love getting themselves stuck in walls, so this is necessary to prevent that
+                    NPC.velocity = Main.rand.NextVector2CircularEdge(8, 8);
+                }
             }
             else
             {
+                // wouldnt want it flipping back into the air immediately, would we?
+                flipCounter = 0;
                 // Height is changed so that the jelly looks like it's actually laying on the ground when rotated
                 NPC.height = (int)(24 * NPC.scale);
                 // Gravy
@@ -214,7 +267,7 @@ namespace CalamityMod.NPCs.SunkenSea
             Color lightColor = Color.LightBlue; // Voltaic uses the same light blue
             switch (Variant)
             {
-                case (int)JellyColor.Red:
+                case (int)JellyColor.Pink:
                     lightColor = Color.Pink;
                     break;
                 case (int)JellyColor.Green:
@@ -229,7 +282,18 @@ namespace CalamityMod.NPCs.SunkenSea
             if (Variant == (int)JellyColor.Gold)
             {
                 NPC.ProduceGoldCritterDust();
-                NPC.rarity = 3;
+            }
+        }
+
+        public override void ModifyTypeName(ref string typeName)
+        {
+            if (Variant == (int)JellyColor.Radiant)
+            {
+                typeName = CalamityUtils.GetTextValue("NPCs.RadiantBabyGhostBell");
+            }
+            if (Variant == (int)JellyColor.Gold)
+            {
+                typeName = CalamityUtils.GetTextValue("NPCs.GoldBabyGhostBell");
             }
         }
 
@@ -252,7 +316,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (spawnInfo.Player.Calamity().ZoneSunkenSea && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
+            if (spawnInfo.Player.Calamity().ZoneGleamingBurrows && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
             {
                 return SpawnCondition.CaveJellyfish.Chance * 1.5f;
             }
@@ -264,8 +328,8 @@ namespace CalamityMod.NPCs.SunkenSea
             int dustType = DustID.BlueCrystalShard;
             switch (Variant)
             {
-                case (int)JellyColor.Red:
-                    dustType = DustID.RedTorch;
+                case (int)JellyColor.Pink:
+                    dustType = DustID.PinkTorch;
                     break;
                 case (int)JellyColor.Green:
                     dustType = DustID.GemEmerald;
@@ -295,27 +359,27 @@ namespace CalamityMod.NPCs.SunkenSea
             Texture2D texture = TextureAssets.Npc[Type].Value;
             switch (Variant)
             {
-                case (int)JellyColor.Red:
-                    texture = RedTexture;
+                case (int)JellyColor.Pink:
+                    texture = PinkTexture.Value;
                     break;
                 case (int)JellyColor.Green:
-                    texture = GreenTexture;
+                    texture = GreenTexture.Value;
                     break;
                 case (int)JellyColor.Radiant:
-                    texture = RadiantTexture;
+                    texture = RadiantTexture.Value;
                     break;
                 case (int)JellyColor.Voltaic:
-                    texture = VoltaicTexture;
+                    texture = VoltaicTexture.Value;
                     break;
                 case (int)JellyColor.Gold:
-                    texture = GoldTexture;
+                    texture = GoldTexture.Value;
                     break;
             }
             Vector2 origin = new Vector2(texture.Width / 2, texture.Height / Main.npcFrameCount[Type] / 2);
             Vector2 npcOffset = NPC.Center - screenPos;
             npcOffset -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
             npcOffset += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-            spriteBatch.Draw(texture, npcOffset, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
+            spriteBatch.Draw(texture, npcOffset, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, origin, ScaleSquish, spriteEffects, 0f);
 
             return false;
         }

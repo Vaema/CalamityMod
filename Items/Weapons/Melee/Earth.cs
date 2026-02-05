@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Items.BaseItems;
 using CalamityMod.Items.Materials;
@@ -21,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 186;
             Item.height = 186;
-            Item.damage = 5684;
+            Item.damage = 4200;
             Item.DamageType = TrueMeleeDamageClass.Instance;
             Item.useAnimation = 42;
             Item.useTime = 42;

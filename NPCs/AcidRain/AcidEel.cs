@@ -59,7 +59,6 @@ namespace CalamityMod.NPCs.AcidRain
 
             if (DownedBossSystem.downedPolterghast)
             {
-                NPC.DR_NERD(0.05f);
                 NPC.damage = 100;
                 NPC.lifeMax = 2000;
                 NPC.defense = 20;
@@ -71,7 +70,7 @@ namespace CalamityMod.NPCs.AcidRain
                 NPC.lifeMax = 180;
             }
 
-            NPC.value = Item.buyPrice(0, 0, 2, 0);
+            NPC.value = Item.buyPrice(silver: 2);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.lavaImmune = false;
@@ -85,10 +84,6 @@ namespace CalamityMod.NPCs.AcidRain
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<AcidRainBiome>().Type };
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -102,9 +97,6 @@ namespace CalamityMod.NPCs.AcidRain
         public override void AI()
         {
             NPC.TargetClosest(false);
-
-            // Fall through platforms.
-            NPC.Calamity().ShouldFallThroughPlatforms = true;
 
             // Play a slither sound from time to time.
             if (Main.rand.NextBool(480))
@@ -169,6 +161,8 @@ namespace CalamityMod.NPCs.AcidRain
             NPC.velocity.X = (NPC.velocity.X * 24f + NPC.direction * swimSpeed) / 25f;
         }
 
+        public override bool? CanFallThroughPlatforms() => true;
+
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ModContent.ItemType<SulphuricScale>(), 2, 1, 3);
@@ -188,7 +182,7 @@ namespace CalamityMod.NPCs.AcidRain
             }
         }
 
-        public float SegmentWidthFunction(float completionRatio) => NPC.width * NPC.scale * 0.5f;
+        public float SegmentWidthFunction(float completionRatio, Vector2 vertexPos) => NPC.width * NPC.scale * 0.5f;
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
@@ -242,10 +236,11 @@ namespace CalamityMod.NPCs.AcidRain
             if (segmentPositions.Length >= 2)
             {
                 float tailRotation = (segmentPositions[^2] - segmentPositions[^1]).ToRotation() + MathHelper.Pi;
-                Vector2 tailDrawPosition = segmentPositions[^1] - tailRotation.ToRotationVector2() * 4f;
+                Vector2 tailDrawPosition = segmentPositions[^1] - tailRotation.ToRotationVector2() * 4f  - screenPos;
                 SpriteEffects tailDirection = NPC.velocity.X < 0f ? SpriteEffects.None : SpriteEffects.FlipVertically;
                 Main.EntitySpriteDraw(tailTexture, tailDrawPosition, tailArea, NPC.GetAlpha(Color.White), tailRotation, tailArea.Size() * new Vector2(0f, 0.5f), NPC.scale, tailDirection, 0);
-                PrimitiveRenderer.RenderTrail(segmentPositions, new(SegmentWidthFunction, _ => NPC.GetAlpha(Color.White), pixelate: false, shader: GameShaders.Misc["CalamityMod:PrimitiveTexture"]), 36);
+                Main.instance.GraphicsDevice.BlendState = BlendState.AlphaBlend;
+                PrimitiveRenderer.RenderTrail(segmentPositions, new(SegmentWidthFunction, (_,_) => NPC.GetAlpha(Color.White), pixelate: false, shader: GameShaders.Misc["CalamityMod:PrimitiveTexture"]), 36);
             }
 
             return false;

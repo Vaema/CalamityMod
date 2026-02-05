@@ -1,3 +1,4 @@
+DashKey: Press {0} while facing a direction
 DodgeInfo:
 	'''
 	Grants the ability to dodge attacks
@@ -7,13 +8,37 @@ DodgeInfo:
 	'''
 
 AddedTooltip: {
+	/*
+	Accessories
+	*/
+	TitanGloveLine: 10% increased true melee damage
+	YoyoGlove: Secondary yoyos will do 50% less damage
+	// Also used by Sniper Scope
+	EyeoftheGolem: 15% increased critical strike damage
+	RifleScope: The scope effect can be toggled with visibility
+	ArcaneFlower: 5% increased magic damage
+	HellfireTreads:
+		'''
+		50% increased Heat debuff damage, does not stack with downgrades
+		All attacks inflict Hellfire
+		'''
+	FairyBoots:
+		'''
+		Fairies can spawn at any time on the surface and spawn far more frequently
+		Nearby fairies grant +2 HP/s life regen, 6 defense and 10% movement speed
+		Fairies are immune to damage and will no longer flee
+		'''
+	FleshKnucklesLine: Max life increased by 25
+	HandWarmer: Provides a regeneration boost while wearing the Snow armor
+	/*
+	Others
+	*/
 	TruffleWorm:
 		'''
 		Summons Duke Fishron if used as bait in the Ocean
 		Enrages outside the Ocean
 		'''
 	SlimeGun: Slimed enemies take more damage from fire-based debuffs
-	FleshKnucklesLine: Max life increased by 45
 	RodofDiscord: Teleportation is disabled while Chaos State is active
 	Pwnhammer:
 		'''
@@ -26,62 +51,32 @@ AddedTooltip: {
 		This grants +1.5 HP/s life regen and accelerates natural life regen
 		Life drain stacks based on the number of enemies being hit
 		'''
-	WarmthPotion: Greatly reduces the duration of Chilled, Frozen, and Glacial State
-	HandWarmer: Provides a regeneration boost while wearing the Snow armor
 	GoldenFishingRod: Its fishing line will never break
 	Tombstones:
 		'''
 		13 of any tombstone turns the surrounding area into a graveyard
 		Graveyards have various new item sales and recipes
 		'''
-	DeathSickle: Inflicts Whispering Death on hit
-	HellfireTreads:
-		'''
-		Multiplies all fire-based debuff damage by 1.5x, does not stack with downgrades
-		All attacks inflict Hellfire
-		'''
-	FairyBoots:
-		'''
-		Fairies can spawn at any time on the surface and spawn far more frequently
-		Nearby fairies grant +2 HP/s life regen, 10 defense and 10% movement speed
-		Fairies are immune to damage and will no longer flee
-		'''
-	MoonStone: Reduces the damage of the Nightwither debuff
-	SunStone: Reduces the damage of the Daybroken debuff
-	CelestialStone: Reduces the damage of the Nightwither and Daybroken debuffs
-	ArcaneFlower: 5% increased magic damage
-	RifleScope: The scope effect can be toggled with visibility
 	FeatherfallPotion: Disables all airborne flight recovery
-	TitanGloveLine: 10% increased true melee damage
-	YoyoGlove: Secondary yoyos will do 50% less damage
-	DefensePrefix: +{0}% damage reduction
-	LuckyPrefix: +0.05 luck
-	/*
-	Armor
-	*/
-	CopperHelmet: 5% increased damage
-	CopperChainmail: 3% increased critical strike chance
-	CopperGreaves: 5% increased movement speed
-	TinHelmet: 3% increased critical strike chance
-	TinChainmail: +0.5 HP/s life regen
-	TinGreaves: 5% increased movement speed
-	IronPieces: Increases damage reduction by 3%
-	LeadPieces: Increases damage reduction by 2%
-	SilverHelmet: 5% increased critical strike chance
-	SilverChainmail: +1 HP/s life regen
-	SilverGreaves: 8% increased movement speed
-	TungstenHelmet: 7% increased damage
-	TungstenChainmail: +0.5 HP/s life regen
-	TungstenGreaves: 8% increased movement speed
-	GoldHelmet: 5% increased damage
-	GoldChainmail: Increases damage reduction by 5%
-	GoldGreaves: 10% increased movement speed
-	PlatinumHelmet: 6% increased damage
-	PlatinumChainmail: 3% increased critical strike chance
-	PlatinumGreaves: 10% increased movement speed
-	CrimsonBreastplate: +1 HP/s life regen
-	CrimsonOtherPieces: +0.5 HP/s life regen
+	CrimsonArmorPieces: +0.5 HP/s life regen
 	Picksaw: Can mine Scoria Ore located in the Abyss
+}
+
+PrefixTooltip: {
+	ArcaneBuffStat:
+		'''
+		+{0} max mana
+		+{1}% magic damage
+		-{2}% mana cost
+		'''
+	ArmorPenStat: +{0} armor penetration
+	CritStat: +{0}% critical strike chance
+	DamageStat: +{0}% damage
+	DefenseStat: +{0} defense
+	DRStat: +{0}% damage reduction
+	LuckStat: +{0} luck
+	MeleeSpeedStat: +{0}% melee speed
+	SpeedStat: +{0}% movement speed
 }
 
 EditedTooltip: {
@@ -96,7 +91,7 @@ EditedTooltip: {
 	BloodySpine:
 		'''
 		Summons the Brain of Cthulhu when used in the Crimson
-		Enrages outside the Underground Crimson
+		Despawns outside the Crimson
 		'''
 	ClothierVoodooDoll:
 		'''
@@ -115,41 +110,23 @@ EditedTooltip: {
 		Summons the Golem when used at the Lihzahrd Altar
 		Enrages outside the Jungle Temple
 		'''
-	MechanicalEye:
-		'''
-		Summons The Twins when used during nighttime
-		Enrages during the day
-		'''
+	MechanicalEye: Summons The Twins when used during nighttime
 	MechanicalSkull:
 		'''
 		Summons Skeletron Prime when used during nighttime
 		Enrages during the day
 		'''
-	MechanicalWorm:
-		'''
-		Summons The Destroyer when used during nighttime
-		Enrages during the day
-		'''
+	MechanicalWorm: Summons The Destroyer when used during nighttime
 	QueenSlimeCrystal: Summons Queen Slime when used in the Hallow
-	SuspiciousLookingEye:
-		'''
-		Summons the Eye of Cthulhu when used during nighttime
-		Enrages during the day
-		'''
+	SuspiciousLookingEye: Summons the Eye of Cthulhu when used during nighttime
 	WormFood:
 		'''
 		Summons the Eater of Worlds when used in the Corruption
-		Enrages outside the Underground Corruption
+		Despawns outside the Corruption
 		'''
-	MasterExclusive: Master or Revengeance
-	// Sparkle Slime Balloon
-	GelBalloon:
-		'''
-		Throws a mixture of slime and sparkling crystals
-		Slimed enemies take more damage from fire-based debuffs
-		'''
-	AnkhShield1: Grants immunity to knockback
-	AnkhShield2: Grants immunity to most debuffs, including Mighty Wind
+	/*
+	Life Regen
+	*/
 	Campfires: Life regen is increased by 0.5 HP/s when near a campfire
 	HeartLantern: Grants +1 HP/s life regeneration when placed nearby
 	BottledHoney:
@@ -162,45 +139,31 @@ EditedTooltip: {
 	CharmofMyths: Grants +1 HP/s life regeneration and reduces the cooldown of healing potions by 25%
 	RegenerationPotion: Provides +2 HP/s life regeneration
 	HamBat: Defeating enemies temporarily grants +3 HP/s life regen
-	// Arcane Crystal
+	// Vital Crystal
 	AegisCrystal: Permanently boosts natural life regeneration
-	ArcheryPotion: 20% increased arrow speed and 5% increased arrow damage
-	IronskinPotion: Increase defense by {0}
-	// Aerial Bane
-	DD2BetsyBow: Shoots a tight spread of 6 splitting arrows
-	AleSake:
-		'''
-		Increases melee damage by 10% and reduces defense by 5%
-		Counts as an alcohol for Alcohol Poisoning
-		{$Common.AlcoholWarning}
-		'''
-	FlameWakerBoots:
-		'''
-		Multiplies all fire-based debuff damage by 1.25x
-		All attacks light enemies on fire
-		'Never get cold feet again'
-		'''
+	/*
+	OOA armors
+	*/
+	ApprenticeHat: Increases your max number of sentries by 1, 10% reduced mana cost
+	ApprenticeRobe: 15% increased summon damage and magic damage
+	ApprenticeTrousers: 10% increased summon damage, 15% increased magic critical strike chance, 20% increased movement speed
+	SquireGreatHelm: Increases your max number of sentries by 1 and grants +2 HP/s life regen
+	SquireGreaves: 10% increased summon damage, 15% increased melee critical strike chance and movement speed
+	MonkBrows: Increases your max number of sentries by 1 and increases rogue velocity by 15%
+	MonkShirt: 15% increased summon and rogue damage
+	MonkPants: 15% increased rogue critical strike chance and 20% increased movement speed
+	// Valhalla Knight
+	SquireAltShirt: 30% increased summon damage and grants +4 HP/s life regen
+	// Shinobi Infiltrator
+	MonkAltHead: Increases your max number of sentries by 2 and increases summon & rogue damage by 20%
+	MonkAltShirt0: 20% increased summon damage and rogue velocity
+	MonkAltShirt1: 5% increased rogue critical strike chance
+	MonkAltPants: 10% increased summon damage and rogue critical strike chance
+	/*
+	Accessories
+	*/
 	SunMoonStones: critical strike chance, life regeneration,
 	CelestialStoneShell: Minor increase to damage,
-	MagnetFlower: 10% reduced mana cost
-	ArcaneFlowerManaCloak: 12% reduced mana cost
-	Magiluminescence:
-		'''
-		Increases movement acceleration and deceleration by 1.75x
-		Increases movement speed by 1.15x. This bonus applies to running boot accessories
-		'''
-	FrogLeg: Increases jump speed by {0}% and allows auto-jump
-	// Soaring Insignia
-	EmpressFlightBooster1: Increases wing flight time by 33%
-	EmpressFlightBooster2: Increases movement and jump speed by 10% and acceleration by 1.25x
-	RifleScope1: Increase view range for guns (Right click to zoom out)
-	RifleScope2: The scope effect can be toggled with visibility
-	SniperScope: 7% increased ranged damage and critical strike chance
-	MagicQuiver: Increases arrow damage by 5% and greatly increases arrow speed
-	MoltenQuiver1: Increases arrow damage by 7% and greatly increases arrow speed
-	MoltenQuiver2: Lights wooden arrows ablaze and all arrows inflict Hellfire
-	MagicPowerPotion: 10% increased magic damage
-	MagicHat: 6% increased magic critical strike chance
 	PowerGlove: 10% increased melee speed, does not stack with downgrades
 	BerserkerGlove: 10% increased true melee damage
 	MechanicalGlove:
@@ -214,10 +177,49 @@ EditedTooltip: {
 		14% increased melee damage
 		14% increased melee speed, does not stack with downgrades
 		'''
-	ObsidianSkullLine: Grants immunity to the Burning and On Fire! debuffs
-	LavaWaders: Grants immunity to the Burning and On Fire! debuffs, and 7 seconds of immunity to lava
+	MoltenQuiver: Lights wooden arrows ablaze and all arrows inflict Hellfire
+	RifleScope1: Increase view range for guns (<right> to zoom out)
+	RifleScope2: The scope effect can be toggled with visibility
+	SniperScope: 12% increased ranged critical strike chance
+	Magiluminescence:
+		'''
+		Increases movement acceleration and deceleration by 1.75x
+		Increases movement speed by 1.15x. This bonus applies to running boot accessories
+		'''
+	FrogLeg: Increases jump speed by {0}% and allows auto-jump
+	// Soaring Insignia
+	EmpressFlightBooster1: Increases wing flight time by 33%
+	EmpressFlightBooster2: Increases movement speed by 7.5%, jump speed by 10%, and acceleration by 1.25x
+	GravityGlobe:
+		'''
+		Provides 32% increased jump speed and increased fall speed
+		Provides a gravitational boost jump, which recharges whenever gravity is flipped
+		Slightly improves wingless air movement speed
+		Press {$Key.UP} to change gravity
+		Press {$Key.DOWN} to fall faster
+		'''
+	FlameWakerBoots:
+		'''
+		25% increased Heat debuff damage
+		All attacks light enemies on fire
+		'Never get cold feet again'
+		'''
+	/*
+	Armor
+	*/
+	MagicHat: 6% increased magic critical strike chance
 	Gi: 10% increased movement and jump speed
-	GoldPickaxe: Can mine Demonite, Crimtane, Meteorite, Sea Prisms, and Sea Prism Crystals
+	SolarFlarePieces: Grants +1 HP/s life regeneration
+	/*
+	Potions
+	*/
+	ArcheryPotion: 5% increased arrow damage and 20% increased arrow speed
+	AleSake:
+		'''
+		Increases melee weapon scale by 15%, but decreases melee speed by 10%
+		Counts as an alcohol for Alcohol Poisoning
+		{$Common.AlcoholWarning}
+		'''
 	FlaskofCursedFlames: Melee, Whip, and Rogue attacks inflict enemies with cursed flames
 	FlaskofFire: Melee, Whip, and Rogue attacks set enemies on fire
 	FlaskofGold: Melee, Whip, and Rogue attacks make enemies drop more gold
@@ -226,54 +228,22 @@ EditedTooltip: {
 	FlaskofParty: All attacks cause confetti to appear
 	FlaskofPoison: Melee, Whip, and Rogue attacks poison enemies
 	FlaskofVenom: Melee, Whip, and Rogue attacks inflict Acid Venom on enemies
-	SolarFlarePieces: Grants +1 HP/s life regeneration
 	/*
-	OOA sets
+	Others
 	*/
-	SquireGreatHelm: Increases your max number of sentries by 1 and grants +0.5 HP/s life regen
-	SquirePlating: 5% increased summon damage and 15% increased melee damage
-	SquireGreaves:
+	// Aerial Bane
+	DD2BetsyBow: Shoots a tight spread of 6 splitting arrows
+	GoldPickaxe: Can mine Demonite, Crimtane, Meteorite, Sea Prisms, and Sea Prism Crystals
+	MasterExclusive: Master or Revengeance
+	// Sparkle Slime Balloon
+	GelBalloon:
 		'''
-		5% increased summon damage and melee critical strike chance
-		15% increased movement speed
+		Throws a mixture of slime and sparkling crystals
+		Slimed enemies take more damage from fire-based debuffs
 		'''
-	MonkBrows: Increases your max number of sentries by 1 and increases rogue velocity by 10%
-	MonkShirt: 5% increased summon and rogue damage
-	MonkPants1: 5% increased summon damage and rogue critical strike chance
-	MonkPants2: 20% increased movement speed
-	// Valhalla Knight
-	SquireAltHead: Increases your max number of sentries by 2 and increases summon and melee damage by 15%
-	SquireAltShirt: 15% increased summon damage and grants +1 HP/s life regen
-	SquireAltPants: 10% increased summon damage
-	HuntressJerkin:
-		'''
-		10% increased summon damage and 5% increased ranged damage and critical strike chance
-		10% chance to not consume ammo
-		'''
-	HuntressPants: 5% increased summon damage and 20% increased movement speed
-	ApprenticeHat: Increases your max number of sentries by 1, 5% increased magic damage and 10% reduced mana cost
-	ApprenticeRobe: 10% increased summon and magic damage
-	ApprenticeTrousers:
-		'''
-		5% increased summon damage and magic critical strike chance
-		20% increased movement speed
-		'''
-	// Shinobi Infiltrator
-	MonkAltHead:
-		'''
-		Increases your max number of sentries by 2
-		10% increased summon and rogue damage
-		'''
-	MonkAltShirt0: 10% increased summon damage and 15% increased rogue velocity
-	MonkAltShirt1: 5% increased rogue critical strike chance
-	MonkAltPants: 10% increased summon damage and rogue critical strike chance
-	// Red Riding
-	HuntressAltShirt: 10% increased summon and ranged damage and 20% chance to not consume ammo
-	HuntressAltPants: 20% increased summon damage and 5% increased ranged critical strike chance
-	// Dark Artist
-	ApprenticeAltHead: 10% increased summon & magic damage
-	ApprenticeAltShirt: 15% increased summon damage and 10% increased magic damage
-	ApprenticeAltPants: 10% increased summon damage
+	// Ancient Manipulator
+	LunarCraftingStation: Used to craft items from Lunar Fragments, Luminite, and Astral Bars
+	AnkhShield: Grants immunity to most debuffs, including Mighty Wind
 }
 
 // Buff Descriptions
@@ -281,8 +251,7 @@ BuffDescription: {
 	Banner: You have increased damage and defense against the following:
 	BeetleMight: Melee damage and speed increase by {0}% and {1}% respectively
 	ChaosState: Rod of Discord teleports are disabled
-	LeafCrystal: Emits powerful life pulses at nearby enemies
-	WarmthExtra: Reduced durations of Chilled, Frozen, and Glacial State
+	Rabies: Decreased life regen, Causes status effects
 	WeaponImbueConfetti: All attacks cause confetti to appear
 	WeaponImbueCursedFlames: Melee, Whip, and Rogue attacks inflict enemies with cursed flames
 	WeaponImbueFire: Melee, Whip, and Rogue attacks set enemies on fire
@@ -326,7 +295,6 @@ DemolitionistChat: {
 DryadChat: {
 	DarksunEclipse: There's a dark solar energy emanating from the moths that appear during this time. What's up with moths getting stronger as you do too?
 	Hardmode: That starborne illness sits upon this land like a blister. Do even more vile forces of corruption exist in worlds beyond?
-	DrunkPrincessShroom: "{0} put me up to this."
 	Mushroom: I'm not here for any reason! Just picking up mushrooms for uh, later use.
 	SulphurSea: My Goddess is resting deep below this sea. If you may excuse me, I wish to pay my respects to her alone.
 }
@@ -364,7 +332,6 @@ MechanicChat: {
 	MoonLordDefeated: What do you mean your traps aren't making the cut? Don't look at me!
 	Eclipse: Um... should my nightlight be on?
 	AcidRain: Maybe I should've waterproofed my gadgets... They're starting to corrode.
-	DrunkPrincess: Well, I like {0}, but I, ah... I have my eyes on someone else.
 }
 
 MerchantChat: {
@@ -373,8 +340,6 @@ MerchantChat: {
 	AcidRain: If this acid rain keeps up, there'll be a shortage of Dirt Blocks soon enough!
 	Bandit: I happen to have several Angel Statues at the moment, a truely rare commodity. Want one?
 }
-
-NurseChat.HealNotAllowed: Now is not the time!
 
 PainterChat: {
 	Corruption: A little sickness isn't going to stop me from doing my work as an artist!
@@ -394,7 +359,6 @@ PainterChat: {
 }
 
 PartyGirlChat: {
-	DrunkPrincess: I have a feeling we're going to have absolutely fantastic parties with {0} around!
 	Eclipse1: I think my light display is turning into an accidental bug zapper. At least the monsters are enjoying it.
 	Eclipse2: Ooh! I love parties where everyone wears a scary costume!
 }
@@ -402,7 +366,6 @@ PartyGirlChat: {
 PirateChat: {
 	PreLeviathan: Aye, I've heard of a mythical creature in the oceans, singing with an alluring voice. Careful when yer fishin out there.
 	WetScourgeDefeated: I have to thank ye again for takin' care of that sea serpent. Or was that another one...
-	DrunkPrincess: Twenty-nine bottles of beer on the wall...
 	SeaKing: I remember legends about that {0}. He ain't quite how the stories make him out to be though.
 	Ocean: Now this is a scene that I can admire any time! I feel like something is watching me though.
 	SulphurSea1: It ain't much of a sight, but there's still life living in these waters.
@@ -429,18 +392,12 @@ SteampunkerChat: {
 
 StylistChat: {
 	Hardmode: Please don't catch space lice. Or {0} lice. Or just lice in general.
-	DrunkPrincess1: "{0} is always trying to brighten my mood... even though, deep down, I know she's sad..."
-	DrunkPrincess2: Sometimes I catch {0} sneaking up from behind me.
-	DrunkPrincess3: "{0} has been smiling more often lately, even without alcohol. I think I can thank you for that, at least somewhat."
 	ProfanedSoulCrystal1: They look so cute and yet, I can feel their immense power just by being near them. What are you?
 	ProfanedSoulCrystal2: I hate to break it to you, but you don't have hair to cut or style, hun.
 	ProfanedDonuts: Aww, they're so cute, do they have names?
 }
 
-TavernkeepChat: {
-	FullMoon: Care for a little Moonshine?
-	DrunkPrincess: Sheesh, {0} is a little cruel, isn't she? I never claimed to be an expert on anything but ale!
-}
+TavernkeepChat.FullMoon: Care for a little Moonshine?
 
 TaxCollectorChat: {
 	DoGDefeated: Devourer of what, you said? Devourer of Funds, if its payroll is anything to go by!
@@ -450,12 +407,7 @@ TaxCollectorChat: {
 	Has100Plat: BAH! Doesn't seem like I'll ever be able to quarrel with the debts of the town again!
 }
 
-TravellingMerchantChat.DrunkPrincessMerchant: Tell {0} I'll take up her offer and meet with her at the back of {1}'s house.
-
-TruffleChat: {
-	Normal: I don't feel very safe; I think there's pigs following me around and it frightens me.
-	DrunkPrincess: Sometimes, {0} just looks at me funny and I'm not sure how I feel about that.
-}
+TruffleChat.Normal: I don't feel very safe; I think there's pigs following me around and it frightens me.
 
 WitchDoctorChat: {
 	BloodMoon: This is as good a time as any to pick up the best ingredients for potions.
@@ -463,7 +415,4 @@ WitchDoctorChat: {
 	Jungle: I wonder how my relatives are doing, last time I checked on them they were too busy praising the... Sun, I think.
 }
 
-WizardChat: {
-	Hardmode: Space just got way too close for comfort.
-	MentionRoD: I saw some teleporting pink apparitions in the Hallow. If you let me live nearby, I should be able to channel their magic into a special staff for you.
-}
+WizardChat.Hardmode: Space just got way too close for comfort.

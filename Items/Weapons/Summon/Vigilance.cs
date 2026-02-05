@@ -1,4 +1,6 @@
-﻿using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -16,33 +18,28 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.width = Item.height = 32;
             Item.damage = 115;
             Item.mana = 10;
-            Item.useAnimation = Item.useTime = 10;
+            Item.useAnimation = Item.useTime = 24;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 4f;
             Item.UseSound = SoundID.DD2_BetsySummon;
             Item.autoReuse = true;
+            Item.buffType = ModContent.BuffType<SoulSeekerBuff>();
             Item.shoot = ModContent.ProjectileType<SeekerSummonProj>();
-            Item.shootSpeed = 10f;
             Item.DamageType = DamageClass.Summon;
 
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.altFunctionUse != 2)
+            if (player.maxMinions - player.slotsMinions >= 1f)
             {
-                if (player.maxMinions - player.slotsMinions >= 1f)
-                {
-                    int p = Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
-                    if (Main.projectile.IndexInRange(p))
-                    {
-                        Main.projectile[p].ai[0] = player.ownedProjectileCounts[type];
-                        Main.projectile[p].originalDamage = Item.damage;
-                    }
-                }
+                player.AddBuff(Item.buffType, 2);
+                var minion = Projectile.NewProjectileDirect(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
+                minion.ai[0] = player.ownedProjectileCounts[type];
+                minion.originalDamage = Item.damage;
             }
             return false;
         }

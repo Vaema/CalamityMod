@@ -1,4 +1,4 @@
-﻿using CalamityMod.CalPlayer;
+﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
@@ -25,27 +25,27 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.damage = 560;
             Item.DamageType = DamageClass.Summon;
             Item.mana = 10;
-            Item.useAnimation = Item.useTime = 10;
+            Item.useAnimation = Item.useTime = 24;
             Item.knockBack = 0.25f;
+            Item.buffType = ModContent.BuffType<CosmicEnergy>();
             Item.shoot = ModContent.ProjectileType<CosmicEnergySpiral>();
-            Item.shootSpeed = 10f;
 
             Item.UseSound = SoundID.Item60;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
 
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0 && player.maxMinions >= 10;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            player.AddBuff(Item.buffType, 2);
             CalamityUtils.KillShootProjectiles(true, type, player);
-            int p = Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
-            if (Main.projectile.IndexInRange(p))
-                Main.projectile[p].originalDamage = Item.damage;
+            var minion = Projectile.NewProjectileDirect(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
+            minion.originalDamage = Item.damage;
             return false;
         }
 

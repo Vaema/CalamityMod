@@ -8,13 +8,16 @@ using CalamityMod.Tiles.Astral;
 using CalamityMod.Tiles.AstralDesert;
 using CalamityMod.Tiles.AstralSnow;
 using CalamityMod.Tiles.Crags;
-using CalamityMod.Tiles.FloralParadise;
 using CalamityMod.Tiles.FurnitureAbyss;
 using CalamityMod.Tiles.FurnitureAshen;
-using CalamityMod.Tiles.FurnitureEutrophic;
+using CalamityMod.Tiles.FurnitureDriftwood;
+using CalamityMod.Tiles.FurnitureMonolith;
+using CalamityMod.Tiles.FurnitureNavystone;
+using CalamityMod.Tiles.FurnitureNavystone.FurnitureAncientNavystone;
 using CalamityMod.Tiles.FurnitureOtherworldly;
 using CalamityMod.Tiles.FurnitureProfaned;
 using CalamityMod.Tiles.FurnitureVoid;
+using CalamityMod.Tiles.FurnitureWulfrum;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.Tiles.SunkenSea;
 using Microsoft.Xna.Framework;
@@ -30,35 +33,6 @@ namespace CalamityMod
 {
     public static partial class CalamityUtils
     {
-        public static string GetMapChestName(string baseName, int x, int y)
-        {
-            // Bounds check.
-            if (!WorldGen.InWorld(x, y, 2))
-                return baseName;
-
-            Tile tile = Main.tile[x, y];
-            int left = x;
-            int top = y;
-            if (tile.TileFrameX % 36 != 0)
-                left--;
-            if (tile.TileFrameY != 0)
-                top--;
-
-            int chest = Chest.FindChest(left, top);
-
-            // Valid chest index check.
-            if (chest < 0)
-                return baseName;
-
-            string name = baseName;
-
-            // Concatenate the chest's custom name if it has one.
-            if (!string.IsNullOrEmpty(Main.chest[chest].name))
-                name += $": {Main.chest[chest].name}";
-
-            return name;
-        }
-
         public static void SafeSquareTileFrame(int x, int y, bool resetFrame = true)
         {
             for (int xIter = x - 1; xIter <= x + 1; ++xIter)
@@ -77,38 +51,6 @@ namespace CalamityMod
                         WorldGen.TileFrame(xIter, yIter, false, false);
                 }
             }
-        }
-
-        public static void LightHitWire(int type, int i, int j, int tileX, int tileY)
-        {
-            int x = i - Main.tile[i, j].TileFrameX / 18 % tileX;
-            int y = j - Main.tile[i, j].TileFrameY / 18 % tileY;
-            int tileXX18 = 18 * tileX;
-            for (int l = x; l < x + tileX; l++)
-            {
-                for (int m = y; m < y + tileY; m++)
-                {
-                    if (Main.tile[l, m].HasTile && Main.tile[l, m].TileType == type)
-                    {
-                        if (Main.tile[l, m].TileFrameX < tileXX18)
-                            Main.tile[l, m].TileFrameX += (short)(tileXX18);
-                        else
-                            Main.tile[l, m].TileFrameX -= (short)(tileXX18);
-                    }
-                }
-            }
-
-            if (Wiring.running)
-            {
-                for (int k = 0; k < tileX; k++)
-                {
-                    for (int l = 0; l < tileY; l++)
-                        Wiring.SkipWire(x + k, y + l);
-                }
-            }
-
-            if (Main.netMode != NetmodeID.SinglePlayer)
-                NetMessage.SendTileSquare(-1, x, y, tileX, tileY);
         }
 
         public static bool DrawSwayingMultiTile(int i, int j)
@@ -299,7 +241,7 @@ namespace CalamityMod
             {
                 for (int j = y; j != y + height; j += Math.Sign(height))
                 {
-                    if (WorldGen.InWorld(i, j))
+                    if (!WorldGen.InWorld(i, j))
                         continue;
 
                     if (WorldGen.SolidTile(Framing.GetTileSafely(i, j)))
@@ -377,10 +319,15 @@ namespace CalamityMod
         // Extension shorthand for the Tile Framing System Universal Merges.
         // As this must be defined in a static class, it's out here in CalamityUtils.
         // Flow, 2024/OCT/31 Removing Obsolete in here as tModLoader doesn't like this
-        //[Obsolete("Use TileBlendMergeSystem.RegisterMerge Instead")]
+        [Obsolete("Use TileBlendMergeSystem.RegisterBlendMergeWith Instead")]
         public static void RegisterUniversalMerge(this ModTile tile, int mergeType, string blendSheetPath)
         {
             //TileFramingSystem.RegisterUniversalMerge(tile.Type, mergeType, blendSheetPath);
+            TileBlendMergeSystem.RegisterMerge(tile.Type, mergeType);
+        }
+
+        public static void RegisterBlendMergeWith(this ModTile tile, int mergeType)
+        {
             TileBlendMergeSystem.RegisterMerge(tile.Type, mergeType);
         }
 
@@ -443,13 +390,15 @@ namespace CalamityMod
             TileType<BlackPearlPile>(),
             TileType<WhitePearlPile>(),
             TileType<Shellstone>(),
-            TileType<RuneSand>(),
+            TileType<Dunesand>(),
             TileType<Navystone>(),
             TileType<EutrophicSand>(),
+            TileType<Limestone>(),
+            TileType<LimestoneCobble>(),
             TileType<SulphurousShale>(),
             TileType<AbyssGravel>(),
             TileType<Voidstone>(),
-            TileType<Stohne>(),
+            TileType<MossyStone>(),
         });
 
         /// <summary>
@@ -516,6 +465,7 @@ namespace CalamityMod
             TileType<CelestialRemains>(),
             // Sunken Sea
             TileType<Limestone>(),
+            TileType<LimestoneCobble>(),
             TileType<PolypSand>(),
             TileType<VolcanicSand>(),
             TileType<PinkPearlPile>(),
@@ -523,10 +473,11 @@ namespace CalamityMod
             TileType<WhitePearlPile>(),
             TileType<Shellstone>(),
             TileType<Runestone>(),
-            TileType<RuneSand>(),
+            TileType<Dunesand>(),
             TileType<EutrophicSand>(),
             TileType<Navystone>(),
             TileType<SeaPrism>(),
+            TileType<MossyStone>(),
         });
 
         /// <summary>
@@ -578,17 +529,6 @@ namespace CalamityMod
             TileType<Voidstone>(),
             TileType<PlantyMush>(),
             TileType<ScoriaOre>(),
-        });
-
-        /// <summary>
-        /// Makes the tile merge with all the tile types that generate within various types of floral paradise tiles.
-        /// </summary>
-        /// <param name="type">The tile whose merging properties will be set.</param>
-        public static void MergeWithFloralParadise(int type) => MergeWithSet(type, new int[] {
-            TileType<PeatMoss>(),
-            TileType<Peat>(),
-            TileType<AlgalSlate>(),
-            TileType<PerennialOre>(),
         });
 
         /// <summary>
@@ -646,6 +586,13 @@ namespace CalamityMod
             SetMerge(type, TileType<RunicProfanedBrick>());
             SetMerge(type, TileType<AshenSlab>());
             SetMerge(type, TileType<VoidstoneSlab>());
+            SetMerge(type, TileType<WulfrumPanels>());
+            SetMerge(type, TileType<WulfrumSiding>());
+            SetMerge(type, TileType<WulfrumPlating>());
+            SetMerge(type, TileType<WulfrumEnergyBarrier>());
+            SetMerge(type, TileType<RoundedAnodizedWulfrumPanels>());
+            SetMerge(type, TileType<AnodizedWulfrumTrim>());
+            SetMerge(type, TileType<AnodizedWulfrumPanels>());
         }
 
         /// <summary>
@@ -694,7 +641,7 @@ namespace CalamityMod
         /// Determines if a tile is solid based on whether it's active and not actuated or if the tile is solid. This will not count platforms and other non-solid ground tiles
         /// </summary>
         /// <param name="tile">The tile to check.</param>
-        public static bool IsTileSolid(this Tile tile) => tile != null && tile.HasUnactuatedTile && Main.tileSolid[tile.TileType] && !TileID.Sets.Platforms[tile.TileType];
+        public static bool IsTileSolid(this Tile tile) => tile != null && tile.HasUnactuatedTile && Main.tileSolid[tile.TileType] && !Main.tileSolidTop[tile.TileType];
 
         /// <summary>
         /// Determines if a tile is "full" based on if the tile is solid. This will count platforms and actuated tiles but no other non-solid ground tiles.
@@ -736,7 +683,7 @@ namespace CalamityMod
         /// </summary>
         /// <param name="theTile"></param>
         /// <returns>Wether or not the tile may be grappled onto</returns>
-        public static bool CanTileBeLatchedOnTo(this Tile theTile, bool grappleOnTrees = false) => Main.tileSolid[theTile.TileType] | (theTile.TileType == 314) | (grappleOnTrees && TileID.Sets.IsATreeTrunk[theTile.TileType]) | (grappleOnTrees && theTile.TileType == 323);
+        public static bool CanTileBeLatchedOnTo(this Tile theTile, bool grappleOnTrees = false) => Main.tileSolid[theTile.TileType] | (theTile.TileType == TileID.MinecartTrack) | (grappleOnTrees && TileID.Sets.IsATreeTrunk[theTile.TileType]) | (grappleOnTrees && theTile.TileType == TileID.PalmTree);
 
         /// <summary>
         /// Gets the required pickaxe power of a tile, accounting for both the ModTile and the vanilla tile pick requirements

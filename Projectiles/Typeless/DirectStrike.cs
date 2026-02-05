@@ -40,6 +40,7 @@ namespace CalamityMod.Projectiles.Typeless
 
             // If the target is moving VERY fast, direct strikes spawned on top of them can actually miss
             // Setting a target will guarantee hits on said target by teleporting the projectile onto their center every frame
+            // Setting a target will guarantee hits on said target by teleporting the projectile onto them every frame
             if (!invalidTarget)
                 Projectile.Center = Main.npc[(int)Projectile.ai[0]].Center;
         }
@@ -56,7 +57,7 @@ namespace CalamityMod.Projectiles.Typeless
             if (projHitbox.Intersects(targetHitbox))
             {
                 NPC target = Main.npc[(int)Projectile.ai[0]];
-                if (pushVelocity != Vector2.Zero && !invalidTarget && target.CanBeMoved(hasStongDisplacement))
+                if (pushVelocity != Vector2.Zero && pushVelocity.X < 255f && !invalidTarget && target.CanBeMoved(hasStongDisplacement))
                 {
                     target.velocity = (pushVelocity * (target.knockBackResist == 0 ? 0.5f : 1));
                 }

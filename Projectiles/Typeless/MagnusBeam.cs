@@ -1,5 +1,4 @@
 ﻿using System;
-using CalamityMod.Balancing;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Graphics.Primitives;
@@ -88,14 +87,14 @@ namespace CalamityMod.Projectiles.Typeless
             trail.color = trailColor;
 
             Vector2 sinOffset = (Vector2.UnitY * MathF.Sin(Projectile.timeLeft * MathHelper.Pi * 0.05f) * 24f).RotatedBy(Projectile.rotation);
-            Dust offTrail = Dust.NewDustPerfect(Projectile.Center + sinOffset, 175, Main.rand.NextVector2Circular(0.2f, 0.2f));
+            Dust offTrail = Dust.NewDustPerfect(Projectile.Center + sinOffset, DustID.SpectreStaff, Main.rand.NextVector2Circular(0.2f, 0.2f));
             offTrail.noGravity = true;
             offTrail.scale = Main.rand.NextFloat(1.2f, 1.8f);
             offTrail.alpha = Main.rand.Next(120, 180 + 1);
         }
 
-        internal float WidthFunction(float completionRatio) => Projectile.scale * 24f;
-        internal Color ColorFunction(float completionRatio)
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos) => Projectile.scale * 24f;
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             Vector3 trailColor = Main.rgbToHsl(Color.Lerp(Color.CornflowerBlue, Color.Magenta, ProximityFactor));
             Vector3 endColor = trailColor + new Vector3(0.1f + MathF.Sin(Main.GlobalTimeWrappedHourly * 5f) * 0.05f, 0f, 0.1f);
@@ -105,7 +104,7 @@ namespace CalamityMod.Projectiles.Typeless
         public override void PostDraw(Color lightColor)
         {
             GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"]), 30);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_,_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"]), 30);
             Texture2D glow = TextureAssets.Projectile[Type].Value;
             Main.EntitySpriteDraw(glow, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, glow.Size() * 0.5f, Projectile.scale, SpriteEffects.None);
         }
@@ -117,15 +116,7 @@ namespace CalamityMod.Projectiles.Typeless
             Player player = Main.player[Projectile.owner];
             player.statMana += 25;
             player.ManaEffect(25);
-
-            int heal = (int)Math.Round(hit.Damage * 0.1);
-            if (heal > BalancingConstants.LifeStealCap)
-                heal = BalancingConstants.LifeStealCap;
-
-            if (Main.LocalPlayer.lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
-                return;
-
-            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ModContent.ProjectileType<RoyalHeal>(), BalancingConstants.LifeStealRange);
+            Main.player[Projectile.owner].SpawnLifeStealProjectile(target, Projectile, ModContent.ProjectileType<RoyalHeal>(), (int)Math.Round(hit.Damage * 0.1), 0.75f);
         }
 
         public override void OnKill(int timeLeft)

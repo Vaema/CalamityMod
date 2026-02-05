@@ -4,7 +4,6 @@ using CalamityMod.Particles;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using rail;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -75,8 +74,8 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            float minMult = 0.2f;
-            int hitsToMinMult = 5;
+            float minMult = 0.25f;
+            int hitsToMinMult = 8;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
             modifiers.SourceDamage *= damageMult;
         }
@@ -101,12 +100,12 @@ namespace CalamityMod.Projectiles.Magic
 
                 // Create Blast
                 float blastSize = 60;
-                float minMultiplier = 0.25f;
-                int hitsToMinMult = 6;
-                Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(Projectile.damage * 0.3f), 0, Projectile.owner, blastSize, minMultiplier, hitsToMinMult);
+                float minMultiplier = 0.3f;
+                int hitsToMinMult = 7;
+                Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(Projectile.damage * 0.5f), 0, Projectile.owner, blastSize, minMultiplier, hitsToMinMult);
                 blast.timeLeft = 10;
                 blast.DamageType = DamageClass.Magic;
-                blast.ArmorPenetration = 25;
+                blast.ArmorPenetration = 40;
             }
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)

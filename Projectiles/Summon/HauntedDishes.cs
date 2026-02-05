@@ -15,9 +15,10 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
+            Main.projFrames[Type] = 19;
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
-            Main.projFrames[Type] = 19;
         }
 
         public override void SetDefaults()
@@ -432,9 +433,9 @@ namespace CalamityMod.Projectiles.Summon
                     {
                         int i1 = (int)((double)Projectile.position.X + (double)(Projectile.width / 2)) / 16;
                         int j = (int)((double)Projectile.position.Y + (double)Projectile.height) / 16 + 1;
-                        if (WorldGen.SolidTile(i1, j) || Main.tile[i1, j].IsHalfBlock || ((int)Main.tile[i1, j].Slope > 0 || Projectile.type == 200))
+                        if (WorldGen.SolidTile(i1, j) || Main.tile[i1, j].IsHalfBlock || ((int)Main.tile[i1, j].Slope > 0 || Projectile.type == ProjectileID.PetLizard))
                         {
-                            if (Projectile.type == 200)
+                            if (Projectile.type == ProjectileID.PetLizard)
                             {
                                 Projectile.velocity.Y = -3.1f;
                             }
@@ -467,7 +468,7 @@ namespace CalamityMod.Projectiles.Summon
                             }
                         }
                     }
-                    else if (Projectile.type == 266 && minionMovingLeft | minionMovingRight)
+                    else if (Projectile.type == ProjectileID.BabySlime && minionMovingLeft | minionMovingRight)
                         Projectile.velocity.Y -= 6f;
                 }
                 if (Projectile.velocity.X > groundMinionMaxVel)
@@ -565,8 +566,6 @@ namespace CalamityMod.Projectiles.Summon
                 Vector2 velocity = Projectile.velocity;
             }
         }
-
-        public override bool? CanDamage() => false;
 
         public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
         {

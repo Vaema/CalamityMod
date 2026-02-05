@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon.SmallAresArms
@@ -49,7 +50,7 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
             // Create a burst of dust.
             for (int i = 0; i < 24; i++)
             {
-                Dust laserEnergy = Dust.NewDustPerfect(Projectile.Center + shootDirection * Projectile.width * Projectile.scale * 0.45f, 182);
+                Dust laserEnergy = Dust.NewDustPerfect(Projectile.Center + shootDirection * Projectile.width * Projectile.scale * 0.45f, DustID.TheDestroyer);
                 laserEnergy.velocity = (MathHelper.TwoPi * i / 24f).ToRotationVector2() * 4f;
                 laserEnergy.scale = 1.1f;
                 laserEnergy.fadeIn = 0.4f;
@@ -87,7 +88,7 @@ namespace CalamityMod.Projectiles.Summon.SmallAresArms
                 return;
 
             Vector2 aimDirection = Projectile.rotation.ToRotationVector2();
-            Dust laserEnergy = Dust.NewDustPerfect(Projectile.Center + aimDirection * Projectile.width * Projectile.scale * 0.51f, 182);
+            Dust laserEnergy = Dust.NewDustPerfect(Projectile.Center + aimDirection * Projectile.width * Projectile.scale * 0.51f, DustID.TheDestroyer);
             laserEnergy.velocity = aimDirection.RotatedByRandom(0.48f) * Main.rand.NextFloat(3f);
             laserEnergy.scale = 1.1f;
             laserEnergy.fadeIn = 0.4f;

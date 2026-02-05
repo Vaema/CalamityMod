@@ -60,8 +60,8 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            float minMult = 0.2f;
-            int hitsToMinMult = 15;
+            float minMult = 0.35f;
+            int hitsToMinMult = 10;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
             modifiers.SourceDamage *= damageMult;
 
@@ -70,10 +70,6 @@ namespace CalamityMod.Projectiles.Magic
                 Particle sparks = new SparkParticle(Projectile.Center, Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedByRandom(0.7f) * Main.rand.NextFloat(7, 25), false, 35, Main.rand.NextFloat(0.5f, 0.9f), Main.rand.NextBool() ? Color.Lerp(Color.Crimson, Color.White, 0.5f) : Color.Crimson);
                 GeneralParticleHandler.SpawnParticle(sparks);
             }
-        }
-        public override void OnKill(int timeLeft)
-        {
-            
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {

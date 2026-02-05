@@ -12,11 +12,9 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void SetDefaults()
         {
-            Projectile.width = Projectile.height = 25;
+            Projectile.width = Projectile.height = 36;
             Projectile.friendly = true;
-            Projectile.DamageType = DamageClass.Generic;
-            Projectile.penetrate = 3;
-            Projectile.timeLeft = 150;
+            Projectile.timeLeft = 180;
         }
 
         public override void AI()
@@ -28,6 +26,15 @@ namespace CalamityMod.Projectiles.Typeless
                 dustEffect.noGravity = true;
                 Dust lightedDust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.TintableDustLighted, Main.rand.NextFloat(0.1f), Main.rand.NextFloat(0.1f), 0, new Color(190, 3, 252));
                 lightedDust.noGravity = true;
+            }
+
+            if (Projectile.timeLeft < 170)
+            {
+                foreach (Player player in Main.ActivePlayers)
+                {
+                    if (Vector2.Distance(player.Center, Projectile.Center) < 24f && player.wingTime > 0f)
+                        player.wingTime -= 4f;
+                }
             }
         }
     }

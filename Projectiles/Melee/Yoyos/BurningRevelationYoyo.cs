@@ -18,14 +18,14 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<BurningRevelation>();
         public const int MaxUpdates = 3;
-        public int timer = 0;
         public bool canDamage = true;
         public bool firing = false;
         public NPC targeted;
         public float fade = 0;
         public int hitCooldown = 0;
 
-        public ref float yoyoPower => ref Projectile.ai[2];
+        public int timer = 0;
+        public int yoyoPower = 0;
         public int yoyoPowerMax = 1000;
 
         public bool cloneYoyo = false;
@@ -90,19 +90,19 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             if (firing)
             {
                 if (targeted == null || targeted.life <= 0)
-                    targeted = Projectile.Center.ClosestNPCAt(600);
+                    targeted = Projectile.Center.ClosestNPCAt(800f);
 
                 if (timer % (cloneYoyo ? 20 : 10) == 0) // Fire Holy Stars
                 {
-                    int stardamage = (int)(Projectile.damage * 0.12f);
+                    int stardamage = (int)(Projectile.damage * 0.24f);
 
                     Vector2 vel = new Vector2(0, 10).RotatedBy(timer * 0.025f * (cloneYoyo ? -1 : 1));
-                    Projectile damageStar = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, vel, ModContent.ProjectileType<HolyStarDamage>(), stardamage, Projectile.knockBack, Projectile.owner, 0, 5, (targeted == null ? -1 : targeted.whoAmI));
+                    Projectile damageStar = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, vel, ModContent.ProjectileType<HolyStarDamage>(), stardamage, Projectile.knockBack, Projectile.owner, 0, 5, targeted == null ? -1 : targeted.whoAmI);
                     damageStar.extraUpdates = 1;
-                    damageStar.scale = 0.6f;
-                    Projectile damageStar2 = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, -vel, ModContent.ProjectileType<HolyStarDamage>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner, 0, 5, (targeted == null ? -1 : targeted.whoAmI));
+                    damageStar.scale = 0.5f;
+                    Projectile damageStar2 = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, -vel, ModContent.ProjectileType<HolyStarDamage>(), stardamage, Projectile.knockBack, Projectile.owner, 0, 5, targeted == null ? -1 : targeted.whoAmI);
                     damageStar2.extraUpdates = 1;
-                    damageStar2.scale = 0.6f;
+                    damageStar2.scale = 0.5f;
 
                     SoundStyle fire = new("CalamityMod/Sounds/Custom/Providence/ProvidenceHolyBlastShoot");
                     SoundEngine.PlaySound(fire with { Volume = 0.6f, PitchVariance = 0.2f }, Projectile.Center);
@@ -120,14 +120,16 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                 }
                 */
 
-                if (timer <= 0)
+                if (timer > 0)
                 {
-                    firing = false;
-                    canDamage = true;
-                    yoyoPower = 0;
-                }
-                else
                     timer--;
+                    if (timer <= 0)
+                    {
+                        firing = false;
+                        canDamage = true;
+                        yoyoPower = 0;
+                    }
+                }
             }
             else
             {
@@ -204,7 +206,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
                     SoundStyle explode = new("CalamityMod/Sounds/Custom/Providence/ProvidenceHolyBlastImpact");
                     SoundEngine.PlaySound(explode with { Volume = 0.5f, Pitch = 0.3f * power }, Projectile.Center);
-                    SoundStyle explode2 = new("CalamityMod/Sounds/Item/HeliumFlashReadyAlt");
+                    SoundStyle explode2 = new("CalamityMod/Sounds/Item/HeliumFlashReady");
                     SoundEngine.PlaySound(explode2 with { Volume = 0.7f, Pitch = 0.6f * power }, Projectile.Center);
                 }
             }

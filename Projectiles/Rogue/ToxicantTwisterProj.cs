@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Rogue
                 }
                 if (Projectile.timeLeft % 50 == 0)
                 {
-                    Projectile dustProjectile = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity.RotatedByRandom(0.1f) * -0.6f, ModContent.ProjectileType<ToxicantTwisterDust>(), (int)(Projectile.damage * 0.33f), 0f, Projectile.owner, 0, 0, Projectile.ai[2]);
+                    Projectile dustProjectile = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity.RotatedByRandom(0.1f) * -0.6f, ModContent.ProjectileType<ToxicantTwisterDust>(), (int)(Projectile.damage * 0.4f), 0f, Projectile.owner, 0, 0, Projectile.ai[2]);
                     dustProjectile.timeLeft = 240;
                 }
             }
@@ -110,7 +110,7 @@ namespace CalamityMod.Projectiles.Rogue
             for (int i = 0; i < 5; i++)
             {
                 Vector2 dustVel = Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(4, 8);
-                Dust dust2 = Dust.NewDustPerfect(Projectile.Center + dustVel, 278, dustVel * 0.7f);
+                Dust dust2 = Dust.NewDustPerfect(Projectile.Center + dustVel, DustID.FireworksRGB, dustVel * 0.7f);
                 dust2.scale = Main.rand.NextFloat(0.8f, 0.9f);
                 dust2.noGravity = false;
                 dust2.color = Color.Lerp(Color.White, Main.rand.NextBool(4) ? Color.Chartreuse : Color.Green, 0.7f);

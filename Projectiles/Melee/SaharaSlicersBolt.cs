@@ -1,8 +1,9 @@
-﻿using System;
-using CalamityMod.Particles;
+﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -35,6 +36,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             Player Owner = Main.player[Projectile.owner];
             float playerDist = Vector2.Distance(Owner.Center, Projectile.Center);
+            Projectile.ai[2]++;
 
             // Shot Mode
             if (Projectile.ai[0] == 1)
@@ -65,7 +67,7 @@ namespace CalamityMod.Projectiles.Melee
 
                 // Setting the bolt's position on the player's back
                 Projectile.rotation = (21.8f - (Projectile.ai[1] * 0.1f)) * -Owner.direction;
-                Vector2 BoltPos = Owner.MountedCenter + new Vector2((10 + Projectile.ai[1] * 2.5f) * -Owner.direction, 3f - Projectile.ai[1]);
+                Vector2 BoltPos = Owner.MountedCenter + new Vector2((10 + Projectile.ai[1] * 2.5f) * -Owner.direction, 3f - Projectile.ai[1] + Owner.gfxOffY);
 
                 Projectile.Center = BoltPos;
             }
@@ -77,7 +79,7 @@ namespace CalamityMod.Projectiles.Melee
                 Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 288 : 121, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.3f, 1.9f));
                 dust.noGravity = false;
                 dust.scale = Main.rand.NextFloat(0.6f, 0.9f);
-                Dust dust2 = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 288 : 121, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(35f)) * Main.rand.NextFloat(0.05f, 0.9f));
+                Dust dust2 = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 288 : 207, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(35f)) * Main.rand.NextFloat(0.05f, 0.9f));
                 dust2.noGravity = false;
                 dust2.scale = Main.rand.NextFloat(0.6f, 0.9f);
             }
@@ -89,10 +91,10 @@ namespace CalamityMod.Projectiles.Melee
                 SoundEngine.PlaySound(SoundID.Item10, Projectile.position);
                 for (int i = 0; i <= 5; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 216 : 121, -Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.2f, 1f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 216 : 207, -Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.2f, 1f));
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(1.1f, 1.8f);
-                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 216 : 121, -Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(35f)) * Main.rand.NextFloat(0.05f, 0.4f));
+                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 216 : 207, -Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(35f)) * Main.rand.NextFloat(0.05f, 0.4f));
                     dust2.noGravity = true;
                     dust2.scale = Main.rand.NextFloat(1.1f, 1.8f);
                 }
@@ -102,7 +104,28 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (Projectile.ai[0] == 1)
                 CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
-            return true;
+            Vector2 scale = new Vector2(Projectile.scale);
+            // Squishy fade in. This does not occur if the slicer is instantly thrown
+            if (Projectile.ai[0] == 0)
+            {
+                int endStretch = 4;
+                int endSquash = 8;
+                Vector2 stretch = new Vector2(0.8f, 1.6f);
+                if (Projectile.ai[2] < endStretch)
+                {
+                    float completion = Utils.GetLerpValue(0, endStretch, Projectile.ai[2], true);
+                    scale.X = MathHelper.Lerp(1.8f, stretch.X, completion);
+                    scale.Y = MathHelper.Lerp(0.3f, stretch.Y, completion);
+                }
+                else
+                {
+                    float completion = Utils.GetLerpValue(0, endSquash, Projectile.ai[2], true);
+                    scale.X = MathHelper.Lerp(stretch.X, 1f, completion);
+                    scale.Y = MathHelper.Lerp(stretch.Y, 1f, completion);
+                }
+            }
+            Main.EntitySpriteDraw(TextureAssets.Projectile[Type].Value, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, TextureAssets.Projectile[Type].Size() / 2, scale, SpriteEffects.None);
+            return false;
         }
         public override bool? CanDamage() => Projectile.ai[0] == 1 ? true : false;
     }

@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Xml.XPath;
 using CalamityMod.Enums;
+using CalamityMod.Items.Critters;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Pathfinding;
 using CalamityMod.Tiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -14,6 +15,7 @@ using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.Utilities;
 using static CalamityMod.CalamityUtils;
 using static Terraria.ModLoader.ModContent;
 
@@ -33,14 +35,14 @@ namespace CalamityMod.NPCs.SunkenSea
 
         protected override List<int> PreyIDs =>
         [
-            // NPCType<Slugbun>(),
+            NPCType<Slugbun>(),
         ];
 
         protected override List<int> PredatorIDs =>
         [
-            // NPCType<IlmerianAxolotl>(),
+            NPCType<GildedAxolotl>(),
             NPCType<Sharkoon>(),
-            // NPCType<Polyperil>(),
+            NPCType<Polyperil>(),
             // NPCType<CrestedStalker>(),
             // NPCType<Hermititan>(),
         ];
@@ -105,10 +107,6 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public Vector2 Velocity { get => NPC.velocity; set => NPC.velocity = value; }
 
-        public float Acceleration => 0.4f;
-
-        public float MaxSpeed => 8f;
-
         private Vector2 SpongeFoundPosition;
 
         private bool HasEatenSponge;
@@ -129,20 +127,25 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void OnSpawn(IEntitySource source)
         {
+            pathfinding = new PathfindingManager(this);
+            Acceleration = 0.4f;
+            MaxSpeed = 8f;
+            MinimumPointDistance = 60f;
             CurrentBehavior = IdlingBehavior;
             NPC.spriteDirection = Main.rand.NextBool().ToDirectionInt();
             NPC.GravityMultiplier *= 2f;
             NPC.MaxFallSpeedMultiplier *= 2f;
-            pathfinding = new PathfindingManager(NPC)
-            {
-                Acceleration = 0.4f,
-                MaxSpeed = 8f,
-                MinimumPointDistance = 60f
-            };
         }
 
         public override void AI()
         {
+            if (pathfinding == null)
+            {
+                pathfinding = new PathfindingManager(this);
+                Acceleration = 0.4f;
+                MaxSpeed = 8f;
+                MinimumPointDistance = 60f;
+            }
             CurrentBehavior?.Invoke();
 
             NPC.rotation = MathHelper.ToRadians(NPC.velocity.X * 3f);
@@ -195,8 +198,8 @@ namespace CalamityMod.NPCs.SunkenSea
         private void IdlingBehavior()
         {
             // At random, the mob will choose a random nearby point and pathfind there.
-            pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(500f, 3000f), SunkenSeaTileValidity));
-            pathfinding.MaxSpeed = 6f;
+            pathfinding.DoPathfinding(new(this, NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(500f, 3000f), SunkenSeaTileValidity));
+            MaxSpeed = 6f;
         }
 
         private void FleeingBehavior()
@@ -224,8 +227,8 @@ namespace CalamityMod.NPCs.SunkenSea
                 }
                 while (!Main.tile[(NPC.Center + _randomPathPoint).ToTileCoordinates()].IsTileSolid());
                 NPC.netUpdate = true;
-                pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + _randomPathPoint, SunkenSeaTileValidity));
-                pathfinding.MaxSpeed = 8f;
+                pathfinding.DoPathfinding(new(this, NPC.Center, NPC.Center + _randomPathPoint, SunkenSeaTileValidity));
+                MaxSpeed = 8f;
             }
             else
             {
@@ -252,21 +255,8 @@ namespace CalamityMod.NPCs.SunkenSea
                 HuntCooldown = Main.rand.Next(13, 30);
 
             // With sight, just go straight at him. Without it, try to pathfind over them.
-            pathfinding.DoPathfinding(new(NPC.Center, CurrentPrey.Center, tileValidity: SunkenSeaTileValidity), forceNewTask: huntReady);
-            pathfinding.MaxSpeed = 8f;
-            pathfinding.CustomIdleBehavior = () =>
-            {
-                if (CurrentPrey != null)
-                {
-                    NPC.velocity += NPC.DirectionTo(CurrentPrey.Center) * pathfinding.Acceleration;
-
-                    // Cap the speed if MaxSpeed has been surpassed.
-                    if (NPC.velocity.LengthSquared() > pathfinding.MaxSpeed * pathfinding.MaxSpeed)
-                        NPC.velocity = Vector2.Normalize(NPC.velocity) * pathfinding.MaxSpeed;
-                }
-                else
-                    NPC.velocity *= 0.95f;
-            };
+            pathfinding.DoPathfinding(new(this, NPC.Center, CurrentPrey.Center, tileValidity: SunkenSeaTileValidity), forceNewTask: huntReady);
+            MaxSpeed = 8f;
 
             HuntCooldown--;
         }
@@ -288,8 +278,8 @@ namespace CalamityMod.NPCs.SunkenSea
             }
             else
             {
-                pathfinding.DoPathfinding(new(NPC.Center, SpongeFoundPosition, SunkenSeaTileValidity));
-                pathfinding.MaxSpeed = 6f;
+                pathfinding.DoPathfinding(new(this, NPC.Center, SpongeFoundPosition, SunkenSeaTileValidity));
+                MaxSpeed = 6f;
             }
         }
 
@@ -345,11 +335,28 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
             }
-            if (NPC.life <= 0)
+            SpawnGores(NPC, "Probesnout", 4);
+        }
+
+        public override bool CanBeHitByNPC(NPC attacker) => PredatorIDs.Contains(attacker.type);
+
+        public override void AwaitingPathBehavior()
+        {
+            if (CurrentBehavior == HuntBehavior)
             {
-                for (int i = 0; i < 4; i++)
-                    Gore.NewGoreDirect(NPC.GetSource_Death(), NPC.Center, new Vector2(hit.HitDirection, -1f), Mod.Find<ModGore>($"{Name}{i + 1}").Type);
+                if (CurrentPrey != null)
+                {
+                    NPC.velocity += NPC.DirectionTo(CurrentPrey.Center) * Acceleration;
+
+                    // Cap the speed if MaxSpeed has been surpassed.
+                    if (NPC.velocity.LengthSquared() > MaxSpeed * MaxSpeed)
+                        NPC.velocity = Vector2.Normalize(NPC.velocity) * MaxSpeed;
+                }
+                else
+                    NPC.velocity *= 0.95f;
             }
+            else
+                base.AwaitingPathBehavior();
         }
 
         #endregion
@@ -398,6 +405,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             base.SetDefaults();
 
+            Banner = Type;
             BannerItem = ItemType<ProbesnoutBanner>();
 
             NPC.lifeMax = 5;
@@ -411,12 +419,22 @@ namespace CalamityMod.NPCs.SunkenSea
 
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.catchItem = ModContent.ItemType<ProbesnoutItem>();
 
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
+        }
+
+        public override float SpawnChance(NPCSpawnInfo spawnInfo)
+        {
+            if (spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
+            {
+                if (spawnInfo.Player.Calamity().ZoneRadiantReefs)
+                    return SpawnCondition.CaveJellyfish.Chance * 0.3f;
+            }
+            return 0f;
         }
 
         #endregion
@@ -450,6 +468,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             base.SetDefaults();
             NPC.rarity = 3;
+            NPC.catchItem = ItemType<ProbesnoutGoldItem>();
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -458,11 +477,16 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.GoldCritter, hit.HitDirection, -1f, 0, default, 1f);
             }
-            if (NPC.life <= 0)
+        }
+
+        public override float SpawnChance(NPCSpawnInfo spawnInfo)
+        {
+            if (spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
             {
-                for (int i = 0; i < 4; i++)
-                    Gore.NewGoreDirect(NPC.GetSource_Death(), NPC.Center, new Vector2(hit.HitDirection, -1f), Mod.Find<ModGore>($"{Name}{i + 1}").Type);
+                if (spawnInfo.Player.Calamity().ZoneRadiantReefs)
+                    return SpawnCondition.CaveJellyfish.Chance * 0.05f;
             }
+            return 0f;
         }
     }
 }

@@ -1,20 +1,19 @@
-﻿using System;
-using CalamityMod.Buffs.StatDebuffs;
+﻿using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Particles;
+using CalamityMod.NPCs;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
+    [PierceResistException]
     public class BasherHoldout : BaseCustomUseStyleProjectile, ILocalizedModType
     {
         public override int AssignedItemID => ModContent.ItemType<Basher>();
@@ -143,7 +142,7 @@ namespace CalamityMod.Projectiles.Melee
                         Vector2 particleVel = new Vector2(0, 7 * -Projectile.ai[1] * Owner.direction).RotatedBy(FinalRotation + MathHelper.ToRadians(-45));
                         Vector2 particlePos = Owner.Center + (new Vector2(Main.rand.Next(10, 90), 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)));
 
-                        Dust dust = Dust.NewDustPerfect(particlePos, 79);
+                        Dust dust = Dust.NewDustPerfect(particlePos, DustID.Pearlwood);
                         dust.noGravity = true;
                         dust.scale = Main.rand.NextFloat(0.85f, 1.3f);
                         dust.velocity = -particleVel.RotatedByRandom(0.2f);
@@ -193,9 +192,9 @@ namespace CalamityMod.Projectiles.Melee
 
             if (Owner.Calamity().mouseRight)
             {
-                Owner.Calamity().GeneralScreenShakePower = 1.2f;
+                Owner.SetScreenshake(1.2f);
 
-                SoundStyle fire3 = new("CalamityMod/Sounds/Item/HolyFireBulletExplosion");
+                SoundStyle fire3 = new("CalamityMod/Sounds/Item/DampExplosion");
                 SoundEngine.PlaySound(fire3 with { Volume = 0.35f, Pitch = 0.7f }, Projectile.Center);
                 for (int i = 0; i < MathHelper.Clamp(15 - Projectile.numHits * 3, 2, 15); i++)
                 {

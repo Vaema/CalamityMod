@@ -1,7 +1,6 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
-using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -20,16 +19,17 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 58;
             Item.height = 56;
-            Item.damage = 190;
+            Item.damage = 285;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 10;
-            Item.useTime = 12;
-            Item.useAnimation = 12;
+            Item.mana = 15;
+            Item.useTime = 8;
+            Item.useAnimation = 24;
+            Item.reuseDelay = 30;
+            Item.useLimitPerAnimation = 3;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5f;
             Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
-            Item.UseSound = SoundID.Item72;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<Shadowbolt>();
             Item.shootSpeed = 5f;
@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient(ItemID.ShadowbeamStaff).
                 AddIngredient<RuinousSoul>(2).
                 AddIngredient<ArmoredShell>().
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

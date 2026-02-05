@@ -1,18 +1,17 @@
 ﻿using System;
-using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
-using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
+    [PierceResistException]
     public class MurasamaSlash : ModProjectile, ILocalizedModType
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<Murasama>();
@@ -154,9 +153,9 @@ namespace CalamityMod.Projectiles.Melee
         public void HandleChannelMovement(Player player, Vector2 playerRotatedPoint)
         {
             float speed = 1f;
-            if (player.ActiveItem().shoot == Projectile.type)
+            if (player.HeldItem.shoot == Projectile.type)
             {
-                speed = player.ActiveItem().shootSpeed * Projectile.scale;
+                speed = player.HeldItem.shootSpeed * Projectile.scale;
             }
             // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 newVelocity = (Main.MouseWorld - playerRotatedPoint).SafeNormalize(Vector2.UnitX * player.direction) * speed;
@@ -171,12 +170,15 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.velocity = newVelocity;
             }
         }
-        public override void ModifyDamageHitbox(ref Rectangle hitbox)
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
-            int size = 60;
-            if (Slash3)
-                hitbox.Inflate(size, size);
+            Vector2 lineEnd = Main.player[Projectile.owner].Center + Projectile.velocity * (Slash3 ? 11.35f : 8.6f);
+            // The slash sprite is top-heavy, so make the width lean in a direction
+            float lineWidth = (Projectile.direction == 1 && projHitbox.Center.X > targetHitbox.Center.X) || (Projectile.direction == -1 && projHitbox.Center.X < targetHitbox.Center.X) ? 320f : 200f;
+            float _ = 0f;
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Main.player[Projectile.owner].Center, lineEnd, lineWidth, ref _);
         }
+
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (target.Organic())

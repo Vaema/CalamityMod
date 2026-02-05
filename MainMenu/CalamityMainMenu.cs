@@ -41,7 +41,7 @@ namespace CalamityMod.MainMenu
         } = new();
 
         public float remixLogoRotation = 0f;
-        public override string DisplayName => "Calamity Style";
+        public override string DisplayName => CalamityUtils.GetTextValue("UI.MainMenu");
 
         public override Asset<Texture2D> Logo => ModContent.Request<Texture2D>("CalamityMod/MainMenu/Logo");
         public override Asset<Texture2D> SunTexture => ModContent.Request<Texture2D>("CalamityMod/Backgrounds/BlankPixel");

@@ -22,9 +22,9 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 62;
             Item.height = 60;
-            Item.damage = 188;
+            Item.damage = 190;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 60;
+            Item.mana = 80;
             Item.useTime = 3;
             Item.useAnimation = 45;
             Item.reuseDelay = 75;
@@ -48,7 +48,7 @@ namespace CalamityMod.Items.Weapons.Magic
             }
             for (int i = 0; i < 2; i++)
             {
-                Dust chargefull = Dust.NewDustPerfect(position + velocity * 13, 267);
+                Dust chargefull = Dust.NewDustPerfect(position + velocity * 13, DustID.RainbowMk2);
                 chargefull.velocity = velocity.RotatedByRandom(0.25f) * Main.rand.NextFloat(1f, 4);
                 chargefull.scale = Main.rand.NextFloat(0.5f, 0.9f);
                 chargefull.noGravity = true;
@@ -62,7 +62,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient(ItemID.SpectreStaff).
                 AddIngredient<RuinousSoul>(2).
                 AddIngredient<DarkPlasma>().
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

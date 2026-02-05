@@ -13,17 +13,17 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 109;
             Item.height = 128;
-            Item.damage = 285;
+            Item.damage = 192;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            // Due to the amazing sound engine, having more than one of these on screen will cause audio bugs!
-            // Therefore this thing has to be absurdly slow (Not that I've ever complained about that before)
-            Item.useAnimation = Item.useTime = 115;
+            // Due to the amazing sound engine, having multiple crosses embedded in enemies cuts off the sound
+            // Therefore this thing has to be very slow (Not that I've ever complained about that before)
+            Item.useAnimation = Item.useTime = 96;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 12f;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
-            Item.rare = ItemRarityID.Pink;
+            Item.value = CalamityGlobalItem.RarityLightPurpleBuyPrice;
+            Item.rare = ItemRarityID.LightPurple;
             Item.shoot = ModContent.ProjectileType<ExorcismProj>();
             Item.shootSpeed = 6f;
             Item.DamageType = RogueDamageClass.Instance;

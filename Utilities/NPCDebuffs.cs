@@ -102,7 +102,7 @@ namespace CalamityMod
             // Make all Cal NPCs immune to confused unless otherwise specified
             // Extra note: Clams are not in this list as they initially immune to Confused, but are no longer immune once aggro'd. This is set in their AI().
             bool cal = npc.ModNPC != null && npc.ModNPC.Mod.Name.Equals(ModContent.GetInstance<CalamityMod>().Name);
-            if (!ConfusionDebuffImmunitiesList.Includes(npc.type) && cal)
+            if (!CalamityNPCSets.CalamityNPCNotImmuneToConfused[npc.type] && cal)
                 NPCID.Sets.SpecificDebuffImmunity[npc.type][BuffID.Confused] = true;
 
             // Sets certain vanilla NPCs and all town NPCs to be immune to most debuffs.
@@ -171,8 +171,6 @@ namespace CalamityMod
             EnemyStats.DebuffImmunities = new SortedDictionary<int, Tuple<GeneralImmunityStatus, int[]>>
             {
                 { ModContent.NPCType<KingSlimeJewelRuby>(), immuneToEverything },
-                { ModContent.NPCType<KingSlimeJewelSapphire>(), immuneToEverything },
-                { ModContent.NPCType<KingSlimeJewelEmerald>(), immuneToEverything },
 
                 { ModContent.NPCType<HiveMind>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<BrainRot>() }) },
 
@@ -249,9 +247,9 @@ namespace CalamityMod
                 { ModContent.NPCType<ProfanedGuardianHealer>(), holy },
                 { ModContent.NPCType<ProfanedRocks>(), holy },
 
-                { ModContent.NPCType<Bumblefuck>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<VermillionFlux>() }) },
-                { ModContent.NPCType<Bumblefuck2>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<VermillionFlux>() }) },
-                { ModContent.NPCType<WildBumblefuck>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<VermillionFlux>() }) },
+                { ModContent.NPCType<Dragonfolly>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<VermillionFlux>() }) },
+                { ModContent.NPCType<DraconicSwarmer>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<VermillionFlux>() }) },
+                { ModContent.NPCType<WildBumblebirb>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<VermillionFlux>() }) },
 
                 { ModContent.NPCType<Providence>(), holy },
                 { ModContent.NPCType<ProvSpawnOffense>(), holy },
@@ -278,12 +276,8 @@ namespace CalamityMod
                 { ModContent.NPCType<OldDukeToothBall>(), sulphur },
                 { ModContent.NPCType<SulphurousSharkron>(), sulphur },
 
-                { ModContent.NPCType<DevourerofGodsHead>(), immuneToEverything },
                 { ModContent.NPCType<DevourerofGodsBody>(), immuneToEverything },
                 { ModContent.NPCType<DevourerofGodsTail>(), immuneToEverything },
-                { ModContent.NPCType<CosmicGuardianHead>(), immuneToEverything },
-                { ModContent.NPCType<CosmicGuardianBody>(), immuneToEverything },
-                { ModContent.NPCType<CosmicGuardianTail>(), immuneToEverything },
 
                 { ModContent.NPCType<Yharon>(), new(GeneralImmunityStatus.None, new int[] { BuffID.OnFire, ModContent.BuffType<Dragonfire>() }) },
 
@@ -409,9 +403,6 @@ namespace CalamityMod
                 { ModContent.NPCType<ProfanedEnergyBody>(), holy },
                 { ModContent.NPCType<Sunskater>(), holy },
 
-                { ModContent.NPCType<ArmoredDiggerHead>(), immuneToEverything },
-                { ModContent.NPCType<ArmoredDiggerBody>(), immuneToEverything },
-                { ModContent.NPCType<ArmoredDiggerTail>(), immuneToEverything },
                 { ModContent.NPCType<Eidolist>(), immuneToEverything },
 
                 { ModContent.NPCType<Frogfish>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Poisoned, BuffID.Venom }) },

@@ -4,6 +4,7 @@ using System.IO;
 using CalamityMod.Enums;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Particles;
+using CalamityMod.Pathfinding;
 using CalamityMod.Projectiles.Enemy;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -13,6 +14,7 @@ using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.Utilities;
 using static CalamityMod.CalamityUtils;
 using static Terraria.ModLoader.ModContent;
 
@@ -24,13 +26,11 @@ namespace CalamityMod.NPCs.SunkenSea
 
         #region Static Fields
 
-        public static int IdleRandomMovementUnlikeliness = 250;
+        //public static int IdleRandomMovementUnlikeliness = 250;
         public static int IdleMinPathDistance = 200;
         public static int IdleMaxPathDistance = 400;
 
         public static int FleeTileAnticipationDistance = 64;
-        public static int FleeMinPathDistance = 80;
-        public static int FleeMaxPathDistance = 160;
 
         public static int ExplosionDistance = 80;
         public static int ExplosionRadius = 80;
@@ -143,17 +143,20 @@ namespace CalamityMod.NPCs.SunkenSea
 
         protected override List<int> PreyIDs =>
         [
-            // NPCType<GildedAxolotl>(),
+            NPCType<GildedAxolotl>(),
             NPCType<SeaFloaty>(),
             NPCType<Probesnout>(),
             NPCType<ProbesnoutGold>(),
             NPCType<SeaMinnow>(),
+            NPCType<AlphaSeaMinnow>(),
+            NPCType<SeaMinnowGold>(),
+            NPCType<AlphaSeaMinnowGold>(),
             NPCType<EutrophicRay>(),
         ];
 
         protected override List<int> PredatorIDs =>
         [
-            // NPCType<Polyperil>(),
+            NPCType<Polyperil>(),
             // NPCType<Snailord>(),
             NPCType<PrismBack>(),
             // NPCType<Hermititan>,
@@ -191,7 +194,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(silver: 5);
 
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = true;
@@ -215,11 +218,9 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void OnSpawn(IEntitySource source)
         {
-            pathfinding = new PathfindingManager(NPC)
-            {
-                Acceleration = 0.3f,
-                MaxSpeed = 6f,
-            };
+            pathfinding = new PathfindingManager(this);
+            Acceleration = 0.3f;
+            MaxSpeed = 6f;
             CurrentBehavior = IdlingBehavior;
             NPC.spriteDirection = Main.rand.NextBool().ToDirectionInt();
             NPC.GravityMultiplier *= 2f;
@@ -228,6 +229,12 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void AI()
         {
+            if (pathfinding == null)
+            {
+                pathfinding = new PathfindingManager(this);
+                Acceleration = 0.3f;
+                MaxSpeed = 6f;
+            }
             CurrentBehavior?.Invoke();
 
             // Leans the Sharkoon towards the direction it's going.
@@ -243,18 +250,20 @@ namespace CalamityMod.NPCs.SunkenSea
             }
 
             // When it gets outside of water, it'll try to gravitate downards towards the water.
-            if (!NPC.wet && !IsExploding)
+            if (!NPC.wet && !IsExploding && CurrentBehavior != OutsideWaterBehavior)
                 CurrentBehavior = OutsideWaterBehavior;
 
-            // Reset any squish that is done to the Sharkoon.
+
+            // Reset any squish that is done to the Sharkoon, and clamps its upper limit to prevent it from becoming too tall
             if (ScaleSquish.Y > 1f)
-                ScaleSquish.Y = Math.Max(1f, ScaleSquish.Y - 0.025f);
+                ScaleSquish.Y = MathHelper.Clamp(ScaleSquish.Y, 1f, 1.5f);
+            ScaleSquish.Y = Math.Max(1f, ScaleSquish.Y - 0.025f);
         }
 
         private void IdlingBehavior()
         {
             // At random, the mob will choose a random nearby point and pathfind there.
-            pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * 2000f, SunkenSeaTileValidity));
+            pathfinding.DoPathfinding(new(this, NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.Next(IdleMinPathDistance, IdleMaxPathDistance), SunkenSeaTileValidity));
         }
 
         private void HuntingBehavior()
@@ -271,20 +280,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 HuntCooldown = Main.rand.Next(13, 30);
 
             // With sight, just go straight at him. Without it, try to pathfind over them.
-            pathfinding.DoPathfinding(new(NPC.Center, CurrentPrey.Center, SunkenSeaTileValidity), forceNewTask: huntReady);
-            pathfinding.CustomIdleBehavior = () =>
-            {
-                if (CurrentPrey != null)
-                {
-                    NPC.velocity += NPC.DirectionTo(CurrentPrey.Center) * pathfinding.Acceleration;
-
-                    // Cap the speed if MaxSpeed has been surpassed.
-                    if (NPC.velocity.LengthSquared() > pathfinding.MaxSpeed * pathfinding.MaxSpeed)
-                        NPC.velocity = Vector2.Normalize(NPC.velocity) * pathfinding.MaxSpeed;
-                }
-                else
-                    NPC.velocity *= 0.95f;
-            };
+            pathfinding.DoPathfinding(new(this, NPC.Center, CurrentPrey.Center, SunkenSeaTileValidity), forceNewTask: huntReady);
 
             HuntCooldown--;
         }
@@ -305,19 +301,19 @@ namespace CalamityMod.NPCs.SunkenSea
             // Try to manuever if there are any obstacles.
             if (!Main.tile[(NPC.Center + NPC.DirectionFrom(_avoidedEntity.Center) * FleeTileAnticipationDistance).ToTileCoordinates()].IsTileSolid())
             {
-                NPC.velocity += NPC.DirectionFrom(_avoidedEntity.Center) * pathfinding.Acceleration;
+                NPC.velocity += NPC.DirectionFrom(_avoidedEntity.Center) * Acceleration;
                 pathfinding.ClearResults();
 
                 // Cap the speed if MaxSpeed has been surpassed.
-                if (NPC.velocity.LengthSquared() > pathfinding.MaxSpeed * pathfinding.MaxSpeed)
-                    NPC.velocity = Vector2.Normalize(NPC.velocity) * pathfinding.MaxSpeed;
+                if (NPC.velocity.LengthSquared() > MaxSpeed * MaxSpeed)
+                    NPC.velocity = Vector2.Normalize(NPC.velocity) * MaxSpeed;
             }
             else
             {
                 float distanceFromAvoided = Vector2.Distance(NPC.Center, _avoidedEntity.Center);
                 _randomPathPoint = NPC.Center + Main.rand.NextVector2Unit() * Utils.Remap(distanceFromAvoided, 0f, 960f, 80f, 3200f);
                 NPC.netUpdate = true;
-                pathfinding.DoPathfinding(new(NPC.Center, _randomPathPoint, SunkenSeaTileValidity));
+                pathfinding.DoPathfinding(new(this, NPC.Center, _randomPathPoint, SunkenSeaTileValidity));
             }
 
             // If it's capable of exploding and the predator's within distance, kaboom.
@@ -365,7 +361,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 {
                     Vector2 velOffset = RandomVelocity(50f, 20f, 70f, 0.04f);
                     velOffset *= Main.rand.NextFloat(15, 20) * fade;
-                    Dust dust = Dust.NewDustPerfect(NPC.Center + velOffset * 2.5f, 267, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, 0, default, Main.rand.NextFloat(0.8f, 0.95f));
+                    Dust dust = Dust.NewDustPerfect(NPC.Center + velOffset * 2.5f, DustID.RainbowMk2, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, 0, default, Main.rand.NextFloat(0.8f, 0.95f));
                     dust.noGravity = true;
                     dust.color = Color.Aqua;
                 }
@@ -397,7 +393,7 @@ namespace CalamityMod.NPCs.SunkenSea
             if (newBehavior == OutsideWaterBehavior)
                 NPC.noGravity = false;
 
-            pathfinding.MinimumPointDistance = newBehavior == HuntingBehavior ? 20f : 48f;
+            MinimumPointDistance = newBehavior == HuntingBehavior ? 20f : 48f;
         }
 
         protected override void OnPreyDetection(NPC prey)
@@ -442,18 +438,18 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 if (CanExplode)
                 {
-                    for (int i = 0; i < 4; i++)
-                        Gore.NewGoreDirect(NPC.GetSource_Death(), NPC.Center, new Vector2(hit.HitDirection, -1f), Mod.Find<ModGore>($"{Name}{i + 1}").Type); 
+                    SpawnGores(NPC, "Sharkoon", 6);
                 }
                 else
                 {
-                    for (int i = 0; i < 2; i++)
-                        Gore.NewGoreDirect(NPC.GetSource_Death(), NPC.Center, new Vector2(hit.HitDirection, -1f), Mod.Find<ModGore>($"{Name}Small{i + 1}").Type);
+                    SpawnGores(NPC, "SharkoonSmall", 2);
                 }
             }
         }
 
-        public override bool CanBeHitByNPC(NPC attacker) => attacker.type != Type;
+        public override bool CanBeHitByNPC(NPC attacker) => PredatorIDs.Contains(attacker.type);
+
+        public override bool CanHitNPC(NPC target) => PreyIDs.Contains(target.type);
 
         public override void OnHitByNPC(NPC attacker)
         {
@@ -495,13 +491,13 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 for (int i = 0; i < 10; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(NPC.Center, 278, new Vector2(8, 8).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f), 0, default, Main.rand.NextFloat(0.9f, 1.1f));
+                    Dust dust = Dust.NewDustPerfect(NPC.Center, DustID.FireworksRGB, new Vector2(8, 8).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f), 0, default, Main.rand.NextFloat(0.9f, 1.1f));
                     dust.noGravity = false;
                     dust.color = Main.rand.NextBool() ? Color.OrangeRed : Color.Orange;
                 }
                 for (int i = 0; i < 18; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(NPC.Center, 267, new Vector2(4, 4).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f), 0, default, Main.rand.NextFloat(0.9f, 1.1f));
+                    Dust dust = Dust.NewDustPerfect(NPC.Center, DustID.RainbowMk2, new Vector2(4, 4).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f), 0, default, Main.rand.NextFloat(0.9f, 1.1f));
                     dust.noGravity = true;
                     dust.color = Main.rand.NextBool() ? Color.OrangeRed : Color.Orange;
                 }
@@ -514,6 +510,35 @@ namespace CalamityMod.NPCs.SunkenSea
                 SoundStyle boom = new("CalamityMod/Sounds/Custom/SharkoonBoom");
                 SoundEngine.PlaySound(boom with { Volume = 0.7f, PitchVariance = 0.15f }, NPC.Center);
             }
+        }
+
+        public override void AwaitingPathBehavior()
+        {
+            if (CurrentBehavior == HuntingBehavior)
+            {
+                if (CurrentPrey != null)
+                {
+                    NPC.velocity += NPC.DirectionTo(CurrentPrey.Center) * Acceleration;
+
+                    // Cap the speed if MaxSpeed has been surpassed.
+                    if (NPC.velocity.LengthSquared() > MaxSpeed * MaxSpeed)
+                        NPC.velocity = Vector2.Normalize(NPC.velocity) * MaxSpeed;
+                }
+                else
+                    NPC.velocity *= 0.95f;
+            }
+            else
+                base.AwaitingPathBehavior();
+        }
+
+        public override float SpawnChance(NPCSpawnInfo spawnInfo)
+        {
+            if (spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
+            {
+                if (spawnInfo.Player.Calamity().ZoneRadiantReefs)
+                    return SpawnCondition.CaveJellyfish.Chance * 0.2f;
+            }
+            return 0f;
         }
 
         #endregion

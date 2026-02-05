@@ -69,7 +69,7 @@ namespace CalamityMod.Projectiles.Melee
                 float rot = MathHelper.ToRadians(i * rotFactor);
                 Vector2 offset = new Vector2(9f, 0).RotatedBy(rot);
                 Vector2 velOffset = new Vector2(6f, 0).RotatedBy(rot);
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, 269, new Vector2(velOffset.X, velOffset.Y));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, DustID.Sandnado, new Vector2(velOffset.X, velOffset.Y));
                 dust.noGravity = true;
                 dust.velocity = velOffset;
                 dust.scale = 2.5f;
@@ -92,7 +92,8 @@ namespace CalamityMod.Projectiles.Melee
             else
                 SoundEngine.PlaySound(UseSound with { Pitch = EmpoweredHammer * 0.1f - 0.2f }, Projectile.Center);
 
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity * 0f, ModContent.ProjectileType<PwnagehammerExplosionSmall>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner, 0f);
+            if (Main.myPlayer == Projectile.owner)
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity * 0f, ModContent.ProjectileType<PwnagehammerExplosionSmall>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner, 0f);
 
             return false;
         }

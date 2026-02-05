@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Placeables.FurnitureOtherworldly
                 AddIngredient<OtherworldlyStone>(15).
                 AddIngredient(ItemID.Bone, 4).
                 AddIngredient(ItemID.Book).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.Sawmill).
                 Register();
         }
     }

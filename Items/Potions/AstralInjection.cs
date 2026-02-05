@@ -43,7 +43,7 @@ namespace CalamityMod.Items.Potions
             }
             if (player.statLife <= 0)
             {
-                player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.AstralInjection" + Main.rand.Next(1, 2 + 1)).Format(player.name)), 1000.0, 0, false);
+                player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.AstralInjection" + Main.rand.Next(1, 2 + 1)).ToNetworkText(player.name)), 1000.0, 0, false);
             }
         }
 
@@ -54,7 +54,7 @@ namespace CalamityMod.Items.Potions
                 AddIngredient<StarblightSoot>(4).
                 AddIngredient<AureusCell>().
                 AddTile(TileID.AlchemyTable).
-                AddConsumeItemCallback(Recipe.ConsumptionRules.Alchemy).
+                AddConsumeIngredientCallback(Recipe.IngredientQuantityRules.Alchemy).
                 Register();
 
             CreateRecipe(15).

@@ -2,6 +2,7 @@
 using CalamityMod.Items.Pets;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Tools.ClimateChange;
+using CalamityMod.Items.Tools.SpawnBlocker;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
@@ -55,7 +56,7 @@ namespace CalamityMod.Items.Fishing.SulphurCatches
                 ModContent.ItemType<BrokenWaterFilter>(),
                 ModContent.ItemType<EffigyOfDecay>(),
                 ModContent.ItemType<RustyBeaconPrototype>(),
-                ModContent.ItemType<RustyMedallion>()
+                ModContent.ItemType<ScionsCurio>()
             ));
 
             // Ancient Treasure Chest Loot @ 100%; Individually 10%

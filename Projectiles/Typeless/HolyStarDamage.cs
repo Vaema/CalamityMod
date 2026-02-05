@@ -1,18 +1,12 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
-using CalamityMod.Events;
-using CalamityMod.NPCs;
-using CalamityMod.NPCs.Providence;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
-using CalamityMod.World;
-using Humanizer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -66,17 +60,17 @@ namespace CalamityMod.Projectiles.Typeless
                 if (Projectile.ai[2] != -1 && time > 20)
                 {
                     NPC targeted = Projectile.ai[2] == -1 ? null : Main.npc[(int)Projectile.ai[2]];
-                    if (targeted != null && targeted.life <= 0)
+                    if (targeted != null && (targeted.life <= 0 || !targeted.CanBeChasedBy(Projectile)))
                         targeted = null;
                     else
                         Projectile.timeLeft++;
-                    CalamityUtils.HomeInOnSelectedNPC(Projectile, targeted, true, 0.5f, 12, 0.975f);
+                    CalamityUtils.HomeInOnSelectedNPC(Projectile, targeted ?? Projectile.Center.ClosestNPCAt(800f), true, 0.5f, 12, 0.975f);
                 }
-                if (Projectile.scale < 1)
-                    Projectile.scale += 0.0035f;
-                if (Projectile.scale >= 1 && !reachedMaxDamage)
+                if (Projectile.scale < 1.15)
+                    Projectile.scale += 0.004f;
+                if (Projectile.scale >= 1.15 && !reachedMaxDamage)
                 {
-                    Particle orb2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Orchid, "CalamityMod/Particles/BloomRing", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0, 0.5f, 8);
+                    Particle orb2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Orchid, "CalamityMod/Particles/BloomRing", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0, 0.3f, 8);
                     GeneralParticleHandler.SpawnParticle(orb2);
                     reachedMaxDamage = true;
                 }
@@ -88,8 +82,6 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.localAI[1] += (Projectile.velocity.Length() / 20);
 
             Color col = Projectile.ai[1] == 5 ? (Color.Lerp(Color.Goldenrod, Color.Orchid, Utils.GetLerpValue(0.85f, 1f, Projectile.scale))) : Color.Goldenrod;
-
-            float vel = MathHelper.Clamp(Projectile.velocity.Length() / 5, 0, 1.5f);
 
             Particle spark = new GlowSparkParticle(Projectile.Center, -Projectile.velocity * 0.8f, false, 5, 0.06f * Projectile.scale, col * 0.7f, new Vector2(1, 0.3f), true, false, 1.5f);
             GeneralParticleHandler.SpawnParticle(spark);
@@ -111,9 +103,8 @@ namespace CalamityMod.Projectiles.Typeless
 
             Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
             Vector2 drawPos = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
-            Color baseColor = Color.Goldenrod with { A = 0 };
-            Color baseColor2 = Color.Khaki with { A = 0 };
-            baseColor.A = 0;
+            Color baseColor = Color.Goldenrod with { A = 150 };
+            Color baseColor2 = Color.Khaki with { A = 150 };
             baseColor *= lerpMult;
             baseColor2 *= lerpMult;
             Vector2 origin = texture.Size() / 2f;
@@ -158,8 +149,6 @@ namespace CalamityMod.Projectiles.Typeless
 
                 Particle orb2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Goldenrod, "CalamityMod/Particles/BloomRing", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0, 1.5f, 10);
                 GeneralParticleHandler.SpawnParticle(orb2);
-                Particle orb3 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Orchid, "CalamityMod/Particles/SmallBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0, 0.65f, 15, true);
-                GeneralParticleHandler.SpawnParticle(orb3);
 
                 for (int i = 0; i < 4; i++)
                 {
@@ -167,9 +156,12 @@ namespace CalamityMod.Projectiles.Typeless
                     GeneralParticleHandler.SpawnParticle(spark);
                 }
 
-                // Sub projectiles spawning sub explosions... yea it needs armor pen
-                Projectile explo = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BurningHolyBlast>(), (int)(Projectile.damage * 1.2f), Projectile.knockBack, Projectile.owner, 0.75f);
-                explo.ArmorPenetration = 30;
+                if (Main.myPlayer == Projectile.owner)
+                {
+                    // Sub projectiles spawning sub explosions... yea it needs armor pen
+                    Projectile explo = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BurningHolyBlast>(), (int)(Projectile.damage * 1.2f), Projectile.knockBack, Projectile.owner, 0.75f);
+                    explo.ArmorPenetration = 30;
+                }
             }
         }
         public override bool? CanDamage() => time > 15 ? null : false;

@@ -125,7 +125,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient<RuinousSoul>(4).
                 AddIngredient(ItemID.SoulofNight, 15).
                 AddIngredient<TwistingNether>(3).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

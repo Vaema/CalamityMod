@@ -82,7 +82,7 @@ namespace CalamityMod.Projectiles.Melee
             Owner.ChangeDir((Math.Cos(Projectile.rotation - MathHelper.PiOver4) > 0f).ToDirectionInt());
         }
 
-        internal Color PrimitiveColorFunction(float completionRatio)
+        internal Color PrimitiveColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float averageRotation = Projectile.oldRot.Average(angle => MathHelper.WrapAngle(angle) + MathHelper.Pi);
             float opacity = Projectile.Opacity * Utils.GetLerpValue(0.75f, 0.45f, completionRatio, true) * 0.5f;
@@ -94,7 +94,7 @@ namespace CalamityMod.Projectiles.Melee
             return Color.Lerp(Color.Red * 1.1f, Color.DarkRed, Utils.GetLerpValue(0f, 0.5f, completionRatio, true)) * opacity;
         }
 
-        internal float PrimitiveWidthFunction(float completionRatio) => Projectile.height * 0.48f;
+        internal float PrimitiveWidthFunction(float completionRatio, Vector2 vertexPos) => Projectile.height * 0.48f;
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -107,13 +107,13 @@ namespace CalamityMod.Projectiles.Melee
 
             for (int i = 0; i < 16; i++)
             {
-                Vector2 position = Projectile.position + (Projectile.rotation - MathHelper.PiOver4).ToRotationVector2() * (PrimitiveWidthFunction(0f) - 30f) * Projectile.scale * 0.5f;
+                Vector2 position = Projectile.position + (Projectile.rotation - MathHelper.PiOver4).ToRotationVector2() * (PrimitiveWidthFunction(0f,Vector2.Zero) - 30f) * Projectile.scale * 0.5f;
                 float angleOffset = MathHelper.Pi * 0.25f * -Math.Sign(SwingSine) * i / 16f;
                 position += (Projectile.rotation - MathHelper.PiOver4 + MathHelper.PiOver2).ToRotationVector2().RotatedBy(angleOffset) * -SwingSine * i * 12f;
                 positions.Add(position);
             }
 
-            PrimitiveRenderer.RenderTrail(positions, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:PhaseslayerRipEffect"]), 50);
+            PrimitiveRenderer.RenderTrail(positions, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_, _) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:PhaseslayerRipEffect"]), 50);
             return true;
         }
     }

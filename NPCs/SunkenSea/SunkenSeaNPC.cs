@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Enums;
+using CalamityMod.Pathfinding;
+using CalamityMod.Pathfinding.Movements;
 using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -16,10 +18,10 @@ namespace CalamityMod.NPCs.SunkenSea
     /// An abstract class that provides the necessary members for an NPC to function as a Sunken Sea NPC.<br/>
     /// These NPCs can hunt both players and other NPCs, and maintain lists of NPCs they hunt and avoid.
     /// </summary>
-    public abstract class SunkenSeaNPC : ModNPC
+    public abstract class SunkenSeaNPC : ModNPC, IPathfinder
     {
         protected PathfindingManager pathfinding = null;
-        
+
         private NPC _currentPrey;
         private NPC _currentPredator;
         private Player _currentPlayer;
@@ -98,8 +100,6 @@ namespace CalamityMod.NPCs.SunkenSea
                                BiomeDesignation.HasFlag(flag))
                 .Select(flag => SunkenSeaBiomeCorrespondentDict.Dict[flag].BiomeType)
                 .ToArray();
-
-            Banner = Type;
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -147,7 +147,7 @@ namespace CalamityMod.NPCs.SunkenSea
         /// </summary>
         /// <param name="n">The NPC to evaluate.</param>
         /// <returns><see langword="true"/> if the NPC is a valid target; otherwise, <see langword="false"/>.</returns>
-        protected virtual bool NPCSearchFilter(NPC n) => NPC.HasSight(n.Center) && Vector2.DistanceSquared(NPC.Center, n.Center) < 72900f;
+        protected virtual bool NPCSearchFilter(NPC n) => NPC.HasSight(n.Center) && Vector2.DistanceSquared(NPC.Center, n.Center) < 72900f && (PreyIDs.Contains(n.type) || PredatorIDs.Contains(n.type)) && !(n.type == ModContent.NPCType<PrismaticGuppy>() && n.alpha > 0);
 
         /// <summary>
         /// Updates the current targets of this creature, including prey, predators, and players, based on detection logic.
@@ -155,29 +155,24 @@ namespace CalamityMod.NPCs.SunkenSea
         protected void UpdateTargets()
         {
             var searchResults = SearchForTarget(NPC, playerFilter: PlayerSearchFilter, npcFilter: NPCSearchFilter);
-            if (searchResults.FoundTarget)
-            {
-                if (searchResults.FoundNPC)
-                {
-                    if (PredatorIDs.Contains(searchResults.NearestNPC.type))
-                        CurrentPredator = searchResults.NearestNPC;
-                    else
-                        CurrentPredator = null;
 
-                    if (PreyIDs.Contains(searchResults.NearestNPC.type))
-                        CurrentPrey = searchResults.NearestNPC;
-                    else
-                        CurrentPrey = null; 
-                }
-
-                CurrentPlayer = searchResults.NearestTankOwner;
-            }
-            else
+            if (!searchResults.FoundTarget)
             {
-                CurrentPredator = null;
-                CurrentPrey = null;
-                CurrentPlayer = null;
+                (CurrentPredator, CurrentPrey, CurrentPlayer) = (null, null, null);
+                return;
             }
+
+            CurrentPlayer = searchResults.NearestTankOwner;
+
+            if (!searchResults.FoundNPC)
+            {
+                (CurrentPredator, CurrentPrey) = (null, null);
+                return;
+            }
+
+            var nearestNPC = searchResults.NearestNPC;
+            CurrentPredator = PredatorIDs.Contains(nearestNPC.type) ? nearestNPC : null;
+            CurrentPrey = PreyIDs.Contains(nearestNPC.type) ? nearestNPC : null;
         }
 
         /// <summary>
@@ -187,10 +182,79 @@ namespace CalamityMod.NPCs.SunkenSea
         /// <returns><see langword="true"/> if the tile is valid; otherwise, <see langword="false"/>.</returns>
         protected bool SunkenSeaTileValidity(Point point)
         {
-            Point actualFuckingPoint = new Point(point.X * 16, point.Y * 16);
-            return NPC.Hitbox.Contains(actualFuckingPoint) 
-                || !NPC.GetIntersectingHitboxPoints(
-                    actualFuckingPoint, 10, 10).Any(a => Main.tile[a].IsTileSolidGround() || Main.tile[a].LiquidAmount < 255 || Main.tile[a].LiquidType != LiquidID.Water);
+            return SunkenSeaTileValidity(NPC, point);
         }
+
+        /// <summary>
+        /// Checks whether a specific tile is valid for this NPC, considering water level.
+        /// </summary>
+        /// <param name="point">The tile location to check.</param>
+        /// <returns><see langword="true"/> if the tile is valid; otherwise, <see langword="false"/>.</returns>
+        protected bool SunkenSeaTileValiditySizeless(Point point)
+        {
+            return SunkenSeaTileValidity(NPC, point, false);
+        }
+
+        /// <summary>
+        /// Checks whether a specific tile is valid for an NPC, considering water level and entity size if given.
+        /// </summary>
+        /// <param name="npc">The npc to use for the check.</param>
+        /// <param name="point">The tile location to check.</param>
+        /// <returns><see langword="true"/> if the tile is valid; otherwise, <see langword="false"/>.</returns>
+        public static bool SunkenSeaTileValidity(NPC npc, Point point, bool accountForSize = true)
+        {
+            Point actualFuckingPoint = new Point(point.X * 16, point.Y * 16);
+
+            if (accountForSize)
+            {
+                return npc.Hitbox.Contains(actualFuckingPoint)
+                    || !npc.GetIntersectingHitboxPoints(
+                        actualFuckingPoint, 10, 10).Any(a => Main.tile[a].IsTileSolidGround() || Main.tile[a].LiquidAmount < 255 || Main.tile[a].LiquidType != LiquidID.Water);
+            }
+            else
+            {
+                return !(Main.tile[point].IsTileSolidGround() || Main.tile[point].LiquidAmount < 255 || Main.tile[point].LiquidType != LiquidID.Water);
+            }
+        }
+
+        /// <summary>
+        /// Checks whether a specific tile is valid for a lava NPC, considering water level and entity size if given.
+        /// </summary>
+        /// <param name="point">The tile location to check.</param>
+        /// <returns><see langword="true"/> if the tile is valid; otherwise, <see langword="false"/>.</returns>
+        public bool LavaTileValidity(Point point)
+        {
+            Point actualFuckingPoint = new Point(point.X * 16, point.Y * 16);
+
+            return NPC.Hitbox.Contains(actualFuckingPoint)
+                || !NPC.GetIntersectingHitboxPoints(
+                    actualFuckingPoint, 10, 10).Any(a => Main.tile[a].IsTileSolidGround() || Main.tile[a].LiquidAmount < 255 || Main.tile[a].LiquidType != LiquidID.Lava);
+        }
+
+        #region IPathfinder Implementation
+
+        /// <summary>
+        /// The acceleration this PathfindingManager will impart to its Entity when making it follow a found path.<br />
+        /// This has no impact on the Entity's other behaviors, AI, etc.
+        /// </summary>
+        public float Acceleration { get; set; } = 0.2f;
+
+        /// <summary>
+        /// The maximum speed this PathfindingManager allow its Entity to move at when making it follow a found path.<br />
+        /// This has no impact on the Entity's other behaviors, AI, etc.
+        /// </summary>
+        public float MaxSpeed { get; set; } = 4f;
+
+        /// <summary>
+        /// The minimum distance this PathdingManager requires its Entity to reach from its target point before the point is marked as "reached".<br />
+        /// This has no impact on the Entity's other behaviors, AI, etc.
+        /// </summary>
+        public float MinimumPointDistance { get; set; } = 48f;
+
+        public virtual IEnumerable<IMovement> Movements => [new SunkenSeaSwimMovement(NPC)];
+
+        public virtual void AwaitingPathBehavior() => NPC.velocity *= 0.95f;
+
+        #endregion
     }
 }

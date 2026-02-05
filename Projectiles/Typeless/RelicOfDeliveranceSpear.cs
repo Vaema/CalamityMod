@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Typeless;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -17,6 +17,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
+    [PierceResistException]
     public class RelicOfDeliveranceSpear : ModProjectile
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<RelicOfDeliverance>();
@@ -47,7 +48,6 @@ namespace CalamityMod.Projectiles.Typeless
         public bool inTiles = false;
         public float respawnMult = 0;
 
-        int postHitTimer = 0;
         public Color bColor = Color.White;
         public SlotId digSoundSlot;
         public int digFXCooldown = 0;
@@ -115,12 +115,12 @@ namespace CalamityMod.Projectiles.Typeless
             }
 
             // Immediately die if the Owner is not holding the spear
-            if (Owner.ActiveItem() == null)
+            if (Owner.HeldItem == null)
             {
                 KillProj();
                 return;
             }
-            if (Owner.ActiveItem().type != ModContent.ItemType<RelicOfDeliverance>())
+            if (Owner.HeldItem.type != ModContent.ItemType<RelicOfDeliverance>())
             {
                 KillProj();
                 return;
@@ -249,7 +249,7 @@ namespace CalamityMod.Projectiles.Typeless
                                 SoundEngine.PlaySound(sound3 with { Volume = 0.7f, Pitch = 0.4f, MaxInstances = 3 }, Projectile.Center);
                         }
                         if (driftPower > 1)
-                            Owner.Calamity().GeneralScreenShakePower = (driftPower == 2 ? 6 : 9);
+                            Owner.SetScreenshake(driftPower == 2 ? 6 : 9);
                         else if (driftBadMult > 0.15f)
                             driftBadMult -= 0.15f;
                             
@@ -437,14 +437,29 @@ namespace CalamityMod.Projectiles.Typeless
                     Owner.Center = respawnPoint;
             }
             killed = true;
-            Owner.fullRotationOrigin = Owner.Center - Owner.position;
-            Owner.fullRotation = 0;
             Owner.Calamity().rOfDelivarenceRam = false;
             Projectile.netUpdate = true;
             Projectile.Kill();
         }
+
+        public override void OnKill(int timeLeft)
+        {
+            if (Projectile.owner == Main.myPlayer && SoundEngine.TryGetActiveSound(digSoundSlot, out var sound))
+                sound.Stop();
+
+            Owner.fullRotationOrigin = Owner.Center - Owner.position;
+            Owner.fullRotation = 0f;
+
+            if (Main.netMode != NetmodeID.SinglePlayer)
+                NetMessage.SendData(MessageID.SyncPlayer, number: Owner.whoAmI);
+        }
+
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
+            bool crit = Main.rand.Next(0, 100 + 1) < Owner.GetTotalCritChance(Owner.GetBestClass());
+            if (crit)
+                modifiers.SetCrit();
+
             float minMult = 0.15f;
             int hitsToMinMult = 15;
             float damageMult = Utils.Remap(hitCountDamageSource, 0, hitsToMinMult, 1, minMult, true);
@@ -476,7 +491,9 @@ namespace CalamityMod.Projectiles.Typeless
         public override bool PreDraw(ref Color lightColor)
         {
             Vector2 drawPos = Owner.MountedCenter + (drifting ? idealVel : Projectile.velocity).SafeNormalize(Vector2.UnitX) * (55 - 35 * Utils.GetLerpValue(0, 25, driftTimer, true));
-            Projectile.DrawProjectileWithBackglow(Color.Goldenrod with { A = 0 }, Color.White, 3f * driftPowerScaling, effects: Math.Sign((drifting ? idealVel.X : Projectile.velocity.X)) == -1 ? Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipVertically : Microsoft.Xna.Framework.Graphics.SpriteEffects.None, xPos: drawPos.X, yPos: drawPos.Y);
+            Projectile.DrawProjectileWithBackglow(Color.Goldenrod with { A = 0 }, Color.White, 3f * driftPowerScaling, effects: Math.Sign((drifting ? idealVel.X : Projectile.velocity.X)) == -1 ? SpriteEffects.FlipVertically : SpriteEffects.None, xPos: drawPos.X, yPos: drawPos.Y);
+            //Asset<Texture2D> texBase = ModContent.Request<Texture2D>(Texture);
+            //Main.EntitySpriteDraw(texBase.Value, drawPos, null, Color.White, Projectile.rotation, texBase.Size() * 0.5f, Projectile.scale, Math.Sign((drifting ? idealVel.X : Projectile.velocity.X)) == -1 ? Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipVertically : Microsoft.Xna.Framework.Graphics.SpriteEffects.None);
 
             Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomRing").Value;
             Texture2D texture2 = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowSpark").Value;

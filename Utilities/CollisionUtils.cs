@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 
 namespace CalamityMod
 {
@@ -40,27 +41,20 @@ namespace CalamityMod
         /// <param name="targetHitbox">The hitbox of the target to check.</param>
         public static bool CircularHitboxCollision(Vector2 centerCheckPosition, float radius, Rectangle targetHitbox)
         {
-            // If the center intersects the hitbox, return true immediately
-            Rectangle center = new Rectangle((int)centerCheckPosition.X, (int)centerCheckPosition.Y, 1, 1);
-            if (center.Intersects(targetHitbox))
-                return true;
 
-            float topLeftDistance = Vector2.Distance(centerCheckPosition, targetHitbox.TopLeft());
-            float topRightDistance = Vector2.Distance(centerCheckPosition, targetHitbox.TopRight());
-            float bottomLeftDistance = Vector2.Distance(centerCheckPosition, targetHitbox.BottomLeft());
-            float bottomRightDistance = Vector2.Distance(centerCheckPosition, targetHitbox.BottomRight());
+            if (radius <= 0f)
+                return false;
 
-            float distanceToClosestPoint = topLeftDistance;
-            if (topRightDistance < distanceToClosestPoint)
-                distanceToClosestPoint = topRightDistance;
-            if (bottomLeftDistance < distanceToClosestPoint)
-                distanceToClosestPoint = bottomLeftDistance;
-            if (bottomRightDistance < distanceToClosestPoint)
-                distanceToClosestPoint = bottomRightDistance;
+            float closestX = MathHelper.Clamp(centerCheckPosition.X, targetHitbox.Left, targetHitbox.Right);
+            float closestY = MathHelper.Clamp(centerCheckPosition.Y, targetHitbox.Top, targetHitbox.Bottom);
 
-            return distanceToClosestPoint <= radius;
+            float dx = centerCheckPosition.X - closestX;
+            float dy = centerCheckPosition.Y - closestY;
+
+            return (dx * dx + dy * dy) <= (radius * radius);
         }
 
+        /// <summary>
         /// Determines the distance required before a ray in a given direction from a given starting position hits solid tiles. Gives up after a certain quantity of tiles, or when a world border is reached.
         /// </summary>
         /// <param name="startingPoint">The point to check from.</param>
@@ -89,6 +83,154 @@ namespace CalamityMod
             }
 
             return null;
+        }
+        /// <summary>
+        /// Determines the distance required before a ray in a given direction from a given starting position hits solid tiles, taking slopes into account.
+        /// </summary>
+        /// <param name="start">The point to check from.</param>
+        /// <param name="rotation">The direction in which tiles are checked.</param>
+        /// <param name="length">How far in the direction that will be checked.</param>
+        /// <param name="step">How many units moved forward each loop. Greater = less precise.</param>
+        /// <returns>The length until the first collision detected. Returns input length if no collision occurs.</returns>
+        public static float PreciseDistanceToTileCollisionHit(Vector2 start, float rotation, float length, float step = 1)
+        {
+            Vector2 unitVect = rotation.ToRotationVector2();
+            Vector2 end = unitVect * length;
+
+            if (length < 1f)
+            {
+                Point endWorldPos = end.ToTileCoordinates();
+                return ParanoidTileRetrieval(endWorldPos.X, endWorldPos.Y).IsTileSolid() ? 0 : length;
+            }
+
+            Vector2 currentPos = start;
+            Point lastAirPos = new Point(-1, -1);
+            for (float i = 0; i < length; i += step)
+            {
+                currentPos += unitVect * step;
+
+                Point tilePos = currentPos.ToTileCoordinates();
+
+                if (tilePos == lastAirPos)
+                    continue;
+
+                if (!WorldGen.InWorld(tilePos.X, tilePos.Y))
+                    continue;
+
+                Tile tile = Main.tile[tilePos.X, tilePos.Y];
+                if (!tile.IsTileSolid())
+                {
+                    lastAirPos = tilePos;
+                    continue;
+                }
+
+                if (tile.Slope == SlopeType.Solid && !tile.IsHalfBlock)
+                    return (currentPos - start).Length();
+
+                Vector2 tileWorldPos = new Vector2(tilePos.X * 16, tilePos.Y * 16);
+                Vector2 currentPosInTile = currentPos - tileWorldPos;
+                if (tile.IsHalfBlock)
+                {
+                    if (currentPosInTile.Y >= 8f)
+                        return (currentPos - start).Length();
+                }
+                else if (tile.Slope == SlopeType.SlopeDownLeft)
+                {
+                    if (currentPosInTile.X <= currentPosInTile.Y)
+                        return (currentPos - start).Length();
+                }
+                else if (tile.Slope == SlopeType.SlopeDownRight)
+                {
+                    if ((16 - currentPosInTile.X) <= currentPosInTile.Y)
+                        return (currentPos - start).Length();
+                }
+                else if (tile.Slope == SlopeType.SlopeUpLeft)
+                {
+                    if (currentPosInTile.X <= (16 - currentPosInTile.Y))
+                        return (currentPos - start).Length();
+                }
+                else if (tile.Slope == SlopeType.SlopeUpRight)
+                {
+                    if (currentPosInTile.X >= currentPosInTile.Y)
+                        return (currentPos - start).Length();
+                }
+            }
+
+            return length;
+        }
+        /// <summary>
+        /// Determines the distance required before a ray in a given direction from a given starting position hits solid tiles, taking slopes into account.
+        /// </summary>
+        /// <param name="start">The point to check from.</param>
+        /// <param name="rotation">The direction in which tiles are checked.</param>
+        /// <param name="length">How far in the direction that will be checked.</param>
+        /// <param name="step">How many units moved forward each loop. Greater = less precise.</param>
+        /// <returns>False if there is a tile collision before checking the full length of the line.</returns>
+        public static bool PreciseCanHitInLine(Vector2 start, float rotation, float length, float step = 1)
+        {
+            Vector2 unitVect = rotation.ToRotationVector2();
+            Vector2 end = unitVect * length;
+
+            if (length < 1f)
+            {
+                Point endWorldPos = end.ToTileCoordinates();
+                return !ParanoidTileRetrieval(endWorldPos.X, endWorldPos.Y).IsTileSolid();
+            }
+
+            Vector2 currentPos = start;
+            Point lastAirPos = new Point(-1, -1);
+            for (float i = 0; i < length; i += step)
+            {
+                currentPos += unitVect * step;
+
+                Point tilePos = currentPos.ToTileCoordinates();
+
+                if (tilePos == lastAirPos)
+                    continue;
+
+                if (!WorldGen.InWorld(tilePos.X, tilePos.Y))
+                    continue;
+
+                Tile tile = Main.tile[tilePos.X, tilePos.Y];
+                if (!tile.IsTileSolid())
+                {
+                    lastAirPos = tilePos;
+                    continue;
+                }
+
+                if (tile.Slope == SlopeType.Solid && !tile.IsHalfBlock)
+                    return false;
+
+                Vector2 tileWorldPos = new Vector2(tilePos.X * 16, tilePos.Y * 16);
+                Vector2 currentPosInTile = currentPos - tileWorldPos;
+                if (tile.IsHalfBlock)
+                {
+                    if (currentPosInTile.Y >= 8f)
+                        return false;
+                }
+                else if (tile.Slope == SlopeType.SlopeDownLeft)
+                {
+                    if (currentPosInTile.X <= currentPosInTile.Y)
+                        return false;
+                }
+                else if (tile.Slope == SlopeType.SlopeDownRight)
+                {
+                    if ((16 - currentPosInTile.X) <= currentPosInTile.Y)
+                        return false;
+                }
+                else if (tile.Slope == SlopeType.SlopeUpLeft)
+                {
+                    if (currentPosInTile.X <= (16 - currentPosInTile.Y))
+                        return false;
+                }
+                else if (tile.Slope == SlopeType.SlopeUpRight)
+                {
+                    if (currentPosInTile.X >= currentPosInTile.Y)
+                        return false;
+                }
+            }
+
+            return true;
         }
     }
 }

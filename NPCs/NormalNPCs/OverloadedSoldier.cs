@@ -29,20 +29,15 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 18;
             NPC.height = 40;
             NPC.defense = 18;
-            NPC.DR_NERD(0.15f);
-            NPC.lifeMax = NPC.downedMoonlord ? 1700 : 170;
+            NPC.lifeMax = NPC.downedMoonlord ? 3000 : 300;
             NPC.knockBackResist = 0.3f;
-            NPC.value = Item.buyPrice(0, 0, 2, 0);
+            NPC.value = Item.buyPrice(silver: 2);
             NPC.HitSound = SoundID.NPCHit2;
             NPC.DeathSound = SoundID.NPCDeath2;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<OverloadedSoldierBanner>();
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -269,7 +264,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 int doorCheckX = (int)((NPC.position.X + (float)(NPC.width / 2) + (float)(15 * NPC.direction)) / 16f);
                 int doorCheckY = (int)((NPC.position.Y + (float)NPC.height - 15f) / 16f);
-                if ((Main.tile[doorCheckX, doorCheckY - 1].HasUnactuatedTile && (Main.tile[doorCheckX, doorCheckY - 1].TileType == 10 || Main.tile[doorCheckX, doorCheckY - 1].TileType == 388)) & unusedFlag)
+                if ((Main.tile[doorCheckX, doorCheckY - 1].HasUnactuatedTile && (Main.tile[doorCheckX, doorCheckY - 1].TileType == TileID.ClosedDoor || Main.tile[doorCheckX, doorCheckY - 1].TileType == TileID.TallGateClosed)) & unusedFlag)
                 {
                     NPC.ai[2] += 1f;
                     NPC.ai[3] = 0f;
@@ -277,7 +272,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     {
                         NPC.velocity.X = 0.5f * (float)-(float)NPC.direction;
                         int doorOpenInc = 5;
-                        if (Main.tile[doorCheckX, doorCheckY - 1].TileType == 388)
+                        if (Main.tile[doorCheckX, doorCheckY - 1].TileType == TileID.TallGateClosed)
                         {
                             doorOpenInc = 2;
                         }
@@ -292,7 +287,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                         WorldGen.KillTile(doorCheckX, doorCheckY - 1, true, false, false);
                         if ((Main.netMode != NetmodeID.MultiplayerClient || !letMeIn) && letMeIn && Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            if (Main.tile[doorCheckX, doorCheckY - 1].TileType == 10)
+                            if (Main.tile[doorCheckX, doorCheckY - 1].TileType == TileID.ClosedDoor)
                             {
                                 bool canOpenDoor = WorldGen.OpenDoor(doorCheckX, doorCheckY - 1, NPC.direction);
                                 if (!canOpenDoor)
@@ -305,7 +300,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                                     NetMessage.SendData(MessageID.ToggleDoorState, -1, -1, null, 0, (float)doorCheckX, (float)(doorCheckY - 1), (float)NPC.direction, 0, 0, 0);
                                 }
                             }
-                            if (Main.tile[doorCheckX, doorCheckY - 1].TileType == 388)
+                            if (Main.tile[doorCheckX, doorCheckY - 1].TileType == TileID.TallGateClosed)
                             {
                                 bool canOpenTallGate = WorldGen.ShiftTallGate(doorCheckX, doorCheckY - 1, false);
                                 if (!canOpenTallGate)
@@ -387,7 +382,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 120);
+                target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 180);
         }
 
         public override void HitEffect(NPC.HitInfo hit)

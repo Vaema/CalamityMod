@@ -1,26 +1,24 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.CalPlayer;
+﻿using CalamityMod.CalPlayer;
 using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
     [AutoloadEquip(EquipType.Shield)]
-    public class ElysianAegis : ModItem, ILocalizedModType, IHoldShiftTooltipItem
+    public class ElysianAegis : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
         public bool HasFlavorTooltip => true;
         public Color? TooltipExtensionColor => new(195, 223, 255);
 
-        public const int ShieldSlamDamage = 400;
+        public const int ShieldSlamDamage = 500;
         public const float ShieldSlamKnockback = 12f;
         public const int ShieldSlamIFrames = 12;
 
-        public const int RamExplosionDamage = 200;
+        public const int RamExplosionDamage = 100;
         public const float RamExplosionKnockback = 15f;
 
         public override void SetDefaults()
@@ -29,30 +27,16 @@ namespace CalamityMod.Items.Accessories
             Item.height = 42;
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
-            Item.defense = 10;
+            Item.defense = 5;
             Item.accessory = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-
-            // Elysian Aegis ram dash
             modPlayer.DashID = ElysianAegisDash.ID;
             player.dashType = 0;
-
-            // Vaguely inherited Ankh Shield effects I guess
             player.noKnockback = true;
-            player.fireWalk = true;
-
-            // Debuff immunities
-            player.buffImmune[BuffID.OnFire] = true;
-            player.buffImmune[BuffID.OnFire3] = true;
-            player.buffImmune[BuffID.CursedInferno] = true;
-            player.buffImmune[BuffID.ShadowFlame] = true;
-            player.buffImmune[ModContent.BuffType<BrimstoneFlames>()] = true;
-            player.buffImmune[ModContent.BuffType<Daybroken>()] = true;
-            player.buffImmune[ModContent.BuffType<HolyFlames>()] = true;
         }
     }
 }

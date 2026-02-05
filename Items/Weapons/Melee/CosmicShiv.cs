@@ -2,7 +2,6 @@
 using CalamityMod.Projectiles.Melee.Shortswords;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -20,15 +19,15 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.noUseGraphic = true;
             Item.autoReuse = true;
             Item.useStyle = ItemUseStyleID.Rapier;
-            Item.damage = 270;
+            Item.damage = 155;
             Item.DamageType = DamageClass.Melee;
-            Item.useAnimation = Item.useTime = 40;
+            Item.useAnimation = Item.useTime = 30;
             Item.shoot = ModContent.ProjectileType<CosmicShivProj>();
             Item.shootSpeed = 2.4f;
             Item.knockBack = 9f;
             Item.UseSound = SoundID.Item1;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.Calamity().donorItem = true; // revertusernamechange on Discord (Yatagarasu)
         }
 
@@ -37,7 +36,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<StarburstShiv>().
+                AddIngredient<Lightspeed>().
                 AddIngredient<CosmiliteBar>(8).
                 AddTile<CosmicAnvil>().
                 Register();

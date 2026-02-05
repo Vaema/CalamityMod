@@ -2,6 +2,7 @@
 using CalamityMod.Rarities;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Tarragon
@@ -10,21 +11,28 @@ namespace CalamityMod.Items.Armor.Tarragon
     public class TarragonBreastplate : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PostMoonLord";
+
+        public static float DamageBoost = 0.12f;
+        public static int CritBoost = 8;
+        public static int RegenBoost = 4;
+        public static float DamageReductionBoost = 0.1f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(), CritBoost, RegenBoost.ToRegenPerSecond(), DamageReductionBoost.ToPercent());
+
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.lifeRegen = 3;
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
-            Item.defense = 37;
+            Item.defense = 36;
             Item.rare = ModContent.RarityType<Turquoise>();
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.statLifeMax2 += 40;
-            player.GetDamage<GenericDamageClass>() += 0.1f;
-            player.GetCritChance<GenericDamageClass>() += 5;
+            player.GetDamage<GenericDamageClass>() += DamageBoost;
+            player.GetCritChance<GenericDamageClass>() += CritBoost;
+            player.lifeRegen += RegenBoost;
+            player.endurance += DamageReductionBoost;
         }
 
         public override void AddRecipes()
@@ -32,7 +40,7 @@ namespace CalamityMod.Items.Armor.Tarragon
             CreateRecipe().
                 AddIngredient<UelibloomBar>(15).
                 AddIngredient<DivineGeode>(18).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

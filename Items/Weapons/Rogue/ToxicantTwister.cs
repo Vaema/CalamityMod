@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -14,7 +15,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 42;
             Item.height = 46;
-            Item.damage = 230;
+            Item.damage = 272;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useAnimation = Item.useTime = 40;

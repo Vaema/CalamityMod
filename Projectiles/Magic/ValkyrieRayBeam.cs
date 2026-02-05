@@ -6,7 +6,6 @@ using Terraria;
 using Terraria.Enums;
 using Terraria.GameContent.Shaders;
 using Terraria.Graphics.Effects;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
@@ -47,7 +46,7 @@ namespace CalamityMod.Projectiles.Magic
             // The beam itself still stops on tiles, but its invisible "source" projectile ignores them.
             Projectile.tileCollide = false;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 4;
+            Projectile.localNPCHitCooldown = -1;
 
             // The beam lasts for only some frames and fades out over that time.
             Projectile.timeLeft = Lifetime;

@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Ammo
         {
             Item.width = 14;
             Item.height = 30;
-            Item.damage = 27;
+            Item.damage = 17;
             Item.DamageType = DamageClass.Ranged;
             Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
@@ -35,7 +35,7 @@ namespace CalamityMod.Items.Ammo
         {
             CreateRecipe(333).
                 AddIngredient<BloodstoneCore>().
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

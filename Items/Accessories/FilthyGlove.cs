@@ -1,5 +1,4 @@
 ﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -23,16 +22,6 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.filthyGlove = true;
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.DemoniteBar, 2).
-                AddIngredient<RottenMatter>(6).
-                AddIngredient(ItemID.RottenChunk, 2).
-                AddTile(TileID.DemonAltar).
-                Register();
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Events;
 using CalamityMod.Projectiles.Boss;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.Bestiary;
@@ -20,20 +19,20 @@ namespace CalamityMod.NPCs.SlimeGod
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
         }
 
+        // GFB exclusive
+        public static int ShaderainDamage = 12; // 48
+
         public override void SetDefaults()
         {
             NPC.aiStyle = NPCAIStyleID.Bat;
-            NPC.GetNPCDamage();
+            NPC.damage = 28; // 56
             NPC.width = 40;
             NPC.height = 30;
-            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
-                NPC.scale = 2f;
 
             NPC.defense = 6;
-            NPC.lifeMax = BossRushEvent.BossRushActive ? 10000 : (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 360 : 180;
+            NPC.lifeMax = BossRushEvent.BossRushActive ? 10000 : 180;
             NPC.knockBackResist = 0.7f;
-            AnimationType = 121;
-            NPC.Opacity = 0.8f;
+            AnimationType = NPCID.Slimer;
             NPC.lavaImmune = false;
             NPC.noGravity = false;
             NPC.noTileCollide = false;
@@ -41,10 +40,6 @@ namespace CalamityMod.NPCs.SlimeGod
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -60,6 +55,12 @@ namespace CalamityMod.NPCs.SlimeGod
             });
         }
 
+        public override void AI()
+        {
+            Vector3 light = new Vector3(0.5f, 0.1f, 0.5f);
+            Lighting.AddLight(NPC.Center, light.X, light.Y, light.Z);
+        }
+
         public override void HitEffect(NPC.HitInfo hit)
         {
             if (Main.netMode != NetmodeID.MultiplayerClient && NPC.life <= 0)
@@ -70,25 +71,17 @@ namespace CalamityMod.NPCs.SlimeGod
 
             Color dustColor = Color.Lavender;
             dustColor.A = 150;
+
             for (int k = 0; k < 5; k++)
-            {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, hit.HitDirection, -1f, NPC.alpha, dustColor, 1f);
-            }
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, hit.HitDirection, -1f, 0, dustColor, 1f);
         }
         public override void OnKill()
         {
             if (Main.zenithWorld && Main.netMode != NetmodeID.MultiplayerClient)
             {
                 int type = ModContent.ProjectileType<ShadeNimbusHostile>();
-                int damage = NPC.GetProjectileDamage(type);
-                Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, Vector2.Zero, type, damage, 0f, Main.myPlayer);
+                Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, Vector2.Zero, type, ShaderainDamage, 0f, Main.myPlayer);
             }
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Weak, 90, true);
         }
     }
 }

@@ -3,18 +3,17 @@ using System.Collections.Generic;
 using System.IO;
 using CalamityMod.Events;
 using CalamityMod.Graphics.Primitives;
-using CalamityMod.Items;
-using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Mounts;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.Potions;
+using CalamityMod.Items.Potions.Food;
+using CalamityMod.Items.Tools.SpawnBlocker;
 using CalamityMod.Items.TreasureBags;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
@@ -41,6 +40,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.NPCs.ExoMechs.Ares
 {
     [AutoloadBossHead]
+    [HasPierceResist]
     public class AresBody : ModNPC
     {
         // Used for loot
@@ -125,6 +125,9 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
         // Variable used to stop the arm spawning loop
         private bool armsSpawned = false;
 
+        // Variable used to prevent the fight from softlocking if one mech enters berserk before spawning the others
+        public bool berserkEarlyBugFix = false;
+
         // Exo Mechdusa stuff
         public bool exoMechdusa = false;
         public int neurontimer = 0;
@@ -134,7 +137,6 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
         public const float deathrayTelegraphDuration_Expert = 120f;
         public const float deathrayTelegraphDuration_Rev = 105f;
         public const float deathrayTelegraphDuration_Death = 90f;
-        public const float deathrayTelegraphDuration_BossRush = 60f;
 
         // Total duration of the deathrays
         public const float deathrayDuration = 600f;
@@ -184,6 +186,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
         {
             NPCID.Sets.TrailingMode[Type] = 3;
             NPCID.Sets.TrailCacheLength[Type] = NPC.oldPos.Length;
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -216,20 +219,25 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             }
         }
 
+        public static int BlenderDamage = 105; // 420
+
+        // Hekate (GFB)
+        public static int NeuronLaserDamage = 80; // 320
+
         public override void SetDefaults()
         {
+            NPC.damage = 0; // No contact damage
             NPC.npcSlots = 5f;
-            NPC.damage = 100;
             NPC.width = 220;
             NPC.height = 252;
             NPC.defense = 100;
             NPC.DR_NERD(0.35f);
-            NPC.LifeMaxNERB(1250000, 1495000, 650000);
+            NPC.LifeMaxNERB(1000000, 1495000, 650000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.Opacity = 0f;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(1, 0, 0, 0);
+            NPC.value = Item.buyPrice(platinum: 1);
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.DeathSound = CommonCalamitySounds.ExoDeathSound;
@@ -238,9 +246,6 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             NPC.BossBar = ModContent.GetInstance<ExoMechsBossBar>();
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -296,10 +301,9 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             NPC.frame = new Rectangle(NPC.width * frameX, NPC.height * frameY, NPC.width, NPC.height);
 
             // Difficulty modes
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             if (NPC.ai[2] > 0f)
                 NPC.realLife = (int)NPC.ai[2];
@@ -318,17 +322,21 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                         {
                             case 0:
                                 lol = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.position.X + (NPC.width / 2), (int)NPC.position.Y + (NPC.height / 2), ModContent.NPCType<AresLaserCannon>(), NPC.whoAmI);
+                                Main.npc[lol].localAI[0] = Main.rand.Next(240);
                                 break;
                             case 1:
                                 lol = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.position.X + (NPC.width / 2), (int)NPC.position.Y + (NPC.height / 2), ModContent.NPCType<AresPlasmaFlamethrower>(), NPC.whoAmI);
+                                Main.npc[lol].Calamity().newAI[3] = Main.rand.Next(240);
                                 Main.npc[lol].Calamity().newAI[1] = plasmaArmStartTimer;
                                 break;
                             case 2:
                                 lol = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.position.X + (NPC.width / 2), (int)NPC.position.Y + (NPC.height / 2), ModContent.NPCType<AresTeslaCannon>(), NPC.whoAmI);
+                                Main.npc[lol].localAI[0] = Main.rand.Next(240);
                                 Main.npc[lol].Calamity().newAI[1] = teslaArmStartTimer;
                                 break;
                             case 3:
                                 lol = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.position.X + (NPC.width / 2), (int)NPC.position.Y + (NPC.height / 2), ModContent.NPCType<AresGaussNuke>(), NPC.whoAmI);
+                                Main.npc[lol].Calamity().newAI[3] = Main.rand.Next(240);
                                 break;
                             default:
                                 break;
@@ -377,9 +385,9 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                             Vector2 betweenR = NeuronRight + velocity * 650;
                             Vector2 betweenL = NeuronLeft + velocity * 650;
                         
-                            Terraria.Audio.SoundEngine.PlaySound(CommonCalamitySounds.LaserCannonSound with { Volume = CommonCalamitySounds.LaserCannonSound.Volume - 0.2f, Pitch = CommonCalamitySounds.LaserCannonSound.Pitch + 0.2f }, NeuronRight);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), betweenL, betweenL + velocity, ModContent.ProjectileType<ArtemisLaser>(), 111, 0f, Main.myPlayer, 7, NPC.whoAmI);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), betweenR, betweenR + velocity, ModContent.ProjectileType<ArtemisLaser>(), 111, 0f, Main.myPlayer, 7, NPC.whoAmI);
+                            SoundEngine.PlaySound(CommonCalamitySounds.LaserCannonSound with { Volume = CommonCalamitySounds.LaserCannonSound.Volume - 0.2f, Pitch = CommonCalamitySounds.LaserCannonSound.Pitch + 0.2f }, NeuronRight);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), betweenL, betweenL + velocity, ModContent.ProjectileType<ArtemisLaser>(), NeuronLaserDamage, 0f, Main.myPlayer, 7, NPC.whoAmI);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), betweenR, betweenR + velocity, ModContent.ProjectileType<ArtemisLaser>(), NeuronLaserDamage, 0f, Main.myPlayer, 7, NPC.whoAmI);
 
                         }
                         neurontimer = 0;
@@ -442,6 +450,9 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                 {
                     otherExoMechsAlive++;
                     exoWormAlive = true;
+                    // Spread the early berserk bug fix variable if it has been set
+                    if ((Main.npc[CalamityGlobalNPC.draedonExoMechWorm].ModNPC as ThanatosHead).berserkEarlyBugFix)
+                        berserkEarlyBugFix = true;
                 }
             }
 
@@ -452,6 +463,9 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                 {
                     otherExoMechsAlive++;
                     exoTwinsAlive = true;
+                    // Spread the early berserk bug fix variable if it has been set
+                    if ((Main.npc[CalamityGlobalNPC.draedonExoMechTwinGreen].ModNPC as Apollo.Apollo).berserkEarlyBugFix)
+                        berserkEarlyBugFix = true;
                 }
             }
 
@@ -491,11 +505,12 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             }
 
             // Prevent mechs from being respawned
-            if (otherExoMechWasFirst)
+            // CIT 08JUN2025: This code is pointless and makes me unable to work swapping the laser arm position. Commenting it out.
+            /*if (otherExoMechWasFirst)
             {
                 if (NPC.ai[3] < 1f)
                     NPC.ai[3] = 1f;
-            }
+            }*/
 
             // Phases
             bool spawnOtherExoMechs = lifeRatio < 0.7f && NPC.ai[3] == 0f;
@@ -592,8 +607,8 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             Vector2 destination = SecondaryAIState == (float)SecondaryPhase.PassiveAndImmune ? new Vector2(player.Center.X, player.Center.Y - 800f) : AIState != (float)Phase.Deathrays ? new Vector2(player.Center.X, player.Center.Y - 425f) : player.Center;
 
             // Velocity and acceleration values
-            float baseVelocityMult = (shouldGetBuffedByBerserkPhase ? 0.25f : 0f) + (bossRush ? 1.15f : death ? 1.1f : revenge ? 1.075f : expertMode ? 1.05f : 1f);
-            float baseVelocity = (EnragedState == (float)Enraged.Yes ? 28f : 20f) * baseVelocityMult;
+            float baseVelocityMult = (shouldGetBuffedByBerserkPhase ? 0.25f : 0f) + (death ? 1.1f : revenge ? 1.075f : expertMode ? 1.05f : 1f);
+            float baseVelocity = (EnragedState == (float)Enraged.Yes ? 22f : 14f) * baseVelocityMult;
             float baseAcceleration = shouldGetBuffedByBerserkPhase ? 1.25f : 1f;
             float decelerationVelocityMult = 0.85f;
 
@@ -674,6 +689,10 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                                 NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<Artemis.Artemis>());
                                 NPC.SpawnOnPlayer(player.whoAmI, ModContent.NPCType<Apollo.Apollo>());
                             }
+
+                            // If the mech somehow got low enough to enter berserk phase here, trigger the bug fix variable
+                            if (lifeRatio < 0.4f)
+                                berserkEarlyBugFix = true;
                         }
                     }
                     else
@@ -751,8 +770,8 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                 case (int)SecondaryPhase.PassiveAndImmune:
 
                     // Enter the fight again if any of the other exo mechs is below 70% or dead and other mechs aren't berserk
-                    // CIT 10FEB2025: Added checks for if the other mechs are alive, to fix softlocks if you somehow skip straight to berserk
-                    if (((!exoWormAlive || exoWormLifeRatio < 0.7f) || (!exoTwinsAlive || exoTwinsLifeRatio < 0.7f)) && !otherMechIsBerserk)
+                    // CIT 24MAR2025: Actually fixed the early berserk softlock without affecting the normal fight
+                    if ((exoWormLifeRatio < 0.7f || exoTwinsLifeRatio < 0.7f || berserkEarlyBugFix) && !otherMechIsBerserk)
                     {
                         // Tells Ares to return to the battle in passive state and reset everything
                         // Return to normal phases if one or more mechs have been downed
@@ -870,7 +889,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                     else
                     {
                         // Enrage if the target is more than the deathray length away
-                        if ((distanceFromTarget > DeathrayEnrageDistance || (CalamityWorld.LegendaryMode && revenge)) && EnragedState == (float)Enraged.No)
+                        if ((distanceFromTarget > DeathrayEnrageDistance || Main.zenithWorld) && EnragedState == (float)Enraged.No)
                         {
                             // Play enrage sound
                             if (Main.LocalPlayer.active && !Main.LocalPlayer.dead && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < soundDistance)
@@ -880,7 +899,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
 
                             // Draedon comments on how foolish it is to run
                             if (Main.netMode != NetmodeID.MultiplayerClient)
-                                CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Status.Boss.DraedonAresEnrageText", Draedon.TextColor);
+                                CalamityUtils.BroadcastLocalizedText("Mods.CalamityMod.Status.Boss.DraedonAresEnrageText", Draedon.TextColor);
 
                             // Enrage
                             EnragedState = (float)Enraged.Yes;
@@ -889,7 +908,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                         calamityGlobalNPC.newAI[3] = 1f;
                         NPC.velocity *= decelerationVelocityMult;
 
-                        int totalProjectiles = bossRush ? 12 : death ? 10 : revenge ? 9 : expertMode ? 8 : 6;
+                        int totalProjectiles = death ? 10 : revenge ? 9 : expertMode ? 8 : 6;
                         if (Main.getGoodWorld)
                             totalProjectiles += 4;
 
@@ -902,8 +921,8 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                         Vector2 spinningPoint = normalLaserRotation ? new Vector2(0f, -velocity) : new Vector2(-velocityX2, -velocity);
                         spinningPoint.Normalize();
 
-                        float deathrayTelegraphDuration = bossRush ? deathrayTelegraphDuration_BossRush : death ? deathrayTelegraphDuration_Death :
-                            revenge ? deathrayTelegraphDuration_Rev : expertMode ? deathrayTelegraphDuration_Expert : deathrayTelegraphDuration_Normal;
+                        float deathrayTelegraphDuration = death ? deathrayTelegraphDuration_Death : revenge ? deathrayTelegraphDuration_Rev :
+                            expertMode ? deathrayTelegraphDuration_Expert : deathrayTelegraphDuration_Normal;
 
                         calamityGlobalNPC.newAI[2] += (EnragedState == (float)Enraged.Yes && calamityGlobalNPC.newAI[2] % 2f == 0f) ? 2f : 1f;
                         if (calamityGlobalNPC.newAI[2] < deathrayTelegraphDuration)
@@ -973,12 +992,11 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
                                     int type = ModContent.ProjectileType<AresDeathBeamStart>();
-                                    int damage = NPC.GetProjectileDamage(type);
                                     Vector2 spawnPoint = NPC.Center + new Vector2(-1f, 23f);
                                     for (int k = 0; k < totalProjectiles; k++)
                                     {
                                         Vector2 laserVelocity = spinningPoint.RotatedBy(radians * k);
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnPoint + Vector2.Normalize(laserVelocity) * 35f, laserVelocity, type, damage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
+                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnPoint + Vector2.Normalize(laserVelocity) * 35f, laserVelocity, type, BlenderDamage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
                                     }
                                 }
                             }
@@ -1086,8 +1104,6 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                     break;
             }
         }
-
-        public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
 
         public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position)
         {
@@ -1302,12 +1318,12 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
 
             return false;
         }
-        internal float WidthFunction(float completionRatio)
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos)
         {
             return MathHelper.Lerp(0.5f, 1.3f, (float)Math.Sin(MathHelper.Pi * completionRatio)) * NPC.scale;
         }
 
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             Color baseColor1 = EnragedState == (float)Enraged.Yes ? Color.Red : Color.Cyan;
             Color baseColor2 = EnragedState == (float)Enraged.Yes ? Color.IndianRed : Color.Cyan;
@@ -1321,9 +1337,9 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             return color;
         }
 
-        internal float BackgroundWidthFunction(float completionRatio) => WidthFunction(completionRatio) * 4f;
+        internal float BackgroundWidthFunction(float completionRatio, Vector2 vertexPos) => WidthFunction(completionRatio, vertexPos) * 4f;
 
-        public Color BackgroundColorFunction(float completionRatio)
+        public Color BackgroundColorFunction(float completionRatio, Vector2 vertexPos)
         {
             Color backgroundColor = EnragedState == (float)Enraged.Yes ? Color.Crimson : Color.CornflowerBlue;
             Color color = backgroundColor * NPC.Opacity * 0.4f;
@@ -1477,7 +1493,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             }
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ModContent.ItemType<OmegaHealingPotion>();
         }
@@ -1589,7 +1605,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             // GFB Broken Water Filter
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
-                GFBOnly.Add(ModContent.ItemType<BrokenWaterFilter>(), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<BrokenWaterFilter>()), hideLootReport: true);
             }
 
             // Lore item
@@ -1607,7 +1623,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             npcLoot.Add(ItemDropRule.BossBagByCondition(DropHelper.If(CanDropLoot), ModContent.ItemType<DraedonBag>()));
 
             // Legendary seed soup
-            mainDrops.Add(ItemDropRule.ByCondition(DropHelper.If(info => info.npc.type == ModContent.NPCType<AresBody>() && info.npc.ModNPC<Ares.AresBody>().exoMechdusa), ModContent.ItemType<Fabsoup>()), hideLootReport: true);
+            mainDrops.Add(ItemDropRule.ByCondition(DropHelper.If(info => info.npc.type == ModContent.NPCType<AresBody>() && info.npc.ModNPC<Ares.AresBody>().exoMechdusa), ModContent.ItemType<LavaChickenBroth>()), hideLootReport: true);
 
             // All other drops are contained in the bag, so they only drop directly on Normal
             if (!Main.expertMode)
@@ -1634,7 +1650,8 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
 
                 // Equipment
                 normalOnly.Add(ModContent.ItemType<ExoThrone>());
-                normalOnly.Add(ModContent.ItemType<DraedonsHeart>());
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(ModContent.ItemType<DraedonsHeart>());
 
                 // Vanity
                 // Higher chance due to how the drops work
@@ -1650,7 +1667,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 3; k++)
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 107, 0f, 0f, 100, new Color(0, 255, 255), 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Terra, 0f, 0f, 100, new Color(0, 255, 255), 1f);
 
             if (NPC.soundDelay == 0)
             {
@@ -1662,14 +1679,14 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 107, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Terra, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
                 }
                 for (int j = 0; j < 20; j++)
                 {
-                    int plasmaDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, 107, 0f, 0f, 0, new Color(0, 255, 255), 2.5f);
+                    int plasmaDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Terra, 0f, 0f, 0, new Color(0, 255, 255), 2.5f);
                     Main.dust[plasmaDust].noGravity = true;
                     Main.dust[plasmaDust].velocity *= 3f;
-                    plasmaDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, 107, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
+                    plasmaDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Terra, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
                     Main.dust[plasmaDust].velocity *= 2f;
                     Main.dust[plasmaDust].noGravity = true;
                 }
@@ -1692,7 +1709,6 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * 0.8f);
         }
     }
 }

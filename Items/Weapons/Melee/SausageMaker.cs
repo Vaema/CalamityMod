@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Melee.Spears;
+﻿using CalamityMod.Projectiles.Melee.Spears;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -36,15 +35,5 @@ namespace CalamityMod.Items.Weapons.Melee
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.CrimtaneBar, 4).
-                AddIngredient<BloodSample>(12).
-                AddIngredient(ItemID.Vertebrae, 4).
-                AddTile(TileID.DemonAltar).
-                Register();
-        }
     }
 }

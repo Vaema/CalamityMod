@@ -116,9 +116,6 @@ namespace CalamityMod.Projectiles.Summon.Umbrella
         // Glowmask effect
         public override Color? GetAlpha(Color lightColor) => new Color(200, 200, 200, 200);
 
-        // No contact damage
-        public override bool? CanDamage() => false;
-
         // Draw over players
         public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI) => overPlayers.Add(index);
 

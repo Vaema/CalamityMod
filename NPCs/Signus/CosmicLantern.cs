@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Events;
-using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
+using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -26,30 +25,28 @@ namespace CalamityMod.NPCs.Signus
             {
                 GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
             }
+            NPCID.Sets.DontDoHardmodeScaling[Type] = true; //prevent HP from scaling. We manually scale the damage to compensate
         }
 
         public override void SetDefaults()
         {
+            NPC.damage = 120 * (Main.masterMode ? 3 : Main.expertMode ? 2 : 1); // 240
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.GetNPCDamage();
             NPC.width = 25;
             NPC.height = 25;
             NPC.defense = 50;
-            NPC.lifeMax = 25;
+            NPC.lifeMax = 3;
             NPC.alpha = 255;
-            NPC.knockBackResist = 0.85f;
+            NPC.knockBackResist = 0f;
             NPC.noGravity = true;
             NPC.dontTakeDamage = true;
             NPC.chaseable = false;
             NPC.noTileCollide = true;
             NPC.HitSound = SoundID.NPCHit53;
             NPC.DeathSound = SoundID.NPCDeath44;
+            NPC.SuperArmor = true;
             NPC.Calamity().VulnerableToSickness = false;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -117,9 +114,12 @@ namespace CalamityMod.NPCs.Signus
 
             bool revenge = CalamityWorld.revenge;
             float playerDistNormMult = revenge ? 24f : 22f;
-            if (BossRushEvent.BossRushActive)
-                playerDistNormMult = 30f;
             CalamityRegularEnemyAI.DungeonSpiritAI(NPC, Mod, playerDistNormMult, 0f, true);
+        }
+
+        public override void ModifyIncomingHit(ref NPC.HitModifiers modifiers)
+        {
+            modifiers.DisableCrit();
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)

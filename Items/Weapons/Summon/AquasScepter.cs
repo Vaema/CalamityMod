@@ -4,7 +4,6 @@ using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -27,8 +26,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.mana = 50;
             Item.DamageType = DamageClass.Summon;
             Item.sentry = true;
-            Item.useTime = 30;
-            Item.useAnimation = 30;
+            Item.useTime = Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 6;
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
@@ -50,12 +48,12 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override void AddRecipes()
         {
-            Recipe recipe = Recipe.Create(ModContent.ItemType<Items.Weapons.Summon.AquasScepter>());
-            recipe.AddIngredient(ItemID.NimbusRod);
-            recipe.AddIngredient(ItemID.AquaScepter);
-            recipe.AddIngredient<ArmoredShell>(3);
-            recipe.AddTile(TileID.LunarCraftingStation); //LunarCraftingStation = Ancient Manipulator
-            recipe.Register();
+            CreateRecipe().
+                AddIngredient(ItemID.NimbusRod).
+                AddIngredient(ItemID.AquaScepter).
+                AddIngredient<ArmoredShell>(3).
+                AddTile(TileID.MythrilAnvil).
+                Register();
         }
     }
 }

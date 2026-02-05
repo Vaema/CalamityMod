@@ -114,7 +114,7 @@ namespace CalamityMod.Projectiles.Boss
                 float y = projTileX * 16 + 900;
                 Vector2 laserVelocity = new Vector2(x, 160f) - new Vector2(x, y);
                 int type = ModContent.ProjectileType<BirbAura>();
-                int damage = Projectile.GetProjectileDamage(ModContent.NPCType<Bumblefuck>());
+                int damage = Dragonfolly.LightningDamage;
                 if (Projectile.ai[0] >= 2f)
                 {
                     x += 1000f;

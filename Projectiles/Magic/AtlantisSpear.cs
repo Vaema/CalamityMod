@@ -1,4 +1,5 @@
-﻿using CalamityMod.Particles;
+﻿using CalamityMod.NPCs;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -8,10 +9,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
+    [PierceResistException(onlyForSingleHitbox: true)]
     public class AtlantisSpear : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
-        public bool devourer = DownedBossSystem.downedDoG;
         private static int TotalSegments = 16;
         private float damageMultiplier = 1f;
         private int time = 0;
@@ -26,9 +27,8 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.ignoreWater = true;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.penetrate = 4;
-            Projectile.extraUpdates = (Main.zenithWorld && devourer) ? 1 : 0;
             Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = (Main.zenithWorld && devourer) ? 2 : 8;
+            Projectile.idStaticNPCHitCooldown = 8;
             Projectile.appliesImmunityTimeOnSingleHits = true;
         }
 
@@ -69,7 +69,7 @@ namespace CalamityMod.Projectiles.Magic
             }
             if (Main.rand.NextBool(7))
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + Projectile.velocity * 0.5f, 278, Projectile.velocity.RotatedByRandom(0.8) * Main.rand.NextFloat(0.03f, 0.18f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Projectile.velocity * 0.5f, DustID.FireworksRGB, Projectile.velocity.RotatedByRandom(0.8) * Main.rand.NextFloat(0.03f, 0.18f));
                 dust.scale = Main.rand.NextFloat(0.3f, 0.5f);
                 dust.color = Main.rand.NextBool() ? Color.CornflowerBlue : Color.LightBlue;
                 dust.noGravity = true;

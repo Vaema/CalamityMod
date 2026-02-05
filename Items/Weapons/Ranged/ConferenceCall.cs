@@ -10,6 +10,7 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class ConferenceCall : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+
         public override void SetDefaults()
         {
             Item.width = 66;
@@ -30,21 +31,10 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useAmmo = AmmoID.Bullet;
         }
 
-        public override Vector2? HoldoutOffset()
-        {
-            return new Vector2(-10, 0);
-        }
-
-        public override bool CanConsumeAmmo(Item ammo, Player player)
-        {
-            if (Main.rand.Next(0, 100) < 50)
-                return false;
-            return true;
-        }
+        public override Vector2? HoldoutOffset() => new Vector2(-10, 0);
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-
             int bulletAmt = 4;
             for (int index = 0; index < bulletAmt; ++index)
             {
@@ -87,10 +77,12 @@ namespace CalamityMod.Items.Weapons.Ranged
                 targetPosition.X = (targetPosition.X + player.Center.X) / 2f + Main.rand.Next(-200, 201);
                 targetPosition.Y -= 100 * j;
 
-                Vector2 extraBulletVel = Vector2.Normalize(Main.npc[targets[j]].Center - targetPosition) * Item.shootSpeed;
+                // Create a dummy projectile to grab the number of max updates the bullet has for predictive aim use
+                Projectile dummy = new Projectile();
+                dummy.SetDefaults(type);
+                Vector2 extraBulletVel = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(targetPosition, Main.npc[targets[j]], Item.shootSpeed, dummy.MaxUpdates);
 
                 int proj = Projectile.NewProjectile(source, targetPosition, extraBulletVel, type, extraBulletDamage, knockback, player.whoAmI);
-                Main.projectile[proj].extraUpdates += 14;
                 Main.projectile[proj].tileCollide = false;
                 Main.projectile[proj].timeLeft /= 2;
             }
@@ -107,10 +99,12 @@ namespace CalamityMod.Items.Weapons.Ranged
                 targetPosition.X = (targetPosition.X + player.Center.X) / 2f + Main.rand.Next(-200, 201);
                 targetPosition.Y -= 100 * randomTarget;
 
-                Vector2 extraBulletVel = Vector2.Normalize(Main.npc[targets[randomTarget]].Center - targetPosition) * Item.shootSpeed;
+                // Create a dummy projectile to grab the number of max updates the bullet has for predictive aim use
+                Projectile dummy = new Projectile();
+                dummy.SetDefaults(type);
+                Vector2 extraBulletVel = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(targetPosition, Main.npc[targets[randomTarget]], Item.shootSpeed, dummy.MaxUpdates);
 
                 int proj = Projectile.NewProjectile(source, targetPosition, extraBulletVel, type, extraBulletDamage, knockback, player.whoAmI);
-                Main.projectile[proj].extraUpdates += 14;
                 Main.projectile[proj].tileCollide = false;
                 Main.projectile[proj].timeLeft /= 2;
             }
