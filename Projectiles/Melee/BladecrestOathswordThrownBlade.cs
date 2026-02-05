@@ -152,6 +152,9 @@ namespace CalamityMod.Projectiles.Melee
                 CurrentState &= ~State.HitTarget;
             }
 
+            if ((CurrentState & State.Thrown) != 0 && (CurrentState & (State.StuckInGround | State.StuckInTarget)) == 0)
+                Projectile.extraUpdates = 1;
+
             float playerDist = Vector2.Distance(Owner.Center, Projectile.Center);
 
             Projectile.spriteDirection = Projectile.direction;
