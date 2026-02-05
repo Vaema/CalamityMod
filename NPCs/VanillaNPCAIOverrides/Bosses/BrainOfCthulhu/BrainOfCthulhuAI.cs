@@ -40,7 +40,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
     public static SoundStyle Laugh = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Laugh") with { PauseBehavior = PauseBehavior.PauseWithGame };
     private static SoundStyle Growl = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Growl", 2) with { PauseBehavior = PauseBehavior.PauseWithGame };
     private static SoundStyle Death = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Death_Roar") with { PauseBehavior = PauseBehavior.PauseWithGame };
-    private static SoundStyle Blood = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Blood", 3);
+    private static SoundStyle BloodShot = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_BloodShot");
     private static SoundStyle BloodExplosion = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Explosion", 2);
 
 
@@ -1915,7 +1915,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                             Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, initialDir * BloodshotVelocity / 2.1f, ProjectileID.BloodNautilusShot, BloodShotDamage, 0.5f, ai0: dir.ToRotation() + MathHelper.TwoPi, ai1: initialDir.ToRotation());
                         }
                     }
-                    SoundEngine.PlaySound(Blood, NPC.Center);
+                    SoundEngine.PlaySound(BloodShot with { PitchVariance = 0.5f }, NPC.Center);
                 }
 
             }
@@ -2724,12 +2724,13 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         NPC.Opacity = BringOpacityTo(NPC.Opacity, 1, 0.1f);
 
         (float angle, Vector2 offset, int time)[] bloodGushingData = [
-            (MathHelper.Pi / 6f, new(18, 12), 90),
+            (MathHelper.Pi / 6f, new(18, 12), 60),
             (MathHelper.Pi, new(-30, -10), 150),
-            (-MathHelper.Pi / 4f, new(20, -40), 180),
-            (MathHelper.Pi + MathHelper.Pi / 4f, new(-20, -40), 200),
-            (MathHelper.Pi / 1.75f, new(-5, 22), 210)
+            (-MathHelper.Pi / 4f, new(20, -40), 210),
+            (MathHelper.Pi + MathHelper.Pi / 4f, new(-20, -40), 240),
+            (MathHelper.Pi / 1.75f, new(-5, 22), 260)
         ];
+        float EndTime = 270f;
 
         for (int i = 0; i < bloodGushingData.Length; i++)
         {
@@ -2737,7 +2738,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             {
                 if (Time == bloodGushingData[i].time)
                 {
-                    if(i == 2)
+                    if(i == 3)
                         SoundEngine.PlaySound(Death, NPC.Center);
 
                     Vector2 bloodDir = bloodGushingData[i].angle.ToRotationVector2();
@@ -2745,11 +2746,11 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                     GeneralParticleHandler.SpawnParticle(p2);
                     NPC.velocity = bloodDir * -4f;
 
-                    SoundStyle explosion = BloodExplosion with
+                    SoundStyle bleed = BloodShot with
                     {
                         Pitch = i / (float)(bloodGushingData.Length - 1)
                     };
-                    SoundEngine.PlaySound(explosion, NPC.Center);
+                    SoundEngine.PlaySound(bleed, NPC.Center);
 
                     Main.LocalPlayer.SetScreenshake(1f);
                 }
@@ -2763,9 +2764,10 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
         }
 
-        if (Time >= 215)
+        if (Time >= EndTime)
         {
             SoundEngine.PlaySound(BloodExplosion, NPC.Center);
+            SoundEngine.PlaySound(BloodShot, NPC.Center);
 
             Main.LocalPlayer.SetScreenshake(2f);
 
@@ -2789,8 +2791,9 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                 NPC.StrikeInstantKill();
         }
 
-        float animationCompletion = Time / 215f;
+        float animationCompletion = Time / EndTime;
         NPC.frameCounter += 2 * animationCompletion;
+        BoCDrawOffset = Main.rand.NextVector2Circular(4, 4) * animationCompletion;
 
         if (Main.rand.NextFloat(0.5f, 1f) < animationCompletion)
         {

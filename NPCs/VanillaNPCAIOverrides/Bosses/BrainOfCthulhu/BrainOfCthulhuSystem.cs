@@ -411,7 +411,7 @@ public class BrainOfCthulhuSystem : ModSystem
     public override void PostUpdateEverything()
     {
         bool allowBossMusic = false;
-        if (NPC.crimsonBoss != -1 && Main.npc[NPC.crimsonBoss].active && Main.npc[NPC.crimsonBoss].TryGetAIOverride<BrainOfCthulhuAI>(out var brainAI) && brainAI.AIState >= BrainOfCthulhuAI.BrainAIState.SurfaceSpawnAnimation)
+        if (NPC.crimsonBoss != -1 && Main.npc[NPC.crimsonBoss].active && Main.npc[NPC.crimsonBoss].TryGetAIOverride<BrainOfCthulhuAI>(out var brainAI) && brainAI.AIState > BrainOfCthulhuAI.BrainAIState.SurfaceSpawnAnimation)
             allowBossMusic = true;
 
         if (((Main.curMusic != MusicID.Boss3 && Main.curMusic != MusicID.OtherworldlyBoss1) || allowBossMusic) && Main.curMusic != MusicID.Boss1)
