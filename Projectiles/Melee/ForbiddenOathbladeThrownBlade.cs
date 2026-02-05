@@ -161,7 +161,7 @@ namespace CalamityMod.Projectiles.Melee
                         Projectile.velocity *= 0.01f;
                         stabbedTarget.Calamity().demonSwordImpales--;
                         stuckInTarget = false;
-                        fadeOutEffect();
+                        FadeOutEffect();
                     }
 
                     Projectile.Center = stabbedTarget.Center + impalePos;
@@ -187,7 +187,7 @@ namespace CalamityMod.Projectiles.Melee
                 }
 
                 if (fadingOut)
-                    fadeOutEffect();
+                    FadeOutEffect();
             }
             if (!fadingOut && !stuckInTarget && !stuckInGround && ChargeProgress >= 1)
             {
@@ -242,7 +242,7 @@ namespace CalamityMod.Projectiles.Melee
                 time++;
         }
 
-        public void fadeOutEffect()
+        public void FadeOutEffect()
         {
             Projectile.tileCollide = false;
             if (Projectile.timeLeft > Lifetime - fadeOutTime)
@@ -351,7 +351,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 if (bounces >= 2)
                 {
-                    impaleGround(oldVelocity);
+                    ImpaleGround(oldVelocity);
                 }
                 else
                 {
@@ -373,12 +373,12 @@ namespace CalamityMod.Projectiles.Melee
             }
             else
             {
-                impaleGround(oldVelocity);
+                ImpaleGround(oldVelocity);
             }
             Projectile.netUpdate = true;
             return false;
         }
-        public void impaleGround(Vector2 oldVelocity)
+        public void ImpaleGround(Vector2 oldVelocity)
         {
             Projectile.velocity = oldVelocity;
             stuckInGround = true;

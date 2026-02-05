@@ -175,7 +175,7 @@ namespace CalamityMod.Projectiles.Melee
                         Projectile.velocity *= 0.01f;
                         stabbedTarget.Calamity().demonSwordImpales--;
                         stuckInTarget = false;
-                        fadeOutEffect();
+                        FadeOutEffect();
                     }
 
                     Projectile.Center = stabbedTarget.Center + impalePos;
@@ -201,7 +201,7 @@ namespace CalamityMod.Projectiles.Melee
                 }
 
                 if (fadingOut)
-                    fadeOutEffect();
+                    FadeOutEffect();
             }
             if (!fadingOut && !stuckInTarget && !stuckInGround && ChargeProgress >= 1)
             {
@@ -251,7 +251,7 @@ namespace CalamityMod.Projectiles.Melee
             }
             if (chargeProgress < 1f)
             {
-                throwAnimation(chargeProgress);
+                ThrowAnimation(chargeProgress);
                 if (ChargeProgress >= 0.6f && time == 0)
                 {
                     SoundStyle swing = new("CalamityMod/Sounds/Item/DemonSwordSwing", 2);
@@ -264,7 +264,7 @@ namespace CalamityMod.Projectiles.Melee
                 time++;
         }
 
-        public void fadeOutEffect()
+        public void FadeOutEffect()
         {
             Projectile.tileCollide = false;
             if (Projectile.timeLeft > Lifetime - fadeOutTime)
@@ -283,7 +283,7 @@ namespace CalamityMod.Projectiles.Melee
                 dust.velocity += Projectile.velocity;
             }
         }
-        public void throwAnimation(float chargeProgress)
+        public void ThrowAnimation(float chargeProgress)
         {
             Vector2 aimDirection = GetAimDirection();
             Owner.ChangeDir(MathF.Sign(aimDirection.X));
