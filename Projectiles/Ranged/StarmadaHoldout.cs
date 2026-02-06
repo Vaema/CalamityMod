@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
@@ -57,6 +58,19 @@ namespace CalamityMod.Projectiles.Ranged
         public bool naildriver => ((starburstTimer <= starburstPerfectTime + perfectLeniancy) && (starburstTimer >= starburstPerfectTime - perfectLeniancy)); // if within perfect frame window
         public bool scattershot => !naildriver && ((starburstTimer <= starburstPerfectTime + goodLeniancy) && (starburstTimer >= starburstPerfectTime - goodLeniancy)); // If within early or late frame window
         public override void KillHoldoutLogic() { }
+        public override void SendExtraAIHoldout(BinaryWriter writer)
+        {
+            writer.Write(lastUseTime);
+            writer.Write(gunPower);
+            writer.Write(lastGunPower);
+        }
+
+        public override void ReceiveExtraAIHoldout(BinaryReader reader)
+        {
+            lastUseTime = reader.ReadInt32();
+            gunPower = reader.ReadInt32();
+            lastGunPower = reader.ReadInt32();
+        }
         public override void SetDefaults()
         {
             base.SetDefaults();
@@ -97,10 +111,10 @@ namespace CalamityMod.Projectiles.Ranged
                 return;
             }
             bool hasAmmo = Owner.PickAmmo(HeldItem, out _, out _, out _, out _, out _, true);
-            bool leftShootChecks = (Main.mouseLeft && !Main.mapFullscreen && !Owner.mouseInterface && shootingCooldown == 0) && hasAmmo;
-            bool rightShootChecks = Owner.Calamity().mouseRight && !Main.mapFullscreen && !Owner.mouseInterface && starburstCooldown == 0 && starburstTimer == 0;
+            bool leftShootChecks = Owner.whoAmI == Main.myPlayer && (Main.mouseLeft && !Main.mapFullscreen && !Owner.mouseInterface && shootingCooldown == 0) && hasAmmo;
+            bool rightShootChecks = Owner.whoAmI == Main.myPlayer && Owner.Calamity().mouseRight && !Main.mapFullscreen && !Owner.mouseInterface && starburstCooldown == 0 && starburstTimer == 0;
             
-            if (Main.mouseLeft && !hasAmmo && shake < 0.1f)
+            if (Owner.whoAmI == Main.myPlayer && Main.mouseLeft && !hasAmmo && shake < 0.1f)
             {
                 shake = 0.8f;
                 SoundStyle click = new("CalamityMod/Sounds/Item/DudFire");
@@ -111,6 +125,7 @@ namespace CalamityMod.Projectiles.Ranged
                 FireShotgun();
             if (rightShootChecks)
             {
+                Projectile.ForceNetUpdate();
                 SoundStyle blast1 = new("CalamityMod/Sounds/Item/StarfleetStarburst");
                 AudSlot1 = SoundEngine.PlaySound(blast1 with { Volume = 0.7f + gunPower * 0.1f, Pitch = 0f, MaxInstances = 8 }, Projectile.Center);
                 SoundStyle blast2 = new("CalamityMod/Sounds/Item/StarfleetStarburst");
@@ -192,6 +207,7 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public void FireShotgun()
         {
+            Projectile.ForceNetUpdate();
             // 50% chance to not consume ammo
             Owner.PickAmmo(HeldItem, out _, out _, out _, out _, out _, Main.rand.NextBool());
 

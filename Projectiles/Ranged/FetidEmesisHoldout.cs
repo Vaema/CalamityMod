@@ -28,6 +28,7 @@ namespace CalamityMod.Projectiles.Ranged
         public int maxFrames = 420;
         public int initialFireTime = 45;
         public float shineScale = 0;
+        private bool secondShot = true;
 
         public override void KillHoldoutLogic()
         {
@@ -69,6 +70,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                 OffsetLengthFromArm -= 5f;
                 shineScale = 1;
+                secondShot = false;
             }
             if (shootingTimer >= 60 && revFrames < maxFrames)
             {
@@ -81,6 +83,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Projectile.netUpdate = true;
                 }
                 shootingTimer = 0;
+                secondShot = true;
             }
 
             shootingTimer += revSpeed;

@@ -100,7 +100,7 @@ namespace CalamityMod.Projectiles.Ranged
             bool leftShootChecks = Owner.whoAmI == Main.myPlayer && (Main.mouseLeft && !Main.mapFullscreen && !Owner.mouseInterface && shootingCooldown == 0) && hasAmmo;
             bool rightShootChecks = Owner.whoAmI == Main.myPlayer && (Owner.Calamity().mouseRight && !Main.mapFullscreen && !Owner.mouseInterface && starburstCooldown == 0 && starburstTimer == 0);
 
-            if (Main.mouseLeft && !hasAmmo && OffsetLengthFromArm >= 24.5f)
+            if (Owner.whoAmI == Main.myPlayer && Main.mouseLeft && !hasAmmo && OffsetLengthFromArm >= 24.5f)
             {
                 OffsetLengthFromArm -= 8;
                 SoundStyle click = new("CalamityMod/Sounds/Item/DudFire");
