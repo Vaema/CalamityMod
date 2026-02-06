@@ -357,7 +357,7 @@ namespace CalamityMod.Projectiles
                 //Grape Beer homing
                 if (parent.Calamity().grapeBeer)
                 {
-                    if (Main.player[projectile.owner].heldProj != projectile.whoAmI && projectile.aiStyle != ProjAIStyleID.HeldProjectile && projectile.damage > 0 && Main.player[projectile.owner].Calamity().grapeBeerTimer < 5)
+                    if (Main.player[projectile.owner].heldProj != projectile.whoAmI && projectile.aiStyle != ProjAIStyleID.HeldProjectile && projectile.damage > 0 && Main.player[projectile.owner].Calamity().grapeBeerTimer < 5 && !CalamityProjectileSets.DoesNotGetHomingWithGrapeBeer[projectile.type])
                         ApplyGrapeBeer();
                     else
                         grapeBeer = true;
