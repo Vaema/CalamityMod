@@ -55,6 +55,7 @@ using Terraria.WorldBuilding;
 using static Terraria.ModLoader.ModContent;
 using NanotechProjectile = CalamityMod.Projectiles.Typeless.Nanotech;
 using CalamityMod.Graphics;
+using CalamityMod.Packets.Entities;
 
 namespace CalamityMod.Projectiles
 {
@@ -4695,9 +4696,12 @@ namespace CalamityMod.Projectiles
             //Mana Burn
             if (Main.player[projectile.owner].statMana < 0)
             {
-                float burnRatio = (-Main.player[projectile.owner].statMana / 100) * ChaosStone.DamageMultPer100Mana;
-                target.Calamity().manaBurn += damageDone * burnRatio;
-                target.Calamity().playerManaBurnIntensity = -Main.player[projectile.owner].statMana / (float)Main.player[projectile.owner].statManaMax2;
+                var player = Main.player[projectile.owner];
+                float burnRatio = (-player.statMana / 100) * ChaosStone.DamageMultPer100Mana;
+                target.Calamity().manaBurn += damageDone * burnRatio * (player.Calamity().oldFashioned ? OldFashioned.DamageBoostMultiplier : 1) * (player.Calamity().ivDrip ? IVDripOnTheRocks.DamageBoostMultiplier : 1);
+                target.Calamity().playerManaBurnIntensity = -player.statMana / (float)player.statManaMax2;
+                if (Main.netMode != NetmodeID.SinglePlayer)
+                    ManaBurnSyncPacket.Send(target);
             }
             // Hyperius Overflow
             if (projectile.type != ProjectileType<HyperiusBulletProj>() && projectile.type != ProjectileType<HyperiusSplit>() && projectile.type != ProjectileType<HyperiusDamage>() && projectile.type != ProjectileType<HyperiusBleed>() && target.Calamity().hyperiusMarked)
