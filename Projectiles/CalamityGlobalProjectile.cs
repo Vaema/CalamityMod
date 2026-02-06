@@ -323,6 +323,7 @@ namespace CalamityMod.Projectiles
 
             void ApplyGrapeBeer()
             {
+                grapeBeer = true;
                 conditionalHomingRange = 600;
                 if (projectile.timeLeft > 300 * projectile.MaxUpdates)
                     projectile.timeLeft = 300 * projectile.MaxUpdates;
@@ -330,7 +331,7 @@ namespace CalamityMod.Projectiles
                 projectile.usesLocalNPCImmunity = true;
                 projectile.localNPCHitCooldown = -1;
             }
-            if (source is EntitySource_ItemUse_WithAmmo {Item: Item item})
+            if (source is EntitySource_ItemUse_WithAmmo { Item: Item item })
             {
                 if (source is EntitySource_Parent { Entity: Player player })
                 {
@@ -4257,7 +4258,7 @@ namespace CalamityMod.Projectiles
                     arcFlashCooldown--;
                 if (arcFlashCooldown == 0)
                     showArcFlash = true;
-                if (conditionalHomingRange > 0f)
+                if (conditionalHomingRange > 0f && Main.player[projectile.owner].heldProj != projectile.whoAmI && projectile.aiStyle != ProjAIStyleID.HeldProjectile)
                 {
                     CalamityUtils.HomeInOnNPC(projectile, !projectile.tileCollide, conditionalHomingRange, 12f, 20f,true);
                 }
