@@ -40,6 +40,9 @@ public class BrainOfCthulhuAI : VanillaAIOverride
     public static SoundStyle Laugh = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Laugh") with { PauseBehavior = PauseBehavior.PauseWithGame };
     private static SoundStyle Growl = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Growl", 2) with { PauseBehavior = PauseBehavior.PauseWithGame };
     private static SoundStyle Death = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Death_Roar") with { PauseBehavior = PauseBehavior.PauseWithGame };
+    private static SoundStyle BloodShot = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_BloodShot");
+    private static SoundStyle BloodExplosion = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Explosion", 2);
+
 
     internal static bool SummonedViaItem = false;
     internal List<Particle> BoCAfterImages = [];
@@ -545,6 +548,9 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
         NPC.oldVelocity = NPC.velocity;
         Time++;
+
+        if(AIState != BrainAIState.DeathAnimation && NPC.lifeRegen < 0 && Math.Abs(NPC.lifeRegen) >= NPC.life)
+            TriggerDeathAnimation();
 
         return false;
     }
@@ -1889,8 +1895,9 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                     }
                 }
 
-                if (Main.netMode != NetmodeID.MultiplayerClient)
-                    if (Time % BloodshotRate == 0)
+                if (Time % BloodshotRate == 0)
+                {
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         Vector2 dir = NPC.DirectionTo(Target.Center);
 
@@ -1908,7 +1915,8 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                             Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, initialDir * BloodshotVelocity / 2.1f, ProjectileID.BloodNautilusShot, BloodShotDamage, 0.5f, ai0: dir.ToRotation() + MathHelper.TwoPi, ai1: initialDir.ToRotation());
                         }
                     }
-
+                    SoundEngine.PlaySound(BloodShot with { PitchVariance = 0.5f }, NPC.Center);
+                }
 
             }
         }
@@ -2065,11 +2073,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
                     if (AttackCounter <= SanguineTeleportCount)
                     {
-                        SoundStyle explosion = new("CalamityMod/Sounds/Custom/Ravager/RavagerMissileExplosion")
-                        {
-                            Volume = 0.5f
-                        };
-                        SoundEngine.PlaySound(explosion, NPC.Center);
+                        SoundEngine.PlaySound(BloodExplosion, NPC.Center);
 
                         for (int i = 0; i < SanguineScytheCount; i++)
                         {
@@ -2250,10 +2254,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
                 if (Time == CrimsonEyeAttackIdleDuration)
                 {
-                    SoundStyle explosion = new("CalamityMod/Sounds/Custom/Ravager/RavagerMissileExplosion");
-                    explosion.Volume = 0.5f;
-
-                    SoundEngine.PlaySound(explosion, NPC.Center);
+                    SoundEngine.PlaySound(BloodExplosion, NPC.Center);
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         float projCount = 10;
@@ -2723,12 +2724,13 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         NPC.Opacity = BringOpacityTo(NPC.Opacity, 1, 0.1f);
 
         (float angle, Vector2 offset, int time)[] bloodGushingData = [
-            (MathHelper.Pi / 6f, new(18, 12), 90),
+            (MathHelper.Pi / 6f, new(18, 12), 60),
             (MathHelper.Pi, new(-30, -10), 150),
-            (-MathHelper.Pi / 4f, new(20, -40), 180),
-            (MathHelper.Pi + MathHelper.Pi / 4f, new(-20, -40), 200),
-            (MathHelper.Pi / 1.75f, new(-5, 22), 210)
+            (-MathHelper.Pi / 4f, new(20, -40), 210),
+            (MathHelper.Pi + MathHelper.Pi / 4f, new(-20, -40), 240),
+            (MathHelper.Pi / 1.75f, new(-5, 22), 260)
         ];
+        float EndTime = 270f;
 
         for (int i = 0; i < bloodGushingData.Length; i++)
         {
@@ -2736,7 +2738,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             {
                 if (Time == bloodGushingData[i].time)
                 {
-                    if(i == 2)
+                    if(i == 3)
                         SoundEngine.PlaySound(Death, NPC.Center);
 
                     Vector2 bloodDir = bloodGushingData[i].angle.ToRotationVector2();
@@ -2744,12 +2746,11 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                     GeneralParticleHandler.SpawnParticle(p2);
                     NPC.velocity = bloodDir * -4f;
 
-                    SoundStyle explosion = new("CalamityMod/Sounds/Custom/Ravager/RavagerMissileExplosion")
+                    SoundStyle bleed = BloodShot with
                     {
-                        Volume = 0.5f,
                         Pitch = i / (float)(bloodGushingData.Length - 1)
                     };
-                    SoundEngine.PlaySound(explosion, NPC.Center);
+                    SoundEngine.PlaySound(bleed, NPC.Center);
 
                     Main.LocalPlayer.SetScreenshake(1f);
                 }
@@ -2763,10 +2764,10 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
         }
 
-        if (Time >= 215)
+        if (Time >= EndTime)
         {
-            SoundStyle explosion = new("CalamityMod/Sounds/Custom/Ravager/RavagerMissileExplosion");
-            SoundEngine.PlaySound(explosion, NPC.Center);
+            SoundEngine.PlaySound(BloodExplosion, NPC.Center);
+            SoundEngine.PlaySound(BloodShot, NPC.Center);
 
             Main.LocalPlayer.SetScreenshake(2f);
 
@@ -2790,8 +2791,9 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                 NPC.StrikeInstantKill();
         }
 
-        float animationCompletion = Time / 215f;
+        float animationCompletion = Time / EndTime;
         NPC.frameCounter += 2 * animationCompletion;
+        BoCDrawOffset = Main.rand.NextVector2Circular(4, 4) * animationCompletion;
 
         if (Main.rand.NextFloat(0.5f, 1f) < animationCompletion)
         {
@@ -2889,17 +2891,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
     {
         if (AIState != BrainAIState.DeathAnimation && (NPC.life + 1) <= hit.Damage)
         {
-            NPC.life = 1;
-            NPC.BossBar = null;
-            NPC.dontTakeDamage = true;
-
-            if (AIState == BrainAIState.Stunned)
-                TeleportTime = 0;
-
-            AIState = BrainAIState.DeathAnimation;
-            ResetAttackValues();
-            Time = 0;
-            NPC.netUpdate = true;
+            TriggerDeathAnimation();
             return;
         }
 
@@ -2908,6 +2900,30 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             AttackFlag = true;
             NPC.netUpdate = true;
         }
+    }
+
+    private void TriggerDeathAnimation()
+    {
+        NPC.life = 1;
+        NPC.lifeRegen = 0;
+        NPC.BossBar = null;
+        NPC.dontTakeDamage = true;
+
+        if (AIState == BrainAIState.Stunned || AIState == BrainAIState.IllusionTrick)
+            TeleportTime = 0;
+
+        foreach (NPC n in Main.ActiveNPCs)
+        {
+            if (n.type != ModContent.NPCType<FalseBrain>())
+                continue;
+
+            n.ModNPC<FalseBrain>().BeenHit = true;
+        }
+
+        AIState = BrainAIState.DeathAnimation;
+        ResetAttackValues();
+        Time = 0;
+        NPC.netUpdate = true;
     }
 
     public override bool PreKill(Mod mod) => AIState == BrainAIState.DeathAnimation && !NPC.dontTakeDamage;
@@ -3036,6 +3052,8 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                 {
                     if (n.ModNPC is FalseBrain falseBrain)
                         falseBrain.DrawSelf(spriteBatch, screenPos, Lighting.GetColor(n.Center.ToTileCoordinates()));
+                    else if (AIState == BrainAIState.DeathAnimation)
+                        drawBrain = true;
                     else
                         DrawBrainLikeFakes(spriteBatch, n);
                 }

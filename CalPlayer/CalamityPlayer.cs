@@ -2206,15 +2206,18 @@ namespace CalamityMod.CalPlayer
                     Player.AddCooldown(Starburst.ID, MaxStratusStarburst);
                 }
             }
-            // Shields. Has to intentionally be above resetting accessories and armor or the shields would clear instantly
-            if (!roverDrive)
-                RoverDriveShieldDurability = 0;
-            if (!lunicCorpsSet)
-                LunicCorpsShieldDurability = 0;
-            if (!sponge)
-                SpongeShieldDurability = 0;
-            if (!pSoulArtifact)
-                pSoulShieldDurability = 0;
+            
+            if (Player.whoAmI == Main.myPlayer)
+            {
+                if (!roverDrive)
+                    RoverDriveShieldDurability = 0;
+                if (!lunicCorpsSet)
+                    LunicCorpsShieldDurability = 0;
+                if (!sponge)
+                    SpongeShieldDurability = 0;
+                if (!pSoulArtifact)
+                    pSoulShieldDurability = 0;
+            }
             pSoulShieldVisible = false;
             roverDrive = false;
             roverDriveShieldVisible = false;

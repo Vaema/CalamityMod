@@ -683,16 +683,16 @@ namespace CalamityMod.UI.DialogueDisplay
                 if (DialoguePage.Event != null && !DialoguePage.Event.IsOver)
                     DialoguePage.Event.UpdateEvent();
 
-                if (textIndex < Text.Length)
+                if (textIndex < Text.Length - 1)
                 {
                     int delay;
                     int loopCounter = 0;
+                    bool forcedPause = false;
+
                     do
                     {
                         if (TextTimer == 0)
                         {
-                            bool shouldApplyDelay = false;
-
                             if (!lockDelay)
                             {
                                 char currentChar = Text[textIndex];
@@ -707,7 +707,7 @@ namespace CalamityMod.UI.DialogueDisplay
                                         data = value;
                                 }
 
-                                shouldApplyDelay = IsStoppingPunctuation(currentChar, textIndex == 0 ? null : Text[textIndex - 1], textIndex == Text.Length - 1 ? null : Text[textIndex + 1]);
+                                bool shouldApplyDelay = IsStoppingPunctuation(currentChar, textIndex == 0 ? null : Text[textIndex - 1], textIndex == Text.Length - 1 ? null : Text[textIndex + 1]);
 
                                 if (shouldApplyDelay)
                                 {
@@ -722,19 +722,25 @@ namespace CalamityMod.UI.DialogueDisplay
                             }
 
                             if (Pauses.TryGetValue(textIndex, out float pause))
+                            {
                                 storedDelay = (int)(pause * 60);
+                                forcedPause = true;
+                            }
                         }
+                        else if(Pauses.ContainsKey(textIndex))
+                            forcedPause = true;
 
                         int delayToUse = (IsPunctuation(Text[textIndex]) && textIndex > 0 && IsPunctuation(Text[textIndex - 1])) ? inPunctuationDelay : textDelay;
 
-                        delay = ((Text[textIndex] == ' ' || Text[textIndex] == '\n') && storedDelay > 0 ? delayToUse + storedDelay : delayToUse);
+                        bool shouldIncludeStored = Text[textIndex] == ' ' || Text[textIndex] == '\n' || forcedPause;
+                        delay = (shouldIncludeStored && storedDelay > 0 ? delayToUse + storedDelay : delayToUse);
 
                         if (loopCounter == 0)
                             TextTimer++;
 
                         if ((delay == 0 || (TextTimer + loopCounter) % delay == 0) && TextTimer >= 0)
                         {
-                            if (Text[textIndex] == ' ')
+                            if (Text[textIndex] == ' ' || forcedPause)
                             {
                                 storedDelay = 0;
                                 lockDelay = false;

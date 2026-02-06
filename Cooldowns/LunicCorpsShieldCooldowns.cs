@@ -92,11 +92,19 @@ namespace CalamityMod.Cooldowns
         public override SoundStyle? EndSound => LunicCorpsHelmet.ActivationSound;
         public override bool ShouldPlayEndSound => instance.player.Calamity().lunicCorpsSet;
 
-        public override void Tick() => instance.player.Calamity().playedLunicCorpsShieldSound = false;
-        // When the recharge period completes, grant 1 point of shielding immediately so the rest my refill normally.
+        public override void Tick()
+        {
+            if (instance.player.whoAmI == Main.myPlayer)
+                instance.player.Calamity().playedLunicCorpsShieldSound = false;
+        }
+
+        // When the recharge period completes, grant 1 point of shielding immediately so the rest may refill normally.
         // The shield durability cooldown is added elsewhere, in Misc Effects.
         public override void OnCompleted()
         {
+            if (instance.player.whoAmI != Main.myPlayer)
+                return;
+
             CalamityPlayer modPlayer = instance.player.Calamity();
             if (modPlayer.LunicCorpsShieldDurability <= 0)
                 modPlayer.LunicCorpsShieldDurability = 1;

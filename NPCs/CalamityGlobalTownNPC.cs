@@ -370,6 +370,7 @@ namespace CalamityMod.NPCs
             "Kendra", // <@!237247188005158912> (lordmetarex)
             "Libby", // <@!338315261352476682> (tyeski)
             "Myles", // <@!658760860722004017> (apotofkoolaid)
+            "Luna", // <@!534132902095749120> (mizzultraviolet)
         ];
         private static readonly string[] TownDogCorgiNames = null;
         private static readonly string[] TownDogDalmatianNames = null;

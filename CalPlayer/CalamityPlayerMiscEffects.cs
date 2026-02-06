@@ -3729,11 +3729,11 @@ namespace CalamityMod.CalPlayer
                 Player.velocity *= 0.98f;
 
             if (molluskHelmet)
-                Player.velocity.X *= 0.995f;
+                Player.velocity.X *= 0.996f;
             if (molluskChest)
-                Player.velocity.X *= 0.995f;
+                Player.velocity.X *= 0.996f;
             if (molluskLegs)
-                Player.velocity.X *= 0.995f;
+                Player.velocity.X *= 0.996f;
 
             if ((warped) && !Player.slowFall && !Player.mount.Active)
             {
@@ -4505,6 +4505,9 @@ namespace CalamityMod.CalPlayer
         #region Energy Shields
         private void EnergyShields()
         {
+            if (Player.whoAmI != Main.myPlayer)
+                return;
+
             // Because later tier shields are brighter, shields are handled from highest tier to lowest tier here.
             bool shieldAddedLight = false;
 

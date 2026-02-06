@@ -136,7 +136,6 @@ namespace CalamityMod.Projectiles.Ranged
             Vector2 pistilJiggleScale = new Vector2(1 - 0.25f * pistilPow, 1 + 0.5f * pistilPow);
 
             drawPosition.X += 25 * Owner.direction;
-            drawPosition.Y += -5f;
 
             Color drawColor = Projectile.GetAlpha(lightColor);
             float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);
