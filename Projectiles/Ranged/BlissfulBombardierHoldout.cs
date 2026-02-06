@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Dusts;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
@@ -153,9 +154,13 @@ namespace CalamityMod.Projectiles.Ranged
             }
 
             // Spawns the projectile.
+            // 5FEB2026 sunny:
+            // Uses a global projectile to prevent the rocket from working with Grape Beer. Bandaid fix until a blacklist is added.
             if (Main.myPlayer == Projectile.owner)
             {
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootDirection * projSpeed * velocityMultiplier, ProjectileType<NukeOfBliss>(), damage, knockback, Projectile.owner, rocketType);
+                Projectile nuke = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootDirection * projSpeed * velocityMultiplier, ProjectileType<NukeOfBliss>(), damage, knockback, Projectile.owner, rocketType);
+                CalamityGlobalProjectile cpg = nuke.Calamity();
+                cpg.conditionalHomingRange = 0f;
                 PostFireCooldown = Owner.itemAnimationMax;
                 Owner.SetScreenshake(5f);
             }
