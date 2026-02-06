@@ -271,8 +271,9 @@ namespace CalamityMod.Projectiles.Ranged
                     float randomVel = Main.rand.NextFloat(0.8f, 1f);
                     float damageMult = ((naildriver || scattershot) ? 1.75f : 1f) / baseShotCount;
                     float spread = (i == 0 ? 0f : naildriver ? 0.06f : scattershot ? 0.9f : 0.25f) * MathHelper.Lerp(gunPower, 1, 0.75f);
-                    Projectile shotgun = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, randomVel * Projectile.velocity.RotatedByRandom(spread) * 8, ProjectileType<StarmadaStar>(), (int)(Projectile.damage * damageMult), Projectile.knockBack, Projectile.owner, 0, 0, Main.rand.Next(0, 300 + 1));
-                    shotgun.extraUpdates = naildriver ? 9 : scattershot ? 7 : 3;
+                    int starExtraUpdates = naildriver ? 9 : scattershot ? 7 : 3;
+                    Projectile shotgun = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, randomVel * Projectile.velocity.RotatedByRandom(spread) * 8, ProjectileType<StarmadaStar>(), (int)(Projectile.damage * damageMult), Projectile.knockBack, Projectile.owner, 0, starExtraUpdates, Main.rand.Next(0, 300 + 1));
+                    shotgun.extraUpdates = starExtraUpdates;
                 }
             }
             for (int i = 0; i < (int)(25 * gunPowerMult); i++)
