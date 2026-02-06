@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Ranged;
+﻿using CalamityMod.Projectiles;
+using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -68,7 +69,11 @@ namespace CalamityMod.Items.Weapons.Ranged
                 {
                     Vector2 newShootVelocity = shootVelocity * Main.rand.NextFloat(1f, 1.45f);
                     newShootVelocity = newShootVelocity.RotatedByRandom(0.15f);
-                    Projectile.NewProjectile(source, gunTip, newShootVelocity, Item.shoot, damage, knockback, player.whoAmI);
+                    // 5FEB2026 sunny:
+                    // Uses a global projectile to prevent the rocket from working with Grape Beer. Bandaid fix until a blacklist is added.
+                    Projectile proj = Projectile.NewProjectileDirect(source, gunTip, newShootVelocity, Item.shoot, damage, knockback, player.whoAmI);
+                    CalamityGlobalProjectile cpg = proj.Calamity();
+                    cpg.conditionalHomingRange = 0f;
                 }
             }
 

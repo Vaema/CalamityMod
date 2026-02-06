@@ -11,17 +11,18 @@ using CalamityMod.EntitySources;
 using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.ExtraTextures;
+using CalamityMod.Graphics;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Ammo;
-using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.Armor.Daedalus;
 using CalamityMod.Items.Armor.Reaver;
+using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
-using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.Packets.Entities;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Healing;
@@ -54,8 +55,6 @@ using Terraria.Utilities;
 using Terraria.WorldBuilding;
 using static Terraria.ModLoader.ModContent;
 using NanotechProjectile = CalamityMod.Projectiles.Typeless.Nanotech;
-using CalamityMod.Graphics;
-using CalamityMod.Packets.Entities;
 
 namespace CalamityMod.Projectiles
 {
@@ -196,6 +195,8 @@ namespace CalamityMod.Projectiles
         /// Whether or not this proj was spawned with grape beer on
         /// this does NOT mean it has grape beer homing!
         /// </summary>
+        /// Sunny 5FEB2026 TODO: Create a blacklist system to easily add projectiles that should not get homing from Grape Beer
+        /// For now, conditionalHomingRange will be set to 0 when the projectile is spawned.
         public bool grapeBeer = false;
 
         /// <summary>
@@ -323,6 +324,7 @@ namespace CalamityMod.Projectiles
 
             void ApplyGrapeBeer()
             {
+                grapeBeer = true;
                 conditionalHomingRange = 600;
                 if (projectile.timeLeft > 300 * projectile.MaxUpdates)
                     projectile.timeLeft = 300 * projectile.MaxUpdates;
@@ -330,7 +332,7 @@ namespace CalamityMod.Projectiles
                 projectile.usesLocalNPCImmunity = true;
                 projectile.localNPCHitCooldown = -1;
             }
-            if (source is EntitySource_ItemUse_WithAmmo {Item: Item item})
+            if (source is EntitySource_ItemUse_WithAmmo { Item: Item item })
             {
                 if (source is EntitySource_Parent { Entity: Player player })
                 {
@@ -4257,7 +4259,7 @@ namespace CalamityMod.Projectiles
                     arcFlashCooldown--;
                 if (arcFlashCooldown == 0)
                     showArcFlash = true;
-                if (conditionalHomingRange > 0f)
+                if (conditionalHomingRange > 0f && Main.player[projectile.owner].heldProj != projectile.whoAmI && projectile.aiStyle != ProjAIStyleID.HeldProjectile)
                 {
                     CalamityUtils.HomeInOnNPC(projectile, !projectile.tileCollide, conditionalHomingRange, 12f, 20f,true);
                 }

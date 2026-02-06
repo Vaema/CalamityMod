@@ -70,9 +70,15 @@ namespace CalamityMod.Projectiles.Ranged
             Owner.PickAmmo(item, out _, out float projSpeed, out int damage, out float knockback, out int rocketType);
 
             // Spawns the projectile.
+            // 5FEB2026 sunny:
+            // Uses a global projectile to prevent the rocket from working with Grape Beer. Bandaid fix until a blacklist is added.
             Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 12;
             if (Main.myPlayer == Projectile.owner)
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(10f)), ModContent.ProjectileType<ScorchedEarthRocket>(), damage, knockback, Projectile.owner, rocketType);
+            {
+                Projectile rocket = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(10f)), ModContent.ProjectileType<ScorchedEarthRocket>(), damage, knockback, Projectile.owner, rocketType);
+                CalamityGlobalProjectile cpg = rocket.Calamity();
+                cpg.conditionalHomingRange = 0f;
+            }
 
             // Inside here go all the things that dedicated servers shouldn't spend resources on.
             // Like visuals and sounds.

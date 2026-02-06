@@ -73,8 +73,12 @@ namespace CalamityMod.Projectiles.Ranged
             if (shootDirection.X != Projectile.velocity.X || shootDirection.Y != Projectile.velocity.Y)
                 Projectile.netUpdate = true;
 
+            // 5FEB2026 sunny:
+            // Uses a global projectile to prevent the rocket from working with Grape Beer. Bandaid fix until a blacklist is added.
             Vector2 gunTip = armPosition + shootDirection * heldItem.scale * 130f;
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), gunTip, shootVelocity, projectileType, damage, knockback, Projectile.owner, 0f, 0f);
+            Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), gunTip, shootVelocity, projectileType, damage, knockback, Projectile.owner, 0f, 0f);
+            CalamityGlobalProjectile cpg = proj.Calamity();
+            cpg.conditionalHomingRange = 0f;
 
             Projectile.velocity = shootDirection;
         }
