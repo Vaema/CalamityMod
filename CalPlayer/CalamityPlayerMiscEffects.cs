@@ -4515,6 +4515,9 @@ namespace CalamityMod.CalPlayer
         #region Energy Shields
         private void EnergyShields()
         {
+            if (Player.whoAmI != Main.myPlayer)
+                return;
+
             // Because later tier shields are brighter, shields are handled from highest tier to lowest tier here.
             bool shieldAddedLight = false;
 
