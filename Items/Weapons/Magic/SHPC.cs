@@ -19,9 +19,9 @@ namespace CalamityMod.Items.Weapons.Magic
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public static readonly SoundStyle FireSound = new("CalamityMod/Sounds/Item/AnomalysNanogunMPFBShot");
-        public static readonly SoundStyle VacuumStart = new SoundStyle("CalamityMod/Sounds/Item/SHPCVacuumStart") with { Volume = 0.75f };
-        public static readonly SoundStyle VacuumLoop = new SoundStyle("CalamityMod/Sounds/Item/SHPCVacuumLoop") with { Volume = 0.75f };
-        public static readonly SoundStyle VacuumEnd = new SoundStyle("CalamityMod/Sounds/Item/SHPCVacuumEnd") with { Volume = 0.75f };
+        public static readonly SoundStyle VacuumStart = new SoundStyle("CalamityMod/Sounds/Item/SHPCVacuumStart") with { Volume = 0.5f };
+        public static readonly SoundStyle VacuumLoop = new SoundStyle("CalamityMod/Sounds/Item/SHPCVacuumLoop") with { Volume = 0.5f };
+        public static readonly SoundStyle VacuumEnd = new SoundStyle("CalamityMod/Sounds/Item/SHPCVacuumEnd") with { Volume = 0.5f };
 
         public const int ShotsPerSoul = 50;
         public int storedSoulpower = 0;
@@ -43,7 +43,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 124;
             Item.height = 52;
-            Item.damage = 97;
+            Item.damage = 117;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 15;
             Item.useAnimation = Item.useTime = 60;

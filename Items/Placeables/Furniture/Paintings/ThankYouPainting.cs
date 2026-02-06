@@ -71,6 +71,7 @@ namespace CalamityMod.Items.Placeables.Furniture.Paintings
             "HaguriHat",
             "jasper",
             "LordMetarex",
+            "math2",
             "Moonburn",
             "Ozzatron",
             "Piky",
