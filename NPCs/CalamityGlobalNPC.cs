@@ -890,6 +890,11 @@ namespace CalamityMod.NPCs
             {
                 ActiveWaterDebuffMultiplier += 1;
             }
+
+            if (npc.HasBuff<SearingLava>()) //Searing Lava is so hot it makes cold less strong
+            {
+                ActiveColdDebuffMultiplier -= 0.5f;
+            }
             if (VulnerableToHeat.HasValue)
             {
                 if (VulnerableToHeat.Value)
@@ -1291,9 +1296,6 @@ namespace CalamityMod.NPCs
                         break;
                     case NPCID.BrainofCthulhu:
                         npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.75);
-                        break;
-                    case NPCID.Creeper:
-                        npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.1);
                         break;
                     case NPCID.QueenBee:
                         npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.8);
@@ -2935,9 +2937,6 @@ namespace CalamityMod.NPCs
             if (BossRushEvent.BossRushActive && !npc.friendly && !npc.townNPC && !DoesNotDisappearInBossRush)
                 BossRushForceDespawnOtherNPCs(npc, Mod);
 
-            if (NPC.LunarApocalypseIsUp)
-                PillarEventProgressionEdit(npc);
-
             #region Fairies Edit
             // Fairies don't run away and are immune to damage while wearing Fairy Boots.
             if (npc.type >= NPCID.FairyCritterPink && npc.type <= NPCID.FairyCritterBlue && (npc.ai[2] < 2f || npc.ai[2] == 7f))
@@ -3046,247 +3045,6 @@ namespace CalamityMod.NPCs
             {
                 npc.active = false;
                 npc.netUpdate = true;
-            }
-        }
-        #endregion
-
-        #region Pillar Event Progression Edit
-        private void PillarEventProgressionEdit(NPC npc)
-        {
-            // Make pillars a bit more fun by forcing more difficult enemies based on progression.
-            int solarTowerShieldStrength = (int)Math.Ceiling(NPC.ShieldStrengthTowerSolar / 25D);
-            switch (solarTowerShieldStrength)
-            {
-                case 4:
-                    // Possible spawns: Drakanian, Drakomire, Drakomire Rider, Sroller
-                    switch (npc.type)
-                    {
-                        case NPCID.SolarCrawltipedeHead:
-                        case NPCID.SolarCrawltipedeBody:
-                        case NPCID.SolarCrawltipedeTail:
-                        case NPCID.SolarSolenian:
-                        case NPCID.SolarCorite:
-                            npc.active = false;
-                            npc.netUpdate = true;
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-                case 3:
-                    // Possible spawns: Drakanian, Drakomire Rider, Sroller
-                    switch (npc.type)
-                    {
-                        case NPCID.SolarCrawltipedeHead:
-                        case NPCID.SolarCrawltipedeBody:
-                        case NPCID.SolarCrawltipedeTail:
-                        case NPCID.SolarDrakomire:
-                        case NPCID.SolarSolenian:
-                        case NPCID.SolarCorite:
-                            npc.active = false;
-                            npc.netUpdate = true;
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-                case 2:
-                    // Possible spawns: Drakanian, Selenian, Sroller
-                    switch (npc.type)
-                    {
-                        case NPCID.SolarDrakomire:
-                        case NPCID.SolarCrawltipedeHead:
-                        case NPCID.SolarCrawltipedeBody:
-                        case NPCID.SolarCrawltipedeTail:
-                        case NPCID.SolarCorite:
-                        case NPCID.SolarDrakomireRider:
-                            npc.active = false;
-                            npc.netUpdate = true;
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-                case 1:
-                    // Possible spawns: Corite, Selenian, Sroller, Crawltipede
-                    switch (npc.type)
-                    {
-                        case NPCID.SolarDrakomire:
-                        case NPCID.SolarSpearman:
-                        case NPCID.SolarDrakomireRider:
-                            npc.active = false;
-                            npc.netUpdate = true;
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-                case 0:
-                    // Possible spawns: Corite, Crawltipede, Selenian
-                    switch (npc.type)
-                    {
-                        case NPCID.SolarDrakomire:
-                        case NPCID.SolarSpearman:
-                        case NPCID.SolarDrakomireRider:
-                        case NPCID.SolarSroller:
-                            npc.active = false;
-                            npc.netUpdate = true;
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-            }
-
-            int vortexTowerShieldStrength = (int)Math.Ceiling(NPC.ShieldStrengthTowerVortex / 25D);
-            switch (vortexTowerShieldStrength)
-            {
-                case 4:
-                    // Possible spawns: Alien Larva, Alien Hornet, Alien Queen
-                    switch (npc.type)
-                    {
-                        case NPCID.VortexSoldier:
-                        case NPCID.VortexRifleman:
-                            npc.active = false;
-                            npc.netUpdate = true;
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-                case 3:
-                    // Possible spawns: Alien Larva, Alien Hornet, Alien Queen, Vortexian
-                    if (npc.type == NPCID.VortexRifleman)
-                    {
-                        npc.active = false;
-                        npc.netUpdate = true;
-                    }
-                    break;
-                case 2:
-                    // Possible spawns: Alien Larva, Alien Hornet, Alien Queen, Storm Diver
-                    if (npc.type == NPCID.VortexSoldier)
-                    {
-                        npc.active = false;
-                        npc.netUpdate = true;
-                    }
-                    break;
-                case 1:
-                case 0:
-                    // Possible spawns: Alien Larva, Alien Hornet, Alien Queen, Vortexian, Storm Diver
-                    break;
-            }
-
-            int nebulaTowerShieldStrength = (int)Math.Ceiling(NPC.ShieldStrengthTowerNebula / 25D);
-            switch (nebulaTowerShieldStrength)
-            {
-                case 4:
-                    // Possible spawns: Brain Suckler
-                    switch (npc.type)
-                    {
-                        case NPCID.NebulaBeast:
-                        case NPCID.NebulaBrain:
-                        case NPCID.NebulaSoldier:
-                            npc.active = false;
-                            npc.netUpdate = true;
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-                case 3:
-                    // Possible spawns: Brain Suckler, Predictor
-                    switch (npc.type)
-                    {
-                        case NPCID.NebulaBeast:
-                        case NPCID.NebulaBrain:
-                            npc.active = false;
-                            npc.netUpdate = true;
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-                case 2:
-                    // Possible spawns: Brain Suckler, Predictor, Evolution Beast
-                    if (npc.type == NPCID.NebulaBrain)
-                    {
-                        npc.active = false;
-                        npc.netUpdate = true;
-                    }
-                    break;
-                case 1:
-                case 0:
-                    // Possible spawns: Predictor, Evolution Beast, Nebula Floater
-                    if (npc.type == NPCID.NebulaHeadcrab)
-                    {
-                        npc.active = false;
-                        npc.netUpdate = true;
-                    }
-                    break;
-            }
-
-            int stardustTowerShieldStrength = (int)Math.Ceiling(NPC.ShieldStrengthTowerStardust / 25D);
-            switch (stardustTowerShieldStrength)
-            {
-                case 4:
-                    // Possible spawns: Milkyway Weaver, Star Cell
-                    switch (npc.type)
-                    {
-                        case NPCID.StardustSpiderBig:
-                        case NPCID.StardustSoldier:
-                        case NPCID.StardustJellyfishBig:
-                            npc.active = false;
-                            npc.netUpdate = true;
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-                case 3:
-                    // Possible spawns: Milkyway Weaver, Stargazer, Twinkle Popper
-                    switch (npc.type)
-                    {
-                        case NPCID.StardustCellBig:
-                        case NPCID.StardustJellyfishBig:
-                            npc.active = false;
-                            npc.netUpdate = true;
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-                case 2:
-                    // Possible spawns: Stargazer, Twinkle Popper, Flow Invader
-                    switch (npc.type)
-                    {
-                        case NPCID.StardustCellBig:
-                        case NPCID.StardustWormHead:
-                        case NPCID.StardustWormBody:
-                        case NPCID.StardustWormTail:
-                            npc.active = false;
-                            npc.netUpdate = true;
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-                case 1:
-                case 0:
-                    // Possible spawns: Twinkle Popper, Flow Invader
-                    switch (npc.type)
-                    {
-                        case NPCID.StardustCellBig:
-                        case NPCID.StardustWormHead:
-                        case NPCID.StardustWormBody:
-                        case NPCID.StardustWormTail:
-                        case NPCID.StardustSoldier:
-                            npc.active = false;
-                            npc.netUpdate = true;
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
             }
         }
         #endregion
@@ -5006,9 +4764,9 @@ namespace CalamityMod.NPCs
                     dust.color = Color.Red;
                     dust.fadeIn = laserBurnStacks * 0.3f;
                 }
+                // If for some reason neither burn type is set
                 if (laserBurnType == 0)
                 {
-                    Main.NewText("No Burn Type Set", Color.OrangeRed);
                     laserBurnMarked = false;
                     laserBurnTimer = 0;
                 }
@@ -5186,6 +4944,7 @@ namespace CalamityMod.NPCs
             ("CalamityMod/Buffs/DamageOverTime/Plague", NPC => NPC.Calamity().plague),
             ("CalamityMod/Buffs/DamageOverTime/RiptideDebuff", NPC => NPC.Calamity().riptide),
             ("CalamityMod/Buffs/DamageOverTime/SagePoison", NPC => NPC.Calamity().sagePoison),
+            ("CalamityMod/Buffs/DamageOverTime/SearingLava", NPC => NPC.HasBuff<SearingLava>()),
             ("CalamityMod/Buffs/DamageOverTime/ShellfishClaps", NPC => NPC.Calamity().shellfishStaffDebuff),
             ("CalamityMod/Buffs/DamageOverTime/Shred", NPC => NPC.Calamity().somaShredStacks > 0),
             ("CalamityMod/Buffs/DamageOverTime/SnapClamDebuff", NPC => NPC.Calamity().snapClamDebuff),

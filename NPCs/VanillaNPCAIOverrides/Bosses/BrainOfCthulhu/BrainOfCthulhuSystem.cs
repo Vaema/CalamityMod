@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CalamityMod.DataStructures;
+using CalamityMod.Particles;
+using CalamityMod.Scenes.MusicScenes;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -19,6 +21,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses.BrainOfCthulhu;
 
 public class BrainOfCthulhuSystem : ModSystem
 {
+    public static bool IsBrainOfCthulhuTextureVanilla => _vanillaBoCTexture;
+    private static bool _vanillaBoCTexture = true;
     internal static Asset<Texture2D> tendril;
     private static Texture2D tendrilGlow = null;
     private static Texture2D brainGlow = null;
@@ -26,7 +30,7 @@ public class BrainOfCthulhuSystem : ModSystem
 
     internal static float ScreenBlurStrength = 0f;
 
-    internal static List<VerletSimulatedSegment>[] VerletTendrils = new List<VerletSimulatedSegment>[BrainOfCthulhuAI.GetBrainOfCthuluCreepersCountRevDeath()];
+    internal static (int creeper, List<VerletSimulatedSegment> tendril, int reelInTimer)[] VerletTendrils;
 
     private static int previousMusic = -1;
     public static int PreviousMusic => previousMusic;
@@ -34,9 +38,7 @@ public class BrainOfCthulhuSystem : ModSystem
     public override void OnModLoad()
     {
         if (!Main.dedServ)
-        {
             tendril = ModContent.Request<Texture2D>("Terraria/Images/Chain12");
-        }
 
         On_NPC.SpawnBoss += SpawnBrainNoMessage;
         On_Player.ItemCheck_UseBossSpawners += BlockRoar;
@@ -63,19 +65,24 @@ public class BrainOfCthulhuSystem : ModSystem
             if (Main.curMusic == MusicID.Boss3)
                 Main.curMusic = previousMusic;
         }
+
+        if (Main.newMusic == MusicID.Boss1)
+            Main.newMusic = previousMusic;
+
+        if (Main.curMusic == MusicID.Boss1)
+            Main.curMusic = previousMusic;
     }
 
     private void StopOWBoss1FromStarting(On_Main.orig_UpdateAudio_DecideOnTOWMusic orig, Main self)
     {
         orig(self);
 
-        if (NPC.crimsonBoss == -1 || !CalamityWorld.revenge)
+        if (NPC.crimsonBoss == -1 || !CalamityWorld.revenge || !Main.npc[NPC.crimsonBoss].TryGetAIOverride<BrainOfCthulhuAI>(out var brainAI))
             return;
 
         if (previousMusic < 0 || previousMusic >= Main.musicFade.Length)
             return;
 
-        var brainAI = Main.npc[NPC.crimsonBoss].AIOverride<BrainOfCthulhuAI>();
         // The last part leaves one frame at the end of the spawn animation where the boss music starts playing, so that it can be instantly maxed out
         if (brainAI.AIState < 0 && (brainAI.Time - Math.Abs(brainAI.SpawnTime) < 420))
         {
@@ -146,6 +153,7 @@ public class BrainOfCthulhuSystem : ModSystem
             tex.SetData(ColorArray);
             tendrilGlow = tex;
         }
+
         return tendrilGlow;
     }
 
@@ -187,6 +195,39 @@ public class BrainOfCthulhuSystem : ModSystem
         return creeperGlow;
     }
 
+    public override void OnWorldLoad()
+    {
+        if (!Main.dedServ)
+        {
+            Main.QueueMainThreadAction(() =>
+            {
+                var reference = ModContent.Request<Texture2D>("CalamityMod/NPCs/VanillaNPCAIOverrides/Bosses/BrainOfCthulhu/ReferenceBrainOfCthulhu", AssetRequestMode.ImmediateLoad).Value;
+
+                Main.instance.LoadNPC(NPCID.BrainofCthulhu);
+                var usedTexture = TextureAssets.Npc[NPCID.BrainofCthulhu].Value;
+
+                int refSize = reference.Width * reference.Height;
+                var referenceArray = new Color[refSize];
+                reference.GetData(referenceArray);
+
+                int texSize = usedTexture.Width * usedTexture.Height;
+                var textureArray = new Color[texSize];
+                usedTexture.GetData(textureArray);
+
+                bool match = true;
+
+                for (var i = 0; i < referenceArray.Length; i++)
+                    if (referenceArray[i] != textureArray[i])
+                    {
+                        match = false;
+                        break;
+                    }
+
+                _vanillaBoCTexture = match;
+            });
+        }
+    }
+
     public override void PostUpdateNPCs()
     {
         if (!NPC.AnyNPCs(NPCID.BrainofCthulhu))
@@ -194,34 +235,101 @@ public class BrainOfCthulhuSystem : ModSystem
 
         if (Main.netMode != NetmodeID.Server)
         {
-            if (NPC.crimsonBoss != -1 && CalamityWorld.revenge && Main.npc[NPC.crimsonBoss].ai[0] < (float)BrainOfCthulhuAI.BrainAIState.Phase2TransitionClosed)
+            if (NPC.crimsonBoss != -1 && CalamityWorld.revenge && Main.npc[NPC.crimsonBoss].ai[0] <= (float)BrainOfCthulhuAI.BrainAIState.Phase2TransitionOpen)
             {
-                List<NPC> creepers = Main.npc.Where(n => n.active && n.type == NPCID.Creeper).ToList();
+                bool shouldSpawnTendrilIfNeeded = Main.npc[NPC.crimsonBoss].ai[0] == (float)BrainOfCthulhuAI.BrainAIState.Stunned;
 
-                foreach (NPC creeper in creepers)
+                //Handles sim for tendrils attached to creepers
+                int index = 0;
+                foreach (var member in VerletTendrils)
                 {
-                    int creeperID = (int)creeper.ai[0];
+                    NPC creeper = Main.npc[member.creeper];
 
-                    Vector2 startPoint = Main.npc[NPC.crimsonBoss].Center + Vector2.UnitY * 32;
+                    Vector2 startPoint = Main.npc[NPC.crimsonBoss].Center + Main.npc[NPC.crimsonBoss].netOffset + Vector2.UnitY * 32;
 
-                    float creeperRatio = creeperID / (float)BrainOfCthulhuAI.GetBrainOfCthuluCreepersCountRevDeath();
-                    if (creeperID % 2 == 0)
+                    float creeperRatio = index / (float)BrainOfCthulhuAI.GetBrainOfCthuluCreepersCountRevDeath();
+                    if (index % 2 == 0)
                         startPoint += new Vector2(MathHelper.Lerp(-24, 0, creeperRatio), 0);
                     else
                         startPoint += new Vector2(MathHelper.Lerp(24, 0, creeperRatio), 0);
 
-                    Vector2 endPoint = creeper.Center;
+                    List<VerletSimulatedSegment> vTendril = VerletTendrils[index].tendril;
 
-                    List<VerletSimulatedSegment> tendril = VerletTendrils[creeperID];
-                    if (tendril is null || tendril.Count == 0)
+                    //Tendril's creeper is dead, dangle and reel in.
+                    if (!creeper.active || creeper.type != NPCID.Creeper)
+                    {
+                        float reelInTime = 180;
+                        VerletTendrils[index].reelInTimer++;
+
+                        float reelRatio = CalamityUtils.CircInEasing(VerletTendrils[index].reelInTimer / reelInTime, 1);
+                        float reelInSegementedRatio = reelRatio * 28;
+                        float segmentRatio = MathF.Truncate(reelInSegementedRatio);
+
+                        if (reelRatio >= 1 || VerletTendrils[index].tendril.Count <= 1)
+                        {
+                            VerletTendrils[index].tendril.Clear();
+                            index++;
+                            continue;
+                        }
+
+                        for(int i = 0; i < 28; i++)
+                        {
+                            var seg = vTendril[i];
+                            
+                            if (i <= reelInSegementedRatio)
+                            {
+                                seg.position = startPoint;
+                                seg.oldPosition = startPoint;
+                                seg.locked = true;
+                                continue;
+                            }
+
+                            seg.position += Main.npc[NPC.crimsonBoss].velocity;
+                            seg.oldPosition += Main.npc[NPC.crimsonBoss].velocity;
+
+                            if (i == MathF.Ceiling(reelRatio))
+                            {
+                                seg.position = startPoint - (Vector2.unitYVector * MathHelper.Lerp(0, 16, segmentRatio));
+                            }
+                            seg.locked = false;
+                        }
+
+                        if (reelRatio < 0.75f && Main.rand.NextBool(3))
+                        {
+                            Vector2 dir = (vTendril[^1].position - vTendril[^2].position).SafeNormalize(Vector2.unitYVector);
+                            BloodParticle p = new(vTendril[^2].position, dir.RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 10f, MathHelper.Pi / 10f)) * Main.rand.NextFloat(4f, 8f), 16, Main.rand.NextFloat(0.5f, 0.75f), Color.Red * 0.75f);
+                            GeneralParticleHandler.SpawnParticle(p);
+                        }
+
+                        VerletSimulatedSegment.SimpleSimulation(vTendril, 16, 10, 1.5f);
+
+                        index++;
+                        continue;
+                    }
+
+                    VerletTendrils[index].reelInTimer = -1;
+
+                    //Tendril is gone/getting reeled in, attach to newly spawned creeper.
+                    if (vTendril.Count < 28 && shouldSpawnTendrilIfNeeded)
+                    {
+                        BrainOfCthulhuSystem.VerletTendrils[index] = new(creeper.whoAmI, [], -1);
+                        for (int j = 0; j < 28; j++)
+                            BrainOfCthulhuSystem.VerletTendrils[index].tendril.Add(new(creeper.Center));
+                    }
+
+                    Vector2 endPoint = creeper.Center + creeper.netOffset;
+                    index++;
+
+                    if (vTendril is null || vTendril.Count == 0)
                         continue;
 
-                    tendril[0].position = startPoint;
-                    tendril[0].locked = true;
-                    tendril[^1].position = endPoint;
-                    tendril[^1].locked = true;
+                    vTendril[0].position = startPoint;
+                    vTendril[0].locked = true;
+                    vTendril[^1].position = endPoint;
+                    vTendril[^1].locked = true;
 
-                    VerletSimulatedSegment.SimpleSimulation(tendril, 16, 10, 3);
+                    VerletSimulatedSegment.SimpleSimulation(vTendril, 16, 10, 3);
+
                 }
             }
         }
@@ -231,7 +339,7 @@ public class BrainOfCthulhuSystem : ModSystem
     {
         if (Main.netMode != NetmodeID.Server)
         {
-            if (NPC.crimsonBoss == -1 || !CalamityWorld.revenge || Main.npc[NPC.crimsonBoss].ai[0] >= (float)BrainOfCthulhuAI.BrainAIState.Phase2TransitionClosed)
+            if (NPC.crimsonBoss == -1 || !CalamityWorld.revenge || Main.npc[NPC.crimsonBoss].ai[0] >= (float)BrainOfCthulhuAI.BrainAIState.Phase2TransitionClosed || !Main.npc[NPC.crimsonBoss].TryGetAIOverride<BrainOfCthulhuAI>(out var ai))
             {
                 Filters.Scene["CalamityMod:BrainOfCthulhuForcefield"].GetShader().UseOpacity(0);
                 if (Filters.Scene["CalamityMod:BrainOfCthulhuForcefield"].IsActive())
@@ -243,9 +351,9 @@ public class BrainOfCthulhuSystem : ModSystem
                     Filters.Scene.Activate("CalamityMod:BrainOfCthulhuForcefield");
 
                 NPC target = Main.npc[NPC.crimsonBoss];
-                Vector2 targetPos = target.Center;
-                float shieldOpacity = target.AIOverride<BrainOfCthulhuAI>().ShieldOpacity;
-                float shieldScale = target.AIOverride<BrainOfCthulhuAI>().ShieldScale;
+                Vector2 targetPos = target.Center + target.netOffset;
+                float shieldOpacity = ai.ShieldOpacity;
+                float shieldScale = ai.ShieldScale;
                 targetPos = Vector2.Transform(targetPos - Main.screenPosition, Main.GameViewMatrix.ZoomMatrix) / Main.ScreenSize.ToVector2();
 
                 Texture2D voronoi = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/VoronoiShapes3").Value;
@@ -302,12 +410,15 @@ public class BrainOfCthulhuSystem : ModSystem
 
     public override void PostUpdateEverything()
     {
-        if (Main.curMusic != MusicID.Boss3 && Main.curMusic != MusicID.OtherworldlyBoss1)
+        bool allowBossMusic = false;
+        if (NPC.crimsonBoss != -1 && Main.npc[NPC.crimsonBoss].active && Main.npc[NPC.crimsonBoss].TryGetAIOverride<BrainOfCthulhuAI>(out var brainAI) && brainAI.AIState > BrainOfCthulhuAI.BrainAIState.SurfaceSpawnAnimation)
+            allowBossMusic = true;
+
+        if (((Main.curMusic != MusicID.Boss3 && Main.curMusic != MusicID.OtherworldlyBoss1) || allowBossMusic) && Main.curMusic != MusicID.Boss1)
             previousMusic = Main.curMusic;
 
         if (previousMusic == -1)
             previousMusic = MusicID.Crimson;
-
     }
 }
 

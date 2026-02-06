@@ -50,7 +50,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
 
             // Make it lose velocity as it travels
-            Projectile.velocity *= 0.94f;
+            Projectile.velocity *= 0.9f;
             #region Traveling Visuals
             //Firing effects on frame one
             if (time == 1)
@@ -107,7 +107,7 @@ namespace CalamityMod.Projectiles.Ranged
                     float blastSize = 120;
                     float minMultiplier = 0.25f;
                     int hitsToMinMult = 8;
-                    Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(Projectile.damage * 1.5f), 0f, Projectile.owner, blastSize, minMultiplier, hitsToMinMult);
+                    Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(Projectile.damage), 0f, Projectile.owner, blastSize, minMultiplier, hitsToMinMult);
                     blast.DamageType = DamageClass.Ranged;
                     Particle blastRing3 = new CustomPulse(Projectile.Center, Vector2.Zero, Main.rand.NextBool() ? Color.MediumTurquoise : Color.SkyBlue, "CalamityMod/Particles/PlasmaExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0f, 0.12f, 30);
                     GeneralParticleHandler.SpawnParticle(blastRing3);
@@ -199,14 +199,14 @@ namespace CalamityMod.Projectiles.Ranged
                 for (int i = 0; i < projAmt; i++)
                 {
                     Vector2 velocity = CalamityUtils.RandomVelocity(50f, 35f, 50f);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<AquashardSplit>(), (int)(Projectile.damage * 0.2f), 0f, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<AquashardSplit>(), (int)(Projectile.damage * 0.27f), 0f, Projectile.owner);
                 }
                 float blastSize = 185;
                 float minMultiplier = 0.25f;
                 int hitsToMinMult = 8;
                 int debuff1 = BuffID.Electrified;
                 int debuffTime = 240;
-                Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(Projectile.damage * 4f), 0f, Projectile.owner, blastSize, minMultiplier, hitsToMinMult);
+                Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(Projectile.damage * 2f), 0f, Projectile.owner, blastSize, minMultiplier, hitsToMinMult);
                 blast.localAI[0] = debuff1;
                 blast.localAI[1] = debuffTime;
                 blast.DamageType = DamageClass.Ranged;

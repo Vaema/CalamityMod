@@ -413,7 +413,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (charge || forceCharge)
                 {
                     NPC.localAI[2] += 1f;
-                    if (hasMovedForcedDistance || !phase3)
+                    if ((hasMovedForcedDistance || !phase3) && Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         NPC.ai[2] = 0f;
                         NPC.ai[1] = 1f;
@@ -470,9 +470,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     else
                         NPC.rotation = NPC.velocity.X / 15f;
 
-                    // Force net updates every frame during this movement to avoid despawning in multiplayer
-                    // I'm doing this because npc.ai[2] changes every frame and that's used to calculate Skeletron's velocity here
-                    NPC.ForceNetUpdate();
                     return false;
                 }
 
@@ -594,7 +591,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 bool dontGoMach10 = false;
                 float dashPhaseTime = death ? 210f : 300f;
-                if (NPC.ai[2] >= dashPhaseTime)
+                //Netmode check fixes issues where attack ends at different times for server vs clients
+                if (NPC.ai[2] >= dashPhaseTime && Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     if (Main.getGoodWorld)
                     {

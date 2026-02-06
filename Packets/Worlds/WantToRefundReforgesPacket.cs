@@ -9,15 +9,13 @@ namespace CalamityMod.Packets
     {
         public static WantToRefundReforgesPacket Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.WantToRefundReforges;
-
         public static void Send(int toClient = -1, int ignoreClient = -1)
         {
             var packet = Instance.CreateBasePacket();
             packet.Send(toClient, ignoreClient);
         }
 
-        public override void HandlePacket(in BinaryReader packet, int sender)
+        public override void HandlePacket(BinaryReader packet, int sender)
         {
             // Only Server should handle this action!
             if (!Main.dedServ)

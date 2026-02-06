@@ -25,7 +25,6 @@ namespace CalamityMod.Projectiles.Ranged
         public ref float shootingTimer => ref Projectile.ai[2]; // Dual functions for rapid fire shooting cooldown and recoil
         public bool isTired => cooldownTimer > 0;
         public float revSpeed = 1;
-        public bool secondShot = true;
         public int maxFrames = 420;
         public int initialFireTime = 45;
         public float shineScale = 0;
@@ -59,7 +58,7 @@ namespace CalamityMod.Projectiles.Ranged
                 if (Owner.whoAmI == Main.myPlayer)
                 {
                     float spread = 0.045f * Utils.GetLerpValue(0, maxFrames, revFrames, true);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, (shootVelocity).RotatedByRandom(spread), bulletAMMO, Projectile.damage / 2, Projectile.knockBack, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, (shootVelocity).RotatedByRandom(spread), bulletAMMO, Projectile.damage, Projectile.knockBack, Projectile.owner);
                 }
                 
                 for (int i = 0; i <= 3; i++)
@@ -69,7 +68,6 @@ namespace CalamityMod.Projectiles.Ranged
                 }
 
                 OffsetLengthFromArm -= 5f;
-                secondShot = false;
                 shineScale = 1;
             }
             if (shootingTimer >= 60 && revFrames < maxFrames)
@@ -83,7 +81,6 @@ namespace CalamityMod.Projectiles.Ranged
                     Projectile.netUpdate = true;
                 }
                 shootingTimer = 0;
-                secondShot = true;
             }
 
             shootingTimer += revSpeed;

@@ -33,6 +33,7 @@ using CalamityMod.NPCs.Signus;
 using CalamityMod.NPCs.SlimeGod;
 using CalamityMod.NPCs.StormWeaver;
 using CalamityMod.NPCs.SupremeCalamitas;
+using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses.BrainOfCthulhu;
 using CalamityMod.NPCs.Yharon;
 using CalamityMod.Packets;
 using CalamityMod.Projectiles.Typeless;
@@ -175,7 +176,7 @@ namespace CalamityMod.Events
 
                 new Boss(NPCID.EaterofWorldsHead, permittedNPCs: new int[] { NPCID.EaterofWorldsBody, NPCID.EaterofWorldsTail, NPCID.VileSpitEaterOfWorlds }),
 
-                new Boss(NPCID.BrainofCthulhu, permittedNPCs: NPCID.Creeper),
+                new Boss(NPCID.BrainofCthulhu, permittedNPCs: new int[] { NPCID.Creeper, ModContent.NPCType<BrainIllusion>(), ModContent.NPCType<FalseBrain>() }),
 
                 new Boss(ModContent.NPCType<HiveMind>(), permittedNPCs: new int[] { ModContent.NPCType<DankCreeper>(), ModContent.NPCType<DarkHeart>(), ModContent.NPCType<HiveBlob>() }),
 

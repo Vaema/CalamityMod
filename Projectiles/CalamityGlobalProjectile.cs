@@ -55,6 +55,7 @@ using Terraria.WorldBuilding;
 using static Terraria.ModLoader.ModContent;
 using NanotechProjectile = CalamityMod.Projectiles.Typeless.Nanotech;
 using CalamityMod.Graphics;
+using CalamityMod.Packets.Entities;
 
 namespace CalamityMod.Projectiles
 {
@@ -192,11 +193,6 @@ namespace CalamityMod.Projectiles
         public float conditionalHomingRange = 0f;
 
         /// <summary>
-        /// Causes a projectile to use both Static and Local iframes when set
-        /// </summary>
-        public bool hybridIframes = false;
-
-        /// <summary>
         /// Whether or not this proj was spawned with grape beer on
         /// this does NOT mean it has grape beer homing!
         /// </summary>
@@ -330,9 +326,9 @@ namespace CalamityMod.Projectiles
                 conditionalHomingRange = 600;
                 if (projectile.timeLeft > 300 * projectile.MaxUpdates)
                     projectile.timeLeft = 300 * projectile.MaxUpdates;
-                hybridIframes = true;
-                projectile.localNPCHitCooldown = -1;
+                //Calamity adds a hybrid iframe system when both local and static are set to true, so this works fine for both global and static projectiles.
                 projectile.usesLocalNPCImmunity = true;
+                projectile.localNPCHitCooldown = -1;
             }
             if (source is EntitySource_ItemUse_WithAmmo {Item: Item item})
             {
@@ -428,14 +424,7 @@ namespace CalamityMod.Projectiles
             //Light Pets will add light to the abyss darkness.
             //This uses local player on purpose, as the abyss darkness system is entirely client side.
             if (ProjectileID.Sets.LightPet[projectile.type] && Main.LocalPlayer.Calamity().ZoneAbyss)
-                EnhancedDarknessSystem.lights.Add(new() { center = projectile.Center, texture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle"), scale = 1 });
-
-            ///Apply Hybrid iframes
-            if (hybridIframes)
-            {
-                projectile.usesIDStaticNPCImmunity = true;
-                projectile.usesLocalNPCImmunity = true;
-            }
+                EnhancedDarknessSystem.lights.Add(new() { center = projectile.Center, scale = 1 });
 
             if (projectile.bobber && projectile.type != ProjectileType<VictideBobber>() && RunFishingMinigames(projectile))
                 return false;
@@ -4697,7 +4686,7 @@ namespace CalamityMod.Projectiles
         public override void OnHitNPC(Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone)
         {
             //Manage Hybrid iframes
-            if (hybridIframes && (projectile.penetrate != 1 || projectile.appliesImmunityTimeOnSingleHits))
+            if ((projectile.usesLocalNPCImmunity && projectile.usesIDStaticNPCImmunity) && (projectile.penetrate != 1 || projectile.appliesImmunityTimeOnSingleHits))
             {
                 projectile.localNPCImmunity[target.whoAmI] = projectile.localNPCHitCooldown;
                 Projectile.perIDStaticNPCImmunity[projectile.type][target.whoAmI] = Main.GameUpdateCount + (uint)projectile.idStaticNPCHitCooldown;
@@ -4707,9 +4696,12 @@ namespace CalamityMod.Projectiles
             //Mana Burn
             if (Main.player[projectile.owner].statMana < 0)
             {
-                float burnRatio = (-Main.player[projectile.owner].statMana / 5000f); // -400 mana = +8% dmg, -700 mana = +14% dmg
-                target.Calamity().manaBurn += damageDone * burnRatio;
-                target.Calamity().playerManaBurnIntensity = -Main.player[projectile.owner].statMana / (float)Main.player[projectile.owner].statManaMax2;
+                var player = Main.player[projectile.owner];
+                float burnRatio = (-player.statMana / 100) * ChaosStone.DamageMultPer100Mana;
+                target.Calamity().manaBurn += damageDone * burnRatio * (player.Calamity().oldFashioned ? OldFashioned.DamageBoostMultiplier : 1) * (player.Calamity().ivDrip ? IVDripOnTheRocks.DamageBoostMultiplier : 1);
+                target.Calamity().playerManaBurnIntensity = -player.statMana / (float)player.statManaMax2;
+                if (Main.netMode != NetmodeID.SinglePlayer)
+                    ManaBurnSyncPacket.Send(target);
             }
             // Hyperius Overflow
             if (projectile.type != ProjectileType<HyperiusBulletProj>() && projectile.type != ProjectileType<HyperiusSplit>() && projectile.type != ProjectileType<HyperiusDamage>() && projectile.type != ProjectileType<HyperiusBleed>() && target.Calamity().hyperiusMarked)
@@ -4833,7 +4825,7 @@ namespace CalamityMod.Projectiles
         public override bool? CanHitNPC(Projectile projectile, NPC target)
         {
 
-            if (hybridIframes && (projectile.localNPCImmunity[target.whoAmI] != 0 || Projectile.perIDStaticNPCImmunity[projectile.type][target.whoAmI] > Main.GameUpdateCount))
+            if ((projectile.usesLocalNPCImmunity && projectile.usesIDStaticNPCImmunity) && (projectile.localNPCImmunity[target.whoAmI] != 0 || Projectile.perIDStaticNPCImmunity[projectile.type][target.whoAmI] > Main.GameUpdateCount))
                 return false;
             if (target.Calamity().IsArmored() && HomingTarget > -1 && HomingTarget != target.whoAmI)
                 return false;

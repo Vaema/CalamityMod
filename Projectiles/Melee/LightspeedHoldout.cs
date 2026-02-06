@@ -178,7 +178,7 @@ namespace CalamityMod.Projectiles.Melee
                 return;
             }
 
-            Vector2 toMouse = Utils.DirectionTo(Owner.Center, Owner.ClampedMouseWorld());
+            Vector2 toMouse = Utils.DirectionTo(Owner.MountedCenter, Owner.ClampedMouseWorld());
             Positioning(toMouse);
 
             if (DashState == 0)
@@ -201,7 +201,7 @@ namespace CalamityMod.Projectiles.Melee
 
             if (Owner.altFunctionUse == 0 && DashState == 0)
             {
-                Projectile.Center += (Utils.DirectionTo(Owner.Center, Owner.ClampedMouseWorld()) * Main.rand.NextFloat(-5f, 8f));
+                Projectile.Center += (Utils.DirectionTo(Owner.MountedCenter, Owner.ClampedMouseWorld()) * Main.rand.NextFloat(-5f, 8f));
                 UsePrimary(toMouse);
             }
 
@@ -256,7 +256,7 @@ namespace CalamityMod.Projectiles.Melee
             }
 
             // Spawn the hitbox
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center + toMouse * 20 * (float)Math.Pow(Projectile.scale, 4), toMouse * 25, ModContent.ProjectileType<LightspeedM1Hitbox>(), Projectile.damage, 0, Projectile.owner);
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.MountedCenter + toMouse * 20 * (float)Math.Pow(Projectile.scale, 4), toMouse * 25, ModContent.ProjectileType<LightspeedM1Hitbox>(), Projectile.damage, 0, Projectile.owner);
         }
 
         private void UseSecondary()
@@ -294,12 +294,12 @@ namespace CalamityMod.Projectiles.Melee
                     float orbitalAngle = AltSpinRotation * initialDirectionForThisAnim + (initialDirectionForThisAnim == -1 ? MathHelper.Pi : 0);
                     float orbitRadius = 40f;
 
-                    Projectile.Center = Owner.Center + orbitalAngle.ToRotationVector2() * orbitRadius;
+                    Projectile.Center = Owner.MountedCenter + orbitalAngle.ToRotationVector2() * orbitRadius;
                     float tangentAngle = orbitalAngle + (initialDirectionForThisAnim == 1 ? MathHelper.PiOver4 : -MathHelper.PiOver4 + MathHelper.Pi);
                     Projectile.rotation = tangentAngle;
 
                     // Proper arm positioning
-                    Vector2 armDirection = Projectile.Center - Owner.Center;
+                    Vector2 armDirection = Projectile.Center - Owner.MountedCenter;
                     float baseArmRotation = armDirection.ToRotation();
 
                     float compositeArmRotation = baseArmRotation + (initialDirectionForThisAnim == 1 ? MathHelper.TwoPi * 0.75f : -MathHelper.PiOver2);
@@ -318,7 +318,7 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     if (DashTimer % 4 == 0)
                     {
-                        Vector2 pos = Owner.Center + Projectile.rotation.ToRotationVector2() * 60f;
+                        Vector2 pos = Owner.MountedCenter + Projectile.rotation.ToRotationVector2() * 60f;
                         Particle sparkle = new CritSpark(pos, new Vector2(7f, 0).RotatedBy(Projectile.rotation), Color.Lerp(Color.Aqua, Color.MediumPurple, Main.rand.NextFloat(1f)), Color.White * 0.33f, 1.2f, 12, 0.3f, 1.2f, hueShift: 0.06f);
                         GeneralParticleHandler.SpawnParticle(sparkle);
                     }
@@ -333,13 +333,13 @@ namespace CalamityMod.Projectiles.Melee
                     DashState = 2;
                     DashTimer = DashDuration;
 
-                    Vector2 toMouse = Owner.Center.DirectionTo(Owner.ClampedMouseWorld());
+                    Vector2 toMouse = Owner.MountedCenter.DirectionTo(Owner.ClampedMouseWorld());
                     Projectile.velocity = toMouse * DashSpeed;
 
                     Owner.mount?.Dismount(Owner);
                     Owner.RemoveAllGrapplingHooks();
 
-                    SoundEngine.PlaySound(Exoblade.DashSound, Owner.Center);
+                    SoundEngine.PlaySound(Exoblade.DashSound, Owner.MountedCenter);
 
                     SoundStyle otherSound = new("CalamityMod/Sounds/Item/OmicronBeam");
                     SoundEngine.PlaySound(otherSound with { Volume = 0.6f, Pitch = Main.rand.NextFloat(0.2f, 0.25f) }, Projectile.Center);
@@ -350,7 +350,7 @@ namespace CalamityMod.Projectiles.Melee
                     for (int k = 0; k < Owner.hurtCooldowns.Length; k++)
                         Owner.hurtCooldowns[k] = Owner.immuneTime;
 
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, Projectile.velocity, ModContent.ProjectileType<LightspeedDashHitbox>(), Projectile.damage * 24, Projectile.knockBack * 4, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.MountedCenter, Projectile.velocity, ModContent.ProjectileType<LightspeedDashHitbox>(), Projectile.damage * 24, Projectile.knockBack * 4, Projectile.owner);
                 }
             }
 

@@ -7,8 +7,6 @@ namespace CalamityMod.Packets
     {
         public static SpawnBossOnPositionPacket Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.SpawnBossOnPosition;
-
         public static void Send(int x, int y, int npcType, Player target = null, int toClient = -1, int ignoreClient = -1)
         {
             var packet = Instance.CreateBasePacket();
@@ -19,7 +17,7 @@ namespace CalamityMod.Packets
             packet.Send(toClient, ignoreClient);
         }
 
-        public override void HandlePacket(in BinaryReader packet, int sender)
+        public override void HandlePacket(BinaryReader packet, int sender)
         {
             var x = packet.ReadInt32();
             var y = packet.ReadInt32();
@@ -30,6 +28,11 @@ namespace CalamityMod.Packets
             if (!Main.dedServ)
                 return;
 
+            if (npcType == Terraria.ID.NPCID.WallofFlesh) // Divert to using SpawnWOF instead. Used by Slagfire Douser.
+            {
+                NPC.SpawnWOF(new (x, y));
+                return;
+            }
             int spawnedNPCIdx = NPC.NewNPC(NPC.GetBossSpawnSource(targetIndex), x, y, npcType, Start: 1);
             if (spawnedNPCIdx >= Main.maxNPCs)
                 return;

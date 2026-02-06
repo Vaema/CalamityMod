@@ -34,6 +34,10 @@ namespace CalamityMod.Tiles.Abyss
             this.RegisterBlendMergeWith(TileID.Stone);
             this.RegisterBlendMergeWith(ModContent.TileType<AbyssGravel>());
         }
+        public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
+        {
+            World.Abyss.FillTileWithWater(i, j);
+        }
 
         public override void NearbyEffects(int i, int j, bool closer)
         {

@@ -83,6 +83,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using Terraria.Net;
+using Terraria.WorldBuilding;
 using static Terraria.Main;
 using static Terraria.ModLoader.ModContent;
 
@@ -93,6 +94,11 @@ namespace CalamityMod.CalPlayer
         #region Variables
 
         #region No Category
+        /// <summary>
+        /// Increments by 1 for every frame this player has existed.
+        /// </summary>
+        internal ulong universalFrameTimer = 0;
+
         /// <summary> If true, there is a boss NPC active in the world. Primary bool for checking effects that only occur if a boss is alive. </summary>
         public static bool areThereAnyDamnBosses = false;
         /// <summary> If true, there is an event actively occuring near the player. Solely used for preventing Silva Revive's cooldown from decreasing. </summary>
@@ -490,9 +496,16 @@ namespace CalamityMod.CalPlayer
         public float rogueStealthMax = 0f;
         /// <summary>
         /// Temporarily provides stealth even without Rogue armor.
-        /// Max stealth is set to 10 if it's 0.
+        /// Max stealth is set to temporaryStealthMax if it's 0.
         /// </summary>
         public int temporaryStealthTimer = 0;
+        /// <summary>
+        /// Amount of temporary max stealth provided by gear
+        /// 1f = 100 max steatlh
+        /// Duration is temporaryStealthTimer
+        /// Resets to 0.1f whenever timer ends
+        /// </summary>
+        public float temporaryStealthMax = 0.1f;
         /// <summary> A multiplier to the player's stealth generation when standing still. </summary>
         public float stealthGenStandstill = 1f;
         /// <summary> A multiplier to the player's stealth generation when moving. </summary>
@@ -4403,6 +4416,9 @@ namespace CalamityMod.CalPlayer
         #region PreUpdate
         public override void PreUpdate()
         {
+            // Increment the universal frame timer.
+            ++universalFrameTimer;
+            
             //Infinite flight granted by some boss attacks
             if (infiniteFlight)
                 Player.wingTime = Player.wingTimeMax;
@@ -4956,7 +4972,7 @@ namespace CalamityMod.CalPlayer
                 //Flashlight
                 //Due to being in postUpdate we need to adjust the mousepos for the player's movement that will have happened
                 var mouseworld = Main.MouseWorld + Player.position - Player.oldPosition;
-                EnhancedDarknessSystem.lights.Add(new(center: Player.Center + Player.DirectionTo(mouseworld) * 750f, rotation: Player.DirectionTo(mouseworld).ToRotation() - MathHelper.PiOver2, vectorScale: new Vector2(0.75f * abyssFlashlightWidthMultiplier, 0.75f), texture: Request<Texture2D>("CalamityMod/Particles/BloomLineFade")));
+                EnhancedDarknessSystem.lights.Add(new(center: Player.Center + Player.DirectionTo(mouseworld) * 750f, rotation: Player.DirectionTo(mouseworld).ToRotation() - MathHelper.PiOver2, vectorScale: new Vector2(0.85f * abyssFlashlightWidthMultiplier, 0.75f), texture: Request<Texture2D>("CalamityMod/Particles/BloomLineFade").Value));
             }
 
             if (lastDeerclopsPosition.HasValue)
@@ -4969,7 +4985,7 @@ namespace CalamityMod.CalPlayer
 
                 //Add the main light circle for the arena
                 DeerclopsAI.ArenaTex ??= ModContent.Request<Texture2D>(DeerclopsAI.ArenaTexPath);
-                EnhancedDarknessSystem.lights.Add(new(lastDeerclopsPosition.Value, scale: DeerclopsAI.borderScale, texture: DeerclopsAI.ArenaTex));
+                EnhancedDarknessSystem.lights.Add(new(lastDeerclopsPosition.Value, scale: DeerclopsAI.borderScale, texture: DeerclopsAI.ArenaTex.Value));
 
                 //we draw light around the player when far away so they have some visibility, although very small. This is especially nice in multiplayer. we scale opacity with distance bc it looks better
                 EnhancedDarknessSystem.lights.Add(new EnhancedDarknessSystem.LightSource(scale: 0.75f, opacity: MathHelper.Clamp(Main.LocalPlayer.DistanceSQ(lastDeerclopsPosition.Value) / (409600 /*640^2*/), 0, 1)));
@@ -4999,6 +5015,10 @@ namespace CalamityMod.CalPlayer
                     subtitletext.color = Color.Lerp(subtitleColors[1], subtitleColors[0], subtitletext.lifeTime / 120f);
                 }
             }
+
+            // Relic of Convergence defense cut
+            if (Player.ownedProjectileCounts[ModContent.ProjectileType<RelicOfConvergenceCrystal>()] > 0 && Player.HeldItem.type == ModContent.ItemType<RelicOfConvergence>())
+                Player.statDefense *= RelicOfConvergence.DefenseMultiplier;
 
             #region Managing time control
             if (Main.netMode != NetmodeID.Server && Player == Main.LocalPlayer)
@@ -5835,14 +5855,16 @@ namespace CalamityMod.CalPlayer
 
             if (temporaryStealthTimer > 0)
                 temporaryStealthTimer--;
+            else
+                temporaryStealthMax = 0.1f;
         }
 
         public void UpdateRogueStealth()
         {
             if (temporaryStealthTimer > 0)
             {
-                if (rogueStealthMax < 0.1f)
-                    rogueStealthMax = 0.1f;
+                if (rogueStealthMax < temporaryStealthMax)
+                    rogueStealthMax = temporaryStealthMax;
                 wearingRogueArmor = true;
             }
 

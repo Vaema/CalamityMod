@@ -585,9 +585,6 @@ namespace CalamityMod.NPCs.Ravager
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        bool anyRockPillars = Main.npc.Any(x => x.active && x.type == ModContent.NPCType<RockPillar>() && x.ai[1] < 2);
-                        bool anyFlamePillars = NPC.AnyNPCs(ModContent.NPCType<FlamePillar>());
-
                         if (expertMode)
                         {
                             foreach (NPC n in Main.ActiveNPCs)
@@ -619,8 +616,15 @@ namespace CalamityMod.NPCs.Ravager
 
                                 }
                             }
-                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.Center.X - spawnDistance * 1.25f), (int)player.Center.Y - 100, ModContent.NPCType<RockPillar>());
-                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.Center.X + spawnDistance * 1.25f), (int)player.Center.Y - 100, ModContent.NPCType<RockPillar>());
+
+                            bool anyRockPillars = Main.npc.Any(x => x.active && x.type == ModContent.NPCType<RockPillar>() && x.ai[1] < 2);
+                            bool anyFlamePillars = NPC.AnyNPCs(ModContent.NPCType<FlamePillar>());
+
+                            if (!anyRockPillars || phase2)
+                            {
+                                NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.Center.X - spawnDistance * 1.25f), (int)player.Center.Y - 100, ModContent.NPCType<RockPillar>());
+                                NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.Center.X + spawnDistance * 1.25f), (int)player.Center.Y - 100, ModContent.NPCType<RockPillar>());
+                            }
 
                             if (!anyFlamePillars && !phase2)
                             {

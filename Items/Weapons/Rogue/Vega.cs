@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System;
+using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Rarities;
@@ -55,8 +56,10 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             if (player.altFunctionUse == 2)
             {
-
-                player.Calamity().rogueStealth = player.Calamity().rogueStealthMax;
+                //Vega temporarily allows stealth strikes regardless of armor for 10 seconds on Starburst usage
+                player.Calamity().temporaryStealthTimer = 600;
+                player.Calamity().temporaryStealthMax = 1; //Bloodflare is 1.2f
+                player.Calamity().rogueStealth = Math.Max(player.Calamity().rogueStealthMax, player.Calamity().temporaryStealthMax);
                 player.Calamity().StratusStarburst -= StarburstCost;
                 int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI,0,1);
                 if (p.WithinBounds(Main.maxProjectiles))

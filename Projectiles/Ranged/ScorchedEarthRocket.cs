@@ -148,54 +148,64 @@ namespace CalamityMod.Projectiles.Ranged
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             HasHit = true;
+            Projectile.netUpdate = true;
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             HasHit = true;
+            Projectile.netUpdate = true;
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             HasHit = true;
+            Projectile.netUpdate = true;
             return true;
         }
 
         public override void OnKill(int timeLeft)
         {
-            if (Projectile.owner == Main.myPlayer && HasHit == true && !BonusEffectMode && Projectile.ai[2] == 0)
+            if (HasHit == true && !BonusEffectMode && Projectile.ai[2] == 0)
             {
-                bool isClusterRocket = (RocketID == ItemID.ClusterRocketI || RocketID == ItemID.ClusterRocketII);
-                SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
-                SoundEngine.PlaySound(RocketExplosion with { MaxInstances = 2}, Projectile.Center);
-                //If using a rocket with extra effects, spawn an invisible copy that handes the tile breaking/liquid spawning logic
-                if (RocketID == ItemID.RocketII || RocketID == ItemID.RocketIV || RocketID == ItemID.MiniNukeII || RocketID == ItemID.DryRocket || RocketID == ItemID.WetRocket || RocketID == ItemID.LavaRocket || RocketID == ItemID.HoneyRocket)
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<ScorchedEarthRocket>(), 0, 0f, Projectile.owner, RocketID, 0f, 2f);
-                // Create Blast
-                float blastSize = 300;
-                float minMultiplier = 0.25f;
-                int hitsToMinMult = 4;
-                int debuff1 = BuffID.Daybreak;
-                int debuff2 = BuffID.Oiled;
-                int debuffTime = 360;
-                //The explosion has a different damage scaling depending on which rocket type you have. Left is Cluster Rocket, right is Non-Cluster.
-                Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(Projectile.damage * (isClusterRocket ? 0.75f : 1)), Projectile.knockBack, Projectile.owner, blastSize, minMultiplier, hitsToMinMult);
-                blast.localAI[0] = debuff1;
-                blast.localAI[2] = debuff2;
-                blast.localAI[1] = debuffTime;
-                blast.timeLeft = 15;
-                blast.DamageType = DamageClass.Ranged;
-                for (int j = 0; j < (isClusterRocket ? 9 : 5); j++)
+                if (Projectile.owner == Main.myPlayer)
                 {
-                    Vector2 velocity = Main.rand.NextVector2Unit() * Main.rand.NextFloat(8f, 10f);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<ScorchedEarthClusterBomb>(), (int)(Projectile.damage * 0.25), Projectile.knockBack * 0.25f, Projectile.owner);
+                    bool isClusterRocket = (RocketID == ItemID.ClusterRocketI || RocketID == ItemID.ClusterRocketII);
+                    //If using a rocket with extra effects, spawn an invisible copy that handes the tile breaking/liquid spawning logic
+                    if (RocketID == ItemID.RocketII || RocketID == ItemID.RocketIV || RocketID == ItemID.MiniNukeII || RocketID == ItemID.DryRocket || RocketID == ItemID.WetRocket || RocketID == ItemID.LavaRocket || RocketID == ItemID.HoneyRocket)
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<ScorchedEarthRocket>(), 0, 0f, Projectile.owner, RocketID, 0f, 2f);
+                    // Create Blast
+                    float blastSize = 300;
+                    float minMultiplier = 0.25f;
+                    int hitsToMinMult = 4;
+                    int debuff1 = BuffID.Daybreak;
+                    int debuff2 = BuffID.Oiled;
+                    int debuffTime = 360;
+                    //The explosion has a different damage scaling depending on which rocket type you have. Left is Cluster Rocket, right is Non-Cluster.
+                    Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(Projectile.damage * (isClusterRocket ? 0.75f : 1)), Projectile.knockBack, Projectile.owner, blastSize, minMultiplier, hitsToMinMult);
+                    blast.localAI[0] = debuff1;
+                    blast.localAI[2] = debuff2;
+                    blast.localAI[1] = debuffTime;
+                    blast.timeLeft = 15;
+                    blast.DamageType = DamageClass.Ranged;
+                    for (int j = 0; j < (isClusterRocket ? 9 : 5); j++)
+                    {
+                        Vector2 velocity = Main.rand.NextVector2Unit() * Main.rand.NextFloat(8f, 10f);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<ScorchedEarthClusterBomb>(), (int)(Projectile.damage * 0.25), Projectile.knockBack * 0.25f, Projectile.owner);
+                    }
                 }
+
+                // Handle FX for all clients
+                SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
+                SoundEngine.PlaySound(RocketExplosion with { MaxInstances = 2 }, Projectile.Center);
+
                 for (int i = 0; i < 15; i++)
                 {
                     Vector2 randVel = new Vector2(12, 12).RotatedByRandom(100) * Main.rand.NextFloat(0.8f, 1.6f);
                     Particle smoke = new HeavySmokeParticle(Projectile.Center + randVel, randVel, Color.Black, Main.rand.Next(20, 25 + 1), Main.rand.NextFloat(0.9f, 2.3f), 0.7f);
                     GeneralParticleHandler.SpawnParticle(smoke);
                 }
+
                 for (int i = 0; i < 2; i++)
                 {
                     //Explosion effect

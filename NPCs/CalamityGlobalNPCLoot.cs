@@ -443,12 +443,12 @@ namespace CalamityMod.NPCs
                     break;
 
                 // Chaos Elemental
-                // Rod of Discord @ 0.5% Normal, 0.625% Expert+ (2.5 times higher chance than vanilla)
+                // Rod of Discord @ 1% Normal, 2% Expert+
                 case NPCID.ChaosElemental:
                     // Remove the vanilla loot rule for Rod of Discord.
                     npcLoot.RemoveWhere((rule) => rule is CommonDrop conditionalRule && conditionalRule.itemId == ItemID.RodofDiscord);
                     // Define a replacement rule which has an increased chance.
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.RodofDiscord, 200, 160));
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.RodofDiscord, 100, 50));
                     break;
 
                 // Illuminant Bat

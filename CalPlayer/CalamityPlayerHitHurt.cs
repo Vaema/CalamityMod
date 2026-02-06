@@ -57,6 +57,7 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using CalamityMod.Projectiles.Melee;
+using CalamityMod.Items.Tools;
 
 namespace CalamityMod.CalPlayer
 {
@@ -833,6 +834,9 @@ namespace CalamityMod.CalPlayer
 
             if (Player.ownedProjectileCounts[ModContent.ProjectileType<EnergyShell>()] > 0 && Player.HeldItem.type == ModContent.ItemType<LionHeart>())
                 modifiers.FinalDamage *= 0.5f;
+
+            if (Player.ownedProjectileCounts[ModContent.ProjectileType<RelicOfConvergenceCrystal>()] > 0 && Player.HeldItem.type == ModContent.ItemType<RelicOfConvergence>())
+                modifiers.FinalDamage *= RelicOfConvergence.IncomingDamageMultiplier;
 
             bool lifeAndShieldCondition = Player.statLife >= Player.statLifeMax2 && (!HasAnyEnergyShield || TotalEnergyShielding >= TotalMaxShieldDurability);
             if (theBee && theBeeCooldown <= 0 && lifeAndShieldCondition)
