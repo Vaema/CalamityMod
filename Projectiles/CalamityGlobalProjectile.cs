@@ -195,8 +195,6 @@ namespace CalamityMod.Projectiles
         /// Whether or not this proj was spawned with grape beer on
         /// this does NOT mean it has grape beer homing!
         /// </summary>
-        /// Sunny 5FEB2026 TODO: Create a blacklist system to easily add projectiles that should not get homing from Grape Beer
-        /// For now, conditionalHomingRange will be set to 0 when the projectile is spawned.
         public bool grapeBeer = false;
 
         /// <summary>
@@ -338,7 +336,7 @@ namespace CalamityMod.Projectiles
                 {
                     if (player.Calamity().grapeBeer && (item.useAmmo == AmmoID.Bullet || item.useAmmo == AmmoID.Arrow || item.useAmmo == AmmoID.Dart || item.useAmmo == AmmoID.Rocket))
                     {
-                        if (player.heldProj != projectile.whoAmI && projectile.aiStyle != ProjAIStyleID.HeldProjectile && projectile.damage > 0 && player.Calamity().grapeBeerTimer < 5)
+                        if (player.heldProj != projectile.whoAmI && projectile.aiStyle != ProjAIStyleID.HeldProjectile && projectile.damage > 0 && player.Calamity().grapeBeerTimer < 5 && !CalamityProjectileSets.DoesNotGetHomingWithGrapeBeer[projectile.type])
                             ApplyGrapeBeer();
                         else
                             grapeBeer = true;
