@@ -805,7 +805,7 @@ namespace CalamityMod.UI.DialogueDisplay
                     for (int j = 0; j < colors.Length; j++)
                         colors[j] = DialogueDisplaySystem.GetColorFromHex(textColors.hexcodes[j]);
 
-                    color = CalamityClientConfig.Instance.Photosensitivity ? colors[0] : CalamityUtils.MulticolorLerp((Main.GlobalTimeWrappedHourly * textColors.gradiantSpeed) + (i * textColors.IndexOffset), colors);
+                    color = CalamityClientConfig.Instance.TextEffects ? colors[0] : CalamityUtils.MulticolorLerp((Main.GlobalTimeWrappedHourly * textColors.gradiantSpeed) + (i * textColors.IndexOffset), colors);
                 }
                 else
                     color = BaseColor;
@@ -817,7 +817,7 @@ namespace CalamityMod.UI.DialogueDisplay
                     for (int j = 0; j < colors.Length; j++)
                         colors[j] = DialogueDisplaySystem.GetColorFromHex(borderColors.hexcodes[j]);
 
-                    borderColor = CalamityClientConfig.Instance.Photosensitivity ? colors[0] : CalamityUtils.MulticolorLerp((Main.GlobalTimeWrappedHourly * borderColors.gradiantSpeed) + (i * borderColors.IndexOffset), colors);
+                    borderColor = CalamityClientConfig.Instance.TextEffects ? colors[0] : CalamityUtils.MulticolorLerp((Main.GlobalTimeWrappedHourly * borderColors.gradiantSpeed) + (i * borderColors.IndexOffset), colors);
                 }
                 else
                     borderColor = BaseBorderColor;
@@ -845,17 +845,18 @@ namespace CalamityMod.UI.DialogueDisplay
                 if (!ScreenLocked)
                     drawPos -= Main.screenPosition;
 
-                foreach (var l in TextEffects.Where(v => v.Key == i))
-                    foreach ((TextEffect Effect, float[] args) in l.Value)
-                    {
-                        drawPos = Effect.ModifyPos(drawPos, CharacterData[i], args);
+                if(CalamityClientConfig.Instance.TextEffects)
+                    foreach (var l in TextEffects.Where(v => v.Key == i))
+                        foreach ((TextEffect Effect, float[] args) in l.Value)
+                        {
+                            drawPos = Effect.ModifyPos(drawPos, CharacterData[i], args);
 
-                        rotation = Effect.ModifyRot(rotation, CharacterData[i], args);
+                            rotation = Effect.ModifyRot(rotation, CharacterData[i], args);
 
-                        color = Effect.ModifyColor(color, CharacterData[i], args);
+                            color = Effect.ModifyColor(color, CharacterData[i], args);
 
-                        scale = Effect.ModifyScale(scale, CharacterData[i], args);
-                    }
+                            scale = Effect.ModifyScale(scale, CharacterData[i], args);
+                        }
 
                 SpriteCharacterData spriteData = Font.Value.SpriteCharacters[c];
                 Vector2 origin = spriteData.Glyph.Size() * 0.5f;
