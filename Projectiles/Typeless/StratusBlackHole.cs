@@ -1,13 +1,9 @@
 ﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Weapons.Typeless;
 using CalamityMod.Systems.Graphic.PixelationSystem;
 using CalamityMod.Systems.Mechanic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Utilities;
 using Terraria;
-using Terraria.Audio;
 using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
 
@@ -62,18 +58,39 @@ namespace CalamityMod.Projectiles.Typeless
             }
             foreach (var player in Main.ActivePlayers)
             {
-                if (player.Distance(Projectile.Center) <= 600 && player.miscCounter % 30 == 15)
+                if (player.Distance(Projectile.Center) <= 600)
                 {
-                    player.Calamity().StratusStarburst++;
-                    if (player.Calamity().StratusStarburst <= CalamityPlayer.MaxStratusStarburst)
-                        player.Calamity().StarburstEntities.Add(new StarburstEntity(Projectile.Center));
-                    player.Calamity().StratusStarburstResetTimer = (int)MathHelper.Max(player.Calamity().StratusStarburstResetTimer, 180);
+                    if (player.miscCounter % 30 == 15)
+                    {
+                        player.Calamity().StratusStarburst++;
+                        if (player.Calamity().StratusStarburst <= CalamityPlayer.MaxStratusStarburst)
+                            player.Calamity().StarburstEntities.Add(new StarburstEntity(Projectile.Center));
+                        player.Calamity().StratusStarburstResetTimer = (int)MathHelper.Max(player.Calamity().StratusStarburstResetTimer, 180);
+                    }
+                    if (player.wingTimeMax > 0)
+                    {
+                        if (player.wingTime <= 0 && player.Calamity().AvaliableStarburst > 0)
+                        {
+                            player.Calamity().StratusStarburst--;
+                            player.wingTime += 2;
+                        }
+                    }
+                    else
+                    {
+                        if (player.rocketTime <= 0 && player.rocketTimeMax > 0 && player.Calamity().AvaliableStarburst > 0)
+                        {
+                            player.Calamity().StratusStarburst--;
+                            player.rocketTime += 2;
+                        }
+                    }
                 }
             }
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
+            if (Projectile.timeLeft > (CalamityUtils.MinutesToFrames(10) - 45) * Projectile.MaxUpdates)
+                return false;
             return targetHitbox.IntersectsConeFastInaccurate(Projectile.Center, 600, 0, MathHelper.TwoPi);
         }
         static Texture2D _TransparentBloomTex;
@@ -160,7 +177,7 @@ namespace CalamityMod.Projectiles.Typeless
         {
 
             Vector2 drawPosition = mproj.Projectile.Center - Main.screenPosition;
-            
+
             #region Singularity
             var telegraphBase = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/BasicCircle").Value;
 
