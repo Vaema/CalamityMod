@@ -1488,7 +1488,7 @@ namespace CalamityMod.Items
         #region Enchanted Rarity Text Drawing
         public override bool PreDrawTooltipLine(Item item, DrawableTooltipLine line, ref int yOffset)
         {
-            if (line.Name == "ItemName" && line.Mod == "Terraria" && item.type == ModContent.ItemType<XyksBlessingBlue>() && !CalamityClientConfig.Instance.TextEffects)
+            if (line.Name == "ItemName" && line.Mod == "Terraria" && item.type == ModContent.ItemType<XyksBlessingBlue>() && CalamityClientConfig.Instance.TextEffects)
             {
                 Color rarityColor = Color.White;
                 Vector2 basePosition = new Vector2(line.X, line.Y);
