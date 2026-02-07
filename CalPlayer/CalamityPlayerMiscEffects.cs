@@ -3561,19 +3561,8 @@ namespace CalamityMod.CalPlayer
 
             if (starBeamRye)
             {
-                Player.manaFlower = false;
-                Player.ClearBuff(ModContent.BuffType<AstralInjectionBuff>());
-                if (!Player.manaSick)
-                {
-                    Player.manaRegenCount -= Player.manaRegen;
-                    Player.manaRegenDelay = 0;
-                    Player.manaRegenCount += 20; // 20 mana per second, even while using an item
-                    if (Player.HeldItem.mana > 0) 
-                    {
-                        Player.GetDamage<MagicDamageClass>() += 0.5f + MathHelper.Max(0.1f,Player.HeldItem.mana / (float)Player.HeldItem.useTime);
-                    }
-                    Player.GetDamage<GenericDamageClass>() -= 0.5f;
-                }
+                Player.manaRegenCount += StarBeamRye.ManaRegenBoost;
+                Player.GetDamage<MagicDamageClass>() *= StarBeamRye.MagicDmgMult;
             }
 
             if (whiteWine)
