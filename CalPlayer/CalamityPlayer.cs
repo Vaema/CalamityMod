@@ -4498,7 +4498,7 @@ namespace CalamityMod.CalPlayer
             {
                 Player.ClearBuff(BuffID.WindPushed);
             }
-            if (Player.statMana < 0)
+            if (Player.statMana < 0 && Player.Calamity().ChaosStone)
             {
                 Player.AddBuff(BuffType<ManaBurn>(), 10);
             }
