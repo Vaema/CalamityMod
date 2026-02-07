@@ -1044,7 +1044,7 @@ public sealed partial class CalamityVanillaAIOverrideNPC : GlobalNPC
 
     public override void FindFrame(NPC npc, int frameHeight)
     {
-        if (!Enabled)
+        if (!Enabled || npc.IsABestiaryIconDummy)
             return;
 
         AIOverride?.FindFrame(Mod, frameHeight);
