@@ -789,9 +789,8 @@ NanoblackReaper: {
 		Throws a scythe which rapidly forms a swarm of nanoblack tesselations from hard light
 		Nanoblack tesselations each emit an instantaneous zero-point energy strike
 		Zero-point energy strikes have 150 armor penetration and will target bosses whenever possible
-		Press <right> just as the scythe begins returning to carve through the enemy closest to your cursor at light-speed
+		Release <left> just as the scythe begins returning to carve through the enemy closest to your cursor at light-speed
 		Light-speed carves have 150 armor penetration. If timed in a 6-frame window, they supercrit with +100% critical strike chance
-		Carving with a scythe prevents it from spawning tesselations while returning
 		<right> with sufficient stealth to massively increase attack speed for a short time
 		Scythes thrown during flurries cannot be returned manually
 		'''

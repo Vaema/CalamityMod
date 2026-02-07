@@ -66,7 +66,8 @@ namespace CalamityMod.Projectiles.Rogue
 
             // Tesselations enable their owner's mouse listener so that the mouse state is synced.
             // This is necessary for their targeting algorithm.
-            Owner.Calamity().mouseWorldListener = true;
+            if (Owner.whoAmI == Main.myPlayer)
+                Owner.Calamity().mouseWorldListener = true;
 
             // If the Tesselation cannot attack, then it immediately transitions to vanishing.
             bool shouldShutdown = false;

@@ -30,9 +30,9 @@ namespace CalamityMod.Projectiles.Rogue
         internal ref float TesselationSpawnCooldown => ref Projectile.ai[1];
 
         // 0f = Initial state
-        // 1f = Can be pulled back, but isn't perfect
-        // 2f = Can be pulled back, is perfect
-        // 3f = Has been pulled back
+        // 1f = Mouse button still held: Can be pulled back, but isn't in the perfect window
+        // 2f = Mouse button still held: Can be pulled back, will be perfect
+        // 3f = Mouse button no longer held
         internal ref float LightspeedCarveState => ref Projectile.ai[2];
         internal const float LightspeedCarveState_Initial = 0f;
         internal const float LightspeedCarveState_CanImperfect = 1f;
@@ -111,13 +111,21 @@ namespace CalamityMod.Projectiles.Rogue
                     if (perfectWindowPassed)
                         LightspeedCarveState = LightspeedCarveState_CanImperfect;
                 }
+
+                // Also ensure that the Imperfect Lightspeed Carve window expires properly.
+                else if (LightspeedCarveState == LightspeedCarveState_CanImperfect)
+                {
+                    bool imperfectWindowPassed = RealFrameCounter > ReboundStartFrame + NanoblackReaper.PerfectLightspeedCarveFrames + NanoblackReaper.ImperfectLightspeedCarveFrames;
+                    if (imperfectWindowPassed)
+                        LightspeedCarveState = LightspeedCarveState_Performed;
+                }
                 
                 BoomerangMovement();
             }
 
             // Spawn Nanoblack Tesselations at a consistent and overwhelming rate while in flight.
-            // Tesselations are not spawned if a scythe has been pulled for a Lightspeed Carve.
-            bool spawnTesselations = Projectile.Calamity().stealthStrike || LightspeedCarveState != LightspeedCarveState_Performed;
+            // PENDING TESTING: Tesselations are not spawned if a scythe has been pulled for a Lightspeed Carve.
+            bool spawnTesselations = Projectile.Calamity().stealthStrike || /* LightspeedCarveState != LightspeedCarveState_Performed */ true;
             if (spawnTesselations && TesselationSpawnCooldown <= 0f)
             {
                 SpawnTesselation();
@@ -210,7 +218,7 @@ namespace CalamityMod.Projectiles.Rogue
 
             int tessID = ModContent.ProjectileType<NanoblackTesselation>();
             int tessDamage = (int)(NanoblackReaper.TesselationDamageRatio * Projectile.damage);
-            float tessKB = 1.5f;
+            float tessKB = NanoblackReaper.TesselationKnockback;
 
             // The blade of Nanoblack Reaper is close enough to straight-right +X that using the rotation directly is fine.
             float scytheBladeRotation = Projectile.rotation * Projectile.spriteDirection;
@@ -237,13 +245,18 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        internal void PerformLightspeedCarve(bool perfect)
+        internal void AttemptLightspeedCarve()
         {
-            if (perfect)
+            var lcs = LightspeedCarveState;
+            if (lcs == LightspeedCarveState_Performed)
+                return;
+
+            else if (lcs == LightspeedCarveState_CanPerfect)
                 Main.NewText("Jackpot!");
-            else
+            else if (lcs == LightspeedCarveState_CanImperfect)
                 Main.NewText("Lightspeed Carve performed");
 
+            // In all cases, all further attempts are blocked permanently.
             LightspeedCarveState = LightspeedCarveState_Performed;
             Projectile.netUpdate = true;
         }

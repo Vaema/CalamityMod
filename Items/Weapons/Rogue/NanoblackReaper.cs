@@ -40,12 +40,14 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public static int FocusFlurryAttacks = 12;
         public static int PerfectLightspeedCarveFrames = 6;
+        public static int ImperfectLightspeedCarveFrames = 6; // This frame window is immediately after the perfect window.
 
         public static int ArmorPenetration = 30;
         // Armor pen declared on projectiles will be added to that of the parent projectile or, failing that, item that spawned it.
         public static int ZeroPointArmorPenetration = 120; // Total: 150.
         public static int LightspeedCarveArmorPenetration = 120; // Total: 150.
         public static float TesselationDamageRatio = 0.25f;
+        public static float TesselationKnockback = 1.5f;
 
         public override float StealthDamageMultiplier => 1.0f;
 
@@ -82,40 +84,47 @@ namespace CalamityMod.Items.Weapons.Rogue
             if (modPlayer.focusFlurryAttackCount > FocusFlurryAttacks)
                 modPlayer.focusFlurryAttackCount = FocusFlurryAttacks;
 
-            // Nanoblack Reaper has two right click behaviors
-            if (modPlayer.mouseRight)
+            // Remainder of behavior should only be called on owning client
+            if (player.whoAmI != Main.myPlayer)
+                return;
+
+            // Right click behavior: activate Focus Flurry as applicable
+            if (modPlayer.mouseRight && modPlayer.StealthStrikeAvailable())
             {
                 // "Stealth strikes" with Nanoblack Reaper are Focus Flurries: the next 30 attacks come out very, very quickly.
-                if (modPlayer.StealthStrikeAvailable())
+                modPlayer.ConsumeStealthByAttacking();
+                modPlayer.focusFlurryAttackCount = FocusFlurryAttacks;
+
+                SoundStyle flurryActivationSound1 = new("CalamityMod/Sounds/Item/StygianDash");
+                SoundStyle flurryActivationSound2 = new("CalamityMod/Sounds/Item/HeliumFlashCoreImpact");
+                float sound2Pitch = Main.rand.NextFloat(0.08f, 0.2f);
+                SoundEngine.PlaySound(flurryActivationSound1 with { Volume = 1f }, player.Center);
+                SoundEngine.PlaySound(flurryActivationSound2 with { Volume = 0.3f, Pitch = sound2Pitch }, player.Center);
+
+                // Spawn a dramatic void slash particle over the player when this is activated
                 {
-                    modPlayer.ConsumeStealthByAttacking();
-                    modPlayer.focusFlurryAttackCount = FocusFlurryAttacks;
+                    Color color = NanoblackSlashColor1;
+                    float scale = 0.33f;
+                    Vector2 slashDir = (Main.rand.NextBool() ? -1f : 1f) * Vector2.UnitX;
+                    Vector2 vel = 0.01f * slashDir.RotatedByRandom(MathHelper.Pi / 8f);
 
-                    SoundStyle flurryActivationSound1 = new("CalamityMod/Sounds/Item/StygianDash");
-                    SoundStyle flurryActivationSound2 = new("CalamityMod/Sounds/Item/HeliumFlashCoreImpact");
-                    float sound2Pitch = Main.rand.NextFloat(0.08f, 0.2f);
-                    SoundEngine.PlaySound(flurryActivationSound1 with { Volume = 1f }, player.Center);
-                    SoundEngine.PlaySound(flurryActivationSound2 with { Volume = 0.3f, Pitch = sound2Pitch }, player.Center);
+                    // scale of void sparks is arbitrarily multiplied by 0.357f. thanks!
+                    float voidScale = scale / 0.357f;
+                    Particle blackSpark = new VoidSparkParticle(player.Center, vel, false, 12, voidScale, color, 1f);
+                    GeneralParticleHandler.SpawnParticle(blackSpark);
 
-                    // Spawn a dramatic void slash particle over the player when this is activated
-                    {
-                        Color color = NanoblackSlashColor1;
-                        float scale = 0.33f;
-                        Vector2 slashDir = (Main.rand.NextBool() ? -1f : 1f) * Vector2.UnitX;
-                        Vector2 vel = 0.01f * slashDir.RotatedByRandom(MathHelper.Pi / 8f);
-
-                        // scale of void sparks is arbitrarily multiplied by 0.357f. thanks!
-                        float voidScale = scale / 0.357f;
-                        Particle blackSpark = new VoidSparkParticle(player.Center, vel, false, 12, voidScale, color, 1f);
-                        GeneralParticleHandler.SpawnParticle(blackSpark);
-
-                        float glowScale = scale * 0.333f;
-                        Vector2 squashStretch = new(1.3333f, 0.8f);
-                        Particle innerSpark = new GlowSparkParticle(player.Center, vel, false, 11, glowScale, color, squashStretch, true, true, 1f);
-                        GeneralParticleHandler.SpawnParticle(innerSpark);
-                    }
+                    float glowScale = scale * 0.333f;
+                    Vector2 squashStretch = new(1.3333f, 0.8f);
+                    Particle innerSpark = new GlowSparkParticle(player.Center, vel, false, 11, glowScale, color, squashStretch, true, true, 1f);
+                    GeneralParticleHandler.SpawnParticle(innerSpark);
                 }
+            }
 
+            // Negative-edge left click behavior: attempt light-speed carves
+            // This will evaluate to true for exactly one frame when the player lets go of the left mouse button.
+            bool leftMouseJustReleased = Main.mouseLeft && Main.mouseLeftRelease;
+            if (leftMouseJustReleased)
+            {
                 int scytheID = ModContent.ProjectileType<NanoblackMain>();
                 for (int i = 0; i < Main.maxProjectiles; ++i)
                 {
@@ -123,14 +132,8 @@ namespace CalamityMod.Items.Weapons.Rogue
                     if (!p.active || p.type != scytheID || p.owner != player.whoAmI)
                         continue;
 
-                    // Check each potential carve state individually.
                     NanoblackMain nr = p.ModProjectile as NanoblackMain;
-                    bool imperfect = nr.LightspeedCarveState == NanoblackMain.LightspeedCarveState_CanImperfect;
-                    bool perfect   = nr.LightspeedCarveState == NanoblackMain.LightspeedCarveState_CanPerfect;
-
-                    // If either occurs, run the logic to perform a lightspeed carve.
-                    if (imperfect || perfect)
-                        nr.PerformLightspeedCarve(perfect);
+                    nr.AttemptLightspeedCarve();
                 }
             }
         }
