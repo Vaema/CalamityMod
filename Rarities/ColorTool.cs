@@ -13,7 +13,7 @@ namespace CalamityMod.Rarities
 
         public override bool PreDrawTooltipLine(Item Item, DrawableTooltipLine line, ref int yOffset)
         {
-            if (line.Mod == "Terraria" && line.Name == "ItemName" && !CalamityClientConfig.Instance.TextEffects)
+            if (line.Mod == "Terraria" && line.Name == "ItemName" && CalamityClientConfig.Instance.TextEffects)
             {
                 if (Item.rare == RarityCosmicPurple)
                 {
