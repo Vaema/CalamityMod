@@ -805,7 +805,7 @@ namespace CalamityMod.UI.DialogueDisplay
                     for (int j = 0; j < colors.Length; j++)
                         colors[j] = DialogueDisplaySystem.GetColorFromHex(textColors.hexcodes[j]);
 
-                    color = CalamityUtils.MulticolorLerp((Main.GlobalTimeWrappedHourly * textColors.gradiantSpeed) + (i * textColors.IndexOffset), colors);
+                    color = CalamityClientConfig.Instance.Photosensitivity ? colors[0] : CalamityUtils.MulticolorLerp((Main.GlobalTimeWrappedHourly * textColors.gradiantSpeed) + (i * textColors.IndexOffset), colors);
                 }
                 else
                     color = BaseColor;
@@ -817,7 +817,7 @@ namespace CalamityMod.UI.DialogueDisplay
                     for (int j = 0; j < colors.Length; j++)
                         colors[j] = DialogueDisplaySystem.GetColorFromHex(borderColors.hexcodes[j]);
 
-                    borderColor = CalamityUtils.MulticolorLerp((Main.GlobalTimeWrappedHourly * borderColors.gradiantSpeed) + (i * borderColors.IndexOffset), colors);
+                    borderColor = CalamityClientConfig.Instance.Photosensitivity ? colors[0] : CalamityUtils.MulticolorLerp((Main.GlobalTimeWrappedHourly * borderColors.gradiantSpeed) + (i * borderColors.IndexOffset), colors);
                 }
                 else
                     borderColor = BaseBorderColor;
