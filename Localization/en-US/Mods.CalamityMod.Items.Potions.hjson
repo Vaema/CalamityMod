@@ -342,7 +342,7 @@ StarBeamRye: {
 	Tooltip:
 		'''
 		Increases Mana regeneration, even while using an item
-		Magic weapons deal {0} damage
+		Magic weapons deal {0}x damage
 		{$Common.AlcoholWarning}
 		'''
 }
