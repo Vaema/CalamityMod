@@ -46,7 +46,7 @@ namespace CalamityMod.NPCs.DevourerofGods
     [LongDistanceNetSync]
     public class DevourerofGodsHead : ModNPC
     {
-        public static Color SpecialMoveColor => Color.Lerp(Color.Fuchsia, Color.Cyan, MathHelper.SmoothStep(0, 1, (MathF.Sin(Main.GlobalTimeWrappedHourly * 2) + 1) * 0.5f));
+        public static Color SpecialMoveColor => CalamityClientConfig.Instance.Photosensitivity ? Color.Fuchsia : Color.Lerp(Color.Fuchsia, Color.Cyan, MathHelper.SmoothStep(0, 1, (MathF.Sin(Main.GlobalTimeWrappedHourly * 2) + 1) * 0.5f));
 
         public static int phase1IconIndex;
         public static int phase2IconIndex;
