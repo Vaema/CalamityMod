@@ -1055,6 +1055,9 @@ public sealed partial class CalamityVanillaAIOverrideNPC : GlobalNPC
         if (!Enabled)
             base.PreDraw(npc, spriteBatch, screenPos, drawColor);
 
+        if(npc.IsABestiaryIconDummy)
+            return base.PreDraw(npc, spriteBatch, screenPos, drawColor);
+
         bool result = true;
         if (!IsGlobalChangeBlacklisted(npc)) result &= GlobalPreDraw(npc, spriteBatch, screenPos, drawColor);
         result &= AIOverride?.PreDraw(Mod, spriteBatch, screenPos, drawColor) ?? true;
