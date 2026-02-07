@@ -1,4 +1,5 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.Linq;
+using CalamityMod.CalPlayer;
 using CalamityMod.Systems.Graphic.PixelationSystem;
 using CalamityMod.Systems.Mechanic;
 using Microsoft.Xna.Framework;
@@ -67,21 +68,30 @@ namespace CalamityMod.Projectiles.Typeless
                             player.Calamity().StarburstEntities.Add(new StarburstEntity(Projectile.Center));
                         player.Calamity().StratusStarburstResetTimer = (int)MathHelper.Max(player.Calamity().StratusStarburstResetTimer, 180);
                     }
-                    if (player.wingTimeMax > 0)
+                    if (player.wingsLogic > 0)
                     {
                         if (player.wingTime <= 0 && player.Calamity().AvaliableStarburst > 0)
                         {
                             player.Calamity().StratusStarburst--;
-                            player.wingTime += 2;
+                            player.wingTime += 5;
+                        }
+                    }
+                    else if (player.rocketBoots > 0)
+                    {
+                        if (player.rocketTime <= 0 && player.Calamity().AvaliableStarburst > 0)
+                        {
+                            player.Calamity().StratusStarburst--;
+                            player.rocketTime += 1;
                         }
                     }
                     else
                     {
-                        if (player.rocketTime <= 0 && player.rocketTimeMax > 0 && player.Calamity().AvaliableStarburst > 0)
+                        var activeJumps = player.extraJumps.Where(x => x.Enabled).Count();
+                         if (activeJumps > 0 && !player.AnyExtraJumpUsable() && player.Calamity().AvaliableStarburst >= 5 * activeJumps && !player.gravControl2)
                         {
-                            player.Calamity().StratusStarburst--;
-                            player.rocketTime += 2;
-                        }
+                            player.Calamity().StratusStarburst -= 5 * activeJumps;
+                            player.RefreshDoubleJumps();
+                        } 
                     }
                 }
             }
