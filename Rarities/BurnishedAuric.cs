@@ -110,16 +110,12 @@ namespace CalamityMod.Rarities
 
         public static void Draw(Item Item, string text, int X, int Y, float rotation, Vector2 origin, Vector2 baseScale, Color? textColor = null, Color? lightColor = null, bool? renderTextSparkles = null)
         {
-            if (CalamityClientConfig.Instance.Photosensitivity)
-                return;
             Draw(Item, Main.spriteBatch, text, X, Y, Colors.AlphaDarken(textColor ?? TextClr), lightColor ?? BloomClr, rotation, origin, baseScale, Main.GlobalTimeWrappedHourly,
                 renderTextSparkles ?? CalamityClientConfig.Instance.TextEffects, FontAssets.MouseText.Value);
         }
 
         public static void Draw(Item Item, DrawableTooltipLine line)
         {
-            if (CalamityClientConfig.Instance.Photosensitivity)
-                return;
             Draw(Item, line.Text, line.X, line.Y, line.Rotation, line.Origin, line.BaseScale);
         }
 
