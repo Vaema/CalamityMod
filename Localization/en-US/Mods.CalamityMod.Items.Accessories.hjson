@@ -1950,6 +1950,17 @@ TheFirstShadowflame: {
 		'''
 }
 
+ThePointer: {
+	DisplayName: The Pointer
+	Tooltip:
+		'''
+		Allows automatic targeting of enemies
+		Press [KEY] to cycle through targets near your mouse
+		After cycling through all close enemies, the next press will disable it
+		'Great for cats!'
+		'''
+}
+
 TheSponge: {
 	DisplayName: The Sponge
 	Tooltip:

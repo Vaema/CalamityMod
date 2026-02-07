@@ -2748,6 +2748,11 @@ namespace CalamityMod.CalPlayer
             pinkCandle = false;
             yellowCandle = false;
 
+            
+            //Disable Lockon when not on gamepad to prevent it being left on forever by The Pointer
+            if (!Main.gamePad)
+                LockOnHelper.ForceUsability = false;
+
             SelectedFishingMinigame = FishingMinigames.None;
 
             #region Minion Reset Effects
