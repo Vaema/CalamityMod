@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 82;
             Item.height = 82;
-            Item.damage = 531;
+            Item.damage = 500;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useAnimation = 20;
@@ -37,7 +37,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.DamageType = RogueDamageClass.Instance;
         }
 
-        public override float StealthDamageMultiplier => 1.2f;
+        public override float StealthDamageMultiplier => 1f;
         public override void HoldItem(Player player)
         {
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
