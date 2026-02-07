@@ -2897,6 +2897,7 @@ namespace CalamityMod.CalPlayer
             abyssalDivingSuitPrevious = abyssalDivingSuit;
             abyssalDivingSuit = false;
 
+            aquaticHeartPrevious = aquaticHeart;
             aquaticHeart = false;
 
             profanedCrystalStatePrevious = pscState;
