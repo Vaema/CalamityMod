@@ -230,6 +230,8 @@ public class BrainOfCthulhuSystem : ModSystem
 
     public override void PostUpdateNPCs()
     {
+        if (VerletTendrils is null)
+            return;
         if (!NPC.AnyNPCs(NPCID.BrainofCthulhu))
             BrainOfCthulhuAI.SummonedViaItem = false;
 
