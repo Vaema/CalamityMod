@@ -25,6 +25,7 @@ using CalamityMod.NPCs.AstrumDeus;
 using CalamityMod.NPCs.Bumblebirb;
 using CalamityMod.NPCs.CalClone;
 using CalamityMod.NPCs.CeaselessVoid;
+using CalamityMod.NPCs.Deconstructors;
 using CalamityMod.NPCs.DesertScourge;
 using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.NPCs.DraedonLabThings;
@@ -6069,7 +6070,8 @@ namespace CalamityMod.NPCs
             ];
 
             // Insert the debuff info into the NPC's bestiary entry
-            bestiaryEntry.Info.Insert(0, new BestiaryDebuffInfo(elements));
+            bool force = npc.type == ModContent.NPCType<Burrower>(); //Force Burrower to always show the debuff section
+            bestiaryEntry.Info.Insert(0, new BestiaryDebuffInfo(elements,force));
 
             // Add the Astral Infection to the Enchanted Nightcrawler's entry as it spawns there now
             if (npc.type == NPCID.EnchantedNightcrawler)
