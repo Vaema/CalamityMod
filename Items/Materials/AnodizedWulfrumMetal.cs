@@ -20,7 +20,6 @@ namespace CalamityMod.Items.Materials
             Item.maxStack = Item.CommonMaxStack;
             Item.value = Item.sellPrice(copper: 10);
             Item.rare = ItemRarityID.Blue;
-            Item.ammo = Item.type;
         }
         public override void AddRecipes()
         {
