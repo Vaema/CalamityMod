@@ -54,6 +54,7 @@ namespace CalamityMod.Items.Placeables.Furniture.Paintings
             "Atalya",
             "Ben-TK",
             "Big E",
+            "carnymassacre",
             "CDMusic",
             "Cei",
             "CongratsIsTrash",
