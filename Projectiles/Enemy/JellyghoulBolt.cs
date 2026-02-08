@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.StatDebuffs;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Particles;
@@ -86,7 +84,7 @@ namespace CalamityMod.Projectiles.Enemy
             GameShaders.Misc["CalamityMod:ExobladePierce"].UseColor(Color.Red);
             GameShaders.Misc["CalamityMod:ExobladePierce"].UseSecondaryColor(Color.OrangeRed);
 
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(SlashWidthFunction, SlashColorFunction, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:ExobladePierce"]), 30);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(SlashWidthFunction, SlashColorFunction, (_,_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:ExobladePierce"]), 30);
 
             Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             int projFrame = Terraria.GameContent.TextureAssets.Projectile[Type].Value.Height / Main.projFrames[Type];
@@ -104,8 +102,8 @@ namespace CalamityMod.Projectiles.Enemy
             Main.spriteBatch.ExitShaderRegion();*/
             return false;
         }
-        public float SlashWidthFunction(float _) => 16 * Utils.GetLerpValue(0f, 0.1f, _, true);
+        public float SlashWidthFunction(float _, Vector2 vertexPos) => 16 * Utils.GetLerpValue(0f, 0.1f, _, true);
 
-        public Color SlashColorFunction(float _) => Color.IndianRed * Projectile.Opacity;
+        public Color SlashColorFunction(float _, Vector2 vertexPos) => Color.IndianRed * Projectile.Opacity;
     }
 }

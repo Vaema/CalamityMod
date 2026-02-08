@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CalamityMod.Systems;
+﻿using CalamityMod.Systems;
 using CalamityMod.Tiles.Astral;
 using Terraria.ModLoader;
 

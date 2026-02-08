@@ -22,7 +22,6 @@ using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.Furniture

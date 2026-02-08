@@ -101,7 +101,7 @@ namespace CalamityMod.Projectiles.Summon
 
             for (int i = 0; i < 45; i++)
             {
-                Dust ectoplasm = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(60f, 60f), 264);
+                Dust ectoplasm = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(60f, 60f), DustID.PortalBoltTrail);
                 ectoplasm.velocity = Main.rand.NextVector2Circular(2f, 2f);
                 ectoplasm.color = Projectile.GetAlpha(Color.White);
                 ectoplasm.scale = 1.45f;

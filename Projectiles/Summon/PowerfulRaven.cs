@@ -86,7 +86,7 @@ namespace CalamityMod.Projectiles.Summon
                             {
                                 float angle = MathHelper.TwoPi / 40f * i;
                                 float lerp = MathHelper.Lerp(0f, 1f, (float)Math.Sin(i / 8f * MathHelper.TwoPi) * 0.5f + 0.5f);
-                                Dust dust = Dust.NewDustPerfect(Projectile.position, 6);
+                                Dust dust = Dust.NewDustPerfect(Projectile.position, DustID.Torch);
                                 dust.velocity = Vector2.Lerp(Vector2.Zero, angle.ToRotationVector2() * 6f, lerp);
                                 dust.noGravity = true;
                             }
@@ -99,7 +99,7 @@ namespace CalamityMod.Projectiles.Summon
                         for (int i = 0; i < 20; i++)
                         {
                             float angle = MathHelper.TwoPi / 20f * i;
-                            Dust dust = Dust.NewDustPerfect(Projectile.position + angle.ToRotationVector2().RotatedBy(Projectile.rotation) * new Vector2(14f, 21f), 6);
+                            Dust dust = Dust.NewDustPerfect(Projectile.position + angle.ToRotationVector2().RotatedBy(Projectile.rotation) * new Vector2(14f, 21f), DustID.Torch);
                             dust.velocity = angle.ToRotationVector2().RotatedBy(Projectile.rotation) * 2f;
                             dust.noGravity = true;
                         }

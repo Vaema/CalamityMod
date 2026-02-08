@@ -38,7 +38,7 @@ namespace CalamityMod.Tiles.FurniturePlaguedPlate
 
         public override void HitWire(int i, int j)
         {
-            CalamityUtils.LightHitWire(Type, i, j, 1, 1);
+            FurnitureCommon.LightHitWire(Type, i, j, 1, 1);
         }
 
         public override void MouseOver(int i, int j)
@@ -51,7 +51,7 @@ namespace CalamityMod.Tiles.FurniturePlaguedPlate
 
         public override bool RightClick(int i, int j)
         {
-            CalamityUtils.RightClickBreak(i, j);
+            FurnitureCommon.RightClickBreak(i, j);
             return true;
         }
     }

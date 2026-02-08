@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using CalamityMod.BiomeManagers;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Critters;

@@ -18,7 +18,6 @@ namespace CalamityMod.Tiles.FurnitureExo
             {
                 GlowTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureExo/ExoPrismPlatformTileGlow", AssetRequestMode.ImmediateLoad).Value;
             }
-
             this.SetUpPlatform(ModContent.ItemType<ExoPrismPlatform>(), true);
             AnimationFrameHeight = 18;
         }

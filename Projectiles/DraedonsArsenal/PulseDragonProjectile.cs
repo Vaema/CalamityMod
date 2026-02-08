@@ -111,7 +111,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 return;
             for (int i = 0; i < 4; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(52f, 52f), 261);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(52f, 52f), DustID.AncientLight);
                 dust.velocity = Vector2.Zero;
                 dust.noGravity = true;
             }
@@ -125,6 +125,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             if (field.whoAmI.WithinBounds(Main.maxProjectiles))
             {
                 field.DamageType = DamageClass.MeleeNoSpeed;
+                field.usesIDStaticNPCImmunity = false;
                 field.usesLocalNPCImmunity = true;
                 field.localNPCHitCooldown = 3;
                 field.timeLeft = 12;

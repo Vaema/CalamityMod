@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Linq;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Critters;
 using CalamityMod.Items.Placeables.Banners;

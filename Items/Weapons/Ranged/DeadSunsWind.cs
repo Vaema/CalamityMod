@@ -1,7 +1,6 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
-using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -20,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 70;
             Item.height = 24;
-            Item.damage = 100;
+            Item.damage = 115;
             Item.DamageType = DamageClass.Ranged;
             Item.useAnimation = Item.useTime = 22;
             Item.useStyle = ItemUseStyleID.Shoot;

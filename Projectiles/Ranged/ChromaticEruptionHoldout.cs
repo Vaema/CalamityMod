@@ -2,9 +2,11 @@
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -13,6 +15,7 @@ namespace CalamityMod.Projectiles.Ranged
     public class ChromaticEruptionHoldout : BaseGunHoldoutProjectile
     {
         public override int AssociatedItemID => ModContent.ItemType<ChromaticEruption>();
+        public override string Texture => "CalamityMod/Projectiles/Ranged/ChromaticEruptionHoldout";
         public override float MaxOffsetLengthFromArm => 40f;
         public override float OffsetXUpwards => -10f;
         public override float BaseOffsetY => -12f;
@@ -47,14 +50,16 @@ namespace CalamityMod.Projectiles.Ranged
                 if (ShotCooldown == 0)
                 {
                     SoundEngine.PlaySound(SoundID.Item34, Projectile.Center);
-                    Owner.PickAmmo(Owner.ActiveItem(), out _, out float shootSpeed, out int damage, out float knockback, out _, Main.rand.NextFloat() < 0.70f);
-                    for (int i = 0; i < 2; i++)
+                    Owner.PickAmmo(Owner.HeldItem, out _, out float shootSpeed, out int damage, out float knockback, out _);
+                    if (Main.myPlayer == Projectile.owner)
                     {
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, (Projectile.velocity * 10).RotatedByRandom(0.12f), ModContent.ProjectileType<ChromaticFire>(), damage, knockback, Projectile.owner);
+                        for (int i = 0; i < 2; i++)
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, (Projectile.velocity * 10).RotatedByRandom(0.12f), ModContent.ProjectileType<ChromaticFire>(), damage, knockback, Projectile.owner);
                     }
+
                     ShotsFired++;
                     ShotCooldown = HeldItem.useTime;
-                    if (FireBlobs == 0)
+                    if (FireBlobs == 0 && Main.myPlayer == Projectile.owner)
                     {
                         Vector2 newVel = (Projectile.velocity * 9);
                         Vector2 newPos = GunTipPosition + Projectile.velocity.SafeNormalize(Vector2.UnitX) * 36f;
@@ -94,5 +99,15 @@ namespace CalamityMod.Projectiles.Ranged
         public override void SendExtraAIHoldout(BinaryWriter writer) => writer.Write(FireBlobs);
 
         public override void ReceiveExtraAIHoldout(BinaryReader reader) => FireBlobs = reader.ReadInt32();
+        public override void PostDraw(Color lightColor)
+        {
+            Texture2D texture = TextureAssets.Projectile[Type].Value;
+            Vector2 origin = texture.Size() * 0.5f;
+            SpriteEffects spriteEffects = SpriteEffects.None;
+            if (Projectile.spriteDirection == -1)
+                spriteEffects = SpriteEffects.FlipVertically;
+
+            Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/ChromaticEruptionHoldoutGlow").Value, Projectile.Center - Main.screenPosition, new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, 0, texture.Width, texture.Height)), Color.White, Projectile.rotation, origin, Projectile.scale, spriteEffects, 0);
+        }
     }
 }

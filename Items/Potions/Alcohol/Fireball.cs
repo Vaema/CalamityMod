@@ -12,9 +12,9 @@ namespace CalamityMod.Items.Potions.Alcohol
     {
         public new string LocalizationCategory => "Items.Potions";
 
-        public static float HeatDebuffBoost = 0.25f;
-        public static int RegenLoss = 1;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs((1f + HeatDebuffBoost).ToString(), RegenLoss.ToRegenPerSecond());
+        public static float DebuffBoost = 0.5f;
+        public static float DebuffLoss = 0.5f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs((DebuffBoost).ToPercent(), DebuffLoss.ToPercent());
 
         public override void SetStaticDefaults()
         {
@@ -28,27 +28,21 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(16, 38, ModContent.BuffType<FireballBuff>(), CalamityUtils.MinutesToFrames(8), true);
+            Item.DefaultToFood(16, 38, ModContent.BuffType<FireballBuff>(), CalamityUtils.MinutesToFrames(6), true);
 
-            Item.value = Item.sellPrice(silver: 30);
+            Item.value = Item.sellPrice(silver: 2);
             Item.rare = ItemRarityID.LightRed;
         }
 
         public override void AddRecipes()
         {
-            CreateRecipe().
-                AddIngredient(ItemID.Ale).
-                AddIngredient(ItemID.LivingFireBlock).
+
+            CreateRecipe(10).
+                AddIngredient(ItemID.Bottle, 10).
+                AddIngredient(ItemID.LivingFireBlock, 50).
+                AddIngredient<StarblightSoot>(10).
                 AddTile(TileID.Kegs).
                 Register();
-
-            CreateRecipe().
-                AddIngredient(ItemID.BottledWater).
-                AddIngredient<BloodOrb>(5).
-                AddIngredient(ItemID.LivingFireBlock).
-                AddTile(TileID.AlchemyTable).
-                Register()
-                .DisableDecraft();
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using CalamityMod.Tiles.Furniture.CraftingStations;
-using CalamityMod.Tiles.FurnitureStatigel;
+﻿using CalamityMod.Tiles.FurnitureStatigel;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

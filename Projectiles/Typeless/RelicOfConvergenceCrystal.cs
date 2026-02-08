@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Enums;
-using CalamityMod.Items;
+using CalamityMod.Items.Tools;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -30,6 +29,7 @@ namespace CalamityMod.Projectiles.Typeless
         public ref float time => ref Projectile.ai[0];
         public float completion = 0;
         public float fade = 0;
+        public int killTimer = 0;
         public Vector2 mousePos;
         public bool playSound = true;
         public override void SetDefaults()
@@ -49,13 +49,16 @@ namespace CalamityMod.Projectiles.Typeless
             if (Projectile.timeLeft >= 5)
                 mousePos = Owner.ClampedMouseWorld();
 
-            if (!Owner.channel)
+            if (Owner.channel)
+                killTimer = 18;
+            if (killTimer <= 0)
             {
                 Projectile.Kill();
                 return;
             }
             if (Owner.Calamity().profanedSoulRelicBuff)
                 Projectile.extraUpdates = 1;
+            killTimer--;
 
             UpdatePlayerVisuals(Owner);
 

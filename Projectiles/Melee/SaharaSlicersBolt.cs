@@ -67,7 +67,7 @@ namespace CalamityMod.Projectiles.Melee
 
                 // Setting the bolt's position on the player's back
                 Projectile.rotation = (21.8f - (Projectile.ai[1] * 0.1f)) * -Owner.direction;
-                Vector2 BoltPos = Owner.MountedCenter + new Vector2((10 + Projectile.ai[1] * 2.5f) * -Owner.direction, 3f - Projectile.ai[1]);
+                Vector2 BoltPos = Owner.MountedCenter + new Vector2((10 + Projectile.ai[1] * 2.5f) * -Owner.direction, 3f - Projectile.ai[1] + Owner.gfxOffY);
 
                 Projectile.Center = BoltPos;
             }
@@ -79,7 +79,7 @@ namespace CalamityMod.Projectiles.Melee
                 Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 288 : 121, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.3f, 1.9f));
                 dust.noGravity = false;
                 dust.scale = Main.rand.NextFloat(0.6f, 0.9f);
-                Dust dust2 = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 288 : 121, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(35f)) * Main.rand.NextFloat(0.05f, 0.9f));
+                Dust dust2 = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 288 : 207, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(35f)) * Main.rand.NextFloat(0.05f, 0.9f));
                 dust2.noGravity = false;
                 dust2.scale = Main.rand.NextFloat(0.6f, 0.9f);
             }
@@ -91,10 +91,10 @@ namespace CalamityMod.Projectiles.Melee
                 SoundEngine.PlaySound(SoundID.Item10, Projectile.position);
                 for (int i = 0; i <= 5; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 216 : 121, -Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.2f, 1f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 216 : 207, -Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.2f, 1f));
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(1.1f, 1.8f);
-                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 216 : 121, -Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(35f)) * Main.rand.NextFloat(0.05f, 0.4f));
+                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 216 : 207, -Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(35f)) * Main.rand.NextFloat(0.05f, 0.4f));
                     dust2.noGravity = true;
                     dust2.scale = Main.rand.NextFloat(1.1f, 1.8f);
                 }

@@ -86,8 +86,7 @@ namespace CalamityMod.Projectiles.Melee
                     {
                         SoundEngine.PlaySound(SoundID.Item120 with { Volume = SoundID.Item120.Volume * 0.5f }, Projectile.Center);
                         float screenshakeLevel = 4f + CurrentIndicator * 2f;
-                        if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < screenshakeLevel)
-                            Main.LocalPlayer.Calamity().GeneralScreenShakePower = screenshakeLevel;
+                        Main.LocalPlayer.SetScreenshake(screenshakeLevel);
                         CustomPulse shatter = new(Owner.Center, Vector2.Zero, Color.HotPink, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.0075f * CurrentIndicator, 0.075f * CurrentIndicator, 30);
                         GeneralParticleHandler.SpawnParticle(shatter);
 

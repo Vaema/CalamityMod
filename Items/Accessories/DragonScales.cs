@@ -2,7 +2,6 @@
 using CalamityMod.CalPlayer;
 using CalamityMod.Rarities;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories

@@ -51,7 +51,7 @@ namespace CalamityMod.World
             tile.TileType == ModContent.TileType<Limestone>() || tile.TileType == ModContent.TileType<PolypSand>() || tile.TileType == ModContent.TileType<ScarletSeaGrassTile>() || tile.TileType == ModContent.TileType<LimestoneCobble>() ||
             tile.TileType == ModContent.TileType<Runestone>() || tile.TileType == ModContent.TileType<Dunesand>() ||
             tile.WallType == ModContent.WallType<NavystoneWall>() || // hardened eutrophic sand doesnt have a wall lol
-            tile.WallType == ModContent.WallType<ShellstoneWall>() || tile.WallType == ModContent.WallType<EutrophicSandWall>() ||
+            tile.WallType == ModContent.WallType<ShellstoneWall>() ||
             tile.WallType == ModContent.WallType<LimestoneWall>() || // nor polyp sand
             tile.WallType == ModContent.WallType<RunestoneWall>()) // ... nor dunesand
             {
@@ -589,7 +589,7 @@ namespace CalamityMod.World
                 contents.Add(new ChestItem(marineKelpPlanterBox.Type, WorldGen.genRand.Next(5, 9 + 1)));
             }
             else
-                CalamityMod.Instance.Logger.Warn("Could not find Thorium Marine Kelp Planter Box. This item will not be added to the Draedon Planetoid Lab.");
+                CalamityMod.Log.Warn("Could not find Thorium Marine Kelp Planter Box. This item will not be added to the Draedon Planetoid Lab.");
 
             //Adds the Jungle Seeking Mechanism
             contents.Insert(0, new ChestItem(ModContent.ItemType<GreenSeekingMechanism>(), 1));

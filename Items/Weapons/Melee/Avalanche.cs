@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.Items.Weapons.Ranged;
+﻿using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -11,10 +10,6 @@ namespace CalamityMod.Items.Weapons.Melee
     public class Avalanche : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<HoarfrostBow>();
-        }
         public override void SetDefaults()
         {
             Item.width = 64;
@@ -35,7 +30,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
             int type = ModContent.ProjectileType<IceBombFriendly>();
-            if (CalamityUtils.CountOwnedProjectiles(type, player.whoAmI) < 16)
+            if (player.ownedProjectileCounts[type] < 16)
             {
                 var source = player.GetSource_ItemUse(Item);
                 int bombDamage = player.CalcIntDamage<MeleeDamageClass>(Item.damage);

@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Items.Placeables.Walls;
-using CalamityMod.Tiles.Crags;
 using Terraria.ID;
 using Terraria.ModLoader;
 

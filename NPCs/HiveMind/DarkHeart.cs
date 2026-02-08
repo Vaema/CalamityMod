@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.Events;
+﻿using CalamityMod.Events;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;

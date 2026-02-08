@@ -1,5 +1,4 @@
 ﻿using System;
-using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

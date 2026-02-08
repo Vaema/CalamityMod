@@ -1,27 +1,42 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Packets
 {
-    public abstract class CalamityPacket
+    internal abstract class CalamityPacket : ILoadable
     {
-        public abstract byte MessageType { get; }
-        public abstract void HandlePacket(in BinaryReader packet, int sender);
+        public abstract void HandlePacket(BinaryReader packet, int sender);
 
-        public virtual void OnLoaded() { }
-        public virtual void OnUnloaded() { }
+        private ushort _NetID;
+        private PropertyInfo _Prop_Static_Instance;
 
-        internal PropertyInfo _Prop_Static_Instance;
+        public void Load(Mod mod)
+        {
+            _NetID = CalamityNetcode.RegisterHandler(this);
 
-        public void CloneAndBroadcast(in BinaryReader packet, long startIndex, int length, int ignoreClient = -1)
+            var type = GetType();
+            var instanceProperty = type.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic);
+
+            if (instanceProperty == null)
+                return;
+
+            if (!instanceProperty.PropertyType.IsAssignableFrom(type))
+                CalamityMod.Log.Error($"Packet instance's 'Instance' property is not asssignable with given type! [Failed On: '{type.FullName}']");
+
+            instanceProperty.SetValue(null, this);
+            _Prop_Static_Instance = instanceProperty; // We saving this for Unload Steps
+        }
+
+        public virtual void Unload()
+        {
+            _Prop_Static_Instance?.SetValue(null, null);
+            _Prop_Static_Instance = null;
+        }
+
+        public void CloneAndBroadcast(BinaryReader packet, long startIndex, int length, int ignoreClient = -1)
         {
             if (!Main.dedServ)
                 return;
@@ -43,7 +58,7 @@ namespace CalamityMod.Packets
         public ModPacket CreateBasePacket()
         {
             var packet = CalamityMod.Instance.GetPacket();
-            packet.Write(MessageType);
+            CalamityNetcode.WriteHandlerNetID(packet, _NetID);
             return packet;
         }
     }

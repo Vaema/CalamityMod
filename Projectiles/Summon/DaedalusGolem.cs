@@ -132,7 +132,7 @@ namespace CalamityMod.Projectiles.Summon
                     if (AttackTimer >= 45 && AttackTimer < ChargedLaserAttackTime / 2 && !Main.dedServ)
                     {
                         Vector2 drawOffset = Main.rand.NextVector2CircularEdge(12f, 12f);
-                        Dust light = Dust.NewDustPerfect(ArmPosition + drawOffset, 261);
+                        Dust light = Dust.NewDustPerfect(ArmPosition + drawOffset, DustID.AncientLight);
                         light.velocity = drawOffset.SafeNormalize(Vector2.Zero) * -2.5f;
                         light.color = Color.Lerp(Color.HotPink, Color.LightPink, Main.rand.NextFloat());
                         light.scale = Main.rand.NextFloat(1.2f, 1.45f);

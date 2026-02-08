@@ -1,13 +1,7 @@
-﻿using CalamityMod.Cooldowns;
-using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Armor.Wulfrum;
-using CalamityMod.NPCs.NormalNPCs;
+﻿using CalamityMod.Items.Placeables.FurnitureWulfrum;
 using Terraria;
-using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static CalamityMod.CalamityUtils;
 
 namespace CalamityMod.Items.Materials
 {
@@ -27,7 +21,6 @@ namespace CalamityMod.Items.Materials
             Item.maxStack = Item.CommonMaxStack;
             Item.value = Item.sellPrice(copper: 10);
             Item.rare = ItemRarityID.Blue;
-            Item.ammo = Item.type;
         }
         public override void AddRecipes()
         {
@@ -36,9 +29,14 @@ namespace CalamityMod.Items.Materials
                 AddIngredient<WulfrumMetalScrap>().
                 AddTile(TileID.WorkBenches).
                 Register();
+
+            CreateRecipe().
+                AddIngredient<AnodizedWulfrumPlatform>(2).
+                DisableDecraft().
+                Register();
         }
-        //Added to avoid making the recipes really repeditive and nonsensical. It also makes the new metal color make sense. Adds a bit of flavor to the Wulfrum Recipes
-        //Fun fact the reason used Stormlion Manible is because in order to anodize a metal you must use a current, the other option was a powercell but I feel StormlionMandible needed more uses
+        //Added to avoid making the recipes really repetitive and nonsensical. It also makes the new metal color make sense. Adds a bit of flavor to the Wulfrum Recipes
+        //Uses Stormlion Manible because in order to anodize a metal you must use a current, the other option was a Power Cell but I feel Stormlion Mandible needed more uses
         //More uses are planned for other blocks and furniture for wulfrum that use this new metal color and gives a bit more depth to the set
     }
 }

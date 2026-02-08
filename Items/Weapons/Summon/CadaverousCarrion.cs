@@ -11,10 +11,6 @@ namespace CalamityMod.Items.Weapons.Summon
     public class CadaverousCarrion : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<MutatedTruffle>();
-        }
         public override void SetDefaults()
         {
             Item.width = 54;
@@ -23,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.mana = 10;
             Item.DamageType = DamageClass.Summon;
             Item.sentry = true;
-            Item.useAnimation = Item.useTime = 14;
+            Item.useAnimation = Item.useTime = 30;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.autoReuse = true;

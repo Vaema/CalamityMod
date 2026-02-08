@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
 
@@ -28,6 +25,7 @@ namespace CalamityMod.Items.Armor.GemTech
         public const float MeleeSpeedBoost = 0.26f;
 
         public const int MaxFlechettes = 8;
+        public static float RangedAmmoReduction = 0.7f;
         public const float RangedDamageBoost = 0.5f;
         public const float RangedCritBoost = 0.16f;
 

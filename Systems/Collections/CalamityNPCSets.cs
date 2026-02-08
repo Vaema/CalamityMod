@@ -89,10 +89,10 @@ namespace CalamityMod.Systems.Collections
                 NPCType<SupremeCatastrophe>(), NPCType<SepulcherHead>(), NPCType<SepulcherBody>(), NPCType<SepulcherTail>(), NPCType<SepulcherArm>(), NPCType<SepulcherBodyEnergyBall>(),
                 NPCType<PrimordialWyrmBody>(), NPCType<PrimordialWyrmBodyAlt>(), NPCType<PrimordialWyrmHead>(), NPCType<PrimordialWyrmTail>(), NPCType<AquaticAberration>(),
                 NPCType<AnahitasIceShield>(), NPCType<CryogenShield>(), NPCType<OldDukeToothBall>(), NPCType<SulphurousSharkron>(), NPCType<DraconicSwarmer>(), NPCType<AureusSpawn>(),
-                NPCType<Brimling>(), NPCType<CrabShroom>(), NPCType<CosmicGuardianBody>(), NPCType<CosmicGuardianTail>(), NPCType<CosmicGuardianHead>(), NPCType<DankCreeper>(),
+                NPCType<Brimling>(), NPCType<CrabShroom>(), NPCType<DankCreeper>(),
                 NPCType<HiveBlob>(), NPCType<DarkHeart>(), NPCType<DesertNuisanceBody>(), NPCType<DesertNuisanceHead>(), NPCType<DesertNuisanceTail>(),
                 NPCType<DesertNuisanceBodyYoung>(), NPCType<DesertNuisanceHeadYoung>(), NPCType<DesertNuisanceTailYoung>(), NPCType<PolterPhantom>(), NPCType<PhantomFuckYou>(),
-                NPCType<KingSlimeJewelEmerald>(), NPCType<KingSlimeJewelRuby>(), NPCType<KingSlimeJewelSapphire>(), NPCType<PlanterasFreeTentacle>(), NPCType<PlagueHomingMissile>(),
+                NPCType<KingSlimeJewelRuby>(), NPCType<PlanterasFreeTentacle>(), NPCType<PlagueHomingMissile>(),
                 NPCType<PlagueMine>(), NPCType<ProfanedRocks>(), NPCType<ProvSpawnDefense>(), NPCType<ProvSpawnOffense>(), NPCType<ProvSpawnHealer>(), NPCType<RockPillar>(),
                 NPCType<FlamePillar>(), NPCType<CosmicMine>(), NPCType<CosmicLantern>(), NPCType<ProfanedGuardianDefender>(), NPCType<ProfanedGuardianHealer>(), NPCType<CorruptSlimeSpawn>(),
                 NPCType<CorruptSlimeSpawn2>(), NPCType<CrimsonSlimeSpawn>(), NPCType<CrimsonSlimeSpawn2>(), NPCType<PerforatorHeadLarge>(), NPCType<PerforatorBodyLarge>(),
@@ -176,21 +176,13 @@ namespace CalamityMod.Systems.Collections
                 NPCID.Butcher, NPCID.CreatureFromTheDeep, NPCID.Fritz, NPCID.Nailhead, NPCID.Psycho, NPCID.DeadlySphere, NPCID.DrManFly, NPCID.ThePossessed, NPCID.Mothron,
                 NPCID.MothronEgg, NPCID.MothronSpawn);
 
-        // TODO: This set should really also handle the actual splitting behavior and loot, but unsure of the best way to do that looking at what we have right now
-        /// <summary>
-        /// If <see langword="true"/> for an NPC type, then that NPC is part of a worm which splits in Death Mode. Solely used to reduce their max health to 15% of its standard value.<br/>
-        /// Defaults to <see langword="false"/>.
-        /// </summary>
-        public static bool[] DeathModeSplittingWorm = Factory.CreateBoolSet(NPCID.DuneSplicerHead, NPCID.DuneSplicerBody, NPCID.DuneSplicerTail,
-                NPCID.DiggerHead, NPCID.DiggerBody, NPCID.DiggerTail, NPCID.SeekerHead, NPCID.SeekerBody, NPCID.SeekerTail);
-
         /// <summary>
         /// If <see langword="true"/> for an NPC type, then the NPC will receive a 30 second global cooldown to slowing debuffs after being inflicted by one.<br/>
         /// Also used to prevent weapon pulling effects and Anarchy Blade's ability to instantly kill enemies that are below 50% health.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        public static bool[] ResistSlowingDebuffsAndOtherSpecialEffects = Factory.CreateBoolSet(NPCID.KingSlime, NPCType<KingSlimeJewelRuby>(), NPCType<KingSlimeJewelSapphire>(),
-                NPCType<KingSlimeJewelEmerald>(), NPCID.EyeofCthulhu, NPCID.EaterofWorldsHead, NPCID.EaterofWorldsBody, NPCID.EaterofWorldsTail, NPCID.BrainofCthulhu, NPCID.Creeper,
+        public static bool[] ResistSlowingDebuffsAndOtherSpecialEffects = Factory.CreateBoolSet(NPCID.KingSlime, NPCType<KingSlimeJewelRuby>(),
+                NPCID.EyeofCthulhu, NPCID.EaterofWorldsHead, NPCID.EaterofWorldsBody, NPCID.EaterofWorldsTail, NPCID.BrainofCthulhu, NPCID.Creeper,
                 NPCID.QueenBee, NPCID.Deerclops, NPCID.SkeletronHead, NPCID.SkeletronHand, NPCID.WallofFlesh, NPCID.WallofFleshEye, NPCID.PirateShipCannon, NPCID.QueenSlimeBoss,
                 NPCID.Probe, NPCID.Retinazer, NPCID.Spazmatism, NPCID.SkeletronPrime, NPCID.PrimeCannon, NPCID.PrimeSaw, NPCID.PrimeLaser, NPCID.PrimeVice, NPCID.Plantera,
                 NPCID.PlanterasTentacle, NPCType<PlanterasFreeTentacle>(), NPCID.Everscream, NPCID.SantaNK1, NPCID.IceQueen, NPCID.MourningWood, NPCID.Pumpking, NPCID.Mothron,
@@ -203,13 +195,24 @@ namespace CalamityMod.Systems.Collections
                 NPCType<DesertNuisanceHead>(), NPCType<DesertNuisanceBody>(), NPCType<DesertNuisanceTail>(), NPCType<DesertNuisanceHeadYoung>(), NPCType<DesertNuisanceBodyYoung>(),
                 NPCType<DesertNuisanceTailYoung>(), NPCType<GiantClam>(), NPCType<PerforatorHeadLarge>(), NPCType<PerforatorHeadMedium>(), NPCType<PerforatorHeadSmall>(),
                 NPCType<PerforatorBodyLarge>(), NPCType<PerforatorBodyMedium>(), NPCType<PerforatorBodySmall>(), NPCType<PerforatorTailLarge>(), NPCType<PerforatorTailMedium>(),
-                NPCType<PerforatorTailSmall>(), NPCType<EbonianPaladin>(), NPCType<CrimulanPaladin>(), NPCType<SplitEbonianPaladin>(), NPCType<SplitCrimulanPaladin>(), NPCType<Horse>(),
+                NPCType<PerforatorTailSmall>(), NPCType<EbonianPaladin>(), NPCType<CrimulanPaladin>(), NPCType<SplitEbonianPaladin>(), NPCType<SplitCrimulanPaladin>(), NPCType<EarthElemental>(),
                 NPCType<CloudElemental>(), NPCType<CryogenShield>(), NPCType<AquaticScourgeHead>(), NPCType<AquaticScourgeBody>(), NPCType<AquaticScourgeBodyAlt>(), NPCType<AquaticScourgeTail>(),
                 NPCType<CragmawMire>(), NPCType<Cataclysm>(), NPCType<Catastrophe>(), NPCType<SoulSeeker>(), NPCType<GreatSandShark>(), NPCType<AnahitasIceShield>(), NPCType<AureusSpawn>(),
                 NPCType<PlaguebringerMiniboss>(), NPCType<PlagueHomingMissile>(), NPCType<PlagueMine>(), NPCType<RavagerClawLeft>(), NPCType<RavagerClawRight>(), NPCType<RavagerLegLeft>(),
                 NPCType<RavagerLegRight>(), NPCType<RockPillar>(), NPCType<RavagerHead>(), NPCType<ProfanedGuardianDefender>(), NPCType<ProfanedGuardianHealer>(), NPCType<DraconicSwarmer>(),
                 NPCType<ProvSpawnDefense>(), NPCType<ProvSpawnHealer>(), NPCType<ProvSpawnOffense>(), NPCType<BobbitWormHead>(), NPCType<Mauler>(), NPCType<ColossalSquid>(), NPCType<ReaperShark>(),
                 NPCType<EidolonWyrmHead>(), NPCType<NuclearTerror>(), NPCType<OldDukeToothBall>(), NPCType<SulphurousSharkron>(), NPCType<SupremeCataclysm>(), NPCType<SupremeCatastrophe>(), NPCType<SoulSeekerSupreme>());
+
+        /// <summary>
+        /// If <see langword="true"/> for an NPC type, <see cref="ModNPC.CheckDead"/> or <see cref="GlobalNPC.CheckDead(NPC)"/> will be called on this NPC even if <see cref="NPC.realLife"/> is set.
+        /// </summary>
+        public static bool[] DoCheckDeadRegardlessRealLife = Factory.CreateBoolSet(NPCType<DevourerofGodsBody>(), NPCType<DevourerofGodsTail>());
+
+        /// <summary>
+        /// If <see langword="true"/> for an NPC type, <see cref="CalamityUtils.IsAnEnemy(NPC, bool, bool, bool)"/> will not count this NPC as an enemy.<br/>
+        /// Defaults to <see langword="false"/>.
+        /// </summary>
+        public static bool[] DontCountAsEnemy = Factory.CreateBoolSet(NPCID.TargetDummy, NPCType<SuperDummyNPC>());
 
         /// <summary>
         /// Associates an NPC type with the base value of their max health in Boss Rush.<br/>
@@ -230,13 +233,11 @@ namespace CalamityMod.Systems.Collections
             { NPCID.RainbowSlime, 30000 },
             { NPCID.Pinky, 15000 },
             { NPCType<KingSlimeJewelRuby>(), 21000 },
-            { NPCType<KingSlimeJewelSapphire>(), 18000 },
-            { NPCType<KingSlimeJewelEmerald>(), 24000 },
             { NPCID.EyeofCthulhu, 450000 }, // 30 seconds
             { NPCID.ServantofCthulhu, 6000 },
-            { NPCID.EaterofWorldsHead, 10000 }, // 30 seconds + immunity timer at start
-            { NPCID.EaterofWorldsBody, 10000 },
-            { NPCID.EaterofWorldsTail, 10000 },
+            { NPCID.EaterofWorldsHead, 15000 }, // 30 seconds + immunity timer at start
+            { NPCID.EaterofWorldsBody, 15000 },
+            { NPCID.EaterofWorldsTail, 15000 },
             { NPCID.BrainofCthulhu, 100000 }, // 30 seconds with creepers
             { NPCID.Creeper, 10000 },
             { NPCID.QueenBee, 315000 }, // 30 seconds

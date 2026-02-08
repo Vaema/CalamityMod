@@ -21,11 +21,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             TileObjectData.newTile.CoordinatePadding = 2;        
 
             TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile, 3, 0);
-            TileObjectData.newTile.Origin = new Point16(1, 2);  
-
-            TileObjectData.newTile.StyleHorizontal = true;
-            TileObjectData.newTile.StyleWrapLimit = 6;
-            TileObjectData.newTile.RandomStyleRange = 6;
+            TileObjectData.newTile.Origin = new Point16(1, 1); 
 
             TileObjectData.newTile.DrawYOffset = 2;
 

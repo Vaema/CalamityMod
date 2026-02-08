@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;

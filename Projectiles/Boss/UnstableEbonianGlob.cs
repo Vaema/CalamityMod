@@ -59,14 +59,6 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool CanHitPlayer(Player target) => Projectile.timeLeft >= 60;
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (info.Damage <= 0 || Projectile.timeLeft < 60)
-                return;
-
-            target.AddBuff(BuffID.Weak, 180);
-        }
-
         public override bool PreDraw(ref Color lightColor)
         {
             CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);

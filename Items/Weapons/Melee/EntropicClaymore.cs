@@ -1,9 +1,9 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System;
+using CalamityMod.Enums;
+using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 130;
             Item.height = 130;
-            Item.damage = 110;
+            Item.damage = 90;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -37,18 +37,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shoot = ModContent.ProjectileType<EntropicFlechette>();
             Item.shootSpeed = 12f;
         }
-
-        /*public override void UseItemHitbox(Player player, ref Rectangle hitbox, ref bool noHitbox)
-        {
-            int hitX = (int)(player.itemLocation + (swingRotation + MathHelper.ToRadians(90f)).ToRotationVector2() * 90).X;
-            int hitY = (int)(player.itemLocation + (swingRotation + MathHelper.ToRadians(90f)).ToRotationVector2() * 90).Y;
-            hitbox = new Rectangle(hitX, hitY, Item.width / 3, Item.height / 3);
-
-            Particle spark2 = new GlowOrbParticle(new Vector2(hitX, hitY), Vector2.Zero, false, 5, 1, Color.Red);
-            GeneralParticleHandler.SpawnParticle(spark2);
-        }*/
-
-        public override void ModifyTooltips(List<TooltipLine> tooltips) => tooltips.FindAndReplace("[GFB]", this.GetLocalizedValue(Main.zenithWorld ? "TooltipGFB" : "TooltipNormal"));
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
@@ -85,7 +73,7 @@ namespace CalamityMod.Items.Weapons.Melee
             if (Main.rand.NextBool())
             {
                 Vector2 dustVel = new Vector2(5 * swordDirection, -5).RotatedByRandom(1.55f) * Main.rand.NextFloat(0.7f, 1.3f) * 2;
-                Dust dust = Dust.NewDustPerfect(player.Center + dustVel * 9, 66);
+                Dust dust = Dust.NewDustPerfect(player.Center + dustVel * 9, DustID.RainbowTorch);
                 dust.scale = Main.rand.NextFloat(0.5f, 0.75f);
                 dust.velocity = dustVel * 0.85f;
                 dust.color = Color.LightGreen;
@@ -103,6 +91,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 GeneralParticleHandler.SpawnParticle(spark3);
                 Particle spark2 = new SparkParticle(partPos, partVel, false, 24, partScale * 0.6f, Color.LightGreen);
                 GeneralParticleHandler.SpawnParticle(spark2);
+                spark2.DrawLayer = GeneralDrawLayer.AfterEverything;
             }
             Vector2 dustVel2 = new Vector2(5 * swordDirection, -5).RotatedBy(swingRotation - 1.7f * swordDirection);
 

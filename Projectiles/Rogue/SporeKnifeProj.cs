@@ -1,10 +1,6 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Items.Ammo;
-using CalamityMod.Items.Weapons.Rogue;
+﻿using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Ranged;
-using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -57,7 +53,10 @@ namespace CalamityMod.Projectiles.Rogue
         public override void OnKill(int timeLeft)
         {
             #region Visuals and Sound
-            SoundEngine.PlaySound(SoundID.Grass with { Pitch = -0.5f, PitchVariance = 0.4f }, Projectile.Center);
+            if (Projectile.Calamity().stealthStrike)
+                SoundEngine.PlaySound(SporeKnife.StealthImpactSound, Projectile.Center);
+            else
+                SoundEngine.PlaySound(SporeKnife.ImpactSound, Projectile.Center);
 
             for (int i = 0; i < 18; i++)
             {

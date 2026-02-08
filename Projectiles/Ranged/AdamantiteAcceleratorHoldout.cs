@@ -118,11 +118,7 @@ namespace CalamityMod.Projectiles.Ranged
             Particle pulse = new DirectionalPulseRing(GunTipPosition + Projectile.rotation.ToRotationVector2() * 5f, Vector2.Zero, color, new Vector2(0.5f, 1f), Projectile.rotation, 0.05f, 0.34f + Main.rand.NextFloat(0.3f), 30);
             GeneralParticleHandler.SpawnParticle(pulse);
 
-            if (Owner == Main.LocalPlayer && Owner.Calamity().GeneralScreenShakePower < 5)
-            {
-                Main.LocalPlayer.Calamity().GeneralScreenShakePower = 1;
-            }
-
+            Owner.SetScreenshake(1f);
             BounceBackPower = 1f;
         }
 

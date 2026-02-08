@@ -136,7 +136,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (Projectile.damage < 1)
                 Projectile.damage = 1;
         }
-        private float PrimitiveWidthFunction(float completionRatio)
+        private float PrimitiveWidthFunction(float completionRatio, Vector2 vertexPos)
         {
             float arrowheadCutoff = 0.36f;
             float width = 29f * Projectile.scale;
@@ -147,7 +147,7 @@ namespace CalamityMod.Projectiles.Ranged
             return width;
         }
 
-        private Color PrimitiveColorFunction(float completionRatio)
+        private Color PrimitiveColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float endFadeRatio = 0.41f;
 
@@ -170,7 +170,7 @@ namespace CalamityMod.Projectiles.Ranged
             Vector2 overallOffset = Projectile.Size * 0.5f;
             overallOffset += Projectile.velocity * 1.4f;
             int numPoints = 92;
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_) => overallOffset, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), numPoints);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_,_) => overallOffset, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), numPoints);
             return false;
         }
     }

@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
             Item.buffType = ModContent.BuffType<Sandnado>();
             Item.shoot = ModContent.ProjectileType<SandnadoMinion>();
-            Item.useAnimation = Item.useTime = 20;
+            Item.useAnimation = Item.useTime = 36;
             Item.DamageType = DamageClass.Summon;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item44;
@@ -47,9 +47,8 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             CreateRecipe().
                 AddIngredient<ForgottenApexWand>().
-                AddIngredient<GrandScale>().
-                AddIngredient<AerialiteBar>(10).
                 AddIngredient(ItemID.AncientCloth, 5).
+                AddIngredient<GrandScale>().
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

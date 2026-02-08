@@ -1,10 +1,9 @@
 ﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
-using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -32,9 +31,12 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.DamageType = DamageClass.Magic;
         }
 
-        public override void AI()
+        public override void OnSpawn(IEntitySource source)
         {
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
+        }
+        public override void AI()
+        {
             Lighting.AddLight(Projectile.Center, Color.DarkRed.ToVector3());
 
             if (Time == 0f)
@@ -53,7 +55,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 float angle = MathHelper.TwoPi * i / 40f;
 
-                Dust brimstoneMagic = Dust.NewDustPerfect(Projectile.Center + Projectile.velocity * 7f, 27);
+                Dust brimstoneMagic = Dust.NewDustPerfect(Projectile.Center + Projectile.velocity * 7f, DustID.Shadowflame);
                 brimstoneMagic.velocity = angle.ToRotationVector2() * 15f;
                 brimstoneMagic.color = Color.Lerp(Color.Red, Color.MediumPurple, (float)Math.Sin(angle) * 0.5f + 0.5f);
                 brimstoneMagic.scale = 1.6f;

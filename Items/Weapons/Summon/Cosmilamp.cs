@@ -24,7 +24,6 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void SetStaticDefaults()
         {
             ItemID.Sets.StaffMinionSlotsRequired[Type] = 2f;
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<CosmicKunai>();
         }
 
         public override void SetDefaults()
@@ -33,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.height = 60;
             Item.damage = 127;
             Item.mana = 10;
-            Item.useAnimation = Item.useTime = 15;
+            Item.useAnimation = Item.useTime = 24;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 4f;

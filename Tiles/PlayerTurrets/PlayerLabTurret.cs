@@ -1,7 +1,7 @@
-﻿using CalamityMod.Items.Placeables.PlaceableTurrets;
-using CalamityMod.TileEntities;
+﻿using CalamityMod.TileEntities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent.ObjectInteractions;
@@ -19,6 +19,8 @@ namespace CalamityMod.Tiles.PlayerTurrets
         public const int OriginOffsetX = 1;
         public const int OriginOffsetY = 1;
         public const int SheetSquare = 18;
+
+        public Asset<Texture2D> HeadTexture;
 
         public override void SetStaticDefaults()
         {
@@ -79,7 +81,8 @@ namespace CalamityMod.Tiles.PlayerTurrets
             int drawDirection = te.Direction;
             Color drawColor = Lighting.GetColor(i, j);
 
-            Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Tiles/PlayerTurrets/LabTurretHead").Value;
+            HeadTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/PlayerTurrets/LabTurretHead");
+            Texture2D tex = HeadTexture.Value;
             Vector2 screenOffset = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + screenOffset;
             drawOffset.Y -= 2f;

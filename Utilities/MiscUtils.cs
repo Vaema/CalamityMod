@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CalamityMod.CalPlayer;
-using CalamityMod.Items.Tools.ClimateChange;
-using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Chat;
-using Terraria.GameContent.Events;
+using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -18,7 +15,13 @@ namespace CalamityMod
 {
     public static partial class CalamityUtils
     {
-        public static void DisplayLocalizedText(string key, Color? textColor = null)
+        /// <summary>
+        /// Broadcast a LocalizedText. This only should be run on Singleplayer or Server.
+        /// Multiplayer Clients Do NOT ask Server to Broadcast nor the print message locally.
+        /// </summary>
+        /// <param name="key">LocalizedText key</param>
+        /// <param name="textColor">Text Color to use</param>
+        public static void BroadcastLocalizedText(string key, Color? textColor = null)
         {
             // An attempt to bypass the need for a separate method and runtime/compile-time parameter
             // constraints by using nulls for defaults.
@@ -27,15 +30,21 @@ namespace CalamityMod
 
             if (Main.netMode == NetmodeID.SinglePlayer)
                 Main.NewText(Language.GetTextValue(key), textColor.Value);
-            else if (Main.dedServ || Main.netMode == NetmodeID.MultiplayerClient)
+            else if (Main.dedServ)
                 ChatHelper.BroadcastChatMessage(NetworkText.FromKey(key), textColor.Value);
         }
 
-        public static void DisplayFormattedText(string key, Color textColor, params object[] args)
+        /// <summary>
+        /// Broadcast a LocalizedText with formatting. This only should be run on Singleplayer or Server.
+        /// Multiplayer Clients Do NOT ask Server to Broadcast nor the print message locally.
+        /// </summary>
+        /// <param name="key">LocalizedText key</param>
+        /// <param name="textColor">Text Color to use</param>
+        public static void BroadcastFormattedText(string key, Color textColor, params object[] args)
         {
             if (Main.netMode == NetmodeID.SinglePlayer)
                 Main.NewText(Language.GetOrRegister(key).Format(args), textColor);
-            else if (Main.dedServ || Main.netMode == NetmodeID.MultiplayerClient)
+            else if (Main.dedServ)
                 ChatHelper.BroadcastChatMessage(NetworkText.FromKey(key, args), textColor);
         }
 
@@ -131,7 +140,7 @@ namespace CalamityMod
         /// <typeparam name="T">The base type of the collection.</typeparam>
         /// <param name="collection">The collection.</param>
         /// <param name="type">The type to search for.</param>
-        public static bool ContainsType<T>(this IEnumerable<T> collection, Type type) => collection.Any(entry => entry.GetType() == type.GetType());
+        public static bool ContainsType<T>(this IEnumerable<T> collection, Type type) => collection.Any(entry => entry.GetType() == type);
 
         /// <summary>
         /// Calculates the sound volume and panning for a sound which is played at the specified location in the game world.<br/>
@@ -147,7 +156,7 @@ namespace CalamityMod
 
             if (soundPos.X == -1f || soundPos.Y == -1f)
                 volume = 1f;
-            else if (WorldGen.gen || Main.dedServ || Main.dedServ)
+            else if (WorldGen.gen || Main.dedServ)
                 volume = 0f;
             else
             {
@@ -264,12 +273,12 @@ namespace CalamityMod
             for (int i = 0; i < originalText.Length; i++)
             {
                 for (int j = 0; j < 37; j++)
-                {
+            {
                     if (TextKeys[j] == originalText[i])
                     {
                         morseText += MorseKeys[j];
                         break;
-                    }
+                }
                 }
             }
 
@@ -293,6 +302,24 @@ namespace CalamityMod
             }
 
             return morseState[(int)((morseState.Count - 1) * completion)];
+        }
+
+        public static List<string> GetAssignedKeysOrEmpty(this ModKeybind keybind, InputMode mode = InputMode.Keyboard)
+        {
+            if (keybind == null)
+                return [];
+
+            if (Main.dedServ) // Server does not have key assigned
+                return [];
+
+            try
+            {
+                return keybind.GetAssignedKeys(mode);
+            }
+            catch
+            {
+                return [];
+            }
         }
     }
 }

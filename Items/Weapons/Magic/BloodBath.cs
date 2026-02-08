@@ -1,6 +1,4 @@
 ﻿using System;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
@@ -17,7 +15,6 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void SetStaticDefaults()
         {
             Item.staff[Type] = true;
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<FleshOfInfidelity>();
         }
 
         public override void SetDefaults()

@@ -1,14 +1,11 @@
 ﻿using CalamityMod.Buffs.Summon;
-using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.Summon;
-using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Humanizer.In;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
@@ -23,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.height = 64;
             Item.damage = 10;
             Item.mana = 10;
-            Item.useAnimation = Item.useTime = 32;
+            Item.useAnimation = Item.useTime = 36;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = Knockback;
@@ -39,7 +36,6 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.staff[Type] = true;
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<ScourgeoftheDesert>();
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

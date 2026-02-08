@@ -1,7 +1,6 @@
 ﻿using CalamityMod.Dusts;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.CeaselessVoid;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;

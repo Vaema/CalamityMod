@@ -1,21 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using CalamityMod.TileEntities;
-using Terraria.DataStructures;
-using Terraria.ID;
 using Terraria;
+using Terraria.ID;
 
 namespace CalamityMod.Packets
 {
-    public sealed class TEPowerCellFactoryPacket : CalamityPacket
+    internal sealed class TEPowerCellFactoryPacket : CalamityPacket
     {
         public static TEPowerCellFactoryPacket Instance { get; private set; }
-
-        public override byte MessageType => (byte)CalamityModMessageType.PowerCellFactory;
 
         public static void Send(TEPowerCellFactory cellFactory, long time, int stack, int toClient = -1, int ignoreClient = -1)
         {
@@ -29,7 +21,7 @@ namespace CalamityMod.Packets
             packet.Send(toClient, ignoreClient);
         }
 
-        public override void HandlePacket(in BinaryReader packet, int sender)
+        public override void HandlePacket(BinaryReader packet, int sender)
         {
             var cellFactory = packet.ReadTileEntity<TEPowerCellFactory>();
             long time = packet.ReadInt64();

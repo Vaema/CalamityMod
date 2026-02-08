@@ -19,16 +19,15 @@ namespace CalamityMod.Items.Materials
             Item.width = 30;
             Item.height = 24;
             Item.maxStack = Item.CommonMaxStack;
-            Item.value = Item.sellPrice(silver: 36);
+            Item.value = Item.sellPrice(silver: 6);
             Item.rare = ItemRarityID.Green;
         }
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<PearlShard>(2).
-                AddIngredient(ItemID.Coral, 2).
-                AddIngredient(ItemID.Starfish, 2).
-                AddIngredient(ItemID.Seashell, 2).
+                AddIngredient<WillOWisp>(1).
+                //AddIngredient<PolypItem>(2).
+                AddIngredient<PearlShard>(3).
                 AddTile(TileID.Furnaces).
                 Register();
         }

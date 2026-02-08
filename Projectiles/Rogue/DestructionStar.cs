@@ -1,5 +1,6 @@
-﻿using System;
-using CalamityMod.Dusts;
+﻿using CalamityMod.Dusts;
+using CalamityMod.Enums;
+using CalamityMod.Graphics.Renderers;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -152,15 +153,15 @@ namespace CalamityMod.Projectiles.Rogue
 
         internal void Explode(bool big)
         {
-
-
             float sizeBonus = big ? Main.zenithWorld ? 6 : 2 : 1;
             float bigExplosionDamage = 3f;
             Player Owner = Main.player[Projectile.owner];
             Particle orb = new CustomPulse(Projectile.Center, Vector2.Zero, Color.LightGreen with { A = 0 }, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0f, 0.82f * sizeBonus, 11);
             GeneralParticleHandler.SpawnParticle(orb);
+            orb.DrawLayer = GeneralDrawLayer.AfterEverything;
             Particle orb2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0f, 0.74f * sizeBonus, 11);
             GeneralParticleHandler.SpawnParticle(orb2);
+            orb2.DrawLayer = GeneralDrawLayer.AfterEverything;
 
 
             Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<DestructionExplosion>(), (int)(Projectile.damage * (big ? Main.zenithWorld ? bigExplosionDamage * 4f : bigExplosionDamage : Projectile.Calamity().stealthStrike ? 0.25f : 1f)), Projectile.knockBack * 1.5f, Projectile.owner);
@@ -191,12 +192,15 @@ namespace CalamityMod.Projectiles.Rogue
 
             Particle bolt2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.LightGreen, "CalamityMod/Particles/BloomRing", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 2.56f * 1.3f * sizeBonus, 18);
             GeneralParticleHandler.SpawnParticle(bolt2);
+            bolt2.DrawLayer = GeneralDrawLayer.AfterEverything;
 
             Particle bolt3 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.LightGreen, "CalamityMod/Particles/SoftRoundExplosion", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.3f * sizeBonus, 30);
             GeneralParticleHandler.SpawnParticle(bolt3);
+            bolt3.DrawLayer = GeneralDrawLayer.AfterEverything;
 
             Particle bolt4 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.LightGreen * 0.55f, "CalamityMod/Particles/SoftRoundExplosion", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.3f * 1.35f * sizeBonus, 30);
             GeneralParticleHandler.SpawnParticle(bolt4);
+            bolt4.DrawLayer = GeneralDrawLayer.AfterEverything;
 
             for (int i = 0; i < 2; i++)
             {
@@ -214,13 +218,13 @@ namespace CalamityMod.Projectiles.Rogue
             }
             for (int i = 0; i < (25 * sizeBonus); i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 278);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.FireworksRGB);
                 dust.noGravity = false;
                 dust.velocity = new Vector2(18, 18).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 1f) * sizeBonus;
                 dust.scale = Main.rand.NextFloat(0.8f, 1.2f);
                 dust.color = Color.LightGreen;
             }
-            Owner.Calamity().GeneralScreenShakePower = 6f * (big ? 2.5f : 1f);
+            Owner.SetScreenshake(6f * (big ? 2.5f : 1f));
         }
 
         public override bool PreDraw(ref Color lightColor)

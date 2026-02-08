@@ -1,13 +1,11 @@
-using CalamityMod.Projectiles.BaseProjectiles;
-using CalamityMod.Projectiles.Melee;
+﻿using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.Melee.Spears;
-using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
@@ -19,16 +17,22 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<GoldenEagle>();
             base.SetStaticDefaults();
         }
+        public override bool SizeModifiers => false;
 
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            float cdmg = 2f + Main.LocalPlayer.Calamity().critDamage + Main.LocalPlayer.GetTotalCritChance(TrueMeleeNoSpeedDamageClass.Instance) * 0.02f;
+            tooltips.FirstOrDefault(x => x.Name == "CritChance")!.Text = CalamityUtils.GetText("Common.CritDamageTootip").Format(cdmg.ToPercent());
+
+        }
         public override void SetDefaults()
         {
             Item.width = 66;
             Item.height = 66;
-            Item.damage = 4000;
-            Item.DamageType = TrueMeleeDamageClass.Instance;
+            Item.damage = 2090;
+            Item.DamageType = TrueMeleeNoSpeedDamageClass.Instance;
             Item.useAnimation = Item.useTime = 65;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 15f;
@@ -40,7 +44,6 @@ namespace CalamityMod.Items.Weapons.Melee
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
             base.SetDefaults();
         }
-
         public override bool AltFunctionUse(Player player)
         {
             return true;

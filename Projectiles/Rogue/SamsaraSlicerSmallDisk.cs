@@ -9,7 +9,6 @@ namespace CalamityMod.Projectiles.Rogue
     public class SamsaraSlicerSmallDisk : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
-        private double rotation = 0;
         public Projectile Parent = null;
         public override void SetStaticDefaults()
         {
@@ -28,7 +27,8 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.aiStyle = -1;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 3;
+            Projectile.localNPCHitCooldown = 5;
+            Projectile.ArmorPenetration = 20;
         }
 
         public override void AI()

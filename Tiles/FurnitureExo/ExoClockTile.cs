@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Placeables.FurnitureExo;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent.ObjectInteractions;
 using Terraria.ID;
@@ -10,6 +11,8 @@ namespace CalamityMod.Tiles.FurnitureExo
 {
     public class ExoClockTile : ModTile
     {
+        public Asset<Texture2D> GlowTexture;
+
         public override void SetStaticDefaults() => this.SetUpClock(ModContent.ItemType<ExoClock>(), true);
 
         public override bool CanExplode(int i, int j) => false;
@@ -22,7 +25,7 @@ namespace CalamityMod.Tiles.FurnitureExo
             return false;
         }
 
-        public override bool RightClick(int x, int y) => CalamityUtils.ClockRightClick();
+        public override bool RightClick(int x, int y) => FurnitureCommon.ClockRightClick();
 
         public override void NearbyEffects(int i, int j, bool closer)
         {
@@ -37,7 +40,7 @@ namespace CalamityMod.Tiles.FurnitureExo
             num = fail ? 1 : 3;
         }
 
-        public override void MouseOver(int i, int j) => CalamityUtils.MouseOver(i, j, ModContent.ItemType<ExoClock>());
+        public override void MouseOver(int i, int j) => FurnitureCommon.MouseOver(i, j, ModContent.ItemType<ExoClock>());
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
@@ -46,7 +49,10 @@ namespace CalamityMod.Tiles.FurnitureExo
 
             int xFrameOffset = Main.tile[i, j].TileFrameX;
             int yFrameOffset = Main.tile[i, j].TileFrameY;
-            Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureExo/ExoClockGlow").Value;
+
+            GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureExo/ExoClockGlow");
+            Texture2D glowmask = GlowTexture.Value;
+
             Vector2 drawOffest = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawPosition = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + drawOffest;
             Color drawColour = Color.White;

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
@@ -30,7 +31,7 @@ namespace CalamityMod.Buffs.StatBuffs
 
             if (Main.rand.NextBool(4))
             {
-                Dust dust = Dust.NewDustPerfect(Player.Calamity().RandomDebuffVisualSpot, 56, Vector2.Zero, 100, default, 0.9f);
+                Dust dust = Dust.NewDustPerfect(Player.Calamity().RandomDebuffVisualSpot, DustID.BlueFairy, Vector2.Zero, 100, default, 0.9f);
                 dust.noGravity = true;
                 dust.velocity *= 0.5f;
                 dust.velocity.Y -= 0.1f;

@@ -4,6 +4,7 @@ AstralBreastplate: {
 		'''
 		{$CommonItemTooltip.IncreasesMaxManaBy}
 		{$CommonItemTooltip.PercentIncreasedDamage@1}
+		{$CommonItemTooltip.PercentChanceToSaveAmmo@2}
 		'''
 }
 
@@ -44,7 +45,7 @@ BrimflameCowl: {
 		'''
 		{$CommonItemTooltip.IncreasesMaxManaBy} and {$CommonItemTooltip.PercentReducedManaCost@1}
 		{$CommonItemTooltip.PercentIncreasedMagicDamageCritChance@2}
-		Immunity to On Fire!, Brimstone Flames and Frostburn
+		Immunity to [cbuff:OnFire], [cbuff:CalamityMod/BrimstoneFlames] and [cbuff:Frostburn]
 		'''
 	SetBonus:
 		'''
@@ -95,7 +96,7 @@ DaedalusHeadRanged: {
 	Tooltip:
 		'''
 		{$CommonItemTooltip.PercentIncreasedRangedDamage} and {$CommonItemTooltip.PercentIncreasedRangedCritChance@1}
-		20% chance to save ammo
+		{$CommonItemTooltip.PercentChanceToSaveAmmo@2}
 		'''
 	SetBonus: Getting hit causes you to emit a blast of crystal shards
 }
@@ -165,6 +166,7 @@ FathomSwarmerVisage: {
 		{$CommonItemTooltip.IncreasesMaxMinionsBy}
 		{$CommonItemTooltip.PercentIncreasedSummonDamage@1}
 		Provides breathing and light underwater
+		Greatly enhances visibility in the abyss
 		'''
 	SetBonus:
 		'''
@@ -195,7 +197,7 @@ HydrothermicArmor: {
 	Tooltip:
 		'''
 		{$CommonItemTooltip.PercentIncreasedDamage}
-		Grants immunity to fire and lava
+		Grants immunity to lava and [cbuff:OnFire]
 		'''
 	CommonSetBonus:
 		'''
@@ -238,7 +240,7 @@ HydrothermicHeadRanged: {
 	Tooltip:
 		'''
 		{$CommonItemTooltip.PercentIncreasedRangedDamage} and {$CommonItemTooltip.PercentIncreasedRangedCritChance@1}
-		25% chance to save ammo
+		{$CommonItemTooltip.PercentChanceToSaveAmmo@2}
 		'''
 	SetBonus:
 		'''
@@ -317,7 +319,11 @@ LunicCorpsHelmet: {
 
 LunicCorpsVest: {
 	DisplayName: Lunic Corps Vest
-	Tooltip: "{$CommonItemTooltip.PercentIncreasedRangedDamageCritChance}"
+	Tooltip:
+		'''
+		{$CommonItemTooltip.PercentIncreasedRangedDamageCritChance}
+		{$CommonItemTooltip.PercentChanceToSaveAmmo@1}
+		'''
 }
 
 MolluskShelleggings: {
@@ -359,7 +365,7 @@ PlaguebringerCarapace: {
 		'''
 		{$CommonItemTooltip.IncreasesMaxMinionsBy}
 		{$CommonItemTooltip.PercentIncreasedSummonDamage@1}
-		Grants immunity to the Plague
+		Grants immunity to [cbuff:CalamityMod/Plague]
 		'''
 }
 
@@ -384,7 +390,7 @@ PlaguebringerVisor: {
 		'''
 		Grants a plague dash which can slam through enemies without taking damage
 		Summons a lil' plaguebringer which swarms your foes with little bees
-		Friendly bees inflict the plague
+		Friendly bees inflict [cbuff:CalamityMod/Plague]
 		'''
 }
 
@@ -393,7 +399,7 @@ PlagueReaperMask: {
 	Tooltip:
 		'''
 		{$CommonItemTooltip.PercentIncreasedRangedDamage} and {$CommonItemTooltip.PercentIncreasedRangedCritChance@1}
-		25% chance to save ammo
+		{$CommonItemTooltip.PercentChanceToSaveAmmo@2}
 		'''
 	SetBonus:
 		'''
@@ -440,7 +446,7 @@ ReaverHeadExplore: {
 		'''
 		Emits light and shows the location of treasure and ore
 		{$Common.AggroReduction} and grants underwater breathing
-		These have a moderate effect while in the Abyss
+		Greatly enhances visibility in the abyss
 		Increased block placement & tool range by {0}
 		Increases pickup range for items
 		'''
@@ -466,7 +472,7 @@ ReaverHeadTank: {
 		{$Common.AggroBoost}
 		Reduces the life regen lost from damage over time debuffs by {0}%
 		{1}% decreased movement speed and flight time
-		Grants Reaver Rage for {2} {^2:second;seconds} after taking damage
+		Grants [cbuff:CalamityMod/ReaverRage] for {2} {^2:second;seconds} after taking damage
 		'''
 }
 
@@ -490,7 +496,7 @@ TitanHeartMask: {
 	Tooltip:
 		'''
 		{$Common.RogueDamage} and {$Common.RogueVelocity@1}
-		Rogue weapons inflict the Astral Infection debuff
+		Rogue weapons inflict [cbuff:CalamityMod/AstralInfectionDebuff]
 		'''
 	SetBonus:
 		'''

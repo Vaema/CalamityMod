@@ -1,5 +1,4 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
@@ -16,8 +15,8 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void SetDefaults()
         {
-            Item.width = 32;
-            Item.height = 46;
+            Item.width = 34;
+            Item.height = 58;
             Item.damage = 81;
             Item.DamageType = RogueDamageClass.Instance;
             Item.useTime = Item.useAnimation = 19;

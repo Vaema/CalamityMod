@@ -1,7 +1,6 @@
 ﻿using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
@@ -30,8 +29,6 @@ namespace CalamityMod.Projectiles.Ranged
             if (Utils.Distance(target.Center, Projectile.Center) <= Projectile.width)
             {
                 Player Owner = Main.player[Projectile.owner];
-                target.AddBuff(BuffID.Confused, 180);
-
                 Vector2 launchVel = Utils.DirectionTo(Owner.Center, Projectile.Center);
                 target.MoveNPC(launchVel, 5, false);
 

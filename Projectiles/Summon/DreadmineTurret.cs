@@ -18,8 +18,8 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetDefaults()
         {
-            Projectile.width = 26;
-            Projectile.height = 26;
+            Projectile.width = 46;
+            Projectile.height = 80;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
             Projectile.sentry = true;
@@ -47,71 +47,33 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.ai[0] = 0f;
                 Projectile.netUpdate = true;
             }
-            if (Main.rand.NextBool(15))
+            if (Projectile.ai[0] % 15 == 0)
             {
                 int mineAmt = 0;
                 foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    if (p.owner == Main.myPlayer && p.type == ModContent.ProjectileType<Dreadmine>())
+                    if (p.owner == Main.myPlayer && p.type == ModContent.ProjectileType<Dreadmine>() && p.ai[0] == Projectile.whoAmI)
                     {
                         mineAmt++;
                     }
                 }
-                if (Main.rand.Next(15) >= mineAmt && mineAmt < 10)
-                {
-                    int spawnVariance = 24;
-                    int moreSpawnVariance = 90;
-                    for (int j = 0; j < 50; j++)
+                for (float i = 0; i < 5; i++)
+                    if (Main.myPlayer == Projectile.owner && mineAmt < 25)
                     {
-                        int randSpawn = Main.rand.Next(200 - j * 2, 400 + j * 2);
+                        int dreadmineWidth = 58;
                         Vector2 center = Projectile.Center;
-                        center.X += (float)Main.rand.Next(-randSpawn, randSpawn + 1);
-                        center.Y += (float)Main.rand.Next(-randSpawn, randSpawn + 1);
-                        if (!Collision.SolidCollision(center, spawnVariance, spawnVariance))
+                        center += new Vector2(256 * Main.rand.NextFloat() + 64, 0).RotatedByRandom(MathHelper.TwoPi); // This determines the offset of the mine at a random distance between 64 and 320 pixels away. The lower bound is set so mines don't spawn on top of the turret itself, and also helps even out distribution a little.
+                        if (!Collision.SolidCollision(center - Projectile.Size / 2f, dreadmineWidth, dreadmineWidth))
                         {
-                            center.X += (float)(spawnVariance / 2);
-                            center.Y += (float)(spawnVariance / 2);
-                            if (Collision.CanHit(new Vector2(Projectile.Center.X, Projectile.position.Y), 1, 1, center, 1, 1) ||
-                                Collision.CanHit(new Vector2(Projectile.Center.X, Projectile.position.Y - 50f), 1, 1, center, 1, 1))
-                            {
-                                int tileX = (int)center.X / 16;
-                                int tileY = (int)center.Y / 16;
-                                bool canSpawnMine = false;
-                                if (Main.rand.NextBool(3) && Main.tile[tileX, tileY] != null && Main.tile[tileX, tileY].WallType > 0)
-                                {
-                                    canSpawnMine = true;
-                                }
-                                else
-                                {
-                                    center.X -= (float)(moreSpawnVariance / 2);
-                                    center.Y -= (float)(moreSpawnVariance / 2);
-                                    if (Collision.SolidCollision(center, moreSpawnVariance, moreSpawnVariance))
-                                    {
-                                        center.X += (float)(moreSpawnVariance / 2);
-                                        center.Y += (float)(moreSpawnVariance / 2);
-                                        canSpawnMine = true;
-                                    }
-                                }
-                                if (canSpawnMine)
-                                {
-                                    for (int k = 0; k < Main.maxProjectiles; k++)
-                                    {
-                                        if (Main.projectile[k].active && Main.projectile[k].owner == Main.myPlayer &&
-                                            Main.projectile[k].type == ModContent.ProjectileType<Dreadmine>() && (center - Main.projectile[k].Center).Length() < 48f)
-                                        {
-                                            canSpawnMine = false;
-                                            break;
-                                        }
-                                    }
-                                    if (canSpawnMine && Main.myPlayer == Projectile.owner)
-                                    {
-                                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), center, Vector2.Zero, ModContent.ProjectileType<Dreadmine>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-                                    }
-                                }
-                            }
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), center, Vector2.Zero, ModContent.ProjectileType<Dreadmine>(), Projectile.damage, Projectile.knockBack, Projectile.owner,Projectile.whoAmI);
+                            mineAmt++;
+                            i -= 0.75f; // This will cause it to run more loops when mines fail, but still eventually get up to the cap of 5 mines per activation even if no spots to spawn can be found.
                         }
                     }
-                }
+                    else
+                    {
+                        break;
+                    }
             }
         }
 

@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.DraedonMisc;
-using CalamityMod.Items.Pets;
+﻿using CalamityMod.Items.Pets;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;

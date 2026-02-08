@@ -1,5 +1,4 @@
 ﻿using System;
-using CalamityMod.DataStructures;
 using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -244,7 +243,7 @@ namespace CalamityMod.Projectiles.Melee
 
             float num13 = MathHelper.Min(num3, MathHelper.Lerp(1f, fromValue, Utils.Remap(Projectile.localAI[0], 0f, 80f, 0f, 1f)));
 
-            Texture2D value = TextureAssets.Extra[98].Value;
+            Texture2D value = TextureAssets.Extra[ExtrasID.SharpTears].Value;
             SpriteEffects dir = SpriteEffects.None;
             Vector2 drawpos = Projectile.Center - Main.screenPosition + (Projectile.rotation + (MathHelper.Pi / (20f / 3f)) * Projectile.ai[0]).ToRotationVector2() * ((float)asset.Width * 0.5f - 4f) * num * num12;
             Color drawColor = new Color(255, 255, 255, 0) * Projectile.Opacity * 0.5f * num13;

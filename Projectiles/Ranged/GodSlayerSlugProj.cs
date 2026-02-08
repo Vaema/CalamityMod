@@ -1,5 +1,7 @@
 ﻿using System.IO;
 using CalamityMod.Dusts;
+using CalamityMod.Particles;
+using CalamityMod.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -7,6 +9,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
+using System.Linq;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -111,7 +114,7 @@ namespace CalamityMod.Projectiles.Ranged
                 return;
 
             // The bullet disappears in a puff of dust.
-            ProduceWarpCrossDust(Projectile.Center, (int)CalamityDusts.PurpleCosmilite);
+            ProduceWarpCrossDust(Projectile.Center, ModContent.DustType<SquashDust>(), 0.5f, Color.Magenta);
 
             // The warp must be performed client side because it requires knowledge of the player's mouse position.
             Projectile.netUpdate = true;
@@ -144,7 +147,17 @@ namespace CalamityMod.Projectiles.Ranged
 
             // Now that the bullet has warped, produce a tiny puff of dust at its back for effect.
             Vector2 warpInDustPos = Projectile.Center - bulletToMouseVec * TextureHeight;
-            ProduceWarpCrossDust(warpInDustPos, (int)CalamityDusts.BlueCosmilite);
+            ProduceWarpCrossDust(warpInDustPos, ModContent.DustType<SquashDust>(), 1f, Color.Cyan);
+            for (int i = 0; i < 3; i++)
+            {
+                Vector2 dustVel = Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedByRandom(0.05f) * Main.rand.NextFloat(9, 15);
+                Dust d = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<VoidDust>());
+                d.position = warpInDustPos;
+                d.velocity = dustVel;
+                d.noGravity = true;
+                d.scale *= Main.rand.NextFloat(0.6f, 1f);
+                d.color = Color.Cyan;
+            }
         }
 
         public override Color? GetAlpha(Color lightColor) => new Color(255, 255, 255, 140);
@@ -168,20 +181,23 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.Damage();
 
             // Create a fancy triangle of dust.
-            int dustID = (int)CalamityDusts.BlueCosmilite;
+            int dustID = ModContent.DustType<SquashDust>();
             int numDust = 9;
             float triangleAngle = Main.rand.NextFloat(MathHelper.TwoPi);
             for (int i = 0; i < numDust; ++i)
             {
-                float speed = MathHelper.Lerp(0.2f, 3.6f, i / (float)(numDust - 1));
-                Vector2 dustVel = Vector2.UnitX.RotatedBy(triangleAngle) * speed;
+                float lerp = i / (float)(numDust - 1);
+                float speed = MathHelper.Lerp(0.2f, 3.6f, lerp);
+                Vector2 dustVel = Vector2.UnitX.RotatedBy(triangleAngle) * speed * 2;
                 Dust d = Dust.NewDustDirect(Projectile.Center, 0, 0, dustID);
                 d.position = Projectile.Center;
                 d.velocity = dustVel;
                 d.noGravity = true;
-                d.scale *= Main.rand.NextFloat(1.1f, 1.4f);
-                Dust.CloneDust(d).velocity = dustVel.RotatedBy(MathHelper.Pi * 2f / 3f);
-                Dust.CloneDust(d).velocity = dustVel.RotatedBy(MathHelper.Pi * 4f / 3f);
+                d.fadeIn = 1.5f;
+                d.scale *= Main.rand.NextFloat(1.4f, 1.9f) - lerp * 0.5f;
+                d.color = Color.Lerp(Color.Cyan, Color.Magenta, lerp);
+                Dust.BetterCloneDust(d).velocity = dustVel.RotatedBy(MathHelper.Pi * 2f / 3f);
+                Dust.BetterCloneDust(d).velocity = dustVel.RotatedBy(MathHelper.Pi * 4f / 3f);
             }
         }
 
@@ -199,20 +215,39 @@ namespace CalamityMod.Projectiles.Ranged
             return true;
         }
 
-        private void ProduceWarpCrossDust(Vector2 dustPos, int dustID)
+        private void ProduceWarpCrossDust(Vector2 dustPos, int dustID, float speedMultiplier, Color color)
         {
-            for (int i = 0; i < 4; ++i)
+            if (speedMultiplier > 0.8f) //dark
             {
-                float speed = Main.rand.NextFloat(2.0f, 4.1f);
-                Vector2 dustVel = Vector2.UnitX * speed;
+                for (int i = 0; i < 2; ++i)
+                {
+                    Particle pulse = new CustomPulse(dustPos, Vector2.Zero, Color.Black, "CalamityMod/ExtraTextures/BasicCircle", Vector2.One, 0, 0.4f * speedMultiplier, 0.05f * speedMultiplier, 12, false);
+                    GeneralParticleHandler.SpawnParticle(pulse);
+                    Particle pulse2 = new CustomPulse(dustPos, Vector2.Zero, color, "CalamityMod/Particles/BloomRing", Vector2.One, 0, 0.15f * (1 + i * 0.2f) * speedMultiplier, 0.025f * (1 + i * 0.2f) * speedMultiplier, 12, true);
+                    GeneralParticleHandler.SpawnParticle(pulse2);
+                }
+            }
+            else //light
+            {
+                Particle pulse = new CustomSpark(dustPos, Vector2.Zero, "CalamityMod/Particles/BloomCircle", false, 10, 0.3f * speedMultiplier, color, new Vector2(1f, 1f), true, true, glowOpacity: 1f);
+                GeneralParticleHandler.SpawnParticle(pulse);
+            }
+            
+            
+            for (int i = 0; i < 5; ++i)
+            {
+                float speed = Main.rand.NextFloat(3f, 6f);
+                Vector2 dustVel = Vector2.UnitX * speed * speedMultiplier * 1.5f;
                 Dust d = Dust.NewDustDirect(Projectile.Center, 0, 0, dustID);
                 d.position = dustPos;
                 d.velocity = dustVel;
                 d.noGravity = true;
-                d.scale *= Main.rand.NextFloat(1.1f, 1.4f);
-                Dust.CloneDust(d).velocity = dustVel.RotatedBy(MathHelper.PiOver2);
-                Dust.CloneDust(d).velocity = dustVel.RotatedBy(MathHelper.Pi);
-                Dust.CloneDust(d).velocity = dustVel.RotatedBy(-MathHelper.PiOver2);
+                d.scale *= Main.rand.NextFloat(1.8f, 2.2f) * (1 - speed / 7);
+                d.color = color;
+                d.fadeIn = 1;
+                Dust.BetterCloneDust(d).velocity = dustVel.RotatedBy(MathHelper.PiOver2);
+                Dust.BetterCloneDust(d).velocity = dustVel.RotatedBy(MathHelper.Pi);
+                Dust.BetterCloneDust(d).velocity = dustVel.RotatedBy(-MathHelper.PiOver2);
             }
         }
     }

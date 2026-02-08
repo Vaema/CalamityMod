@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Weapons.Magic;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -12,10 +11,6 @@ namespace CalamityMod.Items.Weapons.Rogue
     [LegacyName("Shroomerang")]
     public class InfestedClawmerang : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Mycoroot>();
-        }
         public override void SetDefaults()
         {
             Item.width = 26;

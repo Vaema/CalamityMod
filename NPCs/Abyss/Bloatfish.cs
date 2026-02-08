@@ -4,7 +4,6 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.World;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;

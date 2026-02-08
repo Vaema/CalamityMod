@@ -15,15 +15,9 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             Main.tileFrameImportant[Type] = true;
             Main.tileSolid[Type] = false;
             Main.tileLighted[Type] = true;
-            TileObjectData.newTile.Width = 2;
-            TileObjectData.newTile.Height = 2;
-            TileObjectData.newTile.Origin = new Point16(2, 2);
-            TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16, };
-            TileObjectData.newTile.StyleWrapLimit = 36;
-            TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop | AnchorType.SolidSide, TileObjectData.newTile.Width, 0);
-            TileObjectData.newTile.CoordinateWidth = 16;
-            TileObjectData.newTile.CoordinatePadding = 2;
+            TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
             TileObjectData.newTile.DrawYOffset = 3;
+
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(79, 196, 149));
             DustType = DustID.BlueMoss;
@@ -45,15 +39,9 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             Main.tileFrameImportant[Type] = true;
             Main.tileSolid[Type] = false;
             Main.tileLighted[Type] = true;
-            TileObjectData.newTile.Width = 2;
-            TileObjectData.newTile.Height = 2;
-            TileObjectData.newTile.Origin = new Point16(2, 2);
-            TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16 };
-            TileObjectData.newTile.StyleWrapLimit = 36;
-            TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop | AnchorType.SolidSide, TileObjectData.newTile.Width, 0);
-            TileObjectData.newTile.CoordinateWidth = 16;
-            TileObjectData.newTile.CoordinatePadding = 2;
+            TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
             TileObjectData.newTile.DrawYOffset = 3;
+
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(79, 196, 149));
             DustType = DustID.BlueMoss;
@@ -74,15 +62,11 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             Main.tileFrameImportant[Type] = true;
             Main.tileSolid[Type] = false;
             Main.tileLighted[Type] = true;
+            TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3);
             TileObjectData.newTile.Width = 4;
-            TileObjectData.newTile.Height = 3;
-            TileObjectData.newTile.Origin = new Point16(2, 3);
-            TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16, 16 };
-            TileObjectData.newTile.StyleWrapLimit = 36;
-            TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop | AnchorType.SolidSide, TileObjectData.newTile.Width, 0);
-            TileObjectData.newTile.CoordinateWidth = 16;
-            TileObjectData.newTile.CoordinatePadding = 2;
+            TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop, TileObjectData.newTile.Width, 0);
             TileObjectData.newTile.DrawYOffset = 3;
+
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(79, 196, 149));
             DustType = DustID.BlueMoss;

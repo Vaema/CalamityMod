@@ -3,6 +3,7 @@ using System.IO;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Graphics;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Items.Placeables.Banners;
@@ -12,7 +13,6 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
-using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -85,6 +85,9 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void AI()
         {
+
+            EnhancedDarknessSystem.lights.Add(new(NPC.Center,scale: 1f));
+
             NPC.spriteDirection = (NPC.direction > 0) ? 1 : -1;
             NPC.noGravity = true;
             if (NPC.direction == 0)

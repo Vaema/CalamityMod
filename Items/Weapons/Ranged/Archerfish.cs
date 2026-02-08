@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
@@ -11,6 +12,10 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class Archerfish : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+
+        public static int AmmoSavedPercent = 33;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
+
         public override void SetDefaults()
         {
             Item.width = 78;
@@ -61,11 +66,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             return false;
         }
 
-        public override bool CanConsumeAmmo(Item ammo, Player player)
-        {
-            if (Main.rand.Next(0, 100) < 33)
-                return false;
-            return true;
-        }
+        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.Next(100) >= AmmoSavedPercent;
     }
 }

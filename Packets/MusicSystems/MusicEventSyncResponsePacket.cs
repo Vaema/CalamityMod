@@ -1,21 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using CalamityMod.Systems;
 using Terraria;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace CalamityMod.Packets
 {
-    public sealed class MusicEventSyncResponsePacket : CalamityPacket
+    internal sealed class MusicEventSyncResponsePacket : CalamityPacket
     {
         public static MusicEventSyncResponsePacket Instance { get; private set; }
-
-        public override byte MessageType => (byte)CalamityModMessageType.MusicEventSyncResponse;
 
         public static void Send(int toClient = -1, int ignoreClient = -1)
         {
@@ -27,13 +19,13 @@ namespace CalamityMod.Packets
             int trackCount = MusicEventSystem.PlayedEvents.Count;
             packet.Write(trackCount);
 
-            for (int i = 0; i < trackCount; i++)
-                packet.Write(MusicEventSystem.PlayedEvents[i]);
+            foreach (string playedEvent in MusicEventSystem.PlayedEvents)
+                packet.Write(playedEvent);
 
             packet.Send(toClient, ignoreClient);
         }
 
-        public override void HandlePacket(in BinaryReader packet, int sender)
+        public override void HandlePacket(BinaryReader packet, int sender)
         {
             // Only receive info as clients
             if (Main.netMode != NetmodeID.MultiplayerClient)

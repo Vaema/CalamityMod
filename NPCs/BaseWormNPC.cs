@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -117,9 +118,9 @@ namespace CalamityMod.NPCs
         /// <summary>
         /// Applies this animation for the given frame
         /// </summary>
-        /// <param name="HeadNPC"></param>
+        /// <param name="HeadEntity"></param>
         /// <param name="frame"></param>
-        public void ApplyAnimationFrame(BaseWormNPC HeadNPC, float frame)
+        public void ApplyAnimationFrame(Entity HeadEntity, float frame)
         {
             var orderedKeyframes = AnimationKeyframes.OrderBy(x => x.Key);
             (int, float[], float)? prev = null;
@@ -163,42 +164,139 @@ namespace CalamityMod.NPCs
                         AnimationKeyframes[next.Value.Item1] = (AnimationKeyframes[next.Value.Item1].Item1, next.Value.Item3);
                 }
             }
-            if (HeadNPC.Segments.Count > 0)
+            //We use the same animation framework for both projectiles and NPCs, but applying it is different for each type and so we do the final applications here.
+            if (HeadEntity is NPC)
             {
-                if (applyRotation && !(float.IsNaN(goalRotation)))
+                BaseWormNPC HeadNPC = ((NPC)HeadEntity).ModNPC<BaseWormNPC>();
+                if (HeadNPC.Segments.Count > 0)
                 {
-                    HeadNPC.NPC.rotation = goalRotation * (mirror ? HeadNPC.NPC.velocity.X.DirectionalSign() : 1);
-                }
-                for (int i = 0; i < HeadNPC.Segments.Count; i++)
-                {
-
-                    Vector2 pos1 = HeadNPC.NPC.Center;
-                    float dist = HeadNPC.SegmentTypePositionOffsets[0];
-                    if (i != 0)
+                    if (applyRotation && !(float.IsNaN(goalRotation)))
                     {
-                        dist = HeadNPC.SegmentTypePositionOffsets[HeadNPC.Segments[i - 1].segmentType + 1];
+                        HeadNPC.NPC.rotation = goalRotation * (mirror ? HeadNPC.NPC.velocity.X.DirectionalSign() : 1);
                     }
-                    dist *= HeadNPC.NPC.scale;
-                    Vector2 rot = (HeadNPC.NPC.rotation - MathHelper.PiOver2).ToRotationVector2();
-                    if (rot == Vector2.Zero)
-                        rot = HeadNPC.Segments[0].Center.AngleTo(HeadNPC.NPC.Center).ToRotationVector2();
-                    if (i >= 1)
+                    for (int i = 0; i < HeadNPC.Segments.Count; i++)
                     {
-                        pos1 = HeadNPC.Segments[i - 1].Center;
-                        rot = HeadNPC.Segments[i - 1].velocity.SafeNormalize(Vector2.Zero);
-                    }
-                    rot = rot.RotatedBy(goalSegmentRotOffsets[i] * (mirror ? HeadNPC.NPC.velocity.X.DirectionalSign() : 1));
-                    var dir = HeadNPC.Segments[i].Center.DirectionFrom(pos1);
-                    HeadNPC.Segments[i].Center = pos1 + Vector2.Lerp(dir, -(rot), segmentRigidity) * dist;
-                    HeadNPC.Segments[i].velocity = HeadNPC.Segments[i].Center.DirectionTo(pos1);
-                    HeadNPC.Segments[i].rotation = HeadNPC.Segments[i].velocity.ToRotation() + MathHelper.PiOver2;
-                }
 
-                for (int i = 1; i < HeadNPC.Segments.Count - 1; i++)
-                {
-                    HeadNPC.Segments[i].rotation = HeadNPC.Segments[i + 1].Center.DirectionTo(HeadNPC.Segments[i - 1].Center).ToRotation() + MathHelper.PiOver2;
+                        Vector2 pos1 = HeadNPC.NPC.Center;
+                        float dist = HeadNPC.SegmentTypePositionOffsets[0];
+                        if (i != 0)
+                        {
+                            dist = HeadNPC.SegmentTypePositionOffsets[HeadNPC.Segments[i - 1].segmentType + 1];
+                        }
+                        dist *= HeadNPC.NPC.scale;
+                        Vector2 rot = (HeadNPC.NPC.rotation - MathHelper.PiOver2).ToRotationVector2();
+                        if (rot == Vector2.Zero)
+                            rot = HeadNPC.Segments[0].Center.AngleTo(HeadNPC.NPC.Center).ToRotationVector2();
+                        if (i >= 1)
+                        {
+                            pos1 = HeadNPC.Segments[i - 1].Center;
+                            rot = HeadNPC.Segments[i - 1].velocity.SafeNormalize(Vector2.Zero);
+                        }
+                        rot = rot.RotatedBy(goalSegmentRotOffsets[i] * (mirror ? HeadNPC.NPC.velocity.X.DirectionalSign() : 1));
+                        var dir = HeadNPC.Segments[i].Center.DirectionFrom(pos1);
+                        HeadNPC.Segments[i].Center = pos1 + Vector2.Lerp(dir, -(rot), segmentRigidity) * dist;
+                        float rotationOffset = Vector2.Lerp(dir, -(rot), segmentRigidity).ToRotation();
+                        float finalOffset = (-rot).ToRotation().AngleLerp(rotationOffset, 0);
+                        HeadNPC.Segments[i].Center = pos1 + finalOffset.ToRotationVector2() * dist;
+                        HeadNPC.Segments[i].velocity = HeadNPC.Segments[i].Center.DirectionTo(pos1);
+                        HeadNPC.Segments[i].rotation = HeadNPC.Segments[i].velocity.ToRotation() + MathHelper.PiOver2;
+                    }
+
+                    for (int i = 1; i < HeadNPC.Segments.Count - 1; i++)
+                    {
+                        HeadNPC.Segments[i].rotation = HeadNPC.Segments[i + 1].Center.DirectionTo(HeadNPC.Segments[i - 1].Center).ToRotation() + MathHelper.PiOver2;
+                    }
                 }
             }
+            else if (HeadEntity is Projectile)
+            {
+                BaseWormProjectile HeadProjectile = ((Projectile)HeadEntity).ModProjectile<BaseWormProjectile>();
+                if (HeadProjectile.Segments.Count > 0)
+                {
+                    if (applyRotation && !(float.IsNaN(goalRotation)))
+                    {
+                        HeadProjectile.Projectile.rotation = goalRotation * (mirror ? HeadProjectile.Projectile.velocity.X.DirectionalSign() : 1);
+                    }
+                    for (int i = 0; i < HeadProjectile.Segments.Count; i++)
+                    {
+
+                        Vector2 pos1 = HeadProjectile.Projectile.Center;
+                        float dist = HeadProjectile.SegmentTypePositionOffsets[0];
+                        if (i != 0)
+                        {
+                            dist = HeadProjectile.SegmentTypePositionOffsets[HeadProjectile.Segments[i - 1].segmentType + 1];
+                        }
+                        dist *= HeadProjectile.Projectile.scale;
+                        Vector2 rot = (HeadProjectile.Projectile.rotation - MathHelper.PiOver2).ToRotationVector2();
+                        if (rot == Vector2.Zero)
+                            rot = HeadProjectile.Segments[0].Center.AngleTo(HeadProjectile.Projectile.Center).ToRotationVector2();
+                        if (i >= 1)
+                        {
+                            pos1 = HeadProjectile.Segments[i - 1].Center;
+                            rot = HeadProjectile.Segments[i - 1].velocity.SafeNormalize(Vector2.Zero);
+                        }
+                        rot = rot.RotatedBy(goalSegmentRotOffsets[i] * (mirror ? HeadProjectile.Projectile.velocity.X.DirectionalSign() : 1));
+                        var dir = HeadProjectile.Segments[i].Center.DirectionFrom(pos1);
+                        HeadProjectile.Segments[i].Center = pos1 + Vector2.Lerp(dir, -(rot), segmentRigidity) * dist;
+                        HeadProjectile.Segments[i].velocity = HeadProjectile.Segments[i].Center.DirectionTo(pos1);
+                        HeadProjectile.Segments[i].rotation = HeadProjectile.Segments[i].velocity.ToRotation() + MathHelper.PiOver2;
+                    }
+
+                    for (int i = 1; i < HeadProjectile.Segments.Count - 1; i++)
+                    {
+                        HeadProjectile.Segments[i].rotation = HeadProjectile.Segments[i + 1].Center.DirectionTo(HeadProjectile.Segments[i - 1].Center).ToRotation() + MathHelper.PiOver2;
+                    }
+                }
+            }
+        }
+    }
+    #endregion
+
+    #region Segment Class
+    /// <summary>
+    /// This class is used to store the information of each segment's location, size, and texture path
+    /// Due to the amount of segments, there is only one actual NPC for this boss
+    /// </summary>
+    public class BaseWormSegment
+    {
+        /// <summary>
+        /// The type of segment this is. Segment type is used to determine spacing and textures.
+        /// </summary>
+        public int segmentType = 0;
+
+        /// <summary>
+        /// The position of the center of this segment
+        /// </summary>
+        public Vector2 Center = Vector2.Zero;
+
+        /// <summary>
+        /// The rotation of this segment in radians
+        /// </summary>
+        public float rotation = 0;
+
+        /// <summary>
+        /// The velocity this segment has.
+        /// Currently doesn't actually do anything besides be a token value if needed to be read by something
+        /// </summary>
+        public Vector2 velocity = Vector2.Zero;
+        /// <summary>
+        /// How opaque this segment is. Ranges from 1 (fully opaque) to 0 (fully transparent)
+        /// </summary>
+        public float Opacity = 1;
+        public BaseWormSegment(ModNPC Head, int segmentStyle = 0)
+        {
+            Center = Head.NPC.Center;
+            rotation = Head.NPC.rotation;
+            velocity = Head.NPC.velocity;
+            segmentType = segmentStyle;
+        }
+
+        public BaseWormSegment(ModProjectile Head, int segmentStyle = 0)
+        {
+            Center = Head.Projectile.Center;
+            rotation = Head.Projectile.rotation;
+            velocity = Head.Projectile.velocity;
+            segmentType = segmentStyle;
         }
     }
     #endregion
@@ -219,6 +317,12 @@ namespace CalamityMod.NPCs
         /// does NOT include the head
         /// </summary>
         public abstract List<string> SegmentTextures { get; }
+
+        /// <summary>
+        /// A list of all glow textures for the segments to draw with
+        /// DOES include the head
+        /// </summary>
+        public virtual List<string?> GlowTextures { get; }
         /// <summary>
         /// The type of the worm hitbox NPC
         /// Make sure that NPC is a child of BaseWormHitboxNPC!
@@ -244,7 +348,7 @@ namespace CalamityMod.NPCs
         /// <summary>
         /// The list of all segments of this worm
         /// </summary>
-        public List<Segment> Segments = new();
+        public List<BaseWormSegment> Segments = new();
 
         /// <summary>
         /// The textures for each segment type of this worm. Works like getting a texture from TextureAssets
@@ -271,41 +375,30 @@ namespace CalamityMod.NPCs
         /// Use SegmentTextureAssets to get the data stored here.
         /// </summary>
         private List<Asset<Texture2D>> internalTexAssets = new List<Asset<Texture2D>>();
-
         /// <summary>
-        /// This class is used to store the information of each segment's location, size, and texture path
-        /// Due to the amount of segments, there is only one actual NPC for this boss
+        /// The textures for each glow type of this worm. Works like getting a texture from TextureAssets
         /// </summary>
-        public class Segment
+        public List<Asset<Texture2D>> GlowTextureAssets
         {
-            /// <summary>
-            /// The type of segment this is. Segment type is used to determine spacing and textures.
-            /// </summary>
-            public int segmentType = 0;
-
-            /// <summary>
-            /// The position of the center of this segment
-            /// </summary>
-            public Vector2 Center = Vector2.Zero;
-
-            /// <summary>
-            /// The rotation of this segment in radians
-            /// </summary>
-            public float rotation = 0;
-
-            /// <summary>
-            /// The velocity this segment has.
-            /// Currently doesn't actually do anything besides be a token value if needed to be read by something
-            /// </summary>
-            public Vector2 velocity = Vector2.Zero;
-            public Segment(ModNPC Head, int segmentStyle = 0)
+            get
             {
-                Center = Head.NPC.Center;
-                rotation = Head.NPC.rotation;
-                velocity = Head.NPC.velocity;
-                segmentType = segmentStyle;
+                if (internalGlowAssets.Count == 0)
+                    for (var i = 0; i < GlowTextures.Count; i++)
+                    {
+                        if (GlowTextures[i] is not null)
+                            internalGlowAssets.Add(ModContent.Request<Texture2D>(GlowTextures[i]));
+                        else internalGlowAssets.Add(ModContent.Request<Texture2D>("CalamityMod/Projectiles/InvisibleProj"));
+                    }
+                return internalGlowAssets;
             }
         }
+
+        /// <summary>
+        /// Internal list that stores the glow textureassets.
+        /// Use SegmentTextureAssets to get the data stored here.
+        /// </summary>
+        private List<Asset<Texture2D>> internalGlowAssets = new List<Asset<Texture2D>>();
+
         public enum SegmentFollowLogic
         {
             Regular = 0, //Traditional worm segment logic
@@ -324,6 +417,11 @@ namespace CalamityMod.NPCs
         public float SegmentRigidity = 0.2f;
 
         /// <summary>
+        /// The max rotational offset from the direction of the previous segment
+        /// </summary>
+        public float SegmentMaxRotation = MathHelper.TwoPi;
+
+        /// <summary>
         /// The points used by ExactSegmentLogic to exactly follow the head
         /// </summary>
         private List<Vector2> segmentPoints = new List<Vector2>();
@@ -336,7 +434,7 @@ namespace CalamityMod.NPCs
             NPC.position += NPC.velocity; //Update this segment's movement so that all other segments use this as the base. This is undone at the end of the method.
             if (ActiveAnimation is not null)
             {
-                ActiveAnimation.ApplyAnimationFrame(this, AnimationFrame);
+                ActiveAnimation.ApplyAnimationFrame(NPC, AnimationFrame);
                 AnimationFrame++;
                 if (AnimationFrame > ActiveAnimation.AnimationKeyframes.Keys.Max())
                 {
@@ -377,7 +475,7 @@ namespace CalamityMod.NPCs
             {
                 float segmentDistance = SegmentTypePositionOffsets[0];
                 var thisSeg = Segments[i];
-                var aheadSeg = new Segment(this);
+                var aheadSeg = new BaseWormSegment(this);
                 if (i != 0)
                 {
                     aheadSeg = Segments[i - 1];
@@ -391,7 +489,9 @@ namespace CalamityMod.NPCs
                     nexSegDir = nexSegDir.MoveTowards((aheadSeg.rotation - thisSeg.rotation).ToRotationVector2(), 1f);
                 }
                 thisSeg.rotation = nexSegDir.ToRotation() + MathHelper.PiOver2;
-                thisSeg.Center = aheadSeg.Center - nexSegDir.SafeNormalize(Vector2.Zero) * segmentDistance;
+                float angledif = MathHelper.WrapAngle(thisSeg.rotation - aheadSeg.rotation);
+                thisSeg.rotation = thisSeg.rotation.AngleLerp(aheadSeg.rotation + MathHelper.Clamp(angledif, -SegmentMaxRotation * 0.5f, SegmentMaxRotation * 0.5f),0.25f);
+                thisSeg.Center = aheadSeg.Center - (thisSeg.rotation -MathHelper.PiOver2).ToRotationVector2() * segmentDistance;
 
             }
         }
@@ -403,7 +503,7 @@ namespace CalamityMod.NPCs
             for (int i = 0; i < Segments.Count; i++)
             {
                 var thisSeg = Segments[i];
-                var aheadSeg = new Segment(this);
+                var aheadSeg = new BaseWormSegment(this);
                 if (i != 0)
                     aheadSeg = Segments[i - 1];
                 bool hasMoved = false;
@@ -446,7 +546,6 @@ namespace CalamityMod.NPCs
                     Segments[i].velocity = Segments[i].Center.DirectionTo(aheadSeg.Center);
                     Segments[i].rotation = Segments[i].velocity.ToRotation() + MathHelper.PiOver2;
                     hasMoved = true;
-                    hasMoved = true;
                     break;
                 }
             }
@@ -486,33 +585,59 @@ namespace CalamityMod.NPCs
         {
             for (var i = 0; i < SegmentCount - 1; i++)
             {
-                Segments.Add(new Segment(this, 0));
+                Segments.Add(new BaseWormSegment(this, 0));
             }
-            Segments.Add(new Segment(this, 1));
+            Segments.Add(new BaseWormSegment(this, 1));
         }
 
         #endregion
 
         #region Draw
+
+        public override void FindFrame(int frameHeight)
+        {
+            if (NPC.IsABestiaryIconDummy)
+            {
+                NPC.rotation = MathF.Sin(Main.GlobalTimeWrappedHourly) * 0.2f + MathHelper.PiOver2;
+            }
+        }
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            if (NPC.IsABestiaryIconDummy)
+            {
+                drawColor = Color.White;
+                SegmentRigidity = 0.1f;
+                UpdateSegments();
+            }
             for (int i = Segments.Count - 1; i >= 0; i--)
             {
                 DrawSegment(spriteBatch, screenPos, drawColor, Segments[i]);
             }
-            spriteBatch.Draw(TextureAssets.Npc[Type].Value, NPC.Center - Main.screenPosition, null, drawColor, NPC.rotation, TextureAssets.Npc[Type].Value.Size() / 2, NPC.scale, SpriteEffects.None, 1);
+            spriteBatch.Draw(TextureAssets.Npc[Type].Value, NPC.Center - screenPos, null, drawColor* NPC.Opacity, NPC.rotation, TextureAssets.Npc[Type].Value.Size() / 2, NPC.scale, SpriteEffects.None, 1);
+            if (GlowTextures.Count > 0 && GlowTextures[0] is not null)
+                spriteBatch.Draw(GlowTextureAssets[0].Value, NPC.Center - screenPos, null, Color.White * NPC.Opacity, NPC.rotation, GlowTextureAssets[0].Size() / 2, NPC.scale, SpriteEffects.None, 1);
             return false;
         }
 
-        public virtual void DrawSegment(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor, Segment segment)
+        public virtual void DrawSegment(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor, BaseWormSegment segment)
         {
             var color = Lighting.GetColor(segment.Center.ToTileCoordinates());
+            if (NPC.IsABestiaryIconDummy)
+            {
+                color = Color.White;
+            }
             if (!SegmentTextureAssets.IndexInRange(segment.segmentType))
             {
                 return;
             }
             var tex = SegmentTextureAssets[segment.segmentType].Value;
-            spriteBatch.Draw(tex, segment.Center - Main.screenPosition, null, color, segment.rotation, tex.Size() / 2 + (SegmentTypeDrawOffsets[segment.segmentType]), NPC.scale, SpriteEffects.None, 1);
+            spriteBatch.Draw(tex, segment.Center - screenPos, null, color * segment.Opacity, segment.rotation, tex.Size() / 2 + (SegmentTypeDrawOffsets[segment.segmentType]), NPC.scale, SpriteEffects.None, 1);
+            if (!GlowTextures.IndexInRange(segment.segmentType+1) || GlowTextures[segment.segmentType+1] is null)
+            {
+                return;
+            }
+            tex = GlowTextureAssets[segment.segmentType+1].Value;
+            spriteBatch.Draw(tex, segment.Center - screenPos, null, Color.White * segment.Opacity, segment.rotation, tex.Size() / 2 + (SegmentTypeDrawOffsets[segment.segmentType]), NPC.scale, SpriteEffects.None, 1);
         }
         #endregion
     }
@@ -532,6 +657,10 @@ namespace CalamityMod.NPCs
 
         public override bool? CanBeHitByItem(Player player, Item item)
         {
+            if (!Main.npc.IndexInRange((int)NPC.ai[0]))
+            {
+                return base.CanBeHitByItem(player, item);
+            }
             var canhit = Main.npc[(int)NPC.ai[0]].ModNPC.CanBeHitByItem(player, item);
             if (canhit.HasValue && !canhit.Value)
                 return false;
@@ -540,6 +669,10 @@ namespace CalamityMod.NPCs
 
         public override bool? CanBeHitByProjectile(Projectile projectile)
         {
+            if (!Main.npc.IndexInRange((int)NPC.ai[0]))
+            {
+                return base.CanBeHitByProjectile(projectile);
+            }
             var canhit = Main.npc[(int)NPC.ai[0]].ModNPC.CanBeHitByProjectile(projectile);
             if (canhit.HasValue && !canhit.Value)
                 return false;

@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Placeables.Walls
             Item.ResearchUnlockCount = 400;
         }
 
-        public override void SetDefaults() => Item.DefaultToPlaceableWall(ModContent.WallType<WallTiles.SulphurousSandWallSafe>());
+        public override void SetDefaults() => Item.DefaultToPlaceableWall(ModContent.WallType<WallTiles.SulphurousSandWall>());
 
         public override void AddRecipes()
         {

@@ -1,10 +1,13 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static CalamityMod.Projectiles.Ranged.BlissfulBombardierHoldout;
@@ -133,6 +136,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             target.AddBuff(ModContent.BuffType<HolyFlames>(), 300);
         }
+
         public override void OnKill(int timeLeft)
         {
             // Only do rocket effects for the owner client side
@@ -190,7 +194,7 @@ namespace CalamityMod.Projectiles.Ranged
                 }
                 else
                 {
-                    Dust l = Dust.NewDustPerfect(Projectile.Center, 278);
+                    Dust l = Dust.NewDustPerfect(Projectile.Center, DustID.FireworksRGB);
                     l.velocity = new Vector2(5, 5).RotatedByRandom(100) * blastRadiusVisual * Main.rand.NextFloat(0.4f, 1f);
                     l.scale = Main.rand.NextFloat(0.6f, 0.8f) * blastRadiusVisual * 0.2f * (i % 2 == 0 ? 2.2f : 1.8f);
                     l.noGravity = false;

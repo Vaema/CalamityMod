@@ -100,6 +100,10 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         /// Defaults to <see langword="true"/>.
         /// </summary>
         public bool KeepRefreshingLifetime { get; set; } = true;
+        /// <summary>
+        /// If the holdout should constantly set Owner.itemTime and Owner.itemAnimation as 2.
+        /// </summary>
+        public bool SetUsage { get; set; } = true;
 
         /// <summary>
         /// The current offset length from the arm of the holdout.<br/>
@@ -168,7 +172,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         {
             // Multiplayer null-checking.
             Owner ??= Main.player[Projectile.owner];
-            HeldItem ??= Owner.ActiveItem();
+            HeldItem ??= Owner.HeldItem;
 
             KillHoldoutLogic();
             ManageHoldout();
@@ -193,36 +197,56 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             // The center of the player, taking into account if they have a mount or not.
             Vector2 armPosition = Owner.RotatedRelativePoint(Owner.MountedCenter, true);
 
-            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
-            // The vector between the player and the mouse, used for pointing the holdout.
-            Vector2 ownerToMouse = Owner.Calamity().mouseWorld - armPosition;
-
             // The direction this holdout's pointing at.
             float holdoutDirection = Projectile.velocity.ToRotation();
 
-            // A range from -1 to 1 for when the holdout is pointing downards of upwards, respectively.
-            // Used for the offsets.
-            float proximityLookingUpwards = Vector2.Dot(ownerToMouse.SafeNormalize(Vector2.Zero), -Vector2.UnitY * Owner.gravDir);
+            // Only the owner should compute aiming from mouse position.
+            // Non-owner clients use the synced rotation/direction to avoid jitter.
+            if (Projectile.owner == Main.myPlayer)
+            {
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
+                // The vector between the player and the mouse, used for pointing the holdout.
+                Vector2 ownerToMouse = Owner.Calamity().mouseWorld - armPosition;
 
-            int direction = MathF.Sign(ownerToMouse.X);
+                // A range from -1 to 1 for when the holdout is pointing downards of upwards, respectively.
+                // Used for the offsets.
+                float proximityLookingUpwards = Vector2.Dot(ownerToMouse.SafeNormalize(Vector2.Zero), -Vector2.UnitY * Owner.gravDir);
 
-            Vector2 lengthOffset = Projectile.rotation.ToRotationVector2() * OffsetLengthFromArm;
-            Vector2 armOffset = new Vector2(Utils.Remap(MathF.Abs(proximityLookingUpwards), 0f, 1f, 0f, proximityLookingUpwards > 0f ? OffsetXUpwards : OffsetXDownwards) * direction, BaseOffsetY * Owner.gravDir + Utils.Remap(MathF.Abs(proximityLookingUpwards), 0f, 1f, 0f, proximityLookingUpwards > 0f ? OffsetYUpwards : OffsetYDownwards) * Owner.gravDir);
-            Projectile.Center = armPosition + lengthOffset + armOffset;
-            Projectile.velocity = holdoutDirection.AngleTowards(ownerToMouse.ToRotation(), WeaponTurnSpeed).ToRotationVector2();
-            Projectile.rotation = holdoutDirection;
+                int direction = MathF.Sign(ownerToMouse.X);
 
-            Projectile.spriteDirection = direction;
-            Owner.ChangeDir(direction);
+                Vector2 lengthOffset = Projectile.rotation.ToRotationVector2() * OffsetLengthFromArm;
+                Vector2 armOffset = new Vector2(Utils.Remap(MathF.Abs(proximityLookingUpwards), 0f, 1f, 0f, proximityLookingUpwards > 0f ? OffsetXUpwards : OffsetXDownwards) * direction, BaseOffsetY * Owner.gravDir + Utils.Remap(MathF.Abs(proximityLookingUpwards), 0f, 1f, 0f, proximityLookingUpwards > 0f ? OffsetYUpwards : OffsetYDownwards) * Owner.gravDir);
+                Projectile.Center = armPosition + lengthOffset + armOffset;
+                Projectile.velocity = holdoutDirection.AngleTowards(ownerToMouse.ToRotation(), WeaponTurnSpeed).ToRotationVector2();
+                Projectile.rotation = holdoutDirection;
+
+                Projectile.spriteDirection = direction;
+                Owner.ChangeDir(direction);
+            }
+            else
+            {
+                Vector2 lengthOffset = Projectile.rotation.ToRotationVector2() * OffsetLengthFromArm;
+                float proximityLookingUpwards = Vector2.Dot(Projectile.velocity.SafeNormalize(Vector2.Zero), -Vector2.UnitY * Owner.gravDir);
+                int direction = Projectile.spriteDirection;
+
+                Vector2 armOffset = new Vector2(Utils.Remap(MathF.Abs(proximityLookingUpwards), 0f, 1f, 0f, proximityLookingUpwards > 0f ? OffsetXUpwards : OffsetXDownwards) * direction, BaseOffsetY * Owner.gravDir + Utils.Remap(MathF.Abs(proximityLookingUpwards), 0f, 1f, 0f, proximityLookingUpwards > 0f ? OffsetYUpwards : OffsetYDownwards) * Owner.gravDir);
+                Projectile.Center = armPosition + lengthOffset + armOffset;
+                Projectile.velocity = Projectile.rotation.ToRotationVector2();
+
+                Owner.ChangeDir(direction);
+            }
+
+            int currentDirection = Projectile.spriteDirection;
 
             Owner.heldProj = Projectile.whoAmI;
-            Owner.itemTime = Owner.itemAnimation = 2;
+            if (SetUsage)
+                Owner.itemTime = Owner.itemAnimation = 2;
             Owner.itemRotation = (Projectile.velocity * Projectile.direction).ToRotation();
 
             // -Pi/2 because the arms rotation starts with arms pointing down.
             float armRotation = (Projectile.rotation - MathHelper.PiOver2) * Owner.gravDir + (Owner.gravDir == -1 ? MathHelper.Pi : 0f);
-            Owner.SetCompositeArmFront(true, FrontArmStretch, armRotation + ExtraFrontArmRotation * direction);
-            Owner.SetCompositeArmBack(true, BackArmStretch, armRotation + ExtraBackArmRotation * direction);
+            Owner.SetCompositeArmFront(true, FrontArmStretch, armRotation + ExtraFrontArmRotation * currentDirection);
+            Owner.SetCompositeArmBack(true, BackArmStretch, armRotation + ExtraBackArmRotation * currentDirection);
 
             if (KeepRefreshingLifetime)
                 Projectile.timeLeft = 2;
@@ -230,7 +254,8 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             if (OffsetLengthFromArm != MaxOffsetLengthFromArm)
                 OffsetLengthFromArm = MathHelper.Lerp(OffsetLengthFromArm, MaxOffsetLengthFromArm, RecoilResolveSpeed);
 
-            Projectile.ForceNetUpdate();
+            if (Projectile.owner == Main.myPlayer)
+                Projectile.ForceNetUpdate();
         }
 
         /// <summary>
@@ -246,12 +271,25 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         {
             Texture2D texture = TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
-            float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);
             Vector2 rotationPoint = texture.Size() * 0.5f;
-            SpriteEffects flipSprite = (Projectile.spriteDirection * Owner.gravDir == -1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            float drawRotation = Projectile.rotation;
 
-            Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(lightColor), drawRotation, rotationPoint, Projectile.scale * Owner.gravDir, flipSprite);
+            SpriteEffects flipSprite = SpriteEffects.None;
 
+            if (Owner.gravDir == 1f)
+            {
+                if (Projectile.spriteDirection == -1)
+                    flipSprite = SpriteEffects.FlipVertically;
+            }
+            else
+            {
+                rotationPoint.Y = texture.Height - rotationPoint.Y;
+
+                if (Projectile.spriteDirection == 1)
+                    flipSprite = SpriteEffects.FlipVertically;
+            }
+
+            Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(lightColor), drawRotation, rotationPoint, Projectile.scale, flipSprite, 0);
             return false;
         }
 

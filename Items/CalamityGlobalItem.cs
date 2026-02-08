@@ -6,6 +6,7 @@ using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer;
 using CalamityMod.Enums;
 using CalamityMod.Events;
+using CalamityMod.ExtraJumps;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Ammo;
 using CalamityMod.Items.Armor.Bloodflare;
@@ -17,19 +18,17 @@ using CalamityMod.Items.Armor.Tarragon;
 using CalamityMod.Items.Armor.Victide;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Items.Tools;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs.Other;
 using CalamityMod.NPCs.TownNPCs;
-using CalamityMod.Packets;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Healing;
 using CalamityMod.Projectiles.Magic;
-using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Ranged;
-using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Rarities;
@@ -37,8 +36,6 @@ using CalamityMod.Systems.Collections;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.UI;
 using CalamityMod.UI.CalamitasEnchants;
-using CalamityMod.World;
-using CalamityMod.ExtraJumps;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -48,7 +45,6 @@ using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
-using Terraria.Utilities;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Items
@@ -57,16 +53,18 @@ namespace CalamityMod.Items
     {
         public override bool InstancePerEntity => true;
 
-        // TODO -- split out a separate GlobalItem for rogue behavior?
-        /// <summary> Tracks the stealth strike damage modifier for this item, derived from its prefix. </summary>
-        internal float StealthStrikePrefixBonus;
+        private BitsByte flag0 = 0;
 
         #region Chargeable Item Variables
         /// <summary>
         /// If set to true, this item will consume <see cref="Charge"/> on use.<br/>
         /// Be sure to also set <see cref="MaxCharge"/> and <see cref="ChargePerUse"/>.
         /// </summary>
-        public bool UsesCharge = false;
+        public bool UsesCharge
+        {
+            get => flag0[0];
+            set => flag0[0] = value;
+        }
         /// <summary> The current charge value of this item. </summary>
         public float Charge = 0f;
         /// <summary> The maximum charge value of this item. Should only be set if <see cref="UsesCharge"/> is set to true. </summary>
@@ -90,7 +88,11 @@ namespace CalamityMod.Items
 
         #region Enchantment Variables
         /// <summary> If set to true, this item cannot receive enchantments from the Brimstone Witch. </summary>
-        public bool CannotBeEnchanted = false;
+        public bool CannotBeEnchanted
+        {
+            get => flag0[1];
+            set => flag0[1] = value;
+        }
         /// <summary> Stores the current enchantment placed on this item. If set to null, this item has no enchantment. </summary>
         public Enchantment? AppliedEnchantment = null;
         /// <summary>
@@ -119,29 +121,31 @@ namespace CalamityMod.Items
         /// Set to true if this item can only be obtained in Revengeance Mode.<br/>
         /// Adds "Revengeance" to the bottom of the item's tooltip.
         /// </summary>
-        public bool revengeanceItem = false;
+        public bool revengeanceItem
+        {
+            get => flag0[2];
+            set => flag0[2] = value;
+        }
         /// <summary>
         /// Set to true if this item is dedicated to a Patreon donator.<br/>
         /// Adds "- Donor Item -" to the bottom of the item's tooltip.
         /// </summary>
-        public bool donorItem = false;
+        public bool donorItem
+        {
+            get => flag0[3];
+            set => flag0[3] = value;
+        }
         /// <summary>
         /// Set to true if this item is dedicated to a Calamity developer.<br/>
         /// Adds "- Dev Item -" to the bottom of the item's tooltip.
         /// </summary>
-        public bool devItem = false;
-        /// <summary>
-        /// If set to a value greater than 1, applies a multiplier to the item's grab range.<br/>
-        /// Used by coin items spawned from hitting ricoshot coins.
-        /// </summary>
-        public float grabRangeMultiplier = 1f;
+        public bool devItem
+        {
+            get => flag0[4];
+            set => flag0[4] = value;
+        }
 
         public static readonly Color ExhumedTooltipColor = new Color(198, 27, 64);
-
-        public CalamityGlobalItem()
-        {
-            StealthStrikePrefixBonus = 0f;
-        }
 
         // Ozzatron 21MAY2022: This function is required by TML 1.4's new clone behavior.
         // This behavior is sadly mandatory because there are a few places in vanilla Terraria which use cloning.
@@ -154,8 +158,8 @@ namespace CalamityMod.Items
         {
             CalamityGlobalItem myClone = (CalamityGlobalItem)base.Clone(item, itemClone);
 
-            // Rogue
-            myClone.StealthStrikePrefixBonus = StealthStrikePrefixBonus;
+            // BitFlags
+            myClone.flag0 = flag0;
 
             // Charge (Draedon's Arsenal)
             myClone.UsesCharge = UsesCharge;
@@ -165,15 +169,8 @@ namespace CalamityMod.Items
             myClone.ChargePerAltUse = ChargePerAltUse;
 
             // Enchantments
-            myClone.CannotBeEnchanted = CannotBeEnchanted;
             myClone.AppliedEnchantment = AppliedEnchantment.HasValue ? AppliedEnchantment.Value : null;
             myClone.DischargeEnchantExhaustion = DischargeEnchantExhaustion;
-
-            // Miscellaneous
-            myClone.revengeanceItem = revengeanceItem;
-            myClone.donorItem = donorItem;
-            myClone.devItem = devItem;
-            myClone.grabRangeMultiplier = grabRangeMultiplier;
 
             return myClone;
         }
@@ -240,6 +237,10 @@ namespace CalamityMod.Items
             if (item.accessory)
                 CannotBeEnchanted = true;
 
+            // Music boxes are pre-boss and sold from the Merchant, so they should now use the blue rarity.
+            if (item.type == ItemID.MusicBox || item.createTile == TileID.MusicBoxes || ItemID.Sets.ShimmerTransformToItem[item.type] == ItemID.MusicBox)
+                item.rare = ItemRarityID.Blue;
+
             // Modified Pearlwood items are now Light Red.
             if (item.type == ItemID.PearlwoodBow || item.type == ItemID.PearlwoodHammer || item.type == ItemID.PearlwoodSword)
                 item.rare = ItemRarityID.LightRed;
@@ -260,8 +261,8 @@ namespace CalamityMod.Items
             if (item.type == ItemID.Zenith)
                 item.rare = RarityType<BurnishedAuric>();
 
-            // Make most expert items no longer expert because they drop in all modes now.
-            switch (item.type)
+            // CIT 16OCT2025: Following overwhelming dev vote, Expert+ drops are NOT available in Classic
+            /*switch (item.type)
             {
                 case ItemID.RoyalGel:
                 case ItemID.EoCShield:
@@ -286,7 +287,7 @@ namespace CalamityMod.Items
                 case ItemID.LongRainbowTrailWings:
                     item.expert = false;
                     break;
-            }
+            }*/
 
             // Allow Souls to be used as ammo for SHPC.
             if (item.type == ItemID.SoulofLight || item.type == ItemID.SoulofNight || item.type == ItemID.SoulofFlight || item.type == ItemID.SoulofMight || item.type == ItemID.SoulofSight || item.type == ItemID.SoulofFright)
@@ -482,76 +483,6 @@ namespace CalamityMod.Items
                 }
             }
 
-            // 23APR2025: Ozzatron: make late game vanilla guns significantly more accurate
-            // Currently applies to Gatligator, Tactical Shotgun and Chain Gun
-            #region Vanilla Item Shoot Overrides
-            if (item.type == ItemID.Gatligator)
-            {
-                // Vanilla  Gatligator: X/Y velocity += -2 to 2 in steps of 0.05 (-40 to 40 x 0.05)
-                // Calamity Gatligator: Velocity gets randomly rotated by up to 0.05 radians and multiplied by 0.87 to 1.13
-                // This logic is lifted from Onyxia
-                //
-                // Gatligator has an additional inaccuracy effect where bullets have a 1 in 3 chance to have their velocity totally fucked
-                // When this happens, the X and Y components of the velocity are multiplied by 0.4 to 1.6, with separate random calls for each
-                // This has been replicated by giving bullets a 1 in 3 chance to go much faster, but be more inaccurate
-                //
-                // Vanilla Gatligator gets additional hardcoded inaccuracy to produce the gun jittering visual
-                // Extra inaccuracy: X/Y velocity += -1.5 to 1.5 in steps of 0.03 (-50 to 50 x 0.03)
-                // This is IL edited out
-
-                Vector2 spreadVel;
-                if (Main.rand.NextBool(3)) // Xtra Inaccurate
-                {
-                    float radianInaccuracy = 0.09f;
-                    float randAngle = Main.rand.NextFloat(-radianInaccuracy, radianInaccuracy);
-                    float randVelMultiplier = Main.rand.NextFloat(1.3f, 1.63f);
-                    spreadVel = velocity.RotatedBy(randAngle) * randVelMultiplier;
-                }
-                else
-                {
-                    float radianInaccuracy = 0.05f;
-                    float randAngle = Main.rand.NextFloat(-radianInaccuracy, radianInaccuracy);
-                    float randVelMultiplier = Main.rand.NextFloat(0.87f, 1.13f);
-                    spreadVel = velocity.RotatedBy(randAngle) * randVelMultiplier;
-                }
-
-                Projectile.NewProjectile(source, position, spreadVel, type, damage, knockBack, player.whoAmI);
-                return false;
-            }
-
-            if (item.type == ItemID.TacticalShotgun)
-            {
-                // Vanilla  Tactical Shotgun: X/Y velocity += -2 to 2 in steps of 0.05 (-40 to 40 x 0.05)
-                // Calamity Tactical Shotgun: Velocity gets a random vector of magnitude 0-1 added to it, anywhere on the unit circle
-
-                int tacticalShotgunNumBullets = 6;
-                for (int i = 0; i < tacticalShotgunNumBullets; i++)
-                {
-                    Vector2 spreadVel = velocity + Main.rand.NextVector2Circular(0.5f, 0.5f);
-                    Projectile.NewProjectile(source, position, spreadVel, type, damage, knockBack, player.whoAmI);
-                }
-                return false;
-            }
-
-            if (item.type == ItemID.ChainGun)
-            {
-                // Vanilla  Chain Gun: X/Y velocity += -1.2 to 1.2 in steps of 0.03 (-40 to 40 x 0.03)
-                // Calamity Chain Gun: Velocity gets randomly rotated by up to 0.035 radians and multiplied by 0.92 to 1.08
-                // This logic is lifted from Onyxia
-                //
-                // Vanilla Chain Gun gets additional hardcoded accuracy to produce the gun jittering visual
-                // Extra inaccuracy: X/Y velocity += -1.5 to 1.5 in steps of 0.03 (-50 to 50 x 0.03)
-                // This is IL edited out
-
-                float radianInaccuracy = 0.035f;
-                float randAngle = Main.rand.NextFloat(-radianInaccuracy, radianInaccuracy);
-                float randVelMultiplier = Main.rand.NextFloat(0.92f, 1.08f);
-                Vector2 spreadVel = velocity.RotatedBy(randAngle) * randVelMultiplier;
-                Projectile.NewProjectile(source, position, spreadVel, type, damage, knockBack, player.whoAmI);
-                return false;
-            }
-            #endregion
-
             return true;
         }
         #endregion
@@ -611,7 +542,7 @@ namespace CalamityMod.Items
             // Prevent Mana Stars from being picked up while wielding Ion Blaster or Apoctosis Array
             if (item.type == ItemID.Star || item.type == ItemID.SoulCake || item.type == ItemID.SugarPlum)
             {
-                if (player.ActiveItem().type == ItemType<IonBlaster>() || player.ActiveItem().type == ItemType<ApoctosisArray>())
+                if (player.HeldItem.type == ItemType<IonBlaster>() || player.HeldItem.type == ItemType<ApoctosisArray>())
                     return false;
             }
             return base.CanPickup(item, player);
@@ -713,6 +644,7 @@ namespace CalamityMod.Items
                     return true;
                 }
             }
+            
             return base.UseItem(item, player);
         }
 
@@ -722,7 +654,7 @@ namespace CalamityMod.Items
             {
                 return false;
             }
-            if (player.ActiveItem().type == ItemType<VoidConcentrationStaff>() && player.ownedProjectileCounts[ProjectileType<VoidConcentrationBlackhole>()] == 0)
+            if (player.HeldItem.type == ItemType<VoidConcentrationStaff>() && player.ownedProjectileCounts[ProjectileType<VoidConcentrationBlackhole>()] == 0)
             {
                 foreach (Projectile p in Main.ActiveProjectiles)
                 {
@@ -737,7 +669,7 @@ namespace CalamityMod.Items
                 }
                 return false;
             }
-            if (player.ActiveItem().type == ItemType<GlacialEmbrace>())
+            if (player.HeldItem.type == ItemType<GlacialEmbrace>())
             {
                 bool canContinue = true;
                 int count = 0;
@@ -767,7 +699,7 @@ namespace CalamityMod.Items
                         float angleVariance = MathHelper.TwoPi / pointyThingyAmount;
                         float angle = 0f;
 
-                        var source = player.GetSource_ItemUse(player.ActiveItem());
+                        var source = player.GetSource_ItemUse(player.HeldItem);
                         for (int i = 0; i < pointyThingyAmount; i++)
                         {
                             if (Main.projectile.Length == Main.maxProjectiles)
@@ -872,10 +804,6 @@ namespace CalamityMod.Items
             // Handle general use-item effects for the Gem Tech Armor.
             player.Calamity().GemTechState.OnItemUseEffects(item);
 
-            if (item.type == ItemID.MonkStaffT1 || CalamityItemSets.AutoreusableSpear[item.type])
-            {
-                return player.ownedProjectileCounts[item.shoot] <= 0;
-            }
             if (item.type == ItemID.RodofDiscord)
             {
                 if (player.chaosState)
@@ -970,6 +898,8 @@ namespace CalamityMod.Items
             // This assume all items with a damage hit is a weapon. There appears to be no edge cases for this thus far
             if (player.Calamity().oldFashioned)
                 modifiers.SourceDamage *= OldFashioned.DamageReductionMultiplier;
+            if (player.Calamity().ivDrip)
+                modifiers.SourceDamage *= IVDripOnTheRocks.DamageReductionMultiplier;
         }
 
         public override void OnHitNPC(Item item, Player player, NPC target, NPC.HitInfo hit, int damageDone)
@@ -1011,18 +941,6 @@ namespace CalamityMod.Items
                 return "MagicHat";
             if (head.type == ItemID.CrystalNinjaHelmet && body.type == ItemID.CrystalNinjaChestplate && legs.type == ItemID.CrystalNinjaLeggings)
                 return "CrystalAssassin";
-            if (head.type == ItemID.SquireGreatHelm && body.type == ItemID.SquirePlating && legs.type == ItemID.SquireGreaves)
-                return "SquireTier2";
-            if (head.type == ItemID.HuntressWig && body.type == ItemID.HuntressJerkin && legs.type == ItemID.HuntressPants)
-                return "HuntressTier2";
-            if (head.type == ItemID.ApprenticeHat && body.type == ItemID.ApprenticeRobe && legs.type == ItemID.ApprenticeTrousers)
-                return "ApprenticeTier2";
-            if (head.type == ItemID.SquireAltHead && body.type == ItemID.SquireAltShirt && legs.type == ItemID.SquireAltPants)
-                return "SquireTier3";
-            if (head.type == ItemID.HuntressAltHead && body.type == ItemID.HuntressAltShirt && legs.type == ItemID.HuntressAltPants)
-                return "HuntressTier3";
-            if (head.type == ItemID.ApprenticeAltHead && body.type == ItemID.ApprenticeAltShirt && legs.type == ItemID.ApprenticeAltPants)
-                return "ApprenticeTier3";
             if (head.type == ItemID.SpectreHood && body.type == ItemID.SpectreRobe && legs.type == ItemID.SpectrePants)
                 return "SpectreHealing";
             if (head.type == ItemID.SolarFlareHelmet && body.type == ItemID.SolarFlareBreastplate && legs.type == ItemID.SolarFlareLeggings)
@@ -1030,6 +948,11 @@ namespace CalamityMod.Items
             return "";
         }
 
+        public override void ModifyItemScale(Item item, Player player, ref float scale)
+        {
+            if (item.CountsAsClass<MeleeDamageClass>() && player.HasBuff(BuffID.Tipsy))
+                scale += 0.15f;
+        }
         public override void UpdateArmorSet(Player player, string set)
         {
             CalamityPlayer modPlayer = player.Calamity();
@@ -1052,44 +975,6 @@ namespace CalamityMod.Items
                 modPlayer.rogueStealthMax += 0.9f;
                 modPlayer.wearingRogueArmor = true;
             }
-            else if (set == "SquireTier2")
-            {
-                player.lifeRegen += 3;
-                player.GetDamage<SummonDamageClass>() += 0.15f;
-                player.GetCritChance<MeleeDamageClass>() += 10;
-                player.setBonus += $"\n{CalamityUtils.GetTextValue("Vanilla.Armor.SetBonus.SquireTier2")}";
-            }
-            else if (set == "HuntressTier2")
-            {
-                player.GetDamage<SummonDamageClass>() += 0.1f;
-                player.GetDamage<RangedDamageClass>() += 0.1f;
-                player.setBonus += $"\n{CalamityUtils.GetTextValue("Vanilla.Armor.SetBonus.HuntressTier2")}";
-            }
-            else if (set == "ApprenticeTier2")
-            {
-                player.GetDamage<SummonDamageClass>() += 0.1f;
-                player.GetCritChance<MagicDamageClass>() += 10;
-                player.setBonus += $"\n{CalamityUtils.GetTextValue("Vanilla.Armor.SetBonus.ApprenticeTier2")}";
-            }
-            else if (set == "SquireTier3")
-            {
-                player.lifeRegen += 6;
-                player.GetDamage<SummonDamageClass>() += 0.1f;
-                player.GetCritChance<MeleeDamageClass>() += 15;
-                player.setBonus += $"\n{CalamityUtils.GetTextValue("Vanilla.Armor.SetBonus.SquireTier3")}";
-            }
-            else if (set == "HuntressTier3")
-            {
-                player.GetDamage<SummonDamageClass>() += 0.1f;
-                player.GetDamage<RangedDamageClass>() += 0.1f;
-                player.setBonus += $"\n{CalamityUtils.GetTextValue("Vanilla.Armor.SetBonus.HuntressTier3")}";
-            }
-            else if (set == "ApprenticeTier3")
-            {
-                player.GetDamage<SummonDamageClass>() += 0.15f;
-                player.GetCritChance<MagicDamageClass>() += 15;
-                player.setBonus += $"\n{CalamityUtils.GetTextValue("Vanilla.Armor.SetBonus.ApprenticeTier3")}";
-            }
             else if (set == "SpectreHealing")
             {
                 player.GetDamage<MagicDamageClass>() += 0.4f;
@@ -1101,7 +986,7 @@ namespace CalamityMod.Items
                 player.endurance -= 0.12f;
 
                 // Solar Flare armor dash overrides modded dashes by default
-                if (player.solarShields > 0 || player.wingsLogic == (int)VanillaWingID.WingsSolar)
+                if (player.solarShields > 0)
                     modPlayer.DashID = string.Empty;
             }
         }
@@ -1153,35 +1038,30 @@ namespace CalamityMod.Items
                     player.GetAttackSpeed<MeleeDamageClass>() += 0.05f;
                     break;
 
-                case ItemID.SquireGreatHelm:
-                    player.lifeRegen -= 3;
-                    break;
-                case ItemID.SquirePlating:
-                    player.GetDamage<SummonDamageClass>() -= 0.1f;
-                    break;
                 case ItemID.SquireGreaves:
-                    player.GetDamage<SummonDamageClass>() -= 0.1f;
-                    player.GetCritChance<MeleeDamageClass>() -= 10;
+                    player.GetDamage<SummonDamageClass>() -= 0.05f;
+                    break;
+
+                case ItemID.HuntressWig:
+                    player.GetCritChance<RangedDamageClass>() += 5;
                     break;
 
                 case ItemID.HuntressJerkin:
-                    player.GetDamage<SummonDamageClass>() -= 0.1f;
-                    player.GetDamage<RangedDamageClass>() -= 0.15f;
-                    player.GetCritChance<RangedDamageClass>() += 5;
-                    break;
-                case ItemID.HuntressPants:
+                    player.GetDamage<RangedDamageClass>() -= 0.05f;
                     player.GetDamage<SummonDamageClass>() -= 0.05f;
                     break;
 
                 case ItemID.ApprenticeHat:
-                    player.GetDamage<MagicDamageClass>() -= 0.05f;
+                    player.GetDamage<MagicDamageClass>() -= 0.1f;
                     break;
+
                 case ItemID.ApprenticeRobe:
-                    player.GetDamage<SummonDamageClass>() -= 0.1f;
-                    break;
-                case ItemID.ApprenticeTrousers:
                     player.GetDamage<SummonDamageClass>() -= 0.05f;
-                    player.GetCritChance<MagicDamageClass>() -= 15;
+                    player.GetDamage<MagicDamageClass>() += 0.05f;
+                    break;
+
+                case ItemID.ApprenticeTrousers:
+                    player.GetCritChance<MagicDamageClass>() -= 5;
                     break;
 
                 case ItemID.ShroomiteBreastplate:
@@ -1193,34 +1073,36 @@ namespace CalamityMod.Items
                     player.GetDamage<MeleeDamageClass>() += 0.05f;
                     player.GetDamage<SummonDamageClass>() += 0.05f;
                     break;
+
                 case ItemID.SquireAltShirt:
-                    player.lifeRegen -= 6;
-                    player.GetDamage<SummonDamageClass>() -= 0.15f;
-                    break;
-                case ItemID.SquireAltPants:
                     player.GetDamage<SummonDamageClass>() -= 0.1f;
-                    player.GetCritChance<MeleeDamageClass>() -= 20;
+                    break;
+
+                case ItemID.SquireAltPants:
+                    player.GetCritChance<MeleeDamageClass>() -= 5;
+                    player.GetDamage<SummonDamageClass>() -= 0.05f;
                     break;
 
                 case ItemID.HuntressAltShirt:
-                    player.GetDamage<SummonDamageClass>() -= 0.15f;
-                    player.GetDamage<RangedDamageClass>() -= 0.15f;
+                    player.GetDamage<RangedDamageClass>() -= 0.05f;
+                    player.GetDamage<SummonDamageClass>() -= 0.05f;
                     break;
+
                 case ItemID.HuntressAltPants:
                     player.GetDamage<SummonDamageClass>() -= 0.05f;
-                    player.GetCritChance<RangedDamageClass>() -= 5;
                     break;
 
                 case ItemID.ApprenticeAltHead:
                     player.GetDamage<MagicDamageClass>() -= 0.05f;
                     player.GetDamage<SummonDamageClass>() -= 0.05f;
                     break;
+
                 case ItemID.ApprenticeAltShirt:
-                    player.GetDamage<SummonDamageClass>() -= 0.1f;
+                    player.GetDamage<SummonDamageClass>() -= 0.05f;
                     break;
+
                 case ItemID.ApprenticeAltPants:
-                    player.GetDamage<SummonDamageClass>() -= 0.1f;
-                    player.GetCritChance<MagicDamageClass>() -= 25;
+                    player.GetCritChance<MagicDamageClass>() -= 10;
                     break;
 
                 case ItemID.SolarFlareHelmet:
@@ -1270,23 +1152,17 @@ namespace CalamityMod.Items
             if (item.type == ItemID.ArcaneFlower)
                 player.GetDamage<MagicDamageClass>() += 0.05f;
 
-            
-            if (item.type == ItemID.EyeoftheGolem) 
+
+            if (item.type == ItemID.EyeoftheGolem)
             {
-                player.Calamity().critDamage += 0.2f;
+                player.Calamity().critDamage += 0.15f;
             }
             if (item.type == ItemID.SniperScope)
             {
                 player.GetDamage<RangedDamageClass>() -= 0.1f; //Total 0% damage
                 player.GetCritChance<RangedDamageClass>() += 2; //Total 12% crit
-                player.Calamity().critDamage += 0.2f;
+                player.Calamity().critDamage += 0.15f;
             }
-
-            if (item.type == ItemID.MagicQuiver)
-                player.arrowDamage -= 0.05f;
-
-            if (item.type == ItemID.MoltenQuiver)
-                player.arrowDamage -= 0.03f;
 
             if (item.type == ItemID.FireGauntlet)
             {
@@ -1380,10 +1256,12 @@ namespace CalamityMod.Items
             if (item.type == ItemID.GravityGlobe)
             {
                 player.GetJumpState<GravityJump>().Enable();
-                if (player.Calamity().justChangedGravity) {
+                if (player.Calamity().justChangedGravity)
+                {
                     player.GetJumpState<GravityJump>().Available = true;
                 }
-                if (player.wingsLogic <= 0 && player.velocity.Y != 0 && player.maxRunSpeed < 8) {
+                if (player.wingsLogic <= 0 && player.velocity.Y != 0 && player.maxRunSpeed < 8)
+                {
                     player.maxRunSpeed = 5f;
                 }
                 player.jumpSpeedBoost += 1.6f;
@@ -1510,8 +1388,8 @@ namespace CalamityMod.Items
         public override void GrabRange(Item item, Player player, ref int grabRange)
         {
             // First, apply the grab range multiplier.
-            if (grabRangeMultiplier > 1f)
-                grabRange = (int)(grabRangeMultiplier * grabRange);
+            if (item.TryGetGlobalItem<GrabRangeGlobalItem>(out var grabRangeItem) && grabRangeItem.grabRangeMultiplier > 1f)
+                grabRange = (int)(grabRangeItem.grabRangeMultiplier * grabRange);
 
             // Then, apply flat grab range boosts.
             if (player.Calamity().reaverExplore)
@@ -1519,9 +1397,9 @@ namespace CalamityMod.Items
             if (player.Calamity().victideSnailSet)
                 grabRange += VictideHeadSnail.SetBonusGrabRangeBoost;
 
-            // Nebula boosters have greater pickup range while using Nebula Mantle.
-            if (player.wingsLogic == (int)VanillaWingID.WingsNebula && ItemID.Sets.NebulaPickup[item.type])
-                grabRange *= 2;
+            // Nebula boosters have greater pickup range while hovering with Nebula Mantle.
+            if (player.wingsLogic == (int)VanillaWingID.WingsNebula && player.wingTime > 0f && player.controlJump && player.TryingToHoverDown && ItemID.Sets.NebulaPickup[item.type])
+                grabRange *= 3;
         }
         #endregion
 
@@ -1659,9 +1537,6 @@ namespace CalamityMod.Items
         private static int cachedForgeID = -1;
         public override void OnCreated(Item item, ItemCreationContext context)
         {
-            // ChoosePrefix also happens on craft so go reset it here too
-            storedPrefix = -1;
-
             // 05JUL2024: Ozzatron: Register the usage of Draedon's Forge for the purposes of his dialogue.
             // This was moved out of an On edit in the DraedonsForge item for Magic Storage compatibility.
             Player p = Main.LocalPlayer;
@@ -1669,62 +1544,6 @@ namespace CalamityMod.Items
                 cachedForgeID = TileType<DraedonsForge>();
             if (context is RecipeItemCreationContext && p.adjTile[cachedForgeID])
                 p.Calamity().HasCraftedDraedonsForge = true;
-        }
-        #endregion
-
-        #region Reforge Mechanic Rework
-        private static int storedPrefix = -1;
-        public override void PreReforge(Item item)
-        {
-            StealthStrikePrefixBonus = 0f;
-            storedPrefix = item.prefix;
-        }
-
-        // Ozzatron 31AUG2022: total rework to the reforge rework for mod compatibility
-        // you can now disable the rework with config in case it isn't enough to solve your conflicts
-        // removed data saved on items; reforging is now a coalescing flowchart that has no RNG
-        public override int ChoosePrefix(Item item, UnifiedRandom rand)
-        {
-            if (storedPrefix == -1 && item.CountsAsClass<RogueDamageClass>() && (item.maxStack == 1 || item.AllowReforgeForStackableItem))
-            {
-                // Crafting (or first reforge of) a rogue weapon has a 75% chance for a random modifier, this check is done by vanilla
-                // Negative modifiers have a 66.66% chance of being voided, Annoying modifier is intentionally ignored by vanilla
-                int prefix = CalamityUtils.RandomRoguePrefix();
-                bool keepPrefix = !CalamityUtils.NegativeRoguePrefix(prefix) || Main.rand.NextBool(3);
-                return keepPrefix ? prefix : 0;
-            }
-
-            if (!CalamityServerConfig.Instance.RemoveReforgeRNG || Main.gameMenu || storedPrefix == -1)
-                return -1;
-
-            // Pick a prefix using the new system.
-            return CalamityUtils.GetReworkedReforge(item, rand, storedPrefix);
-        }
-
-        public override void PostReforge(Item item)
-        {
-            storedPrefix = -1;
-            // Bandit steals 20% of the total price of the reforge if she's around.
-            if (NPC.AnyNPCs(NPCType<Bandit>()))
-            {
-                // Calculate the item's reforge cost.
-                int value = item.value;
-                Player p = Main.LocalPlayer;
-                ItemLoader.ReforgePrice(item, ref value, ref p.discountAvailable);
-
-                // Steal 20% of that money.
-                int stolen = value / 5;
-                CalamityWorld.MoneyStolenByBandit += stolen;
-
-                // Increment the reforge counter to allow the Bandit to refund
-                // Also triggers Tinkerer dialogue that hints to the player that money is being stolen
-                CalamityWorld.Reforges++;
-
-                if (Main.netMode == NetmodeID.MultiplayerClient)
-                {
-                    BanditStolenMoneySyncPacket.Send(stolen);
-                }
-            }
         }
         #endregion
 

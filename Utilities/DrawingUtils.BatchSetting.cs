@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Graphics;
-using Terraria;
 
 namespace CalamityMod
 {
+    [Obsolete("Use SpriteBatchParameters/SpriteBatchSnapshot")]
     public class BatchSetting(BlendState blend, SamplerState sampler, DepthStencilState depthStencil, RasterizerState rasterizer)
     {
         public readonly BlendState blendState = blend;

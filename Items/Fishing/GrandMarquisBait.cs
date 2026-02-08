@@ -1,6 +1,4 @@
-﻿using CalamityMod.NPCs.AcidRain;
-using CalamityMod.Rarities;
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 

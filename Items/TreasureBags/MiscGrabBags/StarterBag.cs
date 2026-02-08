@@ -76,15 +76,6 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
             };
             itemLoot.AddIf(getsLadPet, ModContent.ItemType<JoyfulHeart>());
 
-            // Mihaii dev item
-            // Name specific: "Mihaii"
-            static bool getsGoldenBomb(DropAttemptInfo info)
-            {
-                string playerName = info.player.name;
-                return playerName == "Mihaii";
-            };
-            itemLoot.AddIf(getsGoldenBomb, ModContent.ItemType<GoldenBomb>());
-
             // HPU dev item
             // Name specific: "Heart Plus Up"
             static bool getsHapuFruit(DropAttemptInfo info)
@@ -112,16 +103,6 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
             }
 
             itemLoot.AddIf(getsGhostBracelet, ModContent.ItemType<GhostBracelet>());
-
-            // Shayy dev item
-            // Name specific: "Shayy"
-            static bool getsPunchCard(DropAttemptInfo info)
-            {
-                string playerName = info.player.name;
-                return playerName == "Shayy";
-            }
-
-            itemLoot.AddIf(getsPunchCard, ModContent.ItemType<PunchCard>());
 
             // Xyk dev item
             // Name specific: "Xyk"

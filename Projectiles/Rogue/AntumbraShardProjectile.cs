@@ -1,11 +1,13 @@
 ﻿using System;
 using CalamityMod.Dusts;
+using CalamityMod.Enums;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -108,9 +110,10 @@ namespace CalamityMod.Projectiles.Rogue
                         GeneralParticleHandler.SpawnParticle(spark);
                         Particle spark2 = new SparkParticle(Projectile.Center, -Projectile.velocity * randVel, false, lifetime, 0.9f, Color.LightGreen);
                         GeneralParticleHandler.SpawnParticle(spark2);
+                        spark2.DrawLayer = GeneralDrawLayer.AfterEverything;
                         if (Main.rand.NextBool() && !Projectile.Calamity().stealthStrike)
                         {
-                            Dust dust = Dust.NewDustPerfect(Projectile.Center, 278);
+                            Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.FireworksRGB);
                             dust.noGravity = true;
                             dust.velocity = Projectile.velocity * randVel;
                             dust.scale = Main.rand.NextFloat(0.6f, 0.8f);
@@ -125,10 +128,11 @@ namespace CalamityMod.Projectiles.Rogue
                         GeneralParticleHandler.SpawnParticle(spark);
                         Particle spark2 = new SparkParticle(placement, -Projectile.velocity * speed, false, 11, 0.5f, Color.LightGreen);
                         GeneralParticleHandler.SpawnParticle(spark2);
+                        spark2.DrawLayer = GeneralDrawLayer.AfterEverything;
                     }
                     if (closestTarget != null && Projectile.numHits < 1 && closestTarget.CanBeChasedBy(Projectile))
                     {
-                        CalamityUtils.HomeInOnSelectedNPC(Projectile, chosenTarget, true, 0.95f, 16, 0.96f);
+                        CalamityUtils.HomeInOnSelectedNPC(Projectile, Projectile.Center.ClosestNPCAt(2000), true, 0.95f, 16, 0.96f);
                     }
                 }
             }
@@ -218,6 +222,7 @@ namespace CalamityMod.Projectiles.Rogue
 
                     Particle bolt2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.LightGreen * 0.85f, "CalamityMod/Particles/BloomRing", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 1f, 18);
                     GeneralParticleHandler.SpawnParticle(bolt2);
+                    bolt2.DrawLayer = GeneralDrawLayer.AfterEverything;
 
                     Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.ToRadians(45f * (storedVelocity.X > 0 ? 1 : -1));
                 }

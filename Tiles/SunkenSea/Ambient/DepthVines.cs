@@ -2,7 +2,6 @@
 using Terraria.ID;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace CalamityMod.Tiles.SunkenSea.Ambient
 {
@@ -16,7 +15,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 			Main.tileNoAttach[Type] = true;
 			TileID.Sets.IsVine[Type] = true;
             TileID.Sets.VineThreads[Type] = true;
-			AddMapEntry(new Color(41, 97, 126));
+			AddMapEntry(new Color(48, 106, 100));
 			DustType = DustID.Grass;
 			HitSound = SoundID.Grass;
 		}
@@ -45,9 +44,10 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 		public override void RandomUpdate(int i, int j)
 		{
 			Tile tileBelow = Framing.GetTileSafely(i, j + 1);
-			if (WorldGen.genRand.NextBool(5) && !tileBelow.HasTile && tileBelow.LiquidType != LiquidID.Lava)
+            Tile tile = Framing.GetTileSafely(i, j);
+            if (WorldGen.genRand.NextBool(5) && !tileBelow.HasTile && tileBelow.LiquidType != LiquidID.Lava)
             {
-				bool PlaceVine = false;
+                bool PlaceVine = false;
 				int Test = j;
 				while (Test > j - 10) 
                 {
@@ -56,7 +56,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
                     {
 						break;
 					}
-					else if (!testTile.HasTile || testTile.TileType != ModContent.TileType<Navystone>()) 
+					else if (!testTile.HasTile || testTile.TileType != ModContent.TileType<Navystone>() && tile.LiquidType == LiquidID.Water) 
                     {
 						Test--;
 						continue;
@@ -74,6 +74,8 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 						NetMessage.SendTileSquare(-1, i, j + 1, 3, TileChangeType.None);
 				}
 			}
+
+            
 		}
 	}
 }

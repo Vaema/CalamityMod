@@ -8,7 +8,7 @@ AndroombaBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 AnthozoanCrabBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 AquaticUrchinBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 AriesBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
-ArmoredDiggerBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+BurrowerBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 AstraglomerateBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 AstralachneaBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 AstralProbeBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
@@ -26,6 +26,7 @@ BohldohrBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 BoxJellyfishBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 CalamityEyeBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 CannonballJellyfishBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+CarrionSwallowerBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 ChaoticPufferBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 CladCrabBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 ClamBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
@@ -54,15 +55,22 @@ FusionFeederBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 GammaSlimeBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 GhostBellBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 GiantSquidBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+GildedAxolotlBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 GnasherBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 GulperEelBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 HadarianBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+HauntedChumBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 HeatSpiritBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 IceClasperBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 ImpiousImmolatorBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 InfernalCongealmentBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 IrradiatedSlimeBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+JellyghoulBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+KelpieSeadragonBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 LaserfishBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+LazarusLampfishBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+LeerslugBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+LostShoalBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 LuminousCorvinaBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 MantisBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 MantisShrimpBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
@@ -74,6 +82,7 @@ NuclearToadBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 OarfishBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 OrthoceraBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 OverloadedSoldierBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+PearlpodBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 PerennialSlimeBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 PestilentSlimeBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 PhantomSpiritBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
@@ -81,7 +90,10 @@ PiggyBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 PlaguebringerBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 PlagueChargerBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 PlagueshellBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+PodobooKoiBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+PolyperilBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 PrismBackBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+PrismaticGuppyBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 ProbesnoutBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 ProfanedEnergyBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 RadiatorBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
@@ -91,22 +103,28 @@ RepairUnitBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 RimehoundBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 RotdogBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 RubyCrawlerBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+SandProwlerBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 SapphireCrawlerBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+ScavengerBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 ScornEaterBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 ScryllarBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 SeaFloatyBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 SeaMinnowBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
-SeaSerpentBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+SearslugBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 SharkoonBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 ShockstormShuttleBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+ShoreskipperBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 ShroombleBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 SightseerColliderBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 SightseerSpitterBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 SkyfinBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 SlabCrabBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+SlugbunBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 SoulSlurperBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+SteampodBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 StellarCulexBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 StormlionBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+StormlionSentryBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 SulflounderBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 SulphurousSkaterBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 SunskaterBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
@@ -383,6 +401,18 @@ ReinforcedCrateItem: {
 	Tooltip: ""
 }
 
+Rock: {
+	DisplayName: Rock
+	Tooltip:
+		'''
+		When the battle was finally over, the dust having just began to settle
+		Where even the stone refused the course of time, there sat a monk
+		Who dared to question history and stare into fate
+		'What is the true price of the past being ever eternal?
+		Why must our future forever haunt us?'
+		'''
+}
+
 RustedPipes: {
 	DisplayName: Rusted Pipes
 	Tooltip: ""
@@ -491,32 +521,6 @@ BabyFlakCrabCage: {
 BabyGhostBellJar: {
 	DisplayName: Baby Ghost Bell Jar
 	Tooltip: ""
-}
-
-CalamityCanvas2023: {
-	DisplayName: Calamity Canvas 2023
-	Tooltip:
-		'''
-		<right> when placed to open a UI which allows customizing the focus of the painting
-		<left> to make the focus follow the cursor, <left> again to set it
-		Arrow keys can also be used to manually adjust the focus point
-		The scroll wheel zooms the focus in and out
-		Hold Shift to hide the UI without closing it
-		'Embrace chaos'
-		'''
-}
-
-CalamityCanvas2024: {
-	DisplayName: Calamity Canvas 2024
-	Tooltip:
-		'''
-		<right> when placed to open a UI which allows customizing the focus of the painting
-		<left> to make the focus follow the cursor, <left> again to set it
-		Arrow keys can also be used to manually adjust the focus point
-		The scroll wheel zooms the focus in and out
-		Hold Shift to hide the UI without closing it
-		'Embrace havoc'
-		'''
 }
 
 AquaticScourgeRelic: {
@@ -699,7 +703,7 @@ AltarOfTheAccursedItem: {
 	Tooltip:
 		'''
 		Offer [i:CalamityMod/AshesofCalamity] {$Items.Materials.AshesofCalamity.DisplayName} at this altar to summon the Witch
-		Doing so will create a square arena of blocks, with the altar at its center
+		Doing so will create a square arena, with the altar at its center
 		The Witch enrages while you are outside of the arena
 		Hovering over the altar while using ruler measurements will display a temporary arena box
 		{$CommonItemTooltip.SpecialCrafting}
@@ -751,16 +755,6 @@ CrimsonEffigy: {
 		<right> when placed to gain {0}% damage and {1} defense
 		However, this comes at a cost of {2}% maximum health
 		This cannot be stacked with Corruption Effigy
-		'''
-}
-
-ThankYouPainting: {
-	DisplayName: Thank You
-	Tooltip:
-		'''
-		Thanks to the entire team, everyone who supported, and those who all play the mod and keep it alive!
-		The confines of this painting is not enough to fit the entire team
-		Hold Shift to see a list of past and current developers
 		'''
 }
 
@@ -884,6 +878,56 @@ NavyPrismTorch: {
 	Tooltip: Can be placed in water
 }
 
+AmidiasPainting: {
+	DisplayName: Sea King's Release
+	Tooltip:
+		'''
+		'O. Rios'
+		'September-October!'
+		'''
+}
+
+CalamityCanvas2023: {
+	DisplayName: Calamity Canvas 2023
+	Tooltip:
+		'''
+		<right> when placed to open a UI which allows customizing the focus of the painting
+		<left> to make the focus follow the cursor, <left> again to set it
+		Arrow keys can also be used to manually adjust the focus point
+		The scroll wheel zooms the focus in and out
+		Hold Shift to hide the UI without closing it
+		'Embrace chaos'
+		'''
+}
+
+CalamityCanvas2024: {
+	DisplayName: Calamity Canvas 2024
+	Tooltip:
+		'''
+		<right> when placed to open a UI which allows customizing the focus of the painting
+		<left> to make the focus follow the cursor, <left> again to set it
+		Arrow keys can also be used to manually adjust the focus point
+		The scroll wheel zooms the focus in and out
+		Hold Shift to hide the UI without closing it
+		'Embrace havoc'
+		'''
+}
+
+ForgivenessPainting: {
+	DisplayName: Forgiveness
+	Tooltip: "'D. User'"
+}
+
+ThankYouPainting: {
+	DisplayName: Thank You
+	Tooltip:
+		'''
+		Thanks to the entire team, everyone who supported, and those who all play the mod and keep it alive!
+		The confines of this painting is not enough to fit the entire team
+		Hold Shift to see a list of past and current developers
+		'''
+}
+
 PiggyCage: {
 	DisplayName: Piggy Cage
 	Tooltip: ""
@@ -948,7 +992,11 @@ ThaumaticChair: {
 
 ThermalTorch: {
 	DisplayName: Thermal Torch
-	Tooltip: Can be placed in water
+	Tooltip:
+		'''
+		Can be placed in water
+		Can dispell the magical darkness of the Abyss when placed
+		'''
 }
 
 TranquilityCandle: {
@@ -958,7 +1006,11 @@ TranquilityCandle: {
 
 VoidTorch: {
 	DisplayName: Void Torch
-	Tooltip: Can be placed in water
+	Tooltip:
+		'''
+		Can be placed in water
+		Can dispell the magical darkness of the Abyss when placed
+		'''
 }
 
 AnahitaTrophy: {
@@ -3960,11 +4012,6 @@ VolcanicSand: {
 
 // End of Sunken Sea
 
-Dreadstone: {
-	DisplayName: Dreadstone
-	Tooltip: ""
-}
-
 UelibloomBrick: {
 	DisplayName: Uelibloom Brick
 	Tooltip: ""
@@ -4144,16 +4191,6 @@ EutrophicGlassWall: {
 	Tooltip: ""
 }
 
-EutrophicSandWall: {
-	DisplayName: Unsafe Eutrophic Sand Wall
-	Tooltip: ""
-}
-
-EutrophicSandWallSafe: {
-	DisplayName: Eutrophic Sand Wall
-	Tooltip: ""
-}
-
 ExoPlatingWallItem: {
 	DisplayName: Exo Plating Wall
 	Tooltip: ""
@@ -4195,11 +4232,6 @@ NavyplateWall: {
 }
 
 NavystoneWall: {
-	DisplayName: Unsafe Navystone Wall
-	Tooltip: ""
-}
-
-NavystoneWallSafe: {
 	DisplayName: Navystone Wall
 	Tooltip: ""
 }
@@ -4651,5 +4683,15 @@ ShellTrimBrickWall: {
 
 BasaltSlab: {
 	DisplayName: Basalt Slab
+	Tooltip: ""
+}
+
+UnsafeNavystoneWall: {
+	DisplayName: Unsafe Navystone Wall
+	Tooltip: ""
+}
+
+MossyStone: {
+	DisplayName: Mossy Stone
 	Tooltip: ""
 }

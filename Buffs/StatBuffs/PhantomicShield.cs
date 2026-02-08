@@ -7,7 +7,7 @@ namespace CalamityMod.Buffs.StatBuffs
 {
     public class PhantomicShield : ModBuff
     {
-        public override LocalizedText Description => base.Description.WithFormatArgs(PhantomicArtifact.DefenseBoost, PhantomicArtifact.DamageReductionBoost.ToPercent());
+        public override LocalizedText Description => base.Description.WithFormatArgs(PhantomicArtifact.DefenseBoost);
 
         public override void SetStaticDefaults()
         {
@@ -19,7 +19,6 @@ namespace CalamityMod.Buffs.StatBuffs
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.endurance += PhantomicArtifact.DamageReductionBoost; // TODO -- is this applied too late to be affected by the DR softcap?
             player.statDefense += PhantomicArtifact.DefenseBoost;
         }
     }

@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Enums;
+using CalamityMod.Pathfinding;
+using CalamityMod.Pathfinding.Movements;
 using CalamityMod.Systems.Collections;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.Bestiary;
@@ -17,10 +18,10 @@ namespace CalamityMod.NPCs.SunkenSea
     /// An abstract class that provides the necessary members for an NPC to function as a Sunken Sea NPC.<br/>
     /// These NPCs can hunt both players and other NPCs, and maintain lists of NPCs they hunt and avoid.
     /// </summary>
-    public abstract class SunkenSeaNPC : ModNPC
+    public abstract class SunkenSeaNPC : ModNPC, IPathfinder
     {
         protected PathfindingManager pathfinding = null;
-        
+
         private NPC _currentPrey;
         private NPC _currentPredator;
         private Player _currentPlayer;
@@ -99,8 +100,6 @@ namespace CalamityMod.NPCs.SunkenSea
                                BiomeDesignation.HasFlag(flag))
                 .Select(flag => SunkenSeaBiomeCorrespondentDict.Dict[flag].BiomeType)
                 .ToArray();
-
-            Banner = Type;
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -205,7 +204,7 @@ namespace CalamityMod.NPCs.SunkenSea
         public static bool SunkenSeaTileValidity(NPC npc, Point point, bool accountForSize = true)
         {
             Point actualFuckingPoint = new Point(point.X * 16, point.Y * 16);
-            
+
             if (accountForSize)
             {
                 return npc.Hitbox.Contains(actualFuckingPoint)
@@ -231,5 +230,31 @@ namespace CalamityMod.NPCs.SunkenSea
                 || !NPC.GetIntersectingHitboxPoints(
                     actualFuckingPoint, 10, 10).Any(a => Main.tile[a].IsTileSolidGround() || Main.tile[a].LiquidAmount < 255 || Main.tile[a].LiquidType != LiquidID.Lava);
         }
+
+        #region IPathfinder Implementation
+
+        /// <summary>
+        /// The acceleration this PathfindingManager will impart to its Entity when making it follow a found path.<br />
+        /// This has no impact on the Entity's other behaviors, AI, etc.
+        /// </summary>
+        public float Acceleration { get; set; } = 0.2f;
+
+        /// <summary>
+        /// The maximum speed this PathfindingManager allow its Entity to move at when making it follow a found path.<br />
+        /// This has no impact on the Entity's other behaviors, AI, etc.
+        /// </summary>
+        public float MaxSpeed { get; set; } = 4f;
+
+        /// <summary>
+        /// The minimum distance this PathdingManager requires its Entity to reach from its target point before the point is marked as "reached".<br />
+        /// This has no impact on the Entity's other behaviors, AI, etc.
+        /// </summary>
+        public float MinimumPointDistance { get; set; } = 48f;
+
+        public virtual IEnumerable<IMovement> Movements => [new SunkenSeaSwimMovement(NPC)];
+
+        public virtual void AwaitingPathBehavior() => NPC.velocity *= 0.95f;
+
+        #endregion
     }
 }

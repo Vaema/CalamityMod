@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Projectiles.Typeless;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -19,11 +18,6 @@ namespace CalamityMod.Items.Ammo
         public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
         {
             itemGroup = ContentSamples.CreativeHelper.ItemGroup.Solutions;
-        }
-
-        public override bool CanConsumeAmmo(Item ammo, Player player)
-        {
-            return !(player.itemAnimation < player.ActiveItem().useAnimation - 3);
         }
     }
 }

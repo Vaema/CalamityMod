@@ -171,8 +171,6 @@ namespace CalamityMod
             EnemyStats.DebuffImmunities = new SortedDictionary<int, Tuple<GeneralImmunityStatus, int[]>>
             {
                 { ModContent.NPCType<KingSlimeJewelRuby>(), immuneToEverything },
-                { ModContent.NPCType<KingSlimeJewelSapphire>(), immuneToEverything },
-                { ModContent.NPCType<KingSlimeJewelEmerald>(), immuneToEverything },
 
                 { ModContent.NPCType<HiveMind>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<BrainRot>() }) },
 
@@ -278,12 +276,8 @@ namespace CalamityMod
                 { ModContent.NPCType<OldDukeToothBall>(), sulphur },
                 { ModContent.NPCType<SulphurousSharkron>(), sulphur },
 
-                { ModContent.NPCType<DevourerofGodsHead>(), immuneToEverything },
                 { ModContent.NPCType<DevourerofGodsBody>(), immuneToEverything },
                 { ModContent.NPCType<DevourerofGodsTail>(), immuneToEverything },
-                { ModContent.NPCType<CosmicGuardianHead>(), immuneToEverything },
-                { ModContent.NPCType<CosmicGuardianBody>(), immuneToEverything },
-                { ModContent.NPCType<CosmicGuardianTail>(), immuneToEverything },
 
                 { ModContent.NPCType<Yharon>(), new(GeneralImmunityStatus.None, new int[] { BuffID.OnFire, ModContent.BuffType<Dragonfire>() }) },
 
@@ -409,9 +403,6 @@ namespace CalamityMod
                 { ModContent.NPCType<ProfanedEnergyBody>(), holy },
                 { ModContent.NPCType<Sunskater>(), holy },
 
-                { ModContent.NPCType<ArmoredDiggerHead>(), immuneToEverything },
-                { ModContent.NPCType<ArmoredDiggerBody>(), immuneToEverything },
-                { ModContent.NPCType<ArmoredDiggerTail>(), immuneToEverything },
                 { ModContent.NPCType<Eidolist>(), immuneToEverything },
 
                 { ModContent.NPCType<Frogfish>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Poisoned, BuffID.Venom }) },

@@ -6,9 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
-using Terraria.GameContent;
 using Terraria.Graphics.Shaders;
-using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
@@ -117,13 +115,13 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.Center = Owner.MountedCenter + Projectile.velocity;
         }
 
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float fadeOpacity = (float)Math.Sqrt(1 - completionRatio);
             return Color.DeepSkyBlue * fadeOpacity;
         }
 
-        internal float WidthFunction(float completionRatio)
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos)
         {
             return 29.4f * completionRatio;
         }

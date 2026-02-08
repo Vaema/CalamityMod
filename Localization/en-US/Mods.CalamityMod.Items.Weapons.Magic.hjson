@@ -29,7 +29,20 @@ AethersWhisper: {
 
 AlulaAustralis: {
 	DisplayName: Alula Australis
-	Tooltip: Fires a beautiful aurora trailed by a star shower
+	Tooltip: Fires a beautiful aurora that inflicts [cbuff:CalamityMod/AstralInfectionDebuff] trailed by a star shower
+}
+
+AlphaDraconis: {
+	DisplayName: Alpha Draconis
+	Tooltip:
+		'''
+		Calls down a meteor shower towards the cursor
+		Successful hits sometimes create Starbursts that can be picked up
+		<right> with enough Starbursts to summon Draco to protect you
+		Draco burns Starbursts over time, and can be disspelled with <right>
+		Draco inflicts [cbuff:CalamityMod/Voidfrost]
+		'An imitation of insanity'
+		'''
 }
 
 AnahitasArpeggio: {
@@ -109,20 +122,17 @@ ArtAttack: {
 
 AstralachneaStaff: {
 	DisplayName: Astralachnea Staff
-	Tooltip: Fires a spread of homing astral spider fangs
+	Tooltip: Fires a spread of homing astral spider fangs that inflict [cbuff:CalamityMod/AstralInfectionDebuff]
 }
 
 AstralStaff: {
 	DisplayName: Astral Staff
-	Tooltip: Summons a large crystal from the sky that has a large area of effect on impact
+	Tooltip: Summons a large crystal from the sky that has a large area of effect on impact and inflicts [cbuff:CalamityMod/AstralInfectionDebuff]
 }
 
 Atlantis: {
 	DisplayName: Atlantis
-	Tooltip: "[GFB]"
-	TooltipNormal: Casts aquatic spears that split as they travel
-	TooltipGFB: A cosmic serpent prevents this weapon's true potential from shining...
-	TooltipGFBDoG: Take good care of my weapon, or else... -CIT
+	Tooltip: Casts aquatic spears that split as they travel
 }
 
 AuguroftheVoid: {
@@ -181,15 +191,6 @@ ChronomancersScythe: {
 		'''
 }
 
-ClamorNoctus: {
-	DisplayName: Clamor Noctus
-	Tooltip:
-		'''
-		Fires night wyverns and stars from the sky that stick to enemies and tiles and explode
-		'Let the sky fall'
-		'''
-}
-
 ClothiersWrath: {
 	DisplayName: Clothier's Wrath
 	Tooltip: Shoots 3 shadowflame skulls
@@ -229,15 +230,6 @@ DarkSpark: {
 		'''
 		'And everything under the sun is in tune,
 		But the sun is eclipsed by the moon.'
-		'''
-}
-
-DeathhailStaff: {
-	DisplayName: Deathhail Staff
-	Tooltip:
-		'''
-		Casts a storm of nebula lasers from the sky
-		'Rain death upon your foes!'
 		'''
 }
 
@@ -440,6 +432,11 @@ Heresy: {
 		Releases fire and souls upward from a held book
 		As the book is held the power of both increases
 		'''
+}
+
+HyperdeathRiftScepter: {
+	DisplayName: Hyperdeath Rift Scepter
+	Tooltip: Tears space in two with [c/ff00ff:Hyperdeath Rift Ripper]
 }
 
 HyphaeRod: {
@@ -734,7 +731,7 @@ SanguineFlare: {
 		'''
 		Charges up a sanguine flare that gains power over time
 		When striking an enemy, this flare causes a bloodsplosion and splits into blood orbs
-		Picking up these blood orbs reduces the duration of [Potion Sickness]
+		Picking up these blood orbs reduces the duration of [cbuff:PotionSickness]
 		'''
 }
 
@@ -952,6 +949,29 @@ UndinesRetribution: {
 	Tooltip: Casts a swarm of homing spears
 }
 
+UnstableCastersGauntlet: {
+	DisplayName: Unstable Caster's Gauntlet
+	Tooltip:
+		'''
+		<left> to fire piercing needles
+		<right> to summon a ring of sigils, each representing a primordial element
+		Hold <left> with sigils available to consume random sigils, each unleashing an attack
+		<right> again while the elemental ring is out to replace all empty slots with [c/DD84E8:Warped] sigils
+		[c/DD84E8:Warped] sigils automatically fire barrages of inaccurate purple blasts
+		All actions require sufficient [c/EADAF5:Vis] to use
+		[c/EADAF5:Vis] is restored over time
+		'''
+	HoldShiftTooltip:
+		'''
+		[c/DBD7CA:Ordo] sigils always land critical strikes and pierce infinitely
+		[c/ABB6D4:Perdito] sigils ignore 25 points of enemy defense
+		[c/E89B8E:Ignis] sigils inflict Daybroken
+		[c/8ECBE8:Aqua] sigils inflict Crush Depth
+		[c/E1E88E:Aer] sigils boast substantial knockback
+		[c/ACCF9F:Terra] sigils split into sharp rocks
+		'''
+}
+
 ValkyrieRay: {
 	DisplayName: Valkyrie Ray
 	Tooltip: Casts a devastating ray of holy power
@@ -991,7 +1011,7 @@ Viscera: {
 		'''
 		Fires a rapid barrage of piercing blood beams
 		The first enemy struck by each beam will burst into blood orbs
-		Picking up these blood orbs reduces the duration of [Potion Sickness]
+		Picking up these blood orbs reduces the duration of [cbuff:PotionSickness]
 		Each successive beam in the barrage deals more damage
 		The last beam of the barrage instead explodes upon hitting an enemy
 		'''

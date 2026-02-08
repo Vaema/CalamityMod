@@ -1,12 +1,10 @@
-﻿using System;
+﻿using CalamityMod.Enums;
+using CalamityMod.Graphics.Renderers;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
-using Terraria.Audio;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
@@ -109,6 +107,7 @@ namespace CalamityMod.Projectiles.Rogue
                 {
                     Particle blastRing = new CustomPulse(Projectile.Center, Vector2.Zero, Color.LightGreen with { A = 0 }, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), Projectile.ai[1] * 0.5f, Projectile.ai[1] * 0.3f, 15, false);
                     GeneralParticleHandler.SpawnParticle(blastRing);
+                    blastRing.DrawLayer = GeneralDrawLayer.AfterEverything;
                 }
             }
             else

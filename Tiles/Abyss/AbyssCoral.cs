@@ -2,8 +2,6 @@
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.ID;
-using Microsoft.Xna.Framework.Graphics;
-using System;
 using CalamityMod.Systems;
 
 namespace CalamityMod.Tiles.Abyss
@@ -22,7 +20,7 @@ namespace CalamityMod.Tiles.Abyss
 
             TileID.Sets.ChecksForMerge[Type] = true;
             HitSound = SoundID.Dig;
-            DustType = 119;
+            DustType = DustID.Ice_Pink;
             AddMapEntry(new Color(70, 115, 144));
             Main.tileShine2[Type] = true;
 

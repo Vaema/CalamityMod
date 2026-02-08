@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
@@ -81,7 +79,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
             if (Main.rand.NextBool(35) && targetDist < 1400f && Time > 5)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 263, new Vector2(0, -5).RotatedByRandom(0.05f) * Main.rand.NextFloat(0.3f, 1.6f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.PortalBolt, new Vector2(0, -5).RotatedByRandom(0.05f) * Main.rand.NextFloat(0.3f, 1.6f));
                 dust.noGravity = true;
                 dust.scale = Main.rand.NextFloat(0.3f, 1f);
                 dust.color = sparkColor;
@@ -89,7 +87,10 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<MiracleBlight>(), 300);
+
+            //Doze - Flamethrowers in vanilla are long debuff infliction tools (20 seconds of their debuff).
+            //I am applying this as the base for Cal flamethrowers, with shorter times being the exception instead of the rule
+            target.AddBuff(ModContent.BuffType<MiracleBlight>(), 1200);
             if (audioCooldown == 0)
             {
                 SoundEngine.PlaySound(Photoviscerator.HitSound, target.Center);
@@ -97,7 +98,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
         }
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<MiracleBlight>(), 300);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<MiracleBlight>(), 1200);
 
     }
 }

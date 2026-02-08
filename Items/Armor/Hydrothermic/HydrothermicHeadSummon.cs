@@ -1,7 +1,5 @@
 ﻿using CalamityMod.Buffs.Summon;
-using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Summon;
 using Terraria;
 using Terraria.ID;

@@ -10,7 +10,7 @@ namespace CalamityMod.UI
         public static Vector2 DrawPosition => Main.LocalPlayer.Center;
         public static void Draw(SpriteBatch spriteBatch, Player player)
         {
-            Item heldItem = player.ActiveItem();
+            Item heldItem = player.HeldItem;
 
             // Do not draw if the player has an empty item. Precise item checks for modded content will fail.
             if (heldItem is null || heldItem.IsAir)

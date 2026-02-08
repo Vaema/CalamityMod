@@ -1,10 +1,10 @@
 ﻿using System;
 using CalamityMod.Dusts;
+using CalamityMod.Enums;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
@@ -59,6 +59,7 @@ namespace CalamityMod.Projectiles.Magic
                     GeneralParticleHandler.SpawnParticle(blastRing);
                     Particle blastRing2 = new CustomPulse(Projectile.Center, Vector2.Zero, InnerColor * 0.6f, "CalamityMod/Particles/LargeBloom", Vector2.One, Main.rand.NextFloat(-10, 10), 0.48f * scaler, 0f, 4, true);
                     GeneralParticleHandler.SpawnParticle(blastRing2);
+                    blastRing2.DrawLayer = GeneralDrawLayer.AfterEverything;
                 }
                 Projectile.velocity *= 0.96f;
                 if (time == 3)
@@ -84,12 +85,13 @@ namespace CalamityMod.Projectiles.Magic
                     scaling = Utils.GetLerpValue(0, scalingTimerMax, scalingTimer, true);
                     float sharpScaling = Utils.GetLerpValue(scalingTimerMax * 0.7f, scalingTimerMax, scalingTimer, true);
 
-                    if (targetDist < 1400f)
+                    if (targetDist < 1400f && Projectile.timeLeft % 2 == 0)
                     {
                         Particle spark = new CustomSpark(Projectile.Center, -Projectile.velocity * 0.05f, "CalamityMod/Particles/GlowSpark2", false, 12, 0.07f * scaling, Color.Black * 0.85f, new Vector2(1.7f - (1 - sharpScaling), 0.9f + (1 - sharpScaling) * 2), false);
                         GeneralParticleHandler.SpawnParticle(spark);
-                        Particle spark2 = new CustomSpark(Projectile.Center, -Projectile.velocity * 0.05f, "CalamityMod/Particles/GlowSpark", false, 12, 0.035f * scaling, Color.LightGreen * 0.55f, new Vector2(1.7f - (1 - sharpScaling), 0.9f + (1 - sharpScaling) * 2));
+                        Particle spark2 = new CustomSpark(Projectile.Center, -Projectile.velocity * 0.05f, "CalamityMod/Particles/GlowSpark", false, 12, 0.035f * scaling, Color.LightGreen * 0.75f, new Vector2(1.7f - (1 - sharpScaling), 0.9f + (1 - sharpScaling) * 2));
                         GeneralParticleHandler.SpawnParticle(spark2);
+                        spark2.DrawLayer = GeneralDrawLayer.AfterEverything;
                     }
                     if (Main.rand.NextBool(6))
                     {
@@ -112,6 +114,7 @@ namespace CalamityMod.Projectiles.Magic
                             {
                                 Particle blastRing2 = new CustomPulse(Projectile.Center, Vector2.Zero, InnerColor, "CalamityMod/Particles/LargeBloom", Vector2.One, Main.rand.NextFloat(-10, 10), 0.36f, 0f, scalingTimerMax / 2, true);
                                 GeneralParticleHandler.SpawnParticle(blastRing2);
+                                blastRing2.DrawLayer = GeneralDrawLayer.AfterEverything;
                             }
                             Projectile.velocity = Vector2.Zero;
                         }
@@ -186,8 +189,9 @@ namespace CalamityMod.Projectiles.Magic
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             // it was GOING to have this but deus made it real bad
-            //damageMult = MathHelper.Clamp(Utils.GetLerpValue(5, 1, Projectile.numHits), 0.7f, 1);
-            //modifiers.SourceDamage *= damageMult;
+            // renabled and tested on deus, no noticable effect
+            damageMult = MathHelper.Clamp(Utils.GetLerpValue(5, 1, Projectile.numHits), 0.7f, 1);
+            modifiers.SourceDamage *= damageMult;
         }
         public override void OnKill(int timeLeft)
         {

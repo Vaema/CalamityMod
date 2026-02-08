@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Projectiles.Magic;
-using CalamityMod.Projectiles.Melee.Yoyos;
-using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -54,7 +52,6 @@ namespace CalamityMod
         }
 
         public static int CountProjectiles(int projectileID) => Main.projectile.Count(proj => proj.type == projectileID && proj.active);
-        public static int CountOwnedProjectiles(int projectileID, int ownerID) => Main.projectile.Count(proj => proj.active && proj.type == projectileID && proj.owner == ownerID);
 
         public static int CountHookProj() => Main.projectile.Count(proj => Main.projHook[proj.type] && proj.ai[0] == 2f && proj.active && proj.owner == Main.myPlayer);
 
@@ -211,7 +208,8 @@ namespace CalamityMod
                 // Home in on the target.
                 Vector2 homeDirection = (destination - projectile.Center).SafeNormalize(Vector2.UnitY);
                 projectile.velocity = (projectile.velocity * inertia + homeDirection * homingVelocity) / (inertia + 1f);
-            }
+                projectile.Calamity().HomingTarget = index;
+    }
             else
             {
                 // Set amount of extra updates to default amount.
@@ -239,6 +237,7 @@ namespace CalamityMod
                     projectile.velocity = projectile.velocity * inertia + moveToNPC * homingVelocity;
                 else
                     projectile.velocity *= overspeedReduction;
+                projectile.Calamity().HomingTarget = targetedNPC.whoAmI;
             }
             if (targetedNPC == null && projectile.velocity.Length() < maxSpeed && accelerate)
                 projectile.velocity *= 1.0055f;

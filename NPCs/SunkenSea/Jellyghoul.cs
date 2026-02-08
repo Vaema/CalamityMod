@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using CalamityMod.BiomeManagers;
 using CalamityMod.DataStructures;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Enemy;
-using CalamityMod.Systems;
-using CalamityMod.Walls;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -65,8 +63,8 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.DeathSound = SoundID.NPCDeath3;
             NPC.chaseable = false;
             NPC.noTileCollide = true;
-           // Banner = NPC.type;
-            //BannerItem = ModContent.ItemType<JellyghoulBanner>();
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<JellyghoulBanner>();
             SpawnModBiomes = new int[1] { ModContent.GetInstance<TimelessShoresBiome>().Type };
         }
 
@@ -108,8 +106,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 NPC.ai[1]++;
 
                 float screenShakePower = 2 * Utils.GetLerpValue(500f, 0f, NPC.Distance(Main.LocalPlayer.Center), true);
-                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < screenShakePower)
-                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = screenShakePower;
+                Main.LocalPlayer.SetScreenshake(screenShakePower);
 
                 // After 1 second, stop shaking and set the scream on cooldown
                 if (NPC.ai[1] > 60)
@@ -180,6 +177,7 @@ namespace CalamityMod.NPCs.SunkenSea
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.SpectreStaff, hit.HitDirection, -1f, 0, Color.DarkGray * 0.2f, 1f);
                 }
             }
+            CalamityUtils.SpawnGores(NPC, "Jellyghoul", 2);
         }
 
         public override void OnKill()

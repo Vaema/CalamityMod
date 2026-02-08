@@ -41,7 +41,7 @@ namespace CalamityMod.Items.Armor.Victide
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
-            Item.defense = 5;
+            Item.defense = 4;
         }
 
         public override void UpdateEquip(Player player)

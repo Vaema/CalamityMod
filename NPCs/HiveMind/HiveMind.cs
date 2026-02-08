@@ -4,10 +4,9 @@ using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
-using CalamityMod.Items.Materials;
 using CalamityMod.Items.Pets;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.TreasureBags;
 using CalamityMod.Items.Weapons.Magic;
@@ -48,7 +47,7 @@ namespace CalamityMod.NPCs.HiveMind
         {
             string normalIconPath = "CalamityMod/NPCs/HiveMind/HiveMind_Head_Boss";
             string phase2IconPath = "CalamityMod/NPCs/HiveMind/HiveMindP2_Head_Boss";
-            
+
             normalIconIndex = CalamityMod.Instance.AddBossHeadTexture(normalIconPath, -1);
             phase2IconIndex = CalamityMod.Instance.AddBossHeadTexture(phase2IconPath, -1);
         }
@@ -148,7 +147,7 @@ namespace CalamityMod.NPCs.HiveMind
             NPC.height = frameHeight_P1;
 
             NPC.defense = 8;
-            NPC.LifeMaxNERB(6150, 7350, 350000);
+            NPC.LifeMaxNERB(5000, 7000, 350000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -277,10 +276,6 @@ namespace CalamityMod.NPCs.HiveMind
                 frameWidth = frameWidth_P2;
                 frameHeight = frameHeight_P2;
             }
-
-            // Update NPC Size accordingly
-            NPC.width = frameWidth;
-            NPC.height = frameHeight - 2; //Phase 1 Sprite have 2 pixel margin
 
             NPC.frameCounter += 1.0; // Update each 6 ticks
             if (NPC.frameCounter >= 6.0)
@@ -417,6 +412,10 @@ namespace CalamityMod.NPCs.HiveMind
 
         public override void AI()
         {
+            // Update NPC Size according to Phase Changes
+            NPC.width = frameWidth;
+            NPC.height = frameHeight - 2; //Phase 1 Sprite have 2 pixel margin
+
             // Get a target
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
                 NPC.TargetClosest();
@@ -804,10 +803,6 @@ namespace CalamityMod.NPCs.HiveMind
                         // Use an attack sooner if being hit
                         if (NPC.justHit)
                             phase2timer -= 4;
-
-                        // Use an attack sooner if target is close
-                        if (NPC.Distance(player.Center) < 160f)
-                            phase2timer -= 2;
                     }
 
                     if (phase2timer <= -180) // No stalling drift mode forever
@@ -1064,7 +1059,7 @@ namespace CalamityMod.NPCs.HiveMind
                             NPC.damage = NPC.defDamage;
 
                             phase2timer++;
-                            if (phase2timer == (int)(arcTime / (death ? 15f : 20f)))
+                            if (phase2timer % 30 == (int)(arcTime / (death ? 15f : 20f)))
                             {
                                 phase2timer = 0;
                                 NPC.ai[0] += 1f;
@@ -1317,7 +1312,7 @@ namespace CalamityMod.NPCs.HiveMind
                 Color messageColor = Color.Cyan;
                 AerialiteOreGen.Enchant();
 
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
             }
 
             // Mark The Hive Mind as dead
@@ -1350,7 +1345,8 @@ namespace CalamityMod.NPCs.HiveMind
 
                 // Equipment
                 normalOnly.Add(ModContent.ItemType<FilthyGlove>(), DropHelper.NormalWeaponDropRateFraction);
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<RottenBrain>()));
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<RottenBrain>()));
 
                 // Vanity
                 normalOnly.Add(ModContent.ItemType<HiveMindMask>(), 7);

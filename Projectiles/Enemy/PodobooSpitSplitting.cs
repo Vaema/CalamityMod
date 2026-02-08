@@ -1,12 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.GameContent;
-using CalamityMod.Projectiles.Ranged;
-using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Enemy
 {

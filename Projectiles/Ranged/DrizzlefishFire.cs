@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Fishing.BrimstoneCragCatches;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -164,6 +163,10 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+
+            //Doze - Flamethrowers in vanilla are long debuff infliction tools (20 seconds of their debuff).
+            //I am applying this as the base for Cal flamethrowers, with shorter times being the exception instead of the rule
+            //This is one of the exceptions, as Brimstone Flames is a very strong DoT debuff for this tier.
             if (Projectile.ai[1] == 1f)
             {
                 target.AddBuff(BuffID.OnFire3, 120);

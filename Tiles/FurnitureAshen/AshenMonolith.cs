@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent.ObjectInteractions;
 using Terraria.ID;
@@ -10,6 +11,8 @@ namespace CalamityMod.Tiles.FurnitureAshen
 {
     public class AshenMonolith : ModTile
     {
+        public Asset<Texture2D> EyeTexture;
+
         public int animationFrameWidth = 36;
         public override void SetStaticDefaults() => this.SetUpClock(ModContent.ItemType<Items.Placeables.FurnitureAshen.AshenMonolith>(), true);
 
@@ -31,7 +34,7 @@ namespace CalamityMod.Tiles.FurnitureAshen
 
         public override bool RightClick(int x, int y)
         {
-            return CalamityUtils.ClockRightClick();
+            return FurnitureCommon.ClockRightClick();
         }
 
         public override void NearbyEffects(int i, int j, bool closer)
@@ -47,7 +50,7 @@ namespace CalamityMod.Tiles.FurnitureAshen
             num = fail ? 1 : 3;
         }
 
-        public override void MouseOver(int i, int j) => CalamityUtils.MouseOver(i, j, ModContent.ItemType<Items.Placeables.FurnitureAshen.AshenMonolith>());
+        public override void MouseOver(int i, int j) => FurnitureCommon.MouseOver(i, j, ModContent.ItemType<Items.Placeables.FurnitureAshen.AshenMonolith>());
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
@@ -122,7 +125,10 @@ namespace CalamityMod.Tiles.FurnitureAshen
             frameY *= 90;
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + zero;
-            Texture2D eyeSheet = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureAshen/AshenMonolith_Eye").Value;
+
+            EyeTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureAshen/AshenMonolith_Eye");
+            Texture2D eyeSheet = EyeTexture.Value;
+
             spriteBatch.Draw
             (
                 eyeSheet,

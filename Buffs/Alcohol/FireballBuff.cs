@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using CalamityMod.Items.Potions.Alcohol;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -11,13 +12,16 @@ namespace CalamityMod.Buffs.Alcohol
             Main.debuff[Type] = true;
             Main.pvpBuff[Type] = true;
             Main.buffNoSave[Type] = false;
+            Main.persistentBuff[Type] = true;
             BuffID.Sets.NurseCannotRemoveDebuff[Type] = true;
         }
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.Calamity().fireball = true;
-            player.Calamity().HeatDebuffMultiplier += 0.25f;
+            var cplayer = player.Calamity();
+            cplayer.fireball = true;
+            cplayer.HeatDebuffMultiplier += Fireball.DebuffBoost;
+            cplayer.SicknessDebuffMultiplier -= Fireball.DebuffLoss;
         }
     }
 }

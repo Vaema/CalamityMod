@@ -1,5 +1,4 @@
-﻿using CalamityMod.DataStructures;
-using Terraria;
+﻿using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.StatDebuffs

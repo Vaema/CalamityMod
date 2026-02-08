@@ -1,10 +1,10 @@
 ﻿using System.IO;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Items.Weapons.Summon;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon.AndromedaUI
@@ -293,7 +293,7 @@ namespace CalamityMod.Projectiles.Summon.AndromedaUI
                     Player player = Main.player[Projectile.owner];
                     for (int i = 0; i < 45; i++)
                     {
-                        Dust dust = Dust.NewDustPerfect(player.Center + Utils.NextVector2Circular(Main.rand, 60f, 90f), 26);
+                        Dust dust = Dust.NewDustPerfect(player.Center + Utils.NextVector2Circular(Main.rand, 60f, 90f), DustID.Bone);
                         dust.velocity = Utils.NextVector2Circular(Main.rand, 4f, 4f);
                         dust.noGravity = true;
                         dust.scale = Main.rand.NextFloat(1.2f, 1.35f);
@@ -369,7 +369,7 @@ namespace CalamityMod.Projectiles.Summon.AndromedaUI
                                 dust.noGravity = true;
                             }
                         }
-                        SoundEngine.PlaySound(new("CalamityMod/Sounds/Item/MechGaussRifle"), Projectile.Center);
+                        SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/MechGaussRifle"), Projectile.Center);
                     }
                 }
             }

@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Dusts;
-using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs.Cryogen;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.Particles;
@@ -77,7 +76,7 @@ namespace CalamityMod.Projectiles.Boss
                 if (Main.rand.NextBool())
                 {
                     float variance = Main.rand.NextFloat(-25f, 25f);
-                    Dust brimstone = Dust.NewDustPerfect(Projectile.Center + new Vector2(variance, 20), 267);
+                    Dust brimstone = Dust.NewDustPerfect(Projectile.Center + new Vector2(variance, 20), DustID.RainbowMk2);
                     brimstone.scale = Main.rand.NextFloat(0.35f, 1.2f);
                     brimstone.color = Main.rand.NextBool() ? Color.Red : new Color(121, 21, 77);
                     brimstone.fadeIn = 0.7f;
@@ -108,7 +107,7 @@ namespace CalamityMod.Projectiles.Boss
             SoundEngine.PlaySound(SpawnSound, Projectile.Center);
 
             // Make a sudden screen shake.
-            Main.LocalPlayer.Calamity().GeneralScreenShakePower = Utils.GetLerpValue(3400f, 1560f, Main.LocalPlayer.Distance(Projectile.Center), true) * 16f;
+            Main.LocalPlayer.SetScreenshake(Utils.GetLerpValue(3400f, 1560f, Main.LocalPlayer.Distance(Projectile.Center), true) * 16f);
 
             // Generate a dust explosion at the ritual's position.
             for (int i = 0; i < 90; i++)

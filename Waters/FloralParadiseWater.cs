@@ -1,7 +1,4 @@
-﻿using CalamityMod.Systems;
-using CalamityMod.Tiles.Abyss;
-using Microsoft.Xna.Framework;
-using Terraria;
+﻿using Microsoft.Xna.Framework;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -9,10 +6,10 @@ namespace CalamityMod.Waters
 {
     public class FloralParadiseWaterflow : ModWaterfallStyle { }
 
-    public class FloralParadiseWater : CalamityModWaterStyle
+    public class FloralParadiseWater : ModWaterStyle
     {
         public static int Type { get; private set; }
-        public static CalamityModWaterStyle Instance { get; private set; }
+        public static ModWaterStyle Instance { get; private set; }
 
         public override void SetStaticDefaults()
         {

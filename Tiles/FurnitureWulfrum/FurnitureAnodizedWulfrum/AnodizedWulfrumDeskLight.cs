@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -8,6 +9,8 @@ namespace CalamityMod.Tiles.FurnitureWulfrum.FurnitureAnodizedWulfrum
 {
     public class AnodizedWulfrumDeskLight : ModTile
     {
+        public Asset<Texture2D> GlowTexture;
+
         public override void SetStaticDefaults() => this.SetUpCandle(ModContent.ItemType<Items.Placeables.FurnitureWulfrum.FurnitureAnodizedWulfrum.AnodizedWulfrumDeskLight>(), true);
 
         public override bool CreateDust(int i, int j, ref int type)
@@ -39,7 +42,7 @@ namespace CalamityMod.Tiles.FurnitureWulfrum.FurnitureAnodizedWulfrum
 
         public override void HitWire(int i, int j)
         {
-            CalamityUtils.LightHitWire(Type, 1, j, 1, 1);
+            FurnitureCommon.LightHitWire(Type, 1, j, 1, 1);
         }
 
         public override void MouseOver(int i, int j)
@@ -52,7 +55,7 @@ namespace CalamityMod.Tiles.FurnitureWulfrum.FurnitureAnodizedWulfrum
 
         public override bool RightClick(int i, int j)
         {
-            CalamityUtils.RightClickBreak(i, j);
+            FurnitureCommon.RightClickBreak(i, j);
             return true;
         }
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
@@ -62,7 +65,10 @@ namespace CalamityMod.Tiles.FurnitureWulfrum.FurnitureAnodizedWulfrum
 
             int xFrameOffset = Main.tile[i, j].TileFrameX;
             int yFrameOffset = Main.tile[i, j].TileFrameY;
-            Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureWulfrum/FurnitureAnodizedWulfrum/AnodizedWulfrumDeskLight_Glow").Value;
+
+            GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureWulfrum/FurnitureAnodizedWulfrum/AnodizedWulfrumDeskLight_Glow");
+            Texture2D glowmask = GlowTexture.Value;
+
             Vector2 drawOffest = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawPosition = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y - 5) + drawOffest;
             Color drawColour = Color.White;

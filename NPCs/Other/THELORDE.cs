@@ -3,9 +3,8 @@ using System.IO;
 using CalamityMod.Balancing;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Pets;
-using CalamityMod.Items.Potions;
+using CalamityMod.Items.Potions.Food;
 using CalamityMod.Projectiles.Boss;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -501,7 +500,7 @@ namespace CalamityMod.NPCs.Other
             {
                 string key = "Mods.CalamityMod.Status.Boss.EdgyBossText8";
                 Color messageColor = Color.Cyan;
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
 
                 // The hit which triggers antibutcher has its damage capped at 1, then THE LORDE heals for 1 so that it doesn't take any net damage.
                 modifiers.SetMaxDamage(1);
@@ -521,7 +520,7 @@ namespace CalamityMod.NPCs.Other
             {
                 string key = "Mods.CalamityMod.Status.Boss.EdgyBossText8";
                 Color messageColor = Color.Cyan;
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
 
                 // The hit which triggers antibutcher has its damage capped at 1, then THE LORDE heals for 1 so that it doesn't take any net damage.
                 modifiers.SetMaxDamage(1);

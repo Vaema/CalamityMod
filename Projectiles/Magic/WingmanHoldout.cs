@@ -19,7 +19,7 @@ namespace CalamityMod.Projectiles.Magic
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<Wingman>();
         public override string Texture => "CalamityMod/Items/Weapons/Magic/Wingman";
 
-        public Color StaticEffectsColor = Color.HotPink;
+        public Color StaticEffectsColor = Color.Orchid;
         private ref float ShootingTimer => ref Projectile.ai[0];
         private ref float PostFireCooldown => ref Projectile.ai[1];
         public float yOffset;
@@ -50,6 +50,8 @@ namespace CalamityMod.Projectiles.Magic
         public override void AI()
         {
             Owner ??= Main.player[Projectile.owner];
+            if (Projectile.ai[2] == 1)
+                StaticEffectsColor = Color.Turquoise;
 
             Lighting.AddLight(Projectile.Center, StaticEffectsColor.ToVector3() * 0.2f);
 
@@ -59,7 +61,7 @@ namespace CalamityMod.Projectiles.Magic
             }
             firingDelay--;
 
-            Item heldItem = Owner.ActiveItem();
+            Item heldItem = Owner.HeldItem;
 
             // Update damage based on curent magic damage stat (so Mana Sickness affects it)
             Projectile.damage = heldItem is null ? 0 : Owner.GetWeaponDamage(heldItem);
@@ -81,7 +83,7 @@ namespace CalamityMod.Projectiles.Magic
                 // If the player's pressing RMB, it'll shoot the grenade.
                 if (Owner.Calamity().mouseRight)
                 {
-                    if ((Owner.CheckMana(Owner.ActiveItem(), (int)(heldItem.mana * Owner.manaCost) * 5, true, false)))
+                    if ((Owner.CheckMana(Owner.HeldItem, (int)(heldItem.mana * Owner.manaCost) * 5, true, false)))
                     {
                         Shoot(true);
                         PostFireCooldown = 35 + 55 * Utils.GetLerpValue(10, 40, FiringTime, true);
@@ -100,7 +102,7 @@ namespace CalamityMod.Projectiles.Magic
                 }
                 else if (ShootingTimer >= FiringTime)
                 {
-                    if (Owner.CheckMana(Owner.ActiveItem(), (int)(heldItem.mana * Owner.manaCost), true, false))
+                    if (Owner.CheckMana(Owner.HeldItem, (int)(heldItem.mana * Owner.manaCost), true, false))
                     {
                         Shoot(false);
                         ShootingTimer = 0;
@@ -192,13 +194,13 @@ namespace CalamityMod.Projectiles.Magic
             {
                 SoundStyle fire = new("CalamityMod/Sounds/Item/DeadSunExplosion");
                 SoundEngine.PlaySound(fire with { Volume = 0.35f, Pitch = -0.4f, PitchVariance = 0.2f }, Projectile.Center);
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), tipPosition, (firingVelocity * 1.3f) * Utils.GetLerpValue(60, 10, FiringTime, true), ModContent.ProjectileType<WingmanGrenade>(), (int)(Projectile.damage * 6), Projectile.knockBack * 5, Projectile.owner, 0);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), tipPosition, (firingVelocity * 1.3f) * Utils.GetLerpValue(60, 10, FiringTime, true), ModContent.ProjectileType<WingmanGrenade>(), (int)(Projectile.damage * 6), Projectile.knockBack * 5, Projectile.owner, 0, (Projectile.ai[2] == 1 ? -1 : 0));
             }
             else
             {
                 SoundStyle fire = new("CalamityMod/Sounds/Item/MagnaCannonShot");
                 SoundEngine.PlaySound(fire with { Volume = 0.25f, Pitch = 1f, PitchVariance = 0.35f }, Projectile.Center);
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), tipPosition, firingVelocity * Utils.GetLerpValue(80, 10, FiringTime, true), ModContent.ProjectileType<WingmanShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), tipPosition, firingVelocity * Utils.GetLerpValue(80, 10, FiringTime, true), ModContent.ProjectileType<WingmanShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, (Projectile.ai[2] == 1 ? -1 : 0));
             }
 
             // Inside here go all the things that dedicated servers shouldn't spend resources on.
@@ -236,7 +238,7 @@ namespace CalamityMod.Projectiles.Magic
                 Particle smoke = new HeavySmokeParticle(tipPosition, smokeVel, StaticEffectsColor, Main.rand.Next(30, 50 + 1), Main.rand.NextFloat(0.1f, 0.4f), 0.5f, Main.rand.NextFloat(-0.2f, 0.2f), Main.rand.NextBool(), required: true);
                 GeneralParticleHandler.SpawnParticle(smoke);
 
-                Dust dust = Dust.NewDustPerfect(tipPosition, 303, smokeVel.RotatedByRandom(0.1f), 80, default, Main.rand.NextFloat(0.2f, 0.8f));
+                Dust dust = Dust.NewDustPerfect(tipPosition, DustID.SteampunkSteam, smokeVel.RotatedByRandom(0.1f), 80, default, Main.rand.NextFloat(0.2f, 0.8f));
                 dust.noGravity = false;
                 dust.color = StaticEffectsColor;
             }

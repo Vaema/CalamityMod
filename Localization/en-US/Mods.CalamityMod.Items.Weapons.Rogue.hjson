@@ -39,6 +39,7 @@ AuroradicalThrow: {
 		Launches a star that splits after a short period of time
 		Split stars home in on nearby enemies after a few seconds
 		Stealth strikes summon a meteor upon enemy impact
+		Inflicts [cbuff:CalamityMod/AstralInfectionDebuff]
 		'''
 }
 
@@ -65,8 +66,9 @@ BlazingStar: {
 	DisplayName: Blazing Star
 	Tooltip:
 		'''
-		Tosses up to 3 red hot returning glaives
-		Stealth strikes throw three glaives with infinite piercing
+		Tosses a red-hot ricocheting glaive
+		After bouncing off of tiles, the glaive can re-hit the same enemy
+		Stealth strikes shred the first enemy they hit and provide rings of high-knockback orbiting glaives
 		'''
 }
 
@@ -77,7 +79,7 @@ BloodsoakedCrasher: {
 		Throws a bloody axe that is affected by gravity and can bounce twice
 		The axe speeds up over time, but will slow down upon hitting an enemy
 		Spews blood orbs upon enemy hits
-		Picking up these blood orbs reduces the duration of [Potion Sickness]
+		Picking up these blood orbs reduces the duration of [cbuff:PotionSickness]
 		Stealth strikes spawn homing blood bolts on hit
 		'''
 }
@@ -301,6 +303,15 @@ DesecratedWater: {
 		'''
 }
 
+DimensionTearingDisk: {
+	DisplayName: Dimension-Tearing Disk
+	Tooltip:
+		'''
+		Throws a disk that tears space in the direction of the nearest enemy
+		Stealth strikes stick to enemies and unleash [c/ff00ff:God's Bane Doombeam Array]
+		'''
+}
+
 DoomsdayDevice: {
 	DisplayName: Doomsday Device
 	Tooltip:
@@ -380,15 +391,6 @@ Equanimity: {
 		Throws a confusing boomerang that ricochets between enemies
 		Enemy hits alternate summoning homing light shards or piercing dark shards
 		Stealth strikes cause an alternating explosion of light or dark on every ricochet, empowering the opposite color of shard
-		'''
-}
-
-Eradicator: {
-	DisplayName: Eradicator
-	Tooltip:
-		'''
-		Throws a disk that fires nebula lasers at nearby enemies
-		Stealth strikes stick to enemies and unleash a barrage of lasers in all directions
 		'''
 }
 
@@ -503,8 +505,8 @@ Glaive: {
 	DisplayName: Glaive
 	Tooltip:
 		'''
-		Tosses a very fast and sharp returning glaive
-		Stealth strikes are faster and can ricochet between enemies, or stick into a single enemy
+		Tosses a ricocheting glaive
+		Stealth strikes shred the first enemy they hit and provide a ring of high-knockback orbiting glaives
 		'''
 }
 
@@ -556,6 +558,7 @@ HeavenfallenStardisk: {
 		Throws a stardisk upwards which then launches itself towards your mouse cursor
 		Explodes into a star of astral bolts on hit
 		Stealth strikes rain astral energy bolts from the sky
+		Inflicts [cbuff:CalamityMod/AstralInfectionDebuff]
 		'''
 }
 
@@ -667,6 +670,7 @@ LeonidProgenitor: {
 		Throws a bombshell that explodes, summoning a meteor to impact the site
 		Press <right> to throw a spread of gravity affected comets that explode, leaving behind a star
 		Stealth strikes lob a bombshell that additionally splits into comets on hit
+		Inflicts [cbuff:CalamityMod/AstralInfectionDebuff]
 		'''
 }
 
@@ -807,16 +811,6 @@ NastyCholla: {
 		'''
 }
 
-NightsGaze: {
-	DisplayName: Night's Gaze
-	Tooltip:
-		'''
-		Strike your foes with this spear of the night
-		Throws a spear that shatters when it hits an enemy
-		Stealth strikes cause the spear to summon homing stars as it flies
-		'''
-}
-
 OrichalcumSpikedGemstone: {
 	DisplayName: Orichalcum Spiked Gemstone
 	Tooltip: Stealth strikes last longer and summon petals on enemy hits
@@ -876,7 +870,7 @@ RadiantStar: {
 	DisplayName: Radiant Star
 	Tooltip:
 		'''
-		Throws daggers that explode and split after a while
+		Throws daggers that explode and split after a while and inflict [cbuff:CalamityMod/AstralInfectionDebuff]
 		Stealth strikes split more with a devastating explosion that sucks enemies in
 		'''
 }
@@ -913,7 +907,7 @@ RegulusRiot: {
 	DisplayName: Regulus Riot
 	Tooltip:
 		'''
-		Fires a swift homing disk
+		Fires a swift homing disk that inflicts [cbuff:CalamityMod/AstralInfectionDebuff]
 		Stealth strikes explode into energy stars
 		'''
 }
@@ -939,7 +933,7 @@ SamsaraSlicer: {
 	Tooltip:
 		'''
 		Throws a disk that has a chance to generate several disks if enemies are near it
-		Stealth strikes travel slower and are rapidly orbited by the smaller disks
+		Stealth strikes shred enemies and are rapidly orbited by the smaller disks
 		'''
 }
 
@@ -1008,20 +1002,6 @@ SealedSingularity: {
 		'''
 		Shatters on impact, summoning a black hole that sucks in nearby enemies
 		Stealth strikes summon a black hole that lasts longer and sucks enemies with stronger force
-		'''
-}
-
-SearedPan: {
-	DisplayName: Seared Pan
-	Tooltip:
-		'''
-		Fires a frying pan at high velocity
-		Enemy hits summon fireballs that linger around the target
-		Landing three consecutive hits will launch a golden pan on the next throw
-		Golden pans cause all fireballs to aggressively home in on their target on hit
-		Stealth strikes act similar to golden pans but also explode into golden sparks
-		Stealth strikes also summon additional fireballs on hit
-		[c/842593:'dAMaGe iS rAthEr cOnSisTeNT']
 		'''
 }
 
@@ -1152,7 +1132,7 @@ StellarKnife: {
 	DisplayName: Stellar Knife
 	Tooltip:
 		'''
-		Throws knives that stop middair and then home into enemies
+		Throws knives that stop middair and then home into enemies, inflicting [cbuff:CalamityMod/AstralInfectionDebuff]
 		Stealth strikes throw a volley of 10 knives in a spread
 		'ZA WARUDO'
 		'''
@@ -1348,6 +1328,19 @@ Valediction: {
 		'''
 }
 
+Vega: {
+	DisplayName: Vega
+	Tooltip:
+		'''
+		Throws a spear that shatters into star fragments on impact and generates Starbursts
+		Stealth strikes conjure an image of Lyra to deal immense damage in an area
+		<right> to consume 20 Starbursts and immediately perform a stealth strike, regardless of your current Stealth
+		This strike calls all star fragments to attack the damaged foe and inflicts [cbuff:CalamityMod/Voidfrost]
+		Consuming Starbursts with Vega allows using stealth for 10 seconds, even without rogue armor
+		'The final song of a misunderstood genius... or just a madman'
+		'''
+}
+
 WaveSkipper: {
 	DisplayName: Wave Skipper
 	Tooltip:
@@ -1394,5 +1387,15 @@ WulfrumKnife: {
 		Fires wulfrum knives in bursts of 3 that stick in enemies
 		Stealth strikes make the knife fly further and hit several times at once
 		<right> to magnetize all stuck knives back to you, restoring stealth
+		Returning knives also temporarily allows using stealth strikes without rogue armor
+		'''
+}
+
+Pumpkaboom: {
+	DisplayName: Pumpkaboom
+	Tooltip:
+		'''
+		Throws a pumpkin which sticks to enemies and explodes after a delay
+		Stealth strikes throw larger pumpkins which pull enemies in before releasing a larger explosion
 		'''
 }
