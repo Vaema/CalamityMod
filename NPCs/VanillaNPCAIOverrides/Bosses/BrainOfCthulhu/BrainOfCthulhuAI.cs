@@ -150,7 +150,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
     #endregion
 
     #region Bloodletting
-    internal static int BloodlettingDuration => 765;
+    internal static int BloodlettingDuration => 675;
     internal static Vector2 HoverDistance => new (420f, 270f);
     internal static float HoverEndHeight => 300f;
     internal static int IchorRate => CalamityWorld.death ? 9 : 10;
