@@ -26,7 +26,7 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
             Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
+            Projectile.idStaticNPCHitCooldown = 10;
             Projectile.timeLeft = 25;
         }
 
