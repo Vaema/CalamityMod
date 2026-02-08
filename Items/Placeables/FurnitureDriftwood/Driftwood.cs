@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Placeables.FurnitureDriftwood
 
         public override void AddRecipes()
         {
-            CreateRecipe(4).
+            CreateRecipe().
             AddIngredient<Walls.DriftwoodWall>(4).
             AddTile(TileID.WorkBenches).
             DisableDecraft().
