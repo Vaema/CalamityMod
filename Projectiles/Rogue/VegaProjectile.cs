@@ -58,6 +58,7 @@ namespace CalamityMod.Projectiles.Rogue
                         item.usesIDStaticNPCImmunity = false;
                         item.usesLocalNPCImmunity = true;
                         item.localNPCHitCooldown = 10;
+                        item.netUpdate = true;
                     }
                 }
             }
@@ -81,7 +82,7 @@ namespace CalamityMod.Projectiles.Rogue
                 {
                     int projID = ModContent.ProjectileType<LyraConstellation>();
                         Vector2 velocity = Vector2.Zero;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, projID, projectileDamage, kb, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, projID, (int)(projectileDamage * 0.8f), kb, Projectile.owner);
                 }
             for (int i = 0; i < onHitCount; i++)
             {

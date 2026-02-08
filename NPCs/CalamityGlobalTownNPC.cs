@@ -184,6 +184,8 @@ namespace CalamityMod.NPCs
             "Robin", // <@!654737510030639112> (altzeus)
             "Curly", // <@!673092101780668416> (curly4830)
             "Cobalt", // <@!132962828922388481> (cobalt_44)
+            "Dizzetriya", // <@!719818245665980517> (dizzykbity)
+            "Vodka", // <@!1172497470438248565> (ehhhhh0981)
         ];
         private static readonly string[] MerchantNames =
         [
@@ -206,6 +208,7 @@ namespace CalamityMod.NPCs
         [
             "Arin", // <@!268169458302976012> (kiyotu)
             "Typhäne", // <@!222064016107896832> (typhane.)
+            "Charlotte Linlin", // <@!563406464522125323> (vixcalibur)
         ];
         private static readonly string[] PirateNames =
         [
@@ -217,6 +220,7 @@ namespace CalamityMod.NPCs
             "Yarrim", // <@!290061123137306624> (borb9834)
             "Hector Barbossa", // <@!615704209303797790> (thatrockisfullamagic)
             "Blunderbeard", // <@!1039460813490102293> (parmiigianoreggiano)
+            "Vergil Cyrus", // <@!732350101619605584> (cyver1)
         ];
         private static readonly string[] PrincessNames =
         [
@@ -228,6 +232,7 @@ namespace CalamityMod.NPCs
             "Hael", // <@!641747280944431156> (kalebtull)
             "Yumesaki Mirrin", // <@!100235144744415232> (milinen)
             "Vela", // <@!208719047146209281> (nyxxynightstar)
+            "Misako Drevis", // <@!1103067115386323065> (threadsofmemory)
         ];
         private static readonly string[] SantaClausNames =
         [
@@ -260,6 +265,7 @@ namespace CalamityMod.NPCs
             "Lain", // <@!655201622863118337> (literallyadeerfr)
             "Hamis", // <@!608455754093035521> (haefer)
             "Brio Scarlet", // <@!358576903701004289> (brio_scarlet)
+            "Vanessa", // <@!638901548591611945> (mediocreking)
         ];
         private static readonly string[] TavernkeepNames =
         [
@@ -271,6 +277,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] TaxCollectorNames =
         [
             "Emmett",
+            "Bagman", // <@!701831892990820383> (supportcrispy)
         ];
         private static readonly string[] TravelingMerchantNames =
         [
@@ -279,6 +286,7 @@ namespace CalamityMod.NPCs
             "Borgus", // <@!539127427482255376> (therealmeepman)
             "Postman Hiss", // <@!454638106122125312> (karinthefairy)
             "Cosmoec", // <@!793660591449309204> (cosmoecark)
+            "Junorism", // <@!740625002596008036> (hewhoshallnotbebaned)
         ];
         private static readonly string[] TruffleNames =
         [
@@ -307,6 +315,7 @@ namespace CalamityMod.NPCs
             "Nextdoor Psycho", // <@!173261518572486656> (nextdoorpsycho)
             "Mike Cyclops", // <@!702327497475227741> (seichoseicho)
             "Derin", // <@!466703979695308820> (god_15)
+            "Umbara", // <@!450062421294579712> (umbaraeclipse)
         ];
         private static readonly string[] ZoologistNames =
         [
@@ -350,6 +359,8 @@ namespace CalamityMod.NPCs
         private static readonly string[] TownDogLabradorNames =
         [
             "Riley", // <@!260875558592708619> (potionpal)
+            "Silvie", // <@!979862425211912242> (goldsockz2)
+            "Madison", // <@!338315261352476682> (tyeski)
         ];
         private static readonly string[] TownDogPitBullNames =
         [
@@ -358,12 +369,16 @@ namespace CalamityMod.NPCs
         private static readonly string[] TownDogBeagleNames =
         [
             "Kendra", // <@!237247188005158912> (lordmetarex)
+            "Libby", // <@!338315261352476682> (tyeski)
+            "Myles", // <@!658760860722004017> (apotofkoolaid)
+            "Luna", // <@!534132902095749120> (mizzultraviolet)
         ];
         private static readonly string[] TownDogCorgiNames = null;
         private static readonly string[] TownDogDalmatianNames = null;
         private static readonly string[] TownDogHuskyNames =
         [
             "Yoshi", // <@!541127291426832384> (gregthespinarak)
+            "Franklin", // <@!338315261352476682> (tyeski)
         ];
 
         private const int TownCatSiameseVanillaNames = 12;
@@ -384,12 +399,19 @@ namespace CalamityMod.NPCs
         private static readonly string[] TownCatSiameseNames =
         [
             "Conductor", // <@!555512087711973390> (grayaeternum)
+            "Vivian", // <@!338315261352476682> (TYESKI)
+            "Pudum", // <@!731141759484297226> (trianglepixel)
+            "Snickers", // <@!658760860722004017> (apotofkoolaid)
+            "Mr. Kitten", // <@!658760860722004017> (apotofkoolaid)
         ];
         private static readonly string[] TownCatBlackNames =
         [
             "Bear", // <@!183424826407518208> (lilac_vrt_olligoci)
             "Storm", // <@!620383533516718085> (airwaveslr)
             "Hognar the Wicked", // <@!766511001356468237> (xzier_tengal)
+            "Saffie", // <@!319753595161411584> (CDMusic)
+            "Willow", // <@!319753595161411584> (CDMusic)
+            "Maine", // <@!731141759484297226> (trianglepixel)
         ];
         private static readonly string[] TownCatOrangeTabbyNames =
         [
@@ -397,6 +419,8 @@ namespace CalamityMod.NPCs
             "Tardo", // <@!739343546867384391> (midnight295)
             "Dali", // <@!460238880436781061> (darthlego)
             "Kiba", // <@!852348657072340992> (jollydragonslayer)
+            "Monkey", // <@!338315261352476682> (TYESKI)
+            "Percy", // <@!658760860722004017> (apotofkoolaid)
         ];
         private static readonly string[] TownCatRussianBlueNames = null;
         private static readonly string[] TownCatSilverNames =
@@ -1230,10 +1254,7 @@ namespace CalamityMod.NPCs
                 shop.AddWithCustomValue(ItemType<M1Garand>(), Item.buyPrice(gold: 20), Condition.DownedSkeletron)
                 .Add<P90>(Condition.Hardmode)
                 .AddWithCustomValue(ItemID.Boomstick, Item.buyPrice(gold: 25), Condition.DownedQueenBee)
-                .AddWithCustomValue(ItemID.Uzi, Item.buyPrice(gold: 50), Condition.DownedPlantera)
-                .AddWithCustomValue(ItemID.TacticalShotgun, Item.buyPrice(platinum: 1), Condition.DownedGolem)
-                .AddWithCustomValue(ItemID.SniperRifle, Item.buyPrice(platinum: 1), Condition.DownedGolem)
-                .AddWithCustomValue(ItemID.RifleScope, Item.buyPrice(platinum: 1), Condition.DownedGolem);
+                .AddWithCustomValue(ItemID.Uzi, Item.buyPrice(gold: 50), Condition.DownedPlantera);
             }
 
             if (type == NPCID.Stylist)
@@ -1247,8 +1268,7 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.Cyborg)
             {
-                shop.AddWithCustomValue(ItemID.RocketLauncher, Item.buyPrice(platinum: 1), Condition.DownedGolem)
-                .Add<MartianDistressRemote>(Condition.DownedGolem)
+                shop.Add<MartianDistressRemote>(Condition.DownedGolem)
                 .Add<LionHeart>(CalamityConditions.DownedPolterghast);
             }
 
@@ -1292,6 +1312,8 @@ namespace CalamityMod.NPCs
             if (type == NPCID.Painter)
             {
                 shop.AddWithCustomValue(ItemID.PainterPaintballGun, Item.buyPrice(gold: 15))
+                .Add(ItemType<CalamityCanvas2023>())
+                .Add(ItemType<CalamityCanvas2024>())
                 .Add(ItemType<AmidiasPainting>(), CalamityConditions.InSunken, Condition.NpcIsPresent(NPCType<SeaKing>()));
             }
 
@@ -1310,10 +1332,6 @@ namespace CalamityMod.NPCs
             {
                 shop.Add<HowlsHeart>()
                 .AddWithCustomValue(ItemID.MagicMissile, Item.buyPrice(gold: 25))
-                .AddWithCustomValue(ItemID.SpectreStaff, Item.buyPrice(platinum: 1), Condition.DownedGolem)
-                .AddWithCustomValue(ItemID.InfernoFork, Item.buyPrice(platinum: 1), Condition.DownedGolem)
-                .AddWithCustomValue(ItemID.ShadowbeamStaff, Item.buyPrice(platinum: 1), Condition.DownedGolem)
-                .AddWithCustomValue(ItemID.MagnetSphere, Item.buyPrice(platinum: 1), Condition.DownedGolem)
                 .Add<ResilientCandle>()
                 .Add<SpitefulCandle>()
                 .Add<VigorousCandle>()
@@ -1326,8 +1344,7 @@ namespace CalamityMod.NPCs
                 .InsertAfter(ItemID.OasisFountain, ItemType<SulphurousFountainItem>())
                 .InsertAfter(ItemID.OasisFountain, ItemType<AbyssFountainItem>())
                 .InsertAfter(ItemID.OasisFountain, ItemType<AstralFountainItem>())
-                .InsertAfter(ItemID.OasisFountain, ItemType<BrimstoneLavaFountainItem>())
-                .AddWithCustomValue(ItemID.ButterflyDust, Item.buyPrice(gold: 25), Condition.DownedGolem);
+                .InsertAfter(ItemID.OasisFountain, ItemType<BrimstoneLavaFountainItem>());
             }
 
             if (type == NPCID.PartyGirl)

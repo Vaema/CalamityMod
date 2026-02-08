@@ -16,7 +16,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.tileCollide = false;
             Projectile.penetrate = -1;
             Projectile.timeLeft = 2;
-            Projectile.DamageType = DamageClass.Ranged;
+            Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
         }

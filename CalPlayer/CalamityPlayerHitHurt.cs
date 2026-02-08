@@ -29,6 +29,7 @@ using CalamityMod.Items.Armor.Victide;
 using CalamityMod.Items.Armor.Wulfrum;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Items.Tools;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Rogue;
@@ -41,11 +42,13 @@ using CalamityMod.NPCs.Providence;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems.Collections;
 using CalamityMod.UI;
+using CalamityMod.Utilities;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -57,7 +60,6 @@ using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace CalamityMod.CalPlayer
 {
@@ -144,7 +146,7 @@ namespace CalamityMod.CalPlayer
             NetMessage.SendData(MessageID.Dodge, -1, -1, null, Player.whoAmI, 1f, 0f, 0f, 0, 0, 0);
         }
 
-        public void AbyssMirrorDodge(double dodgeDamageGateValuePercent, int dodgeDamageGateValue, int hitDamage)
+        public void AbyssMirrorDodge(double dodgeDamageGateValuePercent, int dodgeDamageGateValue, int hitDamage, Player.HurtInfo info)
         {
             double maxCooldownDurationDamagePercent = 0.5;
             int maxCooldownDurationDamageValue = (int)Math.Round(Player.statLifeMax2 * (maxCooldownDurationDamagePercent - dodgeDamageGateValuePercent));
@@ -167,7 +169,7 @@ namespace CalamityMod.CalPlayer
                 rogueStealth += 0.5f;
                 SoundEngine.PlaySound(SilvaArmor.ActivationSound, Player.Center);
 
-                var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<AbyssalMirror>()));
+                var source = Player.GetSource_Accessory_OnHurt(FindAccessory<AbyssalMirror>(), info.DamageSource);
                 for (int i = 0; i < 10; i++)
                 {
                     int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(55);
@@ -187,7 +189,7 @@ namespace CalamityMod.CalPlayer
             }
         }
 
-        public void EclipseMirrorDodge(double dodgeDamageGateValuePercent, int dodgeDamageGateValue, int hitDamage)
+        public void EclipseMirrorDodge(double dodgeDamageGateValuePercent, int dodgeDamageGateValue, int hitDamage, Player.HurtInfo info)
         {
             double maxCooldownDurationDamagePercent = 0.5;
             int maxCooldownDurationDamageValue = (int)Math.Round(Player.statLifeMax2 * (maxCooldownDurationDamagePercent - dodgeDamageGateValuePercent));
@@ -210,7 +212,7 @@ namespace CalamityMod.CalPlayer
                 rogueStealth += 0.5f;
                 SoundEngine.PlaySound(SoundID.Item68, Player.Center);
 
-                var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<EclipseMirror>()));
+                var source = Player.GetSource_Accessory_OnHurt(FindAccessory<EclipseMirror>(), info.DamageSource);
                 int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(2000);
 
                 int eclipse = Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ModContent.ProjectileType<EclipseMirrorBurst>(), damage, 0, Player.whoAmI);
@@ -1001,6 +1003,9 @@ namespace CalamityMod.CalPlayer
             if (Player.ownedProjectileCounts[ModContent.ProjectileType<EnergyShell>()] > 0 && Player.HeldItem.type == ModContent.ItemType<LionHeart>())
                 modifiers.FinalDamage *= 0.5f;
 
+            if (Player.ownedProjectileCounts[ModContent.ProjectileType<RelicOfConvergenceCrystal>()] > 0 && Player.HeldItem.type == ModContent.ItemType<RelicOfConvergence>())
+                modifiers.FinalDamage *= RelicOfConvergence.IncomingDamageMultiplier;
+
             bool lifeAndShieldCondition = Player.statLife >= Player.statLifeMax2 && (!HasAnyEnergyShield || TotalEnergyShielding >= TotalMaxShieldDurability);
             if (theBee && theBeeCooldown <= 0 && lifeAndShieldCondition)
             {
@@ -1050,7 +1055,7 @@ namespace CalamityMod.CalPlayer
                     return;
                 }
             }
-            if (!CalamityProjectileSets.ShouldNotBeReflected[proj.type] && proj.active && !proj.friendly && proj.hostile && proj.damage > 0 && !modifiers.PvP)
+            if (proj.active && proj.hostile && modifiers.Dodgeable && proj.damage > 0)
             {
                 double dodgeDamageGateValuePercent = 0.05;
                 int dodgeDamageGateValue = (int)Math.Round(Player.statLifeMax2 * dodgeDamageGateValuePercent);
@@ -1091,19 +1096,21 @@ namespace CalamityMod.CalPlayer
                     // The Evolution
                     if (evolution)
                     {
-                        proj.hostile = false;
-                        proj.friendly = true;
-                        proj.damage = 10 * actualProjDamage;
-                        proj.velocity *= -2f;
-                        proj.extraUpdates += 1;
-                        proj.penetrate = 1;
+                        if (Player.whoAmI == Main.myPlayer)
+                        {
+                            var source = Player.GetSource_Accessory_OnHurt(FindAccessory<TheEvolution>(), modifiers.DamageSource);
+                            int mirrorDamage = (int)MathHelper.Min(actualProjDamage, 1000) * 50;
+                            for (var i = 0; i < 5; i++)
+                            {
+                                Projectile.NewProjectile(source, Player.Center + Vector2.UnitX.RotatedBy(MathHelper.TwoPi * (i / 10f)), Vector2.Zero, ModContent.ProjectileType<MirrorBlast>(), mirrorDamage, 5, Main.myPlayer, 1);
+                            }
+                        }
 
-                        // 17APR2024: Ozzatron: The Evolution is a reflect which also functions as a dodge. It uses vanilla dodge iframes and benefits from Cross Necklace.
-                        int evolutionIFrames = Player.ComputeReflectIFrames();
+                        //Doze - This gives the same iframes as vanilla dodges, including accounting for cross necklace.
+                        int evolutionIFrames = Player.ComputeDodgeIFrames();
                         Player.GiveUniversalIFrames(evolutionIFrames, true);
 
                         modifiers.Cancel();
-                        evolutionLifeRegenCounter = 600;
                         projTypeJustHitBy = proj.type;
 
                         int cooldownDuration = (int)MathHelper.Lerp(BalancingConstants.EvolutionReflectCooldownMin, BalancingConstants.EvolutionReflectCooldownMax, cooldownDurationScalar);
@@ -1111,7 +1118,7 @@ namespace CalamityMod.CalPlayer
 
                         return;
                     }
-                    else if (daedalusReflect)
+                    else if (daedalusReflect && !CalamityProjectileSets.ShouldNotBeReflected[proj.type] && !modifiers.PvP && !proj.friendly)
                     {
                         proj.hostile = false;
                         proj.friendly = true;
@@ -1299,7 +1306,7 @@ namespace CalamityMod.CalPlayer
                 if (!npc.dontTakeDamage)
                 {
                     int onHitDamage = (int)Player.GetBestClassDamage().ApplyTo(CrawCarapace.ThornsDamage);
-                    Projectile revenge = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), onHitDamage, 0f, Player.whoAmI, npc.whoAmI, pushVel.X, pushVel.Y);
+                    Projectile.NewProjectile(Player.GetSource_Accessory_OnHurt(FindAccessory<CrawCarapace>(), npc), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), onHitDamage, 0f, Player.whoAmI, npc.whoAmI, pushVel.X, pushVel.Y);
                 }
                 SoundEngine.PlaySound(SoundID.NPCHit33 with { Volume = 0.5f }, Player.Center);
 
@@ -1324,8 +1331,8 @@ namespace CalamityMod.CalPlayer
                 if (!npc.dontTakeDamage)
                 {
                     int onHitDamage = (int)Player.GetBestClassDamage().ApplyTo(Baroclaw.ThornsDamage);
-                    Projectile revenge = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), onHitDamage, -1f, Player.whoAmI, npc.whoAmI, pushVel.X, pushVel.Y);
-                    
+                    Projectile.NewProjectile(Player.GetSource_Accessory_OnHurt(FindAccessory<Baroclaw>(), npc), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), onHitDamage, -1f, Player.whoAmI, npc.whoAmI, pushVel.X, pushVel.Y);
+
                     npc.AddBuff(ModContent.BuffType<ArmorCrunch>(), 900);
                     npc.AddBuff(ModContent.BuffType<CrushDepth>(), 900);
                 }
@@ -1359,8 +1366,8 @@ namespace CalamityMod.CalPlayer
                 if (!npc.dontTakeDamage)
                 {
                     int onHitDamage = (int)Player.GetBestClassDamage().ApplyTo(TheAbsorber.ThornsDamage);
-                    Projectile revenge = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), onHitDamage, -1f, Player.whoAmI, npc.whoAmI, pushVel.X, pushVel.Y);
-                    
+                    Projectile.NewProjectile(Player.GetSource_Accessory_OnHurt(FindAccessory<TheAbsorber>(), npc), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), onHitDamage, -1f, Player.whoAmI, npc.whoAmI, pushVel.X, pushVel.Y);
+
                     npc.AddBuff(ModContent.BuffType<AbsorberAffliction>(), 900);
                 }
                 SoundEngine.PlaySound(AbsorberHit, Player.Center);
@@ -1560,7 +1567,7 @@ namespace CalamityMod.CalPlayer
                 {
                     int seekerDamage = (int)Player.GetBestClassDamage().ApplyTo(15);
 
-                    Projectile bee = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, new Vector2(5, 5).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1.2f), ModContent.ProjectileType<BasicPlagueBee>(), seekerDamage, 0f, Player.whoAmI, -20, 30, 2);
+                    Projectile bee = Projectile.NewProjectileDirect(Player.GetSource_Accessory_OnHurt(FindAccessory<AlchemicalDecanter>(), hurtInfo.DamageSource), Player.Center, new Vector2(5, 5).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1.2f), ModContent.ProjectileType<BasicPlagueBee>(), seekerDamage, 0f, Player.whoAmI, -20, 30, 2);
                     bee.ArmorPenetration = 35;
                     bee.penetrate = 6;
                     bee.extraUpdates = 2;
@@ -1591,7 +1598,7 @@ namespace CalamityMod.CalPlayer
                 {
                     float speed = 2f;
                     int damage = 40;
-                    int cloud = Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * speed, ModContent.ProjectileType<ScourgeVenomCloud>(), damage, 0f, Player.whoAmI);
+                    int cloud = Projectile.NewProjectile(Player.GetSource_Accessory_OnHurt(FindAccessory<CorrosiveSpine>(), hurtInfo.DamageSource), Player.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * speed, ModContent.ProjectileType<ScourgeVenomCloud>(), damage, 0f, Player.whoAmI);
                     if (cloud.WithinBounds(Main.maxProjectiles))
                         Main.projectile[cloud].DamageType = DamageClass.Generic;
                 }
@@ -1638,7 +1645,7 @@ namespace CalamityMod.CalPlayer
                         {
                             int damage = Player.CalcIntDamage<MeleeDamageClass>(InterstellarStompers.PassthroughDamage);
 
-                            Projectile.NewProjectile(Player.GetSource_FromThis(), n.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), damage, 0, Main.myPlayer);
+                            Projectile.NewProjectile(Player.GetSource_Accessory(FindAccessory<InterstellarStompers>()), n.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), damage, 0, Main.myPlayer);
 
                             // 17APR2024: Ozzatron: Gravistar Sabaton gives iframes when passing through enemies for projectile safety.
                             // This is a fixed and intentionally very low number of iframes, and is not boosted by Cross Necklace.
@@ -1744,12 +1751,12 @@ namespace CalamityMod.CalPlayer
             {
                 if (eclipseMirror)
                 {
-                    EclipseMirrorDodge(dodgeDamageGateValuePercent, dodgeDamageGateValue, actualDamageTaken);
+                    EclipseMirrorDodge(dodgeDamageGateValuePercent, dodgeDamageGateValue, actualDamageTaken, info);
                     return true;
                 }
                 else if (abyssalMirror)
                 {
-                    AbyssMirrorDodge(dodgeDamageGateValuePercent, dodgeDamageGateValue, actualDamageTaken);
+                    AbyssMirrorDodge(dodgeDamageGateValuePercent, dodgeDamageGateValue, actualDamageTaken, info);
                     return true;
                 }
             }
@@ -2262,9 +2269,9 @@ namespace CalamityMod.CalPlayer
                         d.velocity = dustVel;
                         d.noGravity = true;
                         d.scale *= Main.rand.NextFloat(1.1f, 1.4f);
-                        Dust.CloneDust(d).velocity = dustVel.RotatedBy(MathHelper.PiOver2);
-                        Dust.CloneDust(d).velocity = dustVel.RotatedBy(MathHelper.Pi);
-                        Dust.CloneDust(d).velocity = dustVel.RotatedBy(MathHelper.Pi * 1.5f);
+                        Dust.BetterCloneDust(d).velocity = dustVel.RotatedBy(MathHelper.PiOver2);
+                        Dust.BetterCloneDust(d).velocity = dustVel.RotatedBy(MathHelper.Pi);
+                        Dust.BetterCloneDust(d).velocity = dustVel.RotatedBy(MathHelper.Pi * 1.5f);
                     }
                 }
 
@@ -2324,7 +2331,7 @@ namespace CalamityMod.CalPlayer
                 rageCombatFrames = BalancingConstants.RageCombatDelayTime;
 
             // Regenerator has been CANCLED on TWITTER.COM!!!! (Just keeping this here since it's a neat effect and I'll probably yoink it for something else later)
-            if (regenerator && false)
+            /*if (regenerator)
             {
                 // Projectile damage and count is based on source damage of the hit
                 float hitPower = (hurtInfo.SourceDamage / (Player.statLifeMax2 * 0.5f));
@@ -2334,9 +2341,9 @@ namespace CalamityMod.CalPlayer
                 for (int i = 0; i < projCount; i++)
                 {
                     Vector2 vel = (MathHelper.TwoPi * i / projCount).ToRotationVector2() * (i % 2 == 0 ? 0.75f : 1f) * 10;
-                    Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, vel.RotatedBy(-0.2f * (i % 2 == 0 ? -1 : 1)), ModContent.ProjectileType<RetaliationProjectile>(), projDamage, 0f, Player.whoAmI, 0, (i % 2 == 0 ? -1 : 1), -5);
+                    Projectile.NewProjectile(Player.GetSource_Accessory_OnHurt(FindAccessory<Regenerator>(), hurtInfo.DamageSource), Player.Center, vel.RotatedBy(-0.2f * (i % 2 == 0 ? -1 : 1)), ModContent.ProjectileType<RetaliationProjectile>(), projDamage, 0f, Player.whoAmI, 0, (i % 2 == 0 ? -1 : 1), -5);
                 }
-            }
+            }*/
 
             // Hide of Astrum Deus' melee boost
             if (hideOfDeus)
@@ -2542,7 +2549,7 @@ namespace CalamityMod.CalPlayer
                     }
 
                     // Spawn the harmless brain images that are actually projectiles
-                    var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<TheAmalgam>()));
+                    var source = Player.GetSource_Accessory_OnHurt(amalgam ? FindAccessory<TheAmalgam>() : FindAccessory<AmalgamatedBrain>(), hurtInfo.DamageSource);
                     Projectile.NewProjectile(source, Player.Center.X + Main.rand.Next(-40, 40), Player.Center.Y - Main.rand.Next(20, 60), Player.velocity.X * 0.3f, Player.velocity.Y * 0.3f, ProjectileID.BrainOfConfusion, 0, 0f, Player.whoAmI);
                 }
             }
@@ -2568,7 +2575,7 @@ namespace CalamityMod.CalPlayer
                 // Drop some bones for visual effects
                 if (!Main.dedServ && Player.wingTime > 0)
                 {
-                    var source = Player.GetSource_Accessory(FindAccessory(ItemID.BoneWings));
+                    var source = Player.GetSource_Accessory_OnHurt(FindAccessory(ItemID.BoneWings), hurtInfo.DamageSource);
                     for (int i = 0; i < 6; i++)
                     {
                         Vector2 boneVelocity = Vector2.UnitY.RotatedByRandom(MathHelper.ToRadians(30f)) * Main.rand.NextFloat(1.5f, 2.5f);
@@ -2623,7 +2630,7 @@ namespace CalamityMod.CalPlayer
                 }
                 if (hideOfDeus)
                 {
-                    var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<HideofAstrumDeus>()));
+                    var source = Player.GetSource_Accessory_OnHurt(FindAccessory<HideofAstrumDeus>(), hurtInfo.DamageSource);
                     SoundEngine.PlaySound(SoundID.Item74, Player.Center);
 
                     int blazeDamage = (int)Player.GetBestClassDamage().ApplyTo(HideofAstrumDeus.BlazeDamage);
@@ -2634,7 +2641,7 @@ namespace CalamityMod.CalPlayer
                 // This also serves to make the Honeycomb in Sweetheart Necklace make sense
                 if (dAmulet)
                 {
-                    var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<DeificAmulet>()));
+                    var source = Player.GetSource_Accessory_OnHurt(FindAccessory<DeificAmulet>(), hurtInfo.DamageSource);
                     int projAmount = (rampartOfDeities ? 12 : 6);
                     for (int n = 0; n < projAmount; n++)
                     {
@@ -2675,7 +2682,7 @@ namespace CalamityMod.CalPlayer
                 {
                     if (!(CalamityUtils.AnyProjectiles(ModContent.ProjectileType<ShadeNimbus>()) || CalamityUtils.AnyProjectiles(ModContent.ProjectileType<ShadeNimbusSpawner>())))
                     {
-                        var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<RottenBrain>()));
+                        var source = Player.GetSource_Accessory_OnHurt(amalgam ? FindAccessory<TheAmalgam>() : aBrain ? FindAccessory<AmalgamatedBrain>() : FindAccessory<RottenBrain>(), hurtInfo.DamageSource);
                         int effectStrength = amalgam ? 3 : aBrain ? 2 : 1;
                         int effectDamage = amalgam ? TheAmalgam.NimbusDamage : aBrain ? AmalgamatedBrain.NimbusDamage : RottenBrain.NimbusDamage;
                         effectDamage = (int)Player.GetBestClassDamage().ApplyTo(effectDamage);
@@ -2695,11 +2702,11 @@ namespace CalamityMod.CalPlayer
                             SoundEngine.PlaySound(SoundID.NPCDeath28 with { Volume = 2f }, Player.Center);
                         }
 
-                        var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<Items.Accessories.InkBomb>()));
+                        var source = Player.GetSource_Accessory_OnHurt(FindAccessory<Items.Accessories.InkBomb>(), hurtInfo.DamageSource);
                         SoundEngine.PlaySound(SoundID.Item1, Player.Center);
                         for (int i = 0; i < 3; i++)
                         {
-                            int ink = Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 2f, ModContent.ProjectileType<InkBombProjectile>(), 0, 0, Player.whoAmI);
+                            int ink = Projectile.NewProjectile(source, Player.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 2f, ModContent.ProjectileType<InkBombProjectile>(), 0, 0, Player.whoAmI);
                             if (ink.WithinBounds(Main.maxProjectiles))
                                 Main.projectile[ink].DamageType = DamageClass.Generic;
                         }
@@ -2707,7 +2714,7 @@ namespace CalamityMod.CalPlayer
                 }
                 if (ataxiaBlaze)
                 {
-                    var fuckYouBitch = Player.GetSource_Misc("21");
+                    var fuckYouBitch = Player.GetSource_OnHurt(hurtInfo.DamageSource);
                     if (hurtInfo.Damage > 0)
                     {
                         SoundEngine.PlaySound(SoundID.Item74, Player.Center);
@@ -2725,7 +2732,7 @@ namespace CalamityMod.CalPlayer
 
                         if (Player.whoAmI == Main.myPlayer)
                         {
-                            var source = Player.GetSource_Misc("22");
+                            var source = Player.GetSource_OnHurt(hurtInfo.DamageSource);
                             float offset = Main.rand.NextFloat(MathHelper.TwoPi);
                             int sDamage = (int)Player.GetTotalDamage<RangedDamageClass>().ApplyTo(DaedalusHeadRanged.ShardDamage);
                             for (int i = 0; i < 10; i++)
@@ -2740,7 +2747,7 @@ namespace CalamityMod.CalPlayer
                 }
                 else if (godSlayerDamage) //god slayer melee helm
                 {
-                    var source = Player.GetSource_Misc("24");
+                    var source = Player.GetSource_OnHurt(hurtInfo.DamageSource);
                     if (hurtInfo.Damage > GodSlayerHeadMelee.SetBonusHurtDamageThreshold)
                     {
                         SoundEngine.PlaySound(SoundID.Item73, Player.Center);

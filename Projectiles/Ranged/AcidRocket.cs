@@ -122,6 +122,7 @@ namespace CalamityMod.Projectiles.Ranged
                 stuckInTarget = true;
                 storedVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * 8;
                 Projectile.velocity = Vector2.Zero;
+                Projectile.netUpdate = true;
             }
         }
 

@@ -73,6 +73,8 @@ namespace CalamityMod.Projectiles.Boss
             float vel = MathHelper.Clamp(Projectile.velocity.Length() / 5, 0, 1.5f);
             GlowOrbParticle p = new GlowOrbParticle(Projectile.Center, Projectile.velocity + new Vector2(Main.rand.NextFloat(vel * 2), 0).RotatedByRandom(MathHelper.TwoPi), false, 4, 1f, col);
             GeneralParticleHandler.SpawnParticle(p);
+            //Trail for visibilty
+            GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center + Projectile.velocity, Vector2.Zero, col, "CalamityMod/Particles/BlastCone", new Vector2(3f, 2f), Vector2.Zero.AngleFrom(Projectile.velocity), 1f, 0f, 3));
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -87,7 +89,7 @@ namespace CalamityMod.Projectiles.Boss
             baseColor *= lerpMult;
             baseColor2 *= lerpMult;
             Vector2 origin = texture.Size() / 2f;
-            Vector2 scale = new Vector2(0.5f, 1.5f) * lerpMult;
+            Vector2 scale = new Vector2(0.5f, 1f) * ((lerpMult-1)*0.5f + 1f);
 
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (Projectile.spriteDirection == -1)

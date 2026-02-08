@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
             Projectile.extraUpdates = 5; //ExtraUpdates help make the VFX smoother
             Projectile.noEnchantmentVisuals = true;
         }
-        public override void Spawn(IEntitySource source)
+        public override void Spawn()
         {
             //This sets variables for the spear in general, as well as the secondary attack
             //The secondary attack is the "default" because it was coded first
@@ -262,14 +262,13 @@ namespace CalamityMod.Projectiles.Melee.Spears
             target.AddBuff(ModContent.BuffType<VermillionFlux>(), 900);
             Main.player[Projectile.owner].SpawnLifeStealProjectile(target, Projectile, ProjectileID.VampireHeal, (int)Math.Round(hit.Damage * 0.0015));
             if (Projectile.damage > 1)
-                Projectile.damage = (int)(Projectile.damage * 0.85f);
+                Projectile.damage = (int)(Projectile.damage * 0.925f);
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             modifiers.SetCrit();
-
-            float critDamage = Math.Min(Main.player[Projectile.owner].GetTotalCritChance(Projectile.DamageType) * 0.01f, 1f);
-            modifiers.SourceDamage *= 1 + critDamage;
+            float critDamage = Main.player[Projectile.owner].GetTotalCritChance(Projectile.DamageType) * 0.02f;
+            modifiers.CritDamage += critDamage;
         }
     }
 }

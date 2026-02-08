@@ -77,7 +77,8 @@ namespace CalamityMod.Items.Weapons.Ranged
                 holdout2.velocity = (player.Calamity().mouseWorld - player.MountedCenter).SafeNormalize(Vector2.Zero);
                 SoundStyle fire = new("CalamityMod/Sounds/Item/DudFire");
                 SoundEngine.PlaySound(fire with { Volume = 0.7f, Pitch = aiType == 20 ? -0.7f : (-0.5f + (shotType ? 0.5f : 0)) }, player.Center);
-                shotType = !shotType;
+                if (aiType != 20)
+                    shotType = !shotType;
             }
             else
             {

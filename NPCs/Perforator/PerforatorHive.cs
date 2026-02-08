@@ -333,7 +333,7 @@ namespace CalamityMod.NPCs.Perforator
                     }
 
 
-                    if (Main.getGoodWorld && lifeRatio < 0.5f)
+                    if (Main.getGoodWorld && lifeRatio < 0.5f && Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         if (lifeRatio > 0.35f)
                             NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X + Main.rand.Next(-25, 26), (int)NPC.Center.Y + Main.rand.Next(-25, 26), ModContent.NPCType<PerforatorHeadLarge>(), 1);
@@ -346,13 +346,16 @@ namespace CalamityMod.NPCs.Perforator
                     {
                         squashTimer = squashInterval; // Start scaling animation
 
-                        NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X + Main.rand.Next(-25, 26), (int)NPC.Center.Y + Main.rand.Next(-25, 26), wormType, 1);
-
-                        // Spawn two small worms in Death
-                        if (death)
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            if (wormType == ModContent.NPCType<PerforatorHeadSmall>())
-                                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X + Main.rand.Next(-25, 26), (int)NPC.Center.Y + Main.rand.Next(-25, 26), wormType, 1);
+                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X + Main.rand.Next(-25, 26), (int)NPC.Center.Y + Main.rand.Next(-25, 26), wormType, 1);
+
+                            // Spawn two small worms in Death
+                            if (death)
+                            {
+                                if (wormType == ModContent.NPCType<PerforatorHeadSmall>())
+                                    NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X + Main.rand.Next(-25, 26), (int)NPC.Center.Y + Main.rand.Next(-25, 26), wormType, 1);
+                            }
                         }
                     }
 

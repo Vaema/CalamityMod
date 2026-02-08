@@ -53,6 +53,18 @@ public sealed partial class CalamityVanillaAIOverrideNPC : GlobalNPC
     public static bool Enabled { get; set; } = true;
 
     /// <summary>
+    /// Blacklist for non difficulty specific AI changes. External mods can add NPC type to opt-out global changes.
+    /// <para>Example: Destroyer Probe's Telegraph Drawing</para>
+    /// </summary>
+    public static HashSet<int> GlobalChangeBlacklist { get; private set; } = [];
+
+    /// <summary>
+    /// Hook to Modify AI Overrides on External mods demand.<br/>
+    /// Modifying <see cref="VanillaAIOverrideContext.OverrideToApply"/> will result in NPCs to use that specific AI.
+    /// </summary>
+    public static event Action<VanillaAIOverrideContext> ModifyAIOverride;
+
+    /// <summary>
     /// Specify the AI Override to work with. This handles AI, SendExtraAI and ReceiveExtraAI in instaned manner.
     /// </summary>
     public VanillaAIOverride AIOverride = null;
@@ -151,9 +163,15 @@ public sealed partial class CalamityVanillaAIOverrideNPC : GlobalNPC
                     return new QueenBeeAI();
 
                 case NPCID.SkeletronHead:
-                    return new SkeletronAI();
+                    if (Main.netMode == NetmodeID.SinglePlayer)
+                        return new SkeletronAI();
+                    else return null;
+                
                 case NPCID.SkeletronHand:
-                    return new SkeletronAI.SkeletronHandAI();
+                    if (Main.netMode == NetmodeID.SinglePlayer)
+                        return new SkeletronAI.SkeletronHandAI();
+                    else return null;
+                
                 case NPCID.DungeonGuardian:
                     return new SkeletronAI.DungeonGuardianAI();
 
@@ -874,6 +892,8 @@ public sealed partial class CalamityVanillaAIOverrideNPC : GlobalNPC
     }
     #endregion
 
+    internal static bool IsGlobalChangeBlacklisted(NPC npc) => GlobalChangeBlacklist.Contains(npc.type);
+
     internal static void RegisterNetID(VanillaAIOverride aiOverride)
     {
         var id = NetIDLookup.Count + 1;
@@ -883,6 +903,8 @@ public sealed partial class CalamityVanillaAIOverrideNPC : GlobalNPC
     public override void Unload()
     {
         NetIDLookup.Clear();
+        GlobalChangeBlacklist.Clear();
+        ModifyAIOverride = null;
     }
 
     public override void SetDefaults(NPC npc)
@@ -895,6 +917,21 @@ public sealed partial class CalamityVanillaAIOverrideNPC : GlobalNPC
             return;
 
         AIOverride = GetVanillaAIOverrideToApply(npc);
+        if (ModifyAIOverride != null)
+        {
+            var context = new VanillaAIOverrideContext()
+            {
+                NPC = npc,
+                NPCType = npc.type,
+                InRevengeanceWorld = CalamityWorld.revenge,
+                InDeathWorld = CalamityWorld.death,
+                InBossRush = BossRushEvent.BossRushActive,
+                OverrideToApply = AIOverride
+            };
+            ModifyAIOverride.Invoke(context);
+            AIOverride = context.OverrideToApply;
+        }
+
         if (AIOverride != null)
         {
             AIOverride.NPC = npc;
@@ -918,7 +955,7 @@ public sealed partial class CalamityVanillaAIOverrideNPC : GlobalNPC
             return base.PreAI(npc);
 
         bool result = true;
-        result &= GlobalPreAI(npc);
+        if (!IsGlobalChangeBlacklisted(npc)) result &= GlobalPreAI(npc);
         if (AIOverride != null)
         {
             result &= AIOverride.AI(Mod);
@@ -938,7 +975,7 @@ public sealed partial class CalamityVanillaAIOverrideNPC : GlobalNPC
         if (!Enabled)
             return;
 
-        GlobalAI(npc);
+        if (!IsGlobalChangeBlacklisted(npc)) GlobalAI(npc);
     }
 
     public override void PostAI(NPC npc)
@@ -1007,7 +1044,7 @@ public sealed partial class CalamityVanillaAIOverrideNPC : GlobalNPC
 
     public override void FindFrame(NPC npc, int frameHeight)
     {
-        if (!Enabled)
+        if (!Enabled || npc.IsABestiaryIconDummy)
             return;
 
         AIOverride?.FindFrame(Mod, frameHeight);
@@ -1018,8 +1055,11 @@ public sealed partial class CalamityVanillaAIOverrideNPC : GlobalNPC
         if (!Enabled)
             base.PreDraw(npc, spriteBatch, screenPos, drawColor);
 
+        if(npc.IsABestiaryIconDummy)
+            return base.PreDraw(npc, spriteBatch, screenPos, drawColor);
+
         bool result = true;
-        result &= GlobalPreDraw(npc, spriteBatch, screenPos, drawColor);
+        if (!IsGlobalChangeBlacklisted(npc)) result &= GlobalPreDraw(npc, spriteBatch, screenPos, drawColor);
         result &= AIOverride?.PreDraw(Mod, spriteBatch, screenPos, drawColor) ?? true;
         return result;
     }
@@ -1029,7 +1069,7 @@ public sealed partial class CalamityVanillaAIOverrideNPC : GlobalNPC
         if (!Enabled)
             return;
 
-        GlobalPostDraw(npc, spriteBatch, screenPos, drawColor);
+        if (!IsGlobalChangeBlacklisted(npc)) GlobalPostDraw(npc, spriteBatch, screenPos, drawColor);
         AIOverride?.PostDraw(Mod, spriteBatch, screenPos, drawColor);
     }
 

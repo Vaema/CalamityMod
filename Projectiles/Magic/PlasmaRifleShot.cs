@@ -86,7 +86,7 @@ namespace CalamityMod.Projectiles.Magic
 
             SoundEngine.PlaySound(AnomalysNanogunMPFBBoom.MPFBExplosion, Projectile.Center);
             if (Projectile.owner == Main.myPlayer)
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<PlasmaRifleExplosion>(), Projectile.damage, Projectile.knockBack, Projectile.owner, ai1: 160f);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<PlasmaRifleExplosion>(), (int)(Projectile.damage * 0.7f), Projectile.knockBack, Projectile.owner, ai1: 160f);
 
             for (int k = 0; k < 30; k++)
             {

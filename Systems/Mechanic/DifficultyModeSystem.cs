@@ -35,15 +35,19 @@ namespace CalamityMod.Systems
             MostAlternateDifficulties = 1;
             //Initialize base mod difficulties
             Difficulties = new List<DifficultyMode>() { ModContent.GetInstance<NoDifficulty>(),
-                                                        ModContent.GetInstance<ExpertDifficulty>(),
-                                                        ModContent.GetInstance<MasterDifficulty>(), ModContent.GetInstance<RevengeanceDifficulty>(),
-                                                        ModContent.GetInstance<DeathDifficulty>() };
+                                                        ModContent.GetInstance<ExpertDifficulty>(),ModContent.GetInstance<RevengeanceDifficulty>(),
+                                                        ModContent.GetInstance<MasterDifficulty>(), ModContent.GetInstance<DeathDifficulty>(),
+                                                        ModContent.GetInstance<LegendaryDifficulty>(), ModContent.GetInstance<MaliceDifficulty>() };
 
             journeyDifficultyUpdateMethod = typeof(CreativePowers.DifficultySliderPower).GetMethod("UpdateInfoFromSliderValueCache", BindingFlags.Instance | BindingFlags.NonPublic);
 
             CalculateDifficultyData();
         }
 
+        public override void PostWorldLoad()
+        {
+            CalculateDifficultyData(); //Reload difficulties upon loading a world to adjust for FTW.
+        }
         public override void OnModUnload()
         {
             Difficulties = null;
@@ -58,6 +62,16 @@ namespace CalamityMod.Systems
                 {
                     case GameModeID.Normal:
                         {
+                            if (Main.getGoodWorld)
+                            {
+                                // if death was activated, change it to revengence
+                                if (GetCurrentDifficulty.CountAs<DeathDifficulty>())
+                                {
+                                    ModeIndicatorUI.SwitchToDifficulty(ModContent.GetInstance<RevengeanceDifficulty>(), broadcast: true);
+                                }
+                                break;
+                            }
+
                             // vanilla game mode in classic, but cal difficulty >= expert
                             if (GetCurrentDifficulty.CountAs<DeathDifficulty>() || GetCurrentDifficulty.CountAs<RevengeanceDifficulty>())
                             {
@@ -67,6 +81,15 @@ namespace CalamityMod.Systems
                         }
                     case GameModeID.Expert:
                         {
+                            if (Main.getGoodWorld)
+                            {
+                                if (GetCurrentDifficulty.CountAs<LegendaryDifficulty>())
+                                {
+                                    ModeIndicatorUI.SwitchToDifficulty(ModContent.GetInstance<DeathDifficulty>(), broadcast: true);
+                                }
+                                break;
+                            }
+
                             // if death was activated, change it to revengence
                             if (GetCurrentDifficulty.CountAs<DeathDifficulty>())
                             {
@@ -76,6 +99,14 @@ namespace CalamityMod.Systems
                         }
                     case GameModeID.Master:
                         {
+                            if (Main.getGoodWorld)
+                            {
+                                if (!GetCurrentDifficulty.CountAs<MaliceDifficulty>() && CalamityWorld.revenge)
+                                {
+                                    ModeIndicatorUI.SwitchToDifficulty(ModContent.GetInstance<MaliceDifficulty>(), broadcast: true);
+                                }
+                                break;
+                            }
                             // if revengence and master both activated, change it to death
                             if (!GetCurrentDifficulty.CountAs<DeathDifficulty>() && CalamityWorld.revenge)
                             {
@@ -143,6 +174,10 @@ namespace CalamityMod.Systems
 
             for (int i = 0; i < Difficulties.Count; i++)
             {
+                //Only add difficulties that are allowed in the current world type;
+                if ((Main.getGoodWorld && Difficulties[i].GetForTheWorthyDisplay == DifficultyMode.FTWDisplayMode.NotForTheWorthy)
+                    || (!Main.getGoodWorld && Difficulties[i].GetForTheWorthyDisplay == DifficultyMode.FTWDisplayMode.OnlyForTheWorthy))
+                    continue;
                 //if we are at a new tier, create a new list of difficulties at that tier.
                 if (currentTier != Difficulties[i].DifficultyScale)
                 {
@@ -235,6 +270,12 @@ namespace CalamityMod.Systems
 
     public abstract class DifficultyMode : ModType
     {
+        public enum FTWDisplayMode
+        {
+            Always,
+            OnlyForTheWorthy,
+            NotForTheWorthy,
+        }
         protected sealed override void Register()
         {
             ModTypeLookup<DifficultyMode>.Register(this);
@@ -251,6 +292,11 @@ namespace CalamityMod.Systems
         public abstract Asset<Texture2D> Texture { get; }
         protected Asset<Texture2D> _textureDisabled;
         public abstract Asset<Texture2D> TextureDisabled { get; }
+
+        protected Asset<Texture2D> _outlineTexture;
+        public abstract Asset<Texture2D> OutlineTexture { get; }
+        public virtual FTWDisplayMode GetForTheWorthyDisplay { get; } = FTWDisplayMode.Always;
+
         protected SoundStyle? _activationSound;
         public abstract SoundStyle ActivationSound { get; }
         public abstract int BackBoneGameModeID { get; }
@@ -262,8 +308,8 @@ namespace CalamityMod.Systems
         public abstract LocalizedText ShortDescription { get; }
         public virtual LocalizedText ExpandedDescription => LocalizedText.Empty;
 
-        public abstract LocalizedText FTWName { get; }
-        public abstract Color FTWTextColor { get; }
+        public virtual LocalizedText FTWName { get; } = null;
+        public virtual Color? FTWTextColor { get; } = null;
 
 
         /// <summary>
@@ -304,6 +350,8 @@ namespace CalamityMod.Systems
 
         public override Asset<Texture2D> Texture => _texture ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Classic");
 
+        public override Asset<Texture2D> OutlineTexture => _outlineTexture ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Classic_Border");
+
         public override Asset<Texture2D> TextureDisabled => _textureDisabled ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Classic_Off");
 
         public override SoundStyle ActivationSound => _activationSound ??= SoundID.MenuTick with { Volume = 1f };
@@ -317,17 +365,14 @@ namespace CalamityMod.Systems
         public override Color ChatTextColor => Color.White;
 
         public override LocalizedText ShortDescription => GetText("UI.ClassicInfo");
-
-        public override LocalizedText FTWName => Language.GetText("UI.Expert");
-
-        public override Color FTWTextColor => new Color(255, 186, 117); // World display: Main.mcColor
+        public override FTWDisplayMode GetForTheWorthyDisplay => FTWDisplayMode.NotForTheWorthy;
     }
 
     public class ExpertDifficulty : DifficultyMode
     {
         public override bool Enabled
         {
-            get => Main.getGoodWorld ? Main.masterMode : Main.expertMode;
+            get => Main.expertMode;
             set
             {
                 if (!Main.GameModeInfo.IsJourneyMode)
@@ -342,32 +387,29 @@ namespace CalamityMod.Systems
         }
 
         public override Asset<Texture2D> Texture => _texture ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Expert");
+        public override Asset<Texture2D> OutlineTexture => _outlineTexture ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Expert_Border");
 
         public override Asset<Texture2D> TextureDisabled => _textureDisabled ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Expert_Off");
 
         public override SoundStyle ActivationSound => _activationSound ??= SoundID.ForceRoarPitched;
 
-        public override int BackBoneGameModeID => GameModeID.Expert;
+        public override int BackBoneGameModeID => Main.getGoodWorld ? GameModeID.Normal : GameModeID.Expert;
 
         public override float DifficultyScale => 0.1f;
 
         public override LocalizedText Name => Language.GetText("UI.Expert");
-        public override Color ChatTextColor => new Color(255, 186, 117); // World display: Main.mcColor
+        public override Color ChatTextColor => Main.mcColor;
 
         public override LocalizedText ShortDescription => GetText("UI.ExpertShortInfo");
 
         public override LocalizedText ExpandedDescription => GetText("UI.ExpertExpandedInfo");
-
-        public override LocalizedText FTWName => Language.GetText("UI.Master");
-
-        public override Color FTWTextColor => new Color(28, 255, 170); // World display: Main.hcColor
     }
 
     public class MasterDifficulty : DifficultyMode
     {
         public override bool Enabled
         {
-            get => Main.getGoodWorld ? CalamityWorld.LegendaryMode : Main.masterMode;
+            get => Main.masterMode;
             set
             {
                 if (!Main.GameModeInfo.IsJourneyMode)
@@ -382,26 +424,63 @@ namespace CalamityMod.Systems
         }
 
         public override Asset<Texture2D> Texture => _texture ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Master");
+        public override Asset<Texture2D> OutlineTexture => _outlineTexture ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Master_Border");
 
         public override Asset<Texture2D> TextureDisabled => _textureDisabled ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Master_Off");
 
         public override SoundStyle ActivationSound => _activationSound ??= SoundID.NPCDeath10;
 
-        public override int BackBoneGameModeID => GameModeID.Master;
+        public override int BackBoneGameModeID => Main.getGoodWorld ? GameModeID.Expert : GameModeID.Master;
 
         public override float DifficultyScale => 0.25f;
 
         public override LocalizedText Name => Language.GetText("UI.Master");
 
-        public override Color ChatTextColor => new Color(28, 255, 170); // World display: Main.hcColor
+        public override Color ChatTextColor => Main.hcColor;
 
         public override LocalizedText ShortDescription => GetText("UI.MasterShortInfo");
 
         public override LocalizedText ExpandedDescription => GetText("UI.MasterExpandedInfo");
 
-        public override LocalizedText FTWName => Language.GetText("UI.Legendary");
+    }
 
-        public override Color FTWTextColor => Main.legendaryModeColor;
+    public class LegendaryDifficulty : DifficultyMode
+    {
+        public override bool Enabled
+        {
+            get => CalamityWorld.LegendaryMode;
+            set
+            {
+                if (!Main.GameModeInfo.IsJourneyMode)
+                {
+                    Main.GameMode = value == true ? GameModeID.Master : GameModeID.Expert;
+                }
+                else
+                {
+                    DifficultyModeSystem.AlignJourneyDifficultySlider();
+                }
+            }
+        }
+
+        public override Asset<Texture2D> Texture => _texture ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Legendary");
+        public override Asset<Texture2D> OutlineTexture => _outlineTexture ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Legendary_Border");
+
+        public override Asset<Texture2D> TextureDisabled => _textureDisabled ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Legendary_Off");
+
+        public override SoundStyle ActivationSound => _activationSound ??= new("CalamityMod/Sounds/Custom/DifficultySelection/Legendary_Mode_Select");
+
+        public override int BackBoneGameModeID => GameModeID.Master;
+
+        public override float DifficultyScale => 0.5f;
+
+        public override LocalizedText Name => Language.GetText("UI.Legendary");
+
+        public override Color ChatTextColor => Main.legendaryModeColor;
+
+        public override LocalizedText ShortDescription => GetText("UI.LegendaryShortInfo");
+
+        public override LocalizedText ExpandedDescription => GetText("UI.LegendaryExpandedInfo");
+        public override FTWDisplayMode GetForTheWorthyDisplay => FTWDisplayMode.OnlyForTheWorthy;
 
     }
 
@@ -412,25 +491,22 @@ namespace CalamityMod.Systems
             get => CalamityWorld.revenge;
             set
             {
-                if (Main.getGoodWorld)
-                {
-                    CalamityWorld.revenge = value;
-                    CalamityWorld.death = value;
-                }
-                else
-                    CalamityWorld.revenge = value;
+                CalamityWorld.revenge = value;
+                if (value && !Main.GameModeInfo.IsJourneyMode)
+                    Main.GameMode = BackBoneGameModeID;
             }
         }
 
         public override Asset<Texture2D> Texture => _texture ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Rev");
+        public override Asset<Texture2D> OutlineTexture => _outlineTexture ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Rev_Border");
 
         public override Asset<Texture2D> TextureDisabled => _textureDisabled ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Rev_Off");
 
-        public override SoundStyle ActivationSound => _activationSound ??= SoundID.Item119;
+        public override SoundStyle ActivationSound => _activationSound ??= new("CalamityMod/Sounds/Custom/DifficultySelection/Revengeance_Mode_Select");
 
-        public override int BackBoneGameModeID => GameModeID.Expert;
+        public override int BackBoneGameModeID => Main.getGoodWorld ? GameModeID.Normal : GameModeID.Expert;
 
-        public override float DifficultyScale => 0.25f;
+        public override float DifficultyScale => 0.1f;
 
         public override LocalizedText Name => GetText("UI.Revengeance");
 
@@ -447,17 +523,79 @@ namespace CalamityMod.Systems
                 return GetText("UI.RevengeanceExpandedInfo").WithFormatArgs(rageKey, adrenKey);
             }
         }
-
-        public override LocalizedText FTWName => GetText("UI.Death");
-
-        public override Color FTWTextColor => new Color(192, 64, 219);
     }
 
     public class DeathDifficulty : DifficultyMode
     {
         public override bool Enabled
         {
-            get => Main.getGoodWorld ? CalamityWorld.death && CalamityWorld.LegendaryMode : CalamityWorld.death;
+            get => CalamityWorld.death;
+            set
+            {
+                if (Main.getGoodWorld)
+                {
+                    if (!Main.GameModeInfo.IsJourneyMode)
+                    {
+                        Main.GameMode = value == true ? GameModeID.Expert : GameModeID.Normal;
+                    }
+                    else
+                    {
+                        DifficultyModeSystem.AlignJourneyDifficultySlider();
+                    }
+                    CalamityWorld.death = value;
+                }
+                else
+                {
+                    CalamityWorld.death = value;
+                    if (value && !Main.GameModeInfo.IsJourneyMode)
+                        Main.GameMode = BackBoneGameModeID;
+                }
+            }
+        }
+
+        public override Asset<Texture2D> Texture => _texture ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Death");
+        public override Asset<Texture2D> OutlineTexture => _outlineTexture ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Death_Border");
+
+        public override Asset<Texture2D> TextureDisabled => _textureDisabled ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Death_Off");
+
+        public override SoundStyle ActivationSound => _activationSound ??= new("CalamityMod/Sounds/Custom/DifficultySelection/Death_Mode_Select");
+
+        public override int BackBoneGameModeID => Main.getGoodWorld ? GameModeID.Expert : GameModeID.Master;
+
+        public override float DifficultyScale => 0.25f;
+
+        public override LocalizedText Name => GetText("UI.Death");
+
+        public override Color ChatTextColor => new Color(192, 64, 219);
+
+        public override LocalizedText ShortDescription => GetText("UI.DeathShortInfo");
+
+        public override LocalizedText ExpandedDescription => GetText("UI.DeathExpandedInfo");
+
+        public override int[] FavoredDifficultyAtTier(int tier)
+        {
+            DifficultyMode[] tierList = DifficultyModeSystem.DifficultyTiers[tier];
+
+            List<int> difficulties = new List<int>();
+
+            for (int i = 0; i < tierList.Length; i++)
+            {
+                if (tierList[i] is MasterDifficulty || tierList[i] is RevengeanceDifficulty)
+                    difficulties.Add(i);
+            }
+
+            if (difficulties.Count <= 0)
+                difficulties.Add(0);
+
+            return difficulties.ToArray();
+        }
+    }
+
+    public class MaliceDifficulty : DifficultyMode
+    {
+        public override bool Enabled
+        {
+            get => Main.getGoodWorld ? CalamityWorld.death && CalamityWorld.LegendaryMode : false;
             set
             {
                 if (Main.getGoodWorld)
@@ -470,35 +608,31 @@ namespace CalamityMod.Systems
                     {
                         DifficultyModeSystem.AlignJourneyDifficultySlider();
                     }
+                    CalamityWorld.revenge = value;
                     CalamityWorld.death = value;
                 }
-                else
-                    CalamityWorld.death = value;
             }
         }
 
-        public override Asset<Texture2D> Texture => _texture ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Death");
+        public override Asset<Texture2D> Texture => _texture ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Malice");
+        public override Asset<Texture2D> OutlineTexture => _outlineTexture ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Malice_Border");
 
-        public override Asset<Texture2D> TextureDisabled => _textureDisabled ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Death_Off");
+        public override Asset<Texture2D> TextureDisabled => _textureDisabled ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Malice_Off");
 
-        public override SoundStyle ActivationSound => _activationSound ??= DemonshadeHelm.ActivationSound;
+        public override SoundStyle ActivationSound => _activationSound ??= new("CalamityMod/Sounds/Custom/DifficultySelection/Malice_Mode_Select");
 
         public override int BackBoneGameModeID => GameModeID.Master;
 
         public override float DifficultyScale => 0.5f;
 
-        public override LocalizedText Name => GetText("UI.Death");
+        public override LocalizedText Name => GetText("UI.Malice");
 
-        public override Color ChatTextColor => new Color(192, 64, 219);
+        public override Color ChatTextColor => new Color(240, 128, 128);
 
-        public override LocalizedText ShortDescription => GetText("UI.DeathShortInfo");
+        public override LocalizedText ShortDescription => GetText("UI.MaliceShortInfo");
 
-        public override LocalizedText ExpandedDescription => GetText("UI.DeathExpandedInfo");
-
-
-        public override LocalizedText FTWName => GetText("UI.Malice");
-
-        public override Color FTWTextColor => new Color(240, 128, 128);
+        public override LocalizedText ExpandedDescription => GetText("UI.MaliceExpandedInfo");
+        public override FTWDisplayMode GetForTheWorthyDisplay => FTWDisplayMode.OnlyForTheWorthy;
 
         public override int[] FavoredDifficultyAtTier(int tier)
         {
@@ -508,7 +642,7 @@ namespace CalamityMod.Systems
 
             for (int i = 0; i < tierList.Length; i++)
             {
-                if (tierList[i] is MasterDifficulty || tierList[i] is RevengeanceDifficulty)
+                if (tierList[i] is MasterDifficulty || tierList[i] is DeathDifficulty)
                     difficulties.Add(i);
             }
 

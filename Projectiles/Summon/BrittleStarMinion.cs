@@ -27,6 +27,14 @@ namespace CalamityMod.Projectiles.Summon
         public int ReformingTimer = 25;
         public bool Reforming = false;
         public int Time = 0;
+
+        public override void SetStaticDefaults()
+        {
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
+            base.SetStaticDefaults();
+        }
+
         public override void SetDefaults()
         {
             Projectile.width = 30;
@@ -120,7 +128,6 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.Center = Vector2.Lerp(Projectile.Center, idleDestination, 0.15f);
                 AITimer++;
 
-                Owner.statDefense += 4;
                 Projectile.rotation += MoveWidth * 0.2f;
             }
             if (!MinionBuffMode && !Reforming) // Minion when ramming

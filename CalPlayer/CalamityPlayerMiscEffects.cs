@@ -68,6 +68,7 @@ using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using CalamityMod.Tiles.FurnitureAuric;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.UI;
+using CalamityMod.Utilities;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -203,12 +204,12 @@ namespace CalamityMod.CalPlayer
             if (Player.HeldItem.type != ModContent.ItemType<SaharaSlicers>())
                 saharaSlicersBolts = 0;
 
-            if (Player.whoAmI == Main.myPlayer && Player.HeldItem.type == ModContent.ItemType<Starfleet>() && (Player.ownedProjectileCounts[ModContent.ProjectileType<StarfleetHoldout>()] == 0) && !Player.dead)
+            if (Player.whoAmI == Main.myPlayer && Player.HeldItem.type == ModContent.ItemType<Starfleet>() && (Player.ownedProjectileCounts[ModContent.ProjectileType<StarfleetHoldout>()] == 0) && !Player.dead && !Main.mapFullscreen && !Player.mouseInterface)
             {
                 int damage = (int)Player.GetTotalDamage<RangedDamageClass>().ApplyTo(Player.HeldItem.damage);
                 Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Player.Center.DirectionTo(Player.Calamity().mouseWorld), ModContent.ProjectileType<StarfleetHoldout>(), damage, Player.HeldItem.knockBack, Player.whoAmI);
             }
-            if (Player.whoAmI == Main.myPlayer && Player.HeldItem.type == ModContent.ItemType<Starmada>() && (Player.ownedProjectileCounts[ModContent.ProjectileType<StarmadaHoldout>()] == 0) && !Player.dead)
+            if (Player.whoAmI == Main.myPlayer && Player.HeldItem.type == ModContent.ItemType<Starmada>() && (Player.ownedProjectileCounts[ModContent.ProjectileType<StarmadaHoldout>()] == 0) && !Player.dead && !Main.mapFullscreen && !Player.mouseInterface)
             {
                 int damage = (int)Player.GetTotalDamage<RangedDamageClass>().ApplyTo(Player.HeldItem.damage);
                 Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Player.Center.DirectionTo(Player.Calamity().mouseWorld), ModContent.ProjectileType<StarmadaHoldout>(), damage, Player.HeldItem.knockBack, Player.whoAmI);
@@ -1297,6 +1298,9 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
+            if (brittleStar && brittleStarBuffMode)
+                Player.statDefense += 4 * Player.ownedProjectileCounts[ModContent.ProjectileType<BrittleStarMinion>()];
+
             // Reduce the rate of recovery of the Lifesteal variable
             // Classic Mode: 36 HP/s to 12 HP/s
             // Expert Mode: 30 HP/s to 9 HP/s
@@ -1669,7 +1673,7 @@ namespace CalamityMod.CalPlayer
                                         holyDust.noGravity = true;
                                         holyDust.scale = 1f;
                                         holyDust.fadeIn = Main.rand.NextFloat() * 2f;
-                                        Dust dustClone = Dust.CloneDust(holyDust);
+                                        Dust dustClone = Dust.BetterCloneDust(holyDust);
                                         Dust extraDust = dustClone;
                                         extraDust.scale /= 2f;
                                         extraDust = dustClone;
@@ -1708,7 +1712,7 @@ namespace CalamityMod.CalPlayer
             }
             if (rOfResilienceEffect > 0)
             {
-                if (Player.Calamity().mouseRight && rOfResilienceCooldown == 0)
+                if (Player.Calamity().mouseRight && !Player.mouseInterface && rOfResilienceCooldown == 0)
                 {
                     int cooldownTime = (Player.Calamity().profanedSoulRelicBuff ? 300 : 600);
                     rOfResilienceCooldown = cooldownTime;
@@ -1784,9 +1788,10 @@ namespace CalamityMod.CalPlayer
 
                         if (p.type == ModContent.ProjectileType<TransformerBlob>() && p.owner == Player.whoAmI)
                         {
-                            float insanityValue = ((p.ai[1] % 10) + 1);
+                            int blobNum = Player.ownedProjectileCounts[ModContent.ProjectileType<TransformerBlob>()] + 1;
+                            float insanityValue = (p.ai[1] % 10);
                             if (p.ai[0] == layer)
-                                p.ai[2] = insanityValue / Player.ownedProjectileCounts[ModContent.ProjectileType<TransformerBlob>()] * (angleMax) - (angleMax) / 2f;
+                                p.ai[2] = (insanityValue / blobNum) * angleMax - angleMax / 2f;
 
                             p.netUpdate = true;
                         }
@@ -1835,9 +1840,10 @@ namespace CalamityMod.CalPlayer
 
                                 if (p.type == ModContent.ProjectileType<TransformerBlob>() && p.owner == Player.whoAmI)
                                 {
-                                    float insanityValue = (p.ai[1] % 10) + 1;
+                                    int blobNum = Player.ownedProjectileCounts[ModContent.ProjectileType<TransformerBlob>()] + 1;
+                                    float insanityValue = (p.ai[1] % 10);
                                     if (p.ai[0] == layer)
-                                        p.ai[2] = insanityValue / Player.ownedProjectileCounts[ModContent.ProjectileType<TransformerBlob>()] * angleMax - angleMax / 2f;
+                                        p.ai[2] = (insanityValue / blobNum) * angleMax - angleMax / 2f;
 
                                     p.netUpdate = true;
                                     index++;
@@ -2316,8 +2322,6 @@ namespace CalamityMod.CalPlayer
                 xerocDmg = 0f;
             if (hideOfDeusMeleeBoostTimer > 0)
                 hideOfDeusMeleeBoostTimer--;
-            if (evolutionLifeRegenCounter > 0)
-                evolutionLifeRegenCounter--;
             if (hurtSoundTimer > 0)
                 hurtSoundTimer--;
             if (wingProjectileCooldown > 0)
@@ -3558,19 +3562,8 @@ namespace CalamityMod.CalPlayer
 
             if (starBeamRye)
             {
-                Player.manaFlower = false;
-                Player.ClearBuff(ModContent.BuffType<AstralInjectionBuff>());
-                if (!Player.manaSick)
-                {
-                    Player.manaRegenCount -= Player.manaRegen;
-                    Player.manaRegenDelay = 0;
-                    Player.manaRegenCount += 20; // 20 mana per second, even while using an item
-                    if (Player.HeldItem.mana > 0) 
-                    {
-                        Player.GetDamage<MagicDamageClass>() += 0.5f + MathHelper.Max(0.1f,Player.HeldItem.mana / (float)Player.HeldItem.useTime);
-                    }
-                    Player.GetDamage<GenericDamageClass>() -= 0.5f;
-                }
+                Player.manaRegenCount += StarBeamRye.ManaRegenBoost;
+                Player.GetDamage<MagicDamageClass>() *= StarBeamRye.MagicDmgMult;
             }
 
             if (whiteWine)
@@ -3736,11 +3729,11 @@ namespace CalamityMod.CalPlayer
                 Player.velocity *= 0.98f;
 
             if (molluskHelmet)
-                Player.velocity.X *= 0.995f;
+                Player.velocity.X *= 0.996f;
             if (molluskChest)
-                Player.velocity.X *= 0.995f;
+                Player.velocity.X *= 0.996f;
             if (molluskLegs)
-                Player.velocity.X *= 0.995f;
+                Player.velocity.X *= 0.996f;
 
             if ((warped) && !Player.slowFall && !Player.mount.Active)
             {
@@ -4512,6 +4505,9 @@ namespace CalamityMod.CalPlayer
         #region Energy Shields
         private void EnergyShields()
         {
+            if (Player.whoAmI != Main.myPlayer)
+                return;
+
             // Because later tier shields are brighter, shields are handled from highest tier to lowest tier here.
             bool shieldAddedLight = false;
 

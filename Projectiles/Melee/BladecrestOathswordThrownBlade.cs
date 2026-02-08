@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 using static CalamityMod.CalamityUtils;
 
@@ -47,6 +48,23 @@ namespace CalamityMod.Projectiles.Melee
         public Vector2 impalePos;
         public int bounces = 0;
         public bool fadingOut => Projectile.timeLeft <= (Lifetime - fadeOutTime);
+
+        private Vector2 GetAimDirection()
+        {
+            if (Main.myPlayer == Projectile.owner)
+            {
+                Vector2 toMouse = (Owner.Calamity().mouseWorld - Owner.Center).SafeNormalize(Vector2.UnitX * Owner.direction);
+                float aimAngle = toMouse.ToRotation();
+                if (Math.Abs(MathHelper.WrapAngle(aimAngle - Projectile.localAI[1])) > 0.02f)
+                {
+                    Projectile.localAI[1] = aimAngle;
+                    if (Projectile.timeLeft % 6 == 0)
+                        Projectile.netUpdate = true;
+                }
+                return toMouse;
+            }
+            return Projectile.localAI[1].ToRotationVector2();
+        }
 
         public override void SetDefaults()
         {
@@ -134,16 +152,19 @@ namespace CalamityMod.Projectiles.Melee
                 CurrentState &= ~State.HitTarget;
             }
 
+            if ((CurrentState & State.Thrown) != 0 && (CurrentState & (State.StuckInGround | State.StuckInTarget)) == 0)
+                Projectile.extraUpdates = 1;
+
             float playerDist = Vector2.Distance(Owner.Center, Projectile.Center);
 
             Projectile.spriteDirection = Projectile.direction;
             Vector3 Light = Color.Firebrick.ToVector3();
             Lighting.AddLight(Projectile.Center, Light * 0.5f);
 
-            if (Projectile.timeLeft == Lifetime)
+            if (Projectile.timeLeft == Lifetime && Main.myPlayer == Projectile.owner)
             {
                 // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
-                Vector2 toMouse = (Owner.Calamity().mouseWorld - Owner.Center).SafeNormalize(Vector2.UnitX * Owner.direction);
+                Vector2 toMouse = GetAimDirection();
                 Projectile.velocity = toMouse * 14;
                 Projectile.Center = Owner.MountedCenter + toMouse * 12f;
                 Projectile.spriteDirection = Projectile.direction;
@@ -151,6 +172,7 @@ namespace CalamityMod.Projectiles.Melee
                 time = 0;
                 Projectile.extraUpdates = 1;
                 Projectile.tileCollide = true;
+                Projectile.netUpdate = true;
             }
 
             if (Projectile.velocity.X > 0)
@@ -287,7 +309,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public void throwAnimation()
         {
-            Owner.ChangeDir(MathF.Sign(Owner.Calamity().mouseWorld.X - Owner.Center.X));
+            Vector2 aimDirection = GetAimDirection();
+            Owner.ChangeDir(MathF.Sign(aimDirection.X));
 
             float armRotation = ArmAnticipationMovement() * Owner.direction;
 
@@ -358,6 +381,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.tileCollide = false;
             SoundStyle stuck = new("CalamityMod/Sounds/Item/DemonSwordImpact", 2);
             SoundEngine.PlaySound(stuck with { Volume = 0.75f, Pitch = Main.rand.NextFloat(0.2f, 0.3f), MaxInstances = 3 }, Projectile.Center);
+            Projectile.netUpdate = true;
         }
 
         public override bool? CanDamage()
@@ -407,11 +431,22 @@ namespace CalamityMod.Projectiles.Melee
         public override void SendExtraAI(BinaryWriter writer)
         {
             writer.Write((byte)CurrentState);
+            writer.Write(Projectile.rotation);
+            writer.Write(Projectile.localAI[1]);
+            writer.Write(impalePos.X);
+            writer.Write(impalePos.Y);
+            writer.Write(stuckTimer);
+            writer.Write((short)bounces);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
             CurrentState = (State)reader.ReadByte();
+            Projectile.rotation = reader.ReadSingle();
+            Projectile.localAI[1] = reader.ReadSingle();
+            impalePos = new Vector2(reader.ReadSingle(), reader.ReadSingle());
+            stuckTimer = reader.ReadInt32();
+            bounces = reader.ReadInt16();
         }
     }
 }

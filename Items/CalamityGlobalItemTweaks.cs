@@ -156,7 +156,7 @@ namespace CalamityMod.Items
                 { ItemID.MagicalHarp, Do(DamageExact(50), ShootSpeedExact(12f)) },
                 { ItemID.MagicMissile, Do(DamageExact(23), ManaExact(10), UseAnimationExact(20), UseTimeExact(10)) },
                 { ItemID.Marrow, Do(DamageExact(60)) },
-                { ItemID.MedusaHead, Do(ManaExact(6), DamageExact(48)) },
+                { ItemID.MedusaHead, Do(ManaExact(6), DamageExact(75)) },
                 { ItemID.Meowmere, Do(UseMeleeSpeed, DamageExact(240)) },
                 { ItemID.MeteorStaff, Do(DamageExact(58), ManaExact(7), ShootSpeedExact(13f)) },
                 { ItemID.MiniNukeI, Do(DamageExact(90)) },
@@ -283,7 +283,7 @@ namespace CalamityMod.Items
                 { ItemID.Yelets, Do(DamageExact(53)) },
                 { ItemID.YellowPhaseblade, phaseblade },
                 { ItemID.YellowPhasesaber, phasesaber },
-                { ItemID.Zenith, Do(DamageExact(210)) },
+                { ItemID.Zenith, Do(DamageExact(200)) },
                 { ItemID.ZombieArm, Do(UseTurn, KnockbackExact(12f)) },
                 #endregion
 

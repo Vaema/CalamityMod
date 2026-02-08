@@ -41,7 +41,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public bool hasGivenBlood = false;
 
-        public override void Spawn(IEntitySource source)
+        public override void Spawn()
         {
             var player = Main.player[Projectile.owner];
             var modplayer = player.GetModPlayer<BaseSwordHoldoutPlayer>();

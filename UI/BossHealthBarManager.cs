@@ -23,6 +23,7 @@ using CalamityMod.NPCs.SlimeGod;
 using CalamityMod.NPCs.StormWeaver;
 using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.NPCs.SupremeCalamitas;
+using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses.BrainOfCthulhu;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoMod.Utils;
@@ -209,8 +210,10 @@ namespace CalamityMod.UI
                 NPCType<AquaticScourgeTail>(),
                 NPCType<AstrumDeusBody>(),
                 NPCType<AstrumDeusTail>(),
+                NPCType<BrainIllusion>(),
                 NPCType<DesertScourgeBody>(),
                 NPCType<DesertScourgeTail>(),
+                NPCType<FalseBrain>(),
                 NPCType<SlimeGodCore>(),
                 NPCType<StormWeaverBody>(),
                 NPCType<StormWeaverTail>(),
@@ -271,7 +274,7 @@ namespace CalamityMod.UI
 
                 // Hardmode Modded.
                 NPCType<CloudElemental>(),
-                NPCType<Horse>(),
+                NPCType<EarthElemental>(),
                 NPCType<GreatSandShark>(),
                 NPCType<PlaguebringerMiniboss>(),
                 NPCType<Cataclysm>(), //Clone's brothers

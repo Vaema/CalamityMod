@@ -67,6 +67,10 @@ namespace CalamityMod.CalPlayer
             if (Player.whoAmI != Main.myPlayer)
                 return;
 
+            // Apply this to player equippable sources ie. Orichalcum set bonus petal spawns
+            // Do not apply if this effect is an extension of a weapon ie. Pearl God round effect as it will mess up Old Fashioned
+            var source = Player.GetSource_OnHit(target);
+
             // Handle on-hit melee effects for the gem tech armor set.
             if (item.CountsAsClass<MeleeDamageClass>())
                 GemTechState.MeleeOnHitEffects(target);
@@ -145,7 +149,7 @@ namespace CalamityMod.CalPlayer
             bool targetIsDummy = target.type == NPCID.TargetDummy || target.type == NPCType<SuperDummyNPC>();
 
             ItemLifesteal(target, item, damageDone);
-            ItemOnHit(item, damageDone, target.Center, hit.Crit, target.IsAnEnemy(false, true), targetIsDummy);
+            ItemOnHit(item, damageDone, target, hit.Crit, target.IsAnEnemy(false, true), targetIsDummy);
             NPCDebuffs(target, item.CountsAsClass<MeleeDamageClass>(), item.CountsAsClass<RangedDamageClass>(), item.CountsAsClass<MagicDamageClass>(), item.CountsAsClass<SummonDamageClass>(), item.CountsAsClass<ThrowingDamageClass>(), item.CountsAsClass<SummonMeleeSpeedDamageClass>(), hit.Crit);
 
             // Ursa Sergeant slash cooldown is reset on kill
@@ -157,16 +161,14 @@ namespace CalamityMod.CalPlayer
                 int cooldown = 0;
                 if (bGlassBand)
                 {
-                    var source = item.GetSource_FromThis();
                     int damage = (int)Player.GetBestClassDamage().ApplyTo(BlackGlassBand.damage);
                     Vector2 launchVel = Utils.DirectionTo(Player.Center, target.Center) * 6;
-                    Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<BlackGlassBandProjectile>(), damage, -1, Player.whoAmI, target.whoAmI, launchVel.X, launchVel.Y);
+                    Projectile.NewProjectile(source, target.Center, Vector2.Zero, ProjectileType<BlackGlassBandProjectile>(), damage, -1, Player.whoAmI, target.whoAmI, launchVel.X, launchVel.Y);
                     if (cooldown < BlackGlassBand.cooldown)
                         cooldown = BlackGlassBand.cooldown;
                 }
                 if (protolithBangle && item.DamageType == DamageClass.Ranged)
                 {
-                    var source = item.GetSource_FromThis();
                     int damage = (int)Player.GetBestClassDamage().ApplyTo(ProtolithBangle.damage);
                     Projectile band = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<ProtolithBangleProjectile>(), damage, -1, Player.whoAmI, target.whoAmI);
                     band.DamageType = DamageClass.Ranged;
@@ -175,7 +177,6 @@ namespace CalamityMod.CalPlayer
                 }
                 if (batholithBangle && item.DamageType == DamageClass.Magic)
                 {
-                    var source = item.GetSource_FromThis();
                     int damage = (int)Player.GetBestClassDamage().ApplyTo(BatholithBangle.damage);
                     Projectile band = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<BatholithBangleProjectile>(), damage, -1, Player.whoAmI, target.whoAmI);
                     band.DamageType = DamageClass.Magic;
@@ -186,7 +187,7 @@ namespace CalamityMod.CalPlayer
                 if (cooldown > 0) // Check if a band effect went off, and apply the highest cooldown
                 {
                     generalBandCooldown = cooldown;
-                    Player.AddCooldown(Cooldowns.GenericBandCooldown.ID, cooldown);
+                    Player.AddCooldown(GenericBandCooldown.ID, cooldown);
                 }
             }
 
@@ -204,8 +205,7 @@ namespace CalamityMod.CalPlayer
             bool spawnChance = (Main.rand.Next(100) < ArcFlashRing.LightningSpawnPercent);
             if (arcFlashRing && spawnChance)
             {
-                var source = item.GetSource_FromThis();
-                int damage = (int)(((hit.Damage * ArcFlashRing.LightningDamageMult) * (hit.Crit ? 0.5f : 1)) / (Player.Calamity().adrenalineModeActive ? Player.Calamity().GetAdrenalineDamage() + 1 : 1)); // 400% damage (uneffected by crits and adrenaline)
+                int damage = (int)(hit.Damage * ArcFlashRing.LightningDamageMult * (hit.Crit ? 0.5f : 1) / (Player.Calamity().adrenalineModeActive ? Player.Calamity().GetAdrenalineDamage() + 1 : 1)); // 400% damage (uneffected by crits and adrenaline)
 
                 Projectile bolt = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<FlashBolt>(), damage, 0f, Player.whoAmI, target.whoAmI);
                 bolt.DamageType = hit.DamageType;
@@ -226,6 +226,9 @@ namespace CalamityMod.CalPlayer
             if (Player.whoAmI != Main.myPlayer)
                 return;
 
+            // Apply this to player equippable sources ie. Orichalcum set bonus petal spawns
+            // Do not apply if this effect is an extension of a weapon ie. Pearl God round effect as it will mess up Old Fashioned
+            var source = Player.GetSource_OnHit(target);
             CalamityGlobalNPC cgn = target.Calamity();
 
             // Handle on-hit melee effects for the gem tech armor set.
@@ -362,16 +365,14 @@ namespace CalamityMod.CalPlayer
                 // No clue why this happens or how to fix it, but it just breaks using multiple band types together on these two weapons
                 if (bGlassBand) 
                 {
-                    var source = proj.GetSource_FromThis();
                     int damage = (int)Player.GetBestClassDamage().ApplyTo(BlackGlassBand.damage);
                     Vector2 launchVel = Utils.DirectionTo(Player.Center, target.Center) * 6;
-                    Projectile band = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<BlackGlassBandProjectile>(), damage, -1, Player.whoAmI, target.whoAmI, launchVel.X, launchVel.Y);
+                    Projectile.NewProjectile(source, target.Center, Vector2.Zero, ProjectileType<BlackGlassBandProjectile>(), damage, -1, Player.whoAmI, target.whoAmI, launchVel.X, launchVel.Y);
                     if (cooldown < BlackGlassBand.cooldown)
                         cooldown = BlackGlassBand.cooldown;
                 }
                 if (protolithBangle && proj.DamageType == DamageClass.Ranged)
                 {
-                    var source = proj.GetSource_FromThis();
                     int damage = (int)Player.GetBestClassDamage().ApplyTo(ProtolithBangle.damage);
                     Projectile band = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<ProtolithBangleProjectile>(), damage, -1, Player.whoAmI, target.whoAmI);
                     band.DamageType = DamageClass.Ranged;
@@ -380,7 +381,6 @@ namespace CalamityMod.CalPlayer
                 }
                 if (batholithBangle && proj.DamageType == DamageClass.Magic)
                 {
-                    var source = proj.GetSource_FromThis();
                     int damage = (int)Player.GetBestClassDamage().ApplyTo(BatholithBangle.damage);
                     Projectile band = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<BatholithBangleProjectile>(), damage, -1, Player.whoAmI, target.whoAmI);
                     band.DamageType = DamageClass.Magic;
@@ -391,11 +391,11 @@ namespace CalamityMod.CalPlayer
                 if (cooldown > 0) // Check if a band effect went off, and apply the highest cooldown
                 {
                     generalBandCooldown = cooldown;
-                    Player.AddCooldown(Cooldowns.GenericBandCooldown.ID, cooldown);
+                    Player.AddCooldown(GenericBandCooldown.ID, cooldown);
                 }
             }
 
-            if (luxorsGift && proj.type != ModContent.ProjectileType<LuxorsGiftMelee>() && proj.type != ModContent.ProjectileType<LuxorsGiftRanged>() && proj.type != ModContent.ProjectileType<LuxorsGiftMagic>() && proj.type != ModContent.ProjectileType<LuxorsGiftSummon>() && proj.type != ModContent.ProjectileType<LuxorsGiftRogue>() && proj.type != ModContent.ProjectileType<LuxorsGiftClassless>())
+            if (luxorsGift && proj.type != ProjectileType<LuxorsGiftMelee>() && proj.type != ProjectileType<LuxorsGiftRanged>() && proj.type != ProjectileType<LuxorsGiftMagic>() && proj.type != ProjectileType<LuxorsGiftSummon>() && proj.type != ProjectileType<LuxorsGiftRogue>() && proj.type != ProjectileType<LuxorsGiftClassless>())
                 luxorHit = true;
 
             // Transformer gives +2 blobs on kill, which are stored then given to you one by one (so it can't spawn more than one on a single frame)
@@ -406,13 +406,12 @@ namespace CalamityMod.CalPlayer
 
             CalamityGlobalProjectile globalProj = proj.Calamity();
             // Arc Flash Ring lightning strike (Remember to change the one for item hits if applicable when you change this one!)
-            bool spawnChance = (Main.rand.Next(0, 100) < 6);
+            bool spawnChance = (Main.rand.Next(0, 100) < ArcFlashRing.LightningSpawnPercent);
             if (arcFlashRing && spawnChance && proj.type != ProjectileType<FlashBolt>())
             {
                 proj.active = true; // Okay so if a projectile manually kills itself on hit, it totally breaks the bolts. to prevent this we set them to active
 
-                var source = proj.GetSource_FromThis();
-                int damage = (int)(((hit.Damage * 4f) * (hit.Crit ? 0.5f : 1)) / (Player.Calamity().adrenalineModeActive ? Player.Calamity().GetAdrenalineDamage() + 1 : 1)); // 400% damage (uneffected by crits and adrenaline)
+                int damage = (int)(hit.Damage * ArcFlashRing.LightningDamageMult * (hit.Crit ? 0.5f : 1) / (Player.Calamity().adrenalineModeActive ? Player.Calamity().GetAdrenalineDamage() + 1 : 1)); // 400% damage (uneffected by crits and adrenaline)
 
                 Projectile bolt = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<FlashBolt>(), damage, 0f, Player.whoAmI, target.whoAmI, (globalProj.showArcFlash ? 0 : 1));
                 bolt.DamageType = hit.DamageType;
@@ -424,7 +423,7 @@ namespace CalamityMod.CalPlayer
 
             if (forbiddenCirclet && globalProj.stealthStrike)
             {
-                target.AddBuff(ModContent.BuffType<ForbiddenStealthSummonTagBuff>(), ForbiddenCirclet.TagDuration);
+                target.AddBuff(BuffType<ForbiddenStealthSummonTagBuff>(), ForbiddenCirclet.TagDuration);
             }
 
             if (!proj.npcProj && !proj.trap && proj.friendly)
@@ -520,7 +519,7 @@ namespace CalamityMod.CalPlayer
                         }
 
                         int onHitDamage = Player.CalcIntDamage<RangedDamageClass>(0.2f * proj.damage);
-                        Projectile shock = Projectile.NewProjectileDirect(proj.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), onHitDamage, 0f, Player.whoAmI, target.whoAmI);
+                        Projectile shock = Projectile.NewProjectileDirect(proj.GetSource_FromThis(), target.Center, Vector2.Zero, ProjectileType<DirectStrike>(), onHitDamage, 0f, Player.whoAmI, target.whoAmI);
                         shock.DamageType = proj.DamageType;
                         SoundStyle hitSound = new("CalamityMod/Sounds/Item/ElectricHit");
                         SoundEngine.PlaySound(hitSound with { Volume = 0.2f, Pitch = 0.7f, PitchVariance = 0.2f }, proj.Center);
@@ -552,14 +551,14 @@ namespace CalamityMod.CalPlayer
                         GeneralParticleHandler.SpawnParticle(subTrail);
                     }
 
-                    int pearls = (int)(MathHelper.Clamp(7 - (int)(proj.numHits * 0.5f), 2, 7));
+                    int pearls = (int)MathHelper.Clamp(7 - (int)(proj.numHits * 0.5f), 2, 7);
                     for (int k = 0; k < pearls; k++)
                     {
                         Vector2 velocity = new Vector2(1, 1).RotatedByRandom(100) * Main.rand.NextFloat(0.7f, 1.2f);
                         PearlParticle subTrail = new PearlParticle(Position + velocity * 11f, velocity * 10, true, 50, 0.85f, color, 0.95f, Main.rand.NextFloat(2, -2), true);
                         GeneralParticleHandler.SpawnParticle(subTrail);
                     }
-                    int dusts = (int)(MathHelper.Clamp(10 - (int)(proj.numHits * 0.5f), 2, 10));
+                    int dusts = (int)MathHelper.Clamp(10 - (int)(proj.numHits * 0.5f), 2, 10);
                     for (int i = 0; i <= dusts; i++)
                     {
                         Dust dust2 = Dust.NewDustPerfect(Position, DustID.FireworksRGB, new Vector2(5, 5).RotatedByRandom(100f) * Main.rand.NextFloat(0.1f, 2.9f));
@@ -569,7 +568,7 @@ namespace CalamityMod.CalPlayer
                     }
 
                     int onHitDamage = Player.CalcIntDamage<RangedDamageClass>(0.2f * proj.damage);
-                    Projectile blast = Projectile.NewProjectileDirect(proj.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), onHitDamage, 0f, Player.whoAmI, target.whoAmI);
+                    Projectile blast = Projectile.NewProjectileDirect(proj.GetSource_FromThis(), target.Center, Vector2.Zero, ProjectileType<DirectStrike>(), onHitDamage, 0f, Player.whoAmI, target.whoAmI);
                     blast.DamageType = proj.DamageType;
 
                     SoundStyle hitSound = new("CalamityMod/Sounds/Item/HadalUrnClose");
@@ -612,7 +611,7 @@ namespace CalamityMod.CalPlayer
                 bool targetIsDummy = target.type == NPCID.TargetDummy || target.type == NPCType<SuperDummyNPC>();
 
                 ProjLifesteal(target, proj, damageDone, hit.Crit);
-                ProjOnHit(proj, target.Center, hit.Crit, target.IsAnEnemy(false), targetIsDummy);
+                ProjOnHit(proj, target, hit.Crit, target.IsAnEnemy(false), targetIsDummy);
                 NPCDebuffs(target, proj.CountsAsClass<MeleeDamageClass>(), proj.CountsAsClass<RangedDamageClass>(), proj.CountsAsClass<MagicDamageClass>(), proj.CountsAsClass<SummonDamageClass>(), proj.CountsAsClass<ThrowingDamageClass>(), proj.CountsAsClass<SummonMeleeSpeedDamageClass>(), hit.Crit, true, proj.noEnchantments);
 
                 // Shattered Community tracks all damage dealt with Rage Mode (ignoring dummies).
@@ -626,9 +625,10 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Item
-        public void ItemOnHit(Item item, int damage, Vector2 position, bool crit, bool npcCheck, bool targetIsDummy)
+        public void ItemOnHit(Item item, int damage, NPC target, bool crit, bool npcCheck, bool targetIsDummy)
         {
-            var source = Player.GetSource_ItemUse(item);
+            Vector2 position = target.Center;
+            var source = Player.GetSource_OnHit(target);
             if (!item.CountsAsClass<MeleeDamageClass>() && Player.meleeEnchant == 7)
                 Projectile.NewProjectile(source, position, Player.velocity, ProjectileID.ConfettiMelee, 0, 0f, Player.whoAmI);
 
@@ -682,10 +682,11 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Proj On Hit
-        public void ProjOnHit(Projectile proj, Vector2 position, bool crit, bool npcCheck, bool targetIsDummy)
+        public void ProjOnHit(Projectile proj, NPC target, bool crit, bool npcCheck, bool targetIsDummy)
         {
             CalamityGlobalProjectile modProj = proj.Calamity();
-            var source = proj.GetSource_FromThis();
+            Vector2 position = target.Center;
+            var source = Player.GetSource_OnHit(target);
             bool hasClass = proj.CountsAsClass<MeleeDamageClass>() || proj.CountsAsClass<RangedDamageClass>() || proj.CountsAsClass<MagicDamageClass>() || proj.CountsAsClass<SummonDamageClass>() || proj.CountsAsClass<ThrowingDamageClass>();
 
             //flask of party affects all types of weapons, !proj.CountsAsClass<MeleeDamageClass>() is to prevent double flask effects
@@ -735,29 +736,26 @@ namespace CalamityMod.CalPlayer
             if (ursaSergeant && ursaSergeantCooldown <= 0)
             {
                 ursaSergeantCooldown = UrsaSergeant.MaxCooldown;
-
                 int ursaSlashdamage = (int)Player.GetBestClassDamage().ApplyTo(UrsaSergeant.BaseSwipeDamage);
-
                 Projectile.NewProjectile(source, position, Vector2.Zero, ProjectileType<UrsaSlash>(), ursaSlashdamage, 0f, Player.whoAmI);
             }
 
             if (proj.CountsAsClass<MeleeDamageClass>())
-                MeleeOnHit(proj, modProj, position, crit, npcCheck, targetIsDummy);
+                MeleeOnHit(proj, modProj, target, crit, npcCheck, targetIsDummy);
             if (proj.CountsAsClass<RangedDamageClass>())
-                RangedOnHit(proj, modProj, position, crit, npcCheck);
+                RangedOnHit(proj, modProj, target, crit, npcCheck);
             if (proj.CountsAsClass<MagicDamageClass>())
-                MagicOnHit(proj, modProj, position, crit, npcCheck);
+                MagicOnHit(proj, modProj, target, crit, npcCheck);
             if (proj.CountsAsClass<SummonDamageClass>() && !proj.CountsAsClass<SummonMeleeSpeedDamageClass>())
-                SummonOnHit(proj, modProj, position, crit, npcCheck);
+                SummonOnHit(proj, modProj, target, crit, npcCheck);
             if (proj.CountsAsClass<ThrowingDamageClass>())
-                RogueOnHit(proj, modProj, position, crit, npcCheck);
+                RogueOnHit(proj, modProj, target, crit, npcCheck);
         }
 
         #region Melee
-        private void MeleeOnHit(Projectile proj, CalamityGlobalProjectile modProj, Vector2 position, bool crit, bool npcCheck, bool targetIsDummy)
+        private void MeleeOnHit(Projectile proj, CalamityGlobalProjectile modProj, NPC target, bool crit, bool npcCheck, bool targetIsDummy)
         {
-            var source = proj.GetSource_FromThis();
-            Item heldItem = Player.HeldItem;
+            var source = Player.GetSource_OnHit(target);
 
             if (proj.IsTrueMelee())
             {
@@ -787,9 +785,10 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Ranged
-        private void RangedOnHit(Projectile proj, CalamityGlobalProjectile modProj, Vector2 position, bool crit, bool npcCheck)
+        private void RangedOnHit(Projectile proj, CalamityGlobalProjectile modProj, NPC target, bool crit, bool npcCheck)
         {
-            var source = proj.GetSource_FromThis();
+            Vector2 position = target.Center;
+            var source = Player.GetSource_OnHit(target);
 
             if (npcCheck)
             {
@@ -831,14 +830,15 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Magic
-        private void MagicOnHit(Projectile proj, CalamityGlobalProjectile modProj, Vector2 position, bool crit, bool npcCheck)
+        private void MagicOnHit(Projectile proj, CalamityGlobalProjectile modProj, NPC target, bool crit, bool npcCheck)
         {
-            var source = proj.GetSource_FromThis();
+            Vector2 position = target.Center;
+            var source = Player.GetSource_OnHit(target);
             if (ataxiaMage && ataxiaDmg <= 0)
             {
                 int orbDamage = (int)(proj.damage * HydrothermicHeadMagic.OrbDamageRatio);
-
-                CalamityUtils.SpawnOrb(proj, orbDamage, ProjectileType<HydrothermicSphere>(), 800f, 20f);
+                Vector2 velocity = CalamityUtils.RandomVelocity(100f, 20f, 20f, 1f);
+                Projectile.NewProjectile(source, proj.Center, velocity, ProjectileType<HydrothermicSphere>(), orbDamage, 0f, proj.owner);
                 int cooldown = (int)(orbDamage * HydrothermicHeadMagic.OrbDamageCooldownMult);
                 ataxiaDmg += cooldown;
             }
@@ -872,9 +872,10 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Summon
-        private void SummonOnHit(Projectile proj, CalamityGlobalProjectile modProj, Vector2 position, bool crit, bool npcCheck)
+        private void SummonOnHit(Projectile proj, CalamityGlobalProjectile modProj, NPC target, bool crit, bool npcCheck)
         {
-            var source = proj.GetSource_FromThis();
+            Vector2 position = target.Center;
+            var source = Player.GetSource_OnHit(target);
 
                 if (phantomicArtifact)
                 {
@@ -892,10 +893,10 @@ namespace CalamityMod.CalPlayer
                     {
                         if (phantomicHeartRegen == 1000 && Player.ownedProjectileCounts[ProjectileType<PhantomicHeart>()] == 0)
                         {
-                            Vector2 target = proj.Center;
-                            target.Y += Main.rand.Next(-50, 50);
-                            target.X += Main.rand.Next(-50, 50);
-                            Projectile.NewProjectile(source, target, Vector2.Zero, ProjectileType<PhantomicHeart>(), 0, 0f, Player.whoAmI);
+                            Vector2 spawnPos = proj.Center;
+                            spawnPos.Y += Main.rand.Next(-50, 50);
+                            spawnPos.X += Main.rand.Next(-50, 50);
+                            Projectile.NewProjectile(source, spawnPos, Vector2.Zero, ProjectileType<PhantomicHeart>(), 0, 0f, Player.whoAmI);
                         }
                     }
                     else if (buffType == empowerBuff)
@@ -1000,9 +1001,10 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Rogue
-        private void RogueOnHit(Projectile proj, CalamityGlobalProjectile modProj, Vector2 position, bool crit, bool npcCheck)
+        private void RogueOnHit(Projectile proj, CalamityGlobalProjectile modProj, NPC target, bool crit, bool npcCheck)
         {
-            var spawnSource = proj.GetSource_FromThis();
+            Vector2 position = target.Center;
+            var spawnSource = Player.GetSource_OnHit(target);
             int Type = ProjectileType<DragonScalesInfernado>();
             if (modProj.stealthStrike && dragonScales && Main.projectile.Count(proj => proj.type == Type && proj.active) < 1)
             {
@@ -1221,7 +1223,7 @@ namespace CalamityMod.CalPlayer
             }
             if (summon && !whip)
             {
-                if (profanedCrystal && (DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs))
+                if (profanedCrystal && DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs)
                     target.AddBuff(BuffType<HolyFlames>(), 600);
                 else if (pSoulArtifact)
                     target.AddBuff(BuffType<HolyFlames>(), 300);
@@ -1307,7 +1309,7 @@ namespace CalamityMod.CalPlayer
                     target.Calamity().gladiatorOnKill = false;
                     if (healPower >= 1)
                     {
-                        Projectile.NewProjectile(Player.GetSource_FromThis(), target.Center, target.velocity * 0.5f, ProjectileType<GladiatorHealOrb>(), 0, 0, -1, (int)healPower);
+                        Projectile.NewProjectile(Player.GetSource_OnHit(target), target.Center, target.velocity * 0.5f, ProjectileType<GladiatorHealOrb>(), 0, 0, -1, (int)healPower);
                         gladiatorTimer = 300;
                     }
                 }
@@ -1326,7 +1328,7 @@ namespace CalamityMod.CalPlayer
                     Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, electricianGlove ? 10 : 5, 2f);
 
                 if (bloodflareThrowing && proj.CountsAsClass<ThrowingDamageClass>() && crit)
-                    Projectile.NewProjectile(proj.GetSource_OnHit(target), proj.Center, proj.velocity.SafeNormalize(Vector2.Zero) * Math.Min(((proj.velocity.Length() * proj.MaxUpdates) / 4f), 4f) * Main.rand.NextFloat(0.75f, 1.25f), ModContent.ProjectileType<BloodstoneHealOrb>(), 4, 0f, proj.owner);
+                    Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, 2, 1.5f);
 
                 if (proj.CountsAsClass<MagicDamageClass>() && Player.HeldItem.CountsAsClass<MagicDamageClass>())
                 {
@@ -1364,7 +1366,7 @@ namespace CalamityMod.CalPlayer
                     target.Calamity().gladiatorOnKill = false;
                     if (healPower >= 1)
                     {
-                        Projectile.NewProjectile(Player.GetSource_FromThis(), target.Center, target.velocity * 0.5f, ProjectileType<GladiatorHealOrb>(), 0, 0, -1, (int)healPower);
+                        Projectile.NewProjectile(Player.GetSource_OnHit(target), target.Center, target.velocity * 0.5f, ProjectileType<GladiatorHealOrb>(), 0, 0, -1, (int)healPower);
                         gladiatorTimer = 300;
                     }
                 }

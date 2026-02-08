@@ -158,7 +158,9 @@ namespace CalamityMod.Projectiles.Ranged
 
             if (Time > 6)
             {
+                Main.spriteBatch.SetBlendState(BlendState.Additive);
                 CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], MainColor with { A = 0 } * 0.6f, 1, texture);
+                Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
             }
             Main.EntitySpriteDraw(arrow.Value, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, arrow.Size() / 2f, 1, SpriteEffects.None, 0);
             Main.EntitySpriteDraw(glow.Value, Projectile.Center - Main.screenPosition, null, Color.Lerp(MainColor, Color.White, 0.6f), Projectile.rotation, glow.Size() / 2f, 1, SpriteEffects.None, 0);

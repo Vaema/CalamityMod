@@ -116,7 +116,7 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(astralInfection, 24, infectedJewel || hideOfDeus || purity);
             ApplyDoTDebuff(shadowflame, 30, purity);
             ApplyDoTDebuff(brimstoneFlames, (int)MathF.Round(30 * ((abaddon || voidOfExtinction) ? (1f - Abaddon.BrimstoneFlamesReduction) : 1f)), purity);
-            ApplyDoTDebuff(plague, (int)MathF.Round(30 * (alchFlask ? (1f - AlchemicalFlask.PlagueReduction) : 1f)), purity);
+            ApplyDoTDebuff(plague, (int)MathF.Round(30 * (alchFlask ? (1f - AlchemicalDecanter.PlagueReduction) : 1f)), purity);
             ApplyDoTDebuff(vHex, 30); // Has other effects
             ApplyDoTDebuff(searingLava, 30);
             ApplyDoTDebuff(demonicFlames, 33, purity); // Never inflicted on the player
@@ -256,9 +256,9 @@ namespace CalamityMod.CalPlayer
             else
                 witheredWeaponHoldTime = 0;
 
-            if (Player.statMana < 0)
+            if (Player.statMana < 0 && Player.Calamity().ChaosStone)
             {
-                totalNegativeLifeRegen -= Player.statMana/10f;
+                totalNegativeLifeRegen -= Player.statMana/100f * Items.Accessories.ChaosStone.LostRegenPer100Mana;
             }
 
             //
@@ -566,12 +566,6 @@ namespace CalamityMod.CalPlayer
 
             if (trinketOfChi || chiRegen)
                 Player.lifeRegen += 2;
-
-            if (evolutionLifeRegenCounter > 0)
-            {
-                if (Player.lifeRegenTime < 3600f)
-                    Player.lifeRegenTime = 3600f;
-            }
 
             if (darkSunRing)
             {

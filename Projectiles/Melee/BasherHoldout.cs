@@ -221,7 +221,7 @@ namespace CalamityMod.Projectiles.Melee
             float minMult = 0.3f;
             int hitsToMinMult = 5;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
-            modifiers.SourceDamage *= damageMult * (Owner.Calamity().mouseRight ? 2.5f : 1);
+            modifiers.SourceDamage *= damageMult * (Owner.Calamity().mouseRight ? 2f : 1);
         }
         public override bool PreDraw(ref Color lightColor)
         {

@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using CalamityMod.Enums;
 using CalamityMod.Graphics.Primitives;
+using CalamityMod.Items.Weapons.Summon;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -41,19 +43,19 @@ namespace CalamityMod.Projectiles.Summon
         Vector2 SarosPos => Owner.Center + Vector2.UnitY * (Owner.gfxOffY + Owner.gravDir * -24f);
         public override void OnSpawn(IEntitySource source)
         {
-            SoundEngine.PlaySound(SoundID.DD2_BetsyFlameBreath with { Volume = 0.5f, SoundLimitBehavior = SoundLimitBehavior.IgnoreNew }, Owner.Center);
+            SoundEngine.PlaySound(SarosPossession.SpawnSound with {pitch = -0.5f, MaxInstances = 5, SoundLimitBehavior = SoundLimitBehavior.IgnoreNew}, Owner.Center);
             Projectile.rotation = SarosPos.DirectionTo(Owner.Calamity().mouseWorld).ToRotation();
         }
         public override void AI()
         {
             if (Owner.miscCounter % 10 == 0)
-                SoundEngine.PlaySound(SoundID.DD2_BetsyFlameBreath with {Volume = 0.1f }, Owner.Center);
+                SoundEngine.PlaySound(SoundID.DD2_BetsyFlameBreath with {Volume = 0.2f }, Owner.Center);
             Projectile.rotation = Projectile.rotation.AngleLerp(SarosPos.DirectionTo(Owner.Calamity().mouseWorld).ToRotation(), 0.1f);
             Projectile.Center = SarosPos + Projectile.rotation.ToRotationVector2() * Utils.Remap(Projectile.timeLeft,5,10,1600,0);
             if (Projectile.timeLeft == 5 && Owner.channel)
                 Projectile.timeLeft++;
             Owner.Calamity().sarosEclipseBeamUsage += 2;
-        }
+            }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
@@ -84,7 +86,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public float FireWidthFunction(float completion, Vector2 vertexPos)
         {
-            return MathHelper.Min(Utils.Remap(completion, 0, 0.1f, 0, 96), Utils.Remap(completion, 0.9f, 1f, 96, 0)) * Utils.Remap(Projectile.timeLeft, 0, 5, 0, 1) * (0.75f+MathF.Pow(1 -(Owner.Calamity().sarosEclipseBeamUsage / 300f), 3));
+            return MathHelper.Min(Utils.Remap(completion, 0, 0.1f, 0, 96), Utils.Remap(completion, 0.9f, 1f, 96, 0)) * Utils.Remap(Projectile.timeLeft, 0, 5, 0, 1) * (0.75f+MathF.Pow(1 -(Owner.Calamity().sarosEclipseBeamUsage / 300f), 3)) * (Projectile.timeLeft > 5 ? 1 - (Projectile.timeLeft - 5) / 5f : 1);
         }
 
         public Color FireColorFunction(float completion, Vector2 vertexPos)
@@ -95,7 +97,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public float FireCoreWidthFunction(float completion, Vector2 vertexPos)
         {
-            return MathHelper.Min(Utils.Remap(completion, 0, 0.1f, 0, 32), Utils.Remap(completion, 0.9f, 1f, 32, 0)) * Utils.Remap(Projectile.timeLeft, 0, 5, 0, 1) * (0.75f+MathF.Pow(1 - (Owner.Calamity().sarosEclipseBeamUsage / 300f), 3));
+            return MathHelper.Min(Utils.Remap(completion, 0, 0.1f, 0, 32), Utils.Remap(completion, 0.9f, 1f, 32, 0)) * Utils.Remap(Projectile.timeLeft, 0, 5, 0, 1) * (0.75f+MathF.Pow(1 - (Owner.Calamity().sarosEclipseBeamUsage / 300f), 3)) * (Projectile.timeLeft > 5 ? 1-(Projectile.timeLeft-5)/5f : 1);
         }
 
         public Color FireCoreColorFunction(float completion, Vector2 vertexPos)

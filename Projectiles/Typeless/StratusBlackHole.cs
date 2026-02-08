@@ -1,5 +1,5 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.Accessories;
+﻿using System.Linq;
+using CalamityMod.CalPlayer;
 using CalamityMod.Systems.Graphic.PixelationSystem;
 using CalamityMod.Systems.Mechanic;
 using Microsoft.Xna.Framework;
@@ -13,6 +13,7 @@ namespace CalamityMod.Projectiles.Typeless
     public class StratusBlackHole : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
+
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 6;
@@ -27,7 +28,7 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.usesLocalNPCImmunity = true;
             Projectile.DamageType = AverageDamageClass.Instance;
             Projectile.MaxUpdates = 1;
-            Projectile.timeLeft = 3600 * Projectile.MaxUpdates;
+            Projectile.timeLeft = CalamityUtils.MinutesToFrames(10) * Projectile.MaxUpdates;
             Projectile.localNPCHitCooldown = 30 * Projectile.MaxUpdates;
             Projectile.aiStyle = 0;
             Projectile.tileCollide = false;
@@ -58,17 +59,48 @@ namespace CalamityMod.Projectiles.Typeless
             }
             foreach (var player in Main.ActivePlayers)
             {
-                if (player.Distance(Projectile.Center) <= 600 && player.miscCounter % 30 == 15)
+                if (player.Distance(Projectile.Center) <= 600)
                 {
-                    player.Calamity().StratusStarburst++;
-                    if (player.Calamity().StratusStarburst <= CalamityPlayer.MaxStratusStarburst)
-                        player.Calamity().StarburstEntities.Add(new StarburstEntity(Projectile.Center));
-                    player.Calamity().StratusStarburstResetTimer = (int)MathHelper.Max(player.Calamity().StratusStarburstResetTimer, 180);
+                    if (player.miscCounter % 30 == 15)
+                    {
+                        player.Calamity().StratusStarburst++;
+                        if (player.Calamity().StratusStarburst <= CalamityPlayer.MaxStratusStarburst)
+                            player.Calamity().StarburstEntities.Add(new StarburstEntity(Projectile.Center));
+                        player.Calamity().StratusStarburstResetTimer = (int)MathHelper.Max(player.Calamity().StratusStarburstResetTimer, 180);
+                    }
+                    if (player.wingsLogic > 0)
+                    {
+                        if (player.wingTime <= 0 && player.Calamity().AvaliableStarburst > 0)
+                        {
+                            player.Calamity().StratusStarburst--;
+                            player.wingTime += 5;
+                        }
+                    }
+                    else if (player.rocketBoots > 0)
+                    {
+                        if (player.rocketTime <= 0 && player.Calamity().AvaliableStarburst > 0)
+                        {
+                            player.Calamity().StratusStarburst--;
+                            player.rocketTime += 1;
+                        }
+                    }
+                    else
+                    {
+                        var activeJumps = player.extraJumps.Where(x => x.Enabled).Count();
+                         if (activeJumps > 0 && !player.AnyExtraJumpUsable() && player.Calamity().AvaliableStarburst >= 5 * activeJumps && !player.gravControl2)
+                        {
+                            player.Calamity().StratusStarburst -= 5 * activeJumps;
+                            player.RefreshDoubleJumps();
+                        } 
+                    }
                 }
             }
         }
+
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
+            if (Projectile.timeLeft > (CalamityUtils.MinutesToFrames(10) - 45) * Projectile.MaxUpdates)
+                return false;
             return targetHitbox.IntersectsConeFastInaccurate(Projectile.Center, 600, 0, MathHelper.TwoPi);
         }
         static Texture2D _TransparentBloomTex;
@@ -155,10 +187,16 @@ namespace CalamityMod.Projectiles.Typeless
         {
 
             Vector2 drawPosition = mproj.Projectile.Center - Main.screenPosition;
-            
+
             #region Singularity
             var telegraphBase = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/BasicCircle").Value;
-            Main.EntitySpriteDraw(telegraphBase, drawPosition, null, Color.DarkSlateBlue, 0, telegraphBase.Size() / 2f, 84f * mproj.Projectile.Opacity / telegraphBase.Width, 0, 0);
+
+            Main.spriteBatch.EnterShaderRegion(matrix: matrix);
+            GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].UseOpacity(0.5f);
+            GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].UseSaturation(0.2f);
+            GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/VoidGashes"), 1);
+            GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].Apply();
+            Main.EntitySpriteDraw(telegraphBase, drawPosition, null, Color.Lerp(Color.DarkSlateBlue, Color.SkyBlue, 0.75f), 0.5f, telegraphBase.Size() / 2f, 84f * mproj.Projectile.Opacity / telegraphBase.Width, 0, 0);
 
             Main.spriteBatch.EnterShaderRegion(matrix: matrix);
             GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].UseOpacity(0.5f);
@@ -166,7 +204,7 @@ namespace CalamityMod.Projectiles.Typeless
             GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/VoidGashes"), 1);
             GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].Apply();
             telegraphBase = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/BasicCircle").Value;
-            Main.EntitySpriteDraw(telegraphBase, drawPosition, null, Color.Lerp(Color.DarkSlateBlue, Color.MediumPurple, 1f), 0, telegraphBase.Size() / 2f, 84f * mproj.Projectile.Opacity / telegraphBase.Width, 0, 0);
+            Main.EntitySpriteDraw(telegraphBase, drawPosition, null, Color.Lerp(Color.DarkSlateBlue, Color.SkyBlue, 1f), 0, telegraphBase.Size() / 2f, 84f * mproj.Projectile.Opacity / telegraphBase.Width, 0, 0);
             Main.spriteBatch.EnterShaderRegion(matrix: matrix);
             GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].UseOpacity(0.25f);
             GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].UseSaturation(0.1f);

@@ -37,11 +37,7 @@ namespace CalamityMod.Items.Weapons.Melee
 
         }
 
-        public override bool AltFunctionUse(Player player)
-        {
-            return true;
-        }
-
+        public override bool AltFunctionUse(Player player) => player.Calamity().darklightEnergy >= MaxEnergy;
 
         public override void HoldItem(Player player)
         {

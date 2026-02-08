@@ -37,14 +37,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         private const float MaximumMouseRange = 360f;
         private const float ProjCenterOffset = 36f;
 
-        public bool IsSmall
-        {
-            get
-            {
-                CalamityGlobalItem swordItem = Main.player[Projectile.owner].HeldItem.Calamity();
-                return swordItem.ChargeRatio < Phaseslayer.SizeChargeThreshold;
-            }
-        }
+        public bool IsSmall => false; //Phaseslayer no longer uses charge so no longer gets small. I don't care to redo the code to remove this entirely so it's just being set to false.
 
         // ai[0] wrapper. Stores a rolling lerped average of angular momentum which is used as the swing speed damage multiplier.
         public float AngularDamageFactor
@@ -116,12 +109,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             AdjustCurrentDamage(player, deltaAngle);
             ManipulateFrames();
             HandleSwordBeams(player, modItem, deltaAngle);
-
-            // Because sword beams (or just holding the sword while it's fizzling) can take energy even when the sword's at zero energy,
-            // this is here to ensure the sword item's charge never goes below zero.
-            if (modItem.Charge < 0f)
-                modItem.Charge = 0f;
-
             HandleFadeout();
         }
 
@@ -131,7 +118,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             {
                 // In addition to typical channel cancellation criteria, the sword fizzles out if it runs out of charge.
                 Item playerItem = player.HeldItem;
-                bool hasCharge = modItem.Charge > 0f;
+                bool hasCharge = true; // Phaseslayer no longer uses charge so always true.
                 if (!player.CantUseHoldout() && playerItem.type == ModContent.ItemType<Phaseslayer>() && hasCharge)
                 {
                     // 14NOV2024: Ozzatron: clamped mouse position unnecessary, the effect is capped separately
@@ -251,9 +238,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 {
                     Vector2 velocity = Projectile.rotation.ToRotationVector2() * 20f;
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<PhaseslayerBeam>(), (int)(Projectile.damage * SwordBeamDamageMultiplier), 0f, player.whoAmI);
-
-                    // Actually consume energy to fire the sword beam.
-                    modItem.Charge -= Phaseslayer.SwordBeamChargeUse;
                 }
 
                 // The sound delay doubles as the sword beam's cooldown.

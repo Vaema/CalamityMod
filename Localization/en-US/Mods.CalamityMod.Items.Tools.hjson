@@ -175,7 +175,6 @@ DisgustingMeat: {
 	DisplayName: Disgusting Meat
 	Tooltip:
 		'''
-		Debug item, spawn and use to remove permanent upgrades
 		<left> will remove health and mana upgrades, use with no Calamity upgrades to remove vanilla upgrades
 		<right> will remove rage and adrenaline upgrades, plus other miscellaneous boosters
 		Removed boosters will be vomited out of you as items
@@ -311,7 +310,7 @@ RelicOfConvergence: {
 		Creates a profaned crystal at the cursor that channels a healing aura before shattering
 		All players within the area of effect are healed for {0} HP
 		Allies gain 50% extra healing
-		Holding out the crystal heavily reduces the damage of all summons
+		Holding out the crystal reduces the damage of all summons, decreases defense, and increases incoming damage
 		[c/FF8C00:Never once had I known kindness. Neither my peers or family had a shred of compassion for me.]
 		[c/FF8C00:I wished for someone I could confide. A presence that cleansed me of anxiety.]
 		[c/FF8C00:And when I saw Her radiant smile when we met, I knew I had finally found it.]
@@ -415,6 +414,7 @@ WulfrumDiggingTurtle: {
 		'''
 		Throws a rickety mining contraption to dig out a small tunnel
 		In case of an emergency, press <right> to instantly detonate all your digging turtles
+		The turtle scales with your pickaxe power
 		'''
 }
 

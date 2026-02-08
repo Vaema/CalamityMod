@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Placeables.Walls
 
         public override void AddRecipes()
         {
-            CreateRecipe().
+            CreateRecipe(4).
             AddIngredient<Driftwood>().
             AddTile(TileID.WorkBenches).
             Register();

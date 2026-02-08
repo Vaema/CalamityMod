@@ -443,12 +443,12 @@ namespace CalamityMod.NPCs
                     break;
 
                 // Chaos Elemental
-                // Rod of Discord @ 0.5% Normal, 0.625% Expert+ (2.5 times higher chance than vanilla)
+                // Rod of Discord @ 1% Normal, 2% Expert+
                 case NPCID.ChaosElemental:
                     // Remove the vanilla loot rule for Rod of Discord.
                     npcLoot.RemoveWhere((rule) => rule is CommonDrop conditionalRule && conditionalRule.itemId == ItemID.RodofDiscord);
                     // Define a replacement rule which has an increased chance.
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.RodofDiscord, 200, 160));
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.RodofDiscord, 100, 50));
                     break;
 
                 // Illuminant Bat
@@ -1272,7 +1272,7 @@ namespace CalamityMod.NPCs
 
                     // GFB Lavaproof Bug Net and Alchemical Flask drop
                     GFB.Add(DropHelper.PerPlayer(ItemID.FireproofBugNet), hideLootReport: true);
-                    GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<AlchemicalFlask>()), hideLootReport: true);
+                    GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<AlchemicalDecanter>()), hideLootReport: true);
 
                     // Lore
                     npcLoot.AddConditionalPerPlayer(() => !NPC.downedQueenBee, ModContent.ItemType<LoreQueenBee>(), desc: DropHelper.FirstKillText);

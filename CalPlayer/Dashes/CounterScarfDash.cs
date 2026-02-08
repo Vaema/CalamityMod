@@ -19,7 +19,7 @@ namespace CalamityMod.CalPlayer.Dashes
             ID = DashID;
         }
 
-        public override float CalculateDashSpeed(Player player) => player.Calamity().evasionScarf ? 16.3f : 15f;
+        public override float CalculateDashSpeed(Player player) => player.Calamity().evasionScarf ? 19f : 15f;
 
         public override void OnDashEffects(Player player)
         {

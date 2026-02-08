@@ -41,6 +41,10 @@ namespace CalamityMod.Tiles.Abyss
             Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.DungeonSpirit, 0f, 0f, 1, new Color(128, 128, 128), 1f);
             return false;
         }
+        public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
+        {
+            World.Abyss.FillTileWithWater(i, j);
+        }
 
         public override bool CanExplode(int i, int j)
         {

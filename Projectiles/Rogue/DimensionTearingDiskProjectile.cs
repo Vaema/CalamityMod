@@ -93,7 +93,7 @@ namespace CalamityMod.Projectiles.Rogue
                 }
                 if (npc != null)
                 {
-                    int laserDamage = (int)(Projectile.damage * 0.75f);
+                    int laserDamage = (int)(Projectile.damage * 0.7f);
                     Projectile laser = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.DirectionTo(npc.Center), ModContent.ProjectileType<FriendlyLaserWallBeam>(), laserDamage, 0f, Projectile.owner, -1.5f);
                     if (laser.whoAmI.WithinBounds(Main.maxProjectiles))
                     {

@@ -304,56 +304,9 @@ namespace CalamityMod.Tiles
                     AchievementsHelper.NotifyProgressionEvent(6); // Gives the Begone, Evil! achievement
                 }
 
-                // Drop Evil Smasher on every 12 alter smashed
+                // Drop Evil Smasher on every 12 altar smashed
                 if (WorldGen.altarCount > 1 && WorldGen.altarCount % 12 == 0)
                     DropItem(i, j, ItemType<EvilSmasher>(), quantity: 1, asStack: true, prefix: true);
-            }
-
-            // Drop Golden Bombs at a 0.33% chance from Pots
-            if (type == TileID.Pots)
-            {
-                if (Main.rand.NextBool(300))
-                    DropItem(i, j, ItemType<GoldenBomb>(), quantity: 1, asStack: true);
-            }
-
-            // Mature herbs always drop 1 seed (Blooming herbs drop between 1 and 3 seeds, more with Regrowth items)
-            if (type == TileID.MatureHerbs)
-            {
-                int herbType = Main.tile[i, j].TileFrameX / 18;
-                int seedQuantity = Main.rand.Next(2) + 1;
-                switch (herbType)
-                {
-                    default:
-                        break;
-
-                    case (int)HerbType.Daybloom:
-                        DropItem(i, j, ItemID.DaybloomSeeds, quantity: seedQuantity, asStack: true);
-                        break;
-
-                    case (int)HerbType.Moonglow:
-                        DropItem(i, j, ItemID.MoonglowSeeds, quantity: seedQuantity, asStack: true);
-                        break;
-
-                    case (int)HerbType.Blinkroot:
-                        DropItem(i, j, ItemID.BlinkrootSeeds, quantity: seedQuantity, asStack: true);
-                        break;
-
-                    case (int)HerbType.Deathweed:
-                        DropItem(i, j, ItemID.DeathweedSeeds, quantity: seedQuantity, asStack: true);
-                        break;
-
-                    case (int)HerbType.Waterleaf:
-                        DropItem(i, j, ItemID.WaterleafSeeds, quantity: seedQuantity, asStack: true);
-                        break;
-
-                    case (int)HerbType.Fireblossom:
-                        DropItem(i, j, ItemID.FireblossomSeeds, quantity: seedQuantity, asStack: true);
-                        break;
-
-                    case (int)HerbType.Shiverthorn:
-                        DropItem(i, j, ItemID.ShiverthornSeeds, quantity: seedQuantity, asStack: true);
-                        break;
-                }
             }
         }
 

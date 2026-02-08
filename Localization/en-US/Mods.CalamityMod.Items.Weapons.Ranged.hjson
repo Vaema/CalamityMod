@@ -115,7 +115,7 @@ ArterialAssault: {
 
 AstralBlaster: {
 	DisplayName: Astral Blaster
-	Tooltip: Converts musket balls into homing astral rounds
+	Tooltip: Converts musket balls into homing astral rounds that inflict [cbuff:CalamityMod/AstralInfectionDebuff]
 }
 
 AstrealDefeat: {
@@ -140,7 +140,7 @@ AuroraBlazer: {
 	DisplayName: Aurora Blazer
 	Tooltip:
 		'''
-		Spews a nebula stream which forms a star shaped pattern
+		Spews a nebula stream which forms a star shaped pattern and inflicts [cbuff:CalamityMod/AstralInfectionDebuff]
 		Uses gel for ammo
 		'''
 }
@@ -191,7 +191,7 @@ BloodBoiler: {
 	Tooltip:
 		'''
 		Fires twin streams of bloodfire that returns to you
-		Retuning bloodfire reduces [cbuff:PotionSickness] if it struck an enemy
+		Returning bloodfire reduces [cbuff:PotionSickness] if it struck an enemy
 		Uses your health as ammo
 		20% chance to save health
 		'''
@@ -538,8 +538,8 @@ HalleysInferno: {
 	Tooltip:
 		'''
 		Fires a burst of intensely concentrated lunar fire jets
-		Generates Starbursts over time when hitting enemies
-		<right> to rapid-fire Starbursts
+		<right> to rapid-fire Starbursts that inflict [cbuff:CalamityMod/Voidfrost]
+		Generates Starbursts when hitting enemies, depending on your accuracy
 		Uses gel for ammo
 		'Halley arrived sooner than expected'
 		'''
@@ -965,7 +965,7 @@ PristineFury: {
 		'''
 		'I and many others lost everything in this world's darkest hour.
 		I saw a beast descend from the heavens. A hulking cosmic monstrosity that heralded countless angels of death.
-		My family was torn from me by them, and my people forsake me. Even our supposed protectors did nothing to aid us.
+		My family was torn from me, my people forsake me. Even our supposed protectors did nothing to aid us.
 		And thus I swore to those I lost that I would do what is right, that my blaze's light would dwarf even that of Zeratros' Sun;
 		That one day, this cruel world would know nothing less than My perfect fury.'
 		'''
@@ -1131,6 +1131,16 @@ Shroomer: {
 	Tooltip: Fires bullets and an extremely powerful homing mushroom
 }
 
+SlagfireDouser: {
+	DisplayName: Slagfire Douser
+	Tooltip:
+		'''
+		Lobs armor-penetrating lava in bursts
+		Armor-penetrating lava ignores 10 points of enemy defense
+		[c/FF9900:Capable of dousing townsfolk in lava too...]
+		'''
+}
+
 SlagMagnum: {
 	DisplayName: Slag Magnum
 	Tooltip: Converts musket balls into fossil shards that split into additional shards on impact
@@ -1196,7 +1206,6 @@ Starfleet: {
 		'''
 		<left> fires a spread of starshots
 		<right> fires a concussive short range starburst
-		Holding down <right> disables the recoil damper
 		Starshots can be accelerated by firing when the starburst goes off
 		Perfect timing reduces spread and increases damage
 		Imperfect timing still increases damage, but heavily increases spread
@@ -1211,7 +1220,6 @@ Starmada: {
 		'''
 		<left> fires a spread of starshots
 		<right> fires a concussive short range starburst
-		Holding down <right> disables the recoil damper
 		Starshots can be accelerated by firing when the starburst goes off
 		Perfect timing reduces spread, increases damage, and adds a stacking weapon power buff
 		Imperfect timing still increases damage, but heavily increases spread and reduces weapon power
@@ -1230,7 +1238,7 @@ StarSputter: {
 	DisplayName: Star Sputter
 	Tooltip:
 		'''
-		Fires a chain of comets
+		Fires a chain of comets that inflict [cbuff:CalamityMod/AstralInfectionDebuff]
 		Fires a bigger, more powerful comet every four rounds
 		'Look to the stars for a galaxy far, far away'
 		'''
@@ -1238,7 +1246,7 @@ StarSputter: {
 
 StellarCannon: {
 	DisplayName: Stellar Cannon
-	Tooltip: Launches an explosive astral crystal
+	Tooltip: Launches an explosive astral crystal that inflicts [cbuff:CalamityMod/AstralInfectionDebuff]
 }
 
 StormSurge: {
@@ -1310,6 +1318,7 @@ TauCannon: {
 		Charge level one fires a burst of bolts
 		Charge level two fires a beam of energy that quickly fizzles out
 		Charge level three fires a massive laser and creates astral portals around you
+		Inflicts [cbuff:CalamityMod/AstralInfectionDebuff]
 		'This weapon is very ethically questionable'
 		'''
 }

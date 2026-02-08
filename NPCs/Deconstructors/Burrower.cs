@@ -32,11 +32,11 @@ namespace CalamityMod.NPCs.Deconstructors
         }
         public override void SetDefaults()
         {
-            NPC.damage = 50;
+            NPC.damage = 0;
             NPC.width = 88;
             NPC.height = 88;
             NPC.lifeMax = 100;
-            NPC.value = Item.buyPrice(0, 2, 0, 0);
+            NPC.value = 0;
 
             NPC.HitSound = ThanatosHead.ThanatosHitSoundClosed;
             NPC.DeathSound = CommonCalamitySounds.WulfrumNPCDeathSound;
@@ -50,7 +50,7 @@ namespace CalamityMod.NPCs.Deconstructors
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = false;
-
+            NPC.chaseable = false;
             Banner = ModContent.NPCType<Burrower>();
             BannerItem = ModContent.ItemType<BurrowerBanner>();
             base.SetDefaults();
@@ -115,8 +115,8 @@ namespace CalamityMod.NPCs.Deconstructors
             NPC.damage = 0;
             NPC.width = 38;
             NPC.height = 38;
-            NPC.lifeMax = 1000;
-            NPC.value = Item.buyPrice(1, 0, 0, 0);
+            NPC.lifeMax = 500;
+            NPC.value = Item.buyPrice(0, 0, 50, 0);
             NPC.rarity = 3;
             NPC.HitSound = ThanatosHead.ThanatosHitSoundClosed;
             NPC.DeathSound = SoundID.NPCDeath44;
@@ -204,6 +204,11 @@ namespace CalamityMod.NPCs.Deconstructors
 
         public override void AI()
         {
+            //Force burrower bestiary to unlock
+            if (Main.netMode != NetmodeID.MultiplayerClient && Main.BestiaryTracker.Kills.GetKillCount(NPC) <= 0)
+            {
+                Main.BestiaryTracker.Kills.RegisterKill(NPC);
+            }
             HandleAIStates();
             MainTimer++;
             UpdateSegments();

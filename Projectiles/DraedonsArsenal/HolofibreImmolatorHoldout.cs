@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items;
+﻿using CalamityMod.Dusts;
+using CalamityMod.Items;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
@@ -29,11 +30,13 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public ref float ShotsLoaded => ref Projectile.ai[1];
         public int chargeMax = 0;
         public int downtime = 0;
+        public static int spamDelayMax = 8;
+        public int spamDelay = spamDelayMax;
         public bool ChargeLV1 => CurrentChargingFrames >= chargeMax;
 
         public override void KillHoldoutLogic()
         {
-            if (Owner.CantUseHoldout(false) || HeldItem.type != Owner.HeldItem.type)
+            if (HeldItem.type != Owner.HeldItem.type)
                 Projectile.Kill();
         }
         public override void OnSpawn(IEntitySource source)
@@ -41,29 +44,34 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             OffsetLengthFromArm = 15;
             Player Owner = Main.player[Projectile.owner];
             chargeMax = (int)(Owner.itemAnimationMax * 1.5f);
-
-            SoundStyle sound = new("CalamityMod/Sounds/Item/ImmolatorCharge");
-            ChargeSlot = SoundEngine.PlaySound(sound with { Volume = 0.7f, IsLooped = true }, Projectile.Center);
         }
 
         public override void HoldoutAI()
         {
+            if (CurrentChargingFrames == 0)
+            {
+                SoundStyle sound = new("CalamityMod/Sounds/Item/ImmolatorCharge");
+                ChargeSlot = SoundEngine.PlaySound(sound with { Volume = 0.7f, IsLooped = true }, Projectile.Center);
+            }
             CalamityGlobalItem modItem = Owner.HeldItem.Calamity();
             Vector2 mountedCenter = Owner.MountedCenter;
             Vector2 ownerToMouse = Owner.Calamity().mouseWorld - mountedCenter;
             if (SoundEngine.TryGetActiveSound(ChargeSlot, out var ChargeSound) && ChargeSound.IsPlaying)
                 ChargeSound.Position = Projectile.Center;
-
+            if (ChargeLV1 && spamDelay > 0)
+                spamDelay--;
             // Fire if the owner stops channeling or otherwise cannot use the weapon.
-            if ((Owner.CantUseHoldout() || Owner.Calamity().mouseRight) && downtime == 0 && time >= 1)
+            bool autoSpam = (Owner.Calamity().mouseRight && !Main.mouseLeft);
+            bool chargeSpam = (Owner.Calamity().mouseRight && Main.mouseLeft && ChargeLV1 && spamDelay == 0);
+            if ((!Main.mouseLeft || autoSpam || chargeSpam) && downtime == 0 && time >= 1)
             {
                 KeepRefreshingLifetime = false;
 
                 Projectile.timeLeft = Owner.Calamity().mouseRight ? Owner.itemAnimationMax * 2 : Owner.itemAnimationMax;
                 downtime = Owner.itemAnimationMax;
-                if (Owner.Calamity().mouseRight)
+                if (Owner.Calamity().mouseRight && !Main.mouseLeft)
                     CurrentChargingFrames = 0;
-
+                spamDelay = spamDelayMax;
                 // Big Shot mode
                 if (ChargeLV1)
                 {
@@ -74,7 +82,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * BulletSpeed;
                     if (Main.myPlayer == Projectile.owner)
                     {
-                        int charge2Damage = (int)(Projectile.damage * 2.5f);
+                        int charge2Damage = (int)(Projectile.damage * 4.5f);
                         float charge2KB = Projectile.knockBack * 3f;
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity * 2, ModContent.ProjectileType<ImmolationArrow>(), charge2Damage, charge2KB, Projectile.owner);
                     }
@@ -116,6 +124,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             else if (downtime == 0)
             {
                 CurrentChargingFrames++;
+                Projectile.timeLeft = Owner.itemAnimationMax;
+
                 // Charge-up visuals
                 if (CurrentChargingFrames >= 10)
                 {
@@ -131,7 +141,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     ChargeSound?.Stop();
                     for (int i = 0; i < 20; i++)
                     {
-                        Dust chargefull = Dust.NewDustPerfect(GunTipPosition, Effects.ArsenalEffects.ArsenalDust);
+                        Dust chargefull = Dust.NewDustPerfect(GunTipPosition, ModContent.DustType<LightDust>());
                         chargefull.velocity = (MathHelper.TwoPi * i / 20f).ToRotationVector2() * 4f + Owner.velocity * 0.5f;
                         chargefull.scale = Main.rand.NextFloat(0.6f, 0.8f);
                         chargefull.noGravity = false;
@@ -143,16 +153,20 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
                 if (CurrentChargingFrames > chargeMax && Main.rand.NextBool())
                 {
-                    Dust chargefull = Dust.NewDustPerfect(GunTipPosition, Effects.ArsenalEffects.ArsenalDust);
+                    Dust chargefull = Dust.NewDustPerfect(GunTipPosition, ModContent.DustType<SquashDust>());
                     chargefull.velocity = Projectile.velocity.RotatedByRandom(0.3f) * Main.rand.NextFloat(5, 9);
-                    chargefull.scale = Main.rand.NextFloat(0.2f, 0.4f);
+                    chargefull.scale = Main.rand.NextFloat(0.7f, 0.85f);
                     chargefull.noGravity = true;
                     chargefull.color = Effects.ArsenalEffects.ArsenalPlasmaColor;
+                    chargefull.fadeIn = 0.5f;
                 }
             }
 
-            if (downtime == 1 && !Owner.Calamity().mouseRight)
+            if ((downtime == 1 && !Owner.Calamity().mouseRight) || Owner.dead)
+            {
+                ChargeSound?.Stop();
                 Projectile.Kill();
+            }
 
             if (downtime > 0)
                 downtime--;
@@ -193,7 +207,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 Main.EntitySpriteDraw(rechargeTexture, tipPosition - Main.screenPosition, null, Effects.ArsenalEffects.ArsenalPlasmaColor with { A = 0 }, Projectile.rotation, rechargeTexture.Size() * 0.5f, 0.25f * Utils.GetLerpValue(0, chargeMax, CurrentChargingFrames, true) * randSize, SpriteEffects.None, 0);
                 Main.EntitySpriteDraw(rechargeTexture, tipPosition - Main.screenPosition, null, Color.White with { A = 0 }, Projectile.rotation, rechargeTexture.Size() * 0.5f, 0.15f * Utils.GetLerpValue(0, chargeMax, CurrentChargingFrames, true) * randSize, SpriteEffects.None, 0);
 
-                Main.EntitySpriteDraw(pointTexture, tipPosition - Main.screenPosition + (Projectile.velocity * 15 * fade), null, Effects.ArsenalEffects.ArsenalPlasmaColor with { A = 0 } * fade, Projectile.velocity.RotatedBy(MathHelper.ToRadians(90f)).ToRotation(), pointTexture.Size() * 0.5f, new Vector2(0.5f, 0.9f) * 0.035f * fade * randSize * (CurrentChargingFrames == chargeMax ? 1.5f : 1), flipSprite);
+                for (int i = 0; i < 3; i++)
+                    Main.EntitySpriteDraw(pointTexture, tipPosition - Main.screenPosition + (Projectile.velocity * 15 * fade), null, Color.Lerp(Color.White, Effects.ArsenalEffects.ArsenalPlasmaColor, i * 0.5f) with { A = 0 } * fade * 0.7f, Projectile.velocity.RotatedBy(MathHelper.ToRadians(90f)).ToRotation(), pointTexture.Size() * 0.5f, new Vector2(0.7f - 0.2f * i, 0.7f + 0.3f * i) * 0.035f * fade * randSize * (CurrentChargingFrames == chargeMax ? 1.5f : 1) * (0.6f + 0.2f * i), flipSprite);
             }
             return false;
         }

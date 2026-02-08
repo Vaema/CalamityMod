@@ -67,8 +67,8 @@ Affliction: {
 	Tooltip: Gives all teammates +{0} HP/s life regen, +{1}% max life, {2}% damage reduction, {3} defense and {4}% increased damage
 }
 
-AlchemicalFlask: {
-	DisplayName: Alchemical Flask
+AlchemicalDecanter: {
+	DisplayName: Alchemical Decanter
 	Tooltip:
 		'''
 		All attacks inflict the [cbuff:CalamityMod/Plague] and reduces damage taken from the [cbuff:CalamityMod/Plague] by {0}%
@@ -400,11 +400,10 @@ ChaosStone: {
 		'''
 		Disables automatic potion consumption
 		Items that consume mana can be used even without the required mana amount
-		Mana usage can overflow into negative mana, causing you to receive [Mana Burn]
+		Mana usage can overflow into negative mana, causing you to both receive and inflict [cbuff:CalamityMod/ManaBurn]
 		The lower your mana, the more intense the manafire burns
-		Attacks while you have [Mana Burn] inflict [Mana Burn] on enemies
-		Every 50 negative mana increases [Mana Burn] by 1% of the attack's damage
 		Negative Mana is capped at your maximum mana amount
+		Current maximum intensity with your maximum mana: -[REGEN] HP/s, and burns enemies for [DAMAGE]% of dealt damage
 		'''
 }
 
@@ -431,14 +430,14 @@ CorrosiveSpine: {
 	Tooltip:
 		'''
 		5% increased movement speed
-		Multiplies all sickness and water-related debuff damage by 1.25x
+		25% increased Sickness and Water debuff damage
 		All attacks irradiate enemies and reduces the severity of the sulphuric waters
 		You burst into radioactive clouds when struck
 		'''
 }
 
-CorruptFlask: {
-	DisplayName: Corrupt Flask
+UnholyTonic: {
+	DisplayName: Unholy Tonic
 	Tooltip:
 		'''
 		Increases damage reduction by 4% and defense by 6 while in the corruption
@@ -450,7 +449,6 @@ CounterScarf: {
 	DisplayName: Counter Scarf
 	Tooltip:
 		'''
-		10% increased true melee damage
 		Grants the ability to dash; dashing into an attack will cause you to dodge it
 		After a successful dodge you must wait 30 seconds before you can dodge again
 		'''
@@ -465,8 +463,8 @@ CrawCarapace: {
 		'''
 }
 
-CrimsonFlask: {
-	DisplayName: Crimson Flask
+ViciousTonic: {
+	DisplayName: Vicious Tonic
 	Tooltip:
 		'''
 		Increases damage reduction by 4% and defense by 6 while in the crimson
@@ -487,7 +485,7 @@ CryoStone: {
 	DisplayName: Cryo Stone
 	Tooltip:
 		'''
-		Multiplies all cold-based debuff damage by 1.5x
+		50% increased Cold debuff damage
 		Creates a rotating ice shield around you that damages and slows down enemies on contact
 		'One of the ancient relics'
 		'''
@@ -590,7 +588,7 @@ DiamondOfTheDeep: {
 	DisplayName: Diamond of the Deep
 	Tooltip:
 		'''
-		Multiplies all water debuff damage by 1.6x
+		60% increased Water debuff damage
 		Slowly accrue up to three different abyssal spirits
 		Dash to disperse the spirits and have them attack enemies
 		When dispersed [c/CB7AD7:below 50% life], the spirits support you instead
@@ -758,9 +756,9 @@ EvasionScarf: {
 	DisplayName: Evasion Scarf
 	Tooltip:
 		'''
-		15% increased true melee damage
 		Grants the ability to dash; dashing into an attack will cause you to dodge it
 		After a successful dodge you must wait 30 seconds before you can dodge again
+		Has a shorter dash cooldown than most dashes
 		'''
 }
 
@@ -923,7 +921,7 @@ HallowedRune: {
 	HoldShiftTooltip:
 		'''
 		[c/8ce0ff:  Hallowed Power] [c/ccf1ff: grants 10% increased summon damage and rains stars on enemies]
-		[c/d08aff:  Hallowed Defense] [c/eed4ff: grants 4 defense and 4% damage reduction]
+		[c/d08aff:  Hallowed Defense] [c/eed4ff: grants 5 defense]
 		[c/ff8cb5:  Hallowed Regen] [c/ffccde: grants +1.5 HP/s life regen]
 		'''
 }
@@ -1118,7 +1116,7 @@ ManaPolarizer: {
 		Increases max mana by 50
 		Provides life regeneration and magic damage that scales based on how much mana you have
 		Lower mana means more life regeneration, but less magic damage
-		These scale from -2 to 2 HP/sec, and 5% to 15% damage
+		These scale from -2 to 2 HP/sec, and 15% to 5% damage
 		The provided regeneration is halved when under Mana Sickness
 		Magic projectiles steal enemy life while holding a magic weapon
 		'''
@@ -1201,7 +1199,7 @@ Nucleogenesis: {
 	DisplayName: Nucleogenesis
 	Tooltip:
 		'''
-		Increases your max number of mininons by 4
+		Increases your max number of minions by 4
 		Grants immunity to Shadowflame and Irradiated
 		15% increased summon damage, and increased minion knockback
 		Minions inflict a variety of debuffs
@@ -1307,7 +1305,7 @@ PhantomicArtifact: {
 	HoldShiftTooltip:
 		'''
 		[c/8ce0ff:  Phantomic Empowerment] [c/ccf1ff: grants 10% increased summon damage and throws knives at enemies]
-		[c/d08aff:  Phantomic Shield] [c/eed4ff: grants 10 defense, 5% damage reduction and a 20% damage reduction bulwark]
+		[c/d08aff:  Phantomic Shield] [c/eed4ff: grants 10 defense and a 20% damage reduction bulwark]
 		[c/ff8cb5:  Phantomic Regen] [c/ffccde: grants 1 HP/s life regen and occasionally drops phantom hearts which grant an additional 1 HP/s life regen]
 		'''
 }
@@ -1578,7 +1576,7 @@ SeaSpiritAmulet: {
 		Slowly accumulate up to eight spirit orbs that follow you
 		Spirits disperse when dashing
 		If below 50% life, they will heal you, otherwise they will attack nearby enemies
-		Multiplies all water debuff damage by 1.35x
+		35% increased Water debuff damage
 		Spirit orbs are transparent and silent if visibility is disabled
 		'''
 }
@@ -1690,7 +1688,7 @@ SpiritGlyph: {
 	HoldShiftTooltip:
 		'''
 		[c/8ce0ff:  Spirit Power] [c/ccf1ff:grants 10% increased summon damage]
-		[c/d08aff:  Spirit Defense] [c/eed4ff:grants 4 defense]
+		[c/d08aff:  Spirit Defense] [c/eed4ff:grants 3 defense]
 		[c/ff8cb5:  Spirit Regen] [c/ffccde:grants +1 HP/s life regeneration]
 		'''
 }
@@ -1883,8 +1881,7 @@ TheAmalgam: {
 	DisplayName: The Amalgam
 	Tooltip:
 		'''
-		10% increased damage
-		All attacks inflict a variety of debuffs and multiplies all elemental debuff damage by 3x
+		All attacks inflict a variety of debuffs, 300% increased elemental debuff damage
 		Most buffs last twice as long, and persist after dying
 		Taking damage confuses nearby enemies and spawns a dank creeper
 		The dank creeper flies above you, exploding into several shaderain clouds
@@ -1940,9 +1937,8 @@ TheEvolution: {
 	DisplayName: The Evolution
 	Tooltip:
 		'''
-		Reflects projectiles that hit you, negating their damage and dealing 10x damage to enemies
-		{$Common.ReflectInformation}
-		Reflecting a projectile grants maximum natural life regen for 10 seconds
+		Allows you to dodge projectiles, reflecting highly damaging mirror shards back at enemies
+		{$Common.DodgeInformation}
 		Getting hit by the same enemy projectile type during cooldown will resist its damage by 25%
 		'''
 }
@@ -1953,6 +1949,17 @@ TheFirstShadowflame: {
 		'''
 		Increases your max number of minions by 1
 		Minion attacks inflict Shadowflame, and grants immunity to Shadowflame
+		'''
+}
+
+ThePointer: {
+	DisplayName: The Pointer
+	Tooltip:
+		'''
+		Allows automatic targeting of enemies
+		Press [KEY] to cycle through targets near your mouse
+		After cycling through all close enemies, the next press will disable it
+		'Great for cats!'
 		'''
 }
 
@@ -1997,7 +2004,7 @@ ToxicHeart: {
 		'''
 		Your heart beats with the plague, pulsing outside of your body
 		Pulse frequency scale with regen, and pulses that kill enemies pulse again to heal you
-		Multiplies all sickness debuff damage by 1.5x
+		50% increased Sickness debuff damage
 		Effects are transparent and silent if visibility is disabled
 		'''
 }
@@ -2146,11 +2153,6 @@ AbandonedWulfrumHelmet: {
 GhostBracelet: {
 	DisplayName: Ghost Bracelet
 	Tooltip: Wow.... It looks at me with its hollow eyes full of curiosity
-}
-
-GoldenBomb: {
-	DisplayName: Golden Bomb
-	Tooltip: "'I AM THE BOMB'"
 }
 
 HapuFruit: {

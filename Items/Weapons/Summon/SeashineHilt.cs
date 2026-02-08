@@ -47,7 +47,7 @@ namespace CalamityMod.Items.Weapons.Summon
             // There's a long cooldown on commanding blades
             // This is so you don't just hold down right click, since now it's optimal to only command blades when all are ready
             if (player.altFunctionUse == 2)
-                return 0.1f;
+                return 0.37f;
             else
                 return 1f;
         }
@@ -57,6 +57,17 @@ namespace CalamityMod.Items.Weapons.Summon
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            float usedMinionSlots = 0;
+            foreach (var minions in Main.ActiveProjectiles)
+            {
+                if (minions.owner == player.whoAmI)
+                    usedMinionSlots += minions.minionSlots;
+            }
+            bool hasSlotsForSummon = true;
+            if (usedMinionSlots + 1 > player.maxMinions)
+                hasSlotsForSummon = false;
+
+            
             // Call all active blades to attack if they are charged
             // The check to see if a blade is charged is done in the blade itself
             if (player.altFunctionUse == 2)
@@ -89,7 +100,7 @@ namespace CalamityMod.Items.Weapons.Summon
                     SoundEngine.PlaySound(SoundID.Item101 with { Volume = 0.9f, Pitch = Main.rand.NextFloat(0.3f, 0.5f) }, player.Center);
                 }
             }
-            else // Toss out the summon
+            else if (hasSlotsForSummon) // Toss out the summon
             {
                 player.AddBuff(Item.buffType, 2);
                 SoundEngine.PlaySound(SoundID.Item1, player.Center);
@@ -117,6 +128,8 @@ namespace CalamityMod.Items.Weapons.Summon
                     }
                 }
             }
+            
+            
             return false;
         }
         public override void UseItemFrame(Player player) // Player hand animation when you command the blades

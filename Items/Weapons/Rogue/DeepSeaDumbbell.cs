@@ -70,7 +70,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone) => flexMult = 1f;
         public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo) => flexMult = 1f;
 
-        public override float StealthDamageMultiplier => 0.4f;
+        public override float StealthDamageMultiplier => 0.9f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

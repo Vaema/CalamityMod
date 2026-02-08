@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetStaticDefaults()
         {
-            Item.ResearchUnlockCount = 30;
+            Item.ResearchUnlockCount = 20;
             // Clear, yellow-green
             ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
                 new Color(242, 252, 177, 180),
@@ -32,8 +32,8 @@ namespace CalamityMod.Items.Potions.Alcohol
         public override void SetDefaults()
         {
             Item.DefaultToFood(14, 44, ModContent.BuffType<WhiteWineBuff>(), CalamityUtils.MinutesToFrames(6), true);
-            Item.value = Item.sellPrice(silver: 40);
-            Item.rare = ItemRarityID.LightPurple;
+            Item.value = Item.sellPrice(silver: 2);
+            Item.rare = ItemRarityID.Pink;
         }
 
         public override void OnConsumeItem(Player player)

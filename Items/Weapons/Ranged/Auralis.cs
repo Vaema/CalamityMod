@@ -14,6 +14,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 {
     public class Auralis : ModItem, ILocalizedModType
     {
+        public static readonly SoundStyle HeavyShotSound = new("CalamityMod/Sounds/Item/PlasmaRifleMain");
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public static readonly Color blueColor = new Color(0, 77, 255);
         public static readonly Color greenColor = new Color(0, 255, 77);
@@ -33,7 +34,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
-            Item.UseSound = new SoundStyle("CalamityMod/Sounds/Item/StarfleetStar");
+            Item.UseSound = HeavyShotSound with { Volume = 0.8f };
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.Calamity().donorItem = true;
