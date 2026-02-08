@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using CalamityMod.Utilities;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -86,7 +87,7 @@ namespace CalamityMod.Projectiles.Summon
                     rainbowDust.fadeIn = fadeIn;
                     rainbowDust.noLight = true;
 
-                    Dust rainbowDust2 = CalamityUtils.SafeCloneDust(rainbowDust);
+                    Dust rainbowDust2 = Dust.BetterCloneDust(rainbowDust);
                     rainbowDust2.scale *= 0.65f;
                     rainbowDust2.fadeIn *= 0.65f;
                     rainbowDust2.color = new Color(255, 255, 255, 255);
@@ -114,7 +115,7 @@ namespace CalamityMod.Projectiles.Summon
                 dustID.noGravity = true;
                 dustID.fadeIn = Main.rand.NextFloat() * 2f;
 
-                Dust dustCloning = CalamityUtils.SafeCloneDust(dustID);
+                Dust dustCloning = Dust.BetterCloneDust(dustID);
                 dustCloning.scale /= 2f;
                 dustCloning.fadeIn /= 2f;
                 dustCloning.color = Color.White;
@@ -125,7 +126,7 @@ namespace CalamityMod.Projectiles.Summon
                 dustID.noGravity = true;
                 dustID.fadeIn = Main.rand.NextFloat() * 2f;
 
-                Dust dustCloning2 = CalamityUtils.SafeCloneDust(dustID);
+                Dust dustCloning2 = Dust.BetterCloneDust(dustID);
                 dustCloning2.scale /= 2f;
                 dustCloning2.fadeIn /= 2f;
                 dustCloning2.color = Color.White;

@@ -4,6 +4,7 @@ using CalamityMod.Buffs.Summon.Whips;
 using CalamityMod.CalPlayer;
 using CalamityMod.Items.Accessories;
 using CalamityMod.NPCs.Providence;
+using CalamityMod.Utilities;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -149,7 +150,7 @@ namespace CalamityMod.Projectiles.Summon
                                     Main.dust[dust].noGravity = true;
                                     Main.dust[dust].scale = 1f + k;
                                     Main.dust[dust].fadeIn = Main.rand.NextFloat() * 2f;
-                                    Dust dust2 = CalamityUtils.SafeCloneDust(dust);
+                                    Dust dust2 = Dust.BetterCloneDust(dust);
                                     Dust dust3 = dust2;
                                     dust3.scale /= 2f;
                                     dust3 = dust2;

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
+using CalamityMod.Utilities;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -131,7 +132,7 @@ namespace CalamityMod.Projectiles.Summon
                 sulphuricAcid.noGravity = true;
                 sulphuricAcid.velocity *= 1.8f;
 
-                sulphuricAcid = CalamityUtils.SafeCloneDust(sulphuricAcid);
+                sulphuricAcid = Dust.BetterCloneDust(sulphuricAcid);
                 sulphuricAcid.velocity *= -1f;
             }
         }

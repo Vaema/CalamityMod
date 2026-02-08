@@ -321,49 +321,5 @@ namespace CalamityMod
                 return [];
             }
         }
-
-        /// <summary>
-        /// Modified version of Dust.CloneDust that clones dust safely. Returns a blank, unused dust if the dust cap is exceeded
-        /// </summary>
-        /// <param name="rf"></param>
-        /// <returns></returns>
-        public static Dust SafeCloneDust(Dust rf)
-        {
-            if (rf.dustIndex == Main.maxDustToDraw)
-            {
-                return rf;
-            }
-
-            int num = Dust.NewDust(rf.position, 0, 0, rf.type);
-            if (!Main.dust.IndexInRange(num))
-            {
-                return new Dust();
-            }
-            Dust obj = Main.dust[num];
-            obj.position = rf.position;
-            obj.velocity = rf.velocity;
-            obj.fadeIn = rf.fadeIn;
-            obj.noGravity = rf.noGravity;
-            obj.scale = rf.scale;
-            obj.rotation = rf.rotation;
-            obj.noLight = rf.noLight;
-            obj.active = rf.active;
-            obj.type = rf.type;
-            obj.color = rf.color;
-            obj.alpha = rf.alpha;
-            obj.frame = rf.frame;
-            obj.shader = rf.shader;
-            obj.customData = rf.customData;
-            return obj;
-        }
-        /// <summary>
-        /// <inheritdoc cref="SafeCloneDust(Dust)"/>
-        /// </summary>
-        /// <param name="dustIndex"></param>
-        /// <returns></returns>
-        public static Dust SafeCloneDust(int dustIndex)
-        {
-            return SafeCloneDust(Main.dust[dustIndex]);
-        }
     }
 }

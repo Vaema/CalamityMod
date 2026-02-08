@@ -45,6 +45,7 @@ using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems.Collections;
 using CalamityMod.UI;
+using CalamityMod.Utilities;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -2101,9 +2102,9 @@ namespace CalamityMod.CalPlayer
                         d.velocity = dustVel;
                         d.noGravity = true;
                         d.scale *= Main.rand.NextFloat(1.1f, 1.4f);
-                        CalamityUtils.SafeCloneDust(d).velocity = dustVel.RotatedBy(MathHelper.PiOver2);
-                        CalamityUtils.SafeCloneDust(d).velocity = dustVel.RotatedBy(MathHelper.Pi);
-                        CalamityUtils.SafeCloneDust(d).velocity = dustVel.RotatedBy(MathHelper.Pi * 1.5f);
+                        Dust.BetterCloneDust(d).velocity = dustVel.RotatedBy(MathHelper.PiOver2);
+                        Dust.BetterCloneDust(d).velocity = dustVel.RotatedBy(MathHelper.Pi);
+                        Dust.BetterCloneDust(d).velocity = dustVel.RotatedBy(MathHelper.Pi * 1.5f);
                     }
                 }
 
