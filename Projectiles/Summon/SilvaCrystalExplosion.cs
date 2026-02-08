@@ -86,7 +86,7 @@ namespace CalamityMod.Projectiles.Summon
                     rainbowDust.fadeIn = fadeIn;
                     rainbowDust.noLight = true;
 
-                    Dust rainbowDust2 = Dust.CloneDust(rainbowDust);
+                    Dust rainbowDust2 = CalamityUtils.SafeCloneDust(rainbowDust);
                     rainbowDust2.scale *= 0.65f;
                     rainbowDust2.fadeIn *= 0.65f;
                     rainbowDust2.color = new Color(255, 255, 255, 255);
@@ -114,7 +114,7 @@ namespace CalamityMod.Projectiles.Summon
                 dustID.noGravity = true;
                 dustID.fadeIn = Main.rand.NextFloat() * 2f;
 
-                Dust dustCloning = Dust.CloneDust(dustID);
+                Dust dustCloning = CalamityUtils.SafeCloneDust(dustID);
                 dustCloning.scale /= 2f;
                 dustCloning.fadeIn /= 2f;
                 dustCloning.color = Color.White;
@@ -125,7 +125,7 @@ namespace CalamityMod.Projectiles.Summon
                 dustID.noGravity = true;
                 dustID.fadeIn = Main.rand.NextFloat() * 2f;
 
-                Dust dustCloning2 = Dust.CloneDust(dustID);
+                Dust dustCloning2 = CalamityUtils.SafeCloneDust(dustID);
                 dustCloning2.scale /= 2f;
                 dustCloning2.fadeIn /= 2f;
                 dustCloning2.color = Color.White;

@@ -1164,7 +1164,7 @@ namespace CalamityMod.Projectiles.Summon
                     dust26.fadeIn = fadeIn;
                     dust26.scale = num981;
                     dust26.noLight = true;
-                    Dust dust27 = Dust.CloneDust(dust26);
+                    Dust dust27 = CalamityUtils.SafeCloneDust(dust26);
                     Dust dust = dust27;
                     dust.scale *= 0.65f;
                     dust = dust27;
@@ -1210,7 +1210,7 @@ namespace CalamityMod.Projectiles.Summon
                 Main.dust[num71].noGravity = true;
                 Main.dust[num71].scale = 2f;
                 Main.dust[num71].fadeIn = Main.rand.NextFloat() * 2f;
-                Dust dust11 = Dust.CloneDust(num71);
+                Dust dust11 = CalamityUtils.SafeCloneDust(num71);
                 Dust dust = dust11;
                 dust.scale /= 2f;
                 dust = dust11;
@@ -1228,7 +1228,7 @@ namespace CalamityMod.Projectiles.Summon
                 dust.noGravity = true;
                 dust.scale = Main.rand.NextFloat() * 1f;
                 dust.fadeIn = Main.rand.NextFloat() * 2f;
-                Dust dust12 = Dust.CloneDust(num74);
+                Dust dust12 = CalamityUtils.SafeCloneDust(num74);
                 dust = dust12;
                 dust.scale /= 2f;
                 dust = dust12;

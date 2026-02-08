@@ -3929,13 +3929,13 @@ namespace CalamityMod.CalPlayer
                         d.velocity = Main.rand.NextVector2Unit() * spreadSpeed;
 
                         Vector2 segmentTwoPos = Player.Center + segmentTwoStart + segmentTwoIncrement * interpolant;
-                        d = Dust.CloneDust(d);
+                        d = CalamityUtils.SafeCloneDust(d);
                         d.position = segmentTwoPos;
                         d.scale = Main.rand.NextFloat(1.2f, 1.8f);
                         d.velocity = Main.rand.NextVector2Unit() * spreadSpeed;
 
                         Vector2 segmentThreePos = Player.Center + segmentThreeStart + segmentThreeIncrement * interpolant;
-                        d = Dust.CloneDust(d);
+                        d = CalamityUtils.SafeCloneDust(d);
                         d.position = segmentThreePos;
                         d.scale = Main.rand.NextFloat(1.2f, 1.8f);
                         d.velocity = Main.rand.NextVector2Unit() * spreadSpeed;

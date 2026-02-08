@@ -2101,9 +2101,9 @@ namespace CalamityMod.CalPlayer
                         d.velocity = dustVel;
                         d.noGravity = true;
                         d.scale *= Main.rand.NextFloat(1.1f, 1.4f);
-                        Dust.CloneDust(d).velocity = dustVel.RotatedBy(MathHelper.PiOver2);
-                        Dust.CloneDust(d).velocity = dustVel.RotatedBy(MathHelper.Pi);
-                        Dust.CloneDust(d).velocity = dustVel.RotatedBy(MathHelper.Pi * 1.5f);
+                        CalamityUtils.SafeCloneDust(d).velocity = dustVel.RotatedBy(MathHelper.PiOver2);
+                        CalamityUtils.SafeCloneDust(d).velocity = dustVel.RotatedBy(MathHelper.Pi);
+                        CalamityUtils.SafeCloneDust(d).velocity = dustVel.RotatedBy(MathHelper.Pi * 1.5f);
                     }
                 }
 

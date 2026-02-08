@@ -375,7 +375,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                                 Main.dust[dust].noGravity = true;
                                 Main.dust[dust].scale = 1f + k;
                                 Main.dust[dust].fadeIn = Main.rand.NextFloat() * 2f;
-                                Dust dust2 = Dust.CloneDust(dust);
+                                Dust dust2 = CalamityUtils.SafeCloneDust(dust);
                                 Dust dust3 = dust2;
                                 dust3.scale /= 2f;
                                 dust3 = dust2;

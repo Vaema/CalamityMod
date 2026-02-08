@@ -64,7 +64,7 @@ namespace CalamityMod.Projectiles.Magic
                     Main.dust[dust].scale = 0.7f;
                     if (dust != Main.maxDust)
                     {
-                        Dust dust2 = Dust.CloneDust(dust);
+                        Dust dust2 = CalamityUtils.SafeCloneDust(dust);
                         dust2.scale /= 2f;
                         dust2.fadeIn *= 0.85f;
                         dust2.color = new Color(255, 255, 255, 255);
@@ -98,7 +98,7 @@ namespace CalamityMod.Projectiles.Magic
                 Main.dust[dust].scale = 0.7f;
                 if (dust != Main.maxDust)
                 {
-                    Dust dust2 = Dust.CloneDust(dust);
+                    Dust dust2 = CalamityUtils.SafeCloneDust(dust);
                     dust2.scale /= 2f;
                     dust2.fadeIn *= 0.85f;
                     dust2.color = new Color(255, 255, 255, 255);
@@ -148,7 +148,7 @@ namespace CalamityMod.Projectiles.Magic
                 Main.dust[dust].scale = 1.4f;
                 if (dust != Main.maxDust)
                 {
-                    Dust dust2 = Dust.CloneDust(dust);
+                    Dust dust2 = CalamityUtils.SafeCloneDust(dust);
                     dust2.scale /= 2f;
                     dust2.fadeIn *= 0.85f;
                     dust2.color = new Color(255, 255, 255, 255);

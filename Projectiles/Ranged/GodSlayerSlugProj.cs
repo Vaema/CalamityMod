@@ -194,8 +194,8 @@ namespace CalamityMod.Projectiles.Ranged
                 d.fadeIn = 1.5f;
                 d.scale *= Main.rand.NextFloat(1.4f, 1.9f) - lerp * 0.5f;
                 d.color = Color.Lerp(Color.Cyan, Color.Magenta, lerp);
-                Dust.CloneDust(d).velocity = dustVel.RotatedBy(MathHelper.Pi * 2f / 3f);
-                Dust.CloneDust(d).velocity = dustVel.RotatedBy(MathHelper.Pi * 4f / 3f);
+                CalamityUtils.SafeCloneDust(d).velocity = dustVel.RotatedBy(MathHelper.Pi * 2f / 3f);
+                CalamityUtils.SafeCloneDust(d).velocity = dustVel.RotatedBy(MathHelper.Pi * 4f / 3f);
             }
         }
 
@@ -243,9 +243,9 @@ namespace CalamityMod.Projectiles.Ranged
                 d.scale *= Main.rand.NextFloat(1.8f, 2.2f) * (1 - speed / 7);
                 d.color = color;
                 d.fadeIn = 1;
-                Dust.CloneDust(d).velocity = dustVel.RotatedBy(MathHelper.PiOver2);
-                Dust.CloneDust(d).velocity = dustVel.RotatedBy(MathHelper.Pi);
-                Dust.CloneDust(d).velocity = dustVel.RotatedBy(-MathHelper.PiOver2);
+                CalamityUtils.SafeCloneDust(d).velocity = dustVel.RotatedBy(MathHelper.PiOver2);
+                CalamityUtils.SafeCloneDust(d).velocity = dustVel.RotatedBy(MathHelper.Pi);
+                CalamityUtils.SafeCloneDust(d).velocity = dustVel.RotatedBy(-MathHelper.PiOver2);
             }
         }
     }

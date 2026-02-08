@@ -99,7 +99,7 @@ namespace CalamityMod.Projectiles.Rogue
                 prismaticEnergy.color = dustColor;
                 prismaticEnergy.noGravity = true;
 
-                prismaticEnergy = Dust.CloneDust(prismaticEnergy);
+                prismaticEnergy = CalamityUtils.SafeCloneDust(prismaticEnergy);
                 prismaticEnergy.scale *= 0.6f;
             }
         }
@@ -151,9 +151,9 @@ namespace CalamityMod.Projectiles.Rogue
                 explosionDust.scale = 1.1f;
                 explosionDust.fadeIn = Main.rand.NextFloat(1.4f, 2.4f);
 
-                Dust.CloneDust(explosionDust).velocity *= Main.rand.NextFloat(0.8f);
+                CalamityUtils.SafeCloneDust(explosionDust).velocity *= Main.rand.NextFloat(0.8f);
 
-                explosionDust = Dust.CloneDust(explosionDust);
+                explosionDust = CalamityUtils.SafeCloneDust(explosionDust);
                 explosionDust.scale /= 2f;
                 explosionDust.fadeIn /= 2f;
                 explosionDust.color = new Color(255, 255, 255, 255);

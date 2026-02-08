@@ -123,7 +123,7 @@ namespace CalamityMod.Projectiles.Melee
                                 fire.noGravity = true;
                                 fire.scale = Main.rand.NextFloat(0.7f, 1.2f) + EmpoweredHammer * 0.4f;
 
-                                fire = Dust.CloneDust(fire);
+                                fire = CalamityUtils.SafeCloneDust(fire);
                                 fire.velocity = Main.rand.NextVector2Circular(3f, 3f);
                                 fire.velocity += Projectile.velocity * (EmpoweredHammer * 0.1f);
                             }
@@ -146,7 +146,7 @@ namespace CalamityMod.Projectiles.Melee
                                 fire.noGravity = true;
                                 fire.scale = Main.rand.NextFloat(0.7f, 1.2f) + EmpoweredHammer * 0.4f;
 
-                                fire = Dust.CloneDust(fire);
+                                fire = CalamityUtils.SafeCloneDust(fire);
                                 fire.velocity = Main.rand.NextVector2Circular(3f, 3f);
                                 fire.velocity += Projectile.velocity * (EmpoweredHammer * 0.1f);
                             }

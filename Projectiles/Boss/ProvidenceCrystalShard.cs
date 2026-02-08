@@ -156,7 +156,7 @@ namespace CalamityMod.Projectiles.Boss
                     holyDust.fadeIn = fadeIn;
                     holyDust.scale = dustScale;
                     holyDust.noLight = true;
-                    Dust holyDust2 = Dust.CloneDust(holyDust);
+                    Dust holyDust2 = CalamityUtils.SafeCloneDust(holyDust);
                     Dust dust = holyDust2;
                     dust.scale *= 0.65f;
                     dust = holyDust2;
@@ -182,7 +182,7 @@ namespace CalamityMod.Projectiles.Boss
                 Main.dust[killDust].noGravity = true;
                 Main.dust[killDust].scale = 2f;
                 Main.dust[killDust].fadeIn = Main.rand.NextFloat() * 2f;
-                Dust killDustClone = Dust.CloneDust(killDust);
+                Dust killDustClone = CalamityUtils.SafeCloneDust(killDust);
                 Dust dust = killDustClone;
                 dust.scale /= 2f;
                 dust = killDustClone;
@@ -199,7 +199,7 @@ namespace CalamityMod.Projectiles.Boss
                 dust.noGravity = true;
                 dust.scale = Main.rand.NextFloat() * 1f;
                 dust.fadeIn = Main.rand.NextFloat() * 2f;
-                Dust killDustClone2 = Dust.CloneDust(killDust2);
+                Dust killDustClone2 = CalamityUtils.SafeCloneDust(killDust2);
                 dust = killDustClone2;
                 dust.scale /= 2f;
                 dust = killDustClone2;

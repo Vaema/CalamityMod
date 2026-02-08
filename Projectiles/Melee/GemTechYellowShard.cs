@@ -48,8 +48,8 @@ namespace CalamityMod.Projectiles.Melee
                     crystalShard.color = Color.Yellow;
                     crystalShard.noGravity = true;
 
-                    Dust.CloneDust(crystalShard).velocity = initialVelocity.RotatedBy(MathHelper.Pi * 0.666f) * i / 4f;
-                    Dust.CloneDust(crystalShard).velocity = initialVelocity.RotatedBy(MathHelper.Pi * -0.666f) * i / 4f;
+                    CalamityUtils.SafeCloneDust(crystalShard).velocity = initialVelocity.RotatedBy(MathHelper.Pi * 0.666f) * i / 4f;
+                    CalamityUtils.SafeCloneDust(crystalShard).velocity = initialVelocity.RotatedBy(MathHelper.Pi * -0.666f) * i / 4f;
                 }
                 Projectile.localAI[0] = 1f;
             }

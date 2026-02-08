@@ -84,7 +84,7 @@ namespace CalamityMod.Projectiles.Ranged
                 fire.color = Color.Lerp(Color.White, Color.Purple, Main.rand.NextFloat());
                 fire.scale = Main.rand.NextFloat(1f, 1.1f);
 
-                fire = Dust.CloneDust(fire);
+                fire = CalamityUtils.SafeCloneDust(fire);
                 fire.velocity = Main.rand.NextVector2Circular(3f, 3f);
                 fire.velocity += Projectile.velocity * 0.6f;
             }
