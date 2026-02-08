@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using CalamityMod.Utilities;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -99,7 +100,7 @@ namespace CalamityMod.Projectiles.Rogue
                 prismaticEnergy.color = dustColor;
                 prismaticEnergy.noGravity = true;
 
-                prismaticEnergy = Dust.CloneDust(prismaticEnergy);
+                prismaticEnergy = Dust.BetterCloneDust(prismaticEnergy);
                 prismaticEnergy.scale *= 0.6f;
             }
         }
@@ -151,9 +152,9 @@ namespace CalamityMod.Projectiles.Rogue
                 explosionDust.scale = 1.1f;
                 explosionDust.fadeIn = Main.rand.NextFloat(1.4f, 2.4f);
 
-                Dust.CloneDust(explosionDust).velocity *= Main.rand.NextFloat(0.8f);
+                Dust.BetterCloneDust(explosionDust).velocity *= Main.rand.NextFloat(0.8f);
 
-                explosionDust = Dust.CloneDust(explosionDust);
+                explosionDust = Dust.BetterCloneDust(explosionDust);
                 explosionDust.scale /= 2f;
                 explosionDust.fadeIn /= 2f;
                 explosionDust.color = new Color(255, 255, 255, 255);
