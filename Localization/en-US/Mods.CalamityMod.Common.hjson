@@ -4,6 +4,7 @@ RogueCrit: "{0}% increased rogue critical strike chance"
 RogueDamageCrit: "{0}% increased rogue damage and critical strike chance"
 RogueVelocity: "{0}% increased rogue velocity"
 RogueStealth: +{0} maximum stealth
+CritDamageTootip: "{0}% critical strike damage"
 // Armor Set Bonus key states
 BothArmorSetBonusKeys: Press {0} or Double tap {1}
 NoArmorSetBonusKey: Press the Armor Set Bonus key

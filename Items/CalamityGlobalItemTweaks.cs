@@ -283,7 +283,7 @@ namespace CalamityMod.Items
                 { ItemID.Yelets, Do(DamageExact(53)) },
                 { ItemID.YellowPhaseblade, phaseblade },
                 { ItemID.YellowPhasesaber, phasesaber },
-                { ItemID.Zenith, Do(DamageExact(210)) },
+                { ItemID.Zenith, Do(DamageExact(200)) },
                 { ItemID.ZombieArm, Do(UseTurn, KnockbackExact(12f)) },
                 #endregion
 
