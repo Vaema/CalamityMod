@@ -374,7 +374,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
         #region Despawn
         // Despawn check
-        if (!BossRushEvent.BossRushActive)
+        if (!BossRushEvent.BossRushActive && AIState != BrainAIState.DeathAnimation)
         {
             bool despawn = (Target.dead || !Target.ZoneCrimson);
             if (despawn)
