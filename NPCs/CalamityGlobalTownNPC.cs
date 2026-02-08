@@ -1311,6 +1311,8 @@ namespace CalamityMod.NPCs
             if (type == NPCID.Painter)
             {
                 shop.AddWithCustomValue(ItemID.PainterPaintballGun, Item.buyPrice(gold: 15))
+                .Add(ItemType<CalamityCanvas2023>())
+                .Add(ItemType<CalamityCanvas2024>())
                 .Add(ItemType<AmidiasPainting>(), CalamityConditions.InSunken, Condition.NpcIsPresent(NPCType<SeaKing>()));
             }
 

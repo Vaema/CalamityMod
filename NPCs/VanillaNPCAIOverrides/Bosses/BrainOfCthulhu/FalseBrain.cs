@@ -48,10 +48,7 @@ public class FalseBrain : ModNPC, ILocalizedModType
 
         NPC.localAI[0] = Main.rand.Next(6);
 
-        if(BrainOfCthulhuSystem.IsBrainOfCthulhuTextureVanilla)
-            NPC.localAI[1] = 1 + Main.rand.NextFloat(-0.25f, 0.25f);
-        else
-            NPC.localAI[1] = 1 + (Main.rand.NextFloat(0.25f, 0.75f) * (Main.rand.NextBool() ? -1 : 1));
+        NPC.localAI[1] = 1 + Main.rand.NextFloat(-0.25f, 0.25f);
     }
     private int Variant => (int)NPC.localAI[0];
     private float Angle => NPC.ai[0];
@@ -182,33 +179,7 @@ public class FalseBrain : ModNPC, ILocalizedModType
         else
         {
             tex = TextureAssets.Npc[NPCID.BrainofCthulhu].Value;
-            frame = tex.Frame(1, 8, 0, 4 + (int)NPC.frameCounter);
-
-            switch(Variant)
-            {
-                case 0:
-                    scaleAddition = new(-0.125f, 0.25f);
-                    break;
-                case 1:
-                    scaleAddition = new(0.25f, -0.125f);
-                    break;
-                case 2:
-                    drawColor = Color.Lerp(drawColor, Color.Red.MultiplyRGB(drawColor), 0.5f);
-                    break;
-                case 3:
-                    drawColor = Color.Lerp(drawColor, Color.Orange.MultiplyRGB(drawColor), 0.5f);
-                    break;
-                case 4:
-                    drawColor = Color.Lerp(drawColor, Color.Yellow.MultiplyRGB(drawColor), 0.5f);
-                    break;
-                case 5:
-                    scaleAddition = new(0.1625f, 0.1625f);
-                    break;
-                case 6:
-                    scaleAddition = new(-0.1625f, -0.1625f);
-                    break;
-
-            }
+            frame = tex.Frame(1, 8, 0, (int)NPC.frameCounter);
         }
 
         if (SpawnTime > 0)

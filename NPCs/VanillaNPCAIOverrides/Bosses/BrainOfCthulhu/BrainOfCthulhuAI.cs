@@ -141,7 +141,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
     #region Idle Period
     internal static int ChaseTime => 160;
-    internal static int MaxChases => 3;
+    internal static int ChaseAmount => 2;
     internal static int IdleTeleportDuration => CalamityWorld.death ? 36 : 44;
     internal static float ChaseMinSpeed => 3;
     internal static float ChaseMaxSpeed => CalamityWorld.death ? 18 : 15;
@@ -1645,9 +1645,6 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
     private void Phase2Idle()
     {
-        //goes from 3 at full health to 1 at low health
-        int chases = (int)Math.Ceiling(MaxChases * (NPC.life / (float)NPC.lifeMax));
-
         NPC.rotation = NPC.velocity.X / 6f * MathHelper.Pi / 8f;
 
         if (Time == ChaseTime - 5)
@@ -1721,7 +1718,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                     AttackFlag = false;
 
                     #region Attack Selection
-                    if (AttackCounter >= chases) //Pick attack
+                    if (AttackCounter >= ChaseAmount) //Pick attack
                     {
                         NPC.rotation = 0;
                         ResetAttackValues();
