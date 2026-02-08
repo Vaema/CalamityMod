@@ -8,6 +8,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
+using System.Linq;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -182,20 +183,25 @@ namespace CalamityMod.Projectiles.Ranged
             int dustID = ModContent.DustType<SquashDust>();
             int numDust = 9;
             float triangleAngle = Main.rand.NextFloat(MathHelper.TwoPi);
-            for (int i = 0; i < numDust; ++i)
+            for (int j = 0; j < 3; ++j)
             {
-                float lerp = i / (float)(numDust - 1);
-                float speed = MathHelper.Lerp(0.2f, 3.6f, lerp);
-                Vector2 dustVel = Vector2.UnitX.RotatedBy(triangleAngle) * speed * 2;
-                Dust d = Dust.NewDustDirect(Projectile.Center, 0, 0, dustID);
-                d.position = Projectile.Center;
-                d.velocity = dustVel;
-                d.noGravity = true;
-                d.fadeIn = 1.5f;
-                d.scale *= Main.rand.NextFloat(1.4f, 1.9f) - lerp * 0.5f;
-                d.color = Color.Lerp(Color.Cyan, Color.Magenta, lerp);
-                Dust.CloneDust(d).velocity = dustVel.RotatedBy(MathHelper.Pi * 2f / 3f);
-                Dust.CloneDust(d).velocity = dustVel.RotatedBy(MathHelper.Pi * 4f / 3f);
+                float angleOffset = MathHelper.TwoPi / 3f * j;
+                float currentAngle = triangleAngle + angleOffset;
+
+                for (int i = 0; i < numDust; ++i)
+                {
+                    float lerp = i / (float)(numDust - 1);
+                    float speed = MathHelper.Lerp(0.2f, 3.6f, lerp);
+
+                    Vector2 dustVel = Vector2.UnitX.RotatedBy(currentAngle) * speed * 2f;
+                    Dust d = Dust.NewDustDirect(Projectile.Center, 0, 0, dustID);
+                    d.position = Projectile.Center;
+                    d.velocity = dustVel;
+                    d.noGravity = true;
+                    d.fadeIn = 1.5f;
+                    d.scale *= Main.rand.NextFloat(1.4f, 1.9f) - lerp * 0.5f;
+                    d.color = Color.Lerp(Color.Cyan, Color.Magenta, lerp);
+                }
             }
         }
 
