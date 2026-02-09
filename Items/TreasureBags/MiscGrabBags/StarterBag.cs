@@ -124,7 +124,7 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
 
             itemLoot.AddIf(getsOracleHeadphones, ModContent.ItemType<OracleHeadphones>());
 
-            // Mishiro dev vanity
+            // Big E dev vanity
             // Name specific: "Big E" in any form
             static bool getsLittleE(DropAttemptInfo info)
             {
@@ -134,7 +134,7 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
 
             itemLoot.AddIf(getsLittleE, ModContent.ItemType<LittleE>());
 
-            // Mishiro dev vanity
+            // Sagittariod dev vanity
             // Name specific: "Sagi" or "Sagittariod" (case insensitive
             static bool getsShimmeringRibbon(DropAttemptInfo info)
             {
