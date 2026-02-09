@@ -28,13 +28,13 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override void MeleeEffects(Player player, Rectangle hitbox)
         {
-            if (IsPlayerInContactWithWater(player))
+            if (player.Calamity().countsAsAnyWet)
                 Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.MagnetSphere);
         }
 
-        public override float UseSpeedMultiplier(Player player) => IsPlayerInContactWithWater(player) ? 1.66f : 1f;
+        public override float UseSpeedMultiplier(Player player) => player.Calamity().countsAsAnyWet ? 1.66f : 1f;
 
-        public override void ModifyWeaponKnockback(Player player, ref StatModifier knockback) => knockback.Base += IsPlayerInContactWithWater(player) ? 1.5f : 0f;
+        public override void ModifyWeaponKnockback(Player player, ref StatModifier knockback) => knockback.Base += player.Calamity().countsAsAnyWet ? 1.5f : 0f;
 
         public override void AddRecipes()
         {
@@ -42,12 +42,6 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient<Driftwood>(7).
                 AddTile(TileID.WorkBenches).
                 Register();
-        }
-
-        private static bool IsPlayerInContactWithWater(Player player)
-        {
-            bool surface = player.Center.Y < Main.worldSurface * 16.0;
-            return (Main.raining && surface) || player.dripping || (player.wet && !player.lavaWet && !player.honeyWet);
         }
     }
 }
