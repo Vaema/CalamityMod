@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -139,16 +140,20 @@ public class FalseBrain : ModNPC, ILocalizedModType
             fool.AddBuff(BuffID.Darkness, 900);
             fool.AddBuff(BuffID.Bleeding, 900);
             fool.AddBuff(BuffID.Confused, 60);
-            int timeToAdd = 600;
+            int timeToAdd = 300;
             int bbIndex = fool.buffType.ToList().IndexOf(ModContent.BuffType<BurningBlood>());
             if (bbIndex != -1)
             {
                 timeToAdd /= 2;
                 timeToAdd += fool.buffTime[bbIndex];
             }
+
+            if (timeToAdd > 3600)
+                timeToAdd = 3600;
+
             fool.AddBuff(ModContent.BuffType<BurningBlood>(), timeToAdd);
 
-            fool.Calamity().adrenaline = 0;
+            fool.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.BrainIllusion" + Main.rand.Next(1, 3 + 1)).ToNetworkText(fool.name)), 50, NPC.Center.X > fool.Center.X ? -1 : 1, cooldownCounter: 0, dodgeable: false, scalingArmorPenetration: 1f);
 
             NPC.dontTakeDamage = true;
         }
