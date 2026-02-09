@@ -460,17 +460,11 @@ EvilSmasher: {
 		'''
 		Channels a powerful hammer strike with the capability to crush all evil
 		Striking a tile with the hammer strike will cause an explosion and push you back
-		Striking enemies provides inflicts Smashed Evil on both the user and target
-		Smashed Evil strengthens players and weakens enemies
-		Charging strikes increases damage, explosion radius, and Smashed Evil duration
+		Striking enemies provides inflicts [cbuff:CalamityMod/SmashedEvil] on both the user and target
+		[cbuff:CalamityMod/SmashedEvil] strengthens players and weakens enemies
+		Charging strikes increases damage, explosion radius, and [cbuff:CalamityMod/SmashedEvil] duration
 		'EViL! sMaSH eVIl! SmAsh... ER!'
 		'''
-	AltarDialogue0: Bearer of the Holy Hammer...
-	AltarDialogue1: Desirest thou to taste true power?
-	AltarDialogue2: Your eyes shall be opened...
-	AltarDialogue3: Ye shall be even as the gods!
-	AltarDialogue4: Yield the hammer unto us upon the altar
-	AltarDialogue5: Surrender, and thou shalt surely recieve our might
 	//All damage and kill dialogue has the capitalization randomized when said
 	DamageDialogue0: smash!
 	DamageDialogue1: evil!

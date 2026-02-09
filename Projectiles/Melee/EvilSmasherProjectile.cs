@@ -47,7 +47,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.height = 66;
         }
 
-        public override void Spawn(IEntitySource source)
+        public override void Spawn()
         {
             angle = new Vector2(angle.X.DirectionalSign(), 0);
             var player = Main.player[Projectile.owner];

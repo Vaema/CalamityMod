@@ -68,6 +68,8 @@ using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using CalamityMod.Tiles.FurnitureAuric;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.UI;
+using CalamityMod.UI.DialogueDisplay;
+using CalamityMod.UI.DialogueDisplay.DisplayEffects;
 using CalamityMod.Utilities;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -1139,10 +1141,13 @@ namespace CalamityMod.CalPlayer
                     var tilePos = Player.Center.ToTileCoordinates() + new Point(h, j);
                     if (Main.tile[tilePos.X, tilePos.Y].TileType == TileID.DemonAltar)
                     {
-                        CombatText.NewText(new Rectangle(tilePos.X * 16, tilePos.Y * 16, 16, 16), WorldGen.crimson ? Color.Red : Color.Purple, CalamityUtils.GetTextValue("Items.Weapons.Melee.EvilSmasher.AltarDialogue" + DemonAltarDialogueCounter), true);
+                        string type = WorldGen.crimson ? "Mods.CalamityMod.EvilSmasher.CrimsonAltar" : "Mods.CalamityMod.EvilSmasher.DemonAltar";
+                        if (DialogueDisplaySystem.ContainsDialogueKey(type))
+                            DialogueDisplaySystem.RemoveDialogue(DialogueDisplaySystem.GetSlot(type));
+                        DialogueDisplaySystem.StartDialogueOnClient(type, new Vector2(tilePos.X * 16 + 16, tilePos.Y * 16), DemonAltarDialogueCounter, 180, false, new AltarText());
                         DemonAltarDialogueCounter++;
                         DemonAltarDialogueCooldown = 240;
-                        if (DemonAltarDialogueCounter >= 6)
+                        if (DemonAltarDialogueCounter >= 4)
                         {
                             DemonAltarDialogueCooldown = 1200;
                             DemonAltarDialogueCounter = 0;
