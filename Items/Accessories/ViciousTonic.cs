@@ -5,6 +5,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
+    [LegacyName("CrimsonFlask")]
     public class ViciousTonic : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
