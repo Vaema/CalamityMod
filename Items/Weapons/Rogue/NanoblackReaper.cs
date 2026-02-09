@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         internal static readonly Color TesselationParticleColor = new Color(79, 240, 168); // 4FF0A8
         internal static readonly Color ZeroPointLineColor       = new Color(24, 191, 160); // #1FBFA0
         internal static readonly Color ZeroPointImpactColor     = new Color(31, 223, 128, 96); // #1FDF80
-        internal static readonly Color LightspeedCarveColor     = new Color(36, 252, 212); // #24FCD4
+        internal static readonly Color PiercingStrikeColor      = new Color(36, 252, 212); // #24FCD4
 
         public bool ShowExtensionIndicator => false;
         public bool HasFlavorTooltip => true;
@@ -41,6 +41,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public static int FocusFlurryAttacks = 12;
         public static int PerfectLightspeedCarveFrames = 6;
         public static int ImperfectLightspeedCarveFrames = 6; // This frame window is immediately after the perfect window.
+        public static float LightspeedCarveKnockback = 7f;
 
         public static int ArmorPenetration = 30;
         // Armor pen declared on projectiles will be added to that of the parent projectile or, failing that, item that spawned it.

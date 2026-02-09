@@ -85,6 +85,11 @@ namespace CalamityMod.Projectiles.Rogue
             if (Projectile.timeLeft == InternalLifetime)
                 FrameOneEffects();
 
+            // Nanoblack Reaper enables its owner's mouse listener so that the mouse state is synced.
+            // This is necessary for its targeting algorithm.
+            if (Owner.whoAmI == Main.myPlayer)
+                Owner.Calamity().mouseWorldListener = true;
+
             InFlightVisualEffects();
             UpdateAIVariables();
 
@@ -251,10 +256,40 @@ namespace CalamityMod.Projectiles.Rogue
             if (lcs == LightspeedCarveState_Performed)
                 return;
 
-            else if (lcs == LightspeedCarveState_CanPerfect)
-                Main.NewText("Jackpot!");
-            else if (lcs == LightspeedCarveState_CanImperfect)
-                Main.NewText("Lightspeed Carve performed");
+            if (lcs != LightspeedCarveState_Initial && Projectile.owner == Main.myPlayer)
+            {
+                int projType = ModContent.ProjectileType<NanoblackLightspeedCarve>();
+                int damage = Projectile.damage * 6;
+                float kb = NanoblackReaper.LightspeedCarveKnockback;
+                var source = Projectile.GetSource_FromThis();
+
+                Vector2 pos = Projectile.Center;
+
+                // As is Nanoblack tradition, Lightspeed Carves prefer to target bosses whenever possible.
+                NPC target = Owner.ClampedMouseWorld().ClosestNPCAt(NanoblackLightspeedCarve.TargetingRange, bossPriority: true);
+
+                // If the first cursor-based targeting attempt fails, try again near the Tesselation itself.
+                if (target is null || !target.active)
+                    target = Projectile.Center.ClosestNPCAt(NanoblackLightspeedCarve.TargetingRange, bossPriority: true);
+
+                if (target is not null && target.active)
+                    pos = target.Center;
+
+                float fuzz = NanoblackLightspeedCarve.PlacementRandomness;
+                pos += Main.rand.NextVector2Circular(fuzz, fuzz);
+
+                if (lcs == LightspeedCarveState_CanPerfect)
+                {
+                    Projectile perf = Projectile.NewProjectileDirect(source, pos, Vector2.Zero, projType, damage, kb, Projectile.owner, ai0: 1f);
+                    var cgp = perf.Calamity();
+                    cgp.supercritHits = -1;
+                    cgp.bonusCritDamage += 1f;
+                }
+                else if (lcs == LightspeedCarveState_CanImperfect)
+                {
+                    Projectile.NewProjectile(source, pos, Vector2.Zero, projType, damage, kb, Projectile.owner, ai0: 0f);
+                }
+            }
 
             // In all cases, all further attempts are blocked permanently.
             LightspeedCarveState = LightspeedCarveState_Performed;

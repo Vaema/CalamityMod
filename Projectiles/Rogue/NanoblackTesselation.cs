@@ -189,7 +189,7 @@ namespace CalamityMod.Projectiles.Rogue
             // Stealth strike attack: Lightspeed carve
             if (stealthStrikeAttack)
             {
-                int carveID = ModContent.ProjectileType<NanoblackLightspeedCarve>();
+                int carveID = ModContent.ProjectileType<NanoblackPiercingStrike>();
                 int carveDamage = Projectile.damage; // same damage ratio as the tesselation itself
                 float carveKB = 0f;
 
