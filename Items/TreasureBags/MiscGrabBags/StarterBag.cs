@@ -123,6 +123,26 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
             }
 
             itemLoot.AddIf(getsOracleHeadphones, ModContent.ItemType<OracleHeadphones>());
+
+            // Mishiro dev vanity
+            // Name specific: "Big E" in any form
+            static bool getsLittleE(DropAttemptInfo info)
+            {
+                string playerName = info.player.name.ToLower();
+                return playerName is "big e" or "bige";
+            }
+
+            itemLoot.AddIf(getsLittleE, ModContent.ItemType<LittleE>());
+
+            // Mishiro dev vanity
+            // Name specific: "Sagi" or "Sagittariod" (case insensitive
+            static bool getsShimmeringRibbon(DropAttemptInfo info)
+            {
+                string playerName = info.player.name.ToLower();
+                return playerName is "sagi" or "sagittariod";
+            }
+
+            itemLoot.AddIf(getsShimmeringRibbon, ModContent.ItemType<ShimmeringRibbon>());
         }
     }
 }
