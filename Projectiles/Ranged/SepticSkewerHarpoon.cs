@@ -46,7 +46,7 @@ namespace CalamityMod.Projectiles.Ranged
         public bool strongEnemy = false;
         public bool normalHit = false;
 
-        public bool pullCheckValid => ((chosenTarget != null && chosenTarget.life < Projectile.damage * 28f && !calledToPull && chosenTarget.realLife == -1 && !normalHit) || Main.zenithWorld);
+        public bool pullCheckValid => ((chosenTarget != null && chosenTarget.life < Projectile.damage * 20f && !calledToPull && chosenTarget.realLife == -1 && !normalHit) || Main.zenithWorld);
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
