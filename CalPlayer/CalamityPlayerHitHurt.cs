@@ -859,16 +859,8 @@ namespace CalamityMod.CalPlayer
                                 Projectile.NewProjectile(source, Player.Center + Vector2.UnitX.RotatedBy(MathHelper.TwoPi * (i / 10f)), Vector2.Zero, ModContent.ProjectileType<MirrorBlast>(), mirrorDamage, 5, Main.myPlayer, 1);
                             }
                         }
-
-                        //Doze - This gives the same iframes as vanilla dodges, including accounting for cross necklace.
-                        int evolutionIFrames = Player.ComputeDodgeIFrames();
-                        Player.GiveUniversalIFrames(evolutionIFrames, true);
-
-                        modifiers.Cancel();
                         projTypeJustHitBy = proj.type;
-
-                        int cooldownDuration = (int)MathHelper.Lerp(BalancingConstants.EvolutionReflectCooldownMin, BalancingConstants.EvolutionReflectCooldownMax, cooldownDurationScalar);
-                        Player.AddCooldown(GlobalDodge.ID, cooldownDuration);
+                        procDodgeEffects = true; //This tells the game to dodge in the Consumable Dodge step, which procs all generic dodge effects at once.
 
                         return;
                     }
@@ -1446,11 +1438,59 @@ namespace CalamityMod.CalPlayer
 
         public override bool ConsumableDodge(Player.HurtInfo info)
         {
+            // Vanilla dodges are gated behind the global dodge cooldown
+            // The dodges will only trigger if the player has taken greater than or equal to 5% of their max HP in damage
+            double dodgeDamageGateValuePercent = 0.05;
+            int dodgeDamageGateValue = (int)Math.Round(Player.statLifeMax2 * dodgeDamageGateValuePercent);
+
+            // 14MAY2024: Ozzatron: Chalice of the Blood God now works with dodges
+            int actualDamageTaken = chaliceOfTheBloodGod ? chaliceHitOriginalDamage : info.Damage;
+            bool sufficientDamageForDodging = actualDamageTaken >= dodgeDamageGateValue;
+
+            //This is in a method here so the logic below can call it in multiple places
+            void GenericDodgeEffects() {
+                double maxCooldownDurationDamagePercent = 0.5;
+                int maxCooldownDurationDamageValue = (int)Math.Round(Player.statLifeMax2 * (maxCooldownDurationDamagePercent - dodgeDamageGateValuePercent));
+
+                // Just in case...
+                if (maxCooldownDurationDamageValue <= 0)
+                    maxCooldownDurationDamageValue = 1;
+
+                float cooldownDurationScalar = MathHelper.Clamp((actualDamageTaken - dodgeDamageGateValue) / (float)maxCooldownDurationDamageValue, 0f, 1f);
+                //Every dodge after the first reduces the dodge cooldown by 15%, stacking multiplicatively
+                float cooldownMultiplier = 1;
+                if (DodgeEffects.Count > 1)
+                    cooldownMultiplier = MathF.Pow(BalancingConstants.DodgeCooldownMultPerStack, DodgeEffects.Count - 1);
+
+                string? IconToUse = null;
+                foreach (var dodge in DodgeEffects)
+                {
+                    string? str = dodge(Player, info);
+                    if (str is not null)
+                        IconToUse = str;
+                }
+                //This is set after DodgeEffects in case some dodge wants to modify ConsumableDodgeCooldown, and so custom dodge icons for mirror line work
+                int cooldownDuration = (int)MathHelper.Lerp(ConsumableDodgeCooldown * cooldownMultiplier * BalancingConstants.DodgeCooldownDamageMult, ConsumableDodgeCooldown * cooldownMultiplier, cooldownDurationScalar);
+                if (IconToUse is null)
+                    Player.AddCooldown(GlobalDodge.ID, cooldownDuration);
+                else
+                    Player.AddCooldown(GlobalDodge.ID, cooldownDuration, true, IconToUse);
+            }
+
             //Dodge activation order is as follows:
+            // 1. Evolution dodge (which also procs Generals)
             // 2. Spectral Veil
             // 3. Evasion/Counter Scarf
-            // 1. Hallowed Armor
-            // 4. General Dodge
+            // 4. Hallowed Armor
+            // 5. General Dodge
+
+            if (procDodgeEffects)
+            {
+                DodgeEffects.Add((_, _) => null); //This is to account for whatever procced the dodge when counting dodge cooldown stacking
+                GenericDodgeEffects();
+                procDodgeEffects = false;
+                return true;
+            }
 
             if (spectralVeil && spectralVeilImmunity > 0)
             {
@@ -1467,44 +1507,10 @@ namespace CalamityMod.CalPlayer
                 storedShadowDodge = false;
                 return true;
             }
-            // Vanilla dodges are gated behind the global dodge cooldown
-            // The dodges will only trigger if the player has taken greater than or equal to 5% of their max HP in damage
-            double dodgeDamageGateValuePercent = 0.05;
-            int dodgeDamageGateValue = (int)Math.Round(Player.statLifeMax2 * dodgeDamageGateValuePercent);
-
-            // 14MAY2024: Ozzatron: Chalice of the Blood God now works with dodges
-            int actualDamageTaken = chaliceOfTheBloodGod ? chaliceHitOriginalDamage : info.Damage;
-            bool sufficientDamageForDodging = actualDamageTaken >= dodgeDamageGateValue;
-
+            
             if (!Player.HasCooldown(GlobalDodge.ID) && sufficientDamageForDodging && DodgeEffects.Count > 0)
             {
-                double maxCooldownDurationDamagePercent = 0.5;
-                int maxCooldownDurationDamageValue = (int)Math.Round(Player.statLifeMax2 * (maxCooldownDurationDamagePercent - dodgeDamageGateValuePercent));
-
-                // Just in case...
-                if (maxCooldownDurationDamageValue <= 0)
-                    maxCooldownDurationDamageValue = 1;
-
-                float cooldownDurationScalar = MathHelper.Clamp((actualDamageTaken - dodgeDamageGateValue) / (float)maxCooldownDurationDamageValue, 0f, 1f);
-                //Every dodge after the first reduces the dodge cooldown by 15%, stacking multiplicatively
-                float cooldownMultiplier = 1;
-                if (DodgeEffects.Count > 1)
-                    cooldownMultiplier = MathF.Pow(0.85f, DodgeEffects.Count - 1);
-                
-                string? IconToUse = null;
-                foreach (var dodge in DodgeEffects)
-                {
-                    string? str = dodge(Player, info);
-                    if (str is not null)
-                        IconToUse = str;
-                }
-                //This is set after DodgeEffects in case some dodge wants to modify ConsumableDodgeCooldown, and so custom dodge icons for mirror line work
-                int cooldownDuration = (int)MathHelper.Lerp(ConsumableDodgeCooldown * cooldownMultiplier * 0.2f, ConsumableDodgeCooldown * cooldownMultiplier, cooldownDurationScalar);
-                if (IconToUse is null)
-                    Player.AddCooldown(GlobalDodge.ID, cooldownDuration);
-                else
-                    Player.AddCooldown(GlobalDodge.ID, cooldownDuration,true, IconToUse);
-
+                GenericDodgeEffects();
                 return true;
             }
 

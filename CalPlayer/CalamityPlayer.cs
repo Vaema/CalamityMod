@@ -949,6 +949,7 @@ namespace CalamityMod.CalPlayer
         public bool seraphTracers = false;
         public bool frostFlare = false;
         public bool evolution = false;
+        public bool procDodgeEffects = true;
         public bool nanotech = false;
         public bool deadshotBrooch = false;
         public bool shadowMinions = false;
@@ -2505,7 +2506,7 @@ namespace CalamityMod.CalPlayer
             voidField = false;
             copyrightInfringementShield = false;
 
-            ConsumableDodgeCooldown = BalancingConstants.BeltDodgeCooldownMax;
+            ConsumableDodgeCooldown = BalancingConstants.DodgeCooldownMax;
             DodgeEffects = [];
 
         daedalusReflect = false;
