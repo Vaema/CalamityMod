@@ -2179,6 +2179,11 @@ SharkyPlush: {
 	Tooltip: "[c/696969:'Look out, for the force without form...']"
 }
 
+ShimmeringRibbon: {
+	DisplayName: Shimmering Ribbon
+	Tooltip: "'We are born colorless. It's the people we meet who give us color.'"
+}
+
 TheComb: {
 	DisplayName: The Comb
 	Tooltip:
