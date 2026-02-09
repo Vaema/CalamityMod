@@ -80,7 +80,7 @@ namespace CalamityMod.Items.TreasureBags
 
             // Vanity
             itemLoot.Add(ModContent.ItemType<OldDukeMask>(), 7);
-            itemLoot.Add(ModContent.ItemType<DeepSeaAnchor>(), 10);
+            itemLoot.Add(ModContent.ItemType<EldenDiorama>(), 10);
             itemLoot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
         }
     }
