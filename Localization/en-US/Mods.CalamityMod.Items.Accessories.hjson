@@ -2150,6 +2150,11 @@ HapuFruit: {
 	Tooltip: "'A fruit that calms your nerves (may have unintended side effects)'"
 }
 
+LittleE: {
+	DisplayName: Little E
+	Tooltip: "'That's a little version of me, {0}. I want you to have it.'"
+}
+
 LucisSight: {
 	DisplayName: Luci's Sight
 	Tooltip: "'Fashionable glasses? In Earthia's current economy?!'"
