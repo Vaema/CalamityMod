@@ -3,18 +3,8 @@ AbyssalWarhammer: {
 	Tooltip: ""
 }
 
-AcidwoodAxe: {
-	DisplayName: Acidwood Axe
-	Tooltip: ""
-}
-
 AcidwoodHammer: {
 	DisplayName: Acidwood Hammer
-	Tooltip: ""
-}
-
-AcidwoodPickaxe: {
-	DisplayName: Acidwood Pickaxe
 	Tooltip: ""
 }
 
