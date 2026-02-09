@@ -37,16 +37,16 @@ namespace CalamityMod.Tiles.Ores
             Main.tileShine2[Type] = false;
 
             TileID.Sets.ChecksForMerge[Type] = true;
-            DustType = 33;
+            DustType = DustID.Water;
             AddMapEntry(new Color(145, 255, 255), CreateMapEntryName());
             MinPick = 65;
             HitSound = MineSound;
             Main.tileSpelunker[Type] = true;
 
-            this.RegisterUniversalMerge(TileID.Cloud, "CalamityMod/Tiles/Merges/CloudMerge");
-            this.RegisterUniversalMerge(TileID.RainCloud, "CalamityMod/Tiles/Merges/RainCloudMerge");
-            this.RegisterUniversalMerge(TileID.SnowCloud, "CalamityMod/Tiles/Merges/SnowCloudMerge");
-            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
+            this.RegisterBlendMergeWith(TileID.Cloud);
+            this.RegisterBlendMergeWith(TileID.RainCloud);
+            this.RegisterBlendMergeWith(TileID.SnowCloud);
+            this.RegisterBlendMergeWith(TileID.Dirt);
         }
         public override void PostSetDefaults()
         {

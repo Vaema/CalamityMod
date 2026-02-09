@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
+using System.Collections.Generic;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Packets.Entities;
@@ -12,7 +12,6 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.IO;
 using static CalamityMod.CalamityUtils;
 
 namespace CalamityMod.Projectiles.Melee
@@ -46,6 +45,26 @@ namespace CalamityMod.Projectiles.Melee
         public int bounces = 0;
         public Vector2 tipPosition = Vector2.Zero;
         public bool fadingOut => Projectile.timeLeft <= (Lifetime - fadeOutTime);
+        private bool visualChargeInitialized = false;
+        private int visualChargeTimer = 0;
+        private int visualChargeTime = 0;
+
+        private Vector2 GetAimDirection()
+        {
+            if (Main.myPlayer == Projectile.owner)
+            {
+                Vector2 toMouse = (Main.MouseWorld - Owner.Center).SafeNormalize(Vector2.UnitX * Owner.direction);
+                float aimAngle = toMouse.ToRotation();
+                if (Math.Abs(MathHelper.WrapAngle(aimAngle - Projectile.localAI[1])) > 0.02f)
+                {
+                    Projectile.localAI[1] = aimAngle;
+                    if (Projectile.timeLeft % 6 == 0)
+                        Projectile.netUpdate = true;
+                }
+                return toMouse;
+            }
+            return Projectile.localAI[1].ToRotationVector2();
+        }
         public override void SetDefaults()
         {
             Projectile.width = 35;
@@ -60,6 +79,16 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.noEnchantmentVisuals = true;
         }
 
+        public override void OnSpawn(Terraria.DataStructures.IEntitySource source)
+        {
+            if (Main.myPlayer == Projectile.owner)
+            {
+                Vector2 toMouse = (Owner.Calamity().mouseWorld - Owner.Center).SafeNormalize(Vector2.UnitX * Owner.direction);
+                Projectile.localAI[1] = toMouse.ToRotation();
+                Projectile.netUpdate = true;
+            }
+        }
+
         public override bool ShouldUpdatePosition()
         {
             return (ChargeProgress >= 1 && !stuckInGround && !stuckInTarget);
@@ -68,10 +97,25 @@ namespace CalamityMod.Projectiles.Melee
         //Swing animation keys
         public CurveSegment pullback = new CurveSegment(EasingType.PolyOut, 0f, 0f, MathHelper.PiOver4 * -1.2f, 2);
         public CurveSegment throwout = new CurveSegment(EasingType.PolyOut, 0.7f, MathHelper.PiOver4 * -1.2f, MathHelper.PiOver4 * 1.2f + MathHelper.PiOver2, 3);
-        internal float ArmAnticipationMovement() => PiecewiseAnimation(ChargeProgress, new CurveSegment[] { pullback, throwout });
+        internal float ArmAnticipationMovement(float progress) => PiecewiseAnimation(progress, new CurveSegment[] { pullback, throwout });
 
         public override void AI()
         {
+            bool isOwner = Main.myPlayer == Projectile.owner;
+            if (!visualChargeInitialized && !isOwner)
+            {
+                int fallbackCharge = (int)MathHelper.Clamp((Owner.HeldItem.useTime / 2.8f), 1, 100);
+                visualChargeTime = (int)(Projectile.localAI[2] > 0f ? Projectile.localAI[2] : fallbackCharge);
+                visualChargeTimer = visualChargeTime;
+                visualChargeInitialized = true;
+            }
+
+            if (!thrown && ChargeProgress >= 1f)
+                thrown = true;
+
+            if (thrown && !stuckInGround && !stuckInTarget && !exitedTarget)
+                Projectile.extraUpdates = 3;
+
             float rate = (Main.GlobalTimeWrappedHourly + time * 3) * 2;
             List<Color> eColors = new List<Color>()
             {
@@ -89,10 +133,10 @@ namespace CalamityMod.Projectiles.Melee
             Vector3 Light = Color.MediumOrchid.ToVector3();
             Lighting.AddLight(Projectile.Center, Light * 0.85f);
 
-            if (Projectile.timeLeft == Lifetime)
+            if (Projectile.timeLeft == Lifetime && Main.myPlayer == Projectile.owner)
             {
                 // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
-                Vector2 toMouse = (Main.MouseWorld - Owner.Center).SafeNormalize(Vector2.UnitX * Owner.direction);
+                Vector2 toMouse = GetAimDirection();
                 Projectile.velocity = toMouse * 14;
                 Projectile.Center = Owner.MountedCenter + toMouse * 30f;
                 Projectile.spriteDirection = Projectile.direction;
@@ -131,7 +175,7 @@ namespace CalamityMod.Projectiles.Melee
                         Projectile.velocity *= 0.01f;
                         stabbedTarget.Calamity().demonSwordImpales--;
                         stuckInTarget = false;
-                        fadeOutEffect();
+                        FadeOutEffect();
                     }
 
                     Projectile.Center = stabbedTarget.Center + impalePos;
@@ -157,7 +201,7 @@ namespace CalamityMod.Projectiles.Melee
                 }
 
                 if (fadingOut)
-                    fadeOutEffect();
+                    FadeOutEffect();
             }
             if (!fadingOut && !stuckInTarget && !stuckInGround && ChargeProgress >= 1)
             {
@@ -198,9 +242,16 @@ namespace CalamityMod.Projectiles.Melee
             }
 
             //Anticipation animation. Make the player look like they're holding the item
-            if (ChargeProgress < 1)
+            float chargeProgress = ChargeProgress;
+            bool canVisualCharge = !isOwner && Projectile.velocity.LengthSquared() < 0.01f && visualChargeTimer > 0;
+            if (canVisualCharge)
             {
-                throwAnimation();
+                chargeProgress = 1f - (visualChargeTimer / (float)visualChargeTime);
+                visualChargeTimer--;
+            }
+            if (chargeProgress < 1f)
+            {
+                ThrowAnimation(chargeProgress);
                 if (ChargeProgress >= 0.6f && time == 0)
                 {
                     SoundStyle swing = new("CalamityMod/Sounds/Item/DemonSwordSwing", 2);
@@ -212,7 +263,8 @@ namespace CalamityMod.Projectiles.Melee
             else
                 time++;
         }
-        public void fadeOutEffect()
+
+        public void FadeOutEffect()
         {
             Projectile.tileCollide = false;
             if (Projectile.timeLeft > Lifetime - fadeOutTime)
@@ -231,11 +283,12 @@ namespace CalamityMod.Projectiles.Melee
                 dust.velocity += Projectile.velocity;
             }
         }
-        public void throwAnimation()
+        public void ThrowAnimation(float chargeProgress)
         {
-            Owner.ChangeDir(MathF.Sign(Main.MouseWorld.X - Owner.Center.X));
+            Vector2 aimDirection = GetAimDirection();
+            Owner.ChangeDir(MathF.Sign(aimDirection.X));
 
-            float armRotation = ArmAnticipationMovement() * Owner.direction;
+            float armRotation = ArmAnticipationMovement(chargeProgress) * Owner.direction;
 
             Owner.heldProj = Projectile.whoAmI;
             Projectile.spriteDirection = Owner.direction;
@@ -364,25 +417,43 @@ namespace CalamityMod.Projectiles.Melee
 
             return false;
         }
-        /*
         public override void SendExtraAI(BinaryWriter writer)
         {
-            writer.Write(Projectile.timeLeft);
-            writer.Write(Projectile.rotation);
-            writer.Write(Projectile.localAI[2]);
-            writer.Write(Projectile.localAI[0]);
+            byte state = 0;
+            if (thrown)
+                state |= 1;
+            if (stuckInTarget)
+                state |= 2;
+            if (exitedTarget)
+                state |= 4;
+            if (stuckInGround)
+                state |= 8;
 
-            writer.WriteFlags(stuckInTarget, thrown);
+            writer.Write(state);
+            writer.Write(Projectile.rotation);
+            writer.Write(Projectile.localAI[0]);
+            writer.Write(Projectile.localAI[1]);
+            writer.Write(Projectile.localAI[2]);
+            writer.Write(impalePos.X);
+            writer.Write(impalePos.Y);
+            writer.Write(stuckTimer);
+            writer.Write((short)bounces);
         }
         public override void ReceiveExtraAI(BinaryReader reader)
         {
-            Projectile.timeLeft = reader.Read();
-            Projectile.rotation = reader.ReadSingle();
-            Projectile.localAI[2] = reader.ReadSingle();
-            Projectile.localAI[0] = reader.ReadSingle();
+            byte state = reader.ReadByte();
+            thrown = (state & 1) != 0;
+            stuckInTarget = (state & 2) != 0;
+            exitedTarget = (state & 4) != 0;
+            stuckInGround = (state & 8) != 0;
 
-            reader.ReadFlags(out stuckInTarget, out thrown);
+            Projectile.rotation = reader.ReadSingle();
+            Projectile.localAI[0] = reader.ReadSingle();
+            Projectile.localAI[1] = reader.ReadSingle();
+            Projectile.localAI[2] = reader.ReadSingle();
+            impalePos = new Vector2(reader.ReadSingle(), reader.ReadSingle());
+            stuckTimer = reader.ReadInt32();
+            bounces = reader.ReadInt16();
         }
-        */
     }
 }

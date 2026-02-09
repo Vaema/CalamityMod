@@ -115,18 +115,18 @@ namespace CalamityMod.Projectiles.Melee
             return new Color(150, Main.DiscoG, 255, 127);
         }*/
 
-        // Only inflict Voidfrost if not spawned from Icebreaker
+        // Only inflict Nightwither if not spawned from Icebreaker
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (Projectile.ai[2] != 1f)
-                target.AddBuff(ModContent.BuffType<Voidfrost>(), 420);
+                target.AddBuff(ModContent.BuffType<Nightwither>(), 420);
             Projectile.direction = Main.player[Projectile.owner].direction;
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             if (Projectile.ai[2] != 1f)
-                target.AddBuff(ModContent.BuffType<Voidfrost>(), 420);
+                target.AddBuff(ModContent.BuffType<Nightwither>(), 420);
             Projectile.direction = Main.player[Projectile.owner].direction;
         }
     }

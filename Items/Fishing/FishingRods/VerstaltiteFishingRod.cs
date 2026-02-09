@@ -29,32 +29,7 @@ namespace CalamityMod.Items.Fishing.FishingRods
             Item.shoot = ModContent.ProjectileType<VerstaltiteBobber>();
             Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
-            Item.accessory = true;
         }
-
-        public override bool AllowPrefix(int pre)
-        {
-            if (pre == 0)
-                return true;
-            return false;
-        }
-
-        public override bool CanReforge()
-        {
-            return false;
-        }
-        public override void HoldItem(Player player)
-        {
-            player.accFishingLine = true;
-            if (player.Calamity().SelectedFishingMinigame == CalamityPlayer.FishingMinigames.None)
-                player.Calamity().SelectedFishingMinigame = CalamityPlayer.FishingMinigames.VerstaltiteFishingRod;
-        }
-
-        public override void UpdateEquip(Player player)
-        {
-            player.Calamity().SelectedFishingMinigame = CalamityPlayer.FishingMinigames.VerstaltiteFishingRod;
-        }
-
         public override void ModifyFishingLine(Projectile bobber, ref Vector2 lineOriginOffset, ref Color lineColor)
         {
             lineOriginOffset = new Vector2(43f, -36f);

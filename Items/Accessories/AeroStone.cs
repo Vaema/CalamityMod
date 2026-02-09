@@ -4,6 +4,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -11,6 +12,9 @@ namespace CalamityMod.Items.Accessories
     public class AeroStone : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static int FlightTimeBoostFlat = 50;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(FlightTimeBoostFlat.FramesToSeconds());
 
         public override void SetStaticDefaults()
         {
@@ -30,7 +34,7 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.Calamity().aeroStone = true;
-            player.wingTimeMax += 50;
+            player.wingTimeMax += FlightTimeBoostFlat;
         }
 
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)

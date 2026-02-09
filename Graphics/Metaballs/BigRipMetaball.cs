@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -25,7 +26,6 @@ namespace CalamityMod.Graphics.Metaballs
             public Vector2 Scale = Vector2.One;
 
             public float SizeScaling = 0.85f;
-            bool firstFrame = true;
             public int CurrentFrame = 0;
             public int MaxFrames = 1;
 
@@ -45,7 +45,6 @@ namespace CalamityMod.Graphics.Metaballs
                 Velocity *= 0.96f;
                 if (ShrinkDelay < TimeAlive || (TimeAlive > 1 && SizeScaling <= 0))
                     Scale.X *= SizeScaling;
-                firstFrame = false;
             }
         }
 
@@ -77,7 +76,7 @@ namespace CalamityMod.Graphics.Metaballs
             // Load the layer asset wrapper.
             LayerAsset = ModContent.Request<Texture2D>($"CalamityMod/Graphics/Metaballs/BigRipLayer", AssetRequestMode.ImmediateLoad);
         }
-        public override MetaballDrawLayer DrawContext => MetaballDrawLayer.BeforeProjectiles;
+        public override GeneralDrawLayer DrawLayer => GeneralDrawLayer.BeforeProjectiles;
 
         public override Color EdgeColor => new Color(239, 111, 85) * 0.5f;
 

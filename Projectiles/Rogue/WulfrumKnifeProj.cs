@@ -25,7 +25,7 @@ namespace CalamityMod.Projectiles.Rogue
             ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
-        public static int Lifetime = 1200;
+        public static int Lifetime = 1440;
         public float LifetimeCompletion => MathHelper.Clamp((Lifetime - Projectile.timeLeft) / (float)Lifetime, 0f, 1f);
         public float StealthEffectOpacity => MathHelper.Clamp(1 - LifetimeCompletion, 0f, 1f);
 
@@ -68,7 +68,9 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.tileCollide = false;
                 if (!Main.npc[(int)StuckEnemyID-1].active)
                 {
-                    Projectile.Kill();
+                    StuckEnemyID = 0;
+                    Projectile.velocity = -Vector2.UnitY.RotatedByRandom(0.25f) * Main.rand.NextFloat(0, 1f);
+                    Projectile.tileCollide = true;
                     return;
                 }
                 Projectile.Center = Main.npc[(int)StuckEnemyID-1].Center + Vector2.UnitX.RotatedBy(StuckEnemyRotation) * StuckEnemyDistance;
@@ -83,12 +85,16 @@ namespace CalamityMod.Projectiles.Rogue
                 {
                     Vector2 dustCenter = Projectile.Center + Main.rand.NextVector2Circular(4f, 4f);
 
-                    Dust chust = Dust.NewDustPerfect(dustCenter, 15, -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.1f), Scale: Main.rand.NextFloat(1.2f, 1.8f));
+                    Dust chust = Dust.NewDustPerfect(dustCenter, DustID.MagicMirror, -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.1f), Scale: Main.rand.NextFloat(1.2f, 1.8f));
                     chust.noGravity = true;
                 }
                 if (Projectile.Distance(player.Center) < 16)
                 {
-                    player.Calamity().rogueStealth += player.Calamity().rogueStealthMax * 0.067f;
+                    //Gives 1 second of armorless stealth usage
+                    player.Calamity().temporaryStealthTimer = 60;
+                    if (player.Calamity().rogueStealthMax < 0.1f)
+                        player.Calamity().rogueStealthMax = 0.1f;
+                    player.Calamity().rogueStealth += player.Calamity().rogueStealthMax * 0.084f;
                     Projectile.Kill();
                 }
                 return;
@@ -106,7 +112,7 @@ namespace CalamityMod.Projectiles.Rogue
                 {
                     Vector2 dustCenter = Projectile.Center + Projectile.velocity.RotatedBy(MathHelper.PiOver2).SafeNormalize(Vector2.Zero) * Main.rand.NextFloat(-3f, 3f);
 
-                    Dust chust = Dust.NewDustPerfect(dustCenter, 15, -Projectile.velocity * Main.rand.NextFloat(0.6f, 1.5f), Scale: Main.rand.NextFloat(1f, 1.4f));
+                    Dust chust = Dust.NewDustPerfect(dustCenter, DustID.MagicMirror, -Projectile.velocity * Main.rand.NextFloat(0.6f, 1.5f), Scale: Main.rand.NextFloat(1f, 1.4f));
                     chust.noGravity = true;
 
                     if (!Main.rand.NextBool(5))
@@ -130,7 +136,7 @@ namespace CalamityMod.Projectiles.Rogue
                 {
                     Vector2 dustCenter = Projectile.Center + Projectile.velocity.RotatedBy(MathHelper.PiOver2).SafeNormalize(Vector2.Zero) * Main.rand.NextFloat(-3f, 3f);
 
-                    Dust chust = Dust.NewDustPerfect(dustCenter, 15, -Projectile.velocity * Main.rand.NextFloat(0.6f, 1.5f), Scale: Main.rand.NextFloat(1f, 1.4f));
+                    Dust chust = Dust.NewDustPerfect(dustCenter, DustID.MagicMirror, -Projectile.velocity * Main.rand.NextFloat(0.6f, 1.5f), Scale: Main.rand.NextFloat(1f, 1.4f));
                     chust.noGravity = true;
                     chust.noLightEmittence = true;
                 }
@@ -153,13 +159,13 @@ namespace CalamityMod.Projectiles.Rogue
             return base.OnTileCollide(oldVelocity);
         }
 
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float fadeOpacity = (float)Math.Pow(1 - completionRatio, 2) * StealthEffectOpacity;
             return Color.GreenYellow.MultiplyRGB(PrimColorMult) * fadeOpacity;
         }
 
-        internal float WidthFunction(float completionRatio)
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos)
         {
             return 9.4f;
         }
@@ -179,7 +185,7 @@ namespace CalamityMod.Projectiles.Rogue
                 CalamityUtils.DrawChromaticAberration(Vector2.UnitX, 1f, delegate (Vector2 offset, Color colorMod)
                 {
                     PrimColorMult = colorMod;
-                    PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size + offset, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 30);
+                    PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_,_) => Projectile.Size + offset, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 30);
                 });
 
 

@@ -31,7 +31,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void KillHoldoutLogic()
         {
-            if (Owner.CantUseHoldout(false) || HeldItem.type != Owner.ActiveItem().type)
+            if (Owner.CantUseHoldout(false) || HeldItem.type != Owner.HeldItem.type)
                 Projectile.Kill();
         }
 
@@ -159,7 +159,7 @@ namespace CalamityMod.Projectiles.Ranged
             for (int i = 0; i < 10; i++)
             {
                 Vector2 drawOffset = (MathHelper.TwoPi * i / 10f).ToRotationVector2() * (3f + sine * 0.3f);
-                Main.EntitySpriteDraw(texture, drawPosition + drawOffset * chargeScale, null, Color.OrangeRed with { A = 0 } * Math.Min(chargeScale, 1) * 0.4f, drawRotation, rotationPoint, Projectile.scale, flipSprite, 0);
+                Main.EntitySpriteDraw(texture, drawPosition + drawOffset * chargeScale, null, Color.OrangeRed with { A = 0 } * Math.Min(chargeScale, 1) * 0.4f, drawRotation + (Owner.gravDir == -1 ? MathHelper.Pi : 0), rotationPoint, Projectile.scale, flipSprite, 0);
             }
 
             Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(lightColor), drawRotation, rotationPoint, Projectile.scale * Owner.gravDir, flipSprite);
@@ -168,8 +168,23 @@ namespace CalamityMod.Projectiles.Ranged
 
             Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(lightColor), drawRotation, rotationPoint, Projectile.scale * Owner.gravDir, flipSprite);
 
+            // Handle glow copies
+            SpriteEffects flipSpriteGlow = SpriteEffects.None;
+            if (Owner.gravDir == -1f)
+            {
+                if (Projectile.spriteDirection == -1)
+                    flipSpriteGlow = SpriteEffects.FlipVertically;
+            }
+            else
+            {
+                rotationPoint.Y = texture.Height - rotationPoint.Y;
+
+                if (Projectile.spriteDirection == 1)
+                    flipSpriteGlow = SpriteEffects.FlipVertically;
+            }
+
             for (int i = 0; i < 3; i++)
-                Main.EntitySpriteDraw(tex2.Value, GunTipPosition - Main.screenPosition, null, Color.Lerp(FullyCharged ? Color.OrangeRed : Color.Orange, Color.White, i * 0.25f) with { A = 0 } * 0.8f, Main.rand.NextFloat(-5, 5), tex2.Size() * 0.5f, new Vector2(1.35f, 1f) * Projectile.scale * chargeScale * (1 - 0.27f * i) * 0.3f * ((chargeScale >= 1 && CurrentChargingFrames <= OpalStriker.FullChargeFrames + 3) ? 1.75f : FullyCharged ? 1.4f : 1), SpriteEffects.None, 0);
+                Main.EntitySpriteDraw(tex2.Value, GunTipPosition - Main.screenPosition, null, Color.Lerp(FullyCharged ? Color.OrangeRed : Color.Orange, Color.White, i * 0.25f) with { A = 0 } * 0.8f, Main.rand.NextFloat(-5, 5), tex2.Size() * 0.5f, new Vector2(1.35f, 1f) * Projectile.scale * chargeScale * (1 - 0.27f * i) * 0.3f * ((chargeScale >= 1 && CurrentChargingFrames <= OpalStriker.FullChargeFrames + 3) ? 1.75f : FullyCharged ? 1.4f : 1), flipSpriteGlow, 0);
 
             return false;
         }

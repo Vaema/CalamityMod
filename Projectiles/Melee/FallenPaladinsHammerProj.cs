@@ -2,6 +2,7 @@
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Utilities;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -115,7 +116,7 @@ namespace CalamityMod.Projectiles.Melee
                             SoundEngine.PlaySound(RedHamSound, Projectile.Center);
                             for (int i = 0; i < 20; i++)
                             {
-                                Dust fire = Dust.NewDustPerfect(Projectile.Center, 90);
+                                Dust fire = Dust.NewDustPerfect(Projectile.Center, DustID.GemRuby);
                                 fire.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedByRandom(0.8f) * new Vector2(4f, 1.25f) * Main.rand.NextFloat(0.9f, 1f);
                                 fire.velocity = fire.velocity.RotatedBy(Projectile.rotation - MathHelper.PiOver2);
                                 fire.velocity += Projectile.velocity * (EmpoweredHammer * 0.1f);
@@ -123,7 +124,7 @@ namespace CalamityMod.Projectiles.Melee
                                 fire.noGravity = true;
                                 fire.scale = Main.rand.NextFloat(0.7f, 1.2f) + EmpoweredHammer * 0.4f;
 
-                                fire = Dust.CloneDust(fire);
+                                fire = Dust.BetterCloneDust(fire);
                                 fire.velocity = Main.rand.NextVector2Circular(3f, 3f);
                                 fire.velocity += Projectile.velocity * (EmpoweredHammer * 0.1f);
                             }
@@ -138,7 +139,7 @@ namespace CalamityMod.Projectiles.Melee
                             SoundEngine.PlaySound(SoundID.DD2_BetsysWrathShot with { Volume = 0.4f }, Projectile.Center);
                             for (int i = 0; i < 20; i++)
                             {
-                                Dust fire = Dust.NewDustPerfect(Projectile.Center, 90);
+                                Dust fire = Dust.NewDustPerfect(Projectile.Center, DustID.GemRuby);
                                 fire.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedByRandom(0.8f) * new Vector2(4f, 1.25f) * Main.rand.NextFloat(0.9f, 1f);
                                 fire.velocity = fire.velocity.RotatedBy(Projectile.rotation - MathHelper.PiOver2);
                                 fire.velocity += Projectile.velocity * (EmpoweredHammer * 0.1f);
@@ -146,7 +147,7 @@ namespace CalamityMod.Projectiles.Melee
                                 fire.noGravity = true;
                                 fire.scale = Main.rand.NextFloat(0.7f, 1.2f) + EmpoweredHammer * 0.4f;
 
-                                fire = Dust.CloneDust(fire);
+                                fire = Dust.BetterCloneDust(fire);
                                 fire.velocity = Main.rand.NextVector2Circular(3f, 3f);
                                 fire.velocity += Projectile.velocity * (EmpoweredHammer * 0.1f);
                             }
@@ -162,7 +163,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Vector2 offset = new Vector2(12, 0).RotatedByRandom(MathHelper.ToRadians(360f));
                 Vector2 velOffset = new Vector2(4, 0).RotatedBy(offset.ToRotation());
-                Dust dust = Dust.NewDustPerfect(new Vector2(Projectile.Center.X, Projectile.Center.Y) + offset, 267, new Vector2(Projectile.velocity.X * 0.2f + velOffset.X, Projectile.velocity.Y * 0.2f + velOffset.Y), 0, default, 0.7f);
+                Dust dust = Dust.NewDustPerfect(new Vector2(Projectile.Center.X, Projectile.Center.Y) + offset, DustID.RainbowMk2, new Vector2(Projectile.velocity.X * 0.2f + velOffset.X, Projectile.velocity.Y * 0.2f + velOffset.Y), 0, default, 0.7f);
                 dust.noGravity = true;
                 dust.color = Color.DarkRed;
             }

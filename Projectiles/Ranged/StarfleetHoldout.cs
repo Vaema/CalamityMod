@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
@@ -27,13 +28,14 @@ namespace CalamityMod.Projectiles.Ranged
 
         public int time = 0;
         public int lastUseTime = 0;
-        public int perfectLeniancy = 2;
-        public int goodLeniancy => perfectLeniancy + 6;
+        public static int perfectLeniancy = 2;
+        public static int goodLeniancy = perfectLeniancy + 6;
+        public static int starburstPerfectTime = 23;
         public ref float shootingCooldown => ref Projectile.ai[0];
         public ref float starburstTimer => ref Projectile.ai[1];
         public int extendedCooldown => (int)(lastUseTime * 1.2f);
         public int naildriverCooldown => (int)(lastUseTime * 1.5f);
-        public int starburstPerfectTime = 23;
+        
         public float recoilIntensity = 0;
         public int recoilTimerMax = 62;
         public Vector2 recoilDirection;
@@ -54,6 +56,17 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.tileCollide = false;
+        }
+        public override void SendExtraAIHoldout(BinaryWriter writer)
+        {
+            writer.Write(lastUseTime);
+            writer.Write(Projectile.spriteDirection);
+        }
+
+        public override void ReceiveExtraAIHoldout(BinaryReader reader)
+        {
+            lastUseTime = reader.ReadInt32();
+            Projectile.spriteDirection = reader.ReadInt32();
         }
         public override void HoldoutAI()
         {
@@ -78,16 +91,16 @@ namespace CalamityMod.Projectiles.Ranged
 
             glowIntensity = MathHelper.Lerp(glowIntensity, (float)Math.Pow(Utils.GetLerpValue(recoilTimerMax, 0, shootingCooldown, true), 5), 0.2f);
             
-            if ((Owner.HeldItem.type != ItemType<Starfleet>() && doingNothing) || Owner.dead)
+            if ((Owner.HeldItem.type != ItemType<Starfleet>() && doingNothing) || (doingNothing && (Main.mapFullscreen || Owner.mouseInterface)) || Owner.dead)
             {
                 Projectile.Kill();
                 return;
             }
             bool hasAmmo = Owner.PickAmmo(HeldItem, out _, out _, out _, out _, out _, true);
-            bool leftShootChecks = (Main.mouseLeft && !Main.mapFullscreen && !Owner.mouseInterface && shootingCooldown == 0) && hasAmmo;
-            bool rightShootChecks = Owner.Calamity().mouseRight && !Main.mapFullscreen && !Owner.mouseInterface && starburstCooldown == 0 && starburstTimer == 0;
+            bool leftShootChecks = Owner.whoAmI == Main.myPlayer && (Main.mouseLeft && !Main.mapFullscreen && !Owner.mouseInterface && shootingCooldown == 0) && hasAmmo;
+            bool rightShootChecks = Owner.whoAmI == Main.myPlayer && (Owner.Calamity().mouseRight && !Main.mapFullscreen && !Owner.mouseInterface && starburstCooldown == 0 && starburstTimer == 0);
 
-            if (Main.mouseLeft && !hasAmmo && OffsetLengthFromArm >= 24.5f)
+            if (Owner.whoAmI == Main.myPlayer && Main.mouseLeft && !hasAmmo && OffsetLengthFromArm >= 24.5f)
             {
                 OffsetLengthFromArm -= 8;
                 SoundStyle click = new("CalamityMod/Sounds/Item/DudFire");
@@ -97,6 +110,7 @@ namespace CalamityMod.Projectiles.Ranged
                 FireShotgun();
             if (rightShootChecks)
             {
+                Projectile.ForceNetUpdate();
                 SoundStyle test = new("CalamityMod/Sounds/Item/StarfleetStarburst");
                 SoundEngine.PlaySound(test with { Volume = 1f, Pitch = 0f }, Projectile.Center);
                 starburstTimer++;
@@ -128,7 +142,8 @@ namespace CalamityMod.Projectiles.Ranged
         {
             float slowdown = (float)Math.Pow(Utils.GetLerpValue(recoilTimerMax / 2, recoilTimerMax, Math.Max(shootingCooldown, starburstCooldown), true), 4);
             Vector2 movement = recoilDirection * (recoilIntensity) * slowdown;
-            if (Collision.SolidCollision(Owner.Center + movement, (int)(Owner.width * 1.1f), (int)(Owner.height * 1.1f)) || !Owner.Calamity().mouseRight)
+            bool enableRecoil = false;
+            if (!enableRecoil || Collision.SolidCollision(Owner.Center + movement, (int)(Owner.width * 1.1f), (int)(Owner.height * 1.1f)) || !Owner.Calamity().mouseRight)
             {
                 recoilIntensity = 0;
                 return;
@@ -148,6 +163,7 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public void FireShotgun()
         {
+            Projectile.ForceNetUpdate();
             // 50% chance to not consume ammo
             Owner.PickAmmo(HeldItem, out _, out _, out _, out _, out _, Main.rand.NextBool());
 
@@ -162,15 +178,20 @@ namespace CalamityMod.Projectiles.Ranged
             Owner.SetScreenshake(naildriver ? 9 : scattershot ? 7 : 4);
             OffsetLengthFromArm = naildriver ? 0 : scattershot ? 7 : 15;
 
-            int baseShotCount = 6;
-            for (int i = 0; i < baseShotCount; i++)
+            if (Main.myPlayer == Projectile.owner)
             {
-                float randomVel = Main.rand.NextFloat(0.8f, 1f);
-                float damageMult = ((naildriver || scattershot) ? 1.75f : 1f) / baseShotCount;
-                float spread = (naildriver ? 0.06f : scattershot ? 0.9f : 0.25f);
-                Projectile shotgun = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, randomVel * Projectile.velocity.RotatedByRandom(spread) * 8, ModContent.ProjectileType<StarfleetStar>(), (int)(Projectile.damage * damageMult), Projectile.knockBack, Projectile.owner, 0, 0, Main.rand.Next(0, 300 + 1));
-                shotgun.extraUpdates = naildriver ? 9 : scattershot ? 7 : 3;
+                int baseShotCount = 6;
+                for (int i = 0; i < baseShotCount; i++)
+                {
+                    float randomVel = Main.rand.NextFloat(0.8f, 1f);
+                    float damageMult = ((naildriver || scattershot) ? 1.75f : 1f) / baseShotCount;
+                    float spread = (naildriver ? 0.06f : scattershot ? 0.9f : 0.25f);
+                    int starExtraUpdates = naildriver ? 9 : scattershot ? 7 : 3;
+                    Projectile shotgun = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, randomVel * Projectile.velocity.RotatedByRandom(spread) * 8, ModContent.ProjectileType<StarfleetStar>(), (int)(Projectile.damage * damageMult), Projectile.knockBack, Projectile.owner, 0, starExtraUpdates, Main.rand.Next(0, 300 + 1));
+                    shotgun.extraUpdates = starExtraUpdates;
+                }
             }
+            
             for (int i = 0; i < 25; i++)
             {
                 float variance = Main.rand.NextFloat(-0.7f, 0.7f);
@@ -202,11 +223,14 @@ namespace CalamityMod.Projectiles.Ranged
             if (starburstCooldown < extendedCooldown)
                 starburstCooldown = extendedCooldown;
 
-            float blastSize = 140;
-            float minMultiplier = 0.1f;
-            int hitsToMinMult = 6;
-            Projectile blast = Projectile.NewProjectileDirect(Owner.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(Projectile.damage * 3), -45, Owner.whoAmI, blastSize, minMultiplier, hitsToMinMult);
-            blast.timeLeft = 15;
+            if (Main.myPlayer == Projectile.owner)
+            {
+                float blastSize = 140;
+                float minMultiplier = 0.1f;
+                int hitsToMinMult = 6;
+                Projectile blast = Projectile.NewProjectileDirect(Owner.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), Projectile.damage * 3, -45, Owner.whoAmI, blastSize, minMultiplier, hitsToMinMult);
+                blast.timeLeft = 15;
+            }
 
             for (int i = 0; i < 14; i++)
             {

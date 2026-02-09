@@ -1,18 +1,20 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Walls
 {
     [LegacyName("AbyssGravelWallSafe")]
-    public class AbyssGravelWall : ModWall
+    public class SafeAbyssGravelWall : ModWall
     {
         public override void SetStaticDefaults()
         {
             Main.wallHouse[Type] = true;
             AddMapEntry(new Color(6, 10, 54));
-            DustType = 33;
+            DustType = DustID.Water;
         }
+        public override string Texture => "CalamityMod/Walls/AbyssGravelWall";
 
         public override bool CanExplode(int i, int j) => false;
 

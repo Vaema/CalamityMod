@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using CalamityMod.BiomeManagers;
 using CalamityMod.Enums;
 using CalamityMod.Items.Critters;
 using CalamityMod.Items.Placeables.Banners;

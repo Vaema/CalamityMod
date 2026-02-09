@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using CalamityMod.Buffs.Summon;
-using CalamityMod.CalPlayer;
 using CalamityMod.NPCs.ExoMechs.Thanatos;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

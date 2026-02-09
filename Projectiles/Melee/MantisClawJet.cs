@@ -1,16 +1,9 @@
-﻿using CalamityMod.Projectiles.Typeless;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
-using CalamityMod.Items.BaseItems;
 using Terraria.ModLoader;
-using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using CalamityMod.Balancing;
-using Terraria.Audio;
-using CalamityMod.Items.Weapons.Melee;
-using System;
 using CalamityMod.Particles;
 using Terraria.DataStructures;
 using System.Collections.Generic;
@@ -104,7 +97,7 @@ namespace CalamityMod.Projectiles.Melee
 
             GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>(Texture));
 
-            PrimitiveRenderer.RenderTrail(positions, new PrimitiveSettings(AA => { return Projectile.ai[1]; }, CC => { return Lighting.GetColor(Vector2.Lerp(Projectile.oldPos[Projectile.oldPos.Length - 1], Projectile.position, CC).ToPoint()).MultiplyRGBA(WaterColor); }, shader: GameShaders.Misc["CalamityMod:TrailStreak"]));
+            PrimitiveRenderer.RenderTrail(positions, new PrimitiveSettings((AA,_) => { return Projectile.ai[1]; }, (CC,_) => { return Lighting.GetColor(Vector2.Lerp(Projectile.oldPos[Projectile.oldPos.Length - 1], Projectile.position, CC).ToPoint()).MultiplyRGBA(WaterColor); }, shader: GameShaders.Misc["CalamityMod:TrailStreak"]));
 
             return false;
         }

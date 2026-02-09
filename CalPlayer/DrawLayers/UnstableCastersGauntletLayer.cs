@@ -1,10 +1,8 @@
-﻿using System.Linq;
-using Terraria;
+﻿using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using CalamityMod.Items.Weapons.Magic;
 
 namespace CalamityMod.Items.Weapons.Magic
 {

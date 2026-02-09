@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.buffType = ModContent.BuffType<CausticStaffBuff>();
             Item.shoot = ModContent.ProjectileType<CausticStaffSummon>();
             Item.UseSound = SoundID.Item77;
-            Item.useAnimation = Item.useTime = 25;
+            Item.useAnimation = Item.useTime = 36;
 
             Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;

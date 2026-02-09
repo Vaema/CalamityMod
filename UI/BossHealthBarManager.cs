@@ -23,6 +23,7 @@ using CalamityMod.NPCs.SlimeGod;
 using CalamityMod.NPCs.StormWeaver;
 using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.NPCs.SupremeCalamitas;
+using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses.BrainOfCthulhu;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoMod.Utils;
@@ -111,12 +112,7 @@ namespace CalamityMod.UI
                 BossMainHPBar = Request<Texture2D>("CalamityMod/UI/MiscTextures/BossHPMainBar", AssetRequestMode.ImmediateLoad).Value;
                 BossComboHPBar = Request<Texture2D>("CalamityMod/UI/MiscTextures/BossHPComboBar", AssetRequestMode.ImmediateLoad).Value;
                 BossSeperatorBar = Request<Texture2D>("CalamityMod/UI/MiscTextures/BossHPSeperatorBar", AssetRequestMode.ImmediateLoad).Value;
-
-                PlatformID id = Environment.OSVersion.Platform;
-                if (id == PlatformID.Win32NT)
-                    HPBarFont = Request<DynamicSpriteFont>("CalamityMod/Fonts/HPBarFont", AssetRequestMode.ImmediateLoad).Value;
-                else
-                    HPBarFont = FontAssets.MouseText.Value;
+                HPBarFont = Request<DynamicSpriteFont>("CalamityMod/Fonts/HPBarFont", AssetRequestMode.ImmediateLoad).Value;
             }
 
             OneToMany = new Dictionary<int, int[]>();
@@ -214,8 +210,10 @@ namespace CalamityMod.UI
                 NPCType<AquaticScourgeTail>(),
                 NPCType<AstrumDeusBody>(),
                 NPCType<AstrumDeusTail>(),
+                NPCType<BrainIllusion>(),
                 NPCType<DesertScourgeBody>(),
                 NPCType<DesertScourgeTail>(),
+                NPCType<FalseBrain>(),
                 NPCType<SlimeGodCore>(),
                 NPCType<StormWeaverBody>(),
                 NPCType<StormWeaverTail>(),
@@ -276,10 +274,9 @@ namespace CalamityMod.UI
 
                 // Hardmode Modded.
                 NPCType<CloudElemental>(),
-                NPCType<Horse>(),
+                NPCType<EarthElemental>(),
                 NPCType<GreatSandShark>(),
                 NPCType<PlaguebringerMiniboss>(),
-                NPCType<ArmoredDiggerHead>(),
                 NPCType<Cataclysm>(), //Clone's brothers
                 NPCType<Catastrophe>(),
 

@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Effects;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Accessories.Wings;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.TreasureBags;
 using CalamityMod.Items.Weapons.Magic;
@@ -33,16 +31,14 @@ using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.ItemDropRules;
-using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Cryogen
 {
-    [LongDistanceNetSync] // Cryogen follows you forever like Queen Bee in vanilla, So we need this to sync it's position on minimap
+    [LongDistanceNetSync] // Cryogen follows you forever like Queen Bee in vanilla, So we need this to sync its position on minimap
     public class Cryogen : ModNPC
     {
-        private int biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
         private int currentPhase = 1;
         private int teleportLocationX = 0;
 
@@ -102,7 +98,7 @@ namespace CalamityMod.NPCs.Cryogen
             NPC.height = 88;
             NPC.defense = 15;
             NPC.DR_NERD(0.3f);
-            NPC.LifeMaxNERB(40000, 48000, 300000);
+            NPC.LifeMaxNERB(25000, 48000, 300000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -151,7 +147,6 @@ namespace CalamityMod.NPCs.Cryogen
 
         public override void SendExtraAI(BinaryWriter writer)
         {
-            writer.Write(biomeEnrageTimer);
             writer.Write(teleportLocationX);
             writer.Write(NPC.dontTakeDamage);
             writer.Write(NPC.localAI[1]);
@@ -161,7 +156,6 @@ namespace CalamityMod.NPCs.Cryogen
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
-            biomeEnrageTimer = reader.ReadInt32();
             teleportLocationX = reader.ReadInt32();
             NPC.dontTakeDamage = reader.ReadBoolean();
             NPC.localAI[1] = reader.ReadSingle();
@@ -969,7 +963,7 @@ namespace CalamityMod.NPCs.Cryogen
                     {
                         string key = Main.zenithWorld ? "Mods.CalamityMod.Status.Boss.PyrogenBossText" : "Mods.CalamityMod.Status.Boss.CryogenBossText";
                         Color messageColor = Main.zenithWorld ? Color.Orange : Color.Cyan;
-                        CalamityUtils.DisplayLocalizedText(key, messageColor);
+                        CalamityUtils.BroadcastLocalizedText(key, messageColor);
                     }
                 }
             }
@@ -1381,7 +1375,8 @@ namespace CalamityMod.NPCs.Cryogen
                 normalOnly.Add(ModContent.ItemType<EssenceofEleum>(), 1, 8, 10);
 
                 // Equipment
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<SoulofCryogen>()));
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<SoulofCryogen>()));
                 normalOnly.Add(ModContent.ItemType<CryoStone>(), DropHelper.NormalWeaponDropRateFraction);
                 normalOnly.Add(ModContent.ItemType<FrostFlare>(), DropHelper.NormalWeaponDropRateFraction);
             }
@@ -1430,7 +1425,7 @@ namespace CalamityMod.NPCs.Cryogen
                     tileTypes.Add(TileID.JungleGrass);
                 CalamityUtils.SpawnOre(ModContent.TileType<CryonicOre>(), 16E-05, 0.45f, 0.7f, 6, 11, tileTypes);
 
-                CalamityUtils.DisplayLocalizedText(key, Color.LightSkyBlue);
+                CalamityUtils.BroadcastLocalizedText(key, Color.LightSkyBlue);
             }
 
             // Mark Cryogen as dead

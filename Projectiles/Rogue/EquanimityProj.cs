@@ -1,12 +1,10 @@
-﻿using CalamityMod.Projectiles.Melee;
-using System;
+﻿using System;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static CalamityMod.CalamityUtils;
-using System.Collections.Generic;
 using CalamityMod.Particles;
 using CalamityMod.Items.Weapons.Typeless;
 using CalamityMod.Items.Weapons.Ranged;
@@ -37,6 +35,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.height = 46;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
+            Projectile.tileCollide = false;
             Projectile.penetrate = -1;
             Projectile.timeLeft = Lifetime + ChargeupTime;
             Projectile.usesLocalNPCImmunity = true;
@@ -91,7 +90,6 @@ namespace CalamityMod.Projectiles.Rogue
                 SoundEngine.PlaySound(SoundID.DD2_GoblinBomberThrow, Projectile.Center);
                 Projectile.Center = Owner.MountedCenter + Projectile.velocity * 12f;
                 Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.Zero) * 17.5f;
-                Projectile.tileCollide = true;
             }
 
             Projectile.rotation += (MathHelper.PiOver4 / 4f + MathHelper.PiOver4 / 2f * Math.Clamp(ThrowProgress * 2f, 0, 1)) * Math.Sign(Projectile.velocity.X);
@@ -128,7 +126,6 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (Returning == 1f)
             {
-                Projectile.tileCollide = false;
                 //Aim back at the player
                 Projectile.velocity = Projectile.velocity.Length() * (Owner.MountedCenter - Projectile.Center).SafeNormalize(Vector2.One);
 
@@ -286,13 +283,6 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.damage = (int)(Projectile.damage * 0.85f);
                 Bouncing = 2f;
             }
-        }
-
-        public override bool OnTileCollide(Vector2 oldVelocity)
-        {
-            Projectile.velocity = Projectile.oldVelocity.Length() * 0.3f * (Owner.MountedCenter - Projectile.Center).SafeNormalize(Vector2.One);
-            Returning = 1f;
-            return false;
         }
     }
 }

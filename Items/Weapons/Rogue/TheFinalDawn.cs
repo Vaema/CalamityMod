@@ -12,10 +12,6 @@ namespace CalamityMod.Items.Weapons.Rogue
     public class TheFinalDawn : RogueWeapon
     {
         public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/FinalDawnSlash");
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Wrathwing>();
-        }
         public override void SetDefaults()
         {
             Item.width = 78;

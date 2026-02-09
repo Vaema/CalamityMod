@@ -4,6 +4,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityMod.Utilities;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -75,7 +76,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             for (int i = 0; i < 30; i++)
             {
-                Dust fire = Dust.NewDustPerfect(Projectile.Center, 130);
+                Dust fire = Dust.NewDustPerfect(Projectile.Center, DustID.Firework_Red);
                 fire.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedByRandom(0.8f) * new Vector2(4f, 1.25f) * Main.rand.NextFloat(0.9f, 1f);
                 fire.velocity = fire.velocity.RotatedBy(Projectile.rotation - MathHelper.PiOver2);
                 fire.velocity += Projectile.velocity * 0.7f;
@@ -84,7 +85,7 @@ namespace CalamityMod.Projectiles.Ranged
                 fire.color = Color.Lerp(Color.White, Color.Purple, Main.rand.NextFloat());
                 fire.scale = Main.rand.NextFloat(1f, 1.1f);
 
-                fire = Dust.CloneDust(fire);
+                fire = Dust.BetterCloneDust(fire);
                 fire.velocity = Main.rand.NextVector2Circular(3f, 3f);
                 fire.velocity += Projectile.velocity * 0.6f;
             }

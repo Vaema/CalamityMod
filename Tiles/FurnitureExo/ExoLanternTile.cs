@@ -64,7 +64,7 @@ namespace CalamityMod.Tiles.FurnitureExo
 
         public override void HitWire(int i, int j)
         {
-            CalamityUtils.LightHitWire(Type, i, j, 1, 2);
+            FurnitureCommon.LightHitWire(Type, i, j, 1, 2);
         }
     }
 }

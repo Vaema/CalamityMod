@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using CalamityMod.CalPlayer;
-using CalamityMod.Dusts;
 using CalamityMod.NPCs;
-using CalamityMod.NPCs.Ravager;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Ranged;
-using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -21,19 +16,19 @@ namespace CalamityMod.Projectiles.Rogue
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/Pumpkaboom";
-        public ref float time => ref Projectile.ai[0];
-        public ref float skipExplosionSound => ref Projectile.ai[1];
+
+        public float time = 0;
+        public ref float stuckNPC => ref Projectile.ai[2];
+        public ref float stuckState => ref Projectile.ai[1];
+        public ref float flungState => ref Projectile.ai[0];
         public Player Owner => Main.player[Projectile.owner];
         public int tileHits = 0;
-        public bool flung = false;
         public float charge = 0;
         public bool hasReachedFullCharge = false;
         public bool hasStoppedHolding = false;
         public float midAirRot = 0;
         public int initialCastDirection = 0;
 
-        public bool stuck = false;
-        public int stuckNPC = -1;
         Vector2 placementDistance;
         Vector2 placementVelocity;
 
@@ -41,12 +36,10 @@ namespace CalamityMod.Projectiles.Rogue
         private float progress = -1;
 
         public Color mainColor = Color.White;
-        public Color c1 = new Color(255, 117, 24); // Orange
-        public Color c2 = new Color(168, 47, 57); // Maroon / Darkish Red
-        public float glowProgress = -1;
-        public Color shiftColor;
+        public Color c1 = new Color(255, 117, 24);
+        public Color c2 = new Color(168, 47, 57);
+        private bool hasDealtDamage = false;
 
-        public NPC markedTarget;
         public override void SetDefaults()
         {
             Projectile.width = 26;
@@ -57,14 +50,12 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
             Projectile.tileCollide = false;
-
             Projectile.timeLeft = 1200;
             Projectile.DamageType = RogueDamageClass.Instance;
         }
-        public override bool ShouldUpdatePosition() => flung && !stuck;
-        public override bool? CanDamage() => (flung && tileHits == 0 ? null : false);
 
-        private bool hasDealtDamage = false;
+        public override bool ShouldUpdatePosition() => flungState != 0f && stuckState == 0f;
+        public override bool? CanDamage() => (flungState != 0f && tileHits == 0 ? null : false);
 
         public override bool? CanHitNPC(NPC target)
         {
@@ -76,14 +67,8 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void AI()
         {
-            // Outline color shifting
-            float rate = (Main.GlobalTimeWrappedHourly * 6);
-            List<Color> eColors = new List<Color>()
-            {
-                c1,
-                c2
-            };
-
+            float rate = (Main.GlobalTimeWrappedHourly * 6);
+            List<Color> eColors = new List<Color>() { c1, c2 };
             int colorIndex = (int)(rate / 2 % eColors.Count);
             Color currentColor = eColors[colorIndex];
             Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
@@ -95,18 +80,15 @@ namespace CalamityMod.Projectiles.Rogue
                 progress += 0.08f;
             }
 
-            // When an NPC is hit by the bomb, stick to it.
-            if (stuck)
+            if (stuckState == 1f)
             {
-                if (stuckNPC >= 0 && Main.npc[stuckNPC].active)
+                if (stuckNPC >= 0 && Main.npc[(int) stuckNPC].active)
                 {
-                    Projectile.Center = Main.npc[stuckNPC].Center + placementVelocity * placementDistance;
+                    Projectile.Center = Main.npc[(int) stuckNPC].Center + placementVelocity * placementDistance;
                 }
 
-                else
-                {
+                else if (Main.netMode != NetmodeID.MultiplayerClient)
                     Projectile.Kill();
-                }
                 if (Projectile.timeLeft == 109)
                 {
                     SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/PumpkaboomNormalTicking") with { Pitch = 0f, Volume = 1f, MaxInstances = 4 }, Projectile.Center);
@@ -114,7 +96,7 @@ namespace CalamityMod.Projectiles.Rogue
                 return;  
             }
 
-            if (flung)
+            if (flungState != 0f)
             {
                 if (initialCastDirection == 0)
                     initialCastDirection = Owner.direction;
@@ -125,7 +107,7 @@ namespace CalamityMod.Projectiles.Rogue
 
                 Projectile.velocity.Y += 0.22f;
 
-                if (!stuck)
+                if (stuckState == 0f)
                     midAirRot += 0.06f * initialCastDirection;
 
                 Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2 + midAirRot;
@@ -135,89 +117,93 @@ namespace CalamityMod.Projectiles.Rogue
             else
             {
                 Projectile.velocity = Owner.velocity;
-                float completion = time / (Owner.HeldItem.useAnimation * 0.7f); // The completion of the throw animation. Scales with speed.
-                if (completion >= 1 || hasReachedFullCharge) // The moment of being thrown.
-                {
-                    time = -1;
-                    Projectile.Center = Owner.Center;
-                    Vector2 velocity = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
-                    Projectile.velocity = velocity * 16;
+                int useAnim = Owner.HeldItem.useAnimation > 0 ? Owner.HeldItem.useAnimation : 30;
+                float completion = time / (useAnim * 0.7f);
 
-                    Projectile.tileCollide = true;
-                    flung = true;
-                }
-
-                else
+                if (Main.myPlayer == Projectile.owner)
                 {
-                    if (Main.mouseLeft && !hasStoppedHolding) // The charging up.
-                    {
-                        if (completion >= 0.7f && completion <= 0.8f)
+                    if (completion >= 1 || hasReachedFullCharge)
+                    {
+                        time = -1;
+                        Projectile.Center = Owner.Center;
+                        Vector2 velocity = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
+                        Projectile.velocity = velocity * 16;
+                        Projectile.tileCollide = true;
+                        flungState = 1f;
+                        Projectile.netUpdate = true;
+                    }
+                    else
+                    {
+                        if (Main.mouseLeft && !hasStoppedHolding)
                         {
-                            time--;
-                            if (charge < 1)
-                                charge += 0.5f;
-
-                            if (charge >= 1 && !hasReachedFullCharge)
+                            if (completion >= 0.7f && completion <= 0.8f)
                             {
-                                SoundEngine.PlaySound(SoundID.Item1, Projectile.Center);
-                                hasReachedFullCharge = true;
+                                time--;
+                                if (charge < 1)
+                                    charge += 0.5f;
+
+                                if (charge >= 1 && !hasReachedFullCharge)
+                                {
+                                    SoundEngine.PlaySound(SoundID.Item1, Projectile.Center);
+                                    hasReachedFullCharge = true;
+                                }
                             }
                         }
-                    }
-                    else
-                    {
-                        if (!hasReachedFullCharge)
+                        else
                         {
-                            Projectile.localAI[1] = 5;
-                            Projectile.ai[1] = 1; // Skip explosion fx
-                            Projectile.Kill();
+                            if (!hasReachedFullCharge)
+                            {
+                                Projectile.localAI[1] = 5;
+                                flungState = -1f;
+                                Projectile.Kill();
+                            }
+                            hasStoppedHolding = true;
                         }
-                        hasStoppedHolding = true;
                     }
-
                     Owner.direction = Math.Sign(Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld).X);
-                    float grenadeRot = 0;
-                    if (completion >= 0.7f)
-                    {
-                        float completionLerp = (float)Math.Pow(Utils.GetLerpValue(0.7f, 1f, completion, true), 7);
-                        grenadeRot = MathHelper.ToRadians(MathHelper.Lerp(-75, 130f, completionLerp) * Owner.direction);
-                    }
-                    else
-                    {
-                        float completionLerp = (float)Math.Pow(Utils.GetLerpValue(0f, 0.7f, completion, true), 2);
-                        grenadeRot = MathHelper.ToRadians(MathHelper.Lerp(120, -75f, completionLerp) * Owner.direction);
-                    }
-                    grenadeRot += Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld).ToRotation();
-                    Vector2 grenadePos = Owner.GetFrontHandPosition(Player.CompositeArmStretchAmount.Full, grenadeRot) + new Vector2(Owner.direction == 1 ? 5 : -3, Owner.direction == 1 ? -24 : -4).RotatedBy(grenadeRot);
-                    float completionLerp2 = (float)Math.Pow(Utils.GetLerpValue(0f, 0.7f, completion, true), 2);
-                    float grenadeHalfRot = MathHelper.ToRadians(MathHelper.Lerp(120, -75f, completionLerp2) * Owner.direction);
-
-                    Projectile.Center = grenadePos;
-                    Projectile.rotation = grenadeRot - MathHelper.ToRadians(25 * grenadeHalfRot) + (Owner.direction == 1 ? MathHelper.ToRadians(180) : 0);
-
-                    Owner.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Full, Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld).ToRotation() - MathHelper.ToRadians(90));
-                    Owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, grenadeRot - (Owner.direction == 1 ? MathHelper.ToRadians(180) : MathHelper.ToRadians(0)));
                 }
+
+                float grenadeRot = 0;
+                if (completion >= 0.7f)
+                {
+                    float completionLerp = (float)Math.Pow(Utils.GetLerpValue(0.7f, 1f, completion, true), 7);
+                    grenadeRot = MathHelper.ToRadians(MathHelper.Lerp(-75, 130f, completionLerp) * Owner.direction);
+                }
+                else
+                {
+                    float completionLerp = (float)Math.Pow(Utils.GetLerpValue(0f, 0.7f, completion, true), 2);
+                    grenadeRot = MathHelper.ToRadians(MathHelper.Lerp(120, -75f, completionLerp) * Owner.direction);
+                }
+
+                Vector2 mouseDir = (Main.myPlayer == Projectile.owner) ? Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld) : Projectile.velocity.SafeNormalize(Vector2.UnitX);
+                grenadeRot += mouseDir.ToRotation();
+                Vector2 grenadePos = Owner.GetFrontHandPosition(Player.CompositeArmStretchAmount.Full, grenadeRot) + new Vector2(Owner.direction == 1 ? 5 : -3, Owner.direction == 1 ? -24 : -4).RotatedBy(grenadeRot);
+                float completionLerp2 = (float)Math.Pow(Utils.GetLerpValue(0f, 0.7f, completion, true), 2);
+                float grenadeHalfRot = MathHelper.ToRadians(MathHelper.Lerp(120, -75f, completionLerp2) * Owner.direction);
+
+                Projectile.Center = grenadePos;
+                Projectile.rotation = grenadeRot - MathHelper.ToRadians(25 * grenadeHalfRot) + (Owner.direction == 1 ? MathHelper.ToRadians(180) : 0);
+
+                Owner.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Full, mouseDir.ToRotation() - MathHelper.ToRadians(90));
+                Owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, grenadeRot - (Owner.direction == 1 ? MathHelper.ToRadians(180) : MathHelper.ToRadians(0)));
             }
             time++;
         }
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            stuck = true;
+            stuckState = 1f;
             stuckNPC = target.whoAmI;
-
-            Projectile.localAI[1] = 5; // Reset firing state
-
-            // See PreDraw
+            Projectile.localAI[1] = 5;
             beginStretchAnim = true;
+            Projectile.netUpdate = true;
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             SoundStyle w = new("CalamityMod/Sounds/Item/WulfrumScrewdriverThud");
             SoundEngine.PlaySound(w with { Volume = 0.7f, Pitch = 0f, MaxInstances = 6 }, Projectile.Center);
 
-            stuck = true;
+            stuckState = 1f;
             stuckNPC = target.whoAmI;
 
             placementDistance = new(-Vector2.Distance(target.Center, Projectile.Center));
@@ -226,14 +212,12 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.velocity = Vector2.Zero;
             Projectile.tileCollide = false;
             Projectile.rotation = Projectile.oldVelocity.ToRotation() + MathHelper.PiOver2 + midAirRot;
-            Projectile.ai[1] = Projectile.rotation;
+            flungState = Projectile.rotation;
 
             hasDealtDamage = true;
-            Projectile.localAI[1] = 5; // Reset firing state
-
-            glowProgress = 0; // Start glowing until death
-
-            Projectile.timeLeft = 110; // Lasts as long as sfx
+            Projectile.localAI[1] = 5;
+            Projectile.timeLeft = 110;
+            Projectile.netUpdate = true;
 
             for (int i = 0; i < 4; i++)
             {
@@ -263,12 +247,13 @@ namespace CalamityMod.Projectiles.Rogue
         {
             Projectile.localAI[1] = 5; // Reset firing state
 
-            if (Projectile.ai[1] != 1)
+            if (flungState != -1f)
             {
                 SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/PumpkinExplode1") with { Pitch = 0f, Volume = 0.75f }, Projectile.Center);
                 SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/FlakKrakenShoot") with { Pitch = 0f, Volume = 0.4f }, Projectile.Center);
 
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<PumpkaboomBoomSmall>(), Projectile.damage * 2, Projectile.knockBack * 2, Projectile.owner, 0);
+                if (Main.myPlayer == Projectile.owner)
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<PumpkaboomBoomSmall>(), Projectile.damage * 2, Projectile.knockBack * 2, Projectile.owner, 0);
 
                 float scale = 0.1f;
                 Vector2 spawnPos = Projectile.Center;
@@ -285,7 +270,7 @@ namespace CalamityMod.Projectiles.Rogue
                 for (int k = 0; k < 20; k++)
                 {
                     Vector2 velocity = new Vector2(10, 10).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 1.2f);
-                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center + velocity, 259, velocity);
+                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center + velocity, DustID.SolarFlare, velocity);
                     dust2.scale = Main.rand.NextFloat(1.15f, 1.45f);
                     dust2.noGravity = true;
                 }
@@ -350,13 +335,11 @@ namespace CalamityMod.Projectiles.Rogue
             float drawRotation = Projectile.rotation;
             Vector2 drawPosition;
 
-            if (stuck && glowProgress >= 0f)
+            if (stuckState == 1f && Projectile.timeLeft <= 110)
             {
-                glowProgress += 0.03f;
-
-                float glowSine = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 20f); // Period of full pulse
-                float pulse = MathHelper.Lerp(0.7f, 1f, glowSine); // Least protruding to most protruding
-                float lifeFadeIn = Utils.GetLerpValue(110, 0, Projectile.timeLeft, true); // How much the glow overall fades in as it gets closer to exploding
+                float glowSine = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 20f);
+                float pulse = MathHelper.Lerp(0.7f, 1f, glowSine);
+                float lifeFadeIn = Utils.GetLerpValue(110, 0, Projectile.timeLeft, true);
                 float finalGlowIntensity = pulse * lifeFadeIn;
                 drawPosition = Projectile.Center - Main.screenPosition;
 
@@ -366,29 +349,28 @@ namespace CalamityMod.Projectiles.Rogue
                     float rotationOffset = (MathHelper.TwoPi * i / 15);
                     Vector2 glowOffset = rotationOffset.ToRotationVector2() * (3f + glowSine * 1f) * finalGlowIntensity;
 
-                    Main.spriteBatch.Draw(mainTexture, drawPosition + glowOffset, null, mainColor with { A = 0 } * finalGlowIntensity * 0.4f, drawRotation, drawOrigin, drawScale, spriteEffects, 0f);
+                    Main.spriteBatch.Draw(mainTexture, drawPosition + glowOffset, null, mainColor with { A = 0 } * finalGlowIntensity * 0.4f, flungState, drawOrigin, drawScale, spriteEffects, 0f);
                 }
             }
 
-            if (!flung)
+            if (flungState == 0f)
             {
                 spriteEffects = SpriteEffects.FlipVertically;
 
-                float completion = time / (Owner.HeldItem.useAnimation * 0.7f);
+                int useAnim = Owner.HeldItem.useAnimation > 0 ? Owner.HeldItem.useAnimation : 30;
+                float completion = time / (useAnim * 0.7f);
                 float completionLerp2 = (float)Math.Pow(Utils.GetLerpValue(0f, 0.7f, completion, true), 2);
                 float grenadeRot = MathHelper.ToRadians(MathHelper.Lerp(120, -75f, completionLerp2) * Owner.direction);
-                grenadeRot += Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld).ToRotation();
-
+                Vector2 mouseDir = (Main.myPlayer == Projectile.owner) ? Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld) : Projectile.velocity.SafeNormalize(Vector2.UnitX);
+                grenadeRot += mouseDir.ToRotation();
                 Vector2 grenadePos = Owner.GetFrontHandPosition(Player.CompositeArmStretchAmount.Full, grenadeRot) + new Vector2(Owner.direction == 1 ? 5 : 5, Owner.direction == 1 ? -38 : 22).RotatedBy(grenadeRot);
                 drawPosition = grenadePos - Main.screenPosition;
                 drawRotation = grenadeRot - MathHelper.ToRadians(25 * completionLerp2) + (Owner.direction == 1 ? MathHelper.ToRadians(180) : 0);
             }
             else 
             {
-                if (stuck)
-                {
-                    drawRotation = Projectile.ai[1];
-                }
+                if (stuckState == 1f)
+                    drawRotation = flungState;
                 drawPosition = Projectile.Center - Main.screenPosition;
             }
 

@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.Items.Weapons.Melee;
+﻿using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -35,8 +34,8 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
 
         public override void SetVisualOffsets()
         {
-            const int HalfSpriteWidth = 40 / 2;
-            const int HalfSpriteHeight = 40 / 2;
+            const int HalfSpriteWidth = 32 / 2;
+            const int HalfSpriteHeight = 32 / 2;
 
             int HalfProjWidth = Projectile.width / 2;
             int HalfProjHeight = Projectile.height / 2;
@@ -50,7 +49,7 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
         {
             if (Main.rand.NextBool(2))
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(12, 12), 288);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(12, 12), DustID.DesertWater2);
                 dust.scale = Main.rand.NextFloat(0.15f, 0.6f);
                 dust.noGravity = true;
                 dust.velocity = -Projectile.velocity * 0.5f;
@@ -83,7 +82,7 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
                 float rot = MathHelper.ToRadians(i * rotFactor);
                 Vector2 offset = new Vector2(Main.rand.NextFloat(0.5f, 2.5f), 0).RotatedBy(rot * Main.rand.NextFloat(1.1f, 9.1f));
                 Vector2 velOffset = new Vector2(Main.rand.NextFloat(0.5f, 2.5f), 0).RotatedBy(rot * Main.rand.NextFloat(1.1f, 9.1f));
-                Dust dust = Dust.NewDustPerfect(target.Center + offset, Main.rand.NextBool() ? 288 : 121, new Vector2(velOffset.X, velOffset.Y));
+                Dust dust = Dust.NewDustPerfect(target.Center + offset, Main.rand.NextBool() ? 288 : 207, new Vector2(velOffset.X, velOffset.Y));
                 dust.noGravity = false;
                 dust.velocity = velOffset;
                 dust.scale = Main.rand.NextFloat(1.5f, 1.2f);

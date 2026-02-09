@@ -47,24 +47,10 @@ namespace CalamityMod.Systems.Collections
         /// </summary>
         public static bool[] IsPersistentBuff = Factory.CreateBoolSet(BuffID.WeaponImbueVenom, BuffID.WeaponImbueCursedFlames, BuffID.WeaponImbueFire, BuffID.WeaponImbueGold,
                 BuffID.WeaponImbueIchor, BuffID.WeaponImbueNanites, BuffID.WeaponImbueConfetti, BuffID.WeaponImbuePoison, BuffType<WeaponImbueBrimstone>(),
-                BuffType<WeaponImbueCrumbling>(), BuffType<WeaponImbueHolyFlames>());
-
-        /// <summary>
-        /// If <see langword="true"/> for a buff type, then that buff is considered to be a sickness debuff.<br/>
-        /// Used for reducing buff duration with Honey Dew and its upgrades.<br/>
-        /// Defaults to <see langword="false"/>.
-        /// </summary>
-        public static bool[] IsSicknessDebuff = Factory.CreateBoolSet(BuffID.Poisoned, BuffID.Venom, BuffType<BrainRot>(), BuffType<BurningBlood>(), BuffType<SulphuricPoisoning>(),
-                BuffType<AstralInfectionDebuff>(), BuffType<Plague>(), BuffType<AbsorberAffliction>(), BuffType<WhisperingDeath>(), BuffType<Irradiated>());
-
-        /// <summary>
-        /// If <see langword="true"/> for a buff type, then that buff is considered to be a fire debuff.<br/>
-        /// Used for reducing buff duration with Living Dew and its upgrades, and providing Permafrost's Concoction's life regeneration boost.<br/>
-        /// Defaults to <see langword="false"/>.
-        /// </summary>
-        public static bool[] IsFireDebuff = Factory.CreateBoolSet(BuffID.OnFire, BuffID.OnFire3, BuffID.Burning, BuffID.CursedInferno, BuffID.ShadowFlame, BuffType<Shadowflame>(),
-                BuffType<SearingLava>(), BuffType<BrimstoneFlames>(), BuffType<Daybroken>(), BuffType<HolyFlames>(), BuffType<GodSlayerInferno>(), BuffType<Dragonfire>(),
-                BuffType<WeakBrimstoneFlames>(), BuffType<BanishingFire>(), BuffType<ManaBurn>());
+                BuffType<WeaponImbueCrumbling>(), BuffType<WeaponImbueHolyFlames>(), BuffType<BloodyMaryBuff>(), BuffType<CaribbeanRumBuff>(), BuffType<CinnamonRollBuff>(), BuffType<EverclearBuff>(),
+                BuffType<EvergreenGinBuff>(), BuffType<FireballBuff>(), BuffType<GrapeBeerBuff>(), BuffType<ManhattanBuff>(), BuffType<MargaritaBuff>(), BuffType<MoonshineBuff>(),
+                BuffType<MoscowMuleBuff>(), BuffType<OldFashionedBuff>(), BuffType<PurpleHazeBuff>(), BuffType<RedWineBuff>(), BuffType<RumBuff>(), BuffType<ScrewdriverBuff>(),
+                BuffType<StarBeamRyeBuff>(), BuffType<TequilaBuff>(), BuffType<TequilaSunriseBuff>(), BuffType<VodkaBuff>(), BuffType<WhiskeyBuff>(), BuffType<WhiteWineBuff>());
 
         /// <summary>
         /// If <see langword="true"/> for a buff type, then that buff is considered to be a debuff.<br/>

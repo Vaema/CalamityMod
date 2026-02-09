@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.Particles;
+﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -48,7 +47,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 for (int i = 0; i < 12; i++)
                 {
-                    Dust chargefull = Dust.NewDustPerfect(Projectile.Center, 278);
+                    Dust chargefull = Dust.NewDustPerfect(Projectile.Center, DustID.FireworksRGB);
                     chargefull.velocity = Projectile.velocity.RotatedByRandom(0.25f) * Main.rand.NextFloat(0.1f, 1);
                     chargefull.scale = Main.rand.NextFloat(0.45f, 0.8f);
                     chargefull.noGravity = true;
@@ -81,10 +80,9 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            Player Owner = Main.player[Projectile.owner];
-            if (Projectile.owner == Main.myPlayer && explode)
+            if (explode)
             {
-                Owner.SetScreenshake(3.5f);
+                Main.player[Projectile.owner].SetScreenshake(3.5f);
                 SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode with { Volume = 1f, Pitch = -0.5f }, Projectile.Center);
                 SoundEngine.PlaySound(SoundID.Item74 with { Volume = 0.7f, Pitch = 1f }, Projectile.Center);
                 for (int i = 0; i < 6; i++)
@@ -99,34 +97,36 @@ namespace CalamityMod.Projectiles.Magic
                     Particle blastRing2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 0.5f, 1.5f, 25, true);
                     GeneralParticleHandler.SpawnParticle(blastRing2);
                 }
-
-                int explosionDamage = Projectile.damage / 4;
-                float explosionKB = 6f;
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<VenusianExplosion>(), explosionDamage, explosionKB, Projectile.owner);
-
-                int cinderDamage = (int)(Projectile.damage * 0.02);
-                float cinderKB = 0f;
-                Vector2 cinderPos = Projectile.Center;
-                int numCinders = 10;
-                for (int i = 0; i < numCinders; i++)
-                {
-                    Vector2 cinderVel = new Vector2(Main.rand.Next(-100, 101), Main.rand.Next(-100, 101));
-                    while (cinderVel.X == 0f && cinderVel.Y == 0f)
-                    {
-                        cinderVel = new Vector2(Main.rand.Next(-100, 101), Main.rand.Next(-100, 101));
-                    }
-                    cinderVel.Normalize();
-                    cinderVel *= Main.rand.Next(70, 101) * 0.1f;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), cinderPos, cinderVel + new Vector2(0, -3), ModContent.ProjectileType<VenusianFlame>(), cinderDamage, cinderKB, Projectile.owner);
-                }
-
                 for (int i = 0; i < 20; i++)
                 {
-                    Dust chargefull = Dust.NewDustPerfect(Projectile.Center, 278);
+                    Dust chargefull = Dust.NewDustPerfect(Projectile.Center, DustID.FireworksRGB);
                     chargefull.velocity = new Vector2(9, 9).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 2f);
                     chargefull.scale = Main.rand.NextFloat(0.65f, 1.25f);
                     chargefull.noGravity = true;
                     chargefull.color = Color.Lerp(Color.White, Main.rand.NextBool(4) ? Color.Orange : Color.Coral, 0.7f);
+                }
+
+                if (Main.myPlayer == Projectile.owner)
+                {
+                    int explosionDamage = Projectile.damage / 4;
+                    float explosionKB = 6f;
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<VenusianExplosion>(), explosionDamage, explosionKB, Projectile.owner);
+
+                    int cinderDamage = (int)(Projectile.damage * 0.02);
+                    float cinderKB = 0f;
+                    Vector2 cinderPos = Projectile.Center;
+                    int numCinders = 10;
+                    for (int i = 0; i < numCinders; i++)
+                    {
+                        Vector2 cinderVel = new Vector2(Main.rand.Next(-100, 101), Main.rand.Next(-100, 101));
+                        while (cinderVel.X == 0f && cinderVel.Y == 0f)
+                        {
+                            cinderVel = new Vector2(Main.rand.Next(-100, 101), Main.rand.Next(-100, 101));
+                        }
+                        cinderVel.Normalize();
+                        cinderVel *= Main.rand.Next(70, 101) * 0.1f;
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), cinderPos, cinderVel + new Vector2(0, -3), ModContent.ProjectileType<VenusianFlame>(), cinderDamage, cinderKB, Projectile.owner);
+                    }
                 }
             }
         }

@@ -5,6 +5,7 @@ using CalamityMod.Projectiles.Rogue;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -13,6 +14,12 @@ namespace CalamityMod.Items.Accessories
     {
         public new string LocalizationCategory => "Items.Accessories";
         public bool HasFlavorTooltip => true;
+
+        public static int AggroReduction = 450;
+        public static float StandingStealthRegenBoost = 0.25f;
+        public static float MovingStealthRegenBoost = 0.12f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(StandingStealthRegenBoost.ToPercent(), MovingStealthRegenBoost.ToPercent());
+
         public override void SetDefaults()
         {
             Item.width = 30;
@@ -25,8 +32,8 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.stealthGenStandstill += 0.25f;
-            modPlayer.stealthGenMoving += 0.12f;
+            modPlayer.stealthGenStandstill += StandingStealthRegenBoost;
+            modPlayer.stealthGenMoving += MovingStealthRegenBoost;
             modPlayer.abyssalMirror = true;
             player.aggro -= 450;
             modPlayer.DodgeEffects.Add(AbyssMirrorDodge);

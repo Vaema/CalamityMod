@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Reflection;
 using CalamityMod.Events;
 using CalamityMod.Skies;
 using Microsoft.Xna.Framework;
@@ -11,8 +10,6 @@ namespace CalamityMod.Systems
 {
     public class BossRushScene : ModSceneEffect
     {
-        internal static readonly FieldInfo EffectsField = typeof(SkyManager).GetField("_effects", BindingFlags.NonPublic | BindingFlags.Instance);
-
         public override int Music => BossRushEvent.MusicToPlay;
         public override SceneEffectPriority Priority => SceneEffectPriority.BossHigh;
 
@@ -23,7 +20,7 @@ namespace CalamityMod.Systems
             // Clear all other skies, including the vanilla ones.
             if (isActive)
             {
-                Dictionary<string, CustomSky> skies = EffectsField.GetValue(SkyManager.Instance) as Dictionary<string, CustomSky>;
+                Dictionary<string, CustomSky> skies = SkyManager.Instance._effects;
                 bool updateRequired = false;
                 foreach (string skyName in skies.Keys)
                 {

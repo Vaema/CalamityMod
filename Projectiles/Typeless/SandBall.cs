@@ -1,11 +1,5 @@
 ﻿using System;
 using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Items.Placeables.Abyss;
-using CalamityMod.Items.Placeables.Astral;
-using CalamityMod.Items.Placeables.SunkenSea;
-using CalamityMod.Tiles.Abyss;
-using CalamityMod.Tiles.AstralDesert;
-using CalamityMod.Tiles.SunkenSea;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -144,6 +138,7 @@ namespace CalamityMod.Projectiles.Typeless
         public override string Texture => "CalamityMod/Projectiles/Typeless/SandBallEutrophic";
         public override int TileType => ModContent.TileType<Tiles.SunkenSea.EutrophicSand>();
         public override int ItemType => ModContent.ItemType<Items.Placeables.SunkenSea.EutrophicSand>();
+        public override bool DropAsItem => true;
         public override int DustType => 108; // Weirdly same dusts as Astral
 
         //Doze: I'm giving our sandgun sands actual special effects because it's more interesting
@@ -165,6 +160,7 @@ namespace CalamityMod.Projectiles.Typeless
         public override string Texture => "CalamityMod/Projectiles/Typeless/SandBallSulphurous";
         public override int TileType => ModContent.TileType<Tiles.Abyss.SulphurousSand>();
         public override int ItemType => ModContent.ItemType<Items.Placeables.Abyss.SulphurousSand>();
+        public override bool DropAsItem => true;
         // Uses normal sand dust
 
         //Doze: I'm giving our sandgun sands actual special effects because it's more interesting
@@ -274,8 +270,9 @@ namespace CalamityMod.Projectiles.Typeless
             {
                 if (Projectile.ai[1] == 0)
                 {
-                    for (var i = 0; i < 5; i++)
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity.RotatedByRandom(0.5f) * 0.75f, ModContent.ProjectileType<VolcanicSandBallGun>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner, ai2: 1);
+                    if (Main.myPlayer == Projectile.owner)
+                        for (var i = 0; i < 5; i++)
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity.RotatedByRandom(0.5f) * 0.75f, ModContent.ProjectileType<VolcanicSandBallGun>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner, ai2: 1);
                     Projectile.damage = (int)(Projectile.damage * 0.5f);
                     
                 }
@@ -303,6 +300,11 @@ namespace CalamityMod.Projectiles.Typeless
         public virtual int ItemType => ItemID.SandBlock;
         // Associated dust type
         public virtual int DustType => DustID.Sand;
+
+        /// <summary>
+        /// Whether the sandball should drop as an item on death instead of placing a tile. This is for non-falling sands in sandgun.
+        /// </summary>
+        public virtual bool DropAsItem => false;
 
         public override void SetDefaults()
         {
@@ -355,6 +357,13 @@ namespace CalamityMod.Projectiles.Typeless
             // If the sand is dying outside the world border, or having used all of it's pierce, cancel placing sand.
             if ( p.X < 0 || p.X >= Main.maxTilesX || p.Y < 0 || p.Y >= Main.maxTilesY)
                 return;
+
+            if (DropAsItem)
+            {
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                    Item.NewItem(Projectile.GetSource_DropAsItem(), Projectile.position, Projectile.width, Projectile.height, ItemType);
+                return;
+            }
             Tile placer = Main.tile[p.X, p.Y];
 
             // If the sand hit a half brick, but was mostly going downwards (at a lower than 45 degree angle), then stack atop the half brick.
@@ -397,7 +406,8 @@ namespace CalamityMod.Projectiles.Typeless
             }
             // Give the block back if you literally can't place it
             else
-                Item.NewItem(Projectile.GetSource_DropAsItem(), Projectile.position, Projectile.width, Projectile.height, ItemType);
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                    Item.NewItem(Projectile.GetSource_DropAsItem(), Projectile.position, Projectile.width, Projectile.height, ItemType);
         }
     }
 }

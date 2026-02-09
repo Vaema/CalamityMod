@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.Astral;
 using CalamityMod.NPCs.NormalNPCs;
@@ -50,6 +46,15 @@ namespace CalamityMod.NPCs
             _GreatSharkTriggerNPCS = null;
         }
 
+        private sealed class ClearWorldHook : ModSystem
+        {
+            public override void ClearWorld()
+            {
+                ghostKillCount = 0;
+                sharkKillCount = 0;
+            }
+        }
+
         public override void OnKill(NPC npc)
         {
             CheckPolterghastCondition(npc);
@@ -73,14 +78,14 @@ namespace CalamityMod.NPCs
                 string key = "Mods.CalamityMod.Status.Boss.GhostBossText2";
                 Color messageColor = Color.Cyan;
 
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
             }
             else if (ghostKillCount == 20)
             {
                 string key = "Mods.CalamityMod.Status.Boss.GhostBossText3";
                 Color messageColor = Color.Cyan;
 
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
             }
 
             if (ghostKillCount >= 30 && Main.netMode != NetmodeID.MultiplayerClient)
@@ -119,14 +124,14 @@ namespace CalamityMod.NPCs
                 string key = "Mods.CalamityMod.Status.Boss.SandSharkText";
                 Color messageColor = Color.Goldenrod;
 
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
             }
             else if (sharkKillCount == 8)
             {
                 string key = "Mods.CalamityMod.Status.Boss.SandSharkText2";
                 Color messageColor = Color.Goldenrod;
 
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
             }
             if (sharkKillCount >= 10 && Main.netMode != NetmodeID.MultiplayerClient)
             {

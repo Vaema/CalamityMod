@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CalamityMod.Buffs.Summon.Whips;
 using CalamityMod.DataStructures;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Particles;
@@ -211,6 +212,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 SoundEngine.PlaySound(SlapSound with { Volume = SlapSound.Volume * centrifugalForce + 0.8f }, target.position);
                 Owner.MinionAttackTargetNPC = target.whoAmI;
+                target.AddBuff(BuffType<CnidarianSummonTagBuff>(), 240);
             }
 
         }
@@ -221,12 +223,12 @@ namespace CalamityMod.Projectiles.Summon
         public CurveSegment retract = new CurveSegment(EasingType.SineInOut, 0.7f, 0.5f, 0.5f);
         internal float StretchRatio() => PiecewiseAnimation(MathHelper.Clamp((Timer + 45) % ElectrifyTimer, 0, 80) / 80f, new CurveSegment[] { anticipation, contraction, retract });
 
-        public float PrimWidthFunction(float completionRatio)
+        public float PrimWidthFunction(float completionRatio, Vector2 vertexPos)
         {
             return 1.6f;
         }
 
-        public Color PrimColorFunction(float completionRatio)
+        public Color PrimColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float timeAfterZap = MathHelper.Clamp(20 - (Timer - 5 - completionRatio * 12f) % ElectrifyTimer, 0, 20);
             float postZapTime = 1 - timeAfterZap / 20f;
@@ -289,7 +291,7 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 catch (Exception)
                 {
-                    CalamityMod.Instance.Logger.Warn("IbanPlay Victide Cnidarian Position Netcode failed safely");
+                    CalamityMod.Log.Warn("IbanPlay Victide Cnidarian Position Netcode failed safely");
                 }
             }
         }

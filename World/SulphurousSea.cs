@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CalamityMod.Items;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Placeables.Furniture;
+using CalamityMod.Items.Tools.SpawnBlocker;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Schematics;
 using CalamityMod.Tiles.Abyss;
@@ -302,7 +302,7 @@ namespace CalamityMod.World
                         OtherTilesForSulphSeaToDestroy.Contains(type))
                         CalamityUtils.ParanoidTileRetrieval(x, y).Get<TileWallWireStateData>().HasTile = false;
                     if (WallsForSulphSeaToDestroy.Contains(CalamityUtils.ParanoidTileRetrieval(x, y).WallType))
-                        CalamityUtils.ParanoidTileRetrieval(x, y).WallType = 0;
+                        CalamityUtils.ParanoidTileRetrieval(x, y).WallType = WallID.None;
                 }
             }
         }
@@ -959,7 +959,7 @@ namespace CalamityMod.World
                 // Create a log message if for some reason the schematic in question doesn't exist.
                 if (!wrappedSchematicArea.HasValue)
                 {
-                    CalamityMod.Instance.Logger.Warn($"Tried to place a schematic with name \"{schematicName}\". No matching schematic file found.");
+                    CalamityMod.Log.Warn($"Tried to place a schematic with name \"{schematicName}\". No matching schematic file found.");
                     continue;
                 }
 

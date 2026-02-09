@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Projectiles.Ranged;
+﻿using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -16,16 +15,11 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public static int AmmoSavedPercent = 66;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
-
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<SepticSkewer>();
-        }
         public override void SetDefaults()
         {
             Item.width = 76;
             Item.height = 46;
-            Item.damage = 424;
+            Item.damage = 214;
             Item.DamageType = DamageClass.Ranged;
             Item.useAnimation = Item.useTime = 6;
             Item.useStyle = ItemUseStyleID.Shoot;

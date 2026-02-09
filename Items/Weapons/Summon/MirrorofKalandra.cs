@@ -51,7 +51,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.width = 58;
             Item.height = 50;
             Item.damage = 256;
-            Item.useAnimation = Item.useTime = 30;
+            Item.useAnimation = Item.useTime = 24;
             Item.knockBack = 4f;
             Item.mana = 10;
             Item.buffType = ModContent.BuffType<KalandraMirrorBuff>();

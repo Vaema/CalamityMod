@@ -1,7 +1,4 @@
-﻿using System.Data;
-using System.IO;
-using System.Runtime.CompilerServices;
-using CalamityMod.Dusts;
+﻿using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.PrimordialWyrm;
@@ -12,7 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
@@ -197,7 +194,7 @@ namespace CalamityMod.Projectiles.Melee
                         {
                             float randRot = Main.rand.NextFloat(-30, -60);
                             Vector2 dustVel = (new Vector2(0, 15 * -Projectile.ai[1] * Owner.direction)).RotatedBy(FinalRotation + MathHelper.ToRadians(randRot));
-                            Dust dust2 = Dust.NewDustPerfect(Owner.Center + (new Vector2(185, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), 278, dustVel * Main.rand.NextFloat(0.1f, 0.5f));
+                            Dust dust2 = Dust.NewDustPerfect(Owner.Center + (new Vector2(185, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), DustID.FireworksRGB, dustVel * Main.rand.NextFloat(0.1f, 0.5f));
                             dust2.scale = Main.rand.NextFloat(0.55f, 1.05f);
                             dust2.noGravity = true;
                             dust2.color = Main.rand.NextBool(3) ? Color.Goldenrod : Color.Gold;
@@ -259,10 +256,10 @@ namespace CalamityMod.Projectiles.Melee
                 // Remove knockback resist, just like it used to
                 target.knockBackResist = 1;
 
-                // Apply tile collison damage (is bonus on GFB and even further is both final bosses are gone)
+                // Apply tile collison damage (is boosted on GFB and even further if both final bosses are gone)
                 float damageMults = ((DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs) ? 5 : 1) * (Main.zenithWorld ? 77 : 1) * (rightClicked ? 3 : 1);
                 int damage = (int)(Projectile.damage * damageMults);
-                target.FlungNPC().ApplyCollisionDamage(target, Owner, damage, launchVel * launchPower, 5f, true);
+                target.GetGlobalNPC<CalamityTileCollisionHarmNPC>().ApplyCollisionDamage(target, Owner, damage, launchVel * launchPower, 5f, true);
             }
 
             if (Projectile.numHits < 3)

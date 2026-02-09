@@ -1,19 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Terraria.ID;
+﻿using System.IO;
 using Terraria;
 
 namespace CalamityMod.Packets
 {
-    public sealed class PlaceAltCritterPacket : CalamityPacket
+    internal sealed class PlaceAltCritterPacket : CalamityPacket
     {
         public static PlaceAltCritterPacket Instance { get; private set; }
-
-        public override byte MessageType => (byte)CalamityModMessageType.PlaceAltCritter;
 
         /// <summary>
         /// Same Method, but uses critterItem.makeNPC and critterItem.type for shorthanded call
@@ -41,7 +33,7 @@ namespace CalamityMod.Packets
             packet.Send(toClient, ignoreClient);
         }
 
-        public override void HandlePacket(in BinaryReader packet, int sender)
+        public override void HandlePacket(BinaryReader packet, int sender)
         {
             var placerplayer = packet.ReadPlayer();
             int posX = packet.ReadInt32();

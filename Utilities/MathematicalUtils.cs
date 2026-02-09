@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.Xml;
-using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
-using ReLogic.Threading;
 using Terraria;
 
 namespace CalamityMod
@@ -296,6 +292,16 @@ namespace CalamityMod
         }
 
         public static List<Point> GetIntersectingPointsInLine(Vector2 start, Vector2 end) => GetIntersectingPointsInLine(start.ToTileCoordinates(), end.ToTileCoordinates());
+
+        /// <summary>
+        ///     Rotates a vector towards targetAngle by at most maxChange and normalizes the vector.
+        /// </summary>
+        public static Vector2 RotateDirectionTowards(this Vector2 vec, float targetAngle, float maxChange) => vec.ToRotation().AngleTowards(targetAngle, maxChange).ToRotationVector2();
+
+        /// <summary>
+        ///     Rotates a vector towards targetAngle by at most maxChange.
+        /// </summary>
+        public static Vector2 RotateTowards(this Vector2 vec, float targetAngle, float maxChange) => vec.RotateDirectionTowards(targetAngle, maxChange) * vec.Length();
 
         #region Easings
         /// <summary>

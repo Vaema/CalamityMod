@@ -27,7 +27,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         // Both checks to make sure sounds/hitboxes only happen once per swing
         public bool makeSound = true;
         public bool makeHitbox = true;
-        public int cooldownGiven => (int)(400 / Owner.GetAttackSpeed<MeleeDamageClass>()); // Cooldown is effected by melee speed, lines up perfectly so you do 10 swings and end in time for a big swing
+        public int cooldownGiven => (int)(800 / Owner.GetAttackSpeed<MeleeDamageClass>()); // Cooldown is effected by melee speed, lines up perfectly so you do 22 swings and end in time for a big swing
         public float pullFx = 1; // Scaling on the effects of the blade when it's buffed
         public bool pressedRight = false;
         // Spawns a hitbox to do damage, rather than dealing damage itself

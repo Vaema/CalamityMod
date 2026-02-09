@@ -18,6 +18,7 @@ BallisticPoisonCloud.DisplayName: Ballistic Cloud
 BarrelShrapnel.DisplayName: Barrel Shrapnel
 BileExplosion.DisplayName: Bile
 BlastBarrelProjectile.DisplayName: Blast Barrel
+BlazingStarOrbital.DisplayName: Orbital Blazing Star
 BlazingStarProj.DisplayName: Blazing Star
 BloodsoakedCrashax.DisplayName: Bloodsoaked Crasher
 BlueFlamePillar.DisplayName: Flame Pillar
@@ -122,6 +123,7 @@ GacruxianProj.DisplayName: Gacruxian Mollusk
 GelDartProjectile.DisplayName: Gel Dart
 GhoulishGougerBoomerang.DisplayName: Ghoulish Gouger
 GildedDaggerProj.DisplayName: Gilded Dagger
+GlaiveOrbital.DisplayName: Orbital Glaive
 GlaiveProj.DisplayName: Glaive
 GleamingDaggerProj.DisplayName: Gleaming Dagger
 GodsParanoiaDart.DisplayName: God's Paranoia Dart
@@ -163,6 +165,7 @@ LostSoulFriendly.DisplayName: Lost Soul
 LuminousShard.DisplayName: Stardust Shard
 LunarKunaiProj.DisplayName: Lunar Kunai
 LuxorsGiftRogue.DisplayName: Luxor's Rogue
+LyraConstellation.DisplayName: Lyra Constellation
 MalachiteBolt.DisplayName: Malachite
 MalachiteProj.DisplayName: Malachite
 MalachiteStealth.DisplayName: Malachite
@@ -181,13 +184,8 @@ NanoblackSplit.DisplayName: Nanoblack Blade
 NanoblackStealthSplit.DisplayName: Nanoblack Afterimage
 NastyChollaBol.DisplayName: Nasty Cholla
 NastyChollaNeedle.DisplayName: Cactus Needle
-NiceCock.DisplayName: Kitchen Fire
-NightsGazeProjectile.DisplayName: Night's Gaze
-NightsGazeSpark.DisplayName: Night's Gaze Spark
-NightsGazeStar.DisplayName: Night's Gaze Star
 OrichalcumSpikedGemstoneProjectile.DisplayName: Orichalcum Gemstone
 PalladiumJavelinProjectile.DisplayName: Palladium Javelin
-PanSpark.DisplayName: Pan Spark
 PartisanExplosion.DisplayName: Profaned Explosion
 PenumbraBomb.DisplayName: Penumbra Bomb
 PenumbraSoul.DisplayName: Penumbra Soul
@@ -227,7 +225,7 @@ RegulusRiotProj.DisplayName: Regulus Riot
 RotBallProjectile.DisplayName: Rot Ball
 SacrificeProjectile.DisplayName: Sacrificial Dagger
 SamsaraSlicerProjectile.DisplayName: Samsara Slicer
-SamsaraSlicerSmallDisk.DisplayName: Samsara Slicer
+SamsaraSlicerSmallDisk.DisplayName: Samsara Slicer Split
 SandDollarFrag.DisplayName: Sand Dollar Frag
 SandDollarProj.DisplayName: Sand Dollar
 SandDollarStealth.DisplayName: Sand Dollar Duststorm
@@ -242,7 +240,6 @@ SeafoamBubble.DisplayName: Seafoam Bubble
 SealedSingularityBlackhole.DisplayName: Sealed Blackhole
 SealedSingularityGore.DisplayName: Sealed Singularity Fragment
 SealedSingularityProj.DisplayName: Sealed Singularity
-SearedPanProjectile.DisplayName: Pan
 SeraphimAngelicLight.DisplayName: Light Orb
 SeraphimAngelicLight2.DisplayName: Light Orb
 SeraphimBeamLarge.DisplayName: Holy Beam
@@ -316,6 +313,9 @@ ValariBoomerang.DisplayName: Frostcrush Valari
 Valaricicle.DisplayName: Valaricicle
 Valaricicle2.DisplayName: Valaricicle
 ValedictionBoomerang.DisplayName: Valediction
+VegaProjectile.DisplayName: Vega
+VegaSpark.DisplayName: Vega Spark
+VegaStar.DisplayName: Vega Star
 VeneratedKnife.DisplayName: Venerated Knife
 WaveSkipperProjectile.DisplayName: Wave Skipper
 WebBallBol.DisplayName: Web Ball

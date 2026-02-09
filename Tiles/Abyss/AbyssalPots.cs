@@ -25,7 +25,7 @@ namespace CalamityMod.Tiles.Abyss
             TileObjectData.newTile.DrawYOffset = 2;
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(47, 79, 79), Language.GetText("MapObject.Pot")); // dark slate gray
-            DustType = 29;
+            DustType = DustID.WaterCandle;
             HitSound = SoundID.Shatter;
         }
 

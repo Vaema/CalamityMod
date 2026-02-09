@@ -37,14 +37,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         private const float MaximumMouseRange = 360f;
         private const float ProjCenterOffset = 36f;
 
-        public bool IsSmall
-        {
-            get
-            {
-                CalamityGlobalItem swordItem = Main.player[Projectile.owner].ActiveItem().Calamity();
-                return swordItem.ChargeRatio < Phaseslayer.SizeChargeThreshold;
-            }
-        }
+        public bool IsSmall => false; //Phaseslayer no longer uses charge so no longer gets small. I don't care to redo the code to remove this entirely so it's just being set to false.
 
         // ai[0] wrapper. Stores a rolling lerped average of angular momentum which is used as the swing speed damage multiplier.
         public float AngularDamageFactor
@@ -92,7 +85,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public override void AI()
         {
             Player player = Main.player[Projectile.owner];
-            CalamityGlobalItem modItem = player.ActiveItem().Calamity();
+            CalamityGlobalItem modItem = player.HeldItem.Calamity();
 
             // Angles are wrapped to be 0 to 2pi instead of -pi to pi for convenience with absolute values.
             float rotationAdjusted = MathHelper.WrapAngle(Projectile.rotation) + MathHelper.Pi;
@@ -116,12 +109,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             AdjustCurrentDamage(player, deltaAngle);
             ManipulateFrames();
             HandleSwordBeams(player, modItem, deltaAngle);
-
-            // Because sword beams (or just holding the sword while it's fizzling) can take energy even when the sword's at zero energy,
-            // this is here to ensure the sword item's charge never goes below zero.
-            if (modItem.Charge < 0f)
-                modItem.Charge = 0f;
-
             HandleFadeout();
         }
 
@@ -130,8 +117,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             if (Main.myPlayer == player.whoAmI)
             {
                 // In addition to typical channel cancellation criteria, the sword fizzles out if it runs out of charge.
-                Item playerItem = player.ActiveItem();
-                bool hasCharge = modItem.Charge > 0f;
+                Item playerItem = player.HeldItem;
+                bool hasCharge = true; // Phaseslayer no longer uses charge so always true.
                 if (!player.CantUseHoldout() && playerItem.type == ModContent.ItemType<Phaseslayer>() && hasCharge)
                 {
                     // 14NOV2024: Ozzatron: clamped mouse position unnecessary, the effect is capped separately
@@ -205,7 +192,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             float speedDamageScalar = MathF.Log(AngularDamageFactor / StandardSwingSpeed + 3f, 3f);
 
             // Get the underlying sword item's current damage. This takes into account the player's stats and the sword's current charge.
-            int damageWithChargeAndStats = player.GetWeaponDamage(player.ActiveItem());
+            int damageWithChargeAndStats = player.GetWeaponDamage(player.HeldItem);
             float sizeDamageScalar = IsSmall ? Phaseslayer.SmallDamageMultiplier : 1f;
             Projectile.damage = (int)(damageWithChargeAndStats * speedDamageScalar * sizeDamageScalar);
         }
@@ -251,9 +238,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 {
                     Vector2 velocity = Projectile.rotation.ToRotationVector2() * 20f;
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<PhaseslayerBeam>(), (int)(Projectile.damage * SwordBeamDamageMultiplier), 0f, player.whoAmI);
-
-                    // Actually consume energy to fire the sword beam.
-                    modItem.Charge -= Phaseslayer.SwordBeamChargeUse;
                 }
 
                 // The sound delay doubles as the sword beam's cooldown.
@@ -272,7 +256,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             }
         }
 
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float averageRotation = Projectile.oldRot.Take(20).Average(angle => MathHelper.WrapAngle(angle) + MathHelper.Pi);
             float deltaAngle = Math.Abs(averageRotation - (MathHelper.WrapAngle(Projectile.rotation) + MathHelper.Pi));
@@ -291,7 +275,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             return Color.Lerp(Color.Red, Color.PaleVioletRed * completionRatio, MathHelper.Clamp(completionRatio * 0.8f, 0f, 1f)) * opacity;
         }
 
-        internal float WidthFunction(float completionRatio) => (IsSmall ? 101f : 127f) * (1f - completionRatio) * 0.8f;
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos) => (IsSmall ? 101f : 127f) * (1f - completionRatio) * 0.8f;
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -324,7 +308,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 float angularTurn = i * swingAngularDirection * -0.09f;
                 drawPoints[i] = Projectile.position + perpendicularDirection.RotatedBy(angularTurn) * offsetFactor;
             }
-            PrimitiveRenderer.RenderTrail(drawPoints, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f + bladeOffset, shader: GameShaders.Misc["CalamityMod:PhaseslayerRipEffect"]), 50);
+            PrimitiveRenderer.RenderTrail(drawPoints, new(WidthFunction, ColorFunction, (_,_) => Projectile.Size * 0.5f + bladeOffset, shader: GameShaders.Misc["CalamityMod:PhaseslayerRipEffect"]), 50);
 
             Main.EntitySpriteDraw(bladeTexture, Projectile.Center + bladeOffset - Main.screenPosition, frame, Color.White, Projectile.rotation + MathHelper.PiOver2, origin, Projectile.scale, SpriteEffects.None, 0);
             Main.EntitySpriteDraw(hiltTexture, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation + MathHelper.PiOver2, hiltTexture.Size() * 0.5f, Projectile.scale, SpriteEffects.None, 0);

@@ -1,11 +1,6 @@
-﻿using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
-using Terraria.Enums;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -23,7 +18,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             TileObjectData.newTile.RandomStyleRange = 3;
             TileObjectData.newTile.DrawYOffset = 2;
             TileObjectData.addTile(Type);
-            DustType = 253;
+            DustType = DustID.TsunamiInABottle;
             AddMapEntry(new Color(31, 92, 114));
 
             base.SetStaticDefaults();

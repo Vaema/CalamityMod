@@ -12,10 +12,6 @@ namespace CalamityMod.Items.Weapons.Summon
     public class SpikecragStaff : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<CraniumSmasher>();
-        }
         public override void SetDefaults()
         {
             Item.width = 50;
@@ -24,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.mana = 10;
             Item.DamageType = DamageClass.Summon;
             Item.sentry = true;
-            Item.useAnimation = Item.useTime = 20;
+            Item.useAnimation = Item.useTime = 30;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 2f;

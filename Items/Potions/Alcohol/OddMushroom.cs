@@ -10,8 +10,6 @@ namespace CalamityMod.Items.Potions.Alcohol
     {
         public new string LocalizationCategory => "Items.Potions";
 
-        public static float DamageBoost = 0.5f;
-
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;
@@ -28,12 +26,6 @@ namespace CalamityMod.Items.Potions.Alcohol
 
             Item.value = Item.buyPrice(gold: 5); // Sold by Truffle
             Item.rare = ItemRarityID.LightRed;
-        }
-
-        public override void OnConsumeItem(Player player)
-        {
-            if (player.Calamity().trippyLevel < 3)
-                player.Calamity().trippyLevel++;
         }
     }
 }

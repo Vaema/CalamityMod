@@ -181,6 +181,7 @@ namespace CalamityMod.NPCs.SunkenSea
             AddScavengerItem(black, ItemID.GoldenCrate, 1, () => !Main.hardMode, 0.02f);
             AddScavengerItem(black, ItemID.GoldenCrateHard, 1, () => Main.hardMode, 0.02f);
             AddScavengerItem(black, ItemID.WaterWalkingBoots, 1, 0.05f);
+            AddScavengerItem(black, ItemID.FishingBobber, 1, 0.05f);
             AddScavengerItem(black, ItemID.JellyfishNecklace, 1, 0.05f);
             AddScavengerItem(white, ModContent.ItemType<SerpentsBite>(), 1, 0.05f);
             //AddScavengerItem(black, ItemID.Nachos, 1, 0.05f); insert food item
@@ -482,12 +483,16 @@ namespace CalamityMod.NPCs.SunkenSea
                             return;
                         }
                         
-                        // If the item is suddenly no longer valid for some reason, go back to idle behaviur
+                        // If the item is suddenly no longer valid for some reason, go back to idle behaviour
                         Item targetItem = Main.item[HeldItemIndex];
                         if (!targetItem.active || !ScavengerLoot.ContainsKey(targetItem.type))
                         {
                             NPC.netUpdate = true;
                             targetItem.noGrabDelay = 0;
+                            if (Main.netMode == NetmodeID.MultiplayerClient)
+                            {
+                                NetMessage.SendData(MessageID.SyncItem, -1, -1, null, targetItem.whoAmI, 0f, 0f, 0f, 0, 0, 0);
+                            }
                             HeldItemIndex = -1;
                             NPC.velocity = Vector2.Zero;
                             Phase = (int)PhaseType.Idle;
@@ -518,6 +523,10 @@ namespace CalamityMod.NPCs.SunkenSea
                                     TurnTimer = 30;
                                     NPC.netUpdate = true;
                                     targetItem.noGrabDelay = 0;
+                                    if (Main.netMode == NetmodeID.MultiplayerClient)
+                                    {
+                                        NetMessage.SendData(MessageID.SyncItem, -1, -1, null, targetItem.whoAmI, 0f, 0f, 0f, 0, 0, 0);
+                                    }
                                     HeldItemIndex = -1;
                                     Phase = (int)PhaseType.Idle;
                                     TurnTimer = 0;
@@ -553,23 +562,31 @@ namespace CalamityMod.NPCs.SunkenSea
                         // Pull the item if close enough
                         if (targetItem.Distance(NPC.Center) < 120)
                         {
-                            targetItem.noGrabDelay = 10000;
+                            targetItem.noGrabDelay = 100;
                             targetItem.velocity = targetItem.DirectionTo(NPC.Center) * 5;
+                            if (Main.netMode == NetmodeID.MultiplayerClient)
+                            {
+                                NetMessage.SendData(MessageID.SyncItem, -1, -1, null, targetItem.whoAmI, 0f, 0f, 0f, 0, 0, 0);
+                            }
                         }
                         // Grab the item if close enough
                         if (targetItem.Distance(NPC.Center) < 10)
                         {
-                            NPC.netUpdate = true;
                             Phase = (int)PhaseType.Bartering;
                             // If the item's stack is 1, despawn the item. Otherwise decrement its stack by 1.
                             if (targetItem.stack == 1)
                                 targetItem.active = false;
                             else
                                 targetItem.stack--;
+                            if (Main.netMode == NetmodeID.MultiplayerClient)
+                            {
+                                NetMessage.SendData(MessageID.SyncItem, -1, -1, null, targetItem.whoAmI, 1, 0f, 0f, 0, 0, 0);
+                            }
                             // Set the crab's held item type
                             HeldItemType = targetItem.type;
                             TurnTimer = 0;
                             WalkTimer = 0;
+                            NPC.netUpdate = true;
                         }
                     }
                     break;
@@ -578,7 +595,10 @@ namespace CalamityMod.NPCs.SunkenSea
                     {
                         if (CurrentPredator != null)
                         {
-                            Item.NewItem(NPC.GetSource_FromThis(), NPC.getRect(), HeldItemType);
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            {
+                                Item.NewItem(NPC.GetSource_FromThis(), NPC.getRect(), HeldItemType);
+                            }
 
                             NPC.netUpdate = true;
                             HeldItemIndex = -1;
@@ -700,8 +720,12 @@ namespace CalamityMod.NPCs.SunkenSea
                 stack = Main.rand.Next((int)NPC.localAI[0], (int)NPC.localAI[1] + 1);
             }
             stack = (int)(stack * stackMult);
-            int i = Item.NewItem(NPC.GetSource_FromThis(), new Rectangle((int)NPC.Center.X + NPC.direction * 20, (int)NPC.Center.Y - 20, NPC.width, NPC.height), ID, Stack: stack);
+            int i = Item.NewItem(NPC.GetSource_FromThis(), new Rectangle((int)NPC.Center.X + NPC.direction * 20, (int)NPC.Center.Y - 20, NPC.width, NPC.height), ID, Stack: stack, noBroadcast: false);
             Main.item[i].velocity = new Vector2(NPC.direction * Main.rand.NextFloat(3.7f, 4.3f), -Main.rand.NextFloat(-1.2f, 0.8f));
+            if (Main.netMode != NetmodeID.SinglePlayer)
+            {
+                NetMessage.SendData(MessageID.SyncItem, -1, -1, null, i);
+            }
         }
 
         // Checks if the horizontal position in front of it has water or is a pit so that the crab can avoid it

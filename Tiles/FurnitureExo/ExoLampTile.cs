@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Placeables.FurnitureExo;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -9,6 +10,8 @@ namespace CalamityMod.Tiles.FurnitureExo
 {
     public class ExoLampTile : ModTile
     {
+        public Asset<Texture2D> FlameTexture;
+
         public override void SetStaticDefaults() => this.SetUpLamp(ModContent.ItemType<ExoLamp>(), true);
 
         public override bool CanExplode(int i, int j) => false;
@@ -42,12 +45,13 @@ namespace CalamityMod.Tiles.FurnitureExo
 
         public override void HitWire(int i, int j)
         {
-            CalamityUtils.LightHitWire(Type, i, j, 1, 3);
+            FurnitureCommon.LightHitWire(Type, i, j, 1, 3);
         }
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            CalamityUtils.DrawFlameEffect(ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureExo/ExoLampTileFlame").Value, i, j);
+            FlameTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureExo/ExoLampTileFlame");
+            CalamityUtils.DrawFlameEffect(FlameTexture.Value, i, j);
         }
     }
 }

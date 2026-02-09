@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Placeables.FurnitureWulfrum;
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurnitureWulfrum

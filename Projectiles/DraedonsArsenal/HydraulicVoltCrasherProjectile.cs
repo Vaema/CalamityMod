@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             if (Main.myPlayer == Owner.whoAmI)
             {
                 // Get the projectile owner's held item. If it's not a modded item, stop now to prevent weird errors.
-                Item heldItem = Owner.ActiveItem();
+                Item heldItem = Owner.HeldItem;
                 if (heldItem.type < ItemID.Count)
                 {
                     Projectile.Kill();
@@ -72,11 +72,9 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 // Update the damage of the holdout projectile constantly so that it decreases as charge decreases, even while in use.
                 Projectile.damage = Owner.GetWeaponDamage(heldItem);
 
-                // Check if the player's held item still has sufficient charge. If so, and they're still using it, take a tiny bit of charge from it.
                 CalamityGlobalItem modItem = heldItem.Calamity();
-                if ((Owner.channel || Owner.Calamity().mouseRight) && modItem.Charge >= HydraulicVoltCrasher.HoldoutChargeUse)
+                if ((Owner.channel || Owner.Calamity().mouseRight))
                 {
-                    modItem.Charge -= HydraulicVoltCrasher.HoldoutChargeUse;
 
                     float speed = Owner.inventory[Owner.selectedItem].shootSpeed * Projectile.scale;
                     // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
@@ -113,7 +111,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 spawnPosition.Normalize();
                 spawnPosition *= Projectile.Size;
                 spawnPosition += Projectile.Center;
-                Dust dust = Dust.NewDustPerfect(spawnPosition, 226);
+                Dust dust = Dust.NewDustPerfect(spawnPosition, DustID.Electric);
                 dust.velocity = Projectile.velocity.SafeNormalize(Vector2.Zero) * Main.rand.NextFloat(2f, 3.6f);
                 dust.velocity += Owner.velocity * 0.4f;
             }
@@ -143,7 +141,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                         for (float increment = 0f; increment <= 1f; increment += 0.05f)
                         {
                             Vector2 spawnPosition = Vector2.Lerp(target.Center, n.Center, increment);
-                            Dust dust = Dust.NewDustPerfect(spawnPosition, 226);
+                            Dust dust = Dust.NewDustPerfect(spawnPosition, DustID.Electric);
                             dust.velocity = Vector2.Zero;
                             dust.scale = 1.6f;
                             dust.noGravity = true;

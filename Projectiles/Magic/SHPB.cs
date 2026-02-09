@@ -2,6 +2,7 @@
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Particles;
+using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -13,7 +14,7 @@ namespace CalamityMod.Projectiles.Magic
 {
     public class SHPB : ModProjectile, ILocalizedModType, IPixelatedPrimitiveRenderer
     {
-        public PixelationPrimitiveLayer LayerToRenderTo => PixelationPrimitiveLayer.BeforeProjectiles;
+        public GeneralDrawLayer LayerToRenderTo => GeneralDrawLayer.BeforeProjectiles;
 
         public ref float ExplodeTimer => ref Projectile.ai[2];
 
@@ -351,7 +352,7 @@ namespace CalamityMod.Projectiles.Magic
             return false;
         }
 
-        public float PlasmaBallWidthFunction(float completion)
+        public float PlasmaBallWidthFunction(float completion, Vector2 vertexPos)
         {
             float deathInterpolant = ExplodeTimer > 0 ? Utils.GetLerpValue(0, 50, ExplodeTimer, true) : Utils.GetLerpValue(60, 10, Projectile.timeLeft, true);
 
@@ -367,7 +368,7 @@ namespace CalamityMod.Projectiles.Magic
             return width * MathHelper.Lerp(1f, 0f, deathInterpolant);
         }
 
-        public Color PlasmaBallColorFunction(float completion)
+        public Color PlasmaBallColorFunction(float completion, Vector2 vertexPos)
         {
             Color bodyColor = Color.Lerp(Color.Transparent, FindColorForSoul((int)Projectile.ai[0]), Utils.GetLerpValue(0f, 0.35f, completion));
             Color endColor = Color.Lerp(bodyColor, FindColorForSoul((int)Projectile.ai[0]), Utils.GetLerpValue(0.35f, 1f, completion));
@@ -377,10 +378,10 @@ namespace CalamityMod.Projectiles.Magic
             return Color.Lerp(endColor, Color.White, deathInterpolant);
         }
 
-        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch, PixelationPrimitiveLayer layer)
+        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch, GeneralDrawLayer layer)
         {
             GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PlasmaBallWidthFunction, PlasmaBallColorFunction, (_) => Projectile.Size * 0.5f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), Projectile.oldPos.Length * 2);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PlasmaBallWidthFunction, PlasmaBallColorFunction, (_,_) => Projectile.Size * 0.5f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), Projectile.oldPos.Length * 2);
         }
     }
 }

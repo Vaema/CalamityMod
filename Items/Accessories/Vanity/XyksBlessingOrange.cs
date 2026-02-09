@@ -1,10 +1,10 @@
 ﻿using CalamityMod.CalPlayer;
 using CalamityMod.Items.BaseItems;
 using CalamityMod.Rarities;
-using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
+using Terraria.GameContent.NetModules;
 using Terraria.ModLoader;
+using Terraria.Net;
 
 namespace CalamityMod.Items.Accessories.Vanity
 {
@@ -47,6 +47,23 @@ namespace CalamityMod.Items.Accessories.Vanity
             {
                 CalamityPlayer modPlayer = player.Calamity();
                 modPlayer.XykVisualsOrange = true;
+            }
+        }
+
+        // Also research the other variant
+        public override void OnResearched(bool fullyResearched)
+        {
+            if (fullyResearched)
+            {
+                if (!Main.ServerSideCharacter)
+                {
+                    Main.LocalPlayerCreativeTracker.ItemSacrifices.RegisterItemSacrifice(ModContent.ItemType<XyksBlessingBlue>(), 1);
+                }
+                else
+                {
+                    NetPacket packet = NetCreativeUnlocksPlayerReportModule.SerializeSacrificeRequest(ModContent.ItemType<XyksBlessingBlue>(), 1);
+                    NetManager.Instance.SendToServerOrLoopback(packet);
+                }
             }
         }
     }

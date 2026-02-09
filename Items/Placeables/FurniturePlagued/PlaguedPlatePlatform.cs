@@ -1,5 +1,4 @@
-﻿using Terraria.ID;
-using Terraria.ModLoader;
+﻿using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurniturePlagued
 {
     public class PlaguedPlatePlatform : ModItem, ILocalizedModType

@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using CalamityMod.Items.Potions.Alcohol;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -11,12 +12,16 @@ namespace CalamityMod.Buffs.Alcohol
             Main.debuff[Type] = true;
             Main.pvpBuff[Type] = true;
             Main.buffNoSave[Type] = false;
+            Main.persistentBuff[Type] = true;
             BuffID.Sets.NurseCannotRemoveDebuff[Type] = true;
         }
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.Calamity().tequila = true;
+            var cplayer = player.Calamity();
+            cplayer.tequila = true;
+            cplayer.ElectricDebuffMultiplier += Tequila.DebuffBoost;
+            cplayer.ColdDebuffMultiplier -= Tequila.DebuffLoss;
         }
     }
 }

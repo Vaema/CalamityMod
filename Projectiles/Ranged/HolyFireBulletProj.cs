@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
-using CalamityMod.InverseKinematics;
 using CalamityMod.Items.Ammo;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Typeless;
@@ -14,7 +11,6 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace CalamityMod.Projectiles.Ranged
 {

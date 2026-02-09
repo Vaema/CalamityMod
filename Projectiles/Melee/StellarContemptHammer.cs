@@ -3,6 +3,7 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
+using CalamityMod.Utilities;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -147,7 +148,7 @@ namespace CalamityMod.Projectiles.Melee
                             fire.noGravity = true;
                             fire.scale = Main.rand.NextFloat(0.2f, 0.6f) * EmpoweredHammer;
 
-                            fire = Dust.CloneDust(fire);
+                            fire = Dust.BetterCloneDust(fire);
                             fire.velocity = Main.rand.NextVector2Circular(3f, 3f);
                             fire.velocity += Projectile.velocity * (EmpoweredHammer * 0.04f);
                             fire.color = Main.rand.NextBool(3) ? Color.PaleTurquoise : Color.Turquoise;
@@ -171,7 +172,7 @@ namespace CalamityMod.Projectiles.Melee
                         velOffset *= Main.rand.NextFloat(25, 45) * fade;
                         Particle energy = new SparkParticle(Projectile.Center + velOffset * 2.5f, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, false, 14, Main.rand.NextFloat(1.1f, 1.25f) - 0.5f * fade, Color.Turquoise);
                         GeneralParticleHandler.SpawnParticle(energy);
-                        Dust dust = Dust.NewDustPerfect(Projectile.Center + velOffset * 2.5f, 278, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, 0, default, Main.rand.NextFloat(0.4f, 0.6f));
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center + velOffset * 2.5f, DustID.FireworksRGB, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, 0, default, Main.rand.NextFloat(0.4f, 0.6f));
                         dust.noGravity = true;
                         dust.color = Color.Turquoise;
                         dust.velocity += Projectile.velocity;

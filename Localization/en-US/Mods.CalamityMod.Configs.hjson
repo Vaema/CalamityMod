@@ -79,11 +79,7 @@ CalamityClientConfig: {
 
 	CooldownDisplay: {
 		Label: "[i:CalamityMod/NebulousCore] Cooldown Rack Display Mode"
-		Tooltip:
-			'''
-			Adds the Cooldown Rack which displays all important cooldowns right underneath buffs and debuffs.
-			Set this to 1 to display the Cooldown Rack in compact mode, and to 0 to hide it entirely.
-			'''
+		Tooltip: Adds the Cooldown Rack which displays all important cooldowns right underneath buffs and debuffs.
 	}
 
 	DebuffDisplay: {
@@ -252,17 +248,7 @@ CalamityClientConfig: {
 
 	SetBonusDoubleTap: {
 		Label: "[i:VortexHelmet] Allow Double Tap for Armor Set Bonuses"
-		Tooltip:
-			'''
-			Allows all armor set bonuses to be triggered by the vanilla double-tap {$Key.DOWN} hotkey (or {$Key.UP} depending on your settings).
-			Set to Auto to automatically turn off double-tap as long as Calamity's {$Keybinds.ArmorSetBonus.DisplayName} hotkey is bound.
-			'''
-
-		Options: {
-			On: Always On
-			Auto: Auto
-			Off: Always Off
-		}
+		Tooltip: Allows all armor set bonuses to be triggered by the vanilla double-tap {$Key.DOWN} hotkey (or {$Key.UP} depending on your settings).
 	}
 
 	ShopNewAlert: {
@@ -382,6 +368,11 @@ CalamityClientConfig: {
 			'''
 	}
 
+	TileTextureBlendingQuality: {
+		Label: "[i:GlowPaint] Tile Merge Soft Blending"
+		Tooltip: Changes the quality of the soft-blending renderer used when different types of tiles merge together.
+	}
+
 	VanillaCooldownDisplay: {
 		Label: "[i:HealingPotion] Display Vanilla Cooldowns"
 		Tooltip:
@@ -459,7 +450,7 @@ CalamityServerConfig: {
 		Label: "[i:Pwnhammer] Early Hardmode Progression Rework"
 		Tooltip:
 			'''
-			Demon Altars no longer spawn ores and crimson/corruption blocks when broken.
+			Demon Altars no longer spawn ores when broken.
 			Wall of Flesh spawns Cobalt and Palladium ore on first kill.
 			The first mech boss you fight has 20% (10% in Expert and Master) less HP and damage and spawns Mythril and Orichalcum ore on first kill.
 			The second mech boss you fight has 10% (5% in Expert and Master) less HP and damage and spawns Adamantite and Titanium ore on first kill.
@@ -573,4 +564,63 @@ CalamityServerConfig: {
 	}
 }
 
-SetBonusDoubleTapOptions.Tooltip: ""
+CooldownDisplayOptions: {
+	Tooltip: ""
+
+	Full: {
+		Label: Full
+		Tooltip: Displays a circular bar around an icon which indicates cooldown duration
+	}
+
+	Compact: {
+		Label: Compact
+		Tooltip: Displays a gradient over an icon which indicates cooldown duration
+	}
+
+	Hidden: {
+		Label: Hidden
+		Tooltip: ""
+	}
+}
+
+SetBonusDoubleTapOptions: {
+	Tooltip: ""
+
+	On: {
+		Label: Always On
+		Tooltip: Always enables double-tap. Can be used in conjunction with Calamity's {$Keybinds.ArmorSetBonus.DisplayName} hotkey.
+	}
+
+	Auto: {
+		Label: Auto
+		Tooltip: Automatically turns off double-tap as long as Calamity's {$Keybinds.ArmorSetBonus.DisplayName} hotkey is bound.
+	}
+
+	Off: {
+		Label: Always Off
+		Tooltip: Always disables double-tap. Can be used to completely disable set bonus activation.
+	}
+}
+
+TileBlendingQuality: {
+	Tooltip: ""
+
+	Disable: {
+		Label: Disabled
+		Tooltip: Tile texture soft blending is disabled.
+	}
+
+	Normal: {
+		Label: Enabled
+		Tooltip: Tile texture soft blending is enabled.
+	}
+
+	High: {
+		Label: Enabled + Slices
+		Tooltip:
+			'''
+			Tile texture soft blending is enabled and uses sliced rendering.
+			[c/F05A5A:Not recommended for low-end devices.]
+			'''
+	}
+}

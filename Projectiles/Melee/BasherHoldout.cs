@@ -1,15 +1,12 @@
-﻿using System;
-using CalamityMod.Buffs.StatDebuffs;
+﻿using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs;
-using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -145,7 +142,7 @@ namespace CalamityMod.Projectiles.Melee
                         Vector2 particleVel = new Vector2(0, 7 * -Projectile.ai[1] * Owner.direction).RotatedBy(FinalRotation + MathHelper.ToRadians(-45));
                         Vector2 particlePos = Owner.Center + (new Vector2(Main.rand.Next(10, 90), 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)));
 
-                        Dust dust = Dust.NewDustPerfect(particlePos, 79);
+                        Dust dust = Dust.NewDustPerfect(particlePos, DustID.Pearlwood);
                         dust.noGravity = true;
                         dust.scale = Main.rand.NextFloat(0.85f, 1.3f);
                         dust.velocity = -particleVel.RotatedByRandom(0.2f);
@@ -224,7 +221,7 @@ namespace CalamityMod.Projectiles.Melee
             float minMult = 0.3f;
             int hitsToMinMult = 5;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
-            modifiers.SourceDamage *= damageMult * (Owner.Calamity().mouseRight ? 2.5f : 1);
+            modifiers.SourceDamage *= damageMult * (Owner.Calamity().mouseRight ? 2f : 1);
         }
         public override bool PreDraw(ref Color lightColor)
         {

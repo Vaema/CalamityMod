@@ -2,15 +2,12 @@
 using System.Collections.Generic;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Potions;
-using CalamityMod.NPCs.SulphurousSea;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.Utilities;
 
@@ -339,11 +336,11 @@ namespace CalamityMod
                 ItemDropRule.NotScalingWithLuck(ItemID.ManaPotion, 1, 5, 17)
             }));
 
-            // 2-6 Bait @ 50%; 25% Master 25% Apprentice
+            // 2-6 Bait @ 50%; 25% Master 25% Journeyman
             loot.Add(new OneFromRulesRule(2, new IItemDropRule[2]
             {
                 ItemDropRule.NotScalingWithLuck(ItemID.MasterBait, 1, 2, 6),
-                ItemDropRule.NotScalingWithLuck(ItemID.ApprenticeBait, 1, 2, 6)
+                ItemDropRule.NotScalingWithLuck(ItemID.JourneymanBait, 1, 2, 6)
             }));
 
             // 5-12 Gold Coin @ 25%

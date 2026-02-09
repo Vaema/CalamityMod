@@ -1,7 +1,5 @@
 ﻿using CalamityMod.Items.Placeables.Crags;
 using CalamityMod.Items.Placeables.Walls;
-using CalamityMod.Tiles.Furniture.CraftingStations;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurnitureAshen

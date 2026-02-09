@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using CalamityMod.Dusts;
 using CalamityMod.Particles;
-using Microsoft.Build.Construction;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
 

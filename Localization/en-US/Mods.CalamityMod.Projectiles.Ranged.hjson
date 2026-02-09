@@ -6,7 +6,7 @@ AngelicBeam.DisplayName: Angelic Beam
 AnimosityBullet.DisplayName: Brimstone Round
 AquaBlast.DisplayName: Aqua Blast
 AquaBlastToxic.DisplayName: Aqua Blast Toxic
-Aquashard.DisplayName: Aquashard
+Aquashard.DisplayName: Aqua Crystal
 AquashardSplit.DisplayName: Aquashard
 ArcherfishRing.DisplayName: Archerfish Ring
 ArcherfishShot.DisplayName: Water Round
@@ -97,6 +97,7 @@ FungiOrb2.DisplayName: Fungi Orb
 GemTechGreenFlechette.DisplayName: Gem Tech Flechette
 GodSlayerSlugProj.DisplayName: God Slayer Slug
 HalleysComet.DisplayName: Halley's Comet
+HalleysStarburst.DisplayName: Halley's Starburst
 HandheldTankShell.DisplayName: Tank Shell
 HeavenlyGaleProj.DisplayName: Heavenly Gale
 HellbornProj.DisplayName: Hell-born Gunblast
@@ -202,6 +203,7 @@ SevensStrikerGrape.DisplayName: Grapes
 SevensStrikerOrange.DisplayName: Orange
 SevensStrikerPlatinumCoin.DisplayName: Platinum Coin
 ShadeFire.DisplayName: Shady Fire
+ShardshockerCrystal.DisplayName: Charged Aqua Crystal
 Shell.DisplayName: Shell
 Shockblast.DisplayName: Blast
 ShockblastRound.DisplayName: Round
@@ -212,6 +214,7 @@ Sickness.DisplayName: Sickness
 SicknessRound.DisplayName: Round
 SicknessRound2.DisplayName: Round
 SlagRound.DisplayName: Slag Round
+Slagfire.DisplayName: Slagfire
 SlimeBolt.DisplayName: Slime Bolt
 SparkSpreaderFire.DisplayName: Sparked Flames
 SpectralFlare.DisplayName: Spectral Flare

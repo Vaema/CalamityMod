@@ -8,7 +8,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Rogue
@@ -17,10 +16,6 @@ namespace CalamityMod.Items.Weapons.Rogue
     public class DimensionTearingDisk : RogueWeapon
     {
         public static float Speed = 10.5f;
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<MawOfInfinity>();
-        }
         public override void SetDefaults()
         {
             Item.width = 62;
@@ -28,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.DamageType = RogueDamageClass.Instance;
             Item.useTime = Item.useAnimation = 24;
             Item.knockBack = 7f;
-            Item.damage = 725;
+            Item.damage = 980;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.autoReuse = true;

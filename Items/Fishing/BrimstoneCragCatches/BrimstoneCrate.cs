@@ -1,4 +1,6 @@
-﻿using CalamityMod.Tiles.Crags;
+﻿using CalamityMod.Items.Materials;
+using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Tiles.Crags;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -40,6 +42,17 @@ namespace CalamityMod.Items.Fishing.BrimstoneCragCatches
         public override bool CanRightClick() => true;
         public override void ModifyItemLoot(ItemLoot itemLoot)
         {
+            // 20-50 Scorched Bones @ 33.33%
+            // This is our equivalent to Bamboo
+            itemLoot.Add(ModContent.ItemType<Placeables.Crags.ScorchedBone>(), 3, 20, 50);
+
+            // 2-5 Essences of Havoc @ 50%
+            // This is our equivalent to Souls of Light/Night
+            itemLoot.Add(ModContent.ItemType<EssenceofHavoc>(), 2, 2, 5);
+
+            // Slagfire Douser @ 10%
+            itemLoot.Add(ModContent.ItemType<SlagfireDouser>(), 10, 1, 1);
+
             itemLoot.AddBiomeCrateLootRules();
         }
     }

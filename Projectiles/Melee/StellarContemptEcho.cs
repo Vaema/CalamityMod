@@ -82,7 +82,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 for (int i = 0; i < 20; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, 278, ((targeted.Center - Projectile.Center).SafeNormalize(Vector2.UnitX) * 25).RotatedByRandom(0.6f) * Main.rand.NextFloat(0.2f, 1f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.FireworksRGB, ((targeted.Center - Projectile.Center).SafeNormalize(Vector2.UnitX) * 25).RotatedByRandom(0.6f) * Main.rand.NextFloat(0.2f, 1f));
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(0.8f, 1.9f);
                     dust.color = Main.rand.NextBool(3) ? Color.PaleTurquoise : Color.Turquoise;

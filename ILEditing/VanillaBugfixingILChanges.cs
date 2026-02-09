@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.NPCs;
+﻿using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework.Graphics;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
@@ -7,6 +6,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.Graphics.Renderers;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.ILEditing
 {
@@ -14,7 +14,7 @@ namespace CalamityMod.ILEditing
     {
         #region Fixing Vanilla Not Accounting For Spritebatch Modification in Held Projectiles
         private static bool HasLoggedHeldProjectileBlendStateCatch = false;
-        private void FixHeldProjectileBlendState(On_PlayerDrawLayers.orig_DrawHeldProj orig, PlayerDrawSet drawinfo, Projectile proj)
+        private static void FixHeldProjectileBlendState(On_PlayerDrawLayers.orig_DrawHeldProj orig, PlayerDrawSet drawinfo, Projectile proj)
         {
             orig(drawinfo, proj);
 
@@ -38,13 +38,13 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Fix Vanilla Not Accounting For Multiple Bobbers When Fishing With Truffle Worm
-        private void FixTruffleWormFishing(ILContext il)
+        private static void FixTruffleWormFishing(ILContext il)
         {
             var cursor = new ILCursor(il);
 
             // Initialize a flag variable whether truffle worm was used.
             il.Method.Body.Variables.Add(new VariableDefinition(il.Module.TypeSystem.Boolean));
-            byte truffleWormUsed = (byte) (il.Method.Body.Variables.Count - 1);
+            byte truffleWormUsed = (byte)(il.Method.Body.Variables.Count - 1);
             cursor.Emit(OpCodes.Ldc_I4_0);
             cursor.Emit(OpCodes.Stloc_S, truffleWormUsed);
 
@@ -81,6 +81,31 @@ namespace CalamityMod.ILEditing
             }
 
             cursor.MarkLabel(loopEnd);
+        }
+        #endregion
+
+        #region Fix Vanilla does not call CheckDead when NPC has realLife
+        private static void EnsureCheckDeadOnSegments(ILContext il)
+        {
+            var cursor = new ILCursor(il);
+            if (!cursor.TryGotoNext(MoveType.After,
+                i => i.MatchLdfld<NPC>(nameof(NPC.realLife)),
+                i => i.MatchLdelemRef(),
+                i => i.MatchCallOrCallvirt<NPC>(nameof(NPC.checkDead))
+                ))
+            {
+                LogFailure("EnsureCheckDeadOnSegments", "Could not locate the checkDead instruction sets");
+                return;
+            }
+
+            cursor.EmitLdarg0();
+            cursor.EmitDelegate((NPC npc) =>
+            {
+                if (npc.life <= 0 && CalamityNPCSets.DoCheckDeadRegardlessRealLife[npc.type])
+                {
+                    NPCLoader.CheckDead(npc);
+                }
+            });
         }
         #endregion
     }

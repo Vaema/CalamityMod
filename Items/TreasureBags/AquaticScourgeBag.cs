@@ -1,7 +1,6 @@
 ﻿using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
-using CalamityMod.Items.TreasureBags.MiscGrabBags;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;

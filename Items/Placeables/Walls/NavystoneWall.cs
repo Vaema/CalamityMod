@@ -2,7 +2,7 @@
 using Terraria.ID;
 using Terraria.ModLoader;
 using WallTiles = CalamityMod.Walls;
-using CalamityMod.Walls.UnsafeWalls;
+
 namespace CalamityMod.Items.Placeables.Walls
 {
     [LegacyName("NavystoneWallSafe")]

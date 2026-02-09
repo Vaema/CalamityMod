@@ -5,7 +5,6 @@ using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
 
@@ -38,6 +37,10 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
+           
+            if (time == 0 && Projectile.ai[1] > 0)
+                Projectile.extraUpdates = (int)Projectile.ai[1];
+
             float rate = (Projectile.ai[2] * 0.05f);
             List<Color> eColors = new List<Color>()
                 {

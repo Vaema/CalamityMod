@@ -52,7 +52,7 @@ namespace CalamityMod.Projectiles.Melee
                     Main.dust[bansheeDust2].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(Math.PI) * (float)Main.rand.NextDouble() * (float)Projectile.width / 2f;
                     Main.dust[bansheeDust2].noGravity = true;
                     Main.dust[bansheeDust2].velocity *= 3f;
-                    bansheeDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 60, 0f, 0f, 100, default, 1.5f);
+                    bansheeDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RedTorch, 0f, 0f, 100, default, 1.5f);
                     Main.dust[bansheeDust2].position = Projectile.Center + Vector2.UnitY.RotatedByRandom(Math.PI) * (float)Main.rand.NextDouble() * (float)Projectile.width / 2f;
                     Main.dust[bansheeDust2].velocity *= 2f;
                     Main.dust[bansheeDust2].noGravity = true;
@@ -61,7 +61,7 @@ namespace CalamityMod.Projectiles.Melee
 
                 for (int k = 0; k < 2; k++)
                 {
-                    int bansheeDust3 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 60, 0f, 0f, 0, default, 2.7f);
+                    int bansheeDust3 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RedTorch, 0f, 0f, 0, default, 2.7f);
                     Main.dust[bansheeDust3].position = Projectile.Center + Vector2.UnitX.RotatedByRandom(Math.PI).RotatedBy((double)Projectile.velocity.ToRotation(), default) * (float)Projectile.width / 2f;
                     Main.dust[bansheeDust3].noGravity = true;
                     Main.dust[bansheeDust3].velocity *= 3f;
@@ -69,7 +69,7 @@ namespace CalamityMod.Projectiles.Melee
 
                 for (int l = 0; l < 5; l++)
                 {
-                    int spiritDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 180, 0f, 0f, 0, default, 1.5f);
+                    int spiritDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.DungeonSpirit, 0f, 0f, 0, default, 1.5f);
                     Main.dust[spiritDust].position = Projectile.Center + Vector2.UnitX.RotatedByRandom(Math.PI).RotatedBy((double)Projectile.velocity.ToRotation(), default) * (float)Projectile.width / 2f;
                     Main.dust[spiritDust].noGravity = true;
                     Main.dust[spiritDust].velocity *= 3f;

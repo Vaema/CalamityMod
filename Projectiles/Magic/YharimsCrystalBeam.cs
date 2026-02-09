@@ -2,6 +2,7 @@
 using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.NPCs;
+using CalamityMod.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -275,7 +276,7 @@ namespace CalamityMod.Projectiles.Magic
                 // If the beam isn't at max scale, then make additional smaller dust.
                 if (Projectile.scale != MaxBeamScale)
                 {
-                    Dust smallDust = Dust.CloneDust(d);
+                    Dust smallDust = Dust.BetterCloneDust(d);
                     smallDust.scale /= 2f;
                 }
             }

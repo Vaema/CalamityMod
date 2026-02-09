@@ -1,8 +1,5 @@
 ﻿using System;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.DataStructures;
 using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Items.Weapons.Ranged;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;

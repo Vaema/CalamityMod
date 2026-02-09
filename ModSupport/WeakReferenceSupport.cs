@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Buffs.Summon;
 using CalamityMod.Events;
-using CalamityMod.Items;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Pets;
+using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.SummonItems.Invasion;
@@ -54,6 +54,7 @@ using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Summon.Umbrella;
 using CalamityMod.Systems;
+using CalamityMod.Systems.Graphic.LiquidSystem;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -203,10 +204,9 @@ namespace CalamityMod
             if (biomelava == null)
                 return;
 
-            foreach (ModLavaStyle item in LavaStylesLoader.Content)
+            foreach (ModLavaStyle lavaStyle in ModLavaStyleLoader.AllStyles)
             {
-                int type = item.Slot;
-                ModLavaStyle lavaStyle = LavaStylesLoader.Get(type);
+                int type = lavaStyle.Slot;
                 if (lavaStyle != null)
                 {
                     Func<int> GetSplashDust = lavaStyle.GetSplashDust;
@@ -1153,7 +1153,7 @@ namespace CalamityMod
                 sAssociation.Call("AddMinionInfo", summonItem, summonBuff, summonProjectile);
             }
             RegisterSummon(ItemType<WulfrumController>(), BuffType<WulfrumDroidBuff>(), ProjectileType<WulfrumDroid>());
-            RegisterSummon(ItemType<SunSpiritStaff>(), BuffType<SolarSpirit>(), ProjectileType<SolarPixie>());
+            RegisterSummon(ItemType<SunSpiritStaff>(), BuffType<SolarSpirit>(), ProjectileType<SunSpiritMinion>());
             RegisterSummon(ItemType<FrostBlossomStaff>(), BuffType<FrostBlossomBuff>(), ProjectileType<FrostBlossom>());
             RegisterSummon(ItemType<BelladonnaSpiritStaff>(), BuffType<BelladonnaSpiritBuff>(), ProjectileType<BelladonnaSpirit>());
             RegisterSummon(ItemType<StormjawStaff>(), BuffType<BabyStormlionBuff>(), ProjectileType<StormjawBaby>());
@@ -1181,7 +1181,7 @@ namespace CalamityMod
             RegisterSummon(ItemType<GlacialEmbrace>(), BuffType<GlacialEmbraceBuff>(), ProjectileType<GlacialEmbracePointyThing>());
             RegisterSummon(ItemType<MountedScanner>(), BuffType<MountedScannerBuff>(), ProjectileType<MountedScannerSummon>());
             RegisterSummon(ItemType<DeepseaStaff>(), BuffType<AquaticStar>(), ProjectileType<AquaticStarMinion>());
-            RegisterSummon(ItemType<VengefulSunStaff>(), BuffType<SolarGodSpiritBuff>(), ProjectileType<SolarGod>());
+            RegisterSummon(ItemType<VengefulSunStaff>(), BuffType<SolarGodSpiritBuff>(), ProjectileType<VengefulSunSpiritMinion>());
             RegisterSummon(ItemType<TundraFlameBlossomsStaff>(), BuffType<TundraFlameBlossomsBuff>(), ProjectileType<TundraFlameBlossom>());
             RegisterSummon(ItemType<DormantBrimseeker>(), BuffType<BrimseekerBuff>(), ProjectileType<DormantBrimseekerBab>());
             RegisterSummon(ItemType<IgneousExaltation>(), BuffType<IgneousExaltationBuff>(), ProjectileType<IgneousBlade>());
@@ -1310,7 +1310,7 @@ namespace CalamityMod
         #region Luminance
         private static void RegisterWorldInfoIcon(Mod luminance, string texturePath, string hoverTextKey, Func<WorldFileData, bool> shouldAppear, byte priority)
             => luminance.Call("RegisterWorldInfoIcon", texturePath, hoverTextKey, shouldAppear, priority);
-        
+
         private static void LuminanceSupport()
         {
             Mod luminance = ExternalMods.luminance;
@@ -1324,7 +1324,7 @@ namespace CalamityMod
 
                 return tagData.ContainsKey("DeathMode") && tagData.GetBool("DeathMode");
             };
-            
+
             Func<WorldFileData, bool> revengeanceEnabled = data =>
             {
                 if (!data.TryGetHeaderData<WorldSelectionDifficultySystem>(out var tagData))
@@ -1332,7 +1332,7 @@ namespace CalamityMod
 
                 return tagData.ContainsKey("RevengeanceMode") && tagData.GetBool("RevengeanceMode") && !(tagData.ContainsKey("DeathMode") && tagData.GetBool("DeathMode"));
             };
-            
+
             RegisterWorldInfoIcon(luminance, "CalamityMod/UI/ModeIndicator/ModeIndicator_Death", "Mods.CalamityMod.UI.Death", deathEnabled, 50);
             RegisterWorldInfoIcon(luminance, "CalamityMod/UI/ModeIndicator/ModeIndicator_Rev", "Mods.CalamityMod.UI.Revengeance", revengeanceEnabled, 50);
         }

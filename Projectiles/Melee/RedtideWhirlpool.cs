@@ -44,7 +44,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 float angle = i / (float)dustCount * MathHelper.TwoPi + offset;
                 Vector2 dustPos = Projectile.Center + angle.ToRotationVector2() * 46f;
-                Dust dust = Dust.NewDustPerfect(dustPos, 176, (angle - MathHelper.PiOver2 * Math.Sign(Projectile.velocity.X)).ToRotationVector2() * 8f + Projectile.velocity, Scale: Main.rand.NextFloat(1.6f, 3f));
+                Dust dust = Dust.NewDustPerfect(dustPos, DustID.BubbleBurst_Blue, (angle - MathHelper.PiOver2 * Math.Sign(Projectile.velocity.X)).ToRotationVector2() * 8f + Projectile.velocity, Scale: Main.rand.NextFloat(1.6f, 3f));
                 dust.noGravity = true;
             }
         }
@@ -82,7 +82,7 @@ namespace CalamityMod.Projectiles.Melee
                 Vector2 offset = Vector2.Normalize(Projectile.velocity) * new Vector2(Projectile.width / 2f, Projectile.height) * 0.75f;
                 offset = offset.RotatedBy(((i - (dustCount / 2 - 1)) * MathHelper.TwoPi / (float)dustCount), default) + Projectile.Center;
                 Vector2 dustDirection = offset - Projectile.Center;
-                Dust dust = Dust.NewDustPerfect(offset + dustDirection, 172, Vector2.Zero, 100, default, 1.4f);
+                Dust dust = Dust.NewDustPerfect(offset + dustDirection, DustID.DungeonWater, Vector2.Zero, 100, default, 1.4f);
                 dust.noGravity = true;
                 dust.noLight = true;
                 dust.velocity = dustDirection;

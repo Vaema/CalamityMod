@@ -9,8 +9,8 @@ namespace CalamityMod.Buffs.DamageOverTime
     {
         public static DebuffData debuffData = new DebuffData()
         {
-            EnemyLostRegen = 1000, //Never infliced on enemies, token value. Really high bc this hurts a lot on players
-            HeatDebuffScaling = 1
+            EnemyLostRegen = 40,
+            HeatDebuffScaling = 2
         };
         public override void SetStaticDefaults()
         {

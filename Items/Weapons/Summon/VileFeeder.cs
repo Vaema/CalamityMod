@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.shoot = ModContent.ProjectileType<VileFeederSummon>();
             Item.knockBack = 0.5f;
 
-            Item.useAnimation = Item.useTime = 30;
+            Item.useAnimation = Item.useTime = 36;
             Item.mana = 10;
             Item.noMelee = true;
             Item.autoReuse = true;

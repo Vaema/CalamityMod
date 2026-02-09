@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Security.Cryptography;
-using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
-using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.WorldBuilding;
 
 namespace CalamityMod.DataStructures
 {
@@ -23,6 +18,7 @@ namespace CalamityMod.DataStructures
                 BuffID.CursedInferno, DebuffData.CursedInferno,
                 BuffID.ShadowFlame, DebuffData.Shadowflame,
                 BuffID.Daybreak, DebuffData.Daybroken,
+                BuffID.Burning, DebuffData.Burning,
                 BuffID.Frostburn, DebuffData.Frostburn,
                 BuffID.Frostburn2, DebuffData.Frostbite,
                 BuffID.Poisoned, DebuffData.Poisoned,
@@ -229,6 +225,13 @@ namespace CalamityMod.DataStructures
                  ))))
                  :
                  cnpc.ActiveTypelessDebuffMultiplier;
+
+            //Ensure at least 25% effectiveness
+            if (totalScaling.Multiplicative <= 0.25f)
+                totalScaling.Multiplicative = 0.25f; 
+            if (totalScaling.Additive < 0.25f)
+                totalScaling.Additive = 0.25f;
+
             totalDPS = totalScaling.ApplyTo(totalDPS);
             var totalDPSAdjusted = totalDPS-EnemyVanillaRegenToCancelOut;
             npc.Calamity().ApplyDPSDebuff((int)(totalDPSAdjusted), (int)Math.Max(totalDPS*MultiplierDamageTickSize,MinimumDamageTickSize), ref npc.lifeRegen, ref damage);
@@ -255,6 +258,13 @@ namespace CalamityMod.DataStructures
                  ))))
                  :
                  cnpc.ActiveTypelessDebuffMultiplier;
+
+            //Ensure at least 25% effectiveness
+            if (totalScaling.Multiplicative <= 0.25f)
+                totalScaling.Multiplicative = 0.25f;
+            if (totalScaling.Additive < 0.25f)
+                totalScaling.Additive = 0.25f;
+
             totalDPS = totalScaling.ApplyTo(totalDPS);
             totalDPS *= (npc.velocity.X == 0 ? 1 : 4);
             totalDPS -= EnemyVanillaRegenToCancelOut * (npc.velocity.X == 0 ? 1 : 5); //Vanilla Electrified is 5x when moving, not 4x
@@ -377,6 +387,11 @@ namespace CalamityMod.DataStructures
             EnemyVanillaRegenToCancelOut = 200,
             HeatDebuffScaling = 1,
             NPCLifeRegenMethod = DaybrokenRegen
+        };
+        // Provided purely to classify it as a heat debuff
+        public static DebuffData Burning = new DebuffData()
+        {
+            HeatDebuffScaling = 1
         };
         public static DebuffData Frostburn = new DebuffData()
         {

@@ -12,10 +12,8 @@ namespace CalamityMod.Items.Potions.Alcohol
     {
         public new string LocalizationCategory => "Items.Potions";
 
-        public static int DefenseBoost = 10;
-        public static float DamageReductionBoost = 0.03f;
-        public static int RegenLoss = 1;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DefenseBoost, DamageReductionBoost.ToPercent(), RegenLoss.ToRegenPerSecond());
+        public static float MaxLifePercentBoost = 0.33f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MaxLifePercentBoost.ToPercent());
 
         public override void SetStaticDefaults()
         {
@@ -30,27 +28,20 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(24, 28, ModContent.BuffType<MoonshineBuff>(), CalamityUtils.MinutesToFrames(8), true);
+            Item.DefaultToFood(24, 28, ModContent.BuffType<MoonshineBuff>(), CalamityUtils.MinutesToFrames(6), true);
 
-            Item.value = Item.sellPrice(gold: 1);
-            Item.rare = ItemRarityID.Yellow;
+            Item.value = Item.sellPrice(silver: 2);
+            Item.rare = ItemRarityID.Lime;
         }
 
         public override void AddRecipes()
         {
-            CreateRecipe().
-                AddIngredient(ItemID.Ale).
-                AddIngredient<LivingShard>().
+            CreateRecipe(10).
+                AddIngredient(ItemID.Bottle, 10).
+                AddIngredient(ItemID.LifeFruit).
+                AddIngredient<AncientBoneDust>(5).
                 AddTile(TileID.Kegs).
                 Register();
-
-            CreateRecipe().
-                AddIngredient(ItemID.BottledWater).
-                AddIngredient<BloodOrb>(5).
-                AddIngredient<LivingShard>().
-                AddTile(TileID.AlchemyTable).
-                Register()
-                .DisableDecraft();
         }
     }
 }

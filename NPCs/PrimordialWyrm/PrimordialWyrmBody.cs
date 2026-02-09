@@ -9,7 +9,6 @@ using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using CalamityMod.NPCs.PrimordialWyrm;
 
 namespace CalamityMod.NPCs.PrimordialWyrm
 {
@@ -22,6 +21,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
 
         public override void SetStaticDefaults()
         {
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
             this.HideFromBestiary();
             if (!Main.dedServ)
             {

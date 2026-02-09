@@ -14,7 +14,7 @@ namespace CalamityMod.Tiles.FurniturePlaguedPlate
 
         public override bool RightClick(int x, int y)
         {
-            return CalamityUtils.ClockRightClick();
+            return FurnitureCommon.ClockRightClick();
         }
 
         public override bool CreateDust(int i, int j, ref int type)
@@ -36,6 +36,6 @@ namespace CalamityMod.Tiles.FurniturePlaguedPlate
             }
         }
 
-        public override void MouseOver(int i, int j) => CalamityUtils.MouseOver(i, j, ModContent.ItemType<Items.Placeables.FurniturePlagued.PlaguedPlateClock>());
+        public override void MouseOver(int i, int j) => FurnitureCommon.MouseOver(i, j, ModContent.ItemType<Items.Placeables.FurniturePlagued.PlaguedPlateClock>());
     }
 }

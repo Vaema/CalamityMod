@@ -89,8 +89,9 @@ namespace CalamityMod.Items.BaseItems
         }
 
         internal TransformationAccessory currentTransformation = null;
-        int previousHighest = -1;
-        int currentHighest = -1;
+        internal TransformationAccessory previousTransformation = null;
+        internal int previousHighest = -1;
+        internal int currentHighest = -1;
 
         public int Type 
         { 
@@ -113,16 +114,26 @@ namespace CalamityMod.Items.BaseItems
         {
             orig(self);
 
-            Reset(self);
+            if (!self.dead)
+                Reset(self);
+            else
+            {
+                TransformationAccessory trans = self.Transformation().currentTransformation = self.Transformation().previousTransformation;
+                if (trans is not null)
+                    EquipTransformation(trans, self, Mod);
+            }
         }
 
-        private void Reset(Player p)
+        private static void Reset(Player p)
         {
-            previousHighest = currentHighest;
-            currentHighest = -1;
+            p.Transformation().previousHighest = p.Transformation().currentHighest;
+            p.Transformation().currentHighest = -1;
 
             if (p.Transformation().currentTransformation != null && !p.Transformation().currentTransformation.IsForced)
-                p.Transformation().currentTransformation = null;
+            {
+                p.Transformation().previousTransformation = p.Transformation().currentTransformation;
+                p.Transformation().currentTransformation = null;               
+            }
         }
 
         private void SetTransformationItem(On_Player.orig_UpdateVisibleAccessory orig, Player self, int itemSlot, Item item, bool modded)
@@ -135,24 +146,13 @@ namespace CalamityMod.Items.BaseItems
                     self.Transformation().currentTransformation = transformation;
             }
 
-            if (currentHighest < itemSlot)
-                currentHighest = itemSlot;
+            if (self.Transformation().currentHighest < itemSlot)
+                self.Transformation().currentHighest = itemSlot;
 
-            if (self.Transformation().currentTransformation != null && itemSlot == previousHighest) // last item slot, can set equip slots to our transformation if one is equipped
+            if (self.Transformation().currentTransformation != null && itemSlot == self.Transformation().previousHighest) // last item slot, can set equip slots to our transformation if one is equipped
             {
                 TransformationAccessory trans = self.Transformation().currentTransformation;
-                bool[] list = new bool[15];
-                foreach (var (Type, AssetName, EquipName) in trans.EquipSlots)
-                {
-                    string name = AssetName == null ? null : EquipName ?? trans.Name;
-                    if (!trans.CustomSetEquipType(self, Type, Mod, name) && !list[(int)Type])
-                    {
-                        SetEquipSlot(self, Type, Mod, name);
-                        list[(int)Type] = true;
-                    }
-                }
-                if (trans.ShouldHideAccessories)
-                    self.HideAccessories();
+                EquipTransformation(trans, self, Mod);
             }
         }
 
@@ -283,6 +283,22 @@ namespace CalamityMod.Items.BaseItems
             EquipType.Beard => player.beard,
             _ => -1,
         };
+
+        public static void EquipTransformation(TransformationAccessory trans, Player self, Mod mod)
+        {
+            bool[] list = new bool[15];
+            foreach (var (Type, AssetName, EquipName) in trans.EquipSlots)
+            {
+                string name = AssetName == null ? null : EquipName ?? trans.Name;
+                if (!trans.CustomSetEquipType(self, Type, mod, name) && !list[(int)Type])
+                {
+                    SetEquipSlot(self, Type, mod, name);
+                    list[(int)Type] = true;
+                }
+            }
+            if (trans.ShouldHideAccessories)
+                self.HideAccessories();
+        }
 
         public static EquipTexture GetEquipTexture(Player p, EquipType type) => EquipLoader.GetEquipTexture(type, GetEquipSlot(p, type));
     }

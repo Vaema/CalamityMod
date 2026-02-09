@@ -1,6 +1,5 @@
 ﻿using System;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;

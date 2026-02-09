@@ -1,6 +1,5 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -55,7 +54,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 for (int i = 0; i < 4; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2CircularEdge(200f * areaScale, 200f * areaScale), 66);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2CircularEdge(200f * areaScale, 200f * areaScale), DustID.RainbowTorch);
                     dust.scale = Main.rand.NextFloat(0.3f, 0.7f);
                     dust.velocity = Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1f);
                     dust.color = Color.LightBlue;
@@ -77,10 +76,13 @@ namespace CalamityMod.Projectiles.Rogue
             Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Particles/HighResFoggyCircleHardEdge").Value;
             Texture2D tex2 = ModContent.Request<Texture2D>("CalamityMod/Particles/SoftRoundExplosion").Value;
             Color drawColor2 = Color.LightBlue;
+            float rotMult = CalamityClientConfig.Instance.Photosensitivity ? 0f : 1f;
 
-            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, drawColor2 with { A = 0 }, 0, tex.Size() / 2f, 0.2f * fade * areaScale, SpriteEffects.None, 0);
-            Main.EntitySpriteDraw(tex2, Projectile.Center - Main.screenPosition, null, drawColor2 with { A = 0 } * 0.3f, Projectile.rotation, tex2.Size() / 2f, 0.2f * fade * areaScale, SpriteEffects.None, 0);
-            Main.EntitySpriteDraw(tex2, Projectile.Center - Main.screenPosition, null, drawColor2 with { A = 0 } * 0.3f, -Projectile.rotation, tex2.Size() / 2f, 0.2f * fade * areaScale, SpriteEffects.None, 0);
+            float opacityMult = CalamityClientConfig.Instance.Photosensitivity ? 0.33f : 1f;
+
+            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, drawColor2 with { A = 0 } * opacityMult, 0, tex.Size() / 2f, 0.2f * fade * areaScale, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(tex2, Projectile.Center - Main.screenPosition, null, drawColor2 with { A = 0 } * 0.3f * opacityMult, Projectile.rotation * rotMult, tex2.Size() / 2f, 0.2f * fade * areaScale, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(tex2, Projectile.Center - Main.screenPosition, null, drawColor2 with { A = 0 } * 0.3f * opacityMult, -Projectile.rotation * rotMult, tex2.Size() / 2f, 0.2f * fade * areaScale, SpriteEffects.None, 0);
 
             return false;
         }

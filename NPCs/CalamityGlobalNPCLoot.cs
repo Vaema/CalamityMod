@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using CalamityMod.Events;
-using CalamityMod.Items;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Fishing;
@@ -10,7 +9,8 @@ using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.PermanentBoosters;
 using CalamityMod.Items.Pets;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.SummonItems;
@@ -31,6 +31,7 @@ using Terraria.Audio;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static CalamityMod.NPCs.CalamityGlobalTownNPC;
 
 namespace CalamityMod.NPCs
 {
@@ -103,11 +104,9 @@ namespace CalamityMod.NPCs
                 #region Sky / Space
                 // Harpy
                 // Sky Glaze @ 3.33% IF Eye of Cthulhu dead
-                // Giant Harpy Feather @ 1.25% (0.67% in Vanilla)
                 // Essence of Sunlight @ 50% IF Hardmode and not statue spawned
                 case NPCID.Harpy:
                     postEoC.Add(ModContent.ItemType<SkyGlaze>(), 30);
-                    npcLoot.ChangeDropRate(ItemID.GiantHarpyFeather, 1, 80);
                     hardmode.AddIf(() => !npc.SpawnedFromStatue, ModContent.ItemType<EssenceofSunlight>(), 2);
                     break;
 
@@ -142,28 +141,20 @@ namespace CalamityMod.NPCs
                 // Craw Carapace @ 100% IF Hardmode
                 // OTHERWISE,
                 // Craw Carapace @ 14.29% Normal, 25% Expert+
-                // Armor Polish @ 1% Normal, 2% Expert+
                 case NPCID.Crawdad:
                 case NPCID.Crawdad2:
                     hardmode.Add(ModContent.ItemType<CrawCarapace>());
                     hardmode.OnFailedConditions(ItemDropRule.NormalvsExpert(ModContent.ItemType<CrawCarapace>(), 7, 4));
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.ArmorPolish, 100, 50));
-                    break;
-
-                // Toxic Sludge
-                // Fast Clock @ 1% Normal, 2% Expert+
-                case NPCID.ToxicSludge:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.FastClock, 100, 50));
                     break;
 
                 // Medusa
-                // Pocket Mirror @ 10% Normal, 20% Expert+
+                // Pocket Mirror @ 7.14% Normal, 14.29% Expert+ (2.5% Normal, 5% Expert+ in vanilla)
                 case NPCID.Medusa:
                     // Remove the vanilla loot rule for Pocket Mirror.
                     npcLoot.RemoveWhere((rule) => rule is CommonDrop conditionalRule && conditionalRule.itemId == ItemID.PocketMirror);
 
                     // Define a replacement rule which has an increased chance.
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.PocketMirror, 10, 5));
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.PocketMirror, 14, 7));
                     break;
 
                 // Tim
@@ -174,23 +165,16 @@ namespace CalamityMod.NPCs
 
                 // Skeleton Archer
                 // Magic Quiver @ 5% (2.5% in Vanilla)
-                // Marrow @ 2.5% (0.5% in Vanilla)
+                // Marrow @ 2% (0.5% in Vanilla)
                 case NPCID.SkeletonArcher:
                     npcLoot.ChangeDropRate(ItemID.MagicQuiver, 1, 20);
-                    npcLoot.ChangeDropRate(ItemID.Marrow, 1, 40);
+                    npcLoot.ChangeDropRate(ItemID.Marrow, 1, 50);
                     break;
 
                 // Armored Skeleton
-                // Beam Sword @ 2.5% (0.67% in Vanilla)
+                // Beam Sword @ 2% (0.67% in Vanilla)
                 case NPCID.ArmoredSkeleton:
-                    npcLoot.ChangeDropRate(ItemID.BeamSword, 1, 40);
-                    break;
-
-                // Black Recluse
-                // Poison Staff @ 5% (2.5% in Vanilla)
-                case NPCID.BlackRecluse:
-                case NPCID.BlackRecluseWall:
-                    npcLoot.ChangeDropRate(ItemID.PoisonStaff, 1, 20);
+                    npcLoot.ChangeDropRate(ItemID.BeamSword, 1, 50);
                     break;
 
                 // Mimic
@@ -308,9 +292,8 @@ namespace CalamityMod.NPCs
                     npcLoot.Add(ModContent.ItemType<FrostyBatBottle>(), 14);
                     break;
 
-                // Undead Viking, Armored Viking
+                // Armored Viking
                 // Armor Polish @ 1% Normal, 2% Expert
-                case NPCID.UndeadViking:
                 case NPCID.ArmoredViking:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.ArmorPolish, 100, 50));
                     break;
@@ -405,23 +388,24 @@ namespace CalamityMod.NPCs
                 #region Aquatic / Ocean
                 // Pink Jellyfish
                 // Life Jelly @ 10% Normal, 14.29% Expert+
+                // Jellyfish Necklace @ 3.33% (1% in vanilla)
                 case NPCID.PinkJellyfish:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<LifeJelly>(), 10, 7));
-                    npcLoot.ChangeDropRate(ItemID.JellyfishNecklace, 1, 25);
+                    npcLoot.ChangeDropRate(ItemID.JellyfishNecklace, 1, 30);
                     break;
 
                 // Blue Jellyfish
                 // Cleansing Jelly @ 10% Normal, 14.29% Expert+
                 case NPCID.BlueJellyfish:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<CleansingJelly>(), 10, 7));
-                    npcLoot.ChangeDropRate(ItemID.JellyfishNecklace, 1, 25);
+                    npcLoot.ChangeDropRate(ItemID.JellyfishNecklace, 1, 30);
                     break;
 
                 // Green Jellyfish
                 // Vital Jelly @ 12.5% Normal, 20% Expert+
                 case NPCID.GreenJellyfish:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<VitalJelly>(), 8, 5));
-                    npcLoot.ChangeDropRate(ItemID.JellyfishNecklace, 1, 25);
+                    npcLoot.ChangeDropRate(ItemID.JellyfishNecklace, 1, 30);
                     break;
 
                 // Piranha, Arapaima, Blood Feeder
@@ -443,10 +427,10 @@ namespace CalamityMod.NPCs
                     break;
 
                 // Blood Jelly, Fungo Fish
-                // Jellyfish Necklace @ 1%
+                // Jellyfish Necklace @ 3.33%
                 case NPCID.BloodJelly:
                 case NPCID.FungoFish:
-                    npcLoot.Add(ItemID.JellyfishNecklace, 25);
+                    npcLoot.Add(ItemID.JellyfishNecklace, 30);
                     break;
                 #endregion
 
@@ -459,12 +443,12 @@ namespace CalamityMod.NPCs
                     break;
 
                 // Chaos Elemental
-                // Rod of Discord @ 0.5% Normal, 0.625% Expert+ (2.5 times higher chance than vanilla)
+                // Rod of Discord @ 1% Normal, 2% Expert+
                 case NPCID.ChaosElemental:
                     // Remove the vanilla loot rule for Rod of Discord.
                     npcLoot.RemoveWhere((rule) => rule is CommonDrop conditionalRule && conditionalRule.itemId == ItemID.RodofDiscord);
                     // Define a replacement rule which has an increased chance.
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.RodofDiscord, 200, 160));
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.RodofDiscord, 100, 50));
                     break;
 
                 // Illuminant Bat
@@ -708,7 +692,7 @@ namespace CalamityMod.NPCs
                 case NPCID.Drippler:
                     postEoC.Add(ModContent.ItemType<BloodOrb>(), 4);
                     break;
-                
+
                 //Hardmode enemies drop orbs even if EoC is not dead
                 //99% of players will not encounter this and challenge runners will appreciate it
                 case NPCID.Clown:
@@ -898,8 +882,6 @@ namespace CalamityMod.NPCs
                 case NPCID.MourningWood:
                     // 5-10 Nightmare Fuel @ 100% IF Devourer of Gods dead
                     postDoG.Add(ModContent.ItemType<NightmareFuel>(), 1, 5, 10);
-
-                    pMoon.OnSuccess(ItemDropRule.ByCondition(new Conditions.NotExpert(), ItemID.WitchBroom, 5));
 
                     // Master items drop in Revengeance
                     pMoon.OnSuccess(ItemDropRule.ByCondition(DropHelper.RevNoMaster, ItemID.MourningWoodMasterTrophy));
@@ -1127,8 +1109,8 @@ namespace CalamityMod.NPCs
                     };
                     npcLoot.Add(new DropOneByOne(ItemID.Gel, kingSlimeGelSpray));
 
-                    // Expert+ drops are also available on Normal
-                    npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.RoyalGel));
+                    // 16NOV2025: Ozzatron: following overwhelming dev vote, Expert+ drops are NOT available in Classic
+                    // npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.RoyalGel));
 
                     // Would be in the bag otherwise
                     npcLoot.AddNormalOnly(ItemDropRule.ByCondition(DropHelper.Remix, ItemID.Keybrand, DropHelper.NormalWeaponDropRateInt));
@@ -1149,8 +1131,8 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.EyeofCthulhu:
-                    // Expert+ drops are also available on Normal
-                    npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.EoCShield));
+                    // 16NOV2025: Ozzatron: following overwhelming dev vote, Expert+ drops are NOT available in Classic
+                    // npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.EoCShield));
 
                     // Would be in the bag otherwise
                     npcLoot.AddNormalOnly(ModContent.ItemType<TeardropCleaver>(), DropHelper.NormalWeaponDropRateFraction);
@@ -1171,14 +1153,11 @@ namespace CalamityMod.NPCs
                 case NPCID.EaterofWorldsHead:
                 case NPCID.EaterofWorldsBody:
                 case NPCID.EaterofWorldsTail:
-                    // Expert+ drops are also available on Normal. Drop what would be in the bag otherwise
+                    // 16NOV2025: Ozzatron: following overwhelming dev vote, Expert+ drops are NOT available in Classic
                     LeadingConditionRule EoWKill = new(DropHelper.If((info) => info.npc.boss));
-                    EoWKill.Add(DropHelper.PerPlayer(ItemID.WormScarf));
+                    // EoWKill.Add(DropHelper.PerPlayer(ItemID.WormScarf));
                     EoWKill.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
                     npcLoot.AddNormalOnly(EoWKill);
-
-                    // Would be in the bag otherwise
-                    npcLoot.AddIf((info) => info.npc.boss, ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
                     // Master items drop in Revengeance
                     rev.AddIf((info) => info.npc.boss, ItemID.EaterofWorldsMasterTrophy);
@@ -1203,8 +1182,8 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.BrainofCthulhu:
-                    // Expert+ drops are also available on Normal
-                    npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.BrainOfConfusion));
+                    // 16NOV2025: Ozzatron: following overwhelming dev vote, Expert+ drops are NOT available in Classic
+                    // npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.BrainOfConfusion));
 
                     // Would be in the bag otherwise
                     npcLoot.AddNormalOnly(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
@@ -1253,8 +1232,8 @@ namespace CalamityMod.NPCs
                     }
                     catch (ArgumentNullException) { }
 
-                    // Expert+ drops are also available on Normal
-                    npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.BoneHelm));
+                    // 16NOV2025: Ozzatron: following overwhelming dev vote, Expert+ drops are NOT available in Classic
+                    // npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.BoneHelm));
 
                     // Would be in the bag otherwise
                     npcLoot.AddNormalOnly(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
@@ -1276,8 +1255,9 @@ namespace CalamityMod.NPCs
                     // Define a replacement rule which drops the weapons Calamity style.
                     npcLoot.AddNormalOnly(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, ItemID.BeeKeeper, ItemID.BeesKnees, ItemID.BeeGun, ModContent.ItemType<HardenedHoneycomb>()));
 
-                    // Expert+ drops are also available on Normal
-                    npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.HiveBackpack));
+                    // 16NOV2025: Ozzatron: following overwhelming dev vote, Expert+ drops are NOT available in Classic
+                    // npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.HiveBackpack));
+
                     npcLoot.AddNormalOnly(ModContent.ItemType<TheBee>(), DropHelper.NormalWeaponDropRateFraction);
 
                     // Would be in the bag otherwise
@@ -1292,7 +1272,7 @@ namespace CalamityMod.NPCs
 
                     // GFB Lavaproof Bug Net and Alchemical Flask drop
                     GFB.Add(DropHelper.PerPlayer(ItemID.FireproofBugNet), hideLootReport: true);
-                    GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<AlchemicalFlask>()), hideLootReport: true);
+                    GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<AlchemicalDecanter>()), hideLootReport: true);
 
                     // Lore
                     npcLoot.AddConditionalPerPlayer(() => !NPC.downedQueenBee, ModContent.ItemType<LoreQueenBee>(), desc: DropHelper.FirstKillText);
@@ -1311,8 +1291,8 @@ namespace CalamityMod.NPCs
                     };
                     npcLoot.Add(new DropOneByOne(ItemID.Bone, skeletronBoneSpray));
 
-                    // Expert+ drops are also available on Normal
-                    npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.BoneGlove));
+                    // 16NOV2025: Ozzatron: following overwhelming dev vote, Expert+ drops are NOT available in Classic
+                    // npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.BoneGlove));
 
                     // Would be in the bag otherwise
                     npcLoot.AddNormalOnly(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
@@ -1411,12 +1391,12 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.QueenSlimeBoss:
-                    // Expert+ drops are also available on Normal
-                    npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.VolatileGelatin));
-                    npcLoot.AddNormalOnly(ItemID.SoulofLight, 1, 15, 20);
-                    npcLoot.AddNormalOnly(ItemID.PinkGel, 1, 15, 20);
+                    // 16NOV2025: Ozzatron: following overwhelming dev vote, Expert+ drops are NOT available in Classic
+                    // npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.VolatileGelatin));
 
                     // Would be in the bag otherwise
+                    npcLoot.AddNormalOnly(ItemID.SoulofLight, 1, 15, 20);
+                    npcLoot.AddNormalOnly(ItemID.PinkGel, 1, 15, 20);
                     npcLoot.AddNormalOnly(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
                     // Master items drop in Revengeance
@@ -1438,8 +1418,8 @@ namespace CalamityMod.NPCs
                     // Define a replacement rule which respects the Early Hardmode Progression Rework.
                     npcLoot.AddNormalOnly(ItemDropRule.ByCondition(DropHelper.HallowedBarsCondition, ItemID.HallowedBar, 1, 15, 30));
 
-                    // Expert+ drops are also available on Normal
-                    npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.MechanicalWagonPiece));
+                    // 16NOV2025: Ozzatron: following overwhelming dev vote, Expert+ drops are NOT available in Classic
+                    // npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.MechanicalWagonPiece));
 
                     // Would be in the bag otherwise
                     npcLoot.AddNormalOnly(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
@@ -1479,8 +1459,9 @@ namespace CalamityMod.NPCs
                     }
                     catch (ArgumentNullException) { }
 
-                    // Expert+ drops are also available on Normal. These are done manually due to Last Twin Standing.
-                    npcLoot.AddIf((info) => !Main.expertMode && IsLastTwinStanding(info), ItemID.MechanicalWheelPiece);
+                    // 16NOV2025: Ozzatron: following overwhelming dev vote, Expert+ drops are NOT available in Classic
+                    // These are done manually due to Last Twin Standing.
+                    // npcLoot.AddIf((info) => !Main.expertMode && IsLastTwinStanding(info), ItemID.MechanicalWheelPiece);
 
                     // Would be in the bag otherwise
                     npcLoot.AddIf((info) => !Main.expertMode && IsLastTwinStanding(info), ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
@@ -1506,8 +1487,8 @@ namespace CalamityMod.NPCs
                     // Define a replacement rule which respects the Early Hardmode Progression Rework.
                     npcLoot.AddNormalOnly(ItemDropRule.ByCondition(DropHelper.HallowedBarsCondition, ItemID.HallowedBar, 1, 15, 30));
 
-                    // Expert+ drops are also available on Normal
-                    npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.MechanicalBatteryPiece));
+                    // 16NOV2025: Ozzatron: following overwhelming dev vote, Expert+ drops are NOT available in Classic
+                    // npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.MechanicalBatteryPiece));
 
                     // Would be in the bag otherwise
                     npcLoot.AddNormalOnly(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
@@ -1564,8 +1545,8 @@ namespace CalamityMod.NPCs
                     }
                     catch (ArgumentNullException) { }
 
-                    // Expert+ drops are also available on Normal
-                    npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.SporeSac));
+                    // 16NOV2025: Ozzatron: following overwhelming dev vote, Expert+ drops are NOT available in Classic
+                    // npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.SporeSac));
 
                     // Would be in the bag otherwise
                     npcLoot.AddNormalOnly(ModContent.ItemType<BloomStone>(), 10);
@@ -1617,9 +1598,10 @@ namespace CalamityMod.NPCs
                     }
                     catch (ArgumentNullException) { }
 
-                    // Expert+ drops are also available on Normal
                     var normalOnly = npcLoot.DefineNormalOnlyDropSet();
-                    normalOnly.Add(DropHelper.PerPlayer(ItemID.ShinyStone));
+
+                    // 16NOV2025: Ozzatron: following overwhelming dev vote, Expert+ drops are NOT available in Classic
+                    // normalOnly.Add(DropHelper.PerPlayer(ItemID.ShinyStone));
 
                     // Would be in the bag otherwise
                     normalOnly.Add(ModContent.ItemType<EssenceofSunlight>(), 1, 8, 10);
@@ -1712,12 +1694,12 @@ namespace CalamityMod.NPCs
                         }
                     }
                     catch (ArgumentNullException) { }
-                    DukeEditFailed:
+DukeEditFailed:
 
-                    // Expert+ drops are also available on Normal
-                    npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.ShrimpyTruffle));
+// 16NOV2025: Ozzatron: following overwhelming dev vote, Expert+ drops are NOT available in Classic
+// npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.ShrimpyTruffle));
 
-                    // Would be in the bag otherwise
+// Would be in the bag otherwise
                     npcLoot.AddNormalOnly(ModContent.ItemType<BrinyBaron>(), 10);
                     npcLoot.AddNormalOnly(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
@@ -1746,8 +1728,6 @@ namespace CalamityMod.NPCs
                     GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<FishboneBoomerang>()), hideLootReport: true);
                     GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<FishofEleum>(), 1, 1, 9999), true);
                     GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<FishofFlight>(), 1, 1, 9999), true);
-                    GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<FishofLight>(), 1, 1, 9999), true);
-                    GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<FishofNight>(), 1, 1, 9999), true);
 
                     // Lore
                     npcLoot.AddConditionalPerPlayer(() => !NPC.downedFishron, ModContent.ItemType<LoreDukeFishron>(), desc: DropHelper.FirstKillText);
@@ -1772,7 +1752,6 @@ namespace CalamityMod.NPCs
                                 ItemID.FairyQueenRangedItem, // Eventide
                                 ItemID.FairyQueenMagicItem, // Nightglow
                                 ItemID.SparkleGuitar, // Stellar Tune
-                                ItemID.EmpressBlade, // Terraprisma
                                 ItemID.RainbowWhip, // Kaleidoscope
                                 ItemID.RainbowWings // Empress Wings
                             };
@@ -1788,8 +1767,8 @@ namespace CalamityMod.NPCs
                     }
                     catch (ArgumentNullException) { }
 
-                    // Expert+ drops are also available on Normal
-                    npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.EmpressFlightBooster));
+                    // 16NOV2025: Ozzatron: following overwhelming dev vote, Expert+ drops are NOT available in Classic
+                    // npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.EmpressFlightBooster));
 
                     // Would be in the bag otherwise
                     npcLoot.AddNormalOnly(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
@@ -1851,12 +1830,13 @@ namespace CalamityMod.NPCs
                     }
                     catch (ArgumentNullException) { }
 
-                    // Expert+ drops are also available on Normal
-                    npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.GravityGlobe));
-                    npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.SuspiciousLookingTentacle));
-                    npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.LongRainbowTrailWings));
+                    // 16NOV2025: Ozzatron: following overwhelming dev vote, Expert+ drops are NOT available in Classic
+                    // npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.GravityGlobe));
+                    // npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.SuspiciousLookingTentacle));
+                    // npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.LongRainbowTrailWings));
 
                     // Would be in the bag otherwise
+                    // 16NOV2025: Ozzatron (executive decision): Celestial Onion remains available as a 6th slot in Classic.
                     npcLoot.AddNormalOnly(DropHelper.PerPlayer(ModContent.ItemType<CelestialOnion>()));
                     npcLoot.AddNormalOnly(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
@@ -1993,7 +1973,7 @@ namespace CalamityMod.NPCs
                             World.Abyss.UnlockAllAbyssChests();
                         }
                         string keysk = "Mods.CalamityMod.Status.Progression.SkeletronAbyssChestNotification";
-                        CalamityUtils.DisplayLocalizedText(keysk, new Color(76, 181, 76));
+                        CalamityUtils.BroadcastLocalizedText(keysk, new Color(76, 181, 76));
                     }
                     break;
 
@@ -2009,7 +1989,7 @@ namespace CalamityMod.NPCs
 
                         string key2 = "Mods.CalamityMod.Status.Progression.UglyBossText";
                         Color messageColor2 = Color.Aquamarine;
-                        CalamityUtils.DisplayLocalizedText(key2, messageColor2);
+                        CalamityUtils.BroadcastLocalizedText(key2, messageColor2);
                     }
                     break;
 
@@ -2069,8 +2049,8 @@ namespace CalamityMod.NPCs
                         // TODO -- this should probably be moved to a thread like Aureus meteor
                         CalamityUtils.SpawnOre(ModContent.TileType<PerennialOre>(), 12E-05, 0.65f, 0.85f, 5, 10, TileID.Dirt, TileID.Stone);
 
-                        CalamityUtils.DisplayLocalizedText(key, messageColor);
-                        CalamityUtils.DisplayLocalizedText(key2, messageColor2);
+                        CalamityUtils.BroadcastLocalizedText(key, messageColor);
+                        CalamityUtils.BroadcastLocalizedText(key2, messageColor2);
                     }
                     break;
 
@@ -2103,7 +2083,7 @@ namespace CalamityMod.NPCs
                         string key3 = "Mods.CalamityMod.Status.Progression.BabyBossText";
                         Color messageColor3 = Color.Lime;
 
-                        CalamityUtils.DisplayLocalizedText(key3, messageColor3);
+                        CalamityUtils.BroadcastLocalizedText(key3, messageColor3);
                     }
                     break;
 
@@ -2158,9 +2138,9 @@ namespace CalamityMod.NPCs
                         // Spawn Exodium planetoids and send messages about Providence, Exodium, and Necroplasm if ML has not been killed yet
                         if (!NPC.downedMoonlord)
                         {
-                            CalamityUtils.DisplayLocalizedText(key5, messageColor5);
-                            CalamityUtils.DisplayLocalizedText(key6, messageColor6);
-                            CalamityUtils.DisplayLocalizedText(key7, messageColor7);
+                            CalamityUtils.BroadcastLocalizedText(key5, messageColor5);
+                            CalamityUtils.BroadcastLocalizedText(key6, messageColor6);
+                            CalamityUtils.BroadcastLocalizedText(key7, messageColor7);
                         }
                     }
                     break;
@@ -2178,7 +2158,7 @@ namespace CalamityMod.NPCs
                 Color messageColor = new Color(50, 255, 130);
                 CalamityUtils.SpawnOre(TileID.Mythril, 12E-05, 0.55f, 0.8f, 3, 8);
                 CalamityUtils.SpawnOre(TileID.Orichalcum, 12E-05, 0.55f, 0.8f, 3, 8);
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
             }
             else if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2) || (!NPC.downedMechBoss2 && !NPC.downedMechBoss3) || (!NPC.downedMechBoss3 && !NPC.downedMechBoss1))
             {
@@ -2186,14 +2166,14 @@ namespace CalamityMod.NPCs
                 Color messageColor = new Color(50, 255, 130);
                 CalamityUtils.SpawnOre(TileID.Adamantite, 12E-05, 0.65f, 0.9f, 3, 8);
                 CalamityUtils.SpawnOre(TileID.Titanium, 12E-05, 0.65f, 0.9f, 3, 8);
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
             }
             else
             {
                 string key = "Mods.CalamityMod.Status.Progression.HardmodeOreTier4Text";
                 Color messageColor = new Color(50, 255, 130);
                 CalamityUtils.SpawnOre(ModContent.TileType<HallowedOre>(), 17E-05, 0.55f, 0.9f, 8, 14, TileID.Pearlstone, TileID.HallowHardenedSand, TileID.HallowSandstone, TileID.HallowedIce);
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
             }
         }
         #endregion

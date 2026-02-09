@@ -93,7 +93,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void HoldoutAI()
         {
-            CalamityGlobalItem modItem = Owner.ActiveItem().Calamity();
+            CalamityGlobalItem modItem = Owner.HeldItem.Calamity();
 
             if (Owner.CantUseHoldout() && KeepRefreshingLifetime)
             {
@@ -129,7 +129,6 @@ namespace CalamityMod.Projectiles.Ranged
 
                         if (!HasShotBeam)
                         {
-                            modItem.Charge -= 0.2f;
                             HasShotBeam = true;
                         }
 
@@ -149,7 +148,6 @@ namespace CalamityMod.Projectiles.Ranged
                                 Projectile.owner,
                                 ai1: Projectile.whoAmI);
                             OffsetLengthFromArm -= 25f;
-                            modItem.Charge -= 0.8f;
                             HasShotBeam = true;
                             SoundEngine.PlaySound(SmallBeamSound, GunTipPosition);
                         }
@@ -187,7 +185,6 @@ namespace CalamityMod.Projectiles.Ranged
                                 }
                             }
 
-                            modItem.Charge -= 2.5f;
                             HasShotBeam = true;
                         }
 
@@ -347,6 +344,10 @@ namespace CalamityMod.Projectiles.Ranged
             float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);
             Vector2 rotationPoint = texture.Size() * 0.5f;
             SpriteEffects flipSprite = Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            if (Owner.gravDir == -1f)
+            {
+                flipSprite |= SpriteEffects.FlipVertically;
+            }
 
             if (Projectile.timeLeft > CoolingDownTime || KeepRefreshingLifetime == true)
             {

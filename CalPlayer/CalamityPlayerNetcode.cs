@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using CalamityMod.Cooldowns;
 using CalamityMod.Packets;
@@ -26,10 +25,19 @@ namespace CalamityMod.CalPlayer
             DefenseDamageSyncPacket.Send(this);
         }
 
-        internal void MouseControlsSync()
+        internal void MousePositionSync()
+        {
+            MousePositionSyncPacket.Send(this);
+        }
+
+        internal void MouseRotationSync()
+        {
+            MouseRotationSyncPacket.Send(this);
+        }
+
+        internal void MouseRightClickSync()
         {
             RightClickSyncPacket.Send(this);
-            MousePositionSyncPacket.Send(this);
         }
         #endregion
 

@@ -4,9 +4,7 @@ using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
 using Terraria.Graphics.Shaders;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
@@ -90,11 +88,11 @@ namespace CalamityMod.Projectiles.Melee
             modifiers.SourceDamage *= Utils.Remap(Projectile.numHits, 0, 10, 1f, 0.1f, true);
         }
 
-        internal float WidthFunction(float completionRatio) => MathHelper.Clamp(CalamityUtils.Convert01To010(completionRatio * 2), 0.2f, 1f) * 4f;
-        internal Color ColorFunction(float completionRatio) => Color.White;
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos) => MathHelper.Clamp(CalamityUtils.Convert01To010(completionRatio * 2), 0.2f, 1f) * 4f;
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos) => Color.White;
 
-        internal float BackgroundWidthFunction(float completionRatio) => WidthFunction(completionRatio) * 2f;
-        internal Color BackgroundColorFunction(float completionRatio) => ColorFunction(completionRatio) * 0.5f;
+        internal float BackgroundWidthFunction(float completionRatio, Vector2 vertexPos) => WidthFunction(completionRatio, vertexPos) * 2f;
+        internal Color BackgroundColorFunction(float completionRatio, Vector2 vertexPos) => ColorFunction(completionRatio, vertexPos) * 0.5f;
 
         public override bool PreDraw(ref Color lightColor)
         {

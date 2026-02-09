@@ -11,7 +11,7 @@ namespace CalamityMod.Items.Armor.Astral
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
 
-        public static float DamageBoost = 0.05f;
+        public static float DamageBoost = 0.1f;
         public static float MoveSpeedBoost = 0.15f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(), MoveSpeedBoost.ToPercent());
 

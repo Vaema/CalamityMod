@@ -30,13 +30,12 @@ namespace CalamityMod.Items.Weapons.Melee
             ItemID.Sets.AnimatesAsSoul[Type] = true;
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
             base.SetStaticDefaults();
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<VoidConcentrationStaff>();
         }
         public override void SetDefaults()
         {
             Item.width = 114;
             Item.height = 128;
-            Item.damage = 550;
+            Item.damage = 600;
             Item.DamageType = TrueMeleeDamageClass.Instance;
             Item.useAnimation = 40;
             Item.useTime = 40;

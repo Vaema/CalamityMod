@@ -1,10 +1,8 @@
 ﻿using System;
 using CalamityMod.CalPlayer;
-using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.ExoMechs;
-using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.PrimordialWyrm;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Tiles;
@@ -98,7 +96,7 @@ namespace CalamityMod.Systems
             {
                 string key = Main.zenithWorld ? "Mods.CalamityMod.Status.Boss.AprilFoolsGFB" : "Mods.CalamityMod.Status.Boss.AprilFools";
                 Color messageColor = Color.Crimson;
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
             }
 
             // Disable sandstorms if the Desert Scourge is still alive and Hardmode hasn't begun.

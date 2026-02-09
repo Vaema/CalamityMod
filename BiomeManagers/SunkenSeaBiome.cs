@@ -1,12 +1,8 @@
 ﻿using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Graphics.Light;
-using Microsoft.Xna.Framework;
 using System;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
-using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Systems;
 
 namespace CalamityMod.BiomeManagers

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
@@ -130,7 +129,6 @@ namespace CalamityMod.NPCs.Astral
             NPC.value = Item.buyPrice(silver: 50);
             NPC.aiStyle = -1;
             NPC.DeathSound = DeathSound;
-            NPC.rarity = 1;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<AtlasBanner>();
             if (DownedBossSystem.downedAstrumAureus)

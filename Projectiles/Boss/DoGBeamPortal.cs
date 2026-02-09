@@ -117,7 +117,6 @@ namespace CalamityMod.Projectiles.Boss
                     {
                         SoundEngine.PlaySound(SoundID.Item33, Projectile.Center);
                         float speed = death ? 5f : revenge ? 4.5f : expertMode ? 4f : 3f;
-                        speed *= Main.npc[CalamityGlobalNPC.voidBoss].ai[1];
                         int totalProjectiles = 3;
                         float radians = MathHelper.TwoPi / totalProjectiles;
                         for (int i = 0; i < totalProjectiles; i++)

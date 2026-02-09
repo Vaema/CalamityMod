@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using CalamityMod.Balancing;
 using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
@@ -10,7 +9,6 @@ using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor;
 using CalamityMod.Items.Armor.GodSlayer;
-using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Systems.Collections;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -170,103 +168,81 @@ namespace CalamityMod
         /// Calculates and returns the player's total light strength. This is used for Abyss darkness, among other things.<br/>
         /// The Stat Meter also reports this stat.
         /// </summary>
-        /// <returns>The player's total light strength.</returns>
-        public static int GetCurrentAbyssLightLevel(this Player player)
+        public static void SetAbyssLightLevels(this Player player)
         {
             CalamityPlayer mp = player.Calamity();
-            int light = mp.externalAbyssLight;
             bool underwater = player.IsUnderwater();
             bool miningHelmet = player.head == ArmorIDs.Head.MiningHelmet || player.head == ArmorIDs.Head.UltraBrightHelmet;
-
-            // The campfire bonus does not apply while in the Abyss.
-            if (!mp.ZoneAbyss && (player.HasBuff(BuffID.Campfire) || Main.SceneMetrics.HasCampfire))
-                light += 1;
-            if (mp.camper) // inherits Campfire so it is +2 in practice
-                light += 1;
+            //Things that include darkness multipliers
+            if (mp.camper)
+                mp.abyssPlayerGlowMultiplier += Utils.Remap(player.velocity.Length(), 0, 5, 1, 0);
             if (miningHelmet)
-                light += 1;
-            if (player.hasMagiluminescence)
-                light += 1;
-            if (player.lightOrb)
-                light += 1;
-            if (player.crimsonHeart)
-                light += 1;
-            if (player.magicLantern)
-                light += 1;
+                mp.abyssPlayerGlowMultiplier += 0.2f;
+            if (player.nightVision)
+                mp.abyssDarkness -= 0.4f;
             if (mp.giantPearl)
-                light += 1;
-            if (mp.radiator)
-                light += 1;
-            if (mp.bendyPet)
-                light += 1;
-            if (mp.sparks)
-                light += 1;
-            if (mp.thiefsDime)
-                light += 1;
+                mp.abyssPlayerGlowMultiplier += 0.2f;
             if (mp.fathomSwarmerVisage)
-                light += 1;
+            {
+                mp.abyssDarkness -= 0.2f;
+                mp.abyssPlayerGlowMultiplier += 0.2f;
+                mp.abyssFlashlightWidthMultiplier += 0.5f;
+            }
             if (mp.aquaticHeart)
-                light += 1;
-            if (mp.purity) // does not stack with downgrades
-                light += 2;
-            else if (mp.rOoze || mp.aAmpoule) // the two "yellow lights" do not stack with each other
-                light += 1;
-            if (mp.aquaticEmblem && underwater)
-                light += 1;
-            if (player.arcticDivingGear && underwater) // inherited by abyssal diving gear/suit. jellyfish necklace is inherited so arctic diving gear is really +2
-                light += 1;
+                mp.abyssDarkness -= 0.1f;
             if (mp.jellyfishNecklace && underwater) // inherited by jellyfish diving gear and higher
-                light += 1;
+                mp.abyssPlayerGlowMultiplier += 0.2f;
             if (mp.reaverExplore)
-                light += 2;
+            {
+                mp.abyssDarkness -= 0.2f;
+                mp.abyssPlayerGlowMultiplier += 0.2f;
+                mp.abyssFlashlightWidthMultiplier += 0.5f;
+            }
             if (mp.shine)
-                light += 2;
-            if (mp.blazingCore)
-                light += 2;
-            if (player.redFairy || player.greenFairy || player.blueFairy)
-                light += 2;
-            if (mp.babyGhostBell)
-                light += underwater ? 2 : 1;
-            if (player.petFlagDD2Ghost)
-                light += 2;
-            if (mp.sirenPet)
-                light += underwater ? 3 : 1;
-            if (player.petFlagPumpkingPet)
-                light += 3;
-            if (player.petFlagGolemPet)
-                light += 3;
-            if (player.petFlagFairyQueenPet)
-                light += 3;
-            if (player.wisp)
-                light += 3;
-            if (player.suspiciouslookingTentacle)
-                light += 3;
+                mp.abyssPlayerGlowMultiplier += 0.2f;
+            if (mp.babyGhostBell && underwater)
+                mp.abyssDarkness -= 0.1f;
+            if (mp.sirenPet && underwater)
+                mp.abyssDarkness -= 0.2f;
             if (mp.littleLightPet)
-                light += 3;
-            if (mp.profanedCrystalBuffs && !mp.ZoneAbyss)
-                light += (Main.dayTime || player.lavaWet) ? 2 : 1; // not sure how you'd be in lava in the abyss but go ham I guess
-            return light;
+                mp.abyssDarkness -= 0.4f;
         }
 
         /// <summary>
-        /// Directly retrieves the best pickaxe power of the player.
+        /// Retrieves the best pickaxe item in the player's inventory.<br /></br>
+        /// May return <see langword="null"> if the player has no pickaxes.
         /// </summary>
-        /// <param name="player"></param>
-        /// <returns></returns>
-        public static int GetBestPickPower(this Player player)
+        /// <param name="player">The player whose best pickaxe is being queried.</param>
+        /// <returns>An item with a nonzero pickaxe power, or <see langword="null">.</returns>
+        internal static Item GetBestPick(this Player player)
         {
-            int highestPickPower = 35; //35% if you have no pickaxes.
+            int bestPickPower = 0;
+            Item bestPick = null;
             for (int item = 0; item < Main.InventorySlotsTotal; item++)
             {
                 if (player.inventory[item].pick <= 0)
                     continue;
 
-                if (player.inventory[item].pick > highestPickPower)
-                    highestPickPower = player.inventory[item].pick;
+                if (player.inventory[item].pick > bestPickPower)
+                {
+                    bestPick = player.inventory[item];
+                    bestPickPower = bestPick.pick;
+                }
             }
 
-            return highestPickPower;
+            return bestPick;
         }
+
+        // Pickaxe power minimum is decided by the Copper Pickaxe.
+        private static int _minimumPickPower => ContentSamples.ItemsByType[ItemID.CopperPickaxe].pick;
+
+        /// <summary>
+        /// Retrieves the best pickaxe power of the player.<br /></br>
+        /// Always returns a minimum pickaxe power equivalent to the Copper Pickaxe.
+        /// </summary>
+        /// <param name="player">The player whose pickaxe strength is being queried.</param>
+        /// <returns>A pickaxe power value, minimum 35.</returns>
+        public static int GetBestPickPower(this Player player) => player.GetBestPick()?.pick ?? _minimumPickPower;
         #endregion
 
         #region Movement and Controls
@@ -316,6 +292,19 @@ namespace CalamityMod
             }
             return ConditionMet;
         }
+
+        /// <summary>
+        /// Disables the default wing flap sound from vanilla; this is to stop custom wings playing this sound when they shouldnt
+        /// This must be called each update (eg, in the wings item UpdateAccessory method)
+        /// </summary>
+        /// <param name="player">The Player to disable the sound on</param>
+        public static void DisableWingFlapSound(this Player player)
+        {
+            // vanilla plays a flap sound for all wings barring a few hardcoded exceptions
+            // the flapSound flag is used to see if the sound *has been* played, so we set it to true here to prevent it from playing 
+            player.flapSound = true;
+        }
+
         #endregion
 
         #region Location and Biomes
@@ -336,8 +325,6 @@ namespace CalamityMod
         public static bool InSunkenSea(this Player player) => player.Calamity().ZoneSunkenSea;
 
         public static bool InSulphur(this Player player) => player.Calamity().ZoneSulphur;
-
-        public static bool InFloralParadise(this Player player) => player.Calamity().ZoneFloralParadise;
 
         public static bool InAstral(this Player player, int biome = 0) //1 is above ground, 2 is underground, 3 is desert
         {
@@ -383,11 +370,11 @@ namespace CalamityMod
         // TODO -- Wrong. This should return false for weapons which emit true melee projectiles e.g. Arkhalis
         public static bool HoldingProjectileMeleeWeapon(this Player player)
         {
-            Item item = player.ActiveItem();
+            Item item = player.HeldItem;
             return item.CountsAsClass<MeleeDamageClass>() && item.shoot != ProjectileID.None;
         }
 
-        public static bool HoldingTrueMeleeWeapon(this Player player) => player.ActiveItem().IsTrueMelee();
+        public static bool HoldingTrueMeleeWeapon(this Player player) => player.HeldItem.IsTrueMelee();
 
         public static bool InventoryHas(this Player player, params int[] items)
         {
@@ -460,15 +447,6 @@ namespace CalamityMod
             // This stacks with the above Deific Amulet effect
             if (modPlayer.rampartOfDeities && hurtInfo.Damage > 200)
                 extraIFrames += 30;
-
-            if (modPlayer.purpleHaze)
-            {
-                if (hurtInfo.Damage == 1)
-                    extraIFrames += 5;
-                else
-                    extraIFrames += 10;
-            }
-
             return extraIFrames;
         }
 
@@ -601,17 +579,13 @@ namespace CalamityMod
                 player.hurtCooldowns[i] = 0;
         }
 
-        private static readonly FieldInfo hurtInfoDamageField = typeof(HurtInfo).GetField("_damage", BindingFlags.Instance | BindingFlags.NonPublic);
-
         /// <summary>
         /// Lifted from Fargo's. Sets the damage and knockback of an incoming hit to zero, making it not affect the player.
         /// </summary>
         /// <param name="hurtInfo">The HurtInfo instance to nullify.</param>
         public static void NullifyHit(ref this HurtInfo hurtInfo)
         {
-            object unboxedHurtInfo = hurtInfo;
-            hurtInfoDamageField.SetValue(unboxedHurtInfo, 0);
-            hurtInfo = (Player.HurtInfo)unboxedHurtInfo;
+            hurtInfo._damage = 0;
             hurtInfo.Knockback = 0;
         }
         #endregion
@@ -633,7 +607,7 @@ namespace CalamityMod
 
             // Limit the amount of heal to the player's max health
             amount = Math.Min(amount, player.statLifeMax2 - player.statLife);
-            
+
             // As well as the physical cap to how much HP can be healed
             amount = Math.Min(amount, BalancingConstants.LifeStealCap);
 
@@ -685,7 +659,7 @@ namespace CalamityMod
 
             // Limit the amount of heal to the target player's max health
             amount = Math.Min(amount, lowestHealthCheck);
-            
+
             // As well as the physical cap to how much HP can be healed
             amount = Math.Min(amount, BalancingConstants.LifeStealCap);
 
@@ -985,7 +959,7 @@ namespace CalamityMod
         public static Vector2 ClampedMouseWorld(this Player player)
         {
             Vector2 mouseWorld = player.Calamity().mouseWorld;
-            
+
             // Clamp each axis
             mouseWorld.X = mouseWorld.X >= player.MountedCenter.X ? MathF.Min(mouseWorld.X, player.MountedCenter.X + 960f) : MathF.Max(mouseWorld.X, player.MountedCenter.X - 960f);
             mouseWorld.Y = mouseWorld.Y >= player.MountedCenter.Y ? MathF.Min(mouseWorld.Y, player.MountedCenter.Y + 540f) : MathF.Max(mouseWorld.Y, player.MountedCenter.Y - 540f);

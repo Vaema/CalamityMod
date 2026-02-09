@@ -1,5 +1,4 @@
-﻿using CalamityMod.BiomeManagers;
-using CalamityMod.Items.Critters;
+﻿using CalamityMod.Items.Critters;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Tiles.SunkenSea.Ambient;
 using Microsoft.Xna.Framework;
@@ -13,7 +12,6 @@ using Terraria.Audio;
 using CalamityMod.Enums;
 using System.Collections.Generic;
 using System;
-using CalamityMod.Projectiles.Ranged;
 
 namespace CalamityMod.NPCs.SunkenSea
 {

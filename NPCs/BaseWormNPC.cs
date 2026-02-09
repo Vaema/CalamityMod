@@ -593,33 +593,51 @@ namespace CalamityMod.NPCs
         #endregion
 
         #region Draw
+
+        public override void FindFrame(int frameHeight)
+        {
+            if (NPC.IsABestiaryIconDummy)
+            {
+                NPC.rotation = MathF.Sin(Main.GlobalTimeWrappedHourly) * 0.2f + MathHelper.PiOver2;
+            }
+        }
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            if (NPC.IsABestiaryIconDummy)
+            {
+                drawColor = Color.White;
+                SegmentRigidity = 0.1f;
+                UpdateSegments();
+            }
             for (int i = Segments.Count - 1; i >= 0; i--)
             {
                 DrawSegment(spriteBatch, screenPos, drawColor, Segments[i]);
             }
-            spriteBatch.Draw(TextureAssets.Npc[Type].Value, NPC.Center - Main.screenPosition, null, drawColor* NPC.Opacity, NPC.rotation, TextureAssets.Npc[Type].Value.Size() / 2, NPC.scale, SpriteEffects.None, 1);
+            spriteBatch.Draw(TextureAssets.Npc[Type].Value, NPC.Center - screenPos, null, drawColor* NPC.Opacity, NPC.rotation, TextureAssets.Npc[Type].Value.Size() / 2, NPC.scale, SpriteEffects.None, 1);
             if (GlowTextures.Count > 0 && GlowTextures[0] is not null)
-                spriteBatch.Draw(GlowTextureAssets[0].Value, NPC.Center - Main.screenPosition, null, Color.White * NPC.Opacity, NPC.rotation, GlowTextureAssets[0].Size() / 2, NPC.scale, SpriteEffects.None, 1);
+                spriteBatch.Draw(GlowTextureAssets[0].Value, NPC.Center - screenPos, null, Color.White * NPC.Opacity, NPC.rotation, GlowTextureAssets[0].Size() / 2, NPC.scale, SpriteEffects.None, 1);
             return false;
         }
 
         public virtual void DrawSegment(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor, BaseWormSegment segment)
         {
             var color = Lighting.GetColor(segment.Center.ToTileCoordinates());
+            if (NPC.IsABestiaryIconDummy)
+            {
+                color = Color.White;
+            }
             if (!SegmentTextureAssets.IndexInRange(segment.segmentType))
             {
                 return;
             }
             var tex = SegmentTextureAssets[segment.segmentType].Value;
-            spriteBatch.Draw(tex, segment.Center - Main.screenPosition, null, color * segment.Opacity, segment.rotation, tex.Size() / 2 + (SegmentTypeDrawOffsets[segment.segmentType]), NPC.scale, SpriteEffects.None, 1);
+            spriteBatch.Draw(tex, segment.Center - screenPos, null, color * segment.Opacity, segment.rotation, tex.Size() / 2 + (SegmentTypeDrawOffsets[segment.segmentType]), NPC.scale, SpriteEffects.None, 1);
             if (!GlowTextures.IndexInRange(segment.segmentType+1) || GlowTextures[segment.segmentType+1] is null)
             {
                 return;
             }
             tex = GlowTextureAssets[segment.segmentType+1].Value;
-            spriteBatch.Draw(tex, segment.Center - Main.screenPosition, null, Color.White * segment.Opacity, segment.rotation, tex.Size() / 2 + (SegmentTypeDrawOffsets[segment.segmentType]), NPC.scale, SpriteEffects.None, 1);
+            spriteBatch.Draw(tex, segment.Center - screenPos, null, Color.White * segment.Opacity, segment.rotation, tex.Size() / 2 + (SegmentTypeDrawOffsets[segment.segmentType]), NPC.scale, SpriteEffects.None, 1);
         }
         #endregion
     }
@@ -639,6 +657,10 @@ namespace CalamityMod.NPCs
 
         public override bool? CanBeHitByItem(Player player, Item item)
         {
+            if (!Main.npc.IndexInRange((int)NPC.ai[0]))
+            {
+                return base.CanBeHitByItem(player, item);
+            }
             var canhit = Main.npc[(int)NPC.ai[0]].ModNPC.CanBeHitByItem(player, item);
             if (canhit.HasValue && !canhit.Value)
                 return false;
@@ -647,6 +669,10 @@ namespace CalamityMod.NPCs
 
         public override bool? CanBeHitByProjectile(Projectile projectile)
         {
+            if (!Main.npc.IndexInRange((int)NPC.ai[0]))
+            {
+                return base.CanBeHitByProjectile(projectile);
+            }
             var canhit = Main.npc[(int)NPC.ai[0]].ModNPC.CanBeHitByProjectile(projectile);
             if (canhit.HasValue && !canhit.Value)
                 return false;

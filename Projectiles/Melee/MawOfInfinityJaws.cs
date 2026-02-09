@@ -1,7 +1,7 @@
 ﻿using System;
+using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -18,6 +18,7 @@ namespace CalamityMod.Projectiles.Melee
         public new string LocalizationCategory => "Projectiles.Melee";
 
         public override string Texture => "CalamityMod/Particles/Jaws";
+        public int time = 0;
         public override void SetDefaults()
         {
             Projectile.width = 500;
@@ -31,6 +32,18 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.localNPCHitCooldown = 10;
         }
 
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.WriteVector2(GoalPos);
+            writer.WriteVector2(StartPos);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            GoalPos = reader.ReadVector2();
+            StartPos = reader.ReadVector2();
+        }
+
         Vector2 GoalPos = Vector2.Zero;
         Vector2 StartPos = Vector2.Zero;
         float offset = 0;
@@ -42,6 +55,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 GoalPos = player.Calamity().mouseWorld;
                 StartPos = Projectile.Center;
+                Projectile.netUpdate = true;
             }
             Projectile.Center = Vector2.Lerp(StartPos, GoalPos, MathHelper.Min(1,MathF.Pow(1 - (Projectile.timeLeft - 5) / 30f,0.5f)));
             Projectile.rotation = StartPos.DirectionTo(GoalPos).ToRotation();
@@ -52,7 +66,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Projectile.friendly = true;
 
-                SoundEngine.PlaySound(new("CalamityMod/Sounds/NPCKilled/DevourerSegmentBreak1") { Volume = 0.3f, PitchVariance = 0.3f }, Projectile.position);
+                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/NPCKilled/DevourerSegmentBreak1") { Volume = 0.3f, PitchVariance = 0.3f }, Projectile.position);
                 SoundEngine.PlaySound(SoundID.Item62 with { Volume = 0.5f, PitchVariance = 0.3f }, Projectile.position);
                 for (int i = 0; i < 35; i++)
                 {
@@ -80,6 +94,7 @@ namespace CalamityMod.Projectiles.Melee
                 GeneralParticleHandler.SpawnParticle(explosion2);
 
             }
+            time++;
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)
@@ -106,7 +121,7 @@ namespace CalamityMod.Projectiles.Melee
         public override bool PreDraw(ref Color lightColor)
         {
             var tex = TextureAssets.Projectile[Type].Value;
-            float jawScaleMult = 1f;
+            float jawScaleMult = 1f + (0.007f * time);
             jawScaleMult = MathF.Pow(jawScaleMult, 3);
             float rotationOff = 0.5f * MathHelper.Min(MathF.Pow(MathHelper.Clamp(1 - (Projectile.timeLeft - 5) / 30f,0,1),0.5f), MathF.Pow(MathHelper.Clamp((Projectile.timeLeft - 5) / 10f,0,1),0.5f));
             if (rotationOff < 0.01f)

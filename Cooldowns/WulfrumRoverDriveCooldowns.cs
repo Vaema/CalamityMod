@@ -91,11 +91,18 @@ namespace CalamityMod.Cooldowns
         public override Color CooldownStartColor => Color.Lerp(ringColorLerpStart, ringColorLerpEnd, instance.Completion);
         public override Color CooldownEndColor => Color.Lerp(ringColorLerpStart, ringColorLerpEnd, instance.Completion);
 
-        public override void Tick() => instance.player.Calamity().playedRoverDriveShieldSound = false;
+        public override void Tick()
+        {
+            if (instance.player.whoAmI == Main.myPlayer)
+                instance.player.Calamity().playedRoverDriveShieldSound = false;
+        }
 
         // Rover Drive shields are recharged as a side effect of the cooldown completing client side
         public override void OnCompleted()
         {
+            if (instance.player.whoAmI != Main.myPlayer)
+                return;
+
             CalamityPlayer modPlayer = instance.player.Calamity();
             if (modPlayer.RoverDriveShieldDurability <= 0)
                 modPlayer.RoverDriveShieldDurability = 1;

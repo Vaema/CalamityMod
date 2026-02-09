@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -172,7 +171,7 @@ namespace CalamityMod.UI
                 }
 
                 // When the mouse is released, save the config and destroy the drag offset.
-                if (ms.LeftButton == ButtonState.Released)
+                if (dragOffset.HasValue && ms.LeftButton == ButtonState.Released)
                 {
                     dragOffset = null;
                     CalamityClientConfig.Instance.SaveChanges();

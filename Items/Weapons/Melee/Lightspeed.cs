@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Cooldowns;
 using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Projectiles.Melee;
 using Terraria;
 using Terraria.ID;
@@ -20,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = 74;
             Item.height = 94;
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.damage = 196;
+            Item.damage = 220;
             Item.DamageType = TrueMeleeDamageClass.Instance;
             Item.useAnimation = Item.useTime = 20;
             Item.shootSpeed = 10f;
@@ -37,10 +36,8 @@ namespace CalamityMod.Items.Weapons.Melee
             base.SetDefaults();
         }
 
-        public override bool AltFunctionUse(Player player)
-        {
-            return true;
-        }
+        // You can only use the right-click if you have sufficient Elemental Mastery
+        public override bool AltFunctionUse(Player player) => player.Calamity().elementalMastery >= 100;
 
         public override void HoldItem(Player player)
         {

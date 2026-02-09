@@ -31,7 +31,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void KillHoldoutLogic()
         {
-            if (Owner.CantUseHoldout(false) || HeldItem.type != Owner.ActiveItem().type)
+            if (Owner.CantUseHoldout(false) || HeldItem.type != Owner.HeldItem.type)
                 Projectile.Kill();
         }
 
@@ -58,7 +58,8 @@ namespace CalamityMod.Projectiles.Ranged
                     SoundEngine.PlaySound(MagnaCannon.Fire, Projectile.position);
 
                     Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * BulletSpeed;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(9f)), ModContent.ProjectileType<MagnaShot>(), Projectile.damage, Projectile.knockBack * (FullyCharged ? 3 : 1), Projectile.owner);
+                    if (Main.myPlayer == Projectile.owner)
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(9f)), ModContent.ProjectileType<MagnaShot>(), Projectile.damage, Projectile.knockBack * (FullyCharged ? 3 : 1), Projectile.owner);
                     for (int i = 0; i <= 3; i++)
                     {
                         Dust dust = Dust.NewDustPerfect(GunTipPosition, ModContent.DustType<SquashDust>(), shootVelocity.RotatedByRandom(MathHelper.ToRadians(25f)) * Main.rand.NextFloat(0.2f, 0.9f), 0, default, Main.rand.NextFloat(1.3f, 1.6f));

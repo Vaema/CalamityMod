@@ -1,7 +1,4 @@
-﻿using CalamityMod.Buffs.Potions;
-using CalamityMod.Items.DraedonMisc;
-using CalamityMod.TileEntities;
-using CalamityMod.UI;
+﻿using CalamityMod.TileEntities;
 using CalamityMod.UI.DraedonSummoning;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,7 +9,6 @@ using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.GameContent.ObjectInteractions;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -238,19 +234,16 @@ namespace CalamityMod.Tiles.DraedonSummoner
                     if (codebreakerTileEntity.ContainsDecryptionComputer && codebreakerTileEntity.ContainsSensorArray && !codebreakerTileEntity.ContainsAdvancedDisplay && codebreakerTileEntity.ContainsVoltageRegulationSystem)
                         return false;
 
-                    bool actuallySelected;
+                    // Draws the appropriate Smart Cursor highlight sprite selected from above.
                     Color highlightColor;
-                    if (Main.InSmartCursorHighlightArea(i, j, out actuallySelected) && codebreakerTileEntity.ContainsDecryptionComputer)
+                    if (Main.InSmartCursorHighlightArea(i, j, out var actuallySelected) && codebreakerTileEntity.ContainsDecryptionComputer)
                     {
-                        if (actuallySelected)
+                        int avgBrightness = (drawColor.R + drawColor.G + drawColor.B) / 3;
+                        if (avgBrightness > 10)
                         {
-                            highlightColor = new Color(252, 252, 84);
+                            highlightColor = Colors.GetSelectionGlowColor(actuallySelected, avgBrightness);
+                            spriteBatch.Draw(HighlightToUse, drawPosition, frame, highlightColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
                         }
-                        else
-                        {
-                            highlightColor = new Color(125, 125, 125);
-                        }
-                        spriteBatch.Draw(HighlightToUse, drawPosition, frame, highlightColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
                     }
                 }
             }

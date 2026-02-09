@@ -68,13 +68,17 @@ namespace CalamityMod.Items.Weapons.Ranged
 
             // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
 
-            if (player.Calamity().mouseRight && player.whoAmI == Main.myPlayer && !Main.mapFullscreen && !Main.blockMouse && player.Calamity().despoilerNerf)
+            if (player.Calamity().mouseRight && player.whoAmI == Main.myPlayer && !Main.mapFullscreen && !Main.blockMouse)
             {
-                Projectile holdout2 = Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, Item.shoot, player.ActiveItem().damage, 0f, player.whoAmI, 0, 0, 10 + (shotType ? 5 : 0));
+                int aiType = 10 + (shotType ? 5 : 0);
+                if (!player.Calamity().despoilerNerf)
+                    aiType = 20;
+                Projectile holdout2 = Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, Item.shoot, player.HeldItem.damage, 0f, player.whoAmI, 0, 0, aiType);
                 holdout2.velocity = (player.Calamity().mouseWorld - player.MountedCenter).SafeNormalize(Vector2.Zero);
                 SoundStyle fire = new("CalamityMod/Sounds/Item/DudFire");
-                SoundEngine.PlaySound(fire with { Volume = 0.7f, Pitch = -0.5f + (shotType ? 0.5f : 0) }, player.Center);
-                shotType = !shotType;
+                SoundEngine.PlaySound(fire with { Volume = 0.7f, Pitch = aiType == 20 ? -0.7f : (-0.5f + (shotType ? 0.5f : 0)) }, player.Center);
+                if (aiType != 20)
+                    shotType = !shotType;
             }
             else
             {

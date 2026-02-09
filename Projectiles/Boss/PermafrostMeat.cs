@@ -1,8 +1,4 @@
 ﻿using System;
-using CalamityMod.Buffs.Alcohol;
-using CalamityMod.Dusts;
-using CalamityMod.Events;
-using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -16,7 +12,7 @@ namespace CalamityMod.Projectiles.Boss
     {
         public new string LocalizationCategory => "Projectiles.Boss";
 
-        public override string Texture => "CalamityMod/Items/Potions/DeliciousMeat";
+        public override string Texture => "CalamityMod/Items/Potions/Food/DeliciousMeat";
 
         public override void SetDefaults()
         {

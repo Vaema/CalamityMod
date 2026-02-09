@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Events;
 using CalamityMod.Projectiles.Boss;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.Bestiary;
@@ -83,12 +82,6 @@ namespace CalamityMod.NPCs.SlimeGod
                 int type = ModContent.ProjectileType<ShadeNimbusHostile>();
                 Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, Vector2.Zero, type, ShaderainDamage, 0f, Main.myPlayer);
             }
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Weak, 180);
         }
     }
 }

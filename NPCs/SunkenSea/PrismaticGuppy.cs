@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using CalamityMod.BiomeManagers;
 using CalamityMod.Enums;
 using CalamityMod.Items.Critters;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Pathfinding;
 using CalamityMod.Tiles.SunkenSea;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -16,12 +16,11 @@ using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
-using static Terraria.GameContent.Animations.IL_Actions.NPCs;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
     public class PrismaticGuppy : SunkenSeaNPC
-    {   
+    {
         public enum PhaseType
         {
             Idle = 0,
@@ -244,11 +243,9 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (pathfinding == null)
             {
-                pathfinding = new PathfindingManager(NPC)
-                {
-                    Acceleration = 0.5f,
-                    MaxSpeed = 4f,
-                };
+                pathfinding = new PathfindingManager(this);
+                Acceleration = 0.5f;
+                MaxSpeed = 4f;
             }
             // Spawn more guppies if a leader/naturally spawned guppy
             if (Role == 0 && NPC.releaseOwner == 255)
@@ -280,12 +277,12 @@ namespace CalamityMod.NPCs.SunkenSea
                     // Just do generic pathfinding if a leader. Target prey if one exists
                     case (int)PhaseType.Idle:
                         {
-                            pathfinding.Acceleration = 0.5f;
-                            pathfinding.MaxSpeed = 4;
+                            Acceleration = 0.5f;
+                            MaxSpeed = 4;
                             if (CurrentPrey is not null)
-                                pathfinding.DoPathfinding(new(NPC.Center, CurrentPrey.Center, SunkenSeaTileValidity));
+                                pathfinding.DoPathfinding(new(this, NPC.Center, CurrentPrey.Center, SunkenSeaTileValidity));
                             else
-                                pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.Next(IdleMinPathDistance, IdleMaxPathDistance), SunkenSeaTileValidity));
+                                pathfinding.DoPathfinding(new(this, NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.Next(IdleMinPathDistance, IdleMaxPathDistance), SunkenSeaTileValidity));
                         }
                         break;
                     // The unenlightened masses, They cannot make the judgement call
@@ -302,7 +299,7 @@ namespace CalamityMod.NPCs.SunkenSea
                                 return;
 
                             if (NPC.Distance(owner.Center) > 20)
-                                pathfinding.DoPathfinding(new(NPC.Center, owner.Center, SunkenSeaTileValidity));
+                                pathfinding.DoPathfinding(new(this, NPC.Center, owner.Center, SunkenSeaTileValidity));
                             else
                             {
                                 float passiveMvtFloat = 0.5f;
@@ -421,8 +418,8 @@ namespace CalamityMod.NPCs.SunkenSea
                         {
                             if (CurrentPredator is not null)
                             {
-                                pathfinding.Acceleration = 0.6f;
-                                pathfinding.MaxSpeed = 6;
+                                Acceleration = 0.6f;
+                                MaxSpeed = 6;
                                 Vector2? tilePos = tilePosition;
 
                                 // Find a sea prism
@@ -436,7 +433,7 @@ namespace CalamityMod.NPCs.SunkenSea
                                 {
                                     TileX = tilePos.Value.X;
                                     TileY = tilePos.Value.Y;
-                                    pathfinding.DoPathfinding(new(NPC.Center, tilePos.Value, SunkenSeaTileValiditySizeless));
+                                    pathfinding.DoPathfinding(new(this, NPC.Center, tilePos.Value, SunkenSeaTileValiditySizeless));
                                     if (NPC.Distance(tilePos.Value) < 16)
                                     {
                                         CurrentPhase = (int)PhaseType.Hiding;
@@ -448,19 +445,19 @@ namespace CalamityMod.NPCs.SunkenSea
                                 // Try to manuever if there are any obstacles.
                                 else if (!Main.tile[(NPC.Center + NPC.DirectionFrom(CurrentPredator.Center) * 96).ToTileCoordinates()].IsTileSolid())
                                 {
-                                    NPC.velocity += NPC.DirectionFrom(CurrentPredator.Center) * pathfinding.Acceleration;
+                                    NPC.velocity += NPC.DirectionFrom(CurrentPredator.Center) * Acceleration;
                                     pathfinding.ClearResults();
 
                                     // Cap the speed if MaxSpeed has been surpassed.
-                                    if (NPC.velocity.LengthSquared() > pathfinding.MaxSpeed * pathfinding.MaxSpeed)
-                                        NPC.velocity = Vector2.Normalize(NPC.velocity) * pathfinding.MaxSpeed;
+                                    if (NPC.velocity.LengthSquared() > MaxSpeed * MaxSpeed)
+                                        NPC.velocity = Vector2.Normalize(NPC.velocity) * MaxSpeed;
                                 }
                                 else
                                 {
                                     float distanceFromAvoided = Vector2.Distance(NPC.Center, CurrentPredator.Center);
                                     randomPathPoint = NPC.Center + Main.rand.NextVector2Unit() * Utils.Remap(distanceFromAvoided, 0f, 960f, 80f, 3200f);
                                     NPC.netUpdate = true;
-                                    pathfinding.DoPathfinding(new(NPC.Center, randomPathPoint, SunkenSeaTileValidity));
+                                    pathfinding.DoPathfinding(new(this, NPC.Center, randomPathPoint, SunkenSeaTileValidity));
                                 }
                             }
                             else

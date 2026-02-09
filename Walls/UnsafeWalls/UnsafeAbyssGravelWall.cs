@@ -5,12 +5,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Walls.UnsafeWalls
 {
+
+    [LegacyName("AbyssGravelWall")]
     public class UnsafeAbyssGravelWall : ModWall
     {
         public override string Texture => "CalamityMod/Walls/AbyssGravelWall";
         public override void SetStaticDefaults()
         {
-            DustType = 33;
+            DustType = DustID.Water;
             AddMapEntry(new Color(6, 10, 54));
         }
 

@@ -1,7 +1,5 @@
-﻿using CalamityMod.Items.Placeables.Walls;
-using Terraria.ID;
-using Terraria.ModLoader;
-using CalamityMod.Items.Placeables.SunkenSea;
+﻿using Terraria.ModLoader;
+
 namespace CalamityMod.Items.Placeables.FurnitureShellstone
 {
     public class ShellTrimBrick : ModItem, ILocalizedModType

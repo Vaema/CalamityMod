@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.buffType = ModContent.BuffType<KingofConstellationsBuff>();
             Item.shoot = ModContent.ProjectileType<BlackDragonHead>();
             Item.UseSound = Flare.FlareSound;
-            Item.useAnimation = Item.useTime = 25;
+            Item.useAnimation = Item.useTime = 24;
 
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();

@@ -2,10 +2,8 @@
 using CalamityMod.Items.Materials;
 using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Rarities;
-using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.SummonItems
@@ -41,13 +39,11 @@ namespace CalamityMod.Items.SummonItems
 
         public override bool? UseItem(Player player)
         {
-            string key = "Mods.CalamityMod.Status.Boss.DoGSpawn";
-            Color messageColor = Color.Cyan;
-            CalamityUtils.DisplayLocalizedText(key, messageColor);
-            var subtitle = Main.combatText[CombatText.NewText(player.Hitbox, messageColor, Language.GetTextValue(key), true)];
-            player.Calamity().subtitletext = subtitle;
-            player.Calamity().subtitleColors = new Color[] { Color.Cyan, Color.Fuchsia };
-            CalamityUtils.SpawnBossOnPosUsingItem<DevourerofGodsHead>(player, (int)player.Center.X, (int)player.Center.Y - 1600, DevourerofGodsHead.SpawnSound);
+            // Server literally do nothing here.
+            if (Main.dedServ)
+                return true;
+
+            NPC n = CalamityUtils.SpawnBossOnPosUsingItem<DevourerofGodsHead>(player, (int)player.Center.X, (int)player.Center.Y - 1600, DevourerofGodsHead.SpawnSound);
             return true;
         }
 

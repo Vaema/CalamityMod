@@ -26,7 +26,7 @@ namespace CalamityMod.Projectiles.Melee
         public override bool drawSwordTrail => false;
         public override Color[] trailColors => new Color[] { Color.Red, Color.MediumPurple, Color.Purple }; public override int StartupTime { get; set; }
         public override int CooldownTime { get; set; }
-        public override bool AlternateSwings => true;
+        public override bool AlternateSwings => false;
         public bool SpawnShards = true;
 
         public override bool useMeleeSpeed => true;
@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.extraUpdates = 3;
         }
 
-        public override void Spawn(IEntitySource source)
+        public override void Spawn()
         {
             var player = Main.player[Projectile.owner];
             var modplayer = player.GetModPlayer<BaseSwordHoldoutPlayer>();
@@ -103,7 +103,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<Voidfrost>(), 300);
+            target.AddBuff(ModContent.BuffType<Nightwither>(), 300);
 
             //Ensures only two shards spawn on enemy hits. If you're wondering why this is needed, turn this off and fight Storm Weaver
             if (SpawnShards)
@@ -126,7 +126,7 @@ namespace CalamityMod.Projectiles.Melee
             SoundEngine.PlaySound(SoundID.DD2_WitherBeastCrystalImpact,Projectile.Center);
         }
         public override float trailOffset => 28;
-        public override float trailWidth(float completion)
+        public override float trailWidth(float completion, Vector2 vertexPos)
         {
             return 60;
         }

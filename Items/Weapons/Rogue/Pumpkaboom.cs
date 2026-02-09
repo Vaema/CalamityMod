@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.SunkenSea;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -17,7 +13,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 26;
             Item.height = 34;
-            Item.damage = 20;
+            Item.damage = 17;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useTime = Item.useAnimation = 70;
@@ -31,8 +27,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shootSpeed = 14f;
             Item.DamageType = RogueDamageClass.Instance;
         }
-
-        public override float StealthDamageMultiplier => 1f;
 
         public override bool CanUseItem(Player player)
         {
@@ -69,7 +63,8 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             CreateRecipe().
                 AddIngredient(ItemID.Grenade, 15).
-                AddIngredient(ItemID.Pumpkin, 10).
+                AddIngredient(ItemID.Pumpkin, 30).
+                AddIngredient(ItemID.PumpkinSeed, 5).
                 AddTile(TileID.Anvils).
                 Register();
         }

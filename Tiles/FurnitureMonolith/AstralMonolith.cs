@@ -1,14 +1,13 @@
-﻿
-using System.Collections.Generic;
-using CalamityMod.Dusts;
+﻿using CalamityMod.Dusts;
 using CalamityMod.Systems;
+using CalamityMod.Tiles.Astral;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent.Metadata;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Tiles.Astral;
 
 namespace CalamityMod.Tiles.FurnitureMonolith
 {
@@ -16,6 +15,8 @@ namespace CalamityMod.Tiles.FurnitureMonolith
     {
         private static int sheetWidth = 216;
         private static int sheetHeight = 72;
+
+        public Asset<Texture2D> GlowTexture;
 
         public override void SetStaticDefaults()
         {
@@ -32,7 +33,7 @@ namespace CalamityMod.Tiles.FurnitureMonolith
 
             AddMapEntry(new Color(45, 36, 63));
 
-            this.RegisterUniversalMerge(ModContent.TileType<AstralDirt>(), "CalamityMod/Tiles/Merges/AstralDirtMerge");
+            this.RegisterBlendMergeWith(ModContent.TileType<AstralDirt>());
         }
 
         public override bool CreateDust(int i, int j, ref int type)
@@ -77,7 +78,10 @@ namespace CalamityMod.Tiles.FurnitureMonolith
             int yPos = tile.TileFrameY;
             xPos += xOffset;
             yPos += yOffset;
-            Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureMonolith/AstralMonolithGlow").Value;
+
+            GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureMonolith/AstralMonolithGlow");
+            Texture2D glowmask = GlowTexture.Value;
+
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + zero;
             Color drawColour = CalamityUtils.ApplyPaint(Main.tile[i, j].TileColor, new Color(50, 50, 50, 50));

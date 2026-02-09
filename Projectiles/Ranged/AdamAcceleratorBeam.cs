@@ -1,5 +1,7 @@
 ﻿using System;
 using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.NPCs;
+using CalamityMod.Utilities;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -7,7 +9,6 @@ using Terraria;
 using Terraria.Enums;
 using Terraria.GameContent.Shaders;
 using Terraria.Graphics.Effects;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
@@ -140,7 +141,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.PolarityNPC().applyPolarity(polarity, target); //applies a positive or negative polarity on the target for 120 frames
+            target.GetGlobalNPC<CalamityPolarityNPC>().applyPolarity(polarity, target); //applies a positive or negative polarity on the target for 120 frames
         }
 
 
@@ -148,7 +149,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             // Ensure that the hit direction is correct when hitting enemies.
             modifiers.HitDirectionOverride = (Projectile.Center.X < target.Center.X).ToDirectionInt();
-            float targetPolarity = target.PolarityNPC().CurPolarity;
+            float targetPolarity = target.GetGlobalNPC<CalamityPolarityNPC>().CurPolarity;
             //If a polarity beam hits the target with the opposite polarity, the damage dealt increases by 20%
             if (polarity * targetPolarity < 0)
             {
@@ -237,7 +238,7 @@ namespace CalamityMod.Projectiles.Ranged
                 // If the beam isn't at max scale, then make additional smaller dust.
                 if (Projectile.scale != MaxBeamScale)
                 {
-                    Dust smallDust = Dust.CloneDust(d);
+                    Dust smallDust = Dust.BetterCloneDust(d);
                     smallDust.scale /= 2f;
                 }
             }

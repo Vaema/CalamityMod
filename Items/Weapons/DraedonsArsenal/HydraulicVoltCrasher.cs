@@ -12,8 +12,6 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
     public class HydraulicVoltCrasher : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
-        // This is the amount of charge consumed every frame the holdout projectile is summoned, i.e. the weapon is in use.
-        public const float HoldoutChargeUse = 0.002f;
         public override void SetStaticDefaults()
         {
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
@@ -43,10 +41,6 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.noUseGraphic = true;
             Item.DamageType = TrueMeleeNoSpeedDamageClass.Instance;
             Item.channel = true;
-
-            modItem.UsesCharge = true;
-            modItem.MaxCharge = 85f;
-            modItem.ChargePerUse = 0f; // This weapon is a holdout. Charge is consumed by the holdout projectile.
         }
         public override bool AltFunctionUse(Player player) => true;
 
@@ -62,7 +56,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             {
                 Item.hammer = 100;
             }
-            return player.ownedProjectileCounts[Item.shoot] <= 0 && Item.Calamity().Charge > 0;
+            return player.ownedProjectileCounts[Item.shoot] <= 0;
         }
         public override void HoldItem(Player player)
         {

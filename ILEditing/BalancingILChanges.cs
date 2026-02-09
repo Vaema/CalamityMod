@@ -1,7 +1,7 @@
 ﻿using System;
 using CalamityMod.Balancing;
 using CalamityMod.Enums;
-using CalamityMod.Projectiles.Typeless;
+using CalamityMod.Projectiles.Boss;
 using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
@@ -498,7 +498,7 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region SoC Buffs & Vortex Booster Keeping Stealth
+        #region Shield of Cthulhu Buffs
         private static void DashMovementEdits(On_Player.orig_DashMovement orig, Player self)
         {
             //This is a modified version of Vanilla's Shield of Cthulhu dash collision checks
@@ -509,7 +509,7 @@ namespace CalamityMod.ILEditing
                 for (int i = 0; i < 200; i++)
                 {
                     NPC hitNPC = Main.npc[i];
-                    if (!hitNPC.active || hitNPC.dontTakeDamage || hitNPC.friendly || (hitNPC.aiStyle == 112 && !(hitNPC.ai[2] <= 1f)) || !self.CanNPCBeHitByPlayerOrPlayerProjectile(hitNPC))
+                    if (!hitNPC.active || hitNPC.dontTakeDamage || hitNPC.friendly || (hitNPC.aiStyle == NPCAIStyleID.Fairy && !(hitNPC.ai[2] <= 1f)) || !self.CanNPCBeHitByPlayerOrPlayerProjectile(hitNPC))
                     {
                         continue;
                     }
@@ -563,16 +563,7 @@ namespace CalamityMod.ILEditing
                     }
                 }
             }
-
-            // Allows for Vortex Booster to automatically re-engage Vortex armor's stealth after a delay when dashing
-            bool vortexStealth = self.vortexStealthActive;
             orig(self);
-
-            if (self.wingsLogic == (int)VanillaWingID.WingsVortex)
-            {
-                if (vortexStealth && !self.vortexStealthActive)
-                    self.Calamity().vortexBoosterStealthDelay = 60;
-            }
         }
         #endregion
 
@@ -602,9 +593,9 @@ namespace CalamityMod.ILEditing
             cursor.Emit(OpCodes.Ldc_I4, (int)VanillaWingID.WingsStardust);
             cursor.Emit(OpCodes.Bne_Un, label);
 
-            cursor.Emit(OpCodes.Ldc_R4, 900f);
+            cursor.Emit(OpCodes.Ldc_R4, 960f);
             cursor.Emit(OpCodes.Stloc, 4);
-            cursor.Emit(OpCodes.Ldc_R4, 900f);
+            cursor.Emit(OpCodes.Ldc_R4, 960f);
             cursor.Emit(OpCodes.Stloc, 5);
 
             cursor.MarkLabel(label);
@@ -624,26 +615,18 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Solar Wings Change to Solar Flare Armor Dash
-        private static void SolarWingsDashChange(ILContext il)
+        #region Solar Wings Change to Solar Flare Armor
+        private static bool SolarWingsDashChange(On_Player.orig_ConsumeSolarFlare orig, Player self)
         {
-            // Make Solar Wings always allow using Solar Flare armor's dash.
-            var cursor = new ILCursor(il);
-
-            // Genuinely how the fuck is this the only OR opcode in the entire method
-            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchOr()))
+            // Solar Wings restore flight time when Solar Flare armor's shield explodes
+            // This can trigger from either ramming enemies or taking damage
+            if (orig(self))
             {
-                LogFailure("Solar Dash Change", "Could not locate the OR opcode.");
-                return;
+                if (self.wingsLogic == (int)VanillaWingID.WingsSolar)
+                    self.wingTime += 60;
+                return true;
             }
-
-            // Add an additional check for if the player is wearing Solar Wings.
-            cursor.Emit(OpCodes.Ldarg_0);
-            cursor.Emit(OpCodes.Ldfld, typeof(Player).GetField("wingsLogic"));
-            cursor.Emit(OpCodes.Ldc_I4, (int)VanillaWingID.WingsSolar);
-            cursor.EmitCeq();
-            // Then OR it.
-            cursor.EmitOr();
+            return false;
         }
         #endregion
 
@@ -689,6 +672,18 @@ namespace CalamityMod.ILEditing
             // AND with 0 (false) so that the Ice Spike is never considered to be hitting the player and thus never trigger the Frozen debuff.
             cursor.Emit(OpCodes.Ldc_I4_0);
             cursor.Emit(OpCodes.And);
+        }
+        #endregion
+
+        #region Make GFB Nurse Meteor Undodgeable
+        private static bool GFBNurseMeteorUndodgeable(On_Projectile.orig_IsDamageDodgable orig, Projectile self)
+        {
+            // Make the Leviathan meteor that spawns when talking to the Nurse in GFB undodgeable
+            // Unfortunately the Dodgeable value in HurtModifiers cannot be set in the hook, thus On editing a vanilla function
+            if (self.type == ModContent.ProjectileType<LeviathanBomb>() && self.damage == 9999)
+                return false;
+            else
+                return orig(self);
         }
         #endregion
     }

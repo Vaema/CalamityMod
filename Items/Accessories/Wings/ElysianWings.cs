@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using CalamityMod.CalPlayer;
-using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Particles;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;

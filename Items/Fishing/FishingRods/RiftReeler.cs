@@ -31,28 +31,6 @@ namespace CalamityMod.Items.Fishing.FishingRods
             Item.shoot = ModContent.ProjectileType<RiftReelerBobber>();
             Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
-            Item.accessory = true;
-        }
-        public override bool AllowPrefix(int pre)
-        {
-            if (pre == 0)
-                return true;
-            return false;
-        }
-
-        public override bool CanReforge()
-        {
-            return false;
-        }
-        public override void HoldItem(Player player)
-        {
-            if (player.Calamity().SelectedFishingMinigame == CalamityPlayer.FishingMinigames.None)
-                player.Calamity().SelectedFishingMinigame = CalamityPlayer.FishingMinigames.RiftReeler;
-        }
-
-        public override void UpdateEquip(Player player)
-        {
-            player.Calamity().SelectedFishingMinigame = CalamityPlayer.FishingMinigames.RiftReeler;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

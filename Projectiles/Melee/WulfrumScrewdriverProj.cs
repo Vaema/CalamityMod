@@ -1,19 +1,14 @@
 ﻿using System;
-using System.IO;
 using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
-using Terraria.Graphics.Effects;
-using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using static CalamityMod.CalamityUtils;
-using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -69,7 +64,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (EndLag == 0) //Initialization
             {
-                EndLag = (float)Math.Max(Owner.ActiveItem().useTime - MaxTime, 1);
+                EndLag = (float)Math.Max(Owner.HeldItem.useTime - MaxTime, 1);
                 // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 TrueDirection = (Owner.Calamity().mouseWorld - Owner.MountedCenter).SafeNormalize(Vector2.Zero).ToRotation(); //Store this for the screw hit
                 Projectile.velocity = (Owner.Calamity().mouseWorld - Owner.MountedCenter).SafeNormalize(Vector2.Zero).RotatedByRandom(MathHelper.PiOver4 * 0.15f);

@@ -1,12 +1,10 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using Mono.Cecil;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
@@ -207,7 +205,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             // Generate idle dust
             if (!Main.dedServ)
             {
-                Dust dust = Dust.NewDustPerfect(NPC.Bottom, 229);
+                Dust dust = Dust.NewDustPerfect(NPC.Bottom, DustID.Vortex);
                 dust.color = Color.Green;
                 dust.scale = 0.675f;
             }

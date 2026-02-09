@@ -14,10 +14,6 @@ namespace CalamityMod.Items.Weapons.Summon
     public class EtherealSubjugator : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<GhoulishGouger>();
-        }
         public override void SetDefaults()
         {
             Item.width = 66;
@@ -28,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.shoot = ModContent.ProjectileType<PhantomGuy>();
             Item.knockBack = 1f;
 
-            Item.useAnimation = Item.useTime = 10;
+            Item.useAnimation = Item.useTime = 24;
             Item.mana = 10;
             Item.noMelee = true;
             Item.autoReuse = true;

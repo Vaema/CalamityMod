@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Items.Weapons.Magic;
-using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -16,11 +15,6 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public static int AmmoSavedPercent = 25;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
-
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<AbyssalTome>();
-        }
         public override void SetDefaults()
         {
             Item.width = 42;

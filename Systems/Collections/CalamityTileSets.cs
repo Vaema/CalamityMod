@@ -1,4 +1,6 @@
-﻿using CalamityMod.Tiles.LivingFire;
+﻿using CalamityMod.Tiles.SunkenSea;
+using CalamityMod.Walls;
+using CalamityMod.Walls.UnsafeWalls;
 using ReLogic.Reflection;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -18,5 +20,17 @@ namespace CalamityMod.Systems.Collections
         /// Defaults to <see langword="false"/>.
         /// </summary>
         public static bool[] CanBeReplacedByAbyssGeneration = Factory.CreateBoolSet();
+
+        /// <summary>
+        /// If <see langword="true"/> for a tile type, it will not perform its BlendMerge in the PostDraw hook, and instead will be drawn after every solid tile has been drawn to the screen.<br/>
+        /// Defaults to <see langword="false"/>.
+        /// </summary>
+        public static bool[] DrawBlendMergeAfterSolidTile = Factory.CreateBoolSet(TileType<SeaPrism>());
+
+        /// <summary>
+        /// If <see langword="true"/> for a tile type, it will be considered an Abyss background wall for various effects.
+        /// Defaults to <see langword="false"/>
+        /// </summary>
+        public static bool[] IsAbyssWall = Factory.CreateBoolSet(WallType<UnsafeSulphurousShaleWall>(), WallType<UnsafeAbyssGravelWall>(), WallType<PyreMantleWall>(), WallType<UnsafeVoidstoneWall>(), WallType<HardenedSulphurousSandstoneWall>(), WallType<UnsafeSulphurousSandstoneWall>());
     }
 }

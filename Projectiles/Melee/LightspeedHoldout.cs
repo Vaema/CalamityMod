@@ -12,7 +12,6 @@ using CalamityMod.Graphics.Primitives;
 using System.Linq;
 using Terraria.Graphics.Shaders;
 using static CalamityMod.CalamityUtils;
-using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Sounds;
 
 
@@ -44,8 +43,8 @@ namespace CalamityMod.Projectiles.Melee
         public ref float DashState => ref Projectile.ai[1];
         public ref float DashTimer => ref Projectile.ai[2];
         private const float DashPrepTime = 40f;
-        private const float DashSpeed = 42f;
-        private const float DashDuration = 36f;
+        private const float DashSpeed = 46f;
+        private const float DashDuration = 38f;
         private const float DashAcceleration = 0.9865f;
         private float AltSpinRotation = 0f;
         public bool createdSmear = false;
@@ -179,7 +178,7 @@ namespace CalamityMod.Projectiles.Melee
                 return;
             }
 
-            Vector2 toMouse = Utils.DirectionTo(Owner.Center, Owner.ClampedMouseWorld());
+            Vector2 toMouse = Utils.DirectionTo(Owner.MountedCenter, Owner.ClampedMouseWorld());
             Positioning(toMouse);
 
             if (DashState == 0)
@@ -202,7 +201,7 @@ namespace CalamityMod.Projectiles.Melee
 
             if (Owner.altFunctionUse == 0 && DashState == 0)
             {
-                Projectile.Center += (Utils.DirectionTo(Owner.Center, Owner.ClampedMouseWorld()) * Main.rand.NextFloat(-5f, 8f));
+                Projectile.Center += (Utils.DirectionTo(Owner.MountedCenter, Owner.ClampedMouseWorld()) * Main.rand.NextFloat(-5f, 8f));
                 UsePrimary(toMouse);
             }
 
@@ -257,7 +256,7 @@ namespace CalamityMod.Projectiles.Melee
             }
 
             // Spawn the hitbox
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center + toMouse * 20 * (float)Math.Pow(Projectile.scale, 4), toMouse * 25, ModContent.ProjectileType<LightspeedM1Hitbox>(), Projectile.damage, 0, Projectile.owner);
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.MountedCenter + toMouse * 20 * (float)Math.Pow(Projectile.scale, 4), toMouse * 25, ModContent.ProjectileType<LightspeedM1Hitbox>(), Projectile.damage, 0, Projectile.owner);
         }
 
         private void UseSecondary()
@@ -295,9 +294,23 @@ namespace CalamityMod.Projectiles.Melee
                     float orbitalAngle = AltSpinRotation * initialDirectionForThisAnim + (initialDirectionForThisAnim == -1 ? MathHelper.Pi : 0);
                     float orbitRadius = 40f;
 
-                    Projectile.Center = Owner.Center + orbitalAngle.ToRotationVector2() * orbitRadius;
+                    Projectile.Center = Owner.MountedCenter + orbitalAngle.ToRotationVector2() * orbitRadius;
                     float tangentAngle = orbitalAngle + (initialDirectionForThisAnim == 1 ? MathHelper.PiOver4 : -MathHelper.PiOver4 + MathHelper.Pi);
                     Projectile.rotation = tangentAngle;
+
+                    // Proper arm positioning
+                    Vector2 armDirection = Projectile.Center - Owner.MountedCenter;
+                    float baseArmRotation = armDirection.ToRotation();
+
+                    float compositeArmRotation = baseArmRotation + (initialDirectionForThisAnim == 1 ? MathHelper.TwoPi * 0.75f : -MathHelper.PiOver2);
+                    Owner.SetCompositeArmFront(true, CompositeArmStretchAmount.Full, compositeArmRotation);
+                    Owner.SetCompositeArmBack(true, CompositeArmStretchAmount.Full, 0f);
+
+                    Owner.itemRotation = baseArmRotation;
+                    if (Owner.direction == -1)
+                        Owner.itemRotation += MathHelper.Pi;
+                    
+                    Owner.itemRotation = MathHelper.WrapAngle(Owner.itemRotation);
                 }
 
                 // Mid-spin VFX
@@ -305,7 +318,7 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     if (DashTimer % 4 == 0)
                     {
-                        Vector2 pos = Owner.Center + Projectile.rotation.ToRotationVector2() * 60f;
+                        Vector2 pos = Owner.MountedCenter + Projectile.rotation.ToRotationVector2() * 60f;
                         Particle sparkle = new CritSpark(pos, new Vector2(7f, 0).RotatedBy(Projectile.rotation), Color.Lerp(Color.Aqua, Color.MediumPurple, Main.rand.NextFloat(1f)), Color.White * 0.33f, 1.2f, 12, 0.3f, 1.2f, hueShift: 0.06f);
                         GeneralParticleHandler.SpawnParticle(sparkle);
                     }
@@ -320,13 +333,13 @@ namespace CalamityMod.Projectiles.Melee
                     DashState = 2;
                     DashTimer = DashDuration;
 
-                    Vector2 toMouse = Owner.Center.DirectionTo(Owner.ClampedMouseWorld());
+                    Vector2 toMouse = Owner.MountedCenter.DirectionTo(Owner.ClampedMouseWorld());
                     Projectile.velocity = toMouse * DashSpeed;
 
                     Owner.mount?.Dismount(Owner);
                     Owner.RemoveAllGrapplingHooks();
 
-                    SoundEngine.PlaySound(Exoblade.DashSound, Owner.Center);
+                    SoundEngine.PlaySound(Exoblade.DashSound, Owner.MountedCenter);
 
                     SoundStyle otherSound = new("CalamityMod/Sounds/Item/OmicronBeam");
                     SoundEngine.PlaySound(otherSound with { Volume = 0.6f, Pitch = Main.rand.NextFloat(0.2f, 0.25f) }, Projectile.Center);
@@ -337,7 +350,7 @@ namespace CalamityMod.Projectiles.Melee
                     for (int k = 0; k < Owner.hurtCooldowns.Length; k++)
                         Owner.hurtCooldowns[k] = Owner.immuneTime;
 
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, Projectile.velocity, ModContent.ProjectileType<LightspeedDashHitbox>(), Projectile.damage * 24, Projectile.knockBack * 4, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.MountedCenter, Projectile.velocity, ModContent.ProjectileType<LightspeedDashHitbox>(), Projectile.damage * 24, Projectile.knockBack * 4, Projectile.owner);
                 }
             }
 
@@ -348,10 +361,11 @@ namespace CalamityMod.Projectiles.Melee
                 Vector2 dashVelocity = Projectile.velocity;
                 Owner.velocity = dashVelocity;
                 Owner.ChangeDir(Math.Sign(dashVelocity.X));
+                Owner.Calamity().LungingDown = true;
 
                 Projectile.velocity *= DashAcceleration;
 
-                Projectile.scale = MathHelper.Lerp(1f, 0.3f, MathF.Pow(1f - DashTimer / DashDuration, 5));
+                Projectile.scale = MathHelper.Lerp(1f, 0.4f, MathF.Pow(1f - DashTimer / DashDuration, 5));
 
                 Owner.heldProj = Projectile.whoAmI;
                 Owner.itemTime = Owner.itemAnimation = 2;
@@ -359,13 +373,14 @@ namespace CalamityMod.Projectiles.Melee
                 if (DashTimer <= 0)
                 {
                     Owner.velocity *= 0.1f;
+                    Owner.Calamity().LungingDown = false;
                     Projectile.Kill();
                 }
             }
         }
 
         // Drawcode below is mostly based on Exoblade's dash.
-        public float PierceWidthFunction(float completionRatio)
+        public float PierceWidthFunction(float completionRatio, Vector2 vertexPos)
         {
             float width = Utils.GetLerpValue(0f, 0.2f, completionRatio, true) * Projectile.scale * 24f;
             //Fade it out starkly near the end of the lunge
@@ -373,7 +388,7 @@ namespace CalamityMod.Projectiles.Melee
             return width;
         }
 
-        public Color PierceColorFunction(float completionRatio) => Color.White * Projectile.Opacity; // The trail color doesnt matter here
+        public Color PierceColorFunction(float completionRatio, Vector2 vertexPos) => Color.White * Projectile.Opacity; // The trail color doesnt matter here
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -416,7 +431,7 @@ namespace CalamityMod.Projectiles.Melee
             int numPointsRendered = 30;
             int numPointsProvided = 60;
             var positionsToUse = Projectile.oldPos.Take(numPointsProvided).ToArray();
-            PrimitiveRenderer.RenderTrail(positionsToUse, new(PierceWidthFunction, PierceColorFunction, (_) => trailOffset, shader: GameShaders.Misc["CalamityMod:ExobladePierce"]), numPointsRendered);
+            PrimitiveRenderer.RenderTrail(positionsToUse, new(PierceWidthFunction, PierceColorFunction, (_,_) => trailOffset, shader: GameShaders.Misc["CalamityMod:ExobladePierce"]), numPointsRendered);
 
             Main.spriteBatch.ExitShaderRegion();
         }

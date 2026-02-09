@@ -1,18 +1,12 @@
 ﻿using System;
-using CalamityMod.Cooldowns;
-using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Armor.Wulfrum;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
-using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.IO;
-using static CalamityMod.CalamityUtils;
 
 namespace CalamityMod.Items.Materials
 {

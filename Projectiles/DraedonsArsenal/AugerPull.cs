@@ -50,7 +50,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     if (target != null && target.CanBeMoved(true) && Collision.CanHit(Projectile.Center, 1, 1, target.Center, 1, 1) && Vector2.Distance(target.Center, Projectile.Center) < 650)
                     {
                         Vector2 moveDir = target.Center.DirectionTo(Projectile.Center).SafeNormalize(Vector2.UnitX);
-                        target.velocity = moveDir * 20;
+                        target.velocity = moveDir;
                         target.Center += moveDir * 3f;
                     }
                 }
@@ -72,7 +72,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                         if (Vector2.Distance(target.Center, Projectile.Center) > 15 && Vector2.Distance(target.Center, Projectile.Center) < 300)
                         {
                             Vector2 moveDir = target.Center.DirectionTo(Projectile.Center).SafeNormalize(Vector2.UnitX);
-                            target.velocity = Vector2.Lerp(target.velocity, moveDir * 18, 0.12f);
+                            target.velocity = Vector2.Lerp(target.velocity, moveDir * 5, 0.12f);
                             target.Center += moveDir * 2f;
                         }
                     }

@@ -12,15 +12,11 @@ namespace CalamityMod.Items.Weapons.Magic
     public class VitriolicViper : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<CadaverousCarrion>();
-        }
         public override void SetDefaults()
         {
             Item.width = 60;
             Item.height = 62;
-            Item.damage = 2893;
+            Item.damage = 2626; //Some kind of... brainstorm
             Item.DamageType = DamageClass.Magic;
             Item.mana = 45;
             Item.useAnimation = Item.useTime = 16;

@@ -1,5 +1,4 @@
 ﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
@@ -38,14 +37,16 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.extraUpdates = 5; //ExtraUpdates help make collision more accurate
             Projectile.noEnchantmentVisuals = true;
         }
-        public override void Spawn(IEntitySource source)
+        public override void Spawn()
         {
             var player = Main.player[Projectile.owner];
             var modplayer = player.GetModPlayer<BaseSwordHoldoutPlayer>();
             StartupTime = 10;
             CooldownTime = 10;
             swingTime -= StartupTime + CooldownTime;
-            modplayer.swingNum = modplayer.swingNum++ % 3;
+
+            if (Main.myPlayer == Projectile.owner)
+                modplayer.swingNum = modplayer.swingNum++ % 3;
             OffsetDistance = 70;
             RotateInStartup = 0.2f;
             RotateInCooldown = 0f;
@@ -92,6 +93,7 @@ namespace CalamityMod.Projectiles.Melee
                                     Main.projectile[p].friendly = true;
                                     Main.projectile[p].DamageType = DamageClass.Melee;
                                     Main.projectile[p].timeLeft = 120;
+                                    Main.projectile[p].netUpdate = true;
                                 }
                             }
                         }
@@ -117,8 +119,8 @@ namespace CalamityMod.Projectiles.Melee
                 case 0:
                     if (Main.myPlayer == Projectile.owner)
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), player.Center, -angle * 3, ModContent.ProjectileType<MawOfInfinityJaws>(), Projectile.damage * 2, Projectile.knockBack, player.whoAmI);
-                    player.itemAnimation = BaseItem.useAnimation;
-                    player.itemTime = BaseItem.useTime;
+                        player.itemAnimation = BaseItem.useAnimation;
+                        player.itemTime = BaseItem.useTime;
                     Projectile.Kill();
                     return;
             }

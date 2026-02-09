@@ -84,7 +84,7 @@ namespace CalamityMod.Projectiles.Melee
 
                 Vector2 offset = Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(MathHelper.PiOver2) * sine * wavePower;
 
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + offset * direction, 267, -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.3f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + offset * direction, DustID.RainbowMk2, -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.3f));
                 dust.scale = Main.rand.NextFloat(0.85f, 0.95f);
                 dust.noGravity = true;
                 dust.color = Main.rand.NextBool(3) ? Color.PaleTurquoise : Color.Turquoise;
@@ -143,7 +143,7 @@ namespace CalamityMod.Projectiles.Melee
             }
             for (int i = 0; i < 18; i++)
             {
-                Dust c = Dust.NewDustPerfect(Projectile.Center, 267);
+                Dust c = Dust.NewDustPerfect(Projectile.Center, DustID.RainbowMk2);
                 c.velocity = (MathHelper.TwoPi * i / 18f).ToRotationVector2() * 10f + Owner.velocity * 0.5f;
                 c.scale = Main.rand.NextFloat(0.8f, 0.9f);
                 c.noGravity = true;

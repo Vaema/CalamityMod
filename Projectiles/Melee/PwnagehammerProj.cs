@@ -69,7 +69,7 @@ namespace CalamityMod.Projectiles.Melee
                 float rot = MathHelper.ToRadians(i * rotFactor);
                 Vector2 offset = new Vector2(9f, 0).RotatedBy(rot);
                 Vector2 velOffset = new Vector2(6f, 0).RotatedBy(rot);
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, 269, new Vector2(velOffset.X, velOffset.Y));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, DustID.Sandnado, new Vector2(velOffset.X, velOffset.Y));
                 dust.noGravity = true;
                 dust.velocity = velOffset;
                 dust.scale = 2.5f;

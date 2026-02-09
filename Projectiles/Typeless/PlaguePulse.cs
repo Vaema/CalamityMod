@@ -1,14 +1,9 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using CalamityMod.Particles;
-using Terraria.ID;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework.Graphics;
-using SteelSeries.GameSense;
 using CalamityMod.Buffs.DamageOverTime;
-using Mono.Cecil;
 
 namespace CalamityMod.Projectiles.Typeless
 {
@@ -79,7 +74,7 @@ namespace CalamityMod.Projectiles.Typeless
             Player player = Main.player[Projectile.owner];
             target.AddBuff(ModContent.BuffType<Plague>(), 420);
 
-            if ((target.life <= 0 && target.realLife == -1))
+            if (target.life <= 0 && target.realLife == -1 && target.IsAnEnemy(false))
             {
                 player.Heal(10);
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<PlaguePulse>(), (int)(Projectile.damage * 0.9f), 0f, Projectile.owner, 0, Projectile.ai[1] + 1, 1);

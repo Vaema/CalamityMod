@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using CalamityMod.DataStructures;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Pets;
 using CalamityMod.Items.Tools.ClimateChange;
@@ -15,16 +12,12 @@ using CalamityMod.Packets;
 using CalamityMod.Systems.Collections;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Abyss.AbyssAmbient;
-using CalamityMod.Tiles.FurnitureVoid;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.Walls;
 using CalamityMod.Walls.UnsafeWalls;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
-using Terraria.GameContent.Generation;
 using Terraria.ID;
-using Terraria.IO;
 using Terraria.ModLoader;
 using Terraria.WorldBuilding;
 
@@ -252,7 +245,7 @@ namespace CalamityMod.World
                                 else
                                 {
                                     tile.TileType = (ushort)ModContent.TileType<AbyssGravel>();
-                                    tile.WallType = (ushort)ModContent.WallType<AbyssGravelWall>();
+                                    tile.WallType = (ushort)ModContent.WallType<SafeAbyssGravelWall>();
                                 }
                             }
                             //basically places smaller clusters everywhere else?
@@ -308,7 +301,7 @@ namespace CalamityMod.World
                                 else
                                 {
                                     tile.TileType = (ushort)ModContent.TileType<AbyssGravel>();
-                                    tile.WallType = (ushort)ModContent.WallType<AbyssGravelWall>();
+                                    tile.WallType = (ushort)ModContent.WallType<SafeAbyssGravelWall>();
                                 }
                             }
                         }
@@ -559,7 +552,7 @@ namespace CalamityMod.World
                         }
                     }
 
-                    if (!tile.HasTile && tile.WallType > 0)
+                    if (!tile.HasTile && tile.WallType > WallID.None)
                     {
                         //fill up any air pockets with water
                         tile.Get<LiquidData>().LiquidType = LiquidID.Water;
@@ -996,7 +989,7 @@ namespace CalamityMod.World
             while (islandXOffsetPos < islandPositionXAgain)
             {
                 int islandYOffsetPos = islandPositionY;
-                while ((!Main.tile[islandXOffsetPos, islandYOffsetPos].HasTile || Main.tile[islandXOffsetPos, islandYOffsetPos].TileType != 0) && islandXOffsetPos < islandPositionXAgain)
+                while ((!Main.tile[islandXOffsetPos, islandYOffsetPos].HasTile || Main.tile[islandXOffsetPos, islandYOffsetPos].TileType != TileID.Dirt) && islandXOffsetPos < islandPositionXAgain)
                 {
                     islandYOffsetPos--;
                     if (islandYOffsetPos < islandPositionYAgain)
@@ -1292,6 +1285,16 @@ namespace CalamityMod.World
                         }
                     }
                 }
+            }
+        }
+
+        public static void FillTileWithWater(int i, int j)
+        {
+            var tile = Main.tile[i, j];
+            if (CalamityTileSets.IsAbyssWall[tile.WallType])
+            {
+                tile.LiquidAmount = 255;
+                tile.LiquidType = LiquidID.Water;
             }
         }
     }

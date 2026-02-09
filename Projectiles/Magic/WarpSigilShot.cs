@@ -1,20 +1,20 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using CalamityMod.Dusts;
+using CalamityMod.Enums;
+using CalamityMod.Graphics.Primitives;
+using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using Terraria.Audio;
-using CalamityMod.Graphics.Primitives;
 using Terraria.GameContent;
 using Terraria.Graphics.Shaders;
-using CalamityMod.Particles;
-using System;
-using CalamityMod.Dusts;
-using Humanizer;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class WarpSigilShot : ModProjectile, ILocalizedModType
+    public class WarpSigilShot : ModProjectile, ILocalizedModType, IPixelatedPrimitiveRenderer
     {
         public new string LocalizationCategory => "Projectiles.Magic";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
@@ -80,9 +80,6 @@ namespace CalamityMod.Projectiles.Magic
             }
             Projectile.friendly = DamageStatus == 1 ? true : false;
 
-            // Main orb/center of the projectile
-            GeneralParticleHandler.SpawnParticle(new SquishyLightParticle(Projectile.Center, Projectile.velocity, Projectile.scale * 0.425f, Color.Magenta, 2, 1f, 0f, 1f));
-
             float sine = (float)Math.Sin(Projectile.timeLeft * 0.575f / MathHelper.Pi);
             Vector2 offset = Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(MathHelper.PiOver2) * sine * 16f;
             if (Main.rand.NextBool(5))
@@ -94,32 +91,6 @@ namespace CalamityMod.Projectiles.Magic
             }
 
         }
-
-        // Standard trail drawing logic
-        private float WidthFunction(float completionRatio) => MathHelper.Lerp(0f, MathHelper.Lerp(32f, 0f, completionRatio), MathF.Pow(completionRatio, 1f / 2.5f));
-
-        private Color ColorFunction(float completionRatio)
-        {
-            float offsetTime = Main.GlobalTimeWrappedHourly;
-            float fadeOpacity = Utils.GetLerpValue(0.5f, 0f, completionRatio, true) * Projectile.Opacity;
-            Color endColor = Color.Lerp(Color.Magenta, Color.DarkMagenta, (float)Math.Sin(completionRatio * MathHelper.Pi * 1.6f - offsetTime * 4f) * 0.5f + 0.5f);
-            return Color.Lerp(endColor, Color.White, completionRatio) * fadeOpacity;
-        }
-
-        public override bool PreDraw(ref Color lightColor)
-        {
-            GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new PrimitiveSettings(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f, pixelate: false, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 32);
-
-            Texture2D texture = TextureAssets.Projectile[Type].Value;
-            int frameHeight = texture.Height / Main.projFrames[Type];
-            Rectangle sourceRect = new Rectangle(0, frameHeight * Projectile.frame, texture.Width, frameHeight);
-
-            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, sourceRect, Color.White, Projectile.rotation, sourceRect.Size() * 0.5f, 1f, SpriteEffects.None, 0);
-
-            return false;
-        }
-
         public override void OnKill(int timeLeft)
         {
             SoundStyle w = new("CalamityMod/Sounds/Custom/PlagueSounds/PlagueBoom4");
@@ -130,10 +101,37 @@ namespace CalamityMod.Projectiles.Magic
 
             for (int i = 0; i < 8; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 173, Main.rand.NextVector2Circular(2f, 2f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.ShadowbeamStaff, Main.rand.NextVector2Circular(2f, 2f));
                 dust.noGravity = true;
                 dust.scale = 0.5f;
             }
+        }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Texture2D texture = TextureAssets.Projectile[Type].Value;
+            int frameHeight = texture.Height / Main.projFrames[Type];
+            Rectangle sourceRect = new Rectangle(0, frameHeight * Projectile.frame, texture.Width, frameHeight);
+
+            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, sourceRect, Color.White, Projectile.rotation, sourceRect.Size() * 0.5f, 1f, SpriteEffects.None, 0);
+            return false;
+        }
+
+        // Handle the projectile's trail from here
+        private float WidthFunction(float completionRatio, Vector2 vertexPos) => MathHelper.Lerp(0f, MathHelper.Lerp(32f, 0f, completionRatio), MathF.Pow(completionRatio, 1f / 2.5f));
+        private Color ColorFunction(float completionRatio, Vector2 vertexPos)
+        {
+            float offsetTime = Main.GlobalTimeWrappedHourly;
+            float fadeOpacity = Utils.GetLerpValue(0.5f, 0f, completionRatio, true) * Projectile.Opacity;
+            Color endColor = Color.Lerp(Color.Magenta, Color.DarkMagenta, (float)Math.Sin(completionRatio * MathHelper.Pi * 1.6f - offsetTime * 4f) * 0.5f + 0.5f);
+            return Color.Lerp(endColor, Color.White, completionRatio) * fadeOpacity;
+        }
+        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch, GeneralDrawLayer layer)
+        {
+            GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new PrimitiveSettings(WidthFunction, ColorFunction, (_,_) => Projectile.Size * 0.5f, pixelate: true, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 32);
+
+            GeneralParticleHandler.SpawnParticle(new SquishyLightParticle(Projectile.Center, Projectile.velocity, Projectile.scale * 0.4f, Color.Magenta, 2, 1f, 0.5f, 1f), pixelate: true);
         }
     }
 }

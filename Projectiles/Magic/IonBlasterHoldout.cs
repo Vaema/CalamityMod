@@ -70,7 +70,7 @@ namespace CalamityMod.Projectiles.Magic
                 return;
             }
 
-            if (HeldItem.type != Owner.ActiveItem().type)
+            if (HeldItem.type != Owner.HeldItem.type)
             {
                 if (manaPower > 0)
                     shootingTimer = -75;
@@ -287,7 +287,7 @@ namespace CalamityMod.Projectiles.Magic
             Texture2D texGlow = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Magic/IonBlasterGlow").Value;
             Texture2D tex2 = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
-            float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);
+            float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f) - (Owner.gravDir == -1 ? MathHelper.Pi * Owner.direction : 0f);
             SpriteEffects flipSprite = (Projectile.spriteDirection * Owner.gravDir == -1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
             Vector2 shake = Main.rand.NextVector2Circular(2, 2) * manaPower;
 

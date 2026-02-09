@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Projectiles.Magic;
+﻿using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
 using Terraria;
 using Terraria.DataStructures;
@@ -15,7 +14,6 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(6, 6));
             ItemID.Sets.AnimatesAsSoul[Type] = true;
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Vehemence>();  
         }
 
         public override void SetDefaults()

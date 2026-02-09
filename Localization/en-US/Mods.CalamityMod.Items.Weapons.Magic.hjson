@@ -29,7 +29,20 @@ AethersWhisper: {
 
 AlulaAustralis: {
 	DisplayName: Alula Australis
-	Tooltip: Fires a beautiful aurora trailed by a star shower
+	Tooltip: Fires a beautiful aurora that inflicts [cbuff:CalamityMod/AstralInfectionDebuff] trailed by a star shower
+}
+
+AlphaDraconis: {
+	DisplayName: Alpha Draconis
+	Tooltip:
+		'''
+		Calls down a meteor shower towards the cursor
+		Successful hits sometimes create Starbursts that can be picked up
+		<right> with enough Starbursts to summon Draco to protect you
+		Draco burns Starbursts over time, and can be disspelled with <right>
+		Draco inflicts [cbuff:CalamityMod/Voidfrost]
+		'An imitation of insanity'
+		'''
 }
 
 AnahitasArpeggio: {
@@ -109,20 +122,17 @@ ArtAttack: {
 
 AstralachneaStaff: {
 	DisplayName: Astralachnea Staff
-	Tooltip: Fires a spread of homing astral spider fangs
+	Tooltip: Fires a spread of homing astral spider fangs that inflict [cbuff:CalamityMod/AstralInfectionDebuff]
 }
 
 AstralStaff: {
 	DisplayName: Astral Staff
-	Tooltip: Summons a large crystal from the sky that has a large area of effect on impact
+	Tooltip: Summons a large crystal from the sky that has a large area of effect on impact and inflicts [cbuff:CalamityMod/AstralInfectionDebuff]
 }
 
 Atlantis: {
 	DisplayName: Atlantis
-	Tooltip: "[GFB]"
-	TooltipNormal: Casts aquatic spears that split as they travel
-	TooltipGFB: A cosmic serpent prevents this weapon's true potential from shining...
-	TooltipGFBDoG: Take good care of my weapon, or else... -CIT
+	Tooltip: Casts aquatic spears that split as they travel
 }
 
 AuguroftheVoid: {
@@ -181,15 +191,6 @@ ChronomancersScythe: {
 		'''
 }
 
-ClamorNoctus: {
-	DisplayName: Clamor Noctus
-	Tooltip:
-		'''
-		Fires night wyverns and stars from the sky that stick to enemies and tiles and explode
-		'Let the sky fall'
-		'''
-}
-
 ClothiersWrath: {
 	DisplayName: Clothier's Wrath
 	Tooltip: Shoots 3 shadowflame skulls
@@ -230,11 +231,6 @@ DarkSpark: {
 		'And everything under the sun is in tune,
 		But the sun is eclipsed by the moon.'
 		'''
-}
-
-HyperdeathRiftScepter: {
-	DisplayName: Hyperdeath Rift Scepter
-	Tooltip: Tears space in two with [c/ff00ff:Hyperdeath Rift Ripper]
 }
 
 DeathValleyDuster: {
@@ -436,6 +432,11 @@ Heresy: {
 		Releases fire and souls upward from a held book
 		As the book is held the power of both increases
 		'''
+}
+
+HyperdeathRiftScepter: {
+	DisplayName: Hyperdeath Rift Scepter
+	Tooltip: Tears space in two with [c/ff00ff:Hyperdeath Rift Ripper]
 }
 
 HyphaeRod: {
