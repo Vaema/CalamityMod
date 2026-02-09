@@ -1,6 +1,7 @@
 ﻿using System;
 using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Projectiles.Melee;
+using CalamityMod.Utilities.Daybreak;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -100,8 +101,18 @@ namespace CalamityMod.Items.Weapons.Melee
             if (IsAnimating)
             {
                 var color = Color.Lerp(Color.Purple, Color.Red, MathF.Sin(Main.GlobalTimeWrappedHourly * 6) * 0.5f + 0.5f);
-                Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, null, Main.GameViewMatrix.TransformationMatrix, () =>
+
+                using (Main.spriteBatch.Scope())
                 {
+                    Main.spriteBatch.Begin(SpriteSortMode.Immediate,
+                        BlendState.Additive,
+                        SamplerState.PointClamp,
+                        DepthStencilState.None,
+                        Main.Rasterizer,
+                        null,
+                        Main.GameViewMatrix.TransformationMatrix
+                    );
+
                     Main.spriteBatch.Draw(GetGlowTex(), Item.Center - Main.screenPosition, null, color, 0, GetGlowTex().Size() * 0.5f, 0.1f + 0.7f * (AnimationTime / 240f), SpriteEffects.None, 0);
                     int rep = 0;
                     for (float i = 0; i <= MathHelper.TwoPi; i += MathHelper.TwoPi * 0.166f)
@@ -109,16 +120,31 @@ namespace CalamityMod.Items.Weapons.Melee
                         Main.spriteBatch.Draw(GetGlowBeamTex(), Item.Center - Main.screenPosition, null, color, MathHelper.WrapAngle(Main.GlobalTimeWrappedHourly) + i, new(GetGlowBeamTex().Size().X * 0.5f, 0), 0f + 0.06f * (AnimationTime / 240f) * (rep == 0 ? 1 : 0.75f), SpriteEffects.None, 0);
                         rep = (rep + 1) % 2;
                     }
-                });
+                    
+                    Main.spriteBatch.End();
+                }
+
                 var tex = TextureAssets.Item[ItemID.Pwnhammer].Value;
-                Main.spriteBatch.Draw(tex, Item.Center - Main.screenPosition, null, Color.Lerp(lightColor, Color.Black,AnimationTime / 240f), 0, tex.Size() * 0.5f,MathHelper.Lerp(1,1.75f, AnimationTime / 240f), SpriteEffects.None, 0);
+                Main.spriteBatch.Draw(tex, Item.Center - Main.screenPosition, null, Color.Lerp(lightColor, Color.Black, AnimationTime / 240f), 0, tex.Size() * 0.5f, MathHelper.Lerp(1, 1.75f, AnimationTime / 240f), SpriteEffects.None, 0);
                 return false;
-            } else if (AnimationTime < 300)
+
+            }
+            else if (AnimationTime < 300)
             {
                 float completion = 1 - (AnimationTime - 240) / 60f;
                 var color = Color.Lerp(Color.Purple, Color.Red, MathF.Sin(Main.GlobalTimeWrappedHourly * 6) * 0.5f + 0.5f);
-                Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, null, Main.GameViewMatrix.TransformationMatrix, () =>
+
+                using (Main.spriteBatch.Scope())
                 {
+                    Main.spriteBatch.Begin(SpriteSortMode.Immediate,
+                        BlendState.Additive,
+                        SamplerState.PointClamp,
+                        DepthStencilState.None,
+                        Main.Rasterizer,
+                        null,
+                        Main.GameViewMatrix.TransformationMatrix
+                    );
+
                     Main.spriteBatch.Draw(GetGlowTex(), Item.Center - Main.screenPosition, null, color, 0, GetGlowTex().Size() * 0.5f, 0.1f + 0.7f * completion, SpriteEffects.None, 0);
                     int rep = 0;
                     for (float i = 0; i <= MathHelper.TwoPi; i += MathHelper.TwoPi * 0.166f)
@@ -126,7 +152,9 @@ namespace CalamityMod.Items.Weapons.Melee
                         Main.spriteBatch.Draw(GetGlowBeamTex(), Item.Center - Main.screenPosition, null, color, MathHelper.WrapAngle(Main.GlobalTimeWrappedHourly) + i, new(GetGlowBeamTex().Size().X * 0.5f, 0), 0f + 0.06f * completion * (rep == 0 ? 1 : 0.75f), SpriteEffects.None, 0);
                         rep = (rep + 1) % 2;
                     }
-                });
+                    
+                    Main.spriteBatch.End();
+                }
             }
             return base.PreDrawInWorld(spriteBatch, lightColor, alphaColor, ref rotation, ref scale, whoAmI);
         }
