@@ -100,6 +100,9 @@ namespace CalamityMod.Effects
         // Exoblade's melee slash trails. Also used by Terratomere
         internal static Asset<Effect> ExobladeSlashShader;
 
+        // nanoblack reaper slash effect !!!!
+        internal static Asset<Effect> NanoblackSlashShader;
+
         // Exoblade's projectile on-hit "anime slash marks". Also used by Terratomere
         internal static Asset<Effect> ExobladePierceShader;
 
@@ -361,6 +364,9 @@ namespace CalamityMod.Effects
 
             ExobladeSlashShader = LoadShader("ExobladeSlashShader");
             RegisterMiscShader(ExobladeSlashShader, "TrailPass", "ExobladeSlash");
+
+            NanoblackSlashShader = LoadShader("SlashEffects/NanoblackSlash");
+            RegisterMiscShader(NanoblackSlashShader, "SlashPass", "NanoblackSlash");
 
             ExobladePierceShader = LoadShader("ExobladePierceShader");
             RegisterMiscShader(ExobladePierceShader, "PiercePass", "ExobladePierce");

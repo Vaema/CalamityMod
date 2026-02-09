@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Effects;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Utilities.Daybreak;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
-using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static CalamityMod.CalamityUtils;
@@ -219,10 +220,6 @@ namespace CalamityMod.Projectiles.Melee
             return false;
         }
 
-        public float SlashWidthFunction(float completionRatio, Vector2 vertexPos) => Projectile.scale * 22f;
-
-        public Color SlashColorFunction(float completionRatio, Vector2 vertexPos) => Color.Lime * Utils.GetLerpValue(0.9f, 0.4f, completionRatio, true) * Projectile.Opacity;
-
         public IEnumerable<Vector2> GenerateSlashPoints()
         {
             for (int i = 0; i < 20; i++)
@@ -239,16 +236,45 @@ namespace CalamityMod.Projectiles.Melee
 
         public void DrawSlash()
         {
-            // Draw the slash effect.
-            Main.spriteBatch.EnterShaderRegion();
+            if (SwingCompletionAtStartOfTrail <= SwingCompletionRatio)
+                return;
 
-            // Prepare shader parameters. This relies on the same shader as the Exoblade, albeit with a less contrasted palette.
-            PrepareSlashShader(Direction == 1);
+            var slashPoints = GenerateSlashPoints().ToArray();
+            var path = new List<Vector3>();
+            for (int i = 0; i < slashPoints.Length; i++)
+            {
+                Vector2 screenPos = Projectile.Center + slashPoints[i] - Main.screenPosition;
+                path.Add(new Vector3(screenPos, 0f));
+            }
 
-            if (SwingCompletionAtStartOfTrail > SwingCompletionRatio)
-                PrimitiveRenderer.RenderTrail(GenerateSlashPoints().ToArray(), new(SlashWidthFunction, SlashColorFunction, (_,_) => Projectile.Center, shader: GameShaders.Misc["CalamityMod:ExobladeSlash"]), 95);
+            if (path.Count < 2)
+                return;
 
-            Main.spriteBatch.ExitShaderRegion();
+            float width = Projectile.scale * 22f;
+            PrimitiveMesh mesh = TriangleStripBuilder.BuildStrip(
+                path,
+                _ => width,
+                Color.White,
+                textured: true,
+                smoothingSegments: 4);
+
+            Effect shader = CalamityShaders.NanoblackSlashShader.Value;
+            shader.Parameters["uTime"]?.SetValue((float)Main.gameTimeCache.TotalGameTime.TotalSeconds);
+
+            Matrix view = Main.GameViewMatrix.ZoomMatrix;
+            Matrix projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, -1f, 1f);
+
+            Main.spriteBatch.End(out var ss);
+
+            SanePrimitiveRenderer.DrawMesh(
+                Matrix.Identity,
+                view,
+                projection,
+                mesh,
+                shader,
+                blendState: BlendState.Additive);
+
+            Main.spriteBatch.Begin(ss);
         }
 
         public void DrawBlade(Color lightColor)
@@ -261,16 +287,6 @@ namespace CalamityMod.Projectiles.Melee
 
             SpriteEffects direction = Projectile.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
             Main.spriteBatch.Draw(texture, drawPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, origin, Projectile.scale, direction, 0f);
-        }
-
-        public static void PrepareSlashShader(bool flipped)
-        {
-            GameShaders.Misc["CalamityMod:ExobladeSlash"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/VoronoiShapes"));
-            GameShaders.Misc["CalamityMod:ExobladeSlash"].UseColor(Terratomere.TerraColor1);
-            GameShaders.Misc["CalamityMod:ExobladeSlash"].UseSecondaryColor(Terratomere.TerraColor2);
-            GameShaders.Misc["CalamityMod:ExobladeSlash"].Shader.Parameters["fireColor"].SetValue(Terratomere.TerraColor1.ToVector3());
-            GameShaders.Misc["CalamityMod:ExobladeSlash"].Shader.Parameters["flipped"].SetValue(flipped);
-            GameShaders.Misc["CalamityMod:ExobladeSlash"].Apply();
         }
         #endregion Drawing
 
