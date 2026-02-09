@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.CalPlayer;
 using CalamityMod.DataStructures;
 using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -46,7 +47,7 @@ namespace CalamityMod.Projectiles.Ranged
         public bool strongEnemy = false;
         public bool normalHit = false;
 
-        public bool pullCheckValid => ((chosenTarget != null && chosenTarget.life < Projectile.damage * 20f && !calledToPull && chosenTarget.realLife == -1 && !normalHit) || Main.zenithWorld);
+        public bool pullCheckValid => ((chosenTarget != null && chosenTarget.life < Projectile.damage * 20f && !calledToPull && chosenTarget.realLife == -1 && !normalHit && (CalamityPlayer.areThereAnyDamnBosses ? chosenTarget.life <= chosenTarget.lifeMax / 4 : true)) || Main.zenithWorld);
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
