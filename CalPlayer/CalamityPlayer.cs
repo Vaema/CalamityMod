@@ -194,7 +194,7 @@ namespace CalamityMod.CalPlayer
             DevourerofCods //Not a fishing minigame but uses the same code as the rest
         }
         public FishingMinigames SelectedFishingMinigame = FishingMinigames.None;
-        public bool countsAsAnyWet => (Player.armor[0].type == ItemID.FishBowl || Player.wetCount > 0 || Player.wet || Player.honeyWet || Player.lavaWet);
+        public bool countsAsAnyWet => (Player.armor[0].type == ItemID.FishBowl || (Main.raining && Player.Center.Y < Main.worldSurface * 16.0) || Player.dripping || Player.wetCount > 0 || Player.wet || Player.honeyWet || Player.lavaWet);
 
         /// <summary>
         /// How many Starbursts the player has

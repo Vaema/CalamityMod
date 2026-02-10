@@ -2926,8 +2926,6 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         NPC.netUpdate = true;
     }
 
-    public override bool PreKill(Mod mod) => AIState == BrainAIState.DeathAnimation && !NPC.dontTakeDamage;
-
     public override void FindFrame(Mod mod, int frameHeight)
     {
         if (BoCFrame == Rectangle.Empty)

@@ -828,6 +828,11 @@ DraconicIncense: {
 	Tooltip: "'Ignite the air with dragonfire.'"
 }
 
+EldenDiorama: {
+	DisplayName: Elden Diorama
+	Tooltip: "'Enshroud the sky with toxic torrents'"
+}
+
 ExoObelisk: {
 	DisplayName: Exo Obelisk
 	Tooltip: "'Energize the atmosphere with exo energy.'"
@@ -851,11 +856,6 @@ FrigidMonolith: {
 KelpTorch: {
 	DisplayName: Kelp Torch
 	Tooltip: Can be placed in water
-}
-
-OldDukeMonolith: {
-	DisplayName: Elden Diorama
-	Tooltip: ""
 }
 
 OtonilouStatue: {

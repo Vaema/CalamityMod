@@ -436,15 +436,6 @@ CorrosiveSpine: {
 		'''
 }
 
-UnholyTonic: {
-	DisplayName: Unholy Tonic
-	Tooltip:
-		'''
-		Increases damage reduction by 4% and defense by 6 while in the corruption
-		Grants immunity to Brain Rot
-		'''
-}
-
 CounterScarf: {
 	DisplayName: Counter Scarf
 	Tooltip:
@@ -460,15 +451,6 @@ CrawCarapace: {
 		'''
 		7% increased damage
 		Attackers take damage and are inflicted with Crumbling
-		'''
-}
-
-ViciousTonic: {
-	DisplayName: Vicious Tonic
-	Tooltip:
-		'''
-		Increases damage reduction by 4% and defense by 6 while in the crimson
-		Grants immunity to Burning Blood
 		'''
 }
 
@@ -2019,6 +2001,15 @@ TrinketofChi: {
 		'''
 }
 
+UnholyTonic: {
+	DisplayName: Unholy Tonic
+	Tooltip:
+		'''
+		Increases damage reduction by 4% and defense by 6 while in the corruption
+		Grants immunity to Brain Rot
+		'''
+}
+
 UnstableGraniteCore: {
 	DisplayName: Unstable Granite Core
 	Tooltip:
@@ -2048,6 +2039,15 @@ VeneratedLocket: {
 		Rogue projectiles summon a clone from above the cursor
 		Stealth strikes unleash a ring of seeking cosmilite knives
 		'You'll never be alone, no matter where you go'
+		'''
+}
+
+ViciousTonic: {
+	DisplayName: Vicious Tonic
+	Tooltip:
+		'''
+		Increases damage reduction by 4% and defense by 6 while in the crimson
+		Grants immunity to Burning Blood
 		'''
 }
 
