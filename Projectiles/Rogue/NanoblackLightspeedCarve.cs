@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
@@ -13,7 +14,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         internal const float TargetingRange = 600f;
 
-        private static float HitboxRadius = 60.0f;
+        internal static float HitboxRadius = 60.0f;
         internal static float PlacementRandomness = 12f;
 
         private static int Lifetime = 24;
@@ -53,6 +54,12 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 p = Projectile.Center + (Vector2.UnitX * HitboxRadius).RotatedBy(i * MathHelper.TwoPi / numDust);
                 Dust.NewDust(p, 1, 1, dustID, 0f, 0f, 0, default, 2f);
+            }
+
+            if (Main.netMode != NetmodeID.Server)
+            {
+                int slashVisualID = ModContent.ProjectileType<NanoblackLightspeedCarveSlashVisual>();
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, slashVisualID, 0, 0f, Projectile.owner, IsPerfect ? 1f : 0f);
             }
         }
 

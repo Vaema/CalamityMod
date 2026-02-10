@@ -1,5 +1,7 @@
 // Judgement Cut–style horizontal slash
 // HLSL for use with SanePrimitiveRenderer's custom Effect path
+// Specifically SanePrimitiveRenderer. This won't work with the regular one.
+// Sorry!
 
 matrix uTransformMatrix;
 float uTime;
@@ -83,6 +85,14 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 
     float time = uTime;
     float3 col = chromaSlash(uv, time);
+
+    // temp
+    float fillMask = smoothstep(1.0, 0.6, abs(uv.y));
+    float fillNoise = noise(float2(uv.x * 6.0 + time * 0.8, uv.y * 3.0));
+    fillMask *= lerp(0.7, 1.1, fillNoise);
+    fillMask = pow(saturate(fillMask), 1.8);
+    float fillEdgeFade = smoothstep(1.0, 0.25, abs(uv.y);
+    col += fillMask * fillEdgeFade * float3(0.12, 0.25, 0.55);
 
     float flicker = 0.85 + 0.15 * sin(time * 40.0);
     col *= flicker;
