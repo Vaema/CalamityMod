@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Effects;
+using CalamityMod.Events;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Systems.Graphic;
@@ -222,7 +223,7 @@ namespace CalamityMod.Skies
 
         public override void Draw(SpriteBatch spriteBatch, float minDepth, float maxDepth)
         {
-            if (Main.gameMenu || !CalamityClientConfig.Instance.FancyBackgroundVisuals)
+            if (Main.gameMenu || !CalamityClientConfig.Instance.FancyBackgroundVisuals || BossRushEvent.BossRushActive)
                 return;
 
             spriteBatch.End();
