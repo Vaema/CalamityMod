@@ -1,5 +1,5 @@
-﻿using CalamityMod.NPCs.Providence;
-using CalamityMod.Projectiles.Boss;
+﻿using CalamityMod.NPCs;
+using CalamityMod.NPCs.Providence;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -11,33 +11,24 @@ namespace CalamityMod.Systems
         public override SceneEffectPriority Priority => SceneEffectPriority.BossHigh;
 
         public override int NPCType => ModContent.NPCType<Providence>();
-        public override int? MusicModMusic
-        {
-            get
-            {
-                for (int i = 0; i < Main.projectile.Length; i++)
-                {
-                    Projectile proj = Main.projectile[i];
-                    if (proj.type == ModContent.ProjectileType<HolyAura>() && proj.timeLeft > 35)
-                    {
-                        return MusicLoader.GetMusicSlot(Mod, "Sounds/Music/Silence");
-                    }
-                }
-                return CalamityMod.Instance.GetMusicFromMusicMod("Providence");
-            }
-        }
+        public static int ProvidenceTrack => (int)CalamityMod.Instance.GetMusicFromMusicMod("Providence");
+        public static int SilenceTrack => MusicLoader.GetMusicSlot(CalamityMod.Instance, "Sounds/Music/Silence");
+        public override int? MusicModMusic => ProvidenceSpawnState() < 180f && ProvUtils.StandardAI() ? SilenceTrack : ProvidenceTrack;
         public override int VanillaMusic => MusicID.LunarBoss;
         public override int OtherworldMusic => MusicID.OtherworldlyLunarBoss;
         public override void SpecialVisuals(Player player, bool isActive)
         {
-            for (int i = 0; i < Main.projectile.Length; i++)
-            {
-                Projectile proj = Main.projectile[i];
-                if (isActive && proj.type == ModContent.ProjectileType<HolyAura>() && proj.timeLeft <= 35)
-                {
-                    Main.musicFade[Main.curMusic] = 1f;
-                }
-            }
+            if (ProvidenceSpawnState() == 180f && ProvUtils.StandardAI())
+                Main.musicFade[ProvidenceTrack] = 1f;
+        }
+        public static float ProvidenceSpawnState()
+        {
+            int provIndex = CalamityGlobalNPC.holyBoss;
+            if (provIndex < 0 || provIndex >= Main.maxNPCs || !Main.npc[provIndex].active)
+                return -1f;
+
+            var prov = Main.npc[provIndex];
+            return prov.Calamity().newAI[3];
         }
     }
 }

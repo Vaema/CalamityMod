@@ -1,13 +1,10 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Weapons.Typeless;
+﻿using System.Linq;
+using CalamityMod.CalPlayer;
 using CalamityMod.Systems.Graphic.PixelationSystem;
 using CalamityMod.Systems.Mechanic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Utilities;
 using Terraria;
-using Terraria.Audio;
 using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
 
@@ -16,8 +13,6 @@ namespace CalamityMod.Projectiles.Typeless
     public class StratusBlackHole : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
-
-        public SlotId LoopSoundSlot = SlotId.Invalid;
 
         public override void SetStaticDefaults()
         {
@@ -64,36 +59,48 @@ namespace CalamityMod.Projectiles.Typeless
             }
             foreach (var player in Main.ActivePlayers)
             {
-                if (player.Distance(Projectile.Center) <= 600 && player.miscCounter % 30 == 15)
+                if (player.Distance(Projectile.Center) <= 600)
                 {
-                    player.Calamity().StratusStarburst++;
-                    if (player.Calamity().StratusStarburst <= CalamityPlayer.MaxStratusStarburst)
-                        player.Calamity().StarburstEntities.Add(new StarburstEntity(Projectile.Center));
-                    player.Calamity().StratusStarburstResetTimer = (int)MathHelper.Max(player.Calamity().StratusStarburstResetTimer, 180);
+                    if (player.miscCounter % 30 == 15)
+                    {
+                        player.Calamity().StratusStarburst++;
+                        if (player.Calamity().StratusStarburst <= CalamityPlayer.MaxStratusStarburst)
+                            player.Calamity().StarburstEntities.Add(new StarburstEntity(Projectile.Center));
+                        player.Calamity().StratusStarburstResetTimer = (int)MathHelper.Max(player.Calamity().StratusStarburstResetTimer, 180);
+                    }
+                    if (player.wingsLogic > 0)
+                    {
+                        if (player.wingTime <= 0 && player.Calamity().AvaliableStarburst > 0)
+                        {
+                            player.Calamity().StratusStarburst--;
+                            player.wingTime += 5;
+                        }
+                    }
+                    else if (player.rocketBoots > 0)
+                    {
+                        if (player.rocketTime <= 0 && player.Calamity().AvaliableStarburst > 0)
+                        {
+                            player.Calamity().StratusStarburst--;
+                            player.rocketTime += 1;
+                        }
+                    }
+                    else
+                    {
+                        var activeJumps = player.extraJumps.Where(x => x.Enabled).Count();
+                         if (activeJumps > 0 && !player.AnyExtraJumpUsable() && player.Calamity().AvaliableStarburst >= 5 * activeJumps && !player.gravControl2)
+                        {
+                            player.Calamity().StratusStarburst -= 5 * activeJumps;
+                            player.RefreshDoubleJumps();
+                        } 
+                    }
                 }
             }
-
-            if (!SoundEngine.TryGetActiveSound(LoopSoundSlot, out var sound))
-                LoopSoundSlot = SoundEngine.PlaySound(StratusSphere.LoopSound with { Volume = 1f }, Projectile.Center);
-            else
-                sound.Position = Projectile.Center; // Keep the sound consistently on the projectile
-        }
-
-
-        private void StopLoop()
-        {
-            if (SoundEngine.TryGetActiveSound(LoopSoundSlot, out var sound))
-                sound.Stop();
-
-            LoopSoundSlot = SlotId.Invalid;
-        }
-        public override void OnKill(int timeLeft)
-        {
-            StopLoop();
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
+            if (Projectile.timeLeft > (CalamityUtils.MinutesToFrames(10) - 45) * Projectile.MaxUpdates)
+                return false;
             return targetHitbox.IntersectsConeFastInaccurate(Projectile.Center, 600, 0, MathHelper.TwoPi);
         }
         static Texture2D _TransparentBloomTex;
@@ -180,7 +187,7 @@ namespace CalamityMod.Projectiles.Typeless
         {
 
             Vector2 drawPosition = mproj.Projectile.Center - Main.screenPosition;
-            
+
             #region Singularity
             var telegraphBase = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/BasicCircle").Value;
 

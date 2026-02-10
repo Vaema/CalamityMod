@@ -434,15 +434,6 @@ CorrosiveSpine: {
 		'''
 }
 
-UnholyTonic: {
-	DisplayName: Unholy Tonic
-	Tooltip:
-		'''
-		Increases damage reduction by 4% and defense by 6 while in the corruption
-		Grants immunity to Brain Rot
-		'''
-}
-
 CounterScarf: {
 	DisplayName: Counter Scarf
 	Tooltip:
@@ -458,15 +449,6 @@ CrawCarapace: {
 		'''
 		7% increased damage
 		Attackers take damage and are inflicted with Crumbling
-		'''
-}
-
-ViciousTonic: {
-	DisplayName: Vicious Tonic
-	Tooltip:
-		'''
-		Increases damage reduction by 4% and defense by 6 while in the crimson
-		Grants immunity to Burning Blood
 		'''
 }
 
@@ -1888,7 +1870,7 @@ TheAmalgam: {
 	DisplayName: The Amalgam
 	Tooltip:
 		'''
-		All attacks inflict a variety of debuffs, 200% increased elemental debuff damage
+		All attacks inflict a variety of debuffs, 300% increased elemental debuff damage
 		Most buffs last twice as long, and persist after dying
 		Taking damage confuses nearby enemies and spawns a dank creeper
 		The dank creeper flies above you, exploding into several shaderain clouds
@@ -1959,6 +1941,17 @@ TheFirstShadowflame: {
 		'''
 }
 
+ThePointer: {
+	DisplayName: The Pointer
+	Tooltip:
+		'''
+		Allows automatic targeting of enemies
+		Press [KEY] to cycle through targets near your mouse
+		After cycling through all close enemies, the next press will disable it
+		'Great for cats!'
+		'''
+}
+
 TheSponge: {
 	DisplayName: The Sponge
 	Tooltip:
@@ -2015,6 +2008,15 @@ TrinketofChi: {
 		'''
 }
 
+UnholyTonic: {
+	DisplayName: Unholy Tonic
+	Tooltip:
+		'''
+		Increases damage reduction by 4% and defense by 6 while in the corruption
+		Grants immunity to Brain Rot
+		'''
+}
+
 UnstableGraniteCore: {
 	DisplayName: Unstable Granite Core
 	Tooltip:
@@ -2044,6 +2046,15 @@ VeneratedLocket: {
 		Rogue projectiles summon a clone from above the cursor
 		Stealth strikes unleash a ring of seeking cosmilite knives
 		'You'll never be alone, no matter where you go'
+		'''
+}
+
+ViciousTonic: {
+	DisplayName: Vicious Tonic
+	Tooltip:
+		'''
+		Increases damage reduction by 4% and defense by 6 while in the crimson
+		Grants immunity to Burning Blood
 		'''
 }
 
@@ -2146,11 +2157,6 @@ AbandonedWulfrumHelmet: {
 GhostBracelet: {
 	DisplayName: Ghost Bracelet
 	Tooltip: Wow.... It looks at me with its hollow eyes full of curiosity
-}
-
-GoldenBomb: {
-	DisplayName: Golden Bomb
-	Tooltip: "'I AM THE BOMB'"
 }
 
 HapuFruit: {

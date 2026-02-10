@@ -4,6 +4,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Walls.UnsafeWalls
 {
+    [LegacyName("SulphurousSandstoneWall")]
     public class UnsafeSulphurousSandstoneWall : ModWall
     {
         public override string Texture => "CalamityMod/Walls/SulphurousSandstoneWall";

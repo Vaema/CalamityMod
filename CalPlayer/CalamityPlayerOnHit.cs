@@ -1308,7 +1308,7 @@ namespace CalamityMod.CalPlayer
                     Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, electricianGlove ? 10 : 5, 2f);
 
                 if (bloodflareThrowing && proj.CountsAsClass<ThrowingDamageClass>() && crit)
-                    Projectile.NewProjectile(Player.GetSource_OnHit(target), proj.Center, proj.velocity.SafeNormalize(Vector2.Zero) * Math.Min(proj.velocity.Length() * proj.MaxUpdates / 4f, 4f) * Main.rand.NextFloat(0.75f, 1.25f), ProjectileType<BloodstoneHealOrb>(), 4, 0f, proj.owner);
+                    Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, 2, 1.5f);
 
                 if (proj.CountsAsClass<MagicDamageClass>() && Player.HeldItem.CountsAsClass<MagicDamageClass>())
                 {

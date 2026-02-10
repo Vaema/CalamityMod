@@ -1,18 +1,20 @@
 ﻿using CalamityMod.ForegroundDrawing.LoopingTextures;
+using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.Monoliths;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.Furniture.Monoliths
 {
-    public class OldDukeMonolith : ModItem, ILocalizedModType
+    [LegacyName("OldDukeMonolith")]
+    public class EldenDiorama : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<OldDukeMonolithTile>());
-            Item.value = Item.buyPrice(gold: 25); // Sold by Archmage
-            Item.rare = ItemRarityID.Pink;
+            Item.value = Item.sellPrice(gold: 20);
+            Item.rare = ModContent.RarityType<PureGreen>();
             Item.accessory = true;
             Item.vanity = true;
         }

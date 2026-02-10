@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Placeables.FurnitureWulfrum;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -93,6 +94,14 @@ namespace CalamityMod.Items.Materials
                     }
                 }
             }
+        }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe().
+                AddIngredient<WulfrumPlatform>(2).
+                DisableDecraft().
+                Register();
         }
 
         public override void Load()

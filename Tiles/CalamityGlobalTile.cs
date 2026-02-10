@@ -308,13 +308,6 @@ namespace CalamityMod.Tiles
                 if (WorldGen.altarCount > 1 && WorldGen.altarCount % 12 == 0)
                     DropItem(i, j, ItemType<EvilSmasher>(), quantity: 1, asStack: true, prefix: true);
             }
-
-            // Drop Golden Bombs at a 0.33% chance from Pots
-            if (type == TileID.Pots)
-            {
-                if (Main.rand.NextBool(300))
-                    DropItem(i, j, ItemType<GoldenBomb>(), quantity: 1, asStack: true);
-            }
         }
 
         private static void DropItem(int i, int j, int itemType, int quantity, bool asStack, Vector2 spreadMinMax = default, bool prefix = false)

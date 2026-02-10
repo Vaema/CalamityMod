@@ -183,7 +183,7 @@ namespace CalamityMod.Projectiles.Magic
             target.AddBuff(BuffID.Frostburn2, 60);
 
             float minMult = 0.2f;
-            int hitsToMinMult = 4;
+            int hitsToMinMult = 3;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
             modifiers.SourceDamage *= damageMult;
         }

@@ -4,6 +4,7 @@ RogueCrit: "{0}% increased rogue critical strike chance"
 RogueDamageCrit: "{0}% increased rogue damage and critical strike chance"
 RogueVelocity: "{0}% increased rogue velocity"
 RogueStealth: +{0} maximum stealth
+CritDamageTootip: "{0}% critical strike damage"
 // Armor Set Bonus key states
 BothArmorSetBonusKeys: Press {0} or Double tap {1}
 NoArmorSetBonusKey: Press the Armor Set Bonus key
@@ -15,7 +16,7 @@ AggroReduction: Enemies are less likely to target you
 KnockbackImmunity: Grants immunity to knockback
 AbyssLightLevel: Reduces the darkness intensity of the abyss
 AbyssFlashlight: Increases flashlight width in the abyss
-AbyssGlow: Increases visibily range in the abyss
+AbyssGlow: Increases visibility range in the abyss
 AbyssBreathLevel1: Slightly reduces breath loss in the abyss
 AbyssBreathLevel2: Moderately reduces breath loss in the abyss
 AbyssBreathLevel3: Greatly reduces breath loss in the abyss

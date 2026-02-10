@@ -68,6 +68,7 @@ using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using CalamityMod.Tiles.FurnitureAuric;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.UI;
+using CalamityMod.Utilities;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -1673,7 +1674,7 @@ namespace CalamityMod.CalPlayer
                                         holyDust.noGravity = true;
                                         holyDust.scale = 1f;
                                         holyDust.fadeIn = Main.rand.NextFloat() * 2f;
-                                        Dust dustClone = Dust.CloneDust(holyDust);
+                                        Dust dustClone = Dust.BetterCloneDust(holyDust);
                                         Dust extraDust = dustClone;
                                         extraDust.scale /= 2f;
                                         extraDust = dustClone;
@@ -3604,19 +3605,8 @@ namespace CalamityMod.CalPlayer
 
             if (starBeamRye)
             {
-                Player.manaFlower = false;
-                Player.ClearBuff(ModContent.BuffType<AstralInjectionBuff>());
-                if (!Player.manaSick)
-                {
-                    Player.manaRegenCount -= Player.manaRegen;
-                    Player.manaRegenDelay = 0;
-                    Player.manaRegenCount += 20; // 20 mana per second, even while using an item
-                    if (Player.HeldItem.mana > 0) 
-                    {
-                        Player.GetDamage<MagicDamageClass>() += 0.5f + MathHelper.Max(0.1f,Player.HeldItem.mana / (float)Player.HeldItem.useTime);
-                    }
-                    Player.GetDamage<GenericDamageClass>() -= 0.5f;
-                }
+                Player.manaRegenCount += StarBeamRye.ManaRegenBoost;
+                Player.GetDamage<MagicDamageClass>() *= StarBeamRye.MagicDmgMult;
             }
 
             if (whiteWine)
@@ -3782,11 +3772,11 @@ namespace CalamityMod.CalPlayer
                 Player.velocity *= 0.98f;
 
             if (molluskHelmet)
-                Player.velocity.X *= 0.995f;
+                Player.velocity.X *= 0.996f;
             if (molluskChest)
-                Player.velocity.X *= 0.995f;
+                Player.velocity.X *= 0.996f;
             if (molluskLegs)
-                Player.velocity.X *= 0.995f;
+                Player.velocity.X *= 0.996f;
 
             if ((warped) && !Player.slowFall && !Player.mount.Active)
             {
@@ -4557,6 +4547,9 @@ namespace CalamityMod.CalPlayer
         #region Energy Shields
         private void EnergyShields()
         {
+            if (Player.whoAmI != Main.myPlayer)
+                return;
+
             // Because later tier shields are brighter, shields are handled from highest tier to lowest tier here.
             bool shieldAddedLight = false;
 

@@ -21,6 +21,7 @@ namespace CalamityMod
         public static ModKeybind TransformerHotKey { get; private set; }
         public static ModKeybind SwitchGravityHotkey {get; private set;}
         public static ModKeybind ExpandDebuffInfo { get; private set; }
+        public static ModKeybind ThePointerLock {get; private set;}
 
         public override void Load()
         {
@@ -42,6 +43,7 @@ namespace CalamityMod
             TransformerHotKey = KeybindLoader.RegisterKeybind(Mod, "TransformerHotKey", "K");
             SwitchGravityHotkey = KeybindLoader.RegisterKeybind(Mod, "GravitySwapOverride", "T");
             ExpandDebuffInfo = KeybindLoader.RegisterKeybind(Mod, "ExpandDebuffInfo", "LeftControl");
+            ThePointerLock = KeybindLoader.RegisterKeybind(Mod, "ThePointerLock", "N");
         }
 
         public override void Unload()

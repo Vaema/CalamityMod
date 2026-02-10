@@ -82,7 +82,7 @@ namespace CalamityMod.Items.TreasureBags
             // Vanity
             itemLoot.Add(ModContent.ItemType<AnahitaMask>(), 7);
             itemLoot.Add(ModContent.ItemType<LeviathanMask>(), 7);
-            itemLoot.Add(ModContent.ItemType<DeepSeaAnchor>(), 15);
+            itemLoot.Add(ModContent.ItemType<DeepSeaAnchor>(), 10);
             itemLoot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
         }
     }

@@ -185,6 +185,7 @@ namespace CalamityMod.NPCs
             "Curly", // <@!673092101780668416> (curly4830)
             "Cobalt", // <@!132962828922388481> (cobalt_44)
             "Dizzetriya", // <@!719818245665980517> (dizzykbity)
+            "Vodka", // <@!1172497470438248565> (ehhhhh0981)
         ];
         private static readonly string[] MerchantNames =
         [
@@ -219,6 +220,7 @@ namespace CalamityMod.NPCs
             "Yarrim", // <@!290061123137306624> (borb9834)
             "Hector Barbossa", // <@!615704209303797790> (thatrockisfullamagic)
             "Blunderbeard", // <@!1039460813490102293> (parmiigianoreggiano)
+            "Vergil Cyrus", // <@!732350101619605584> (cyver1)
         ];
         private static readonly string[] PrincessNames =
         [
@@ -263,6 +265,7 @@ namespace CalamityMod.NPCs
             "Lain", // <@!655201622863118337> (literallyadeerfr)
             "Hamis", // <@!608455754093035521> (haefer)
             "Brio Scarlet", // <@!358576903701004289> (brio_scarlet)
+            "Vanessa", // <@!638901548591611945> (mediocreking)
         ];
         private static readonly string[] TavernkeepNames =
         [
@@ -274,6 +277,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] TaxCollectorNames =
         [
             "Emmett",
+            "Bagman", // <@!701831892990820383> (supportcrispy)
         ];
         private static readonly string[] TravelingMerchantNames =
         [
@@ -355,6 +359,8 @@ namespace CalamityMod.NPCs
         private static readonly string[] TownDogLabradorNames =
         [
             "Riley", // <@!260875558592708619> (potionpal)
+            "Silvie", // <@!979862425211912242> (goldsockz2)
+            "Madison", // <@!338315261352476682> (tyeski)
         ];
         private static readonly string[] TownDogPitBullNames =
         [
@@ -363,12 +369,16 @@ namespace CalamityMod.NPCs
         private static readonly string[] TownDogBeagleNames =
         [
             "Kendra", // <@!237247188005158912> (lordmetarex)
+            "Libby", // <@!338315261352476682> (tyeski)
+            "Myles", // <@!658760860722004017> (apotofkoolaid)
+            "Luna", // <@!534132902095749120> (mizzultraviolet)
         ];
         private static readonly string[] TownDogCorgiNames = null;
         private static readonly string[] TownDogDalmatianNames = null;
         private static readonly string[] TownDogHuskyNames =
         [
             "Yoshi", // <@!541127291426832384> (gregthespinarak)
+            "Franklin", // <@!338315261352476682> (tyeski)
         ];
 
         private const int TownCatSiameseVanillaNames = 12;
@@ -389,12 +399,19 @@ namespace CalamityMod.NPCs
         private static readonly string[] TownCatSiameseNames =
         [
             "Conductor", // <@!555512087711973390> (grayaeternum)
+            "Vivian", // <@!338315261352476682> (TYESKI)
+            "Pudum", // <@!731141759484297226> (trianglepixel)
+            "Snickers", // <@!658760860722004017> (apotofkoolaid)
+            "Mr. Kitten", // <@!658760860722004017> (apotofkoolaid)
         ];
         private static readonly string[] TownCatBlackNames =
         [
             "Bear", // <@!183424826407518208> (lilac_vrt_olligoci)
             "Storm", // <@!620383533516718085> (airwaveslr)
             "Hognar the Wicked", // <@!766511001356468237> (xzier_tengal)
+            "Saffie", // <@!319753595161411584> (CDMusic)
+            "Willow", // <@!319753595161411584> (CDMusic)
+            "Maine", // <@!731141759484297226> (trianglepixel)
         ];
         private static readonly string[] TownCatOrangeTabbyNames =
         [
@@ -402,6 +419,8 @@ namespace CalamityMod.NPCs
             "Tardo", // <@!739343546867384391> (midnight295)
             "Dali", // <@!460238880436781061> (darthlego)
             "Kiba", // <@!852348657072340992> (jollydragonslayer)
+            "Monkey", // <@!338315261352476682> (TYESKI)
+            "Percy", // <@!658760860722004017> (apotofkoolaid)
         ];
         private static readonly string[] TownCatRussianBlueNames = null;
         private static readonly string[] TownCatSilverNames =
@@ -1293,6 +1312,8 @@ namespace CalamityMod.NPCs
             if (type == NPCID.Painter)
             {
                 shop.AddWithCustomValue(ItemID.PainterPaintballGun, Item.buyPrice(gold: 15))
+                .Add(ItemType<CalamityCanvas2023>())
+                .Add(ItemType<CalamityCanvas2024>())
                 .Add(ItemType<AmidiasPainting>(), CalamityConditions.InSunken, Condition.NpcIsPresent(NPCType<SeaKing>()));
             }
 

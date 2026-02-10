@@ -74,7 +74,6 @@ namespace CalamityMod.Items.Weapons.Summon
                 if (p.type == type && p.owner == player.whoAmI)
                 {
                     int adjustedProjCount = (int)(projCount);
-                    Main.NewText("index: " + index.ToString() + " | projCount: " + adjustedProjCount.ToString() + " | angleMax: " + angleMax.ToString());
                     p.ai[1] = index / adjustedProjCount * angleMax - angleMax / 2f;
                     p.netUpdate = true;
                     index++;

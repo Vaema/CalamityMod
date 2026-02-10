@@ -209,24 +209,40 @@ namespace CalamityMod
         }
 
         /// <summary>
-        /// Directly retrieves the best pickaxe power of the player.
+        /// Retrieves the best pickaxe item in the player's inventory.<br /></br>
+        /// May return <see langword="null"> if the player has no pickaxes.
         /// </summary>
-        /// <param name="player"></param>
-        /// <returns></returns>
-        public static int GetBestPickPower(this Player player)
+        /// <param name="player">The player whose best pickaxe is being queried.</param>
+        /// <returns>An item with a nonzero pickaxe power, or <see langword="null">.</returns>
+        internal static Item GetBestPick(this Player player)
         {
-            int highestPickPower = 35; //35% if you have no pickaxes.
+            int bestPickPower = 0;
+            Item bestPick = null;
             for (int item = 0; item < Main.InventorySlotsTotal; item++)
             {
                 if (player.inventory[item].pick <= 0)
                     continue;
 
-                if (player.inventory[item].pick > highestPickPower)
-                    highestPickPower = player.inventory[item].pick;
+                if (player.inventory[item].pick > bestPickPower)
+                {
+                    bestPick = player.inventory[item];
+                    bestPickPower = bestPick.pick;
+                }
             }
 
-            return highestPickPower;
+            return bestPick;
         }
+
+        // Pickaxe power minimum is decided by the Copper Pickaxe.
+        private static int _minimumPickPower => ContentSamples.ItemsByType[ItemID.CopperPickaxe].pick;
+
+        /// <summary>
+        /// Retrieves the best pickaxe power of the player.<br /></br>
+        /// Always returns a minimum pickaxe power equivalent to the Copper Pickaxe.
+        /// </summary>
+        /// <param name="player">The player whose pickaxe strength is being queried.</param>
+        /// <returns>A pickaxe power value, minimum 35.</returns>
+        public static int GetBestPickPower(this Player player) => player.GetBestPick()?.pick ?? _minimumPickPower;
         #endregion
 
         #region Movement and Controls

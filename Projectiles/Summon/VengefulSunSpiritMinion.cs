@@ -152,7 +152,7 @@ namespace CalamityMod.Projectiles.Summon
             var whiteTex = GetWhiteTex();
             var ciTex = CalamityUtils.GetTextureEfficient(ref circle, "CalamityMod/ExtraTextures/GreyscaleOpenCircleButBigger").Value;
 
-            float completion = (Projectile.minionSlots-1) / 9f;
+            float completion = (Projectile.minionSlots-1) / 6f;
             var color = Color.Lerp(Color.Yellow, Color.DarkOrange, completion);
             if (completion >= 1)
                 color = Color.LightBlue;

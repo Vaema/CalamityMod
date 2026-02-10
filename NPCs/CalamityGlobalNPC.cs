@@ -25,6 +25,7 @@ using CalamityMod.NPCs.AstrumDeus;
 using CalamityMod.NPCs.Bumblebirb;
 using CalamityMod.NPCs.CalClone;
 using CalamityMod.NPCs.CeaselessVoid;
+using CalamityMod.NPCs.Deconstructors;
 using CalamityMod.NPCs.DesertScourge;
 using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.NPCs.DraedonLabThings;
@@ -890,6 +891,11 @@ namespace CalamityMod.NPCs
             {
                 ActiveWaterDebuffMultiplier += 1;
             }
+
+            if (npc.HasBuff<SearingLava>()) //Searing Lava is so hot it makes cold less strong
+            {
+                ActiveColdDebuffMultiplier -= 0.5f;
+            }
             if (VulnerableToHeat.HasValue)
             {
                 if (VulnerableToHeat.Value)
@@ -1291,9 +1297,6 @@ namespace CalamityMod.NPCs
                         break;
                     case NPCID.BrainofCthulhu:
                         npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.75);
-                        break;
-                    case NPCID.Creeper:
-                        npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.1);
                         break;
                     case NPCID.QueenBee:
                         npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.8);
@@ -3188,10 +3191,13 @@ namespace CalamityMod.NPCs
                             Vector2 startVel = (warbannerBurnDirection * velAdjust).RotatedByRandom(0.6f * warbannerBurnIntensity);
                             Particle sparks = new VelChangingSpark(sparkPos, startVel, endVel, "CalamityMod/Particles/SmallBloom", Main.rand.Next(18, 22 + 1), Main.rand.NextFloat(0.1f, 0.25f) * sizeBonus, color * 0.75f, new Vector2(0.7f, 1), true, false, 0, false, 0.45f, 0.1f);
                             GeneralParticleHandler.SpawnParticle(sparks);
-                            Dust lust2 = Dust.NewDustPerfect(sparkPos, DustType<LightDust>(), startVel, Scale: Main.rand.NextFloat(0.7f, 1.1f) * sizeBonus);
-                            lust2.noGravity = true;
-                            lust2.color = color;
-                            lust2.noLightEmittence = true;
+                            if (Main.rand.NextBool())
+                            {
+                                Dust lust2 = Dust.NewDustPerfect(sparkPos, DustType<LightDust>(), startVel, Scale: Main.rand.NextFloat(0.5f, 0.9f) * Math.Min(sizeBonus, 1.3f));
+                                lust2.noGravity = true;
+                                lust2.color = color;
+                                lust2.noLightEmittence = true;
+                            }
                         }
                     }
                     var player = Main.LocalPlayer;
@@ -4762,9 +4768,9 @@ namespace CalamityMod.NPCs
                     dust.color = Color.Red;
                     dust.fadeIn = laserBurnStacks * 0.3f;
                 }
+                // If for some reason neither burn type is set
                 if (laserBurnType == 0)
                 {
-                    Main.NewText("No Burn Type Set", Color.OrangeRed);
                     laserBurnMarked = false;
                     laserBurnTimer = 0;
                 }
@@ -4942,6 +4948,7 @@ namespace CalamityMod.NPCs
             ("CalamityMod/Buffs/DamageOverTime/Plague", NPC => NPC.Calamity().plague),
             ("CalamityMod/Buffs/DamageOverTime/RiptideDebuff", NPC => NPC.Calamity().riptide),
             ("CalamityMod/Buffs/DamageOverTime/SagePoison", NPC => NPC.Calamity().sagePoison),
+            ("CalamityMod/Buffs/DamageOverTime/SearingLava", NPC => NPC.HasBuff<SearingLava>()),
             ("CalamityMod/Buffs/DamageOverTime/ShellfishClaps", NPC => NPC.Calamity().shellfishStaffDebuff),
             ("CalamityMod/Buffs/DamageOverTime/Shred", NPC => NPC.Calamity().somaShredStacks > 0),
             ("CalamityMod/Buffs/DamageOverTime/SnapClamDebuff", NPC => NPC.Calamity().snapClamDebuff),
@@ -6066,7 +6073,8 @@ namespace CalamityMod.NPCs
             ];
 
             // Insert the debuff info into the NPC's bestiary entry
-            bestiaryEntry.Info.Insert(0, new BestiaryDebuffInfo(elements));
+            bool force = npc.type == ModContent.NPCType<Burrower>(); //Force Burrower to always show the debuff section
+            bestiaryEntry.Info.Insert(0, new BestiaryDebuffInfo(elements,force));
 
             // Add the Astral Infection to the Enchanted Nightcrawler's entry as it spawns there now
             if (npc.type == NPCID.EnchantedNightcrawler)

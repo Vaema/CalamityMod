@@ -50,7 +50,7 @@ namespace CalamityMod.UI.ResourceSets
         public static CalamityUIResourceSet GetManaTextureSet()
         {
             CalamityPlayer modPlayer = Main.LocalPlayer.Calamity();
-            if (Main.LocalPlayer.statMana < 0)
+            if (Main.LocalPlayer.statMana < 0 && Main.LocalPlayer.Calamity().ChaosStone)
                 return CalamityUIResourceSets.MPManaBurn;
             if (modPlayer.pHeart)
                 return CalamityUIResourceSets.MPPhantomHeart;
@@ -196,7 +196,7 @@ namespace CalamityMod.UI.ResourceSets
                 }
             }
             // This is where Mana Burn is drawn
-            else if (Player.statMana < 0)
+            else if (Player.statMana < 0 && Player.Calamity().ChaosStone)
             {
                 var manaSet = GetManaTextureSet();
                 var mana = -Player.statMana;
