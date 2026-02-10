@@ -312,7 +312,7 @@ namespace CalamityMod.Items
                 { ItemID.BonePickaxe, Do(UseTimeExact(6)) },
                 { ItemID.BorealWoodHammer, Do(HammerPower(25), UseTimeExact(11)) },
                 { ItemID.ButchersChainsaw, Do(TrueMeleeNoSpeed, UseTimeExact(3), TileBoostExact(+0)) },
-                { ItemID.CactusPickaxe, Do(PickPower(34), UseTimeExact(9)) },
+                { ItemID.CactusPickaxe, Do(UseTimeExact(9)) },
                 { ItemID.CnadyCanePickaxe, Do(UseTimeExact(9), TileBoostExact(+1)) }, // Candy Cane Pickaxe
                 { ItemID.ChlorophyteChainsaw, Do(TrueMeleeNoSpeed, AxePower(120), UseTimeExact(3), DamageExact(112)) },
                 { ItemID.ChlorophyteDrill, Do(TrueMeleeNoSpeed, TileBoostExact(+2), DamageExact(43)) },
