@@ -88,7 +88,7 @@ namespace CalamityMod.Projectiles.Magic
                 //Main.NewText(pulseMax);
                 if (visuals)
                 {
-                    SoundEngine.PlaySound(BrimstoneElemental.HellfireballSound, Projectile.Center);
+                    SoundEngine.PlaySound(BrimstoneElemental.HellfireballSound with { Volume = 0.65f }, Projectile.Center);
                     for (int k = 0; k < 30; k++)
                     {
                         Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.IceTorch, new Vector2(9, 9).RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(0.5f, 0.8f), 0, Color.LightSkyBlue, Main.rand.NextFloat(1.2f, 1.4f));
@@ -163,10 +163,10 @@ namespace CalamityMod.Projectiles.Magic
                     dust.color = Color.Cyan;
                 }
                 Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
-                //When at max, draw glowing eyes on the totem
-                if (modPlayer.fleshTotemManaStorage == 600)
-                    Main.EntitySpriteDraw(totemEyes, eyesDrawPosition + Vector2.UnitX * -2f, null, Projectile.GetAlpha(lightColor), Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
             }
+            //When at max, draw glowing eyes on the totem
+            if (modPlayer.fleshTotemManaStorage == 600)
+                Main.EntitySpriteDraw(totemEyes, eyesDrawPosition + Vector2.UnitX * -2f, null, Projectile.GetAlpha(lightColor), Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
         public override bool? CanDamage() => false;

@@ -60,6 +60,7 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Items.Tools;
+using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses.BrainOfCthulhu;
 
 namespace CalamityMod.CalPlayer
 {
@@ -2353,8 +2354,9 @@ namespace CalamityMod.CalPlayer
 
                 if (fleshTotem && hurtInfo.Damage > 0)
                 {
-                    if (fleshTotemManaStorage >= 100)
-                        SoundEngine.PlaySound(BloodflareHeadRanged.ActivationSound, Player.Center);
+                    SoundStyle Counter = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Shield_Down");
+                    if (fleshTotemManaStorage >= 100 && fleshTotemVisual)
+                        SoundEngine.PlaySound(Counter with { Volume = 0.75f}, Player.Center);
                     int lostSoulAmount = fleshTotemManaStorage / 25;
                     if (Player.ownedProjectileCounts[ModContent.ProjectileType<FleshTotemMinion>()] != 0)
                     {

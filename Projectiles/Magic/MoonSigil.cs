@@ -11,11 +11,11 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Mage
+namespace CalamityMod.Projectiles.Magic
 {
     public class MoonSigil : ModProjectile, ILocalizedModType
     {
-        public new string LocalizationCategory => "Projectiles.Mage";
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override void SetDefaults()
         {
             Projectile.width = 20;
