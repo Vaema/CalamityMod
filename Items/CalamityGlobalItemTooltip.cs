@@ -678,7 +678,7 @@ namespace CalamityMod.Items
             if (item.type == ItemID.SlimeCrown || item.type == ItemID.SuspiciousLookingEye || item.type == ItemID.WormFood || item.type == ItemID.BloodySpine || item.type == ItemID.Abeemination || item.type == ItemID.DeerThing
                 || item.type == ItemID.QueenSlimeCrystal || item.type == ItemID.MechanicalEye || item.type == ItemID.MechanicalWorm || item.type == ItemID.MechanicalSkull || item.type == ItemID.CelestialSigil)
                 EditTooltipByNum(0, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.NotConsumable"));
-
+            #endregion
             // Brain of Confusion, Black Belt and Master Ninja Gear have guaranteed dodges with a fixed cooldown.
             #region Guaranteed Dodge Tooltips
             if (item.type == ItemID.BlackBelt)
@@ -721,11 +721,11 @@ namespace CalamityMod.Items
             #region Accessories
             // Brain of Confusion, Black Belt and Master Ninja Gear have guaranteed dodges with a fixed cooldown.
             if (item.type == ItemID.BlackBelt)
-                EditTooltipByNum(0, (line) => line.Text = CalamityUtils.GetText("Vanilla.DodgeInfo").Format(BalancingConstants.BeltDodgeCooldownMin / 60, BalancingConstants.BeltDodgeCooldownMax / 60));
+                EditTooltipByNum(0, (line) => line.Text = CalamityUtils.GetText("Vanilla.DodgeInfo").Format((Math.Round((BalancingConstants.DodgeCooldownMax * BalancingConstants.DodgeCooldownDamageMult) / 60f), BalancingConstants.DodgeCooldownMax / 60)));
             if (item.type == ItemID.MasterNinjaGear)
-                EditTooltipByNum(1, (line) => line.Text = CalamityUtils.GetText("Vanilla.DodgeInfo").Format(BalancingConstants.BeltDodgeCooldownMin / 60, BalancingConstants.BeltDodgeCooldownMax / 60));
+                EditTooltipByNum(1, (line) => line.Text = CalamityUtils.GetText("Vanilla.DodgeInfo").Format((Math.Round((BalancingConstants.DodgeCooldownMax * BalancingConstants.DodgeCooldownDamageMult) / 60f), BalancingConstants.DodgeCooldownMax / 60)));
             if (item.type == ItemID.BrainOfConfusion)
-                EditTooltipByNum(0, (line) => line.Text = CalamityUtils.GetText("Vanilla.DodgeInfo").Format(BalancingConstants.BrainDodgeCooldownMin / 60, BalancingConstants.BrainDodgeCooldownMax / 60));
+                EditTooltipByNum(0, (line) => line.Text = CalamityUtils.GetText("Vanilla.DodgeInfo").Format((Math.Round((BalancingConstants.DodgeCooldownMax * BalancingConstants.DodgeCooldownDamageMult) / 60f), BalancingConstants.DodgeCooldownMax / 60)));
 
             // Nerfed Ancient Chisel and its upgrade.
             if (item.type == ItemID.AncientChisel)
