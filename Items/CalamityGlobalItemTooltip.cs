@@ -719,13 +719,6 @@ namespace CalamityMod.Items
             #endregion
 
             #region Accessories
-            // Brain of Confusion, Black Belt and Master Ninja Gear have guaranteed dodges with a fixed cooldown.
-            if (item.type == ItemID.BlackBelt)
-                EditTooltipByNum(0, (line) => line.Text = CalamityUtils.GetText("Vanilla.DodgeInfo").Format((Math.Round((BalancingConstants.DodgeCooldownMax * BalancingConstants.DodgeCooldownDamageMult) / 60f), BalancingConstants.DodgeCooldownMax / 60)));
-            if (item.type == ItemID.MasterNinjaGear)
-                EditTooltipByNum(1, (line) => line.Text = CalamityUtils.GetText("Vanilla.DodgeInfo").Format((Math.Round((BalancingConstants.DodgeCooldownMax * BalancingConstants.DodgeCooldownDamageMult) / 60f), BalancingConstants.DodgeCooldownMax / 60)));
-            if (item.type == ItemID.BrainOfConfusion)
-                EditTooltipByNum(0, (line) => line.Text = CalamityUtils.GetText("Vanilla.DodgeInfo").Format((Math.Round((BalancingConstants.DodgeCooldownMax * BalancingConstants.DodgeCooldownDamageMult) / 60f), BalancingConstants.DodgeCooldownMax / 60)));
 
             // Nerfed Ancient Chisel and its upgrade.
             if (item.type == ItemID.AncientChisel)
