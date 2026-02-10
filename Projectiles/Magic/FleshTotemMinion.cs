@@ -142,6 +142,8 @@ namespace CalamityMod.Projectiles.Magic
             Vector2 drawPosition = player.Center - Main.screenPosition + Vector2.UnitY * -67f;
             Vector2 origin = texture.Size() * 0.5f;
 
+
+            Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(lightColor) * (visuals ? 1f : 0.5f), Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
             if (visuals)
             {
                 float fade = Utils.GetLerpValue(0, modPlayer.fleshTotemManaStorage, FleshTotem.manaStorageMax, true);
