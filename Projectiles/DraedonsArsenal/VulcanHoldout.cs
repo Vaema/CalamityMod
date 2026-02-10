@@ -42,16 +42,11 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override void KillHoldoutLogic()
         {
-
+            if ((Owner.CantUseHoldout(false) || HeldItem.type != Owner.HeldItem.type))
+                Projectile.Kill();
         }
         public override void HoldoutAI()
         {
-            if (Owner.dead)
-            {
-                Projectile.Kill();
-                return;
-            }
-
             if (flashVis1 > 0) flashVis1 -= 0.2f; if (flashVis1 < 0) flashVis1 = 0;
             if (flashVis2 > 0) flashVis2 -= 0.2f; if (flashVis2 < 0) flashVis2 = 0;
 
