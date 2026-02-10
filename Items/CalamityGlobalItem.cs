@@ -626,10 +626,11 @@ namespace CalamityMod.Items
             //Mana Potion interactions
             if (item.healMana > 0)
             {
-                //If mana potion used, kill 
-                if (modPlayer.moonCrown || modPlayer.featherCrown)
+                //If mana potion used, kill all active Crown projectiles 
+                if ((modPlayer.moonCrown || modPlayer.featherCrown) && modPlayer.mageCrownCount > 0)
                 {
-                    //modPlayer.mageCrownCount = 0;
+                    modPlayer.mageCrownTimer = 300;
+                    modPlayer.mageCrownCount = 0;
                 }
             }
 
@@ -1541,7 +1542,7 @@ namespace CalamityMod.Items
 
             return false;
         }
-        #endregion
+        #endregion     
 
         #region On Create
         private static int cachedForgeID = -1;

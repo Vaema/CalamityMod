@@ -34,7 +34,6 @@ namespace CalamityMod.Projectiles.Magic
             CalamityPlayer modPlayer = player.Calamity();
             if (!modPlayer.featherCrown)
             {
-                Projectile.active = false;
                 modPlayer.mageCrownTimer = 0;
                 modPlayer.mageCrownCount = 0;
                 return;

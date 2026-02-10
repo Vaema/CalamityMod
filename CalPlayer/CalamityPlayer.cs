@@ -954,6 +954,7 @@ namespace CalamityMod.CalPlayer
         public bool shatteredCommunity = false;
         public bool fleshTotem = false;
         public bool fleshTotemMinion = false;
+        public bool fleshTotemVisual = false;
         public int fleshTotemManaStorage = 0;
         public bool bloodPact = false;
         public bool bloodflareCore = false;
@@ -1079,6 +1080,7 @@ namespace CalamityMod.CalPlayer
         public bool moonCrown = false;
         public int mageCrownTimer = 0;
         public int mageCrownCount = 0;
+        public int crownShatterTimer = 0;
         public bool dragonScales = false;
         public bool gloveOfPrecision = false;
         public bool gloveOfRecklessness = false;
@@ -2410,6 +2412,7 @@ namespace CalamityMod.CalPlayer
             stressPills = false;
             laudanum = false;
             fleshTotem = false;
+            fleshTotemVisual = false;
             fleshTotemMinion = false;
             bloodPact = false;
             bloodflareCore = false;
@@ -3079,6 +3082,7 @@ namespace CalamityMod.CalPlayer
             theBeeCooldown = 0;
             scuttlerCooldown = 0;
             mageCrownTimer = 0;
+            crownShatterTimer = 0;
             wingProjectileCooldown = 0;
             hallowedRuneCooldown = 0;
             sulphurBubbleCooldown = 0;
@@ -4768,6 +4772,31 @@ namespace CalamityMod.CalPlayer
         }
         #endregion
 
+        #region PreItemChecks
+        public override bool PreItemCheck()
+        {
+            //For use when the player runs out of mana. Currently only used for Feather and Moonstone Crown
+            if (Player.HeldItem.mana > 0 && Player.controlUseItem && Player.itemAnimation == 0)
+            {
+                int manaCost = Player.GetManaCost(Player.HeldItem);
+                if (Player.statMana < manaCost)
+                {
+                    if (moonCrown)
+                    {
+                        if (mageCrownCount > 0 && crownShatterTimer == 0)
+                        {
+                            mageCrownCount = -5;
+                            mageCrownTimer = 300;
+                            crownShatterTimer = 45;
+                        }
+                        if (mageCrownCount < 0) mageCrownCount = 0;
+                    }
+                }
+            }
+            return true;
+        }
+        #endregion
+
         #region PostUpdateEquips
         public override void PostUpdateEquips()
         {
@@ -6194,7 +6223,7 @@ namespace CalamityMod.CalPlayer
                     life.noGravity = true;
                 }
             }
-            
+
             if (modPlayer.fleshTotem)
             {
                 if (Main.myPlayer == Player.whoAmI)
@@ -6204,20 +6233,6 @@ namespace CalamityMod.CalPlayer
                     if (fleshTotemManaStorage >= FleshTotem.manaStorageMax)
                     {
                         fleshTotemManaStorage = FleshTotem.manaStorageMax;
-                    }
-                }
-            }
-            //For when the player runs out of mana
-            if (Player.statMana <= manaConsumed || Player.statMana <= 6)
-            {
-                if (moonCrown && mageCrownCount > 0)
-                {
-                    SoundStyle fire = new("CalamityMod/Sounds/Item/CursedDaggerThrow");
-                    SoundEngine.PlaySound(fire with { Volume = 0.9f, Pitch = 0.9f, PitchVariance = 0.2f, MaxInstances = -1 }, Player.Center);
-                    mageCrownCount -= 5;
-                    if (mageCrownCount < 0)
-                    {
-                        mageCrownCount = 0;
                     }
                 }
             }

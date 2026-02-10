@@ -1187,9 +1187,13 @@ namespace CalamityMod.CalPlayer
             }
             if (magic)
             {
-                if (moonCrown && mageCrownCount >= 10)
+                if (moonCrown && mageCrownCount == 10)
                 {
                     target.AddBuff(BuffType<Nightwither>(), 360);
+                }
+                if(featherCrown && mageCrownCount == 5)
+                {
+                    target.AddBuff(BuffID.Frostburn, 180);
                 }
             }
             if (summon)
@@ -1200,6 +1204,7 @@ namespace CalamityMod.CalPlayer
                 if (profanedCrystal && (DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs))
                 {
                     target.AddBuff(BuffType<HolyFlames>(), 600);
+                }
                 else if (pSoulArtifact)
                     target.AddBuff(BuffType<HolyFlames>(), 300);
 

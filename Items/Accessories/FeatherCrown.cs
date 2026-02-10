@@ -37,7 +37,6 @@ namespace CalamityMod.Items.Accessories
             player.manaCost -= (0.01f * modPlayer.mageCrownCount); //1% per feather, up to 5%
             if (modPlayer.mageCrownCount == 5)
             {
-                player.manaCost -= 0.05f;
                 player.GetCritChance<MagicDamageClass>() += 5;
             }
         }

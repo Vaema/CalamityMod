@@ -2088,22 +2088,26 @@ namespace CalamityMod.CalPlayer
             }
             if (moonCrown)
             {
-                int SpawnTimer = 120;
                 int MaxSigils = 9; //Starts at 0, so cap is 10
-                if (mageCrownTimer >= SpawnTimer)
+                if (mageCrownTimer == 0)
                 {
                     if (mageCrownCount <= MaxSigils)
                     {
-                        Main.NewText(mageCrownCount);
+                        SoundEngine.PlaySound(SoundID.Item20, Player.Center);
                         mageCrownCount += 1;
                         float start = 360f / mageCrownCount;
                         Projectile.NewProjectile(Player.GetSource_FromThis(), new Vector2((int)(Player.Center.X + (Math.Sin(0 * start) * 300)), (int)(Player.Center.Y + (Math.Cos(0 * start) * 300))), Vector2.Zero, ModContent.ProjectileType<MoonSigil>(), 0, 0, Player.whoAmI, 0, mageCrownCount);
                     }
-                    mageCrownTimer = 0;
+                    mageCrownTimer = 120;
                 }
                 else if (!Player.dead)
                 {
-                    mageCrownTimer++;
+                    mageCrownTimer--;
+                    if (crownShatterTimer > 0)
+                    {
+                        crownShatterTimer--;
+                    }
+;
                 }
             }
 

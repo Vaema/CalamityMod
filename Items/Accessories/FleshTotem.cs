@@ -1,9 +1,6 @@
-﻿using CalamityMod.Buffs.Summon;
-using CalamityMod.CalPlayer;
-using CalamityMod.Cooldowns;
+﻿using CalamityMod.CalPlayer;
 using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -36,10 +33,6 @@ namespace CalamityMod.Items.Accessories
             if (player.whoAmI == Main.myPlayer)
             {
                 var source = player.GetSource_Accessory(Item);
-                if (player.FindBuffIndex(ModContent.BuffType<FleshTotemBuff>()) == -1)
-                {
-                    player.AddBuff(ModContent.BuffType<FleshTotemBuff>(), 3600, true);
-                }
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<FleshTotemMinion>()] < 1)
                 {
                     int damage = (int)player.GetTotalDamage<MagicDamageClass>().ApplyTo(lostSoulDamage);

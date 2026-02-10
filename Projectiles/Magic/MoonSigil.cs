@@ -1,24 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using CalamityMod.CalPlayer;
+using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Rogue
+namespace CalamityMod.Projectiles.Mage
 {
     public class MoonSigil : ModProjectile, ILocalizedModType
     {
-        public new string LocalizationCategory => "Projectiles.Rogue";
+        public new string LocalizationCategory => "Projectiles.Mage";
         public override void SetDefaults()
         {
             Projectile.width = 20;
             Projectile.height = 20;
             Projectile.scale = 0.9f;
             Projectile.friendly = true;
-            Projectile.penetrate = -1;
             Projectile.ignoreWater = true;
             Projectile.timeLeft = 18000;
             Projectile.penetrate = -1;
@@ -33,7 +36,6 @@ namespace CalamityMod.Projectiles.Rogue
             CalamityPlayer modPlayer = player.Calamity();
             if (!modPlayer.moonCrown)
             {
-                Projectile.active = false;
                 modPlayer.mageCrownCount = 0;
                 return;
             }
@@ -81,7 +83,6 @@ namespace CalamityMod.Projectiles.Rogue
             if (!Projectile.FinalExtraUpdate())
                 return;
 
-            // Give off some light
             float lightScalar = Main.rand.NextFloat(0.9f, 1.1f) * Main.essScale;
             Lighting.AddLight(Projectile.Center, 0.3f * lightScalar, 0.26f * lightScalar, 0.15f * lightScalar);
 
@@ -99,9 +100,27 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.spriteDirection = Projectile.direction;
 
         }
+        public override void OnSpawn(IEntitySource source)
+        {
+            Player player = Main.player[Projectile.owner];
+            CalamityPlayer modPlayer = player.Calamity();
+            if (modPlayer.mageCrownCount == 10)
+            {
+                SoundEngine.PlaySound(SoundID.DD2_DarkMageHealImpact with { Volume = 1.3f }, player.Center);
+            }
+
+        }   
         public override void OnKill(int timeLeft)
         {
-            float dustSp = 0.2f;
+            Player player = Main.player[Projectile.owner];
+            CalamityPlayer modPlayer = player.Calamity();
+            //Ensures the breaking sound doesn't play when the player removes the accessory
+            if (modPlayer.moonCrown)
+            {
+                SoundEngine.PlaySound(SoundID.DeerclopsIceAttack with { Volume = 0.4f, Pitch = 0.3f, MaxInstances = 1 }, player.Center);
+                SoundEngine.PlaySound(Exoblade.BeamHitSound with { MaxInstances = 1 }, player.Center);
+            }
+            float dustSp = 0.9f;
             int dustD = 0;
             for (int i = 0; i < 4; i++)
             {
@@ -112,10 +131,25 @@ namespace CalamityMod.Projectiles.Rogue
                     Main.dust[d].noGravity = true;
                     Main.dust[d].position = Projectile.Center;
                     Main.dust[d].velocity = dustspeed;
-                    dustSp += 0.2f;
                 }
                 dustD += 90;
-                dustSp = 0.2f;
+            }
+            for (int i = 0; i < 4; i++)
+            {
+                Color colorAccent = Main.rand.NextBool() ? Color.PaleTurquoise : Color.SeaGreen;
+
+                Dust shatter = Dust.NewDustPerfect(Projectile.Center, DustID.PortalBoltTrail);
+                shatter.velocity = Main.rand.NextVector2Circular(4.6f, 4.6f) + Projectile.velocity * 0.5f;
+                shatter.color = Color.Lerp(Color.Turquoise, colorAccent, Main.rand.NextFloat(0.23f));
+                shatter.scale *= 1.1f;
+                shatter.fadeIn = 0.75f;
+                shatter.noGravity = true;
+            }
+            int shardsplash = 0;
+            while (shardsplash < 4)
+            {
+                GeneralParticleHandler.SpawnParticle(new PointParticle(Projectile.Center, new Vector2(Main.rand.NextFloat(10), 0).RotatedByRandom(MathHelper.TwoPi), false, 10, Projectile.ai[0] == 0.6f ? 0.8f : 0.6f, Projectile.ai[0] == 1 ? Color.Turquoise : Color.LightSeaGreen, true, false));
+                shardsplash += 1;
             }
         }
         public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
@@ -133,7 +167,7 @@ namespace CalamityMod.Projectiles.Rogue
             CalamityPlayer modPlayer = player.Calamity();
             if (modPlayer.mageCrownCount >= 10)
             {
-                for (int i = 0; i < 6; i++)
+                for (int i = 0; i < 4; i++)
                 {
                     Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, (Color.Teal * 0.5f) with { A = 0 }, Projectile.rotation, texture.Size() * 0.5f, Projectile.scale * 1.1f, SpriteEffects.None, 0f);
                 }

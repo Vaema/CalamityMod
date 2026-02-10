@@ -40,7 +40,7 @@ namespace CalamityMod.Items.Accessories
             {
                 player.manaRegenBonus += 10;
             }
-            if (modPlayer.mageCrownCount == 9)
+            if (modPlayer.mageCrownCount == 10) //I don't know why it's like this
             {
                 player.GetCritChance<MagicDamageClass>() += 10;
             }
