@@ -100,9 +100,6 @@ namespace CalamityMod.Effects
         // Exoblade's melee slash trails. Also used by Terratomere
         internal static Asset<Effect> ExobladeSlashShader;
 
-        // nanoblack reaper slash effect !!!!
-        internal static Asset<Effect> NanoblackSlashShader;
-
         // Exoblade's projectile on-hit "anime slash marks". Also used by Terratomere
         internal static Asset<Effect> ExobladePierceShader;
 
@@ -265,6 +262,16 @@ namespace CalamityMod.Effects
 
         internal static Asset<Effect> BrainOfCthulhuForcefield;
         #endregion
+        
+        #region jasper's shaders
+        // this convention makes no sense and we should stop doing it
+        // i make this region to conform but i really deeply hate it
+        // it might be worth getting rid of it mostly in the sourcegen pass
+
+        // nanoblack reaper slash effect !!!!
+        internal static Asset<Effect> NanoblackSlashShader;
+        #endregion
+
 
         internal static Asset<Effect> SunkenSeaMenuLogoWater;
 
@@ -364,9 +371,6 @@ namespace CalamityMod.Effects
 
             ExobladeSlashShader = LoadShader("ExobladeSlashShader");
             RegisterMiscShader(ExobladeSlashShader, "TrailPass", "ExobladeSlash");
-
-            NanoblackSlashShader = LoadShader("SlashEffects/NanoblackSlash");
-            RegisterMiscShader(NanoblackSlashShader, "SlashPass", "NanoblackSlash");
 
             ExobladePierceShader = LoadShader("ExobladePierceShader");
             RegisterMiscShader(ExobladePierceShader, "PiercePass", "ExobladePierce");
@@ -524,6 +528,10 @@ namespace CalamityMod.Effects
             BrainOfCthulhuForcefield = LoadShader("ScreenShaders/BrainOfCthulhuForcefield");
             RegisterScreenShader(BrainOfCthulhuForcefield, "BoCShieldPass", "BrainOfCthulhuForcefield");
             #endregion
+
+            // below shader is by jasper VV do not steal!!!
+            NanoblackSlashShader = LoadShader("SlashEffects/NanoblackSlash");
+            RegisterMiscShader(NanoblackSlashShader, "SlashPass", "NanoblackSlash");
 
             SunkenSeaMenuLogoWater = LoadShader("UI/SunkenSeaMenuLogoWater");
         }
