@@ -77,8 +77,8 @@ namespace CalamityMod.Items.Accessories
 
                 if (Utils.Distance(nPC.Center, player.Center) < MaxDistance + generousHitboxWidth && (nPC.IsAnEnemy(true, true, false) || nPC.type == ModContent.NPCType<SuperDummyNPC>()) && !nPC.dontTakeDamage)
                 {
-                    float minDamageMult = 0.35f;
-                    int maxTargets = 25;
+                    float minDamageMult = 0.10f;
+                    int maxTargets = 7;
                     float damageMult = Utils.Remap(targetCount, maxTargets, 1, minDamageMult, 1);
 
                     // Handles giving the Warbanner Burn effect
