@@ -324,7 +324,6 @@ namespace CalamityMod.Items
                 case ItemID.DungeonFishingCrateHard:
                 case ItemID.JungleFishingCrateHard:
                 case ItemID.LavaCrateHard:
-                case ItemID.OasisCrateHard:
                 case ItemID.OceanCrateHard:
                     RemoveHardmodeOresFromBiomeCrates(loot);
                     loot.AddHardmodeOresToCrates(HardmodeCrateType.Biome);
