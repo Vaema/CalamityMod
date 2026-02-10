@@ -30,7 +30,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.height = 16;
             Projectile.friendly = true;
             Projectile.tileCollide = true;
-            Projectile.penetrate = 10;
+            Projectile.penetrate = 6;
             Projectile.MaxUpdates = 3;
             Projectile.timeLeft = Lifetime;
             DrawOffsetX = -10;
@@ -88,6 +88,7 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            Projectile.damage = (int)(Projectile.damage * 0.9f);
             if (Projectile.Calamity().stealthStrike)
             {
                 if (!hasHit)

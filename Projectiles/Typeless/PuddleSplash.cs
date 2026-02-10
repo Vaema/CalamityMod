@@ -25,6 +25,8 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
             Projectile.timeLeft = 25;
         }
 

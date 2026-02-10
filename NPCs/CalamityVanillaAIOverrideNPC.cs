@@ -1044,7 +1044,7 @@ public sealed partial class CalamityVanillaAIOverrideNPC : GlobalNPC
 
     public override void FindFrame(NPC npc, int frameHeight)
     {
-        if (!Enabled)
+        if (!Enabled || npc.IsABestiaryIconDummy)
             return;
 
         AIOverride?.FindFrame(Mod, frameHeight);
@@ -1054,6 +1054,9 @@ public sealed partial class CalamityVanillaAIOverrideNPC : GlobalNPC
     {
         if (!Enabled)
             base.PreDraw(npc, spriteBatch, screenPos, drawColor);
+
+        if(npc.IsABestiaryIconDummy)
+            return base.PreDraw(npc, spriteBatch, screenPos, drawColor);
 
         bool result = true;
         if (!IsGlobalChangeBlacklisted(npc)) result &= GlobalPreDraw(npc, spriteBatch, screenPos, drawColor);

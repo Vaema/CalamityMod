@@ -185,6 +185,7 @@ namespace CalamityMod.NPCs
             "Curly", // <@!673092101780668416> (curly4830)
             "Cobalt", // <@!132962828922388481> (cobalt_44)
             "Dizzetriya", // <@!719818245665980517> (dizzykbity)
+            "Vodka", // <@!1172497470438248565> (ehhhhh0981)
         ];
         private static readonly string[] MerchantNames =
         [
@@ -1311,6 +1312,8 @@ namespace CalamityMod.NPCs
             if (type == NPCID.Painter)
             {
                 shop.AddWithCustomValue(ItemID.PainterPaintballGun, Item.buyPrice(gold: 15))
+                .Add(ItemType<CalamityCanvas2023>())
+                .Add(ItemType<CalamityCanvas2024>())
                 .Add(ItemType<AmidiasPainting>(), CalamityConditions.InSunken, Condition.NpcIsPresent(NPCType<SeaKing>()));
             }
 
