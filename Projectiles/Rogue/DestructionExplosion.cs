@@ -27,12 +27,6 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override void AI()
         {
-            if (Main.zenithWorld)
-            {
-                Projectile.hostile = true;
-                Projectile.friendly = true;
-            }
-
             if (Projectile.ai[0] == 1)
             {
                     ExplosionRadius = 800;

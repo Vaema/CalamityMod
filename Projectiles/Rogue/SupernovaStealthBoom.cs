@@ -134,12 +134,6 @@ namespace CalamityMod.Projectiles.Rogue
             if (time == 80)
             {
                 radius = 2500;
-                if (Main.zenithWorld)
-                {
-                    Projectile.hostile = true;
-                    Projectile.friendly = true;
-                    Projectile.damage *= 100;
-                }
 
                 SoundEngine.PlaySound(Supernova.StealthExplosionSound with { Pitch = Projectile.ai[2] }, Projectile.Center);
                 Projectile.numHits = 0;

@@ -142,12 +142,12 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            // Boost dmg in proportion to money, caps at 1 plat. Much higher cap in GFB cuz it would be funny
+            // Boost dmg in proportion to money, caps at 1 plat.
             if (Projectile.Calamity().stealthStrike)
             {
                 Player player = Main.player[Projectile.owner];
                 double money = Utils.CoinsCount(out bool overflow, player.inventory);
-                double cap = Main.zenithWorld ? 100000000 : 1000000;
+                double cap = 1000000;
                 if (money >= cap)
                     money = cap;
                 if (money != 0)
