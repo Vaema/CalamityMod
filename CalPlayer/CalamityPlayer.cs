@@ -949,6 +949,7 @@ namespace CalamityMod.CalPlayer
         public bool seraphTracers = false;
         public bool frostFlare = false;
         public bool evolution = false;
+        public bool procDodgeEffects = true;
         public bool nanotech = false;
         public bool deadshotBrooch = false;
         public bool shadowMinions = false;
@@ -1148,6 +1149,22 @@ namespace CalamityMod.CalPlayer
         /// <summary> Used for spawning Quiver of Nihility's void fields. </summary>
         public bool voidField = false;
         public bool copyrightInfringementShield = false;
+
+        /// <summary>
+        /// This is the maximum cooldown of general Dodge effects, in frames. Can be modified by equipment.
+        /// Defaults to 90 seconds, or 5400 frames.
+        /// </summary>
+        public int ConsumableDodgeCooldown = 0;
+        /// <summary>
+        /// A list of on dodge effects for every dodge the player has equipped.
+        /// Also used to determine the amount of dodges for cooldowns.
+        /// Returns the string for the dodge cooldown icon to use.
+        /// </summary>
+        public List<Func<Player, Player.HurtInfo,string?>> DodgeEffects = [];
+        /// <summary>
+        /// Used internally to disable Player.shadowDodge so we can use custom dodge ordering.
+        /// </summary>
+        bool storedShadowDodge = false;
         #endregion
 
         #region Armor Set
@@ -2491,7 +2508,10 @@ namespace CalamityMod.CalPlayer
             voidField = false;
             copyrightInfringementShield = false;
 
-            daedalusReflect = false;
+            ConsumableDodgeCooldown = BalancingConstants.DodgeCooldownMax;
+            DodgeEffects = [];
+
+        daedalusReflect = false;
             daedalusSplit = false;
             daedalusAbsorb = false;
             daedalusShard = false;
@@ -4330,6 +4350,17 @@ namespace CalamityMod.CalPlayer
             Player.accRunSpeed += Player.accRunSpeed * moveSpeedBonus * 0.16f;
             if (Player.accRunSpeed < accRunSpeedMin)
                 Player.accRunSpeed = accRunSpeedMin;
+
+            if (Player.blackBelt) 
+                DodgeEffects.Add((Player, hit) => {
+                    Player.NinjaDodge();
+                    return null;
+                    }); 
+            if (Player.brainOfConfusionItem != null && !Player.brainOfConfusionItem.IsAir)
+                DodgeEffects.Add((Player, hit) => {
+                    Player.BrainOfConfusionDodge();
+                    return null;
+                    });
 
             if (Player.Transformation().Type == ItemType<Popo>())
             {

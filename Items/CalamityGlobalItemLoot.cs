@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Fishing;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.PermanentBoosters;
@@ -307,13 +308,22 @@ namespace CalamityMod.Items
                     loot.Add(ModContent.ItemType<EssenceofSunlight>(), 2, 2, 5);
                     break;
 
+                case ItemID.OasisCrate:
+                    loot.Add(ModContent.ItemType<TheComb>(), 8);
+                    break;
+
+                case ItemID.OasisCrateHard:
+                    RemoveHardmodeOresFromBiomeCrates(loot);
+                    loot.AddHardmodeOresToCrates(HardmodeCrateType.Biome);
+                    loot.Add(ModContent.ItemType<TheComb>(), 8);
+                    break;
+
                 case ItemID.CorruptFishingCrateHard:
                 case ItemID.CrimsonFishingCrateHard:
                 case ItemID.HallowedFishingCrateHard:
                 case ItemID.DungeonFishingCrateHard:
                 case ItemID.JungleFishingCrateHard:
                 case ItemID.LavaCrateHard:
-                case ItemID.OasisCrateHard:
                 case ItemID.OceanCrateHard:
                     RemoveHardmodeOresFromBiomeCrates(loot);
                     loot.AddHardmodeOresToCrates(HardmodeCrateType.Biome);

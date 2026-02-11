@@ -205,7 +205,7 @@ namespace CalamityMod.CalPlayer
             bool spawnChance = (Main.rand.Next(100) < ArcFlashRing.LightningSpawnPercent);
             if (arcFlashRing && spawnChance)
             {
-                int damage = (int)(hit.Damage * ArcFlashRing.LightningDamageMult * (hit.Crit ? 0.5f : 1) / (Player.Calamity().adrenalineModeActive ? Player.Calamity().GetAdrenalineDamage() + 1 : 1)); // 400% damage (uneffected by crits and adrenaline)
+                int damage = (int)(hit.Damage * ArcFlashRing.LightningDamageMult * (hit.Crit ? (1 / (Player.Calamity().critDamage + 2)) : 1) / (Player.Calamity().adrenalineModeActive ? Player.Calamity().GetAdrenalineDamage() + 1 : 1)); // 400% damage (uneffected by crits and adrenaline)
 
                 Projectile bolt = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<FlashBolt>(), damage, 0f, Player.whoAmI, target.whoAmI);
                 bolt.DamageType = hit.DamageType;
@@ -411,7 +411,7 @@ namespace CalamityMod.CalPlayer
             {
                 proj.active = true; // Okay so if a projectile manually kills itself on hit, it totally breaks the bolts. to prevent this we set them to active
 
-                int damage = (int)(hit.Damage * ArcFlashRing.LightningDamageMult * (hit.Crit ? 0.5f : 1) / (Player.Calamity().adrenalineModeActive ? Player.Calamity().GetAdrenalineDamage() + 1 : 1)); // 400% damage (uneffected by crits and adrenaline)
+                int damage = (int)(hit.Damage * ArcFlashRing.LightningDamageMult * (hit.Crit ? (1 / (Player.Calamity().critDamage + 2)) : 1) / (Player.Calamity().adrenalineModeActive ? Player.Calamity().GetAdrenalineDamage() + 1 : 1)); // 400% damage (uneffected by crits and adrenaline)
 
                 Projectile bolt = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<FlashBolt>(), damage, 0f, Player.whoAmI, target.whoAmI, (globalProj.showArcFlash ? 0 : 1));
                 bolt.DamageType = hit.DamageType;

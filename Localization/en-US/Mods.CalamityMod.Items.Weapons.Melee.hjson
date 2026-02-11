@@ -868,7 +868,7 @@ MirrorBlade: {
 
 MonolithSword: {
 	DisplayName: Monolith Sword
-	Tooltip: ""
+	Tooltip: "{$Common.ArmorPenetration}"
 }
 
 MonstrousKnives: {
