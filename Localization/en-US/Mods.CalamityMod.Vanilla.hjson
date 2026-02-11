@@ -2,7 +2,7 @@ DashKey: Press {0} while facing a direction
 DodgeInfo:
 	'''
 	{$Common.DodgeProvided}
-	   {$Common.DodgeInformation}
+	{$Common.DodgeInformation}
 	'''
 
 AddedTooltip: {

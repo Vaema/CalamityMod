@@ -35,7 +35,7 @@ namespace CalamityMod.Items.Accessories
             modPlayer.stealthGenStandstill += StandingStealthRegenBoost;
             modPlayer.stealthGenMoving += MovingStealthRegenBoost;
             modPlayer.abyssalMirror = true;
-            player.aggro -= 450;
+            player.aggro -= AggroReduction;
             modPlayer.DodgeEffects.Add(AbyssMirrorDodge);
         }
 

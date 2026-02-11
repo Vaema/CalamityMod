@@ -659,7 +659,7 @@ EclipseMirror: {
 		Stealth generates 25% faster when standing still and is boosted while moving if not attacking
 		Stealth strikes only expend 50% of your max stealth
 		{$Common.DodgeProvided}
-		      Dodging an attack restores stealth and releases a burst of highly damaging darksun light
+		Dodging an attack restores stealth and releases a burst of highly damaging darksun light
 		'''
 	HoldShiftTooltip: "{$Common.DodgeInformation}"
 	FlavorTooltip: "'Its reflection shows naught but darkness'"
@@ -1747,8 +1747,8 @@ StatisVoidSash: {
 		Provides a high-speed dash
 		20% increased movement speed, 32% increased jump speed, and negates fall damage
 		Increases movement acceleration and deceleration by 1.85x
-		Allows the user to swim[TOGGLE] and auto-jump
-		      {$Common.DodgeProvided}
+		Allows the user to swim[TOGGLE] and auto jump
+		{$Common.DodgeProvided}
 		[c/aaaaaa:Shift-<right> this item in your inventory to toggle the] [i:ClimbingClaws] [c/aaaaaa:Climbing Claws]
 		'''
 	ToggleEffect: ", climb walls,"
