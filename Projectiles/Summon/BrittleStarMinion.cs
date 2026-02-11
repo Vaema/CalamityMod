@@ -27,6 +27,14 @@ namespace CalamityMod.Projectiles.Summon
         public int ReformingTimer = 25;
         public bool Reforming = false;
         public int Time = 0;
+
+        public override void SetStaticDefaults()
+        {
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
+            base.SetStaticDefaults();
+        }
+
         public override void SetDefaults()
         {
             Projectile.width = 30;

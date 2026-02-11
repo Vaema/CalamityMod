@@ -380,7 +380,7 @@ namespace CalamityMod.CalPlayer
             else
             {
                 // Mana Burn VFX disabled when hih
-                if (Player.statMana < 0)
+                if (Player.statMana < 0 && Player.Calamity().ChaosStone)
                 {
                     float compactness = Player.width * 0.6f;
                     if (compactness < 10f)

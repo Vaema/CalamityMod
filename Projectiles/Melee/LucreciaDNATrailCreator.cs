@@ -31,7 +31,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.friendly = true;
             Projectile.extraUpdates = 12;
             Projectile.timeLeft = 2400;
-            Projectile.minion = true; // Scuffed but it prevents the projectile from being culled in a few situations
+            Projectile.DamageType = DamageClass.MeleeNoSpeed;
             Projectile.alpha = 255;
         }
 

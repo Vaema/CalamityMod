@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using CalamityMod.NPCs;
+using CalamityMod.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -143,7 +144,7 @@ namespace CalamityMod.Projectiles.Magic
                     Main.dust[rainbowDust].noGravity = true;
                     if (Projectile.scale != 1.4f)
                     {
-                        Dust rainbowClone = Dust.CloneDust(rainbowDust);
+                        Dust rainbowClone = Dust.BetterCloneDust(rainbowDust);
                         rainbowClone.color = color;
                         rainbowClone.scale /= 2f;
                         rainbowClone.noGravity = true;

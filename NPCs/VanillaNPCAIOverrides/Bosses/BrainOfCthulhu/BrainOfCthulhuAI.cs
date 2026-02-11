@@ -37,7 +37,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
     private static SoundStyle ShieldUp = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Shield_Up") with { PauseBehavior = PauseBehavior.PauseWithGame };
     private static SoundStyle IntroRoar = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Roar") with { PauseBehavior = PauseBehavior.PauseWithGame };
     private static SoundStyle Roar = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Short_Roar") with { PauseBehavior =  PauseBehavior.PauseWithGame};
-    public static SoundStyle Laugh = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Laugh") with { PauseBehavior = PauseBehavior.PauseWithGame };
+    public static SoundStyle Laugh = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Laugh") with { PauseBehavior = PauseBehavior.PauseWithGame, MaxInstances = 5 };
     private static SoundStyle Growl = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Growl", 2) with { PauseBehavior = PauseBehavior.PauseWithGame };
     private static SoundStyle Death = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Death_Roar") with { PauseBehavior = PauseBehavior.PauseWithGame };
     private static SoundStyle BloodShot = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_BloodShot");
@@ -141,7 +141,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
     #region Idle Period
     internal static int ChaseTime => 160;
-    internal static int MaxChases => 3;
+    internal static int ChaseAmount => 2;
     internal static int IdleTeleportDuration => CalamityWorld.death ? 36 : 44;
     internal static float ChaseMinSpeed => 3;
     internal static float ChaseMaxSpeed => CalamityWorld.death ? 18 : 15;
@@ -150,7 +150,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
     #endregion
 
     #region Bloodletting
-    internal static int BloodlettingDuration => 765;
+    internal static int BloodlettingDuration => 675;
     internal static Vector2 HoverDistance => new (420f, 270f);
     internal static float HoverEndHeight => 300f;
     internal static int IchorRate => CalamityWorld.death ? 9 : 10;
@@ -374,7 +374,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
         #region Despawn
         // Despawn check
-        if (!BossRushEvent.BossRushActive)
+        if (!BossRushEvent.BossRushActive && AIState != BrainAIState.DeathAnimation)
         {
             bool despawn = (Target.dead || !Target.ZoneCrimson);
             if (despawn)
@@ -1080,7 +1080,10 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             int spawnTime = GetBrainOfCthuluCreepersCountRevDeath() / 2 * creeperRate;
 
             if (Time == StunDuration)
+            {
                 AttackCounter = GetBrainOfCthuluCreepersCountRevDeath() - 1;
+                SoundEngine.PlaySound(Roar, NPC.Center);
+            }
 
             NPC.knockBackResist = 0f;
             NPC.dontTakeDamage = true;
@@ -1645,9 +1648,6 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
     private void Phase2Idle()
     {
-        //goes from 3 at full health to 1 at low health
-        int chases = (int)Math.Ceiling(MaxChases * (NPC.life / (float)NPC.lifeMax));
-
         NPC.rotation = NPC.velocity.X / 6f * MathHelper.Pi / 8f;
 
         if (Time == ChaseTime - 5)
@@ -1721,7 +1721,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                     AttackFlag = false;
 
                     #region Attack Selection
-                    if (AttackCounter >= chases) //Pick attack
+                    if (AttackCounter >= ChaseAmount) //Pick attack
                     {
                         NPC.rotation = 0;
                         ResetAttackValues();
@@ -2925,8 +2925,6 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         Time = 0;
         NPC.netUpdate = true;
     }
-
-    public override bool PreKill(Mod mod) => AIState == BrainAIState.DeathAnimation && !NPC.dontTakeDamage;
 
     public override void FindFrame(Mod mod, int frameHeight)
     {

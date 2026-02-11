@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void SetDefaults()
         {
             Item.width = Item.height = 142;
-            Item.damage = 435;
+            Item.damage = 485;
             Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.noMelee = true;
             Item.useTurn = true;
@@ -46,7 +46,7 @@ namespace CalamityMod.Items.Weapons.Melee
             {
                 ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
                 player.itemAnimation = player.itemAnimationMax = player.itemTime = player.itemTimeMax = 60;
-                Projectile.NewProjectile(source, position, velocity*1.6666f, type, (int)(damage * 20), knockback, player.whoAmI, 0f, velocity.ToRotation(), 0);
+                Projectile.NewProjectile(source, position, velocity*1.6666f, type, (int)(damage * 15), knockback, player.whoAmI, 0f, velocity.ToRotation(), 0);
             }
             else
                 Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, velocity.ToRotation(), 1);
