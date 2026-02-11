@@ -55,6 +55,11 @@ namespace CalamityMod.Projectiles.Rogue
         public override bool? CanDamage() => ((flung && !inSky && !hitTiles && impaleDist == Vector2.Zero) ? null : false);
         public override void AI()
         {
+            if (Owner.dead && !flung)
+            {
+                Projectile.Kill();
+                return;
+            }
             if (stealth && Projectile.ai[2] != 5) // Multiplayer Syncing?
             {
                 Projectile.ai[2] = 5;
@@ -426,6 +431,7 @@ namespace CalamityMod.Projectiles.Rogue
             Color glowColor = Color.Lerp(mainColor, Color.Khaki, glowUp - 1);
             Texture2D tex = TextureAssets.Projectile[Type].Value;
             Asset<Texture2D> glowBlade = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowBlade");
+            Asset<Texture2D> glowBottom = ModContent.Request<Texture2D>("CalamityMod/Particles/SquareRotated");
             Asset<Texture2D> woosh = ModContent.Request<Texture2D>("CalamityMod/Particles/VerticalSmearLarge");
 
             if (hitTiles || falling || stealth)
@@ -453,6 +459,9 @@ namespace CalamityMod.Projectiles.Rogue
 
                     for (int y = 0; y < 2; y++)
                         Main.EntitySpriteDraw(glowBlade.Value, fxPos - Main.screenPosition, null, (y != 0 ? Color.White : mainColor) with { A = 0 } * (0.3f * glowUp), fxVel.ToRotation() + MathHelper.PiOver2, glowBlade.Size() / 2f, new Vector2(0.4f * (y != 0 ? 0.65f : 1f), 1f * throwCompletion * glowUp * (i == 0 ? 1.5f : 1)) * Projectile.scale * 0.04f, SpriteEffects.None, 0);
+                    float softGlowUp = (float)Math.Pow(glowUp, 0.15f);
+                    for (int y = 0; y < 3; y++)
+                        Main.EntitySpriteDraw(glowBottom.Value, fxPos - Main.screenPosition - fxVel * 0.55f, null, (y != 0 ? Color.White : mainColor) with { A = 0 } * (0.1f * glowUp), fxVel.ToRotation() + MathHelper.PiOver2, glowBottom.Size() / 2f, new Vector2(1f * (y != 0 ? 0.65f : 1f) * softGlowUp, 1.7f * throwCompletion * softGlowUp * (i == 0 ? 1.5f : 1)) * Projectile.scale * (y == 2 ? 0.3f : 0.25f), SpriteEffects.None, 0);
                 }
             }
             
