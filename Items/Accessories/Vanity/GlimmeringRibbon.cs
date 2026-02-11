@@ -14,7 +14,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories.Vanity
 {
-    internal class ShimmeringRibbon : TransformationAccessory, ILocalizedModType
+    internal class GlimmeringRibbon : TransformationAccessory, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
 
@@ -27,8 +27,8 @@ namespace CalamityMod.Items.Accessories.Vanity
 
         public override void SetDefaults()
         {
-            Item.width = 30;
-            Item.height = 32;
+            Item.width = 52;
+            Item.height = 46;
             Item.accessory = true;
             Item.vanity = true;
             Item.rare = ItemRarityID.Blue;
@@ -39,8 +39,8 @@ namespace CalamityMod.Items.Accessories.Vanity
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.Silk, 5).
-                AddIngredient(ItemID.FallenStar, 1).
+                AddIngredient(ItemID.Silk, 10).
+                AddIngredient(ItemID.FallenStar, 3).
                 AddTile(TileID.Loom).
                 Register();
         }

@@ -142,7 +142,7 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
                 return playerName is "sagi" or "sagittariod";
             }
 
-            itemLoot.AddIf(getsShimmeringRibbon, ModContent.ItemType<ShimmeringRibbon>());
+            itemLoot.AddIf(getsShimmeringRibbon, ModContent.ItemType<GlimmeringRibbon>());
         }
     }
 }
