@@ -256,7 +256,7 @@ namespace CalamityMod.CalPlayer
             else
                 witheredWeaponHoldTime = 0;
 
-            if (Player.statMana < 0)
+            if (Player.statMana < 0 && Player.Calamity().ChaosStone)
             {
                 totalNegativeLifeRegen -= Player.statMana/100f * Items.Accessories.ChaosStone.LostRegenPer100Mana;
             }

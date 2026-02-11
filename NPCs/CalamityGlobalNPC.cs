@@ -25,6 +25,7 @@ using CalamityMod.NPCs.AstrumDeus;
 using CalamityMod.NPCs.Bumblebirb;
 using CalamityMod.NPCs.CalClone;
 using CalamityMod.NPCs.CeaselessVoid;
+using CalamityMod.NPCs.Deconstructors;
 using CalamityMod.NPCs.DesertScourge;
 using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.NPCs.DraedonLabThings;
@@ -3168,10 +3169,13 @@ namespace CalamityMod.NPCs
                             Vector2 startVel = (warbannerBurnDirection * velAdjust).RotatedByRandom(0.6f * warbannerBurnIntensity);
                             Particle sparks = new VelChangingSpark(sparkPos, startVel, endVel, "CalamityMod/Particles/SmallBloom", Main.rand.Next(18, 22 + 1), Main.rand.NextFloat(0.1f, 0.25f) * sizeBonus, color * 0.75f, new Vector2(0.7f, 1), true, false, 0, false, 0.45f, 0.1f);
                             GeneralParticleHandler.SpawnParticle(sparks);
-                            Dust lust2 = Dust.NewDustPerfect(sparkPos, DustType<LightDust>(), startVel, Scale: Main.rand.NextFloat(0.7f, 1.1f) * sizeBonus);
-                            lust2.noGravity = true;
-                            lust2.color = color;
-                            lust2.noLightEmittence = true;
+                            if (Main.rand.NextBool())
+                            {
+                                Dust lust2 = Dust.NewDustPerfect(sparkPos, DustType<LightDust>(), startVel, Scale: Main.rand.NextFloat(0.5f, 0.9f) * Math.Min(sizeBonus, 1.3f));
+                                lust2.noGravity = true;
+                                lust2.color = color;
+                                lust2.noLightEmittence = true;
+                            }
                         }
                     }
                     var player = Main.LocalPlayer;
@@ -6010,7 +6014,8 @@ namespace CalamityMod.NPCs
             ];
 
             // Insert the debuff info into the NPC's bestiary entry
-            bestiaryEntry.Info.Insert(0, new BestiaryDebuffInfo(elements));
+            bool force = npc.type == ModContent.NPCType<Burrower>(); //Force Burrower to always show the debuff section
+            bestiaryEntry.Info.Insert(0, new BestiaryDebuffInfo(elements,force));
 
             // Add the Astral Infection to the Enchanted Nightcrawler's entry as it spawns there now
             if (npc.type == NPCID.EnchantedNightcrawler)

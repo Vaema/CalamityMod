@@ -65,6 +65,12 @@ public class BrainOfCthulhuSystem : ModSystem
             if (Main.curMusic == MusicID.Boss3)
                 Main.curMusic = previousMusic;
         }
+
+        if (Main.newMusic == MusicID.Boss1)
+            Main.newMusic = previousMusic;
+
+        if (Main.curMusic == MusicID.Boss1)
+            Main.curMusic = previousMusic;
     }
 
     private void StopOWBoss1FromStarting(On_Main.orig_UpdateAudio_DecideOnTOWMusic orig, Main self)
@@ -224,6 +230,8 @@ public class BrainOfCthulhuSystem : ModSystem
 
     public override void PostUpdateNPCs()
     {
+        if (VerletTendrils is null)
+            return;
         if (!NPC.AnyNPCs(NPCID.BrainofCthulhu))
             BrainOfCthulhuAI.SummonedViaItem = false;
 
@@ -404,7 +412,11 @@ public class BrainOfCthulhuSystem : ModSystem
 
     public override void PostUpdateEverything()
     {
-        if (Main.curMusic != MusicID.Boss3 && Main.curMusic != MusicID.OtherworldlyBoss1)
+        bool allowBossMusic = false;
+        if (NPC.crimsonBoss != -1 && Main.npc[NPC.crimsonBoss].active && Main.npc[NPC.crimsonBoss].TryGetAIOverride<BrainOfCthulhuAI>(out var brainAI) && brainAI.AIState > BrainOfCthulhuAI.BrainAIState.SurfaceSpawnAnimation)
+            allowBossMusic = true;
+
+        if (((Main.curMusic != MusicID.Boss3 && Main.curMusic != MusicID.OtherworldlyBoss1) || allowBossMusic) && Main.curMusic != MusicID.Boss1)
             previousMusic = Main.curMusic;
 
         if (previousMusic == -1)

@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -44,14 +45,11 @@ public class FalseBrain : ModNPC, ILocalizedModType
         NPC.netAlways = true;
         NPC.ShowNameOnHover = false;
         Music = MusicID.Boss3;
-        SceneEffectPriority = SceneEffectPriority.BiomeLow;
+        SceneEffectPriority = (SceneEffectPriority)(-1);
 
         NPC.localAI[0] = Main.rand.Next(6);
 
-        if(BrainOfCthulhuSystem.IsBrainOfCthulhuTextureVanilla)
-            NPC.localAI[1] = 1 + Main.rand.NextFloat(-0.25f, 0.25f);
-        else
-            NPC.localAI[1] = 1 + (Main.rand.NextFloat(0.25f, 0.75f) * (Main.rand.NextBool() ? -1 : 1));
+        NPC.localAI[1] = 1 + Main.rand.NextFloat(-0.25f, 0.25f);
     }
     private int Variant => (int)NPC.localAI[0];
     private float Angle => NPC.ai[0];
@@ -142,16 +140,20 @@ public class FalseBrain : ModNPC, ILocalizedModType
             fool.AddBuff(BuffID.Darkness, 900);
             fool.AddBuff(BuffID.Bleeding, 900);
             fool.AddBuff(BuffID.Confused, 60);
-            int timeToAdd = 600;
+            int timeToAdd = 300;
             int bbIndex = fool.buffType.ToList().IndexOf(ModContent.BuffType<BurningBlood>());
             if (bbIndex != -1)
             {
                 timeToAdd /= 2;
                 timeToAdd += fool.buffTime[bbIndex];
             }
+
+            if (timeToAdd > 3600)
+                timeToAdd = 3600;
+
             fool.AddBuff(ModContent.BuffType<BurningBlood>(), timeToAdd);
 
-            fool.Calamity().adrenaline = 0;
+            fool.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.BrainIllusion" + Main.rand.Next(1, 3 + 1)).ToNetworkText(fool.name)), 50, NPC.Center.X > fool.Center.X ? -1 : 1, cooldownCounter: 0, dodgeable: false, scalingArmorPenetration: 1f);
 
             NPC.dontTakeDamage = true;
         }
@@ -182,33 +184,7 @@ public class FalseBrain : ModNPC, ILocalizedModType
         else
         {
             tex = TextureAssets.Npc[NPCID.BrainofCthulhu].Value;
-            frame = tex.Frame(1, 8, 0, 4 + (int)NPC.frameCounter);
-
-            switch(Variant)
-            {
-                case 0:
-                    scaleAddition = new(-0.125f, 0.25f);
-                    break;
-                case 1:
-                    scaleAddition = new(0.25f, -0.125f);
-                    break;
-                case 2:
-                    drawColor = Color.Lerp(drawColor, Color.Red.MultiplyRGB(drawColor), 0.5f);
-                    break;
-                case 3:
-                    drawColor = Color.Lerp(drawColor, Color.Orange.MultiplyRGB(drawColor), 0.5f);
-                    break;
-                case 4:
-                    drawColor = Color.Lerp(drawColor, Color.Yellow.MultiplyRGB(drawColor), 0.5f);
-                    break;
-                case 5:
-                    scaleAddition = new(0.1625f, 0.1625f);
-                    break;
-                case 6:
-                    scaleAddition = new(-0.1625f, -0.1625f);
-                    break;
-
-            }
+            frame = tex.Frame(1, 8, 0, (int)NPC.frameCounter);
         }
 
         if (SpawnTime > 0)

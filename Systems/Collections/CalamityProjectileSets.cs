@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Magic;
+using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
@@ -68,6 +69,13 @@ namespace CalamityMod.Systems.Collections
                 ProjectileType<InfernadoRevenge>(), ProjectileType<OverlyDramaticDukeSummoner>(), ProjectileType<ProvidenceHolyRay>(), ProjectileType<OldDukeVortex>(),
                 ProjectileType<BrimstoneRay>(), ProjectileType<AresDeathBeamStart>(), ProjectileType<AresGaussNukeProjectileBoom>(), ProjectileType<AresLaserBeamStart>(),
                 ProjectileType<ArtemisSpinLaserbeam>(), ProjectileType<BirbAura>(), ProjectileType<ThanatosBeamStart>());
+
+        /// <summary>
+        /// If <see langword="true"/> for a projectile type, then that projectile will be blacklisted from receiving the homing effect of Grape Beer.<br/>
+        /// Defaults to <see langword="false"/>.
+        /// </summary>
+        public static bool[] DoesNotGetHomingWithGrapeBeer = Factory.CreateBoolSet(ProjectileType<NukeOfBliss>(), ProjectileType<PrismaticEnergyBlast>(), ProjectileType<PrismEnergyBullet>(),
+            ProjectileType<PrismMine>(), ProjectileType<ScorchedEarthRocket>(), ProjectileType<UltimaRay>(), ProjectileType<SproutingArrowMain>());
 
         /// <summary>
         /// Determines what other projectiles this projectile will share ID-static immunity frames with. Defaults to -1, which means that it does not share immunity frames.<br/>

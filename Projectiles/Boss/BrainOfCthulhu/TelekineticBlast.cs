@@ -52,11 +52,16 @@ public class TelekineticBlast : ModProjectile, ILocalizedModType
         target.AddBuff(BuffID.Darkness, (int)Math.Round(900 * debuffMultiplier));
         target.AddBuff(BuffID.Bleeding, (int)Math.Round(900 * debuffMultiplier));
         target.AddBuff(BuffID.Confused, (int)Math.Round(60 * debuffMultiplier));
-        int timeToAdd = (int)Math.Round(600 * debuffMultiplier);
+        int timeToAdd = (int)Math.Round(300 * debuffMultiplier);
         int bbIndex = target.buffType.ToList().IndexOf(ModContent.BuffType<BurningBlood>());
         if (bbIndex != -1)
             timeToAdd += target.buffTime[bbIndex];
+        if (timeToAdd > 3600)
+            timeToAdd = 3600;
+
         target.AddBuff(ModContent.BuffType<BurningBlood>(), timeToAdd);
+
+        target.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.BrainIllusion" + Main.rand.Next(1, 3 + 1)).ToNetworkText(target.name)), 100, Main.npc[NPC.crimsonBoss].Center.X > target.Center.X ? -1 : 1, cooldownCounter: 0, dodgeable: false, scalingArmorPenetration: 1f);
 
         target.Calamity().adrenaline = 0;
         Projectile.active = false;

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Enums;
 using CalamityMod.Graphics.Primitives;
+using CalamityMod.Items.Weapons.Summon;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -29,7 +31,6 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.width = 24;
             Projectile.height = 24;
             Projectile.friendly = true;
-            Projectile.timeLeft = 180;
             Projectile.DamageType = DamageClass.Summon;
             Projectile.MaxUpdates = 3;
             Projectile.tileCollide = false;
@@ -37,11 +38,11 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 24;
             Projectile.stopsDealingDamageAfterPenetrateHits = true;
+            Projectile.timeLeft = 120 * Projectile.MaxUpdates;
         }
 
         public override void OnSpawn(IEntitySource source)
         {
-            SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
         }
 
         NPC target = null;
@@ -50,7 +51,9 @@ namespace CalamityMod.Projectiles.Summon
             if (Projectile.ai[0] > 1)
             {
                 Projectile.ai[0]--;
-                Projectile.timeLeft = 120;
+                Projectile.timeLeft = 120 * Projectile.MaxUpdates;
+
+                
             }
 
             if (target != null && Projectile.localNPCImmunity[target.whoAmI] <= 0 && target.active && !target.dontTakeDamage)
@@ -69,7 +72,7 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.Zero) * 4;
                 Projectile.timeLeft = (int)MathHelper.Min(8, Projectile.timeLeft);
             }
-        }
+            }
         NPC GetTargetInRange(float range)
         {
             var player = Main.player[Projectile.owner];

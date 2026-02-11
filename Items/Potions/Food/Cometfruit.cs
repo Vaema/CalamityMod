@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Potions.Food
 		{
 			Item.DefaultToFood(32, 32, BuffID.WellFed2, CalamityUtils.MinutesToFrames(5));
 			Item.value = Item.sellPrice(silver: 20);
-			Item.rare = ItemRarityID.Blue;
+			Item.rare = ItemRarityID.Green;
 		}
 	}
 }

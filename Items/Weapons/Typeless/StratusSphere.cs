@@ -24,8 +24,7 @@ namespace CalamityMod.Items.Weapons.Typeless
     public class StratusSphere : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Typeless";
-        public static readonly SoundStyle CastSound = new("CalamityMod/Sounds/Item/StratusSphereCast");
-        public static readonly SoundStyle LoopSound = new("CalamityMod/Sounds/Item/StratusSphereLoop");
+        public static readonly SoundStyle CastSound = new SoundStyle("CalamityMod/Sounds/Item/StratusSphereCast") with { Volume = 0.75f };
 
         public override void SetDefaults()
         {

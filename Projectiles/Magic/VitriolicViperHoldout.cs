@@ -49,7 +49,7 @@ namespace CalamityMod.Projectiles.Magic
             if (SoundEngine.TryGetActiveSound(ChargeSlot, out var ChargeSound) && ChargeSound.IsPlaying)
                 ChargeSound.Position = Projectile.Center;
 
-            chargePower = Utils.GetLerpValue(0, FirstChargeFrames, CurrentChargingFrames, true) * (FullCharge ? 1.3f : 1);
+            chargePower = Utils.GetLerpValue(0, FirstChargeFrames, CurrentChargingFrames, true) * (FullCharge ? 1.4f : 1);
             if (CurrentOverchargeFrames < FullyChargedFrames)
                 overchargePower = MathHelper.Clamp(Utils.GetLerpValue(FullyChargedFrames * 2, 0, CurrentOverchargeFrames, true), 0.5f, 1);
             else
@@ -222,7 +222,7 @@ namespace CalamityMod.Projectiles.Magic
 
             Texture2D texture = TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
-            float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);
+            float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f) - (Owner.gravDir == -1 ? MathHelper.PiOver2 * Owner.direction : 0f);
             Vector2 rotationPoint = texture.Size() * 0.5f;
             SpriteEffects flipSprite = (Projectile.spriteDirection * Owner.gravDir == -1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 

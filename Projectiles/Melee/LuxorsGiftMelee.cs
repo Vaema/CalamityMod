@@ -66,7 +66,7 @@ namespace CalamityMod.Projectiles.Melee
                 GeneralParticleHandler.SpawnParticle(spark);
             }
 
-            if (Collision.SolidCollision(Projectile.Center, 9, 9))
+            if (Collision.SolidCollision(Projectile.Center, 9, 9) && Projectile.timeLeft <= 150)
                 Projectile.velocity *= 0.91f;
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)

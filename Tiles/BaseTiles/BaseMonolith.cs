@@ -143,20 +143,17 @@ namespace CalamityMod.Tiles.BaseTiles
             // 02FEB2025: Ozzatron: code lifted from https://github.com/CalamityTeam/CalamityModPublic/pull/77
             // transplanted into base monolith as part of manual cherry pick merge
             //
-            // Draws the Smart Cursor Highlight. Not 100% accurate, but its close enough
+            // Draws the Smart Cursor Highlight.
             Color highlightColor;
             var highlight = TextureAssets.HighlightMask[Type];
             if (highlight != null && highlight.IsLoaded && Main.InSmartCursorHighlightArea(i, j, out var actuallySelected))
             {
-                if (actuallySelected)
-                {
-                    highlightColor = new Color(252, 252, 84);
+                int avgBrightness = (drawColor.R + drawColor.G + drawColor.B) / 3;
+                if (avgBrightness > 10)
+                {   
+                    highlightColor = Colors.GetSelectionGlowColor(actuallySelected, avgBrightness); 
+                    Main.spriteBatch.Draw(highlight.Value, new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y) + zero, rect, highlightColor, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
                 }
-                else
-                {
-                    highlightColor = new Color(125, 125, 125);
-                }
-                Main.spriteBatch.Draw(highlight.Value, new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y) + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY + animateFrameOffset, 16, height), highlightColor, 0f, default(Vector2), 1f, SpriteEffects.None, 0f); ;
             }
 
             return false;

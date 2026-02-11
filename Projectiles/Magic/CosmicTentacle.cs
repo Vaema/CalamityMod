@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Dusts;
+using CalamityMod.Enums;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -58,6 +59,7 @@ namespace CalamityMod.Projectiles.Magic
                     GeneralParticleHandler.SpawnParticle(blastRing);
                     Particle blastRing2 = new CustomPulse(Projectile.Center, Vector2.Zero, InnerColor * 0.6f, "CalamityMod/Particles/LargeBloom", Vector2.One, Main.rand.NextFloat(-10, 10), 0.48f * scaler, 0f, 4, true);
                     GeneralParticleHandler.SpawnParticle(blastRing2);
+                    blastRing2.DrawLayer = GeneralDrawLayer.AfterEverything;
                 }
                 Projectile.velocity *= 0.96f;
                 if (time == 3)
@@ -89,6 +91,7 @@ namespace CalamityMod.Projectiles.Magic
                         GeneralParticleHandler.SpawnParticle(spark);
                         Particle spark2 = new CustomSpark(Projectile.Center, -Projectile.velocity * 0.05f, "CalamityMod/Particles/GlowSpark", false, 12, 0.035f * scaling, Color.LightGreen * 0.75f, new Vector2(1.7f - (1 - sharpScaling), 0.9f + (1 - sharpScaling) * 2));
                         GeneralParticleHandler.SpawnParticle(spark2);
+                        spark2.DrawLayer = GeneralDrawLayer.AfterEverything;
                     }
                     if (Main.rand.NextBool(6))
                     {
@@ -111,6 +114,7 @@ namespace CalamityMod.Projectiles.Magic
                             {
                                 Particle blastRing2 = new CustomPulse(Projectile.Center, Vector2.Zero, InnerColor, "CalamityMod/Particles/LargeBloom", Vector2.One, Main.rand.NextFloat(-10, 10), 0.36f, 0f, scalingTimerMax / 2, true);
                                 GeneralParticleHandler.SpawnParticle(blastRing2);
+                                blastRing2.DrawLayer = GeneralDrawLayer.AfterEverything;
                             }
                             Projectile.velocity = Vector2.Zero;
                         }
