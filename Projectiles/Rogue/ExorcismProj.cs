@@ -352,6 +352,8 @@ namespace CalamityMod.Projectiles.Rogue
                     { Item item = Main.item[x]; if (item.active) { item.active = false; } }
                     for (int x = 0; x < Main.maxDust; x++)
                     { Dust dust = Main.dust[x]; if (dust.active) { dust.active = false; } }
+                    for (int x = 0; x < Main.maxGore; x++)
+                    { Gore gore = Main.gore[x]; if (gore.active) { gore.active = false; } }
 
                     SoundStyle gong = new("CalamityMod/Sounds/Custom/GFB/Jesus");
                     for (int i = 0; i < 2; i++)
