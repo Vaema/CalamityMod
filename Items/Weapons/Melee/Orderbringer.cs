@@ -108,13 +108,16 @@ namespace CalamityMod.Items.Weapons.Melee
                 }
                 if (completion >= 0.65f && spawnProj)
                 {
-                    Projectile.NewProjectile(player.GetSource_FromThis(), player.Center, shootDir, Item.shoot, Item.damage, Item.knockBack, player.whoAmI, 0f);
-
-                    for (int i = 0; i < 4; i++)
+                    if (!player.Calamity().bladeArmEnchant) // Manually remove projectiles when Tainted
                     {
-                        float rot = Main.rand.NextFloat(0.5f, 0.65f) * (Main.rand.NextBool() ? 1 : -1);
-                        Vector2 vel = (shootDir * 2.5f).RotatedByRandom(0.6f);
-                        Projectile.NewProjectile(player.GetSource_FromThis(), player.ClampedMouseWorld() - (shootDir * 40) + Main.rand.NextVector2Circular(130, 130), vel.RotatedBy(rot) * Main.rand.NextFloat(0.9f, 1.2f), ModContent.ProjectileType<StarofOrder>(), (int)(Item.damage * 0.12f), (int)(Item.knockBack * 0.2f), player.whoAmI, 0, rot, 1);
+                        Projectile.NewProjectile(player.GetSource_FromThis(), player.Center, shootDir, Item.shoot, Item.damage, Item.knockBack, player.whoAmI, 0f);
+
+                        for (int i = 0; i < 4; i++)
+                        {
+                            float rot = Main.rand.NextFloat(0.5f, 0.65f) * (Main.rand.NextBool() ? 1 : -1);
+                            Vector2 vel = (shootDir * 2.5f).RotatedByRandom(0.6f);
+                            Projectile.NewProjectile(player.GetSource_FromThis(), player.ClampedMouseWorld() - (shootDir * 40) + Main.rand.NextVector2Circular(130, 130), vel.RotatedBy(rot) * Main.rand.NextFloat(0.9f, 1.2f), ModContent.ProjectileType<StarofOrder>(), (int)(Item.damage * 0.12f), (int)(Item.knockBack * 0.2f), player.whoAmI, 0, rot, 1);
+                        }
                     }
 
                     Particle swipe = new CustomSpark(player.Center - shootDir * 5, shootDir.RotatedBy(0.4f * (dir * (swingCount % 2 == 0 ? 1 : -1))) * 2.5f, "CalamityMod/Particles/VerticalSmearLarge", false, (int)(14 / player.GetAttackSpeed(DamageClass.Melee)), 0.8f, player.Calamity().lightRGB, new Vector2(1f, 1f), true, false, 0, false, false);
