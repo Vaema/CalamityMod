@@ -29,11 +29,12 @@ namespace CalamityMod.Items.Weapons.Melee
         public bool canHit => (completion >= 0.35f && completion <= 0.8f);
         public int swingCount = 0;
         public bool spawnProj = true;
+        public bool spawnTrueMeleeProj = true;
         public bool playSound = true;
         public override void SetDefaults()
         {
             Item.width = Item.height = 112;
-            Item.damage = 840;
+            Item.damage = 800;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = Item.useTime = 16;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -72,6 +73,7 @@ namespace CalamityMod.Items.Weapons.Melee
             bladeHitboxPos = player.Center;
             bladeRotation = 0;
             spawnProj = true;
+            spawnTrueMeleeProj = true;
             playSound = true;
             int dir = -Math.Sign(player.Center.X - player.Calamity().mouseWorld.X);
             float startRot = MathHelper.ToRadians(-90) * dir * (swingCount % 2 == 0 ? 1 : -1);
@@ -140,19 +142,23 @@ namespace CalamityMod.Items.Weapons.Melee
         }
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
-            int beamDamage = player.CalcIntDamage<MeleeDamageClass>(Item.damage * 0.4f);
-            Vector2 mouseClamped = player.ClampedMouseWorld();
-            SoundEngine.PlaySound(SoundID.Item84 with { Volume = 1f, Pitch = Main.rand.NextFloat(0.5f, 0.7f)}, player.Center);
-            for (int i = 0; i < 2; i++)
+            if (spawnTrueMeleeProj)
             {
-                Vector2 targetPos = Main.MouseWorld;
-                NPC target2 = Main.MouseWorld.ClosestNPCAt(650);
-                if (target2 != null)
-                    targetPos = target2.Center;
+                int beamDamage = player.CalcIntDamage<MeleeDamageClass>(Item.damage * 0.35f);
+                Vector2 mouseClamped = player.ClampedMouseWorld();
+                SoundEngine.PlaySound(SoundID.Item84 with { Volume = 1f, Pitch = Main.rand.NextFloat(0.5f, 0.7f) }, player.Center);
+                for (int i = 0; i < 2; i++)
+                {
+                    Vector2 targetPos = Main.MouseWorld;
+                    NPC target2 = Main.MouseWorld.ClosestNPCAt(650);
+                    if (target2 != null)
+                        targetPos = target2.Center;
 
-                Vector2 spawnPos = mouseClamped + new Vector2(Main.rand.NextFloat(-300, 300), -900);
-                Vector2 vel = (targetPos - spawnPos).SafeNormalize(Vector2.UnitY) * 10;
-                Projectile.NewProjectile(player.GetSource_ItemUse(Item), spawnPos, vel, ModContent.ProjectileType<OrderbringerBeam>(), beamDamage, 0, player.whoAmI);
+                    Vector2 spawnPos = mouseClamped + new Vector2(Main.rand.NextFloat(-300, 300), -900);
+                    Vector2 vel = (targetPos - spawnPos).SafeNormalize(Vector2.UnitY) * 10;
+                    Projectile.NewProjectile(player.GetSource_ItemUse(Item), spawnPos, vel, ModContent.ProjectileType<OrderbringerBeam>(), beamDamage, 0, player.whoAmI);
+                }
+                spawnTrueMeleeProj = false;
             }
         }
         public override void ModifyTooltips(List<TooltipLine> list)
