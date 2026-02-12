@@ -4,6 +4,7 @@ using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -24,6 +25,41 @@ namespace CalamityMod.Projectiles.Rogue
         private const float TesselationSpawnSpeed = 24f;
 
         internal const float RotationIncrement = 0.22f;
+
+        private static readonly SoundStyle LightspeedMissSound = new("CalamityMod/Sounds/Item/NanoblackReaper/NanoblackReaper_LightspeedMiss")
+        {
+            Volume = 0.8f,
+            PitchVariance = 0.1f,
+            MaxInstances = 8,
+        };
+
+        private static readonly SoundStyle LightspeedPerfectMissSound = new("CalamityMod/Sounds/Item/NanoblackReaper/NanoblackReaper_LightspeedMissPerfect")
+        {
+            Volume = 0.9f,
+            PitchVariance = 0.08f,
+            MaxInstances = 8,
+        };
+
+        private static readonly SoundStyle LightspeedSlashBaseSound = new("CalamityMod/Sounds/Item/NanoblackReaper/NanoblackReaper_LightspeedSlash")
+        {
+            Volume = 0.85f,
+            PitchVariance = 0.08f,
+            MaxInstances = 10,
+        };
+
+        private static readonly SoundStyle LightspeedSlashVariantSound = new("CalamityMod/Sounds/Item/NanoblackReaper/NanoblackReaper_LightspeedSlash", 3)
+        {
+            Volume = 0.65f,
+            PitchVariance = 0.12f,
+            MaxInstances = 10,
+        };
+
+        private static readonly SoundStyle LightspeedPerfectSlashSound = new("CalamityMod/Sounds/Item/NanoblackReaper/NanoblackReaper_PerfectLightspeedSlash")
+        {
+            Volume = 0.95f,
+            PitchVariance = 0.06f,
+            MaxInstances = 8,
+        };
 
         private Player Owner => Main.player[Projectile.owner];
         internal ref float RealFrameCounter => ref Projectile.ai[0];
@@ -124,7 +160,7 @@ namespace CalamityMod.Projectiles.Rogue
                     if (imperfectWindowPassed)
                         LightspeedCarveState = LightspeedCarveState_Performed;
                 }
-                
+
                 BoomerangMovement();
             }
 
@@ -210,7 +246,7 @@ namespace CalamityMod.Projectiles.Rogue
         private void SpawnTesselation()
         {
             int numTessSpawns = 3;
-            
+
             // Each tesselation spawns with a random delay before it chooses to fire.
             // For consistent RNG iteration, these RNG values are obtained even if they are not needed.
             static float GetStrikeDelay() => Main.rand.NextFloat(NanoblackTesselation.MinDelay, NanoblackTesselation.MaxDelay);
@@ -272,11 +308,20 @@ namespace CalamityMod.Projectiles.Rogue
                 if (target is null || !target.active)
                     target = Projectile.Center.ClosestNPCAt(NanoblackLightspeedCarve.TargetingRange, bossPriority: true);
 
-                if (target is not null && target.active)
+                bool foundTarget = target is not null && target.active;
+                if (foundTarget)
                     pos = target.Center;
+                else
+                {
+                    SoundStyle missSound = lcs == LightspeedCarveState_CanPerfect ? LightspeedPerfectMissSound : LightspeedMissSound;
+                    SoundEngine.PlaySound(missSound, Projectile.Center);
+                }
 
                 float fuzz = NanoblackLightspeedCarve.PlacementRandomness;
                 pos += Main.rand.NextVector2Circular(fuzz, fuzz);
+
+                if (foundTarget)
+                    PlayLightspeedCarveSounds(lcs == LightspeedCarveState_CanPerfect, pos);
 
                 if (lcs == LightspeedCarveState_CanPerfect)
                 {
@@ -296,6 +341,16 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.netUpdate = true;
         }
 
+        private static void PlayLightspeedCarveSounds(bool perfect, Vector2 position)
+        {
+            if (perfect)
+                SoundEngine.PlaySound(LightspeedPerfectSlashSound, position);
+            else
+            {
+                SoundEngine.PlaySound(LightspeedSlashVariantSound, position);
+            }
+        }
+
         private void RotateScytheInFlight()
         {
             float spin = Projectile.direction <= 0 ? -1f : 1f;
@@ -308,7 +363,7 @@ namespace CalamityMod.Projectiles.Rogue
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             // No gameplay effects; just spawns slash impact particles at a slightly random angle.
-            Color color =  NanoblackReaper.NanoblackSlashColor1;
+            Color color = NanoblackReaper.NanoblackSlashColor1;
             float scale = 0.12f;
             Vector2 slashDir = -Projectile.velocity.SafeNormalize(-Vector2.UnitY);
             Vector2 vel = 0.01f * slashDir.RotatedByRandom(MathHelper.Pi / 8f);

@@ -46,16 +46,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         private void FrameOneEffects()
         {
-            int dustID = IsPerfect ? 99 : 173;
-            int numDust = 96;
-
-            Vector2 p = Projectile.Center;
-            for (int i = 0; i < numDust; ++i)
-            {
-                p = Projectile.Center + (Vector2.UnitX * HitboxRadius).RotatedBy(i * MathHelper.TwoPi / numDust);
-                Dust.NewDust(p, 1, 1, dustID, 0f, 0f, 0, default, 2f);
-            }
-
+            // todo: multiplayer test
             if (Main.netMode != NetmodeID.Server)
             {
                 int slashVisualID = ModContent.ProjectileType<NanoblackLightspeedCarveSlashVisual>();

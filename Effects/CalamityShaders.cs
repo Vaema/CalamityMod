@@ -270,6 +270,9 @@ namespace CalamityMod.Effects
 
         // nanoblack reaper slash effect !!!!
         internal static Asset<Effect> NanoblackSlashShader;
+
+        // static gaussian bloom, cannot change parameters. do not reuse this if that binds you.
+        internal static Asset<Effect> GaussianBloomShader;
         #endregion
 
 
@@ -532,6 +535,10 @@ namespace CalamityMod.Effects
             // below shader is by jasper VV do not steal!!!
             NanoblackSlashShader = LoadShader("SlashEffects/NanoblackSlash");
             RegisterMiscShader(NanoblackSlashShader, "SlashPass", "NanoblackSlash");
+
+            // also my shader!!!!!!!! also by jasper!!!!! i am the apostle of gauss himself!!!!!!!!
+            GaussianBloomShader = LoadShader("SlashEffects/GaussianBloom");
+            RegisterMiscShader(GaussianBloomShader, "BloomShader", "GaussianBloom");
 
             SunkenSeaMenuLogoWater = LoadShader("UI/SunkenSeaMenuLogoWater");
         }

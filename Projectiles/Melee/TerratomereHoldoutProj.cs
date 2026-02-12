@@ -260,6 +260,9 @@ namespace CalamityMod.Projectiles.Melee
 
             Effect shader = CalamityShaders.NanoblackSlashShader.Value;
             shader.Parameters["uTime"]?.SetValue((float)Main.gameTimeCache.TotalGameTime.TotalSeconds);
+            Color tc = Terratomere.TerraColor1;
+            shader.Parameters["uColor"]?.SetValue(new Vector3(tc.R / 255f, tc.G / 255f, tc.B / 255f));
+            shader.Parameters["uBrightness"]?.SetValue(1f);
 
             Matrix view = Main.GameViewMatrix.ZoomMatrix;
             Matrix projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, -1f, 1f);
