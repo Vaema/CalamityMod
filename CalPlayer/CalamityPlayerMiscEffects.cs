@@ -1860,7 +1860,7 @@ namespace CalamityMod.CalPlayer
 
             if (sSpiritAmulet)
             {
-                int spawnTime = 65; // Time between energy spawns
+                int spawnTime = 75; // Time between energy spawns
                 int energyCap = 8; // Max number of energies that can be alive at a time
 
                 Projectile projectile = null;
@@ -1877,7 +1877,7 @@ namespace CalamityMod.CalPlayer
                         }
                     }
                     if (energyCount > 0)
-                        sSpiritAmuletTimer = -spawnTime; // The spawn cooldown after launching energies is twice as long
+                        sSpiritAmuletTimer = -spawnTime * 3; // The spawn cooldown after launching energies is much longer
                 }
                 int numOfEnergy = 0;
                 for (int x = 0; x < Main.maxProjectiles; x++) // Get a count of energies in idle mode
