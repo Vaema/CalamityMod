@@ -49,7 +49,7 @@ namespace CalamityMod.Projectiles.Typeless
                 Projectile.velocity.Y = Projectile.velocity.Y + 0.2f;
             }
             Projectile.rotation += Projectile.velocity.X * 0.1f;
-            if (Projectile.ai[1] == 0f && Projectile.type >= 326 && Projectile.type <= 328)
+            if (Projectile.ai[1] == 0f && Projectile.type >= ProjectileID.GreekFire1 && Projectile.type <= ProjectileID.GreekFire3)
             {
                 Projectile.ai[1] = 1f;
                 SoundEngine.PlaySound(SoundID.Item13, Projectile.position);

@@ -1,17 +1,12 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer;
-using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Humanizer.In;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -139,18 +134,12 @@ namespace CalamityMod.Projectiles.Rogue
             if (time == 80)
             {
                 radius = 2500;
-                if (Main.zenithWorld)
-                {
-                    Projectile.hostile = true;
-                    Projectile.friendly = true;
-                    Projectile.damage *= 100;
-                }
 
                 SoundEngine.PlaySound(Supernova.StealthExplosionSound with { Pitch = Projectile.ai[2] }, Projectile.Center);
                 Projectile.numHits = 0;
                 damageFrame = true;
                 doDamage = true;
-                Owner.Calamity().GeneralScreenShakePower = 14.5f;
+                Owner.SetScreenshake(14.5f);
 
                 for (int i = 0; i < 55; i++)
                 {
@@ -161,7 +150,7 @@ namespace CalamityMod.Projectiles.Rogue
                 for (int i = 0; i < 150; i++)
                 {
                     Vector2 randVel = new Vector2(15, 15).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 1.6f);
-                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center + randVel, 303, randVel);
+                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center + randVel, DustID.SteampunkSteam, randVel);
                     dust2.scale = Main.rand.NextFloat(1.75f, 2.5f);
                     dust2.noGravity = true;
                     dust2.color = new Color(57, 46, 115);
@@ -288,7 +277,7 @@ namespace CalamityMod.Projectiles.Rogue
                         _ => Color.LawnGreen,
                     };
                     Vector2 vel = target.Center.DirectionFrom(Projectile.Center).SafeNormalize(Vector2.UnitX) * 20 * Main.rand.NextFloat(0.05f, 1.2f);
-                    Dust dust2 = Dust.NewDustPerfect(target.Center + Main.rand.NextVector2Circular(target.width * 0.5f, target.height * 0.5f), 66, vel);
+                    Dust dust2 = Dust.NewDustPerfect(target.Center + Main.rand.NextVector2Circular(target.width * 0.5f, target.height * 0.5f), DustID.RainbowTorch, vel);
                     dust2.scale = Main.rand.NextFloat(1.15f, 2f);
                     dust2.noGravity = true;
                     dust2.color = Color.Lerp(Color.White, randomColor, 0.9f);

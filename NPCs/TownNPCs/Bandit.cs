@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using CalamityMod.Items;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Pets;
+using CalamityMod.Items.Tools;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Packets;
 using CalamityMod.Projectiles.Rogue;
@@ -120,6 +120,7 @@ namespace CalamityMod.NPCs.TownNPCs
             "Ishmael", // <@!840416568000381046> (vanillaoyster)
             "Ariallis", // <@!518231218806980609> (ariallis)
             "Shade", // <@!613133259563466755> (shade__storm)
+            "Orion", // <@!119164557657636865> (canacx)
 
             // Original names
             this.GetLocalizedValue("Name.Laura"),

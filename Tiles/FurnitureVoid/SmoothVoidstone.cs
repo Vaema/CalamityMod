@@ -2,18 +2,14 @@
 using System;
 using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.FurnitureVoid
 {
     public class SmoothVoidstone : GlowMaskTile
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/FurnitureVoid/SmoothVoidstoneGlow";
-
         public override void SetupStatic()
         {
             Main.tileSolid[Type] = true;

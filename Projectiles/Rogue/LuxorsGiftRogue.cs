@@ -28,6 +28,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
             Projectile.extraUpdates = 3;
+            Projectile.tileCollide = false;
         }
         public override void AI()
         {
@@ -50,6 +51,8 @@ namespace CalamityMod.Projectiles.Rogue
                 dust.color = Color.Magenta;
                 dust.noLightEmittence = true;
             }
+            if (!Collision.SolidCollision(Projectile.Center, 35, 35) || Projectile.timeLeft <= 500)
+                Projectile.tileCollide = true;
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {

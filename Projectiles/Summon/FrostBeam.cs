@@ -67,7 +67,7 @@ namespace CalamityMod.Projectiles.Summon
                     // instead of weaving backwards.
                     (float)(Math.Sin(thetaDelta + theta * flowerPetalCount) + 0.5f + weaveDistanceInner) *
                     weaveDistanceOutwardMax);
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 113, velocity);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.MushroomSpray, velocity);
                 dust.noGravity = true;
                 dust.scale = 1.35f;
             }

@@ -1,6 +1,6 @@
 ﻿using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Monoliths;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
@@ -82,7 +82,7 @@ namespace CalamityMod.Items.TreasureBags
             // Vanity
             itemLoot.Add(ModContent.ItemType<AnahitaMask>(), 7);
             itemLoot.Add(ModContent.ItemType<LeviathanMask>(), 7);
-            itemLoot.Add(ModContent.ItemType<DeepSeaAnchor>(), 15);
+            itemLoot.Add(ModContent.ItemType<DeepSeaAnchor>(), 10);
             itemLoot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
         }
     }

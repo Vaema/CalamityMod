@@ -20,7 +20,7 @@ namespace CalamityMod.Tiles.Rubblemaker.Abyss
             TileObjectData.newTile.DrawYOffset = 2;
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(106, 80, 102));
-            DustType = 33;
+            DustType = DustID.Water;
 
             RegisterItemDrop(ItemID.WhitePearl);
             FlexibleTileWand.RubblePlacementLarge.AddVariations(ItemID.WhitePearl, Type, 0);

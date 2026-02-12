@@ -53,7 +53,7 @@ namespace CalamityMod.Projectiles.Magic
                 {
                     Vector2 offset = (MathHelper.TwoPi * i / 2f).ToRotationVector2().RotatedBy(Projectile.timeLeft * 0.1f) * 35 * velLerp;
                     Vector2 dustVel = (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2().RotatedByRandom(0.1f) * Main.rand.NextFloat(5.5f, 6.5f);
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, 278, dustVel);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, DustID.FireworksRGB, dustVel);
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(0.4f, 0.5f);
                     dust.color = Color.Gold;

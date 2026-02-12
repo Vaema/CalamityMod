@@ -1,7 +1,6 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -13,13 +12,8 @@ namespace CalamityMod.Projectiles.Melee
     {
         public new string LocalizationCategory => "Projectiles.Melee";
 
-        private const int TimeLeft = 180;
-
-        private const int TimeToFall = TimeLeft / 2;
-
-        private const int TotalSplits = 6;
-
-        private const int SplitTime = TimeLeft / TotalSplits;
+        private int TimeLeft = Main.zenithWorld ? 300 : 180;
+        private int TotalSplits = Main.zenithWorld ? 30: 6;
 
         public override void SetStaticDefaults()
         {
@@ -35,6 +29,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.DamageType = DamageClass.Melee;
             Projectile.penetrate = -1;
             Projectile.timeLeft = TimeLeft;
+            Projectile.tileCollide = !Main.zenithWorld;
             Projectile.usesIDStaticNPCImmunity = true;
             Projectile.idStaticNPCHitCooldown = 10;
         }
@@ -45,7 +40,7 @@ namespace CalamityMod.Projectiles.Melee
 
             Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + MathHelper.PiOver4;
 
-            if (Projectile.timeLeft < TimeToFall)
+            if (Projectile.timeLeft < (TimeLeft / 2))
             {
                 Projectile.velocity.Y += 0.16f;
                 if (Projectile.velocity.Y > 16f)
@@ -81,18 +76,17 @@ namespace CalamityMod.Projectiles.Melee
             Main.dust[dust].noLightEmittence = true;
 
             Projectile.localAI[0] += 1f;
-            if (Projectile.localAI[0] >= SplitTime)
+            if (Projectile.localAI[0] >= TimeLeft / TotalSplits)
             {
                 Projectile.localAI[0] = 0f;
                 int numProj = 2;
                 float rotation = MathHelper.ToRadians(5);
-                float velocity = 16f;
                 if (Projectile.owner == Main.myPlayer)
                 {
                     for (int i = 0; i < numProj; i++)
                     {
-                        Vector2 perturbedSpeed = Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, perturbedSpeed * velocity, ModContent.ProjectileType<SpatialSpear2>(), (int)(Projectile.damage * 0.8), Projectile.knockBack * 0.5f, Projectile.owner);
+                        Vector2 perturbedSpeed = Projectile.velocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, perturbedSpeed, ModContent.ProjectileType<SpatialSpear2>(), (int)(Projectile.damage * 0.8), Projectile.knockBack * 0.5f, Projectile.owner);
                     }
                 }
             }

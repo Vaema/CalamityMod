@@ -1,35 +1,11 @@
-﻿using CalamityMod.Items.Materials;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
+﻿using Terraria;
+using Terraria.Localization;
 
 namespace CalamityMod.Items.Fishing
 {
-    public class SunbeamFish : ModItem, ILocalizedModType
+    public class SunbeamFish : BaseQuestFish
     {
-        public new string LocalizationCategory => "Items.Fishing";
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 10;
-            ItemID.Sets.CanBePlacedOnWeaponRacks[Type] = true;
-        }
-
-        public override void SetDefaults()
-        {
-            Item.width = 30;
-            Item.height = 28;
-            Item.maxStack = Item.CommonMaxStack;
-            Item.consumable = true;
-            Item.value = Item.sellPrice(silver: 10);
-            Item.rare = ItemRarityID.Green;
-        }
-
-        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-        {
-            itemGroup = ContentSamples.CreativeHelper.ItemGroup.GoodieBags;
-        }
-
-        public override bool CanRightClick() => true;
-        public override void ModifyItemLoot(ItemLoot itemLoot) => itemLoot.Add(ModContent.ItemType<EssenceofSunlight>(), 1, 5, 10);
+        public override bool QuestCondition => Main.hardMode;
+        public override LocalizedText Location => CalamityUtils.GetText("Items.Fishing.CaughtInSpace");
     }
 }

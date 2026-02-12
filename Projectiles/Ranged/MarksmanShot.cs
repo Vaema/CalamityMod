@@ -193,7 +193,7 @@ namespace CalamityMod.Projectiles.Ranged
             SoundEngine.PlaySound(RicoshotCoin.BlingHitSound, struckCoin.Center);
 
             // Apply a little screenshake
-            Main.player[Projectile.owner].Calamity().GeneralScreenShakePower = 5;
+            Main.player[Projectile.owner].SetScreenshake(5f);
 
             // Kill the struck coin immediately after marking it as having been struck.
             struckCoin.localAI[0] = NumRicochets;
@@ -233,13 +233,13 @@ namespace CalamityMod.Projectiles.Ranged
             }
         }
 
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float fadeOpacity = Math.Min(Projectile.timeLeft / (float)trailLength, 1f);
             return Color.PaleGoldenrod * fadeOpacity;
         }
 
-        internal float WidthFunction(float completionRatio)
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos)
         {
             float width = Math.Min(Projectile.timeLeft / (float)trailLength, 1f);
             return (1 - completionRatio) * 6.4f * width;
@@ -252,7 +252,7 @@ namespace CalamityMod.Projectiles.Ranged
                 return false;
 
             GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/BasicTrail"));
-            PrimitiveRenderer.RenderTrail(trailPositions, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f, false, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), trailLength);
+            PrimitiveRenderer.RenderTrail(trailPositions, new(WidthFunction, ColorFunction, (_,_) => Projectile.Size * 0.5f, false, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), trailLength);
 
             return false;
         }

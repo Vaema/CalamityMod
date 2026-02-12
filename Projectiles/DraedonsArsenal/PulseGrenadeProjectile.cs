@@ -55,6 +55,11 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public override bool? CanDamage() => (flung ? null : false);
         public override void AI()
         {
+            if (Owner.dead && !flung)
+            {
+                Projectile.Kill();
+                return;
+            }
             if (Owner.HeldItem.type != ModContent.ItemType<PulseGrenade>())
             {
                 Projectile.Kill();
@@ -278,7 +283,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         }
         public void Explode()
         {
-            Owner.Calamity().GeneralScreenShakePower = 3.5f * (Projectile.Calamity().stealthStrike ? 2 : 1);
+            Owner.SetScreenshake(3.5f * (Projectile.Calamity().stealthStrike ? 2 : 1));
 
             int spin = Main.rand.NextBool() ? -1 : 1;
             for (int i = 0; i < 8; i++)

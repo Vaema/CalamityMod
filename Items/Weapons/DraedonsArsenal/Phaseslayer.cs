@@ -20,10 +20,6 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
         public const float SizeChargeThreshold = 0.25f;
         // The small sword barely affects damage on its own because damage is already dropping significantly at low charge.
         public const float SmallDamageMultiplier = 0.9f;
-        // This is the amount of charge consumed every frame the holdout projectile is summoned, i.e. the weapon is in use.
-        public const float HoldoutChargeUse = 0.005f;
-        // This is the amount of charge consumed every time a sword beam is fired.
-        public const float SwordBeamChargeUse = 0.1f;
 
         public override void SetDefaults()
         {
@@ -31,7 +27,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
             Item.width = 26;
             Item.height = 26;
-            Item.damage = 980;
+            Item.damage = 1350;
             Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.useTime = 24;
             Item.useAnimation = 24;
@@ -50,13 +46,9 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
             Item.shoot = ModContent.ProjectileType<PhaseslayerProjectile>();
             Item.channel = true;
-
-            modItem.UsesCharge = true;
-            modItem.MaxCharge = 250f;
-            modItem.ChargePerUse = 0f; // This weapon is a holdout. Charge is consumed by the holdout projectile.
         }
 
-        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0 && Item.Calamity().Charge > 0;
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

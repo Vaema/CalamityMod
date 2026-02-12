@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -14,15 +13,11 @@ namespace CalamityMod.Items.Weapons.Magic
     public class Volterion : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<SkytideDragoon>();
-        }
         public override void SetDefaults()
         {
             Item.width = 220;
             Item.height = 60;
-            Item.damage = 840;
+            Item.damage = 890;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 50;
             Item.useAnimation = Item.useTime = 80; // 42 frames of firing animation

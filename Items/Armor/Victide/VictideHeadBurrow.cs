@@ -1,5 +1,4 @@
 ﻿using System;
-using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -31,7 +30,7 @@ namespace CalamityMod.Items.Armor.Victide
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
-            Item.defense = 5; // 14
+            Item.defense = 3; // 10
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ModContent.ItemType<VictideBreastplate>() && legs.type == ModContent.ItemType<VictideGreaves>();
@@ -48,7 +47,7 @@ namespace CalamityMod.Items.Armor.Victide
         {
             player.Calamity().victideBurrowHead = true;
             player.moveSpeed += MoveSpeedAccelerationBoost;
-            if (player.IsUnderwater())
+            if (player.Calamity().countsAsAnyWet)
                 player.gills = true;
         }
 

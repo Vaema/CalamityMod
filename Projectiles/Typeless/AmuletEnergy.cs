@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.Summon;
-using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;

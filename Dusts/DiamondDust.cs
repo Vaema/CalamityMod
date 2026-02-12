@@ -1,5 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Systems.Graphic.PixelationSystem;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -7,7 +9,16 @@ namespace CalamityMod.Dusts
 {
     public class DiamondDust : ModDust
     {
+        public static Asset<Texture2D> GlowDiamond { get; private set; }
+
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+
+        public override void Load()
+        {
+            if (!Main.dedServ)
+                GlowDiamond = ModContent.Request<Texture2D>("CalamityMod/Particles/SquareRotated");
+        }
+
         public override void OnSpawn(Dust dust)
         {
             dust.scale *= Main.rand.NextFloat(0.8f, 1f);
@@ -38,26 +49,51 @@ namespace CalamityMod.Dusts
 
             return false;
         }
+
         public override bool PreDraw(Dust dust)
         {
-            Vector2 dustCenter = dust.position + new Vector2(0.25f, 0.25f);
-
-            Texture2D bloom = ModContent.Request<Texture2D>("CalamityMod/Particles/SquareRotated").Value;
-
             // dust.fadeIn is used to determine how intense the squash is, 1 is no squash, 0 is normal squash
             float squashLerp = Utils.GetLerpValue(10, 25, dust.fadeIn, true);
             Vector2 squash = new Vector2(MathHelper.Lerp(1, 0.3f, squashLerp), MathHelper.Lerp(1, 7f, squashLerp));
 
             // Glow Orb
-            Main.EntitySpriteDraw(bloom, dustCenter - Main.screenPosition, null, dust.color with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, bloom.Size() * 0.5f, squash * dust.scale * 0.1f, SpriteEffects.None, 0);
+            Main.spriteBatch.Draw(GlowDiamond.Value, dust.position - Main.screenPosition, null, dust.color with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, GlowDiamond.Size() * 0.5f, squash * dust.scale * 0.1f, SpriteEffects.None, 0);
             if (dust.alpha < 1)
-                Main.EntitySpriteDraw(bloom, dustCenter - Main.screenPosition, null, Color.Lerp(dust.color, Color.White, 0.2f) with { A = 0 } * 0.85f * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, bloom.Size() * 0.5f, squash * dust.scale * 0.09f, SpriteEffects.None, 0);
+                Main.spriteBatch.Draw(GlowDiamond.Value, dust.position - Main.screenPosition, null, Color.Lerp(dust.color, Color.White, 0.2f) with { A = 0 } * 0.85f * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, GlowDiamond.Size() * 0.5f, squash * dust.scale * 0.09f, SpriteEffects.None, 0);
             if (!dust.noLight)
             {
                 for (int i = 0; i < 2; i++)
-                Main.EntitySpriteDraw(bloom, dustCenter - Main.screenPosition, null, Color.Lerp(dust.color, Color.White, 0.4f) with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha) * (i == 0 ? 1f : 0.7f), dust.rotation, bloom.Size() * 0.5f, squash * dust.scale * 0.08f * (i == 0 ? 0.7f : 1), SpriteEffects.None, 0);
+                Main.spriteBatch.Draw(GlowDiamond.Value, dust.position - Main.screenPosition, null, Color.Lerp(dust.color, Color.White, 0.4f) with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha) * (i == 0 ? 1f : 0.7f), dust.rotation, GlowDiamond.Size() * 0.5f, squash * dust.scale * 0.08f * (i == 0 ? 0.7f : 1), SpriteEffects.None, 0);
             }
             return false;
+        }
+    }
+
+    public class DiamondDustPixelated : DiamondDust
+    {
+        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+
+        public override bool PreDraw(Dust dust)
+        {
+            PixelationManager.AddPixelatedDrawer((_) => DrawPixelated(dust), Enums.GeneralDrawLayer.AfterDusts);
+            return false;
+        }
+
+        public static void DrawPixelated(Dust dust)
+        {
+            // dust.fadeIn is used to determine how intense the squash is, 1 is no squash, 0 is normal squash
+            float squashLerp = Utils.GetLerpValue(10, 25, dust.fadeIn, true);
+            Vector2 squash = new Vector2(MathHelper.Lerp(1, 0.3f, squashLerp), MathHelper.Lerp(1, 7f, squashLerp));
+
+            // Glow Orb
+            Main.spriteBatch.Draw(GlowDiamond.Value, dust.position - Main.screenPosition, null, dust.color with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, GlowDiamond.Size() * 0.5f, squash * dust.scale * 0.1f, SpriteEffects.None, 0);
+            if (dust.alpha < 1)
+                Main.spriteBatch.Draw(GlowDiamond.Value, dust.position - Main.screenPosition, null, Color.Lerp(dust.color, Color.White, 0.2f) with { A = 0 } * 0.85f * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, GlowDiamond.Size() * 0.5f, squash * dust.scale * 0.09f, SpriteEffects.None, 0);
+            if (!dust.noLight)
+            {
+                for (int i = 0; i < 2; i++)
+                    Main.spriteBatch.Draw(GlowDiamond.Value, dust.position - Main.screenPosition, null, Color.Lerp(dust.color, Color.White, 0.4f) with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha) * (i == 0 ? 1f : 0.7f), dust.rotation, GlowDiamond.Size() * 0.5f, squash * dust.scale * 0.08f * (i == 0 ? 0.7f : 1), SpriteEffects.None, 0);
+            }
         }
     }
 }

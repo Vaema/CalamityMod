@@ -34,6 +34,8 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
             base.SetStaticDefaults();
             Main.projFrames[Type] = 6;
         }
@@ -63,7 +65,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 if (Main.rand.NextBool(10))
                 {
-                    Dust ghostDust = Dust.NewDustPerfect(Projectile.Center, 56, -Projectile.rotation.ToRotationVector2().RotatedByRandom(MathHelper.PiOver2) * Main.rand.NextFloat(2f, 3f));
+                    Dust ghostDust = Dust.NewDustPerfect(Projectile.Center, DustID.BlueFairy, -Projectile.rotation.ToRotationVector2().RotatedByRandom(MathHelper.PiOver2) * Main.rand.NextFloat(2f, 3f));
                     ghostDust.customData = false;
                     ghostDust.noLight = true;
                     ghostDust.noLightEmittence = true;
@@ -170,7 +172,7 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     float angle = MathHelper.TwoPi / dustAmount * dustIndex;
                     Vector2 velocity = angle.ToRotationVector2() * Main.rand.NextFloat(3f, 7f);
-                    Dust spawnDust = Dust.NewDustPerfect(Projectile.Center, 56, velocity);
+                    Dust spawnDust = Dust.NewDustPerfect(Projectile.Center, DustID.BlueFairy, velocity);
                     spawnDust.customData = false;
                     spawnDust.noGravity = true;
                     spawnDust.velocity *= .75f;

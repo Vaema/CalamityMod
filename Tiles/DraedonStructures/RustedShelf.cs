@@ -10,7 +10,7 @@ namespace CalamityMod.Tiles.DraedonStructures
         {
             this.SetUpPlatform(ModContent.ItemType<Items.Placeables.DraedonStructures.RustedShelf>(), true);
             HitSound = SoundID.Tink;
-            DustType = 32;
+            DustType = DustID.Sand;
         }
 
         public override bool CanExplode(int i, int j) => false;

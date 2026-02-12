@@ -76,15 +76,6 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
             };
             itemLoot.AddIf(getsLadPet, ModContent.ItemType<JoyfulHeart>());
 
-            // Mihaii dev item
-            // Name specific: "Mihaii"
-            static bool getsGoldenBomb(DropAttemptInfo info)
-            {
-                string playerName = info.player.name;
-                return playerName == "Mihaii";
-            };
-            itemLoot.AddIf(getsGoldenBomb, ModContent.ItemType<GoldenBomb>());
-
             // HPU dev item
             // Name specific: "Heart Plus Up"
             static bool getsHapuFruit(DropAttemptInfo info)
@@ -113,16 +104,6 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
 
             itemLoot.AddIf(getsGhostBracelet, ModContent.ItemType<GhostBracelet>());
 
-            // Shayy dev item
-            // Name specific: "Shayy"
-            static bool getsPunchCard(DropAttemptInfo info)
-            {
-                string playerName = info.player.name;
-                return playerName == "Shayy";
-            }
-
-            itemLoot.AddIf(getsPunchCard, ModContent.ItemType<PunchCard>());
-
             // Xyk dev item
             // Name specific: "Xyk"
             static bool getsXyksBlessing(DropAttemptInfo info)
@@ -142,6 +123,26 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
             }
 
             itemLoot.AddIf(getsOracleHeadphones, ModContent.ItemType<OracleHeadphones>());
+
+            // Big E dev vanity
+            // Name specific: "Big E" in any form
+            static bool getsLittleE(DropAttemptInfo info)
+            {
+                string playerName = info.player.name.ToLower();
+                return playerName is "big e" or "bige";
+            }
+
+            itemLoot.AddIf(getsLittleE, ModContent.ItemType<LittleE>());
+
+            // Sagittariod dev vanity
+            // Name specific: "Sagi" or "Sagittariod" (case insensitive
+            static bool getsShimmeringRibbon(DropAttemptInfo info)
+            {
+                string playerName = info.player.name.ToLower();
+                return playerName is "sagi" or "sagittariod";
+            }
+
+            itemLoot.AddIf(getsShimmeringRibbon, ModContent.ItemType<GlimmeringRibbon>());
         }
     }
 }

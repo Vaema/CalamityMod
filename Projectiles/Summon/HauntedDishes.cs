@@ -433,9 +433,9 @@ namespace CalamityMod.Projectiles.Summon
                     {
                         int i1 = (int)((double)Projectile.position.X + (double)(Projectile.width / 2)) / 16;
                         int j = (int)((double)Projectile.position.Y + (double)Projectile.height) / 16 + 1;
-                        if (WorldGen.SolidTile(i1, j) || Main.tile[i1, j].IsHalfBlock || ((int)Main.tile[i1, j].Slope > 0 || Projectile.type == 200))
+                        if (WorldGen.SolidTile(i1, j) || Main.tile[i1, j].IsHalfBlock || ((int)Main.tile[i1, j].Slope > 0 || Projectile.type == ProjectileID.PetLizard))
                         {
-                            if (Projectile.type == 200)
+                            if (Projectile.type == ProjectileID.PetLizard)
                             {
                                 Projectile.velocity.Y = -3.1f;
                             }
@@ -468,7 +468,7 @@ namespace CalamityMod.Projectiles.Summon
                             }
                         }
                     }
-                    else if (Projectile.type == 266 && minionMovingLeft | minionMovingRight)
+                    else if (Projectile.type == ProjectileID.BabySlime && minionMovingLeft | minionMovingRight)
                         Projectile.velocity.Y -= 6f;
                 }
                 if (Projectile.velocity.X > groundMinionMaxVel)

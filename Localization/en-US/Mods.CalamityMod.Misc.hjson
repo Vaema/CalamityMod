@@ -13,7 +13,6 @@ RecipeGroup: {
 	LunarPickaxe: "{$LegacyMisc.37} Lunar Pickaxe"
 	LunarHamaxe: "{$LegacyMisc.37} Lunar Hamaxe"
 	AnyQuiver: "{$LegacyMisc.37} Quiver"
-	AnyWings: "{$LegacyMisc.37} Wings"
 }
 
 // Status
@@ -41,13 +40,14 @@ Tier4KnowledgeTooltip: The Underworld schematic must be deciphered first
 Tier5KnowledgeTooltip: The Ice biome schematic must be deciphered first
 // Other CombatText uses and Item Messages
 ShiftToExpand: Hold Shift to see an expanded description
+AltExpand: Hold {0} to see buff information
+AltExpandUnset: Set a keybind to see debuff information
 LearnedSchematic: You learned how to create new things!
 CragmawVibeCheck: Vibe check.
 AutocannonHot: OUCH! HOT!
 NoComputer: No decryption computer installed
 ArkParry: Parry!
 BurningSeaBurn: It burns...
-LightsWarning: I've gotta give you a flashing lights warning on this one
 NotSafe: Y O U  A R E  N O T  S A F E
 HecBoop: boop!
 ClockworkTick: Tick
@@ -58,6 +58,7 @@ SevensDoubles: Doubles!
 SevensTriples: Triples!
 StylishHammerHit: Stylish!
 GenericConsumedText: "[c/8A8A8A:You have already consumed this item]"
+CelestialOnionText: You have already consumed a Celestial Onion. Consuming another would distort you.
 SanguineTangerineText: You have already consumed a Sanguine Tangerine. Eating any more would make your blood too thick to flow.
 MiracleFruitText: You have already consumed a Miracle Fruit. It would take a miracle to put you back together if you ate another.
 TaintedCloudberryText: You have already consumed a Tainted Cloudberry. Your body would become dust if you ate more than one.
@@ -116,7 +117,7 @@ SwineSecret35: Watch out for Polymorphine, that stuff sucks. Trust me I know.
 SwineSecret36: Many say to keep the greatest swine secret on the down low. I disagree, We cannot shh it.
 SwineSecret37: Let me know when it's 7 PM, I've got to tweak something before some poor soul falls off of it!
 SwineSecret38: Thank Xeroc I don't have any of that 'Pathfinding' garbage, whatever the hell that is.
-SwineSecret39: If you think the Sulphur Sea smells bad, just wait til' you're near a nohitter!
+SwineSecret39: If you think the Sulphur Sea smells bad, you're not close enough to me!
 SwineSecret40: Did you know there's 40 of these damn things?
 // Charge
 Charge: Current Charge: {0}%

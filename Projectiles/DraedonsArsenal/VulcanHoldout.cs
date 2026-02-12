@@ -2,11 +2,9 @@
 using CalamityMod.Cooldowns;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
-using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ModLoader;
@@ -48,6 +46,12 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         }
         public override void HoldoutAI()
         {
+            if (Owner.dead)
+            {
+                Projectile.Kill();
+                return;
+            }
+
             if (flashVis1 > 0) flashVis1 -= 0.2f; if (flashVis1 < 0) flashVis1 = 0;
             if (flashVis2 > 0) flashVis2 -= 0.2f; if (flashVis2 < 0) flashVis2 = 0;
 
@@ -173,24 +177,28 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         {
             if (isSpear)
             {
-                Vector2 spearPos = GunTipPosition + Projectile.velocity.RotatedBy(MathHelper.PiOver2 * Projectile.direction) * 12 - Projectile.velocity * 8;
-                Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedByRandom(0f) * 6f;
-                Owner.Calamity().GeneralScreenShakePower = 3.5f;
+                Owner.SetScreenshake(3.5f);
                 OffsetLengthFromArm -= 16;
                 SoundStyle sound = new("CalamityMod/Sounds/Item/GunShotHeavy");
                 SoundEngine.PlaySound(sound with { Volume = 0.8f, Pitch = 0.8f }, Projectile.Center);
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), spearPos, shootVelocity, ModContent.ProjectileType<VulcanSpear>(), Projectile.damage * 5, 0, Projectile.owner);
+                if (Main.myPlayer == Projectile.owner)
+                {
+                    Vector2 spearPos = GunTipPosition + Projectile.velocity.RotatedBy(MathHelper.PiOver2 * Projectile.direction) * 12 - Projectile.velocity * 8;
+                    Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedByRandom(0f) * 6f;
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), spearPos, shootVelocity, ModContent.ProjectileType<VulcanSpear>(), Projectile.damage * 5, 0, Projectile.owner);
+                }
             }
             else
             {
-                Owner.Calamity().GeneralScreenShakePower = 1f;
+                Owner.SetScreenshake(1f);
                 OffsetLengthFromArm -= 7;
                 SoundStyle sound = new("CalamityMod/Sounds/Item/VulcanShot");
                 SoundEngine.PlaySound(sound with { Volume = 0.6f, Pitch = Main.rand.NextFloat(-0.1f, 0), MaxInstances = 1 }, Projectile.Center);
 
                 Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedByRandom(0f) * 6f;
                 Vector2 position = GunTipPosition + Projectile.velocity.RotatedBy(MathHelper.PiOver2 * (shotsFired % 2 == 0 ? -1 : 1)) * 4;
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), position, shootVelocity, ModContent.ProjectileType<VulcanProjectile>(), Projectile.damage, 0, Projectile.owner);
+                if (Main.myPlayer == Projectile.owner)
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), position, shootVelocity, ModContent.ProjectileType<VulcanProjectile>(), Projectile.damage, 0, Projectile.owner);
 
                 for (int i = 0; i < 4; i++)
                 {

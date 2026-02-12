@@ -69,7 +69,6 @@ namespace CalamityMod.Projectiles.Summon
             float projX = Projectile.position.X;
             float projY = Projectile.position.Y;
             float attackDistance = 100000f;
-            bool canAttack = false;
             Projectile.ai[0] += 1f;
 
             NPC target = null;

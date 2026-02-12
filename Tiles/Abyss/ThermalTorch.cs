@@ -1,5 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Linq;
+using CalamityMod.Graphics;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -9,6 +12,8 @@ namespace CalamityMod.Tiles.Abyss
 {
     public class ThermalTorch : ModTile
     {
+        public Asset<Texture2D> FlameTexture;
+
         public override void SetStaticDefaults() => this.SetUpTorch(ModContent.ItemType<Items.Placeables.Furniture.ThermalTorch>(), true, true);
 
         public override bool CreateDust(int i, int j, ref int type)
@@ -54,9 +59,26 @@ namespace CalamityMod.Tiles.Abyss
             }
         }
 
+        public override void NearbyEffects(int i, int j, bool closer)
+        {
+            //This makes the placed torch cut through the abyss darkness.
+            var pos = new Point(i, j).ToWorldCoordinates();
+            if (!closer && Main.LocalPlayer.Calamity().ZoneAbyss && !Main.gamePaused)
+            {
+                if (EnhancedDarknessSystem.lights.Any(x => x.center == pos))
+                {
+                    var e = EnhancedDarknessSystem.lights.First(x => x.center == pos);
+                    e.lifetime = 5;
+                }
+                else
+                    EnhancedDarknessSystem.lights.Add(new EnhancedDarknessSystem.LightSource(pos, scale: 2f) { lifetime = 5 });
+            }
+        }
+
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            CalamityUtils.DrawFlameEffect(ModContent.Request<Texture2D>("CalamityMod/Tiles/Abyss/ThermalTorchFlame").Value, i, j, 2);
+            FlameTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/Abyss/ThermalTorchFlame");
+            CalamityUtils.DrawFlameEffect(FlameTexture.Value, i, j, 2);
         }
 
         public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)
@@ -67,7 +89,7 @@ namespace CalamityMod.Tiles.Abyss
 
         public override bool RightClick(int i, int j)
         {
-            CalamityUtils.RightClickBreak(i, j);
+            FurnitureCommon.RightClickBreak(i, j);
             return true;
         }
 

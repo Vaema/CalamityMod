@@ -30,7 +30,7 @@ namespace CalamityMod.Projectiles.Ranged
             // If the time reaches Item.useTime, it'll shoot the projectile, consume ammo and reset the timer.
             if (Time >= Owner.itemTimeMax && Main.myPlayer == Projectile.owner)
             {
-                Owner.PickAmmo(Owner.ActiveItem(), out _, out float speed, out int damage, out float knockback, out int usedItemAmmoId);
+                Owner.PickAmmo(Owner.HeldItem, out _, out float speed, out int damage, out float knockback, out int usedItemAmmoId);
 
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitX) * speed * 1.5f, ModContent.ProjectileType<MineralMortarProjectile>(), damage, knockback, Projectile.owner, usedItemAmmoId);
 

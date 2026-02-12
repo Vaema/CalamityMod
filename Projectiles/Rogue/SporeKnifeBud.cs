@@ -1,9 +1,10 @@
-﻿using CalamityMod.Particles;
+﻿using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.GameContent.Animations.Actions.Sprites;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -24,7 +25,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.width = 12;
             Projectile.height = 12;
             Projectile.friendly = true;
-            Projectile.DamageType = DamageClass.Ranged;
+            Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
             Projectile.usesLocalNPCImmunity = true;
@@ -61,6 +62,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            SoundEngine.PlaySound(SporeKnife.ChompSound, Projectile.Center);
             Sticky = true;
             target.AddBuff(BuffID.Poisoned, 60);
             for (int i = 0; i < 3; i++)

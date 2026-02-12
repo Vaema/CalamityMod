@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
@@ -36,13 +37,13 @@ namespace CalamityMod.Projectiles.Magic
         public Color color2 = Color.Orange;
         public override void KillHoldoutLogic()
         {
-            if (!isOnCooldown && (Owner.CantUseHoldout(false) || HeldItem.type != Owner.ActiveItem().type))
+            if (!isOnCooldown && (Owner.CantUseHoldout(false) || HeldItem.type != Owner.HeldItem.type))
                 Projectile.Kill();
         }
 
         public override void HoldoutAI()
         {
-            if (!isOnCooldown && (Owner.CantUseHoldout() || HeldItem.type != Owner.ActiveItem().type))
+            if (!isOnCooldown && (Owner.CantUseHoldout() || HeldItem.type != Owner.HeldItem.type))
                 cooldownTimer = (int)(Utils.Remap(revFrames, 0, 350, 40, 120, true));
             if (isOnCooldown)
             {
@@ -56,10 +57,12 @@ namespace CalamityMod.Projectiles.Magic
                 SoundStyle shot = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianShieldDeactivate");
                 SoundEngine.PlaySound(shot with { Pitch = Utils.Remap(revFrames, 0, 150, 0.2f, 0.8f, true), Volume = 0.2f, MaxInstances = -1 }, Projectile.Center);
 
-                Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY);
-                float spread = 0.045f * Utils.GetLerpValue(0, 300, revFrames, true);
-
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(spread), ModContent.ProjectileType<HolyLaser>(), Projectile.damage, Projectile.knockBack, Projectile.owner, revSpeed * (shotsFired % 2 == 0 ? -1f : 1f) * Utils.Remap(revFrames, 120, 150, 0.1f, 0.45f, true), Projectile.whoAmI);
+                if (Main.myPlayer == Projectile.owner)
+                {
+                    Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY);
+                    float spread = 0.045f * Utils.GetLerpValue(0, 300, revFrames, true);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(spread), ModContent.ProjectileType<HolyLaser>(), Projectile.damage, Projectile.knockBack, Projectile.owner, revSpeed * (shotsFired % 2 == 0 ? -1f : 1f) * Utils.Remap(revFrames, 120, 150, 0.1f, 0.45f, true), Projectile.whoAmI);
+                }
 
                 for (int i = 0; i <= 2; i++)
                 {
@@ -79,7 +82,7 @@ namespace CalamityMod.Projectiles.Magic
             if (revFrames >= 150 && !isOnCooldown)
             {
                 revSpeed = 4;
-                Owner.Calamity().GeneralScreenShakePower = 3.5f;
+                Owner.SetScreenshake(3.5f);
                 OffsetLengthFromArm -= 35f;
                 cooldownTimer = 60;
                 SoundStyle bigShot = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianRay");
@@ -87,15 +90,18 @@ namespace CalamityMod.Projectiles.Magic
                 SoundStyle bigShot2 = new("CalamityMod/Sounds/Custom/Providence/ProvidenceHolyRay");
                 SoundEngine.PlaySound(bigShot2 with { Pitch = 0.4f, Volume = 0.8f }, Projectile.Center);
 
-                int bigBeamDamage = (int)(Projectile.damage * 6.5f);
+                
                 Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY);
-
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<HolyLaser>(), bigBeamDamage, Projectile.knockBack * 3, Projectile.owner, 1, Projectile.whoAmI, 1);
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<HolyLaser>(), bigBeamDamage, Projectile.knockBack * 3, Projectile.owner, -1, Projectile.whoAmI, 1);
+                if (Main.myPlayer == Projectile.owner)
+                {
+                    int bigBeamDamage = (int)(Projectile.damage * 6.5f);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<HolyLaser>(), bigBeamDamage, Projectile.knockBack * 3, Projectile.owner, 1, Projectile.whoAmI, 1);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<HolyLaser>(), bigBeamDamage, Projectile.knockBack * 3, Projectile.owner, -1, Projectile.whoAmI, 1);
+                }
 
                 for (int i = 0; i <= 25; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(GunTipPosition, 278, shootVelocity.RotatedByRandom(0.8f) * Main.rand.NextFloat(5f, 30f), 0, default, Main.rand.NextFloat(0.6f, 1.4f));
+                    Dust dust = Dust.NewDustPerfect(GunTipPosition, DustID.FireworksRGB, shootVelocity.RotatedByRandom(0.8f) * Main.rand.NextFloat(5f, 30f), 0, default, Main.rand.NextFloat(0.6f, 1.4f));
                     dust.noGravity = true;
                     dust.color = Color.Lerp(Color.Orchid, Color.White, Main.rand.NextFloat(0, 0.7f));
                 }

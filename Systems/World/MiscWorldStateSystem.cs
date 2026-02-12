@@ -6,7 +6,6 @@ using CalamityMod.NPCs;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using static CalamityMod.DownedBossSystem;
@@ -115,11 +114,6 @@ namespace CalamityMod
                 downed.Add("HasGeneratedLuminitePlanetoids");
             downed.AddWithCondition("IsWorldAfterDraedonUpdate", IsWorldAfterDraedonUpdate);
 
-            downed.AddWithCondition("TinOreWorld", OreTypes[0] == TileID.Tin);
-            downed.AddWithCondition("LeadOreWorld", OreTypes[1] == TileID.Lead);
-            downed.AddWithCondition("TungstenOreWorld", OreTypes[2] == TileID.Tungsten);
-            downed.AddWithCondition("PlatinumOreWorld", OreTypes[3] == TileID.Platinum);
-
             RecipeUnlockHandler.Save(downed);
 
             tag["downed"] = downed;
@@ -162,11 +156,6 @@ namespace CalamityMod
             AcidRainEvent.OldDukeHasBeenEncountered = downed.Contains("encounteredOldDuke");
             HasGeneratedLuminitePlanetoids = downed.Contains("HasGeneratedLuminitePlanetoids");
             IsWorldAfterDraedonUpdate = downed.Contains("IsWorldAfterDraedonUpdate");
-
-            OreTypes[0] = downed.Contains("TinOreWorld") ? TileID.Tin : TileID.Copper;
-            OreTypes[1] = downed.Contains("LeadOreWorld") ? TileID.Lead : TileID.Iron;
-            OreTypes[2] = downed.Contains("TungstenOreWorld") ? TileID.Tungsten : TileID.Silver;
-            OreTypes[3] = downed.Contains("PlatinumOreWorld") ? TileID.Platinum : TileID.Gold;
 
             RecipeUnlockHandler.Load(downed);
 

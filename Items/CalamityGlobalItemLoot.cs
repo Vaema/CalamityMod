@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Accessories.Vanity;
+using CalamityMod.Items.Fishing;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.PermanentBoosters;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
-using CalamityMod.Items.Placeables.Ores;
-using CalamityMod.Items.Potions;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
@@ -233,7 +233,6 @@ namespace CalamityMod.Items
                         ItemID.FairyQueenRangedItem, // Eventide
                         ItemID.FairyQueenMagicItem, // Nightglow
                         ItemID.SparkleGuitar, // Stellar Tune
-                        ItemID.EmpressBlade, // Terraprisma
                         ItemID.RainbowWhip, // Kaleidoscope
                         ItemID.RainbowWings, // Empress Wings have a pathetically low drop rate.
                     };
@@ -279,23 +278,44 @@ namespace CalamityMod.Items
                     loot.AddHardmodeOresToCrates(HardmodeCrateType.Mythril);
                     break;
 
-                // Non-crafted underground Gold Chest loot @ 20%; Individually 5%
                 case ItemID.GoldenCrate:
-                    loot.Add(new OneFromOptionsNotScaledWithLuckDropRule(5, 1,
-                    ItemID.FlareGun,
-                    ItemID.Mace,
-                    ItemID.BandofRegeneration,
-                    ItemID.ShoeSpikes)); // Climbing Claws is in Wooden/Pearlwood (vanilla) in case you're curious
+                    RemoveBaitFromGoldenCrates(loot);
+                    loot.Add(NewGoldenCrateBaitRule);
+                    loot.Add(UndergroundChestLootRule);
                     break;
 
                 case ItemID.GoldenCrateHard:
                     RemoveHardmodeOresFromStandardCrates(loot);
                     loot.AddHardmodeOresToCrates(HardmodeCrateType.Titanium);
-                    loot.Add(new OneFromOptionsNotScaledWithLuckDropRule(5, 1,
-                    ItemID.FlareGun,
-                    ItemID.Mace,
-                    ItemID.BandofRegeneration,
-                    ItemID.ShoeSpikes));
+                    RemoveBaitFromGoldenCrates(loot);
+                    loot.Add(NewGoldenCrateBaitRule);
+                    loot.Add(UndergroundChestLootRule);
+                    break;
+
+                // 2-5 Essences of Eleum @ 50%
+                // This is our equivalent to Souls of Light/Night
+                case ItemID.FrozenCrateHard:
+                    RemoveHardmodeOresFromBiomeCrates(loot);
+                    loot.AddHardmodeOresToCrates(HardmodeCrateType.Biome);
+                    loot.Add(ModContent.ItemType<EssenceofEleum>(), 2, 2, 5);
+                    break;
+
+                // 2-5 Essences of Sunlight @ 50%
+                // This is our equivalent to Souls of Light/Night
+                case ItemID.FloatingIslandFishingCrateHard:
+                    RemoveHardmodeOresFromBiomeCrates(loot);
+                    loot.AddHardmodeOresToCrates(HardmodeCrateType.Biome);
+                    loot.Add(ModContent.ItemType<EssenceofSunlight>(), 2, 2, 5);
+                    break;
+
+                case ItemID.OasisCrate:
+                    loot.Add(ModContent.ItemType<TheComb>(), 8);
+                    break;
+
+                case ItemID.OasisCrateHard:
+                    RemoveHardmodeOresFromBiomeCrates(loot);
+                    loot.AddHardmodeOresToCrates(HardmodeCrateType.Biome);
+                    loot.Add(ModContent.ItemType<TheComb>(), 8);
                     break;
 
                 case ItemID.CorruptFishingCrateHard:
@@ -303,10 +323,7 @@ namespace CalamityMod.Items
                 case ItemID.HallowedFishingCrateHard:
                 case ItemID.DungeonFishingCrateHard:
                 case ItemID.JungleFishingCrateHard:
-                case ItemID.FloatingIslandFishingCrateHard:
-                case ItemID.FrozenCrateHard:
                 case ItemID.LavaCrateHard:
-                case ItemID.OasisCrateHard:
                 case ItemID.OceanCrateHard:
                     RemoveHardmodeOresFromBiomeCrates(loot);
                     loot.AddHardmodeOresToCrates(HardmodeCrateType.Biome);
@@ -538,6 +555,34 @@ namespace CalamityMod.Items
                 }
             }
         }
+
+        private static void RemoveBaitFromGoldenCrates(ItemLoot loot)
+        {
+            List<IItemDropRule> rules = loot.Get(false);
+            IItemDropRule toRemove = null;
+
+            foreach (IItemDropRule rule in rules)
+                if (rule is CommonDrop c && c.itemId == ItemID.MasterBait)
+                    toRemove = c;
+
+            if (toRemove is not null)
+                loot.Remove(toRemove);
+        }
+
+        // Replaced bait rules for Golden/Titanium Crates
+        // Vanilla: 3-7 Master Bait @ 66.67%
+        // Calamity: 3-7 Master Bait @ 33.33% OR 3-7 Grand Marquis Bait @ 16.67%
+        private static IItemDropRule NewGoldenCrateBaitRule => ItemDropRule.SequentialRulesNotScalingWithLuck(2,
+                ItemDropRule.NotScalingWithLuck(ModContent.ItemType<GrandMarquisBait>(), 3, 3, 7),
+                ItemDropRule.NotScalingWithLuck(ItemID.MasterBait, 1, 3, 7));
+
+        // Non-crafted underground Gold Chest loot for Golden/Titanium Crates @ 25%; Individually 5%
+        private static IItemDropRule UndergroundChestLootRule => new OneFromOptionsNotScaledWithLuckDropRule(4, 1,
+                ItemID.FlareGun,
+                ItemID.Mace,
+                ItemID.BandofRegeneration,
+                ItemID.ShoeSpikes,
+                ModContent.ItemType<EnchantedKnifeStaff>()); // Climbing Claws is in Wooden/Pearlwood (vanilla) in case you're curious
         #endregion
 
         #region Goodie Bag Bat Hook

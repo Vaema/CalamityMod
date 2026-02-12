@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             for (int i = 0; i < 5; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 6);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.Torch);
                 dust.noGravity = true;
                 dust.velocity = Vector2.UnitY.RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(2f);
             }
@@ -51,7 +51,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Player player = Main.player[Projectile.owner];
-            Item heldItem = player.ActiveItem();
+            Item heldItem = player.HeldItem;
             if (!CalamityUtils.ShouldTriggerSummonPenalty(player, heldItem))
             {
                 int duration = Main.rand.Next(60, 181); // Anywhere between 1 and 3 seconds

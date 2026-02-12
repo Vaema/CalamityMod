@@ -11,10 +11,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class ToxicantTwister : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<InsidiousImpaler>();
-        }
         public override void SetDefaults()
         {
             Item.width = 42;

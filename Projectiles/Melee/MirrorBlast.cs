@@ -4,7 +4,6 @@ using System.IO;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Steamworks;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -57,8 +56,8 @@ namespace CalamityMod.Projectiles.Melee
         {
             isShard = reader.ReadBoolean();
             hasSpawned = reader.ReadBoolean();
-            shardNum = reader.Read();
-            shardShield = reader.Read();
+            shardNum = reader.ReadInt32();
+            shardShield = reader.ReadInt32();
         }
         public override bool? CanDamage()
         {
@@ -74,8 +73,24 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override void AI()
         {
+            player.Calamity().mouseWorldListener = true;
             if (!hasSpawned)
             {
+                Projectile.netUpdate = true;
+                if (Projectile.ai[0] != 0)
+                {
+                    //This is used when spawned by Evolution.
+                    //Setting AP so high guarantees we get the full dmg of the projectile.
+                    Projectile.ArmorPenetration = 1000;
+                    hasSpawned = true;
+                    shardShield = 0;
+                    isShard = false;
+                    Projectile.timeLeft = 1200;
+                    Projectile.velocity = Projectile.DirectionTo(player.Center) * -20f;
+                    Projectile.DamageType = DamageClass.Generic;
+                    Projectile.CritChance = 0;
+                    return;
+                }
                 shardNum = player.ownedProjectileCounts[Projectile.type];
                 hasSpawned = true;
                 shardNum = 0;
@@ -84,6 +99,7 @@ namespace CalamityMod.Projectiles.Melee
                     if (proj.active && proj.type == ModContent.ProjectileType<MirrorBlast>() && proj.owner == Projectile.owner)
                     {
                         (proj.ModProjectile as MirrorBlast).shardNum++;
+                        proj.netUpdate = true;
                     }
                 }
             }
@@ -95,6 +111,7 @@ namespace CalamityMod.Projectiles.Melee
                     isShard = false;
                     Projectile.timeLeft = 1200;
                     Projectile.velocity = Projectile.DirectionTo(player.Center) * -20f;
+                    Projectile.netUpdate = true;
                     return;
                 }
                 List<Vector2> positions = new List<Vector2>() //Hardcoded positions for the mirror shield shards so we can make it look nice
@@ -142,6 +159,12 @@ namespace CalamityMod.Projectiles.Melee
             else
             {
                 float homingStrength = 0.025f; // Adjust this value for stronger or weaker homing
+                if (Projectile.timeLeft < 1000)
+                    homingStrength *= 2f;
+                if (Projectile.timeLeft < 800)
+                    homingStrength *= 2f;
+                if (Projectile.timeLeft < 600)
+                    homingStrength *= 2f;
                 NPC target = FindClosestNPC(3200f);
                 if (target != null)
                 {
@@ -154,7 +177,7 @@ namespace CalamityMod.Projectiles.Melee
                     GeneralParticleHandler.SpawnParticle(smoke);
                     if (Main.rand.NextBool(5))
                     {
-                        Dust trailDust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(5, 5) - Projectile.velocity, 66);
+                        Dust trailDust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(5, 5) - Projectile.velocity, DustID.RainbowTorch);
                         trailDust.scale = Main.rand.NextFloat(0.7f, 0.85f);
                         trailDust.velocity = -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.5f);
                         trailDust.color = Main.rand.NextBool() ? Color.AliceBlue : Color.SkyBlue;

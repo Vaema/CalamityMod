@@ -1,6 +1,4 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Magic;
-using CalamityMod.Rarities;
+﻿using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -26,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 72;
             Item.height = 20;
-            Item.damage = 160;
+            Item.damage = 120;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 40;
             Item.useAnimation = Item.useTime = 40;

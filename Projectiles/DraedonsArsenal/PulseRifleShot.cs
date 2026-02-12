@@ -57,7 +57,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     Projectile.Center += Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(-0.05f * Math.Sign(Projectile.velocity.X)) * 60;
                     Projectile.extraUpdates = 100;
                     timesItCanHit = 1;
-                    Owner.Calamity().GeneralScreenShakePower = 4f;
+                    Owner.SetScreenshake(4f);
                 }
 
                 for (int i = 0; i <= 8 * fxPower; i++)

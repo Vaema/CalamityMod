@@ -1,13 +1,9 @@
-﻿using System.Collections.Generic;
-using CalamityMod.Projectiles.Environment;
-using CalamityMod.Systems;
+﻿using CalamityMod.Projectiles.Environment;
 using CalamityMod.Tiles.Abyss;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Ores
@@ -15,8 +11,6 @@ namespace CalamityMod.Tiles.Ores
     [LegacyName("ChaoticOre")]
     public class ScoriaOre : GlowMaskTile
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Ores/ScoriaOreGlow";
-
         public override void SetupStatic()
         {
             Main.tileLighted[Type] = true;
@@ -29,14 +23,14 @@ namespace CalamityMod.Tiles.Ores
 
             TileID.Sets.Ore[Type] = true;
 
-            DustType = 105;
+            DustType = DustID.Water_BloodMoon;
             AddMapEntry(new Color(167, 80, 22), CreateMapEntryName());
             MineResist = 3f;
             MinPick = 210;
             HitSound = SoundID.Tink;
 
-            this.RegisterUniversalMerge(ModContent.TileType<AbyssGravel>(), "CalamityMod/Tiles/Merges/AbyssGravelMerge");
-            this.RegisterUniversalMerge(ModContent.TileType<PyreMantle>(), "CalamityMod/Tiles/Merges/PyreMantleMerge");
+            this.RegisterBlendMergeWith(ModContent.TileType<AbyssGravel>());
+            this.RegisterBlendMergeWith(ModContent.TileType<PyreMantle>());
         }
 
         public override void NearbyEffects(int i, int j, bool closer)
@@ -73,6 +67,10 @@ namespace CalamityMod.Tiles.Ores
             }
         }
 
+        public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
+        {
+            World.Abyss.FillTileWithWater(i, j);
+        }
         public override bool CanExplode(int i, int j)
         {
             return false;

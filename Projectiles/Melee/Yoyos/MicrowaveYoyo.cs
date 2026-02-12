@@ -5,7 +5,6 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -19,7 +18,6 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<TheMicrowave>();
         public const int MaxUpdates = 3;
         private const float Radius = 100f;
-        private SlotId mmmmmm;
         private bool spawnedAura = false;
         public int soundCooldown = 0;
 

@@ -1,6 +1,6 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.CalPlayer.Dashes;
+﻿using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Items.Materials;
+using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
@@ -50,7 +50,7 @@ namespace CalamityMod.Items.Armor.GodSlayer
             modPlayer.wearingRogueArmor = true;
             var hotkey = CalamityKeybinds.GodSlayerDashHotKey.TooltipHotkeyString();
             player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusRogueStealth.ToStealth(), RogueDamageBoostAtFullHealth.ToPercent(), SetBonusHurtDamageThreshold, hotkey, GodSlayerChestplate.DashCooldown.FramesToSeconds());
-
+            player.setBonus = player.setBonus.Replace("ff00ff", Utils.Hex3(DevourerofGodsHead.SpecialMoveColor));
             if (modPlayer.godSlayerDashHotKeyPressed || (player.dashDelay != 0 && modPlayer.LastUsedDashID == GodslayerArmorDash.ID))
             {
                 modPlayer.DeferredDashID = GodslayerArmorDash.ID;

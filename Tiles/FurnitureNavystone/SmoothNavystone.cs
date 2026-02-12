@@ -23,7 +23,7 @@ namespace CalamityMod.Tiles.FurnitureNavystone
             TileID.Sets.ChecksForMerge[Type] = true;
             TileID.Sets.HasSlopeFrames[Type] = true;
             HitSound = SoundID.Tink;
-            DustType = 96;
+            DustType = DustID.BlueMoss;
             AddMapEntry(new Color(44, 57, 64));
         }
 

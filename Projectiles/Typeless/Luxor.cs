@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Particles;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Ranged;
@@ -138,11 +135,6 @@ namespace CalamityMod.Projectiles.Typeless
                         case 5: attackSpeed = LuxorsGift.rogueAttackSpeed; attackDamage = LuxorsGift.rogueDamage; projType = ModContent.ProjectileType<LuxorsGiftRogue>(); break;
                     }
                     float powerMult = Utils.GetLerpValue(-120, 140, attackSpeed, true); // An intensity multiplier based on the fire rate of the mode
-                    if (Main.zenithWorld) // Just like old times
-                    {
-                        attackSpeed = 0;
-                        attackDamage = Math.Max(1, (int)(Owner.HeldItem.damage * Utils.Remap(Owner.HeldItem.useAnimation, 3, 120, 0.025f, 1f, false)));
-                    }
 
                     for (int i = 0; i < (int)(20 * powerMult); i++) // Firing dust
                     {

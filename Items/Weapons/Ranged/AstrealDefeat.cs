@@ -11,6 +11,7 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class AstrealDefeat : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+
         public override void SetDefaults()
         {
             Item.width = 40;
@@ -19,6 +20,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 4;
             Item.useAnimation = 20;
+            Item.useLimitPerAnimation = 5;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5.5f;
@@ -29,11 +31,11 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ModContent.ProjectileType<AstrealArrow>();
             Item.shootSpeed = 4f;
             Item.useAmmo = AmmoID.Arrow;
+            Item.consumeAmmoOnLastShotOnly = true;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-
             float speed = velocity.Length();
             if (speed > 8f)
                 velocity *= 8f / speed;

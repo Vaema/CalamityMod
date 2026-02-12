@@ -1,6 +1,4 @@
-﻿using System;
-using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.Sounds;
+﻿using CalamityMod.Items.Weapons.Ranged;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Utilities;
@@ -48,8 +46,8 @@ namespace CalamityMod.Projectiles.Ranged
 
             int shot;
             float scaleFactor = 14f;
-            int weaponDamage = player.GetWeaponDamage(player.ActiveItem());
-            float weaponKnockback = player.ActiveItem().knockBack;
+            int weaponDamage = player.GetWeaponDamage(player.HeldItem);
+            float weaponKnockback = player.HeldItem.knockBack;
 
             // Consumes a coin, stores it, then calculates what effect will be executed
             if (Projectile.ai[1] == 0)
@@ -57,7 +55,7 @@ namespace CalamityMod.Projectiles.Ranged
                 // These checks are here so that the weapon doesn't consume two coins when first used
                 if (shotonce)
                 {
-                    if (player.PickAmmo(player.ActiveItem(), out shot, out scaleFactor, out weaponDamage, out weaponKnockback, out _))
+                    if (player.PickAmmo(player.HeldItem, out shot, out scaleFactor, out weaponDamage, out weaponKnockback, out _))
                     {
                         Projectile.ai[0] = shot;
                         Projectile.ai[1] = CalculateOutcome();
@@ -105,7 +103,7 @@ namespace CalamityMod.Projectiles.Ranged
                 if (shouldBeHeld && Projectile.ai[1] != 0)
                 {
                     // Holdout stuff
-                    float holdscale = player.ActiveItem().shootSpeed * Projectile.scale;
+                    float holdscale = player.HeldItem.shootSpeed * Projectile.scale;
                     Vector2 playerpos2 = playerpos;
                     Vector2 going = Main.screenPosition + new Vector2((float)Main.mouseX, (float)Main.mouseY) - playerpos2;
                     if (player.gravDir == -1f)
@@ -319,7 +317,7 @@ namespace CalamityMod.Projectiles.Ranged
             Vector2 armPosition = player.RotatedRelativePoint(player.MountedCenter, true);
             armPosition += Projectile.velocity.SafeNormalize(player.direction * Vector2.UnitX) * 32f;
             armPosition.Y -= 20f;
-            Vector2 gunTip = armPosition + Projectile.velocity.SafeNormalize(player.direction * Vector2.UnitX) * player.ActiveItem().scale * 70f;
+            Vector2 gunTip = armPosition + Projectile.velocity.SafeNormalize(player.direction * Vector2.UnitX) * player.HeldItem.scale * 70f;
             for (int i = 0; i < projcount; ++i)
             {
                 Vector2 perturbedSpeed = Projectile.velocity.RotatedBy(MathHelper.Lerp(-spreadfactor, spreadfactor, i / 7f)) * scaleFactor;

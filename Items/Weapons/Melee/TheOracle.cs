@@ -2,9 +2,6 @@
 using CalamityMod.Projectiles.Melee.Yoyos;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
-using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -15,8 +12,8 @@ namespace CalamityMod.Items.Weapons.Melee
     public class TheOracle : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
-        public const int AuraBaseDamage = 68;
-        public const int AuraMaxDamage = 150;
+        public const float AuraBaseDamageMult = 0.35f;
+        public const float AuraMaxDamageMult = 0.8f;
 
         public static float Reach = 800f;
         public static float Speed = 60f;
@@ -34,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = 58;
             Item.height = 50;
             Item.DamageType = DamageClass.MeleeNoSpeed;
-            Item.damage = 192;
+            Item.damage = 201;
             Item.knockBack = 4f;
             Item.useTime = 20;
             Item.useAnimation = 20;

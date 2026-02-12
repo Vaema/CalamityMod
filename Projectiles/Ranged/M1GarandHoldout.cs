@@ -9,6 +9,7 @@ using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ModLoader;
 using System;
+using ReLogic.Utilities;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -17,7 +18,8 @@ namespace CalamityMod.Projectiles.Ranged
         public override int AssociatedItemID => ModContent.ItemType<M1Garand>();
 
         public ref float CurrentState => ref Projectile.ai[0];
-        public ref float Timer => ref Projectile.ai[1];
+        public ref float reloadTimeLeft => ref Projectile.ai[1];
+        public ref float globalTimer => ref Projectile.ai[2];
 
         private float muzzleFlashTimer;
         private float flashVariant;
@@ -39,24 +41,29 @@ namespace CalamityMod.Projectiles.Ranged
 
         // Muzzle flash textures
         public static Asset<Texture2D> MuzzleFlash;
-        public static Asset<Texture2D> GlowTexture;
+        public static Asset<Texture2D> HoldoutGlow;
 
         public static readonly SoundStyle FireSound = new("CalamityMod/Sounds/Item/WulfrumBlunderbussFire") { PitchVariance = 0.1f }; 
         public static readonly SoundStyle PingSound = new("CalamityMod/Sounds/Item/M1GarandPing");
         public static readonly SoundStyle ReloadSound = new("CalamityMod/Sounds/Item/M1GarandReload");
+        private SlotId reloadSoundSlot;
 
         public override void Load()
         {
             MuzzleFlash = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/M1GarandMuzzleFlash", AssetRequestMode.ImmediateLoad);
-            GlowTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/M1GarandHoldoutGlow", AssetRequestMode.ImmediateLoad);
+            HoldoutGlow = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/M1GarandHoldoutGlow", AssetRequestMode.ImmediateLoad);
         }
 
-        public override void SetStaticDefaults() => Main.projFrames[Type] = 6;
+        public override void SetStaticDefaults()
+        {
+            Main.projFrames[Type] = 6;
+            Projectile.frame = Main.projFrames[Type] - 1;
 
+        }
         public override void KillHoldoutLogic()
         {
             // Only allow the projectile to kill if we're not reloading
-            if (CurrentState == 0 && HeldItem.type != Owner.ActiveItem().type)
+            if (CurrentState == 0 && HeldItem.type != Owner.HeldItem.type)
             {
                 Projectile.Kill();
                 Projectile.netUpdate = true;
@@ -65,10 +72,16 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void HoldoutAI()
         {
+            globalTimer++;
+
             // Decrements the timer which controls the duration of the flash
             if (muzzleFlashTimer > 0f)
                 muzzleFlashTimer -= 1f;
 
+            if (shouldPing)
+                pingAnimationTimer += 3;
+
+            hereInstead: // Code reads from back here after getting the 'goto' set down below
             switch (CurrentState)
             {
                 // Normal Firing State
@@ -77,18 +90,36 @@ namespace CalamityMod.Projectiles.Ranged
                     if (Projectile.frame == 5)
                     {
                         Projectile.frameCounter++;
-                        if (Projectile.frameCounter >= MathHelper.Clamp(Owner.ActiveItem().useAnimation - 18, 0f, Owner.ActiveItem().useAnimation))
+                        if (Projectile.frameCounter >= MathHelper.Clamp(Owner.HeldItem.useAnimation - 18, 0f, Owner.HeldItem.useAnimation))
                         {
                             if (Owner.CantUseHoldout())
+                            {
                                 Projectile.Kill();
+                                return;
+                            }
 
-                            Projectile.frame = 0;
+                            if (Owner.Calamity().garandShots != 0)
+                                Projectile.frame = 0;
+                            else
+                            {
+                                CurrentState = 1; // Begin reloading
+                                reloadTimeLeft = 120;
+                                goto hereInstead;
+                            }
+
                             Projectile.frameCounter = 0;
                         }
                     }
                     // Begin firing
                     else if (Projectile.frame == 0)
                     {
+                        if (Owner.Calamity().garandShots == 0 && globalTimer < 3)
+                        {
+                            CurrentState = 1; // Begin reloading
+                            reloadTimeLeft = 120;
+                            goto hereInstead;
+                        }
+
                         if (Projectile.frameCounter != 1)
                         {
                             Projectile.frameCounter++;
@@ -116,22 +147,25 @@ namespace CalamityMod.Projectiles.Ranged
                                 shouldPing = true;
                             }
                             
-                            OffsetLengthFromArm -= 3f;
+                            OffsetLengthFromArm -= 3.5f;
 
                             // Consume a shot
                             Owner.Calamity().garandShots--;
 
                             Vector2 velocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * HeldItem.shootSpeed;
 
-                            // Eject bullet casing
-                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity.RotatedBy(Main.rand.NextFloat(2.5f, 2.65f) * -Projectile.direction) * 0.5f, ModContent.ProjectileType<M1GarandBulletCasing>(), 0, 0, Projectile.owner);
-
-                            if (Owner.Calamity().garandShots == 0)
+                            if (Main.myPlayer == Projectile.owner)
                             {
-                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity.RotatedBy(Main.rand.NextFloat(1.175f, 1.25f) * -Projectile.direction) * 0.285f, ModContent.ProjectileType<M1GarandEmptyClip>(), 0, 0, Projectile.owner);
+                                // Eject bullet casing
+                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity.RotatedBy(Main.rand.NextFloat(2.5f, 2.65f) * -Projectile.direction) * 0.5f, ModContent.ProjectileType<M1GarandBulletCasing>(), 0, 0, Projectile.owner);
 
-                                GenericSparkle sparker = new GenericSparkle(Projectile.Center, Vector2.Zero, Color.PaleGoldenrod, Color.Gold * 0.25f, 1.25f, 5, Projectile.velocity.ToRotation() + Main.rand.NextFloat(-0.15f, 0.15f), 1f);
-                                GeneralParticleHandler.SpawnParticle(sparker);
+                                if (Owner.Calamity().garandShots == 0)
+                                {
+                                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity.RotatedBy(Main.rand.NextFloat(1.175f, 1.25f) * -Projectile.direction) * 0.285f, ModContent.ProjectileType<M1GarandEmptyClip>(), 0, 0, Projectile.owner);
+
+                                    GenericSparkle sparker = new GenericSparkle(Projectile.Center, Vector2.Zero, Color.PaleGoldenrod, Color.Gold * 0.25f, 1.25f, 5, Projectile.velocity.ToRotation() + Main.rand.NextFloat(-0.15f, 0.15f), 1f);
+                                    GeneralParticleHandler.SpawnParticle(sparker);
+                                }
                             }
 
                             // Direct smoke
@@ -146,14 +180,11 @@ namespace CalamityMod.Projectiles.Ranged
                             GeneralParticleHandler.SpawnParticle(shootPulse);
 
                             // Shot starts from slightly behind the tip
-                            Vector2 offsetPos = GunTipPosition - Projectile.velocity.SafeNormalize(Vector2.UnitY) * 18f;
-                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), offsetPos, velocity, ModContent.ProjectileType<NitroShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-                        }
-                        else
-                        {
-                            OffsetLengthFromArm -= 1f;
-                            CurrentState = 1; // Change state to reloading
-                            Timer = 120;
+                            if (Main.myPlayer == Projectile.owner)
+                            {
+                                Vector2 offsetPos = GunTipPosition - Projectile.velocity.SafeNormalize(Vector2.UnitY) * 18f;
+                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), offsetPos, velocity, ModContent.ProjectileType<M1GarandShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                            }
                         }
                     }
                     // The firing animation
@@ -171,31 +202,30 @@ namespace CalamityMod.Projectiles.Ranged
 
                 // Reloading
                 case 1:
-
-                    Timer--;
+                    reloadTimeLeft--;
 
                     // Keep the player from switching weapons
                     Owner.channel = true;
 
                     // The gun points slightly downwards during the first part
-                    if (Timer <= 120 && Timer > 75)
+                    if (reloadTimeLeft <= 120 && reloadTimeLeft > 75)
                     {
                         Projectile.rotation += 0.15f * Projectile.spriteDirection;
                     }
                     // Lerp back to the normal pos
-                    else if (Timer < 75 && Timer >= 64)
+                    else if (reloadTimeLeft < 75 && reloadTimeLeft >= 64)
                     {
-                        float progress = (75f - Timer) / (75f - 64f);
+                        float progress = (75f - reloadTimeLeft) / (75f - 64f);
                         float lerpedOffset = MathHelper.Lerp(0.15f, 0f, progress);
                         Projectile.rotation += lerpedOffset * Projectile.spriteDirection;
                     }
-                    else if (Timer == 39)
+                    else if (reloadTimeLeft == 39)
                     {
                         OffsetLengthFromArm -= 2f;
                     }
 
                     // Hold frame 3 until this point
-                    if (Timer > 40)
+                    if (reloadTimeLeft > 40)
                     {
                         Projectile.frame = 3;
                         Projectile.frameCounter = 0;
@@ -217,15 +247,28 @@ namespace CalamityMod.Projectiles.Ranged
                         Projectile.frame = Main.projFrames[Type] - 1;
                     }
 
-                    if (Timer == 110) 
+                    if (reloadTimeLeft == 110) 
                     {
-                        SoundEngine.PlaySound(ReloadSound, Projectile.Center);
+                        reloadSoundSlot = SoundEngine.PlaySound(ReloadSound, Projectile.Center);
+                    }
+
+                    if (SoundEngine.TryGetActiveSound(reloadSoundSlot, out var sound) && sound.IsPlaying)
+                    {
+                        // Update the sound's position to the current projectile center
+                        sound.Position = Projectile.Center;
                     }
 
                     // Reload and cull the projectile
-                    if (Timer <= 0)
+                    if (reloadTimeLeft <= 0)
                     {
+                        // Stop when sound is complete
+                        if (SoundEngine.TryGetActiveSound(reloadSoundSlot, out var soundToStop) && soundToStop.IsPlaying)
+                        {
+                            soundToStop.Stop();
+                        }
+
                         Owner.Calamity().garandShots += 8;
+                        globalTimer = 0;
                         Projectile.Kill();
                         Projectile.netUpdate = true;
                     }
@@ -240,12 +283,20 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
+            // This class doesn't draw correctly on the first 2 frames.
+            if (globalTimer < 3)
+                return false;
+
+            int chosenFrame = Math.Clamp(Projectile.frame, 0, Main.projFrames[Type] - 1);
             Texture2D texture = TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
-            Rectangle frame = texture.Frame(verticalFrames: Main.projFrames[Type], frameY: Math.Clamp(Projectile.frame, 0, Main.projFrames[Type] - 1));
+            Rectangle frame = texture.Frame(verticalFrames: Main.projFrames[Type], frameY: chosenFrame);
             float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);
             float scale = Projectile.scale * Owner.gravDir;
             SpriteEffects flipSprite = (Projectile.spriteDirection * Owner.gravDir == -1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+
+            if ((CurrentState != 1 && Owner.Calamity().garandShots == 0 && Projectile.frame >= 3)) // After firing the last shot, hold frame 3 after it increments to it to match the start of the reload animation
+                frame = texture.Frame(verticalFrames: Main.projFrames[Type], frameY: 3);
 
             Main.EntitySpriteDraw(texture, drawPosition, frame, Projectile.GetAlpha(lightColor), drawRotation, frame.Size() * 0.5f, scale, flipSprite);
 
@@ -262,15 +313,13 @@ namespace CalamityMod.Projectiles.Ranged
             // PING!
             if (shouldPing)
             {
-                pingAnimationTimer++;
-
                 if (pingAnimationTimer <= PingAnimationDuration)
                 {
-                    Texture2D pingTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/M1GarandPingText").Value;
+                    Texture2D pingTexture = Main.zenithWorld ? ModContent.Request<Texture2D>("CalamityMod/Particles/MammothParticle").Value :  ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/M1GarandPingText").Value;
                     Vector2 origin = pingTexture.Size() * 0.5f;
                     Vector2 pingDrawPosition;
 
-                    Vector2 finalPosition = Owner.Center + new Vector2(40f * -Owner.direction, -40f);
+                    Vector2 finalPosition = Owner.Center + new Vector2(40f * -Owner.direction, -40f * Owner.gravDir);
                     float progress = (float)pingAnimationTimer / PingAnimationDuration;
 
                     if (pingAnimationTimer < 15)
@@ -325,7 +374,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                     // Calculate scale to display with all factors combined
                     Vector2 finalPingScale = new Vector2(basePingDrawScale * stretchScaleX, basePingDrawScale * stretchScaleY);
-                    Main.EntitySpriteDraw(pingTexture, pingDrawPosition, null, drawColor, Owner.direction == 1 ? -0.25f : 0.25f, origin, finalPingScale, SpriteEffects.None, 0f);
+                    Main.EntitySpriteDraw(pingTexture, pingDrawPosition, null, drawColor, (Owner.direction == 1 ? -0.25f : 0.25f) + (Owner.gravDir == -1 ? MathHelper.Pi * Owner.direction : 0f), origin, finalPingScale, (Owner.gravDir == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None), 0f);
                 }
                 else
                 {
@@ -341,9 +390,18 @@ namespace CalamityMod.Projectiles.Ranged
         // Glowmask.
         public override void PostDraw(Color lightColor)
         {
+            // This class doesn't draw correctly on the first 2 frames.
+            if (CurrentState == 1 || globalTimer < 3)
+                return;
+
+            int chosenFrame = Math.Clamp(Projectile.frame, 0, Main.projFrames[Type] - 1);
+
+            if (globalTimer > 2 && globalTimer < 6) // If the holdout just spawned in and isn't in the reload state, play a belated flash animation.
+                chosenFrame = 0;
+
             Texture2D texture = TextureAssets.Projectile[Type].Value;
-            Rectangle frame = texture.Frame(verticalFrames: Main.projFrames[Type], frameY: Math.Clamp(Projectile.frame, 0, Main.projFrames[Type] - 1));
-            Texture2D glowTexture = GlowTexture.Value;
+            Rectangle frame = texture.Frame(verticalFrames: Main.projFrames[Type], frameY: chosenFrame);
+            Texture2D glowTexture = HoldoutGlow.Value;
 
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);

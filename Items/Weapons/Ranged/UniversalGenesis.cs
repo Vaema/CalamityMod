@@ -1,5 +1,4 @@
 ﻿using System;
-using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
@@ -15,6 +14,7 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class UniversalGenesis : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+
         public override void SetDefaults()
         {
             Item.width = 158;
@@ -75,8 +75,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             }
             return false;
         }
-
-        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.NextBool();
 
         public override void AddRecipes()
         {

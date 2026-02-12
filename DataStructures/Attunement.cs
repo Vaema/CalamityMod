@@ -1,10 +1,7 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Enums;
-using CalamityMod.Items.Weapons.Melee;
+﻿using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
@@ -573,7 +570,7 @@ namespace CalamityMod.DataStructures
             item.shootSpeed = 12f;
             item.UseSound = null;
             item.noMelee = true;
-            item.reuseDelay = 30;
+            item.reuseDelay = 12;
         }
     }
 
@@ -598,7 +595,7 @@ namespace CalamityMod.DataStructures
             item.shootSpeed = 12f;
             item.UseSound = null;
             item.noMelee = true;
-            item.reuseDelay = 30;
+            item.reuseDelay = 12;
         }
     }
 
@@ -649,7 +646,7 @@ namespace CalamityMod.DataStructures
             item.shootSpeed = 12f;
             item.UseSound = null;
             item.noMelee = true;
-            item.reuseDelay = 30;
+            item.reuseDelay = 12;
         }
     }
 

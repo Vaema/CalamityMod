@@ -2,7 +2,6 @@
 using Terraria.ID;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace CalamityMod.Tiles.SunkenSea.Ambient
 {
@@ -16,7 +15,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 			Main.tileNoAttach[Type] = true;
 			TileID.Sets.IsVine[Type] = true;
             TileID.Sets.VineThreads[Type] = true;
-			AddMapEntry(new Color(41, 97, 126));
+			AddMapEntry(new Color(124, 67, 197));
 			DustType = DustID.Grass;
 			HitSound = SoundID.Grass;
 		}

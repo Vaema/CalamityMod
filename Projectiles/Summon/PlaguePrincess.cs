@@ -1,7 +1,6 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.Summon;
-using CalamityMod.CalPlayer;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs.PlaguebringerGoliath;
 using CalamityMod.Particles;

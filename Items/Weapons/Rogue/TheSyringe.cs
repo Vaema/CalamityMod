@@ -12,10 +12,6 @@ namespace CalamityMod.Items.Weapons.Rogue
     {
         public static float Knockback = 5f;
         public static float Speed = 15f;
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Virulence>();
-        }
         public override void SetDefaults()
         {
             Item.width = 14;

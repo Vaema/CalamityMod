@@ -6,12 +6,8 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using ReLogic.Utilities;
-using CalamityMod.Projectiles.Ranged;
-using CalamityMod.Items.Weapons.Ranged;
 using Microsoft.Xna.Framework.Graphics;
 using CalamityMod.Particles;
-using Terraria.Graphics.Renderers;
-using CalamityMod.Dusts;
 using ReLogic.Content;
 
 namespace CalamityMod.Projectiles.Melee
@@ -172,7 +168,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Projectile.numHits <= 0)
             {
                 Player Owner = Main.player[Projectile.owner];
-                Owner.Calamity().GeneralScreenShakePower = 4.5f;
+                Owner.SetScreenshake(4.5f);
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<EarthBoom>(), (int)(Projectile.damage * 0.75f), Projectile.knockBack, Projectile.owner);
                 for (int i = 0; i < 15; i++)
                 {
@@ -182,7 +178,7 @@ namespace CalamityMod.Projectiles.Melee
                         1 => Color.MediumTurquoise,
                         _ => Color.LawnGreen,
                     };
-                    Dust dust2 = Dust.NewDustPerfect(target.Center, 278, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(5.5f, 20));
+                    Dust dust2 = Dust.NewDustPerfect(target.Center, DustID.FireworksRGB, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(5.5f, 20));
                     dust2.scale = Main.rand.NextFloat(0.85f, 1.15f);
                     dust2.noGravity = false;
                     dust2.color = Color.Lerp(Color.White, randomColor, 0.5f);

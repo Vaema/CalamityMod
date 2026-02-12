@@ -5,11 +5,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Walls
 {
-    public class SulphurousSandstoneWall : ModWall
+    [LegacyName("SulphurousSandstoneWallSafe")]
+    public class SafeSulphurousSandstoneWall : ModWall
     {
+        public override string Texture => "CalamityMod/Walls/SulphurousSandstoneWall";
         public override void SetStaticDefaults()
         {
-            DustType = 32;
+            Main.wallHouse[Type] = true;
+            DustType = DustID.Sand;
             AddMapEntry(new Color(57, 45, 38));
         }
 

@@ -1,16 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
-using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
-using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Mounts;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.TreasureBags;
@@ -25,7 +24,6 @@ using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -60,6 +58,8 @@ namespace CalamityMod.NPCs.AstrumAureus
         private bool stomping = false;
         public int slimeProjCounter = 0;
         public int slimePhase = 0;
+
+        public RevengeanceAndDeathAI.MimicAI ZenithSeedMimicAI;
 
         public override void SetStaticDefaults()
         {
@@ -102,7 +102,7 @@ namespace CalamityMod.NPCs.AstrumAureus
             NPC.height = 374;
             NPC.defense = 40;
             NPC.DR_NERD(0.1f);
-            NPC.LifeMaxNERB(100000, 120000, 740000); // 30 seconds in boss rush
+            NPC.LifeMaxNERB(75000, 120000, 740000); // 30 seconds in boss rush
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -117,6 +117,9 @@ namespace CalamityMod.NPCs.AstrumAureus
                 NPC.scale = 0.7f;
             if (Main.zenithWorld)
                 NPC.scale = 1.5f;
+
+            ZenithSeedMimicAI = new RevengeanceAndDeathAI.MimicAI();
+            ZenithSeedMimicAI.NPC = NPC;
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -300,7 +303,7 @@ namespace CalamityMod.NPCs.AstrumAureus
                         slimePhase = 1;
                     }
                 }
-                RevengeanceAndDeathAI.BuffedMimicAI(NPC, Mod);
+                ZenithSeedMimicAI.AI(Mod);
                 NPC.noGravity = false;
                 NPC.noTileCollide = false;
                 return;
@@ -670,8 +673,7 @@ namespace CalamityMod.NPCs.AstrumAureus
                     if (Main.zenithWorld)
                     {
                         float screenShakePower = 16 * Utils.GetLerpValue(1300f, 0f, NPC.Distance(Main.LocalPlayer.Center), true);
-                        if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < screenShakePower)
-                            Main.LocalPlayer.Calamity().GeneralScreenShakePower = screenShakePower;
+                        Main.LocalPlayer.SetScreenshake(screenShakePower);
                     }
 
                     // Stomp and jump again, if stomped twice then reset and set AI to next phase (Teleport or Idle)
@@ -1306,7 +1308,8 @@ namespace CalamityMod.NPCs.AstrumAureus
                 normalOnly.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
                 // Equipment
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<InterstellarStompers>()));
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<InterstellarStompers>()));
 
                 // Other
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<AureusCell>(), 1, 9, 12));
@@ -1345,8 +1348,8 @@ namespace CalamityMod.NPCs.AstrumAureus
                 string key2 = "Mods.CalamityMod.Status.Progression.AureusBossText2";
                 Color messageColor = Color.Gold;
 
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
-                CalamityUtils.DisplayLocalizedText(key2, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key2, messageColor);
             }
 
             // Drop an Astral Meteor if applicable

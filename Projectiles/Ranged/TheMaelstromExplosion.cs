@@ -51,7 +51,7 @@ namespace CalamityMod.Projectiles.Ranged
                 GeneralParticleHandler.SpawnParticle(spark);
 
                 Vector2 dustSpawnOffset = Main.rand.NextVector2Circular(Projectile.width, Projectile.height) * Projectile.scale * 0.4f;
-                Dust electricity = Dust.NewDustPerfect(Projectile.Center + dustSpawnOffset, 267);
+                Dust electricity = Dust.NewDustPerfect(Projectile.Center + dustSpawnOffset, DustID.RainbowMk2);
                 electricity.color = Color.Cyan;
                 electricity.color.A = 84;
                 electricity.scale *= Main.rand.NextFloat(0.7f, 1.2f);

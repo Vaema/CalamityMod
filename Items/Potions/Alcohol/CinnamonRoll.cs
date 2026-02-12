@@ -13,13 +13,6 @@ namespace CalamityMod.Items.Potions.Alcohol
     {
         public new string LocalizationCategory => "Items.Potions";
 
-        // Mana has a stupid formula so it won't go into the tooltip
-        public static float ManaRegenDelayBonus = 1f;
-        public static int ManaRegenBonus = 10;
-        public static float HeatDebuffBoost = 0.5f;
-        public static float DefenseLossPercent = 0.1f;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs((1f + HeatDebuffBoost).ToString(), DefenseLossPercent.ToPercent());
-
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;
@@ -32,27 +25,18 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(18, 32, ModContent.BuffType<CinnamonRollBuff>(), CalamityUtils.MinutesToFrames(8), true);
+            Item.DefaultToFood(18, 32, ModContent.BuffType<CinnamonRollBuff>(), CalamityUtils.MinutesToFrames(6), true);
 
-            Item.value = Item.sellPrice(gold: 1);
-            Item.rare = ItemRarityID.Yellow;
+            Item.value = Item.sellPrice(silver: 2);
+            Item.rare = ItemRarityID.Lime;
         }
         public override void AddRecipes()
         {
-            CreateRecipe().
-                AddIngredient(ItemID.Ale).
-                AddIngredient<ScoriaOre>(3).
-                AddIngredient(ItemID.LivingFireBlock).
+            CreateRecipe(10).
+                AddIngredient(ItemID.Bottle, 10).
+                AddIngredient(ItemID.TurtleShell).
                 AddTile(TileID.Kegs).
                 Register();
-
-            CreateRecipe().
-                AddIngredient(ItemID.BottledWater).
-                AddIngredient<BloodOrb>(5).
-                AddIngredient<ScoriaOre>().
-                AddTile(TileID.AlchemyTable).
-                Register()
-                .DisableDecraft();
         }
     }
 }

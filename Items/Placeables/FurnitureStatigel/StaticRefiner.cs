@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Materials;
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurnitureStatigel
@@ -10,7 +9,7 @@ namespace CalamityMod.Items.Placeables.FurnitureStatigel
         public override void SetDefaults()
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.FurnitureStatigel.StaticRefiner>());
-            Item.value = Item.sellPrice(gold: 2);
+            Item.value = Item.sellPrice(silver: 5);
         }
 
         public override void AddRecipes()

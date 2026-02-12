@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Typeless;
@@ -49,7 +48,6 @@ namespace CalamityMod.Projectiles.Typeless
         public bool inTiles = false;
         public float respawnMult = 0;
 
-        int postHitTimer = 0;
         public Color bColor = Color.White;
         public SlotId digSoundSlot;
         public int digFXCooldown = 0;
@@ -117,12 +115,12 @@ namespace CalamityMod.Projectiles.Typeless
             }
 
             // Immediately die if the Owner is not holding the spear
-            if (Owner.ActiveItem() == null)
+            if (Owner.HeldItem == null)
             {
                 KillProj();
                 return;
             }
-            if (Owner.ActiveItem().type != ModContent.ItemType<RelicOfDeliverance>())
+            if (Owner.HeldItem.type != ModContent.ItemType<RelicOfDeliverance>())
             {
                 KillProj();
                 return;
@@ -251,7 +249,7 @@ namespace CalamityMod.Projectiles.Typeless
                                 SoundEngine.PlaySound(sound3 with { Volume = 0.7f, Pitch = 0.4f, MaxInstances = 3 }, Projectile.Center);
                         }
                         if (driftPower > 1)
-                            Owner.Calamity().GeneralScreenShakePower = (driftPower == 2 ? 6 : 9);
+                            Owner.SetScreenshake(driftPower == 2 ? 6 : 9);
                         else if (driftBadMult > 0.15f)
                             driftBadMult -= 0.15f;
                             
@@ -439,14 +437,29 @@ namespace CalamityMod.Projectiles.Typeless
                     Owner.Center = respawnPoint;
             }
             killed = true;
-            Owner.fullRotationOrigin = Owner.Center - Owner.position;
-            Owner.fullRotation = 0;
             Owner.Calamity().rOfDelivarenceRam = false;
             Projectile.netUpdate = true;
             Projectile.Kill();
         }
+
+        public override void OnKill(int timeLeft)
+        {
+            if (Projectile.owner == Main.myPlayer && SoundEngine.TryGetActiveSound(digSoundSlot, out var sound))
+                sound.Stop();
+
+            Owner.fullRotationOrigin = Owner.Center - Owner.position;
+            Owner.fullRotation = 0f;
+
+            if (Main.netMode != NetmodeID.SinglePlayer)
+                NetMessage.SendData(MessageID.SyncPlayer, number: Owner.whoAmI);
+        }
+
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
+            bool crit = Main.rand.Next(0, 100 + 1) < Owner.GetTotalCritChance(Owner.GetBestClass());
+            if (crit)
+                modifiers.SetCrit();
+
             float minMult = 0.15f;
             int hitsToMinMult = 15;
             float damageMult = Utils.Remap(hitCountDamageSource, 0, hitsToMinMult, 1, minMult, true);

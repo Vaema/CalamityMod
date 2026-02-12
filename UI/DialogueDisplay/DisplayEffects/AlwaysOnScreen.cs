@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework;
 
 namespace CalamityMod.UI.DialogueDisplay.DisplayEffects
 {
-    public class AlwayOnScreen : DisplayEffect
+    public class AlwaysOnScreen : DisplayEffect
     {
         Vector2 StartPosition;
 

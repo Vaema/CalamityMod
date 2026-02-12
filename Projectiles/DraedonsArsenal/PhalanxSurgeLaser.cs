@@ -11,7 +11,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public new string LocalizationCategory => "Projectiles.Misc";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
-        private int dust = 127;
         public int time = 0;
         public override void SetDefaults()
         {

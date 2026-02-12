@@ -1,6 +1,5 @@
-﻿using CalamityMod.Cooldowns;
-using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Armor.Wulfrum;
+﻿using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Placeables.FurnitureWulfrum;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -9,8 +8,6 @@ using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.IO;
-using static CalamityMod.CalamityUtils;
 
 namespace CalamityMod.Items.Materials
 {
@@ -97,6 +94,14 @@ namespace CalamityMod.Items.Materials
                     }
                 }
             }
+        }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe().
+                AddIngredient<WulfrumPlatform>(2).
+                DisableDecraft().
+                Register();
         }
 
         public override void Load()

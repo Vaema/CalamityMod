@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.LunicCorps;
 using CalamityMod.Packets;

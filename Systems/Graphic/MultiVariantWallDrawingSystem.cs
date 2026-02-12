@@ -1,5 +1,4 @@
-﻿using CalamityMod.ILEditing;
-using CalamityMod.Walls;
+﻿using CalamityMod.Walls;
 using Microsoft.Xna.Framework;
 using MonoMod.Cil;
 using Terraria;
@@ -66,7 +65,7 @@ namespace CalamityMod.Systems
 
         private static void LogILFailure(string reason)
         {
-            ILChanges.LogFailure("Support for Wall FrameOffset", reason);
+            CalamityMod.Log.ILFailure("Support for Wall FrameOffset", reason);
         }
     }
 }

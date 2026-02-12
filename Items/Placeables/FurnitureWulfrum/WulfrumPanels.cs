@@ -20,13 +20,13 @@ namespace CalamityMod.Items.Placeables.FurnitureWulfrum
             CreateRecipe(25).
                 AddRecipeGroup("AnyStoneBlock", 25).
                 AddIngredient<WulfrumMetalScrap>().
-                AddTile(TileID.HeavyWorkBench).
+                AddTile(TileID.Furnaces).
                 Register();
-            //CreateRecipe().
-            //    AddIngredient<WulfrumPlatingWall>(4).
-            //    AddTile(TileID.WorkBenches).
-            //    DisableDecraft().
-            //    Register();
+            CreateRecipe().
+                AddIngredient<WulfrumPanelWall>(4).
+                AddTile(TileID.WorkBenches).
+                DisableDecraft().
+                Register();
         }
     }
 }

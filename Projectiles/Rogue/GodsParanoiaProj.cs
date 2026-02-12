@@ -1,6 +1,4 @@
-﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.CalPlayer;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
 using Terraria;

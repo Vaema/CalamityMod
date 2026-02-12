@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using CalamityMod.CalPlayer;
+﻿using CalamityMod.CalPlayer;
 using CalamityMod.Projectiles.Enemy;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent.Metadata;
@@ -29,14 +27,14 @@ namespace CalamityMod.Tiles.Abyss
 
             TileID.Sets.CanBeDugByShovel[Type] = true;
 
-            DustType = 32;
+            DustType = DustID.Sand;
             AddMapEntry(new Color(150, 100, 50));
             HitSound = SoundID.Dig;
 
-            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
-            this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
-            this.RegisterUniversalMerge(ModContent.TileType<SulphurousSandstone>(), "CalamityMod/Tiles/Merges/SulphurousSandstoneMerge");
-            this.RegisterUniversalMerge(TileID.Sand, "CalamityMod/Tiles/Merges/SandMerge");
+            this.RegisterBlendMergeWith(TileID.Dirt);
+            this.RegisterBlendMergeWith(TileID.Stone);
+            this.RegisterBlendMergeWith(ModContent.TileType<SulphurousSandstone>());
+            this.RegisterBlendMergeWith(TileID.Sand);
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
@@ -60,10 +58,24 @@ namespace CalamityMod.Tiles.Abyss
             {
                 if (!Main.tile[i, tileLocationY].HasTile)
                 {
-                    if (!CalamityPlayer.areThereAnyDamnBosses && Main.tile[i, tileLocationY].LiquidAmount == 255 && Main.tile[i, tileLocationY - 1].LiquidAmount == 255 &&
-                        Main.tile[i, tileLocationY - 2].LiquidAmount == 255 && !Main.tile[i, tileLocationY - 2].HasTile && Main.netMode != NetmodeID.MultiplayerClient)
+                    if (Main.netMode != NetmodeID.MultiplayerClient && !CalamityPlayer.areThereAnyDamnBosses)
                     {
-                        Projectile.NewProjectile(new EntitySource_WorldEvent(), (float)(i * 16 + 16), (float)(tileLocationY * 16 + 16), 0f, -0.1f, ModContent.ProjectileType<SulphuricAcidBubble>(), 0, 2f, Main.myPlayer);
+                        bool nearby = false;
+                        Vector2 tileWorldPos = new Vector2(i, tileLocationY).ToWorldCoordinates();
+                        foreach (Player player in Main.ActivePlayers)
+                        {
+
+                            if (!player.dead && !player.ghost && player.DistanceSQ(tileWorldPos) < 4000000f) // Don't spawn Acid Bubbles if no players are nearby
+                            {
+                                nearby = true;
+                                break;
+                            }
+                        }
+                        if (nearby && Main.tile[i, tileLocationY].LiquidAmount == 255 && Main.tile[i, tileLocationY - 1].LiquidAmount == 255 &&
+                            Main.tile[i, tileLocationY - 2].LiquidAmount == 255 && !Main.tile[i, tileLocationY - 2].HasTile)
+                        {
+                            Projectile.NewProjectile(new EntitySource_WorldEvent(), (float)(i * 16 + 16), (float)(tileLocationY * 16 + 16), 0f, -0.1f, ModContent.ProjectileType<SulphuricAcidBubble>(), 0, 2f, Main.myPlayer);
+                        }
                     }
 
                     if (i < 250 || i > Main.maxTilesX - 250)
@@ -79,7 +91,7 @@ namespace CalamityMod.Tiles.Abyss
                                 {
                                     for (int m = tileLocationY - ambientObjectDetectRadius; m <= tileLocationY + ambientObjectDetectRadius; m++)
                                     {
-                                        if (Main.tile[l, m].HasTile && Main.tile[l, m].TileType == 81)
+                                        if (Main.tile[l, m].HasTile && Main.tile[l, m].TileType == TileID.Coral)
                                             ambientObjectAmt++;
                                     }
                                 }
@@ -101,7 +113,7 @@ namespace CalamityMod.Tiles.Abyss
                                 {
                                     for (int m = tileLocationY - ambientObjectDetectRadius; m <= tileLocationY + ambientObjectDetectRadius; m++)
                                     {
-                                        if (Main.tile[l, m].HasTile && Main.tile[l, m].TileType == 324)
+                                        if (Main.tile[l, m].HasTile && Main.tile[l, m].TileType == TileID.BeachPiles)
                                             ambientObjectAmt++;
                                     }
                                 }

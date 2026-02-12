@@ -53,7 +53,7 @@ namespace CalamityMod.Projectiles.Melee
                 }
                 if (time % 5 == 0)
                 {
-                    Dust dust = Dust.NewDustPerfect(pos, 278, new Vector2(2, 2).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1f), 0, default, Main.rand.NextFloat(0.45f, 0.6f));
+                    Dust dust = Dust.NewDustPerfect(pos, DustID.FireworksRGB, new Vector2(2, 2).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1f), 0, default, Main.rand.NextFloat(0.45f, 0.6f));
                     dust.noGravity = true;
                     dust.color = usedColor;
                 }

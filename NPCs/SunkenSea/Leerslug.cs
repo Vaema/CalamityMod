@@ -1,22 +1,15 @@
 ﻿using CalamityMod.BiomeManagers;
-using CalamityMod.Items.Critters;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.Tiles.SunkenSea.Ambient;
 using Microsoft.Xna.Framework;
 using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.GameContent.Bestiary;
 using Terraria.ModLoader;
-using Terraria.ModLoader.Utilities;
 using Terraria.Audio;
-using Terraria.DataStructures;
-using rail;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria.GameContent;
 using CalamityMod.Particles;
-using CalamityMod.Graphics.Metaballs;
-using ReLogic.Content;
 using System;
 
 namespace CalamityMod.NPCs.SunkenSea
@@ -61,8 +54,8 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.HitSound = SoundID.NPCHit50;
             NPC.DeathSound = SoundID.NPCDeath53;
             NPC.GravityIgnoresLiquid = true;
-            //Banner = NPC.type;
-            //BannerItem = ModContent.ItemType<SearslugBanner>();
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<LeerslugBanner>();
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToWater = true;
@@ -300,6 +293,7 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.LavaMoss, hit.HitDirection, -1f, 0, default, 1f);
             }
+            CalamityUtils.SpawnGores(NPC, "Leerslug", 2);
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)

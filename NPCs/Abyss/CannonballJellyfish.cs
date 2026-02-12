@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Placeables.Banners;
@@ -322,7 +321,7 @@ namespace CalamityMod.NPCs.Abyss
         {
             npcLoot.Add(ItemID.Bomb);
             npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Bezoar, 100, 50));
-            npcLoot.Add(ItemID.JellyfishNecklace, 25);
+            npcLoot.Add(ItemID.JellyfishNecklace, 30);
         }
     }
 }

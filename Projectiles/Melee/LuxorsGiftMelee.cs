@@ -5,7 +5,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -67,7 +66,7 @@ namespace CalamityMod.Projectiles.Melee
                 GeneralParticleHandler.SpawnParticle(spark);
             }
 
-            if (Collision.SolidCollision(Projectile.Center, 9, 9))
+            if (Collision.SolidCollision(Projectile.Center, 9, 9) && Projectile.timeLeft <= 150)
                 Projectile.velocity *= 0.91f;
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)

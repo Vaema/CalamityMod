@@ -3,7 +3,6 @@ using CalamityMod.Projectiles.BaseProjectiles;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
-using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee.Spears
 {

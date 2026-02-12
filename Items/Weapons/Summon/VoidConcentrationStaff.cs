@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -18,7 +17,6 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void SetStaticDefaults()
         {
             ItemID.Sets.StaffMinionSlotsRequired[Type] = 3f;
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<MirrorBlade>();
         }
 
         public override void SetDefaults()
@@ -32,7 +30,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.mana = 10;
             Item.damage = 105;
             Item.knockBack = 4f;
-            Item.useAnimation = Item.useTime = 15; // 14 because of useStyle 1
+            Item.useAnimation = Item.useTime = 24;
             Item.buffType = ModContent.BuffType<VoidConcentrationBuff>();
             Item.shoot = ModContent.ProjectileType<VoidConcentrationAura>();
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;

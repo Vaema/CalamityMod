@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -31,7 +32,7 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
             TileObjectData.newTile.DrawYOffset = 2;
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(132, 56, 42), CalamityUtils.GetText($"{LocalizationCategory}.ThermalVent.MapEntry"));
-            DustType = 162;
+            DustType = DustID.HeatRay;
 
             base.SetStaticDefaults();
         }

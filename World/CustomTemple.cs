@@ -28,7 +28,7 @@ namespace CalamityMod.World
 
                 if (Main.remixWorld)
                 {
-                    while (Main.tile[x, y].HasTile || Main.tile[x, y].WallType > 0 || y > (int)(Main.worldSurface - 5.0))
+                    while (Main.tile[x, y].HasTile || Main.tile[x, y].WallType > WallID.None || y > (int)(Main.worldSurface - 5.0))
                     {
                         y--;
                     }
@@ -491,7 +491,7 @@ namespace CalamityMod.World
                 int roomToFillIndex = WorldGen.genRand.Next(totalRooms);
                 int randomPointInRoomX = WorldGen.genRand.Next(roomBounds[roomToFillIndex].X, roomBounds[roomToFillIndex].X + roomBounds[roomToFillIndex].Width);
                 int randomPointInRoomY = WorldGen.genRand.Next(roomBounds[roomToFillIndex].Y, roomBounds[roomToFillIndex].Y + roomBounds[roomToFillIndex].Height);
-                if (Main.tile[randomPointInRoomX, randomPointInRoomY].WallType == 87 && !Main.tile[randomPointInRoomX, randomPointInRoomY].HasTile)
+                if (Main.tile[randomPointInRoomX, randomPointInRoomY].WallType == WallID.LihzahrdBrickUnsafe && !Main.tile[randomPointInRoomX, randomPointInRoomY].HasTile)
                 {
                     bool successPlacingSpikes = false;
                     if (WorldGen.genRand.NextBool(2))
@@ -509,7 +509,7 @@ namespace CalamityMod.World
                         {
                             for (int dy = randomPointInRoomY - areaToCheck; dy < randomPointInRoomY + areaToCheck; dy++)
                             {
-                                if (Main.tile[dx, dy].HasTile && Main.tile[dx, dy].TileType == 10)
+                                if (Main.tile[dx, dy].HasTile && Main.tile[dx, dy].TileType == TileID.ClosedDoor)
                                 {
                                     noDoorInWay = false;
                                     break;
@@ -566,7 +566,7 @@ namespace CalamityMod.World
                         {
                             for (int dy = randomPointInRoomY - areaToCheck; dy < randomPointInRoomY + areaToCheck; dy++)
                             {
-                                if (Main.tile[dx, dy].HasTile && Main.tile[dx, dy].TileType == 10)
+                                if (Main.tile[dx, dy].HasTile && Main.tile[dx, dy].TileType == TileID.ClosedDoor)
                                 {
                                     noDoorInWay = false;
                                     break;

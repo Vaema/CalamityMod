@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using CalamityMod.Rarities;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -42,9 +40,9 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             SoundEngine.PlaySound(SoundID.Item38, player.Center);
 
-            // Really jammed in GFB
-            if (Main.zenithWorld)
-                return Main.rand.NextBool(5);
+            // Really jammed in GFB (only fires 20% of the time)
+            if (Main.zenithWorld && Main.rand.Next(5) < 4)
+                return false;
 
             int bulletAmt = Main.rand.Next(25, 36);
             for (int index = 0; index < bulletAmt; ++index)

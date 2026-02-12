@@ -28,8 +28,7 @@ namespace CalamityMod.Projectiles.Rogue
             if (Projectile.ai[0] == 0f)
             {
                 float screenShakePower = 7 * Utils.GetLerpValue(1300f, 0f, Projectile.Distance(Main.LocalPlayer.Center), true);
-                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < screenShakePower)
-                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = screenShakePower;
+                Main.LocalPlayer.SetScreenshake(screenShakePower);
 
                 CustomPulse blastRing1 = new(Projectile.Center, Vector2.Zero, Color.Blue, "CalamityMod/Particles/FlameExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0.05f, 0.35f, 15);
                 GeneralParticleHandler.SpawnParticle(blastRing1);

@@ -1,7 +1,7 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Particles;
+using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -22,7 +22,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
-        public PixelationPrimitiveLayer LayerToRenderTo => PixelationPrimitiveLayer.BeforeProjectiles;
+        public GeneralDrawLayer LayerToRenderTo => GeneralDrawLayer.BeforeProjectiles;
 
         public override void SetStaticDefaults()
         {
@@ -37,6 +37,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.scale = 1.85f;
             Projectile.friendly = true;
             Projectile.extraUpdates = 3;
+            Projectile.tileCollide = false;
             Projectile.timeLeft = 600;
             Projectile.penetrate = -1;
             Projectile.DamageType = DamageClass.Magic;
@@ -51,6 +52,8 @@ namespace CalamityMod.Projectiles.Magic
             // naturally dissipate entirely before despawning. Of course, it's also coded so that the laser stops dealing damage 
             // entirely once this is done to avoid hitting targets multiple times, so functionally the projectile remains the same
             // and this change should have little to no effect on gameplay. If it does, ping me about it.
+            // 2FEB2026: sunny:
+            // Due to Calclone's new border, lasers no longer have tile collision, so this part of the code is now only used for hitting targets.
             if (ShouldStopAndDie)
             {
                 Projectile.velocity *= 0f;
@@ -116,35 +119,35 @@ namespace CalamityMod.Projectiles.Magic
             Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
         }
 
-        public float LaserWidthFunction(float completion)
+        public float LaserWidthFunction(float completion, Vector2 vertexPos)
         {
             float maxBodyWidth = Projectile.scale * Projectile.width;
             float scaleInterpolant = Utils.GetLerpValue(0.05f, 0.2f, completion, true) * Utils.GetLerpValue(0.95f, 0.8f, completion, true);
             return maxBodyWidth * scaleInterpolant * Projectile.scale;
         }
 
-        public float LaserCoreEnergyFunction(float completion)
+        public float LaserCoreEnergyFunction(float completion, Vector2 vertexPos)
         {
             float maxBodyWidth = (Projectile.scale * Projectile.width) * 0.25f;
             float scaleInterpolant = Utils.GetLerpValue(0.05f, 0.2f, completion, true) * Utils.GetLerpValue(0.95f, 0.8f, completion, true);
             return maxBodyWidth * scaleInterpolant * Projectile.scale;
         }
 
-        public Color LaserColorFunction(float completion)
+        public Color LaserColorFunction(float completion, Vector2 vertexPos)
         {
             Color startColor = Color.Lerp(Color.White, SHPB.FindColorForSoul((int)Projectile.ai[0]), Utils.GetLerpValue(0f, 0.125f, completion, true));
             Color bodyColor = Color.Lerp(startColor, SHPB.FindColorForSoul((int)Projectile.ai[0]), Utils.GetLerpValue(0.125f, 1f, completion, true));           
             return Color.Lerp(startColor, bodyColor, completion);
         }
 
-        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch, PixelationPrimitiveLayer layer)
+        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch, GeneralDrawLayer layer)
         {
             // Render the main trail for the body for the laser.
             GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(LaserWidthFunction, LaserColorFunction, (_) => Projectile.Size * 0.5f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), Projectile.oldPos.Length * 2);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(LaserWidthFunction, LaserColorFunction, (_,_) => Projectile.Size * 0.5f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), Projectile.oldPos.Length * 2);
 
             // Render a smaller, pure white trail in the same position to represent condensed energy in the core of the laser.
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(LaserCoreEnergyFunction, (_) => Color.White, (_) => Projectile.Size * 0.5f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), Projectile.oldPos.Length * 2);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(LaserCoreEnergyFunction, (_,_) => Color.White, (_,_) => Projectile.Size * 0.5f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), Projectile.oldPos.Length * 2);
         }
     }
 }

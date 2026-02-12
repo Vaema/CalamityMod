@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -30,6 +29,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
             Projectile.extraUpdates = 5;
+            Projectile.tileCollide = false;
         }
         public override void AI()
         {
@@ -50,6 +50,8 @@ namespace CalamityMod.Projectiles.Ranged
                     dust.noLightEmittence = true;
                 }
             }
+            if (!Collision.SolidCollision(Projectile.Center, 35, 35) || Projectile.timeLeft < 200)
+                Projectile.tileCollide = true;
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {

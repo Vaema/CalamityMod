@@ -1,5 +1,4 @@
 ﻿using CalamityMod.NPCs.DesertScourge;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 

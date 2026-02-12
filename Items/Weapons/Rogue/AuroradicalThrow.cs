@@ -12,10 +12,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class AuroradicalThrow : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Nebulash>();
-        }
         public override void SetDefaults()
         {
             Item.width = 34;

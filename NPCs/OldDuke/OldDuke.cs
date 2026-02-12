@@ -9,7 +9,8 @@ using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
+using CalamityMod.Items.Placeables.Furniture.Monoliths;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.TreasureBags;
@@ -102,8 +103,8 @@ namespace CalamityMod.NPCs.OldDuke
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.defense = 90;
-            NPC.DR_NERD(0.5f, null, null, null, true);
-            NPC.LifeMaxNERB(500000, 600000, 400000);
+            NPC.DR_NERD(0.5f);
+            NPC.LifeMaxNERB(400000, 600000, 400000);
             NPC.knockBackResist = 0f;
             NPC.noTileCollide = true;
             NPC.noGravity = true;
@@ -384,8 +385,7 @@ namespace CalamityMod.NPCs.OldDuke
                 if (Main.zenithWorld)
                 {
                     float screenShakePower = 10 * Utils.GetLerpValue(800f, 0f, NPC.Distance(Main.LocalPlayer.Center), true);
-                    if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < screenShakePower)
-                        Main.LocalPlayer.Calamity().GeneralScreenShakePower = screenShakePower;
+                    Main.LocalPlayer.SetScreenshake(screenShakePower);
 
                     if (calamityGlobalNPC.newAI[0] == exhaustionGateValue)
                         SoundEngine.PlaySound(SoundID.NPCDeath64 with { Pitch = SoundID.NPCDeath64.Pitch - 0.9f, Volume = SoundID.NPCDeath64.Volume + 0.4f }, player.Center); // fart
@@ -1982,7 +1982,7 @@ namespace CalamityMod.NPCs.OldDuke
             drawLocation += new Vector2(Main.rand.NextFloat(-shake, shake), Main.rand.NextFloat(-shake, shake));
 
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(finalDrawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
-            
+
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(overlayDrawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
             float auraOutset = 6f + (float)(Math.Sin(VisualTimerSystem.GlobalVisualTimer / 10f) * 10f);
@@ -2067,7 +2067,7 @@ namespace CalamityMod.NPCs.OldDuke
 
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
-            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<SeaKing>() }, DownedBossSystem.downedBoomerDuke);
+            CalamityGlobalTownNPC.SetNewShopVariable(new int[] { ModContent.NPCType<SeaKing>() }, DownedBossSystem.downedBoomerDuke);
 
             // Mark Old Duke as dead
             DownedBossSystem.downedBoomerDuke = true;
@@ -2099,10 +2099,12 @@ namespace CalamityMod.NPCs.OldDuke
                 normalOnly.Add(ModContent.ItemType<TheOldReaper>(), 10);
 
                 // Equipment
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<OldDukeScales>()));
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<OldDukeScales>()));
 
                 // Vanity
                 normalOnly.Add(ModContent.ItemType<OldDukeMask>(), 7);
+                normalOnly.Add(ModContent.ItemType<EldenDiorama>(), 10);
                 normalOnly.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
             }
 

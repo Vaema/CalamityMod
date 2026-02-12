@@ -1,23 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using CalamityMod.Schematics;
 using CalamityMod.Tiles.Crags;
 using CalamityMod.Tiles.Crags.Lily;
 using CalamityMod.Tiles.Crags.Spike;
 using CalamityMod.Tiles.Crags.Tree;
 using CalamityMod.Tiles.Ores;
-using CalamityMod.Walls;
+using CalamityMod.Walls.UnsafeWalls;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.GameContent.Generation;
 using Terraria.ID;
-using Terraria.IO;
 using Terraria.ModLoader;
 using Terraria.Utilities;
 using Terraria.WorldBuilding;
-using static CalamityMod.Schematics.SchematicManager;
 
 namespace CalamityMod.World
 {
@@ -59,7 +55,7 @@ namespace CalamityMod.World
                     Tile tile = Main.tile[x, y];
                     tile.TileType = (ushort)ModContent.TileType<BrimstoneSlag>();
                     tile.HasTile = true;
-                    tile.WallType = (ushort)ModContent.WallType<BrimstoneSlagWallUnsafe>();
+                    tile.WallType = (ushort)ModContent.WallType<UnsafeBrimstoneSlagWall>();
                 }
             }
 
@@ -146,7 +142,7 @@ namespace CalamityMod.World
                     //place more walls behind slag so theres not just a box of walls from the initial rectangle
                     if (tile.HasTile && tileDown.HasTile && tileDown2.HasTile && Main.tile[x, y + 5].HasTile)
                     {
-                        Main.tile[x, y + 5].WallType = (ushort)ModContent.WallType<BrimstoneSlagWallUnsafe>();
+                        Main.tile[x, y + 5].WallType = (ushort)ModContent.WallType<UnsafeBrimstoneSlagWall>();
                     }
 
                     if (tile.LiquidType == LiquidID.Water && tile.LiquidAmount > 0)
@@ -294,7 +290,7 @@ namespace CalamityMod.World
                                 Tile lavaTile = Main.tile[i, j];
                                 Tile lavaTileDown = Main.tile[i, j + 1];
 
-                                if (lavaTile.WallType == 0 && lavaTileDown.WallType == 0)
+                                if (lavaTile.WallType == WallID.None && lavaTileDown.WallType == WallID.None)
                                 {
                                     lavaTile.LiquidAmount = 0;
                                 }
@@ -531,6 +527,7 @@ namespace CalamityMod.World
             else
             {
                 contents.Insert(0, new ChestItem(ModContent.ItemType<Items.Fishing.FishingRods.SlurperPole>(), 1));
+                contents.Insert(0, new ChestItem(ModContent.ItemType<Items.Weapons.Ranged.SlagfireDouser>(), 1));
             }
 
             for (int i = 0; i < contents.Count; i++)

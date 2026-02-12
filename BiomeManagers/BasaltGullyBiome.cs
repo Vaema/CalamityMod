@@ -25,8 +25,9 @@ namespace CalamityMod.BiomeManagers
             bool MoreThanReefs = BiomeTileCounterSystem.SunkenSeaBasaltTiles > BiomeTileCounterSystem.SunkenSeaReefsTiles;
             bool MoreThanPolyp = BiomeTileCounterSystem.SunkenSeaBasaltTiles > BiomeTileCounterSystem.SunkenSeaPolypTiles;
             bool MoreThanBurrows = BiomeTileCounterSystem.SunkenSeaBasaltTiles > BiomeTileCounterSystem.SunkenSeaBurrowsTiles;
+            bool MoreThanUnderground = BiomeTileCounterSystem.SunkenSeaShoresTiles > BiomeTileCounterSystem.UndergroundTiles;
 
-            return BiomeTileCounterSystem.SunkenSeaBasaltTiles > 1000 && MoreThanShores && MoreThanReefs && MoreThanPolyp && MoreThanBurrows;
+            return BiomeTileCounterSystem.SunkenSeaBasaltTiles > 2500 && (MoreThanShores || MoreThanReefs || MoreThanPolyp || MoreThanBurrows);
         }
     }
 }

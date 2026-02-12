@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using CalamityMod.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -42,14 +43,14 @@ namespace CalamityMod.Projectiles.Melee
                 Vector2 initialVelocity = (Main.rand.NextFloatDirection() * 0.11f).ToRotationVector2() * Main.rand.NextFloat(2f, 3.3f);
                 for (int i = 0; i < 4; i++)
                 {
-                    Dust crystalShard = Dust.NewDustPerfect(Projectile.Center, 267);
+                    Dust crystalShard = Dust.NewDustPerfect(Projectile.Center, DustID.RainbowMk2);
                     crystalShard.velocity = initialVelocity * i / 4f;
                     crystalShard.scale = 1.225f;
                     crystalShard.color = Color.Yellow;
                     crystalShard.noGravity = true;
 
-                    Dust.CloneDust(crystalShard).velocity = initialVelocity.RotatedBy(MathHelper.Pi * 0.666f) * i / 4f;
-                    Dust.CloneDust(crystalShard).velocity = initialVelocity.RotatedBy(MathHelper.Pi * -0.666f) * i / 4f;
+                    Dust.BetterCloneDust(crystalShard).velocity = initialVelocity.RotatedBy(MathHelper.Pi * 0.666f) * i / 4f;
+                    Dust.BetterCloneDust(crystalShard).velocity = initialVelocity.RotatedBy(MathHelper.Pi * -0.666f) * i / 4f;
                 }
                 Projectile.localAI[0] = 1f;
             }

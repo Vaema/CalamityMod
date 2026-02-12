@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -9,6 +10,8 @@ namespace CalamityMod.Tiles.FurnitureMarnite
 {
     public class MarniteLight : ModTile
     {
+        public Asset<Texture2D> FlameTexture;
+
         public override void SetStaticDefaults() => this.SetUpTorch(ModContent.ItemType<Items.Placeables.FurnitureMarnite.MarniteLight>(), true, true);
 
         public override bool CreateDust(int i, int j, ref int type)
@@ -56,7 +59,8 @@ namespace CalamityMod.Tiles.FurnitureMarnite
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            CalamityUtils.DrawFlameEffect(ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureMarnite/MarniteLightFlame").Value, i, j, 2);
+            FlameTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureMarnite/MarniteLightFlame");
+            CalamityUtils.DrawFlameEffect(FlameTexture.Value, i, j, 2);
         }
 
         public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)
@@ -67,7 +71,7 @@ namespace CalamityMod.Tiles.FurnitureMarnite
 
         public override bool RightClick(int i, int j)
         {
-            CalamityUtils.RightClickBreak(i, j);
+            FurnitureCommon.RightClickBreak(i, j);
             return true;
         }
         //This should probably give torch luck in granite AND marble biomes, this was originally planned for Catalyst

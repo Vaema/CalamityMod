@@ -1,5 +1,4 @@
-﻿using CalamityMod.Tiles.Furniture.CraftingStations;
-using CalamityMod.Tiles.FurnitureBotanic;
+﻿using CalamityMod.Tiles.FurnitureBotanic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

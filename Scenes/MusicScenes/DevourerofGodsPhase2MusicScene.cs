@@ -1,6 +1,5 @@
 ﻿using CalamityMod.NPCs;
 using CalamityMod.NPCs.DevourerofGods;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 

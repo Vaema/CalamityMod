@@ -35,9 +35,8 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient(ItemID.MagicMissile).
+                AddIngredient(ItemID.AncientCloth, 5).
                 AddIngredient<GrandScale>().
-                AddIngredient(ItemID.AncientBattleArmorMaterial, 2).
-                AddIngredient(ItemID.SpectreBar, 5).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

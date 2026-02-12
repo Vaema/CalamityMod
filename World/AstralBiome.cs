@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using CalamityMod.Schematics;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Astral;
-using CalamityMod.Tiles.FurnitureAcidwood;
 using CalamityMod.Tiles.FurnitureMonolith;
 using CalamityMod.Tiles.AstralDesert;
 using CalamityMod.Tiles.AstralSnow;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.Walls;
+using CalamityMod.Walls.UnsafeWalls;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -140,7 +139,7 @@ namespace CalamityMod.World
                 while (y < Main.maxTilesY)
                 {
                     //check to place the astral meteor on valid tiles, place automatically on ebonstone walls, and avoid platforms
-                    if (((Main.tile[x, y].HasTile && Main.tileSolid[(int)Main.tile[x, y].TileType]) || Main.tile[x, y].WallType == 3) && !TileID.Sets.Platforms[Main.tile[x, y].TileType])
+                    if (((Main.tile[x, y].HasTile && Main.tileSolid[(int)Main.tile[x, y].TileType]) || Main.tile[x, y].WallType == WallID.EbonstoneUnsafe) && !TileID.Sets.Platforms[Main.tile[x, y].TileType])
                     {
                         int suitableTiles = 0;
                         int checkRadius = 15;
@@ -200,7 +199,7 @@ namespace CalamityMod.World
                             string key = "Mods.CalamityMod.Status.Progression.AstralText";
                             Color messageColor = Color.Gold;
 
-                            CalamityUtils.DisplayLocalizedText(key, messageColor);
+                            CalamityUtils.BroadcastLocalizedText(key, messageColor);
                             break;
                         }
                         break;
@@ -302,7 +301,7 @@ namespace CalamityMod.World
             {
                 for (int n = j - avoidRectangleSize; n < j + avoidRectangleSize; n++)
                 {
-                    if (Main.tile[m, n].HasTile && Main.tile[m, n].TileType == 21)
+                    if (Main.tile[m, n].HasTile && Main.tile[m, n].TileType == TileID.Containers)
                     {
                         return false;
                     }
@@ -362,7 +361,7 @@ namespace CalamityMod.World
                     {
                         if ((double)tileDistance3 < (double)avoidRectangleSize * 0.7)
                         {
-                            if (Main.tile[inc3, doubleinc3].TileType == 5 || Main.tile[inc3, doubleinc3].TileType == 32 || Main.tile[inc3, doubleinc3].TileType == 352)
+                            if (Main.tile[inc3, doubleinc3].TileType == TileID.Trees || Main.tile[inc3, doubleinc3].TileType == TileID.CorruptThorns || Main.tile[inc3, doubleinc3].TileType == TileID.CrimsonThorns)
                             {
                                 try
                                 { WorldGen.KillTile(inc3, doubleinc3, false, false, true); }
@@ -401,7 +400,7 @@ namespace CalamityMod.World
                         {
                             if (Main.tile[inc4, doubleinc4] != null)
                             {
-                                if (Main.tile[inc4, doubleinc4].TileType == 5 || Main.tile[inc4, doubleinc4].TileType == 32 || Main.tile[inc4, doubleinc4].TileType == 352)
+                                if (Main.tile[inc4, doubleinc4].TileType == TileID.Trees || Main.tile[inc4, doubleinc4].TileType == TileID.CorruptThorns || Main.tile[inc4, doubleinc4].TileType == TileID.CrimsonThorns)
                                 {
                                     WorldGen.KillTile(inc4, doubleinc4, false, false, false);
                                 }
@@ -426,7 +425,7 @@ namespace CalamityMod.World
                         {
                             if (Main.tile[inc5, doubleinc5] != null)
                             {
-                                if (Main.tile[inc5, doubleinc5].TileType == 5 || Main.tile[inc5, doubleinc5].TileType == 32 || Main.tile[inc5, doubleinc5].TileType == 352)
+                                if (Main.tile[inc5, doubleinc5].TileType == TileID.Trees || Main.tile[inc5, doubleinc5].TileType == TileID.CorruptThorns || Main.tile[inc5, doubleinc5].TileType == TileID.CrimsonThorns)
                                 {
                                     WorldGen.KillTile(inc5, doubleinc5, false, false, false);
                                 }
@@ -775,33 +774,33 @@ namespace CalamityMod.World
 
                 if (Main.tile[x, y] != null)
                 {
-                    if (wallType != WallID.None && wallType != ModContent.WallType<AstralGrassWall>() && wallType != ModContent.WallType<HardenedAstralSandWall>() &&
-                    wallType != ModContent.WallType<AstralSandstoneWall>() && wallType != ModContent.WallType<AstralStoneWall>() &&
-                    wallType != ModContent.WallType<AstralDirtWall>() && wallType != ModContent.WallType<AstralSnowWall>() &&
-                    wallType != ModContent.WallType<CelestialRemainsWall>() && wallType != ModContent.WallType<AstralIceWall>() &&
+                    if (wallType != WallID.None && wallType != ModContent.WallType<UnsafeAstralGrassWall>() && wallType != ModContent.WallType<UnsafeHardenedAstralSandWall>() &&
+                    wallType != ModContent.WallType<UnsafeAstralSandstoneWall>() && wallType != ModContent.WallType<UnsafeAstralStoneWall>() &&
+                    wallType != ModContent.WallType<UnsafeAstralDirtWall>() && wallType != ModContent.WallType<UnsafeAstralSnowWall>() &&
+                    wallType != ModContent.WallType<CelestialRemainsWall>() && wallType != ModContent.WallType<UnsafeAstralIceWall>() &&
                     wallType != ModContent.WallType<AstralMonolithWall>())
                     {
                         if (WallID.Sets.Conversion.Grass[wallType])
                         {
-                            Main.tile[x, y].WallType = (ushort)ModContent.WallType<AstralGrassWall>();
+                            Main.tile[x, y].WallType = (ushort)ModContent.WallType<UnsafeAstralGrassWall>();
                             WorldGen.SquareWallFrame(x, y, true);
                             NetMessage.SendTileSquare(-1, x, y, 1);
                         }
                         else if (WallID.Sets.Conversion.HardenedSand[wallType])
                         {
-                            Main.tile[x, y].WallType = (ushort)ModContent.WallType<HardenedAstralSandWall>();
+                            Main.tile[x, y].WallType = (ushort)ModContent.WallType<UnsafeHardenedAstralSandWall>();
                             WorldGen.SquareWallFrame(x, y, true);
                             NetMessage.SendTileSquare(-1, x, y, 1);
                         }
                         else if (WallID.Sets.Conversion.Sandstone[wallType])
                         {
-                            Main.tile[x, y].WallType = (ushort)ModContent.WallType<AstralSandstoneWall>();
+                            Main.tile[x, y].WallType = (ushort)ModContent.WallType<UnsafeAstralSandstoneWall>();
                             WorldGen.SquareWallFrame(x, y, true);
                             NetMessage.SendTileSquare(-1, x, y, 1);
                         }
                         else if (WallID.Sets.Conversion.Stone[wallType])
                         {
-                            Main.tile[x, y].WallType = (ushort)ModContent.WallType<AstralStoneWall>();
+                            Main.tile[x, y].WallType = (ushort)ModContent.WallType<UnsafeAstralStoneWall>();
                             WorldGen.SquareWallFrame(x, y, true);
                             NetMessage.SendTileSquare(-1, x, y, 1);
                         }
@@ -816,12 +815,12 @@ namespace CalamityMod.World
                                 case WallID.DirtUnsafe4:
                                 case WallID.Cave6Unsafe:
                                 case WallID.Dirt:
-                                    Main.tile[x, y].WallType = (ushort)ModContent.WallType<AstralDirtWall>();
+                                    Main.tile[x, y].WallType = (ushort)ModContent.WallType<UnsafeAstralDirtWall>();
                                     WorldGen.SquareWallFrame(x, y, true);
                                     NetMessage.SendTileSquare(-1, x, y, 1);
                                     break;
                                 case WallID.SnowWallUnsafe:
-                                    Main.tile[x, y].WallType = (ushort)ModContent.WallType<AstralSnowWall>();
+                                    Main.tile[x, y].WallType = (ushort)ModContent.WallType<UnsafeAstralSnowWall>();
                                     WorldGen.SquareWallFrame(x, y, true);
                                     NetMessage.SendTileSquare(-1, x, y, 1);
                                     break;
@@ -831,7 +830,7 @@ namespace CalamityMod.World
                                     NetMessage.SendTileSquare(-1, x, y, 1);
                                     break;
                                 case WallID.IceUnsafe:
-                                    Main.tile[x, y].WallType = (ushort)ModContent.WallType<AstralIceWall>();
+                                    Main.tile[x, y].WallType = (ushort)ModContent.WallType<UnsafeAstralIceWall>();
                                     WorldGen.SquareWallFrame(x, y, true);
                                     NetMessage.SendTileSquare(-1, x, y, 1);
                                     break;
@@ -1152,295 +1151,6 @@ namespace CalamityMod.World
             }
         }
 
-        public static void ConvertFromAstral(int startX, int endX, int startY, int endY, ConvertType convert)
-        {
-            for (int x = startX; x <= endX; x++)
-            {
-                for (int y = startY; y <= endY; y++)
-                {
-                    ConvertFromAstral(x, y, convert);
-                }
-            }
-        }
-
-        public static void ConvertFromAstral(int x, int y, ConvertType convert, bool tileframe = true)
-        {
-            Tile tile = Main.tile[x, y];
-            int type = tile.TileType;
-            int wallType = tile.WallType;
-
-            if (WorldGen.InWorld(x, y, 1))
-            {
-                #region WALL
-                if (Main.tile[x, y] != null)
-                {
-                    if (wallType == ModContent.WallType<AstralDirtWall>())
-                    {
-                        Main.tile[x, y].WallType = WallID.DirtUnsafe;
-                    }
-                    else if (wallType == ModContent.WallType<AstralSnowWall>() || wallType == ModContent.WallType<AstralSnowWallSafe>())
-                    {
-                        Main.tile[x, y].WallType = WallID.SnowWallUnsafe;
-                    }
-                    else if (wallType == ModContent.WallType<CelestialRemainsWall>())
-                    {
-                        Main.tile[x, y].WallType = WallID.DesertFossil;
-                    }
-                    else if (wallType == ModContent.WallType<AstralGrassWall>())
-                    {
-                        switch (convert)
-                        {
-                            case ConvertType.Corrupt:
-                                Main.tile[x, y].WallType = WallID.CorruptGrassUnsafe;
-                                break;
-                            case ConvertType.Crimson:
-                                Main.tile[x, y].WallType = WallID.CrimsonGrassUnsafe;
-                                break;
-                            case ConvertType.Hallow:
-                                Main.tile[x, y].WallType = WallID.HallowedGrassUnsafe;
-                                break;
-                            case ConvertType.Pure:
-                                Main.tile[x, y].WallType = WallID.GrassUnsafe;
-                                break;
-                        }
-                    }
-                    else if (wallType == ModContent.WallType<AstralIceWall>())
-                    {
-                        Main.tile[x, y].WallType = WallID.IceUnsafe;
-                    }
-                    else if (wallType == ModContent.WallType<AstralMonolithWall>())
-                    {
-                        Main.tile[x, y].WallType = WallID.LivingWood;
-                    }
-                    else if (wallType == ModContent.WallType<AstralStoneWall>())
-                    {
-                        switch (convert)
-                        {
-                            case ConvertType.Corrupt:
-                                Main.tile[x, y].WallType = WallID.EbonstoneUnsafe;
-                                break;
-                            case ConvertType.Crimson:
-                                Main.tile[x, y].WallType = WallID.CrimstoneUnsafe;
-                                break;
-                            case ConvertType.Hallow:
-                                Main.tile[x, y].WallType = WallID.PearlstoneBrickUnsafe;
-                                break;
-                            case ConvertType.Pure:
-                                Main.tile[x, y].WallType = WallID.Stone;
-                                break;
-                        }
-                    }
-                }
-                #endregion
-
-                #region TILE
-                if (Main.tile[x, y] != null)
-                {
-                    if (type == ModContent.TileType<AstralDirt>())
-                    {
-                        tile.TileType = TileID.Dirt;
-                    }
-                    else if (type == ModContent.TileType<AstralSnow>())
-                    {
-                        tile.TileType = TileID.SnowBlock;
-                    }
-                    else if (type == ModContent.TileType<NovaeSlag>())
-                    {
-                        tile.TileType = TileID.Silt;
-                    }
-                    else if (type == ModContent.TileType<CelestialRemains>())
-                    {
-                        tile.TileType = TileID.DesertFossil;
-                    }
-                    else if (type == ModContent.TileType<AstralClay>())
-                    {
-                        tile.TileType = TileID.ClayBlock;
-                    }
-                    else if (type == ModContent.TileType<AstralGrass>())
-                    {
-                        SetTileFromConvert(x, y, convert, TileID.CorruptGrass, TileID.CrimsonGrass, TileID.HallowedGrass, TileID.Grass);
-                    }
-                    else if (type == ModContent.TileType<AstralStone>())
-                    {
-                        SetTileFromConvert(x, y, convert, TileID.Ebonstone, TileID.Crimstone, TileID.Pearlstone, TileID.Stone);
-                    }
-                    else if (type == ModContent.TileType<AstralMonolith>())
-                    {
-                        tile.TileType = TileID.LivingWood;
-                    }
-                    else if (type == ModContent.TileType<AstralSand>())
-                    {
-                        SetTileFromConvert(x, y, convert, TileID.Ebonsand, TileID.Crimsand, TileID.Pearlsand, TileID.Sand);
-                    }
-                    else if (type == ModContent.TileType<AstralSandstone>())
-                    {
-                        SetTileFromConvert(x, y, convert, TileID.CorruptSandstone, TileID.CrimsonSandstone, TileID.HallowSandstone, TileID.Sandstone);
-                    }
-                    else if (type == ModContent.TileType<HardenedAstralSand>())
-                    {
-                        SetTileFromConvert(x, y, convert, TileID.CorruptHardenedSand, TileID.CrimsonHardenedSand, TileID.HallowHardenedSand, TileID.HardenedSand);
-                    }
-                    else if (type == ModContent.TileType<AstralIce>())
-                    {
-                        SetTileFromConvert(x, y, convert, TileID.CorruptIce, TileID.FleshIce, TileID.HallowedIce, TileID.IceBlock);
-                    }
-                    else if (type == ModContent.TileType<AstralVines>())
-                    {
-                        SetTileFromConvert(x, y, convert, ushort.MaxValue, TileID.CrimsonVines, TileID.HallowedVines, TileID.Vines);
-                    }
-                    else if (type == ModContent.TileType<AstralShortPlants>())
-                    {
-                        SetTileFromConvert(x, y, convert, TileID.CorruptPlants, ushort.MaxValue, TileID.HallowedPlants, TileID.Plants);
-                    }
-                    else if (type == ModContent.TileType<AstralTallPlants>())
-                    {
-                        SetTileFromConvert(x, y, convert, ushort.MaxValue, ushort.MaxValue, TileID.HallowedPlants2, TileID.Plants2);
-                    }
-                    // TODO: All astral medium pile conversions break said tiles. Large and small piles work fine.
-                    else if (type == ModContent.TileType<AstralNormalLargePiles>())
-                    {
-                        RecursiveReplaceFromAstral((ushort)type, TileID.LargePiles2, x, y, 540, 0);
-                    }
-                    else if (type == ModContent.TileType<AstralNormalMediumPiles>())
-                    {
-                        RecursiveReplaceFromAstral((ushort)type, TileID.SmallPiles, x, y, 0, 18);
-                    }
-                    else if (type == ModContent.TileType<AstralNormalSmallPiles>())
-                    {
-                        RecursiveReplaceFromAstral((ushort)type, TileID.SmallPiles, x, y, 110, 0);
-                    }
-                    else if (type == ModContent.TileType<AstralStoneLargePiles>())
-                    {
-                        RecursiveReplaceFromAstral((ushort)type, TileID.LargePiles, x, y, 378, 0);
-                    }
-                    else if (type == ModContent.TileType<AstralStoneMediumPiles>())
-                    {
-                        RecursiveReplaceFromAstral((ushort)type, TileID.SmallPiles, x, y, 1368, 18);
-                    }
-                    else if (type == ModContent.TileType<AstralStoneSmallPiles>())
-                    {
-                        RecursiveReplaceFromAstral((ushort)type, TileID.SmallPiles, x, y, 0, 0);
-                    }
-                    else if (type == ModContent.TileType<AstralDesertLargePiles>())
-                    {
-                        RecursiveReplaceFromAstral((ushort)type, TileID.LargePiles2, x, y, 1566, 0);
-                    }
-                    else if (type == ModContent.TileType<AstralDesertMediumPiles>())
-                    {
-                        RecursiveReplaceFromAstral((ushort)type, TileID.SmallPiles, x, y, 1476, 18);
-                    }
-                    else if (type == ModContent.TileType<AstralDesertSmallPiles>())
-                    {
-                        RecursiveReplaceFromAstral((ushort)type, TileID.SmallPiles, x, y, 972, 0);
-                    }
-                    else if (type == ModContent.TileType<AstralIceLargePiles>())
-                    {
-                        RecursiveReplaceFromAstral((ushort)type, TileID.LargePiles, x, y, 1404, 0);
-                    }
-                    else if (type == ModContent.TileType<AstralIceMediumPiles>())
-                    {
-                        RecursiveReplaceFromAstral((ushort)type, TileID.SmallPiles, x, y, 900, 18);
-                    }
-                    else if (type == ModContent.TileType<AstralIceSmallPiles>())
-                    {
-                        RecursiveReplaceFromAstral((ushort)type, TileID.SmallPiles, x, y, 648, 0);
-                    }
-                    // TODO: All astral stalactite conversions break said tiles 
-                    else if (type == ModContent.TileType<AstralNormalStalactite>() || type == ModContent.TileType<AstralStoneStalactite>())
-                    {
-                        ushort originType = TileID.Stone;
-                        switch (convert)
-                        {
-                            case ConvertType.Corrupt:
-                                originType = TileID.Ebonstone;
-                                break;
-                            case ConvertType.Crimson:
-                                originType = TileID.Crimstone;
-                                break;
-                            case ConvertType.Hallow:
-                                originType = TileID.Pearlstone;
-                                break;
-                        }
-                        ReplaceAstralStalactite(TileID.Stalactite, originType, x, y);
-                    }
-                    else if (type == ModContent.TileType<AstralDesertStalactite>())
-                    {
-                        ushort originType = TileID.Sandstone;
-                        switch (convert)
-                        {
-                            case ConvertType.Corrupt:
-                                originType = TileID.CorruptSandstone;
-                                break;
-                            case ConvertType.Crimson:
-                                originType = TileID.CrimsonSandstone;
-                                break;
-                            case ConvertType.Hallow:
-                                originType = TileID.HallowSandstone;
-                                break;
-                        }
-                        ReplaceAstralStalactite(TileID.Stalactite, originType, x, y);
-                    }
-                    else if (type == ModContent.TileType<AstralIceStalactite>())
-                    {
-                        ReplaceAstralStalactite(TileID.Stalactite, TileID.IceBlock, x, y);
-                    }
-
-                    if (TileID.Sets.Conversion.Grass[type] || type == TileID.Dirt)
-                    {
-                        WorldGen.SquareTileFrame(x, y);
-                    }
-                }
-                #endregion
-
-                if (tileframe)
-                {
-                    if (Main.netMode == NetmodeID.SinglePlayer)
-                    {
-                        WorldGen.SquareTileFrame(x, y, true);
-                    }
-                    else if (Main.dedServ)
-                    {
-                        NetMessage.SendTileSquare(-1, x, y, 1);
-                    }
-                }
-            }
-        }
-
-        public static void SetTileFromConvert(int x, int y, ConvertType convert, ushort corrupt, ushort crimson, ushort hallow, ushort pure)
-        {
-            switch (convert)
-            {
-                case ConvertType.Corrupt:
-                    if (corrupt != ushort.MaxValue)
-                    {
-                        Main.tile[x, y].TileType = corrupt;
-                        WorldGen.SquareTileFrame(x, y);
-                    }
-                    break;
-                case ConvertType.Crimson:
-                    if (crimson != ushort.MaxValue)
-                    {
-                        Main.tile[x, y].TileType = crimson;
-                        WorldGen.SquareTileFrame(x, y);
-                    }
-                    break;
-                case ConvertType.Hallow:
-                    if (hallow != ushort.MaxValue)
-                    {
-                        Main.tile[x, y].TileType = hallow;
-                        WorldGen.SquareTileFrame(x, y);
-                    }
-                    break;
-                case ConvertType.Pure:
-                    if (pure != ushort.MaxValue)
-                    {
-                        Main.tile[x, y].TileType = pure;
-                        WorldGen.SquareTileFrame(x, y);
-                    }
-                    break;
-            }
-        }
-
         public static void RecursiveReplaceToAstral(ushort checkType, ushort replaceType, int x, int y, int replaceTextureWidth, int minFrameX = 0, int maxFrameX = int.MaxValue, int minFrameY = 0, int maxFrameY = int.MaxValue)
         {
             Tile tile = Main.tile[x, y];
@@ -1461,26 +1171,6 @@ namespace CalamityMod.World
                 RecursiveReplaceToAstral(checkType, replaceType, x, y - 1, replaceTextureWidth, minFrameX, maxFrameX, minFrameY, maxFrameY);
             if (Main.tile[x, y + 1] != null)
                 RecursiveReplaceToAstral(checkType, replaceType, x, y + 1, replaceTextureWidth, minFrameX, maxFrameX, minFrameY, maxFrameY);
-        }
-
-        public static void RecursiveReplaceFromAstral(ushort checkType, ushort replaceType, int x, int y, int addFrameX, int addFrameY)
-        {
-            Tile tile = Main.tile[x, y];
-            if (tile == null || !tile.HasTile || tile.TileType != checkType)
-                return;
-
-            Main.tile[x, y].TileType = replaceType;
-            Main.tile[x, y].TileFrameX += (short)addFrameX;
-            Main.tile[x, y].TileFrameY += (short)addFrameY;
-
-            if (Main.tile[x - 1, y] != null)
-                RecursiveReplaceFromAstral(checkType, replaceType, x - 1, y, addFrameX, addFrameY);
-            if (Main.tile[x + 1, y] != null)
-                RecursiveReplaceFromAstral(checkType, replaceType, x + 1, y, addFrameX, addFrameY);
-            if (Main.tile[x, y - 1] != null)
-                RecursiveReplaceFromAstral(checkType, replaceType, x, y - 1, addFrameX, addFrameY);
-            if (Main.tile[x, y + 1] != null)
-                RecursiveReplaceFromAstral(checkType, replaceType, x, y + 1, addFrameX, addFrameY);
         }
 
         public static void ReplaceAstralStalactite(ushort replaceType, ushort replaceOriginTile, int x, int y)

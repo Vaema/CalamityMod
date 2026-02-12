@@ -1,5 +1,7 @@
 ﻿using CalamityMod.CalPlayer;
+using CalamityMod.Graphics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -73,9 +75,11 @@ namespace CalamityMod.Projectiles.Pets
                     Projectile.frame = sleepy ? 16 : 8;
                 }
             }
-            underwater = player.IsUnderwater();
+            underwater = player.Calamity().countsAsAnyWet;
             if (underwater)
             {
+                if (Main.LocalPlayer.Calamity().ZoneAbyss)
+                    EnhancedDarknessSystem.lights.Add(new() { center = Projectile.Center, rotation = 0, scale = 6, texture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value });
                 if (Projectile.frame == 16)
                     Projectile.frame = 0;
                 if (sleepyTimer > 0)

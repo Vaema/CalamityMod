@@ -8,7 +8,6 @@ using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
@@ -48,9 +47,8 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void KillHoldoutLogic()
         {
-            // Only times out if at the final frame (post-firing resting time)
-            bool noMana = !Owner.CheckMana(Owner.ActiveItem()) && Projectile.frame == 14;
-            if (HeldItem.type != Owner.ActiveItem().type || noMana)
+            // Override typical CantUseHoldout such that the weapon typically runs through the use animation while not channeled
+            if (HeldItem.type != Owner.HeldItem.type || Owner.dead || !Owner.active)
             {
                 Projectile.Kill();
                 Projectile.netUpdate = true;
@@ -74,9 +72,9 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.frameCounter++;
 
                 // Subtract a flat 42 from the use time because the firing animation consists of 14 frames at 20 FPS
-                if (Projectile.frameCounter >= MathHelper.Clamp(Owner.ActiveItem().useAnimation - 42, 0f, Owner.ActiveItem().useAnimation))
+                if (Projectile.frameCounter >= MathHelper.Clamp(Owner.HeldItem.useAnimation - 42, 0f, Owner.HeldItem.useAnimation))
                 {
-                    if (Owner.CantUseHoldout())
+                    if (Owner.CantUseHoldout() || !Owner.CheckMana(Owner.HeldItem))
                         Projectile.Kill();
 
                     Projectile.frame = 0;
@@ -99,12 +97,11 @@ namespace CalamityMod.Projectiles.Magic
                 }
 
                 Projectile.frameCounter++;
-                if (Owner.CheckMana(Owner.ActiveItem(), -1, true))
+                if (Owner.CheckMana(Owner.HeldItem, -1, true))
                 {
                     FlashTimer = 4f;
                     FireSoundSlot = SoundEngine.PlaySound(FireSound, GunTipPosition);
-                    if (Owner.Calamity().GeneralScreenShakePower < 3f)
-                        Owner.Calamity().GeneralScreenShakePower = 3f;
+                    Owner.SetScreenshake(3f);
 
                     // Start from slightly behind the tip
                     Vector2 offsetPos = GunTipPosition - Projectile.velocity.SafeNormalize(Vector2.UnitY) * 18f;

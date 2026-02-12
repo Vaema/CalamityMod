@@ -9,7 +9,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
 {
-    public static class DemonEyeAI
+    public class DemonEyeAI : VanillaAIOverride
     {
         // Subtypes of enemies with this AI. Made for programmer convenience.
         public static List<int> NightTimeEnemies => new List<int>()
@@ -104,71 +104,71 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
             }
         }
 
-        public static bool BuffedDemonEyeAI(NPC npc, Mod mod)
+        public override bool AI(Mod mod)
         {
             // Randomly play pigron noises if the NPC is a pigron.
-            if (Pigrons.Contains(npc.type) && Main.rand.NextBool(1000))
-                SoundEngine.PlaySound(SoundID.Zombie9, npc.Center);
+            if (Pigrons.Contains(NPC.type) && Main.rand.NextBool(1000))
+                SoundEngine.PlaySound(SoundID.Zombie9, NPC.Center);
 
             // Disable gravity.
-            npc.noGravity = true;
+            NPC.noGravity = true;
 
             // Handle tile collision rebounds if applicable.
-            if (!npc.noTileCollide)
+            if (!NPC.noTileCollide)
             {
                 // Bounce off of tiles on the X axis.
-                if (npc.collideX)
+                if (NPC.collideX)
                 {
-                    npc.velocity.X = npc.oldVelocity.X * -0.5f;
-                    if (npc.direction == -1 && npc.velocity.X > 0f && npc.velocity.X < 2f)
-                        npc.velocity.X = 2f;
+                    NPC.velocity.X = NPC.oldVelocity.X * -0.5f;
+                    if (NPC.direction == -1 && NPC.velocity.X > 0f && NPC.velocity.X < 2f)
+                        NPC.velocity.X = 2f;
 
-                    if (npc.direction == 1 && npc.velocity.X < 0f && npc.velocity.X > -2f)
+                    if (NPC.direction == 1 && NPC.velocity.X < 0f && NPC.velocity.X > -2f)
                     {
-                        npc.velocity.X = -2f;
+                        NPC.velocity.X = -2f;
                     }
                 }
                 // Bounce off of tiles on the Y axis.
-                if (npc.collideY)
+                if (NPC.collideY)
                 {
-                    npc.velocity.Y = npc.oldVelocity.Y * -0.5f;
-                    if (npc.velocity.Y > 0f && npc.velocity.Y < 1f)
-                        npc.velocity.Y = 1f;
-                    if (npc.velocity.Y < 0f && npc.velocity.Y > -1f)
-                        npc.velocity.Y = -1f;
+                    NPC.velocity.Y = NPC.oldVelocity.Y * -0.5f;
+                    if (NPC.velocity.Y > 0f && NPC.velocity.Y < 1f)
+                        NPC.velocity.Y = 1f;
+                    if (NPC.velocity.Y < 0f && NPC.velocity.Y > -1f)
+                        NPC.velocity.Y = -1f;
                 }
             }
 
             // If the NPC is supposed to only appear during the night, disappear if above-ground and it's daytime.
-            if (Main.dayTime && npc.position.Y <= Main.worldSurface * 16.0 && NightTimeEnemies.Contains(npc.type))
+            if (Main.dayTime && NPC.position.Y <= Main.worldSurface * 16.0 && NightTimeEnemies.Contains(NPC.type))
             {
-                if (npc.timeLeft > 10)
-                    npc.timeLeft = 10;
+                if (NPC.timeLeft > 10)
+                    NPC.timeLeft = 10;
 
                 // Adjust directions
-                npc.direction = (npc.velocity.X > 0f).ToDirectionInt();
-                npc.directionY = (npc.velocity.X > 0f).ToDirectionInt();
+                NPC.direction = (NPC.velocity.X > 0f).ToDirectionInt();
+                NPC.directionY = (NPC.velocity.X > 0f).ToDirectionInt();
             }
 
             // Otherwise constantly search for the closest target.
             else
-                npc.TargetClosest();
+                NPC.TargetClosest();
 
-            Player target = Main.player[npc.target];
-            ref float fadeThroughWallsTimer = ref npc.ai[0];
-            ref float fadeThroughWallsFlag = ref npc.ai[1];
+            Player target = Main.player[NPC.target];
+            ref float fadeThroughWallsTimer = ref NPC.ai[0];
+            ref float fadeThroughWallsFlag = ref NPC.ai[1];
 
             // Fade away and go through walls if the NPC is a pigron or Calamity eye.
-            if (Pigrons.Contains(npc.type) || npc.type == ModContent.NPCType<CalamityEye>())
+            if (Pigrons.Contains(NPC.type) || NPC.type == ModContent.NPCType<CalamityEye>())
             {
                 // Stop going through walls if the target can be reached.
-                if (Collision.CanHit(npc.position, npc.width, npc.height, target.position, target.width, target.height))
+                if (Collision.CanHit(NPC.position, NPC.width, NPC.height, target.position, target.width, target.height))
                 {
-                    if (fadeThroughWallsFlag != 0f && !Collision.SolidCollision(npc.position, npc.width, npc.height))
+                    if (fadeThroughWallsFlag != 0f && !Collision.SolidCollision(NPC.position, NPC.width, NPC.height))
                     {
                         fadeThroughWallsFlag = 0f;
                         fadeThroughWallsTimer = 0f;
-                        npc.netUpdate = true;
+                        NPC.netUpdate = true;
                     }
                 }
                 else if (fadeThroughWallsFlag == 0f)
@@ -178,84 +178,84 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
                 {
                     fadeThroughWallsFlag = 1f;
                     fadeThroughWallsTimer = 0f;
-                    npc.netUpdate = true;
+                    NPC.netUpdate = true;
                 }
                 if (fadeThroughWallsFlag == 0f)
                 {
-                    npc.alpha = 0;
-                    npc.noTileCollide = false;
+                    NPC.alpha = 0;
+                    NPC.noTileCollide = false;
                 }
                 else
                 {
-                    npc.wet = false;
-                    npc.alpha = 200;
-                    npc.noTileCollide = true;
+                    NPC.wet = false;
+                    NPC.alpha = 200;
+                    NPC.noTileCollide = true;
                 }
 
-                npc.rotation = npc.velocity.Y * 0.1f * npc.direction;
-                npc.TargetClosest(true);
+                NPC.rotation = NPC.velocity.Y * 0.1f * NPC.direction;
+                NPC.TargetClosest(true);
 
-                DemonEyeBatMovement(npc);
+                DemonEyeBatMovement(NPC);
             }
-            else if (npc.type == NPCID.TheHungryII)
+            else if (NPC.type == NPCID.TheHungryII)
             {
-                npc.TargetClosest(true);
+                NPC.TargetClosest(true);
 
                 // Emit light for some reason.
-                Lighting.AddLight((int)npc.Center.X / 16, (int)npc.Center.Y / 16, 0.3f, 0.2f, 0.1f);
+                Lighting.AddLight((int)NPC.Center.X / 16, (int)NPC.Center.Y / 16, 0.3f, 0.2f, 0.1f);
 
-                DemonEyeBatMovement(npc, CalamityWorld.death ? 10f : 8f, CalamityWorld.death ? 5f : 3.5f, 0.12f, 0.12f, 0.25f, 0.06f, 0.07f, 0.2f);
+                DemonEyeBatMovement(NPC, CalamityWorld.death ? 10f : 8f, CalamityWorld.death ? 5f : 3.5f, 0.12f, 0.12f, 0.25f, 0.06f, 0.07f, 0.2f);
                 if (Main.rand.NextBool(40))
                 {
-                    Vector2 dustSpawnTopLeft = new Vector2(npc.position.X, npc.position.Y + npc.height * 0.25f);
-                    Dust blood = Dust.NewDustDirect(dustSpawnTopLeft, npc.width, npc.height / 2, DustID.Blood, npc.velocity.X, 2f, 0, default, 1f);
+                    Vector2 dustSpawnTopLeft = new Vector2(NPC.position.X, NPC.position.Y + NPC.height * 0.25f);
+                    Dust blood = Dust.NewDustDirect(dustSpawnTopLeft, NPC.width, NPC.height / 2, DustID.Blood, NPC.velocity.X, 2f, 0, default, 1f);
                     blood.velocity.X *= 0.5f;
                     blood.velocity.Y *= 0.1f;
                 }
             }
-            else if (npc.type == NPCID.WanderingEye)
+            else if (NPC.type == NPCID.WanderingEye)
             {
                 // Move faster when close to dying.
-                if (npc.life < npc.lifeMax * 0.5)
-                    DemonEyeBatMovement(npc, CalamityWorld.death ? 10f : 8f, CalamityWorld.death ? 8f : 6f, 0.12f, 0.12f, 0.07f, 0.12f, 0.12f, 0.07f);
+                if (NPC.life < NPC.lifeMax * 0.5)
+                    DemonEyeBatMovement(NPC, CalamityWorld.death ? 10f : 8f, CalamityWorld.death ? 8f : 6f, 0.12f, 0.12f, 0.07f, 0.12f, 0.12f, 0.07f);
                 else
-                    DemonEyeBatMovement(npc, CalamityWorld.death ? 8f : 6f, CalamityWorld.death ? 4f : 2.5f, 0.12f, 0.12f, 0.07f, 0.06f, 0.07f, 0.05f);
+                    DemonEyeBatMovement(NPC, CalamityWorld.death ? 8f : 6f, CalamityWorld.death ? 4f : 2.5f, 0.12f, 0.12f, 0.07f, 0.06f, 0.07f, 0.05f);
             }
             else
             {
                 float maxSpeedX = CalamityWorld.death ? 6f : 5f;
                 float maxSpeedY = CalamityWorld.death ? 2.5f : 2f;
-                maxSpeedX *= 1f + (1f - npc.scale);
-                maxSpeedY *= 1f + (1f - npc.scale);
-                DemonEyeBatMovement(npc, maxSpeedX, maxSpeedY, 0.08f, 0.08f, 0.03f, 0.02f, 0.03f, 0.015f);
+                maxSpeedX *= 1f + (1f - NPC.scale);
+                maxSpeedY *= 1f + (1f - NPC.scale);
+                DemonEyeBatMovement(NPC, maxSpeedX, maxSpeedY, 0.08f, 0.08f, 0.03f, 0.02f, 0.03f, 0.015f);
             }
 
             // Make actual eyes emit blood randomly
-            if (npc.type == NPCID.DemonEye ||
-                 npc.type == NPCID.WanderingEye ||
-                 npc.type == ModContent.NPCType<CalamityEye>() ||
-                 (npc.type >= NPCID.CataractEye && npc.type <= NPCID.PurpleEye))
+            if (NPC.type == NPCID.DemonEye ||
+                 NPC.type == NPCID.WanderingEye ||
+                 NPC.type == ModContent.NPCType<CalamityEye>() ||
+                 (NPC.type >= NPCID.CataractEye && NPC.type <= NPCID.PurpleEye))
             {
                 if (Main.rand.NextBool(40))
                 {
-                    Vector2 dustSpawnTopLeft = new Vector2(npc.position.X, npc.position.Y + npc.height * 0.25f);
-                    Dust blood = Dust.NewDustDirect(dustSpawnTopLeft, npc.width, npc.height / 2, DustID.Blood, npc.velocity.X, 2f, 0, default, 1f);
+                    Vector2 dustSpawnTopLeft = new Vector2(NPC.position.X, NPC.position.Y + NPC.height * 0.25f);
+                    Dust blood = Dust.NewDustDirect(dustSpawnTopLeft, NPC.width, NPC.height / 2, DustID.Blood, NPC.velocity.X, 2f, 0, default, 1f);
                     blood.velocity.X *= 0.5f;
                     blood.velocity.Y *= 0.1f;
                 }
             }
 
             // Avoid entering water. This does not apply to pigrons.
-            if (npc.wet && !Pigrons.Contains(npc.type))
+            if (NPC.wet && !Pigrons.Contains(NPC.type))
             {
-                if (npc.velocity.Y > 0f)
-                    npc.velocity.Y *= 0.95f;
+                if (NPC.velocity.Y > 0f)
+                    NPC.velocity.Y *= 0.95f;
 
-                npc.velocity.Y -= 0.6f;
-                if (npc.velocity.Y < -5f)
-                    npc.velocity.Y = -5f;
+                NPC.velocity.Y -= 0.6f;
+                if (NPC.velocity.Y < -5f)
+                    NPC.velocity.Y = -5f;
 
-                npc.TargetClosest(true);
+                NPC.TargetClosest(true);
             }
             return false;
         }

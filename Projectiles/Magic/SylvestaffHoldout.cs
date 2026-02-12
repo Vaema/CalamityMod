@@ -2,6 +2,7 @@
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Physics;
+using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -14,7 +15,7 @@ namespace CalamityMod.Projectiles.Magic
 {
     public class SylvestaffHoldout : ModProjectile, IPixelatedPrimitiveRenderer
     {
-        public PixelationPrimitiveLayer LayerToRenderTo => PixelationPrimitiveLayer.BeforeProjectiles | PixelationPrimitiveLayer.AfterPlayers;
+        public GeneralDrawLayer LayerToRenderTo => GeneralDrawLayer.BeforeProjectiles | GeneralDrawLayer.AfterPlayers;
 
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<Sylvestaff>();
 
@@ -167,7 +168,7 @@ namespace CalamityMod.Projectiles.Magic
         /// </summary>
         private void FireAwesomeMagicRays()
         {
-            Item heldItem = Owner.ActiveItem();
+            Item heldItem = Owner.HeldItem;
             if (heldItem is null)
                 return;
 
@@ -186,9 +187,9 @@ namespace CalamityMod.Projectiles.Magic
             }
         }
 
-        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch, PixelationPrimitiveLayer layer)
+        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch, GeneralDrawLayer layer)
         {
-            bool backLayer = layer == PixelationPrimitiveLayer.BeforeProjectiles;
+            bool backLayer = layer == GeneralDrawLayer.BeforeProjectiles;
             RenderRibbon(LeftRibbon, -1, backLayer);
             RenderRibbon(RightRibbon, 1, backLayer);
         }
@@ -196,12 +197,12 @@ namespace CalamityMod.Projectiles.Magic
         /// <summary>
         ///     The function responsible for dictating the width of this staff's ribbons.
         /// </summary>
-        private float RibbonWidthFunction(float completionRatio) => Projectile.scale * Utils.GetLerpValue(0f, 0.2f, completionRatio, true) * 3.6f;
+        private float RibbonWidthFunction(float completionRatio, Vector2 vertexPos) => Projectile.scale * Utils.GetLerpValue(0f, 0.2f, completionRatio, true) * 3.6f;
 
         /// <summary>
         ///     The function responsible for dictating the color of this staff's ribbons.
         /// </summary>
-        private Color RibbonColorFunction(float completionRatio)
+        private Color RibbonColorFunction(float completionRatio, Vector2 vertexPos)
         {
             Color light = Lighting.GetColor(RibbonAttachPoint.ToTileCoordinates());
             return Projectile.GetAlpha(light);

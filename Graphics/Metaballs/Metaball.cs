@@ -1,17 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Effects;
+using CalamityMod.Enums;
+using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Graphics.Metaballs
 {
     public abstract class Metaball : ModType
     {
-        internal List<ManagedRenderTarget> LayerTargets = new();
+        internal List<RenderTargetLease> LayerTargets = new();
 
         /// <summary>
         /// Required utility that is used to determine whether this metaball has anything to draw.<br></br>
@@ -33,7 +34,7 @@ namespace CalamityMod.Graphics.Metaballs
         /// <summary>
         /// The draw layer in which metaballs should be drawn.
         /// </summary>
-        public abstract MetaballDrawLayer DrawContext
+        public abstract GeneralDrawLayer DrawLayer
         {
             get;
         }
@@ -45,6 +46,16 @@ namespace CalamityMod.Graphics.Metaballs
         {
             get;
         }
+
+        /// <summary>
+        /// Colors for the layers to draw with. Defaults to white when unset.
+        /// </summary>
+        public virtual List<Vector4> LayerColors { get; set; } = [];
+
+        /// <summary>
+        /// Whether the metaball runs Update based on the draw cycle or the game update cycle
+        /// </summary>
+        public virtual bool IgnoreFPS => false;
 
         /// <summary>
         /// Whether the layer overlay contents from <see cref="Layers"/> should be fixed to the screen.<br></br>
@@ -96,18 +107,19 @@ namespace CalamityMod.Graphics.Metaballs
                 layerScrollOffset = Vector2.Zero;
 
             // Supply shader parameter values.
-            metaballShader.Parameters["layerSize"]?.SetValue(layerTexture.Size());
-            metaballShader.Parameters["screenSize"]?.SetValue(screenSize);
-            metaballShader.Parameters["layerOffset"]?.SetValue(layerScrollOffset);
-            metaballShader.Parameters["edgeColor"]?.SetValue(EdgeColor.ToVector4());
-            metaballShader.Parameters["singleFrameScreenOffset"]?.SetValue((Main.screenLastPosition - Main.screenPosition) / screenSize);
+            metaballShader.Value.Parameters["layerSize"]?.SetValue(layerTexture.Size());
+            metaballShader.Value.Parameters["screenSize"]?.SetValue(screenSize);
+            metaballShader.Value.Parameters["layerOffset"]?.SetValue(layerScrollOffset);
+            metaballShader.Value.Parameters["edgeColor"]?.SetValue(EdgeColor.ToVector4());
+            metaballShader.Value.Parameters["singleFrameScreenOffset"]?.SetValue((Main.screenLastPosition - Main.screenPosition) / screenSize);
+            metaballShader.Value.Parameters["layerColor"]?.SetValue(LayerColors.Count() > layerIndex ? LayerColors[layerIndex] : Color.White.ToVector4());
 
             // Supply the metaball's layer texture to the graphics device so that the shader can read it.
             gd.Textures[1] = layerTexture;
             gd.SamplerStates[1] = SamplerState.LinearWrap;
 
             // Apply the metaball shader.
-            metaballShader.CurrentTechnique.Passes[0].Apply();
+            metaballShader.Value.CurrentTechnique.Passes[0].Apply();
         }
 
         /// <summary>
@@ -134,7 +146,7 @@ namespace CalamityMod.Graphics.Metaballs
                 // Load render targets.
                 int layerCount = Layers.Count();
                 for (int i = 0; i < layerCount; i++)
-                    LayerTargets.Add(new(true, ManagedRenderTarget.CreateScreenSizedTarget));
+                    LayerTargets.Add(ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (width, height) => (width + 4, height + 4)));
             });
         }
 

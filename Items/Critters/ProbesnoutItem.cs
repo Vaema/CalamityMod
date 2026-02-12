@@ -1,5 +1,4 @@
 ﻿using CalamityMod.NPCs.SunkenSea;
-using CalamityMod.Packets;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

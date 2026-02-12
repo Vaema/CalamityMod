@@ -69,7 +69,7 @@ namespace CalamityMod.UI.DraedonsArsenal
             }
 
             // If the Charge Meter is turned off or the player is not holding an item, stop.
-            Item heldItem = player.ActiveItem();
+            Item heldItem = player.HeldItem;
             if (!CalamityClientConfig.Instance.ChargeMeter || heldItem is null || heldItem.IsAir)
             {
                 Reset();
@@ -129,7 +129,7 @@ namespace CalamityMod.UI.DraedonsArsenal
                 }
 
                 // When the mouse is released, save the config and destroy the drag offset.
-                if (ms.LeftButton == ButtonState.Released)
+                if (dragOffset.HasValue && ms.LeftButton == ButtonState.Released)
                 {
                     dragOffset = null;
                     CalamityClientConfig.Instance.SaveChanges();

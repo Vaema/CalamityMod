@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.damage = 57;
             Item.DamageType = DamageClass.Summon;
             Item.mana = 10;
-            Item.useAnimation = Item.useTime = 15;
+            Item.useAnimation = Item.useTime = 24;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 5f;
@@ -51,8 +51,8 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.EmpressBlade).
                 AddIngredient<PlantationStaff>().
+                AddIngredient(ItemID.Smolstar). // Blade Staff
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<LifeAlloy>(5).
                 AddIngredient(ItemID.FragmentStardust, 5).

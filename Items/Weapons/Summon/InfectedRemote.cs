@@ -13,31 +13,22 @@ namespace CalamityMod.Items.Weapons.Summon
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
         public const int DefaultIframes = 10;
-
         public const int ChargeIframes = 2;
-
         public const int RocketShootRate = 6;
-
         public const int BeeShootRate = 22;
 
         public const int MaxUpdatesWhenCharging = 2;
-
         public const float RegularChargeSpeed = 40f;
-
         public const float HorizontalRocketChargeSpeed = 22f;
 
         public const float RocketDamageFactor = 0.7f;
-
         public const float BeeDamageFactor = 0.65f;
-
         public const float MinionSlotRequirement = 3f;
-
         public const float EnemyTargetingRange = 1300f;
 
         public override void SetStaticDefaults()
         {
             ItemID.Sets.StaffMinionSlotsRequired[Type] = 3f;
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<TheSyringe>();
         }
 
         public override void SetDefaults()
@@ -46,7 +37,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.height = 28;
             Item.damage = 50;
             Item.mana = 10;
-            Item.useAnimation = Item.useTime = 19;
+            Item.useAnimation = Item.useTime = 36;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noMelee = true;
             Item.knockBack = 5f;

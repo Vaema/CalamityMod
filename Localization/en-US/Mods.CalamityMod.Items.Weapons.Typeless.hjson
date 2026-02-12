@@ -13,11 +13,16 @@ ClaretCannon: {
 		'''
 		Fires a hypercondensed claret round
 		The round explodes upon striking an enemy and releases blood orbs
-		The explosion shreds enemies, inflicting [Laceration] and dramatically reducing their defense
-		Picking up the blood orbs will reduce [Potion Sickness] when possible
-		If you do not have [Potion Sickness], your natural regeneration will be enhanced
+		The explosion shreds enemies, inflicting [cbuff:CalamityMod/Laceration] and dramatically reducing their defense
+		Picking up the blood orbs will reduce [cbuff:PotionSickness] when possible
+		If you do not have [cbuff:PotionSickness], your natural regeneration will be enhanced
 		Can only fire once every 10 seconds
 		'''
+}
+
+ColdheartIcicle: {
+	DisplayName: Coldheart Icicle
+	Tooltip: "'N(ice) work'"
 }
 
 EyeofMagnus: {
@@ -68,4 +73,16 @@ Skynamite: {
 StarStruckWater: {
 	DisplayName: Star Struck Water
 	Tooltip: Spreads the Astral Infection to some blocks
+}
+
+StratusSphere: {
+	DisplayName: Stratus Sphere
+	Tooltip:
+		'''
+		Launches a singularity which exerts influence on all entities in a large area around it
+		Influenced players gain Starbursts over time and will consume Starbursts to fly when out of flight time
+		<right> to cause Starbursts to form a barrier, causing you to lose Starbursts instead of health
+		Launching the singularity deactivates the barrier, and creating a barrier deactivates the singularity
+		'Channeling souls into stars, an inane concept'
+		'''
 }

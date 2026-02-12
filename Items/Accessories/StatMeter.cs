@@ -19,7 +19,6 @@ namespace CalamityMod.Items.Accessories
             Item.height = 26;
             Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
-            Item.accessory = true;
         }
 
         public override void UpdateInventory(Player player)
@@ -37,7 +36,7 @@ namespace CalamityMod.Items.Accessories
 
             Item heldItem = null;
             if (player.selectedItem >= 0 && player.selectedItem < Main.InventorySlotsTotal)
-                heldItem = player.ActiveItem();
+                heldItem = player.HeldItem;
 
             static string OnePlace(float f) => f.ToString("n1");
             static string TwoPlaces(float f) => f.ToString("n2");
@@ -199,7 +198,7 @@ namespace CalamityMod.Items.Accessories
             }
             list.FindAndReplace("[ITEMS]", stats2);
 
-            float moveSpeedBoost = CalamityServerConfig.Instance.FasterBaseSpeed ? (player.moveSpeed / BalancingConstants.DefaultMoveSpeedBoost) - 1f  : player.moveSpeed - 1f;
+            float moveSpeedBoost = CalamityServerConfig.Instance.FasterBaseSpeed ? (player.moveSpeed / BalancingConstants.DefaultMoveSpeedBoost) - 1f : player.moveSpeed - 1f;
             float wingFlightTime = player.wingTimeMax;
             // Does not use NormalizedLuck. Presents the player's luck exactly as it is used by the game engine.
             // NormalizedLuck is only used in one place: the Wizard's luck report. Which is entirely obsoleted by this Meter.
@@ -222,7 +221,9 @@ namespace CalamityMod.Items.Accessories
 
             // Detailed Abyss stats only render if the player is in the Abyss.
             string stats4 = "\n" + (!modPlayer.ZoneAbyss ? this.GetLocalizedValue("AbyssStatsHidden") : this.GetLocalization("AbyssStats").Format(
-                player.GetCurrentAbyssLightLevel(),
+                modPlayer.abyssDarkness,
+                modPlayer.abyssPlayerGlowMultiplier,
+                modPlayer.abyssFlashlightWidthMultiplier,
                 TwoPlaces(modPlayer.abyssBreathLossRateStat),
                 modPlayer.abyssLifeLostAtZeroBreathStat,
                 modPlayer.abyssDefenseLossStat));

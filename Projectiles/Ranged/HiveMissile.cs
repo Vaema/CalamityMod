@@ -1,7 +1,5 @@
-﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -83,7 +81,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                 if (Main.rand.NextBool())
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(10, 10) - Projectile.velocity * 2.5f, 303, -Projectile.velocity.RotatedByRandom(0.05f) * Main.rand.NextFloat(0.05f, 0.4f), 0, default, Main.rand.NextFloat(0.8f, 1.4f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(10, 10) - Projectile.velocity * 2.5f, DustID.SteampunkSteam, -Projectile.velocity.RotatedByRandom(0.05f) * Main.rand.NextFloat(0.05f, 0.4f), 0, default, Main.rand.NextFloat(0.8f, 1.4f));
                     dust.noGravity = false;
                     dust.color = Color.Black;
                     dust.alpha = Main.rand.Next(90, 220 + 1);
@@ -152,7 +150,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                 for (int k = 0; k < 15; k++)
                 {
-                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center, 303, new Vector2(8, 8).RotatedByRandom(100) * Main.rand.NextFloat(0.05f, 0.8f));
+                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center, DustID.SteampunkSteam, new Vector2(8, 8).RotatedByRandom(100) * Main.rand.NextFloat(0.05f, 0.8f));
                     dust2.scale = Main.rand.NextFloat(0.75f, 0.95f);
                     dust2.noGravity = true;
                     dust2.color = Main.rand.NextBool(3) ? EffectsColor : StaticEffectsColor;

@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Placeables.PlaceableTurrets
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<PlayerWaterTurret>());
 
-            Item.value = Item.sellPrice(gold: 1);
+            Item.value = Item.sellPrice(silver: 50);
             Item.rare = ItemRarityID.Orange;
         }
 
@@ -30,6 +30,7 @@ namespace CalamityMod.Items.Placeables.PlaceableTurrets
                 AddIngredient<Navyplate>(10).
                 AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(1, out Func<bool> condition), condition).
                 AddTile(TileID.Anvils).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<HostileWaterTurret>()).
                 Register();
         }
     }
