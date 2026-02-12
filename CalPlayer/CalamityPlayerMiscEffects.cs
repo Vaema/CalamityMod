@@ -2073,29 +2073,26 @@ namespace CalamityMod.CalPlayer
                 zapActivity += 1;
                 if (zapActivity <= 300 && zapActivity % 30 == 0)
                 {
-                    for (int arcProjCount = 0; arcProjCount < 3; arcProjCount++)
+                    float maxDistance = 300f;
+                    int target = -1;
+                    foreach (NPC npc in Main.ActiveNPCs)
                     {
-                        float maxDistance = 300f;
-                        int target = -1;
-                        foreach (NPC npc in Main.ActiveNPCs)
+                        float targetDist = Vector2.Distance(npc.Center, Player.Center);
+                        if (targetDist < maxDistance && npc.Calamity().arcZapCooldown == 0 && npc.CanBeChasedBy())
                         {
-                            float targetDist = Vector2.Distance(npc.Center, Player.Center);
-                            if (targetDist < maxDistance && npc.Calamity().arcZapCooldown == 0 && npc.CanBeChasedBy())
-                            {
-                                maxDistance = targetDist;
-                                target = npc.whoAmI;
-                            }
+                            maxDistance = targetDist;
+                            target = npc.whoAmI;
                         }
+                    }
 
-                        if (target > 0)
-                        {
-                            unstableSelectedTarget = Main.npc[target];
-                            unstableSelectedTarget.Calamity().arcZapCooldown = 18;
-                            int damage = (int)Player.GetBestClassDamage().ApplyTo(18);
+                    if (target > 0)
+                    {
+                        unstableSelectedTarget = Main.npc[target];
+                        unstableSelectedTarget.Calamity().arcZapCooldown = 25;
+                        int damage = (int)Player.GetBestClassDamage().ApplyTo(15);
 
-                            Projectile.NewProjectile(Player.GetSource_FromThis(), new Vector2(Player.Center.X, Player.Center.Y - 20f), new Vector2(0f, -2f), ModContent.ProjectileType<ArcZap>(), damage, 0f, Player.whoAmI, target, 3f);
-                            target = -1;
-                        }
+                        Projectile.NewProjectile(Player.GetSource_FromThis(), new Vector2(Player.Center.X, Player.Center.Y - 20f), new Vector2(0f, -2f), ModContent.ProjectileType<ArcZap>(), damage, 0f, Player.whoAmI, target, 5f);
+                        target = -1;
                     }
                 }
                 else if (zapActivity > 600)
