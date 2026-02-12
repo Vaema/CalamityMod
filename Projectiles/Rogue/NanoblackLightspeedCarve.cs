@@ -46,7 +46,6 @@ namespace CalamityMod.Projectiles.Rogue
 
         private void FrameOneEffects()
         {
-            // todo: multiplayer test
             if (Main.netMode != NetmodeID.Server)
             {
                 int slashVisualID = ModContent.ProjectileType<NanoblackLightspeedCarveSlashVisual>();
@@ -58,8 +57,6 @@ namespace CalamityMod.Projectiles.Rogue
         {
             if (Projectile.timeLeft > Lifetime - HitboxDuration)
                 Projectile.penetrate++;
-
-            Main.NewText("bazinga");
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, HitboxRadius, targetHitbox);
