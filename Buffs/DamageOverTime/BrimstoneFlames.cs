@@ -30,7 +30,7 @@ namespace CalamityMod.Buffs.DamageOverTime
             bool effected = (cnpc.abaddonEffected || cnpc.voidOfExtinctionEffected);
             bool strong = cnpc.voidOfExtinctionEffected;
             int baseBrimstoneFlamesDoTValue = (int)debuffData.EnemyLostRegen;
-            if (effected)
+            if (effected && cnpc.checkPlayerBflameDamage)
             {
                 for (int playerIndex = 0; playerIndex < Main.maxPlayers; playerIndex++)
                 {
@@ -44,6 +44,7 @@ namespace CalamityMod.Buffs.DamageOverTime
                         }
                     }
                 }
+                cnpc.checkPlayerBflameDamage = false;
             }
             cnpc.ApplyDPSDebuff(baseBrimstoneFlamesDoTValue, baseBrimstoneFlamesDoTValue / 20, ref npc.lifeRegen, ref damage);
         }

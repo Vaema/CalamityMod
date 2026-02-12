@@ -51,6 +51,7 @@ using CalamityMod.UI;
 using CalamityMod.Utilities;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
+using Mono.Cecil;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Chat;
@@ -685,139 +686,11 @@ namespace CalamityMod.CalPlayer
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             NPC npc = target;
-            if ((npc.Calamity().abaddonEffected || npc.Calamity().voidOfExtinctionEffected) && hit.Crit && abaddonCooldown == 0)
+            int debuffSpreadProj = ModContent.ProjectileType<DebuffSpreadEffect>();
+            if ((Player.Calamity().abaddon || Player.Calamity().voidOfExtinction) && (npc.Calamity().abaddonEffected || npc.Calamity().voidOfExtinctionEffected) && hit.Crit && abaddonCooldown == 0 && Player.ownedProjectileCounts[debuffSpreadProj] == 0)
             {
-                bool strong = npc.Calamity().voidOfExtinctionEffected;
-                float areaOfEffect = (strong ? 1200 : 600);
-                if (Main.netMode != NetmodeID.MultiplayerClient)
-                {
-                    Color color1 = Color.Crimson;
-                    Color color2 = Color.OrangeRed;
-                    int debuffTime = (strong ? 180 : 90);
-                    int targetNum = 0;
-                    int maxTargetNum = strong ? 8 : 5;
-                    int startDir = Main.rand.NextBool() ? 1 : -1;
-                    for (int r = 0; r < Main.maxNPCs; r++)
-                    {
-                        NPC targeted = Main.npc[r];
-
-                        if (targeted != null && targeted != npc && targeted.CanBeChasedBy() && Vector2.Distance(targeted.Center, npc.Center) <= areaOfEffect && targetNum < maxTargetNum)
-                        {
-                            targeted.Calamity().voidOfExtinctionEffected = npc.Calamity().voidOfExtinctionEffected;
-                            targeted.Calamity().abaddonEffected = npc.Calamity().abaddonEffected;
-
-                            Vector2 start = npc.Center + Main.rand.NextVector2Circular(npc.width / 2, npc.height / 2);
-                            Vector2 end = targeted.Center;
-                            Color color = Main.rand.NextBool() ? color2 : color1;
-
-                            if (Player.Calamity().abaddonEffectVisual)
-                            {
-                                Vector2 lerpVel = Vector2.Lerp(start, end, 0.5f);
-                                float scale = 0.015f;
-                                Particle spark = new CustomSpark(lerpVel, npc.SafeDirectionTo(targeted.Center), "CalamityMod/Particles/BloomLineThick", false, 18, scale, color, new Vector2(1.2f, (Utils.Distance(start, end) * 0.034f)), true, true, shrinkSpeed: 0.25f, glowOpacity: 0.75f);
-                                GeneralParticleHandler.SpawnParticle(spark);
-
-                                for (int g = 0; g < 7; g++)
-                                {
-                                    int DustID = ModContent.DustType<LightDust>();
-                                    Dust dust2 = Dust.NewDustDirect(targeted.Center, targeted.width, targeted.height, DustID);
-                                    dust2.scale = Main.rand.NextFloat(0.6f, 0.75f);
-                                    dust2.velocity = new Vector2(4, 4).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 0.8f);
-                                    dust2.noGravity = true;
-                                    dust2.color = Main.rand.NextBool() ? color2 : color1;
-                                }
-
-                                float distance = Vector2.Distance(targeted.Center, npc.Center);
-                                int maxDusts = (int)distance;
-                                int dustCaper = 60;
-                                int dustDivisor = maxDusts / dustCaper;
-                                if (dustDivisor < 2)
-                                    dustDivisor = 2;
-
-                                Vector2 dustLineStart = start;
-                                Vector2 dustLineEnd = end;
-                                Vector2 currentDustPos = default;
-                                Vector2 dustVel = start.DirectionTo(end);
-                                int startingPoint = Main.rand.Next(0, 400 + 1);
-                                Vector2 lastDustPos = default;
-                                for (int i = 0; i < maxDusts; i++)
-                                {
-                                    float sine = (float)Math.Sin((i + startingPoint) * 0.425f / MathHelper.Pi) * startDir;
-                                    float endStartFade = Math.Min(Utils.GetLerpValue(maxDusts * 0.8f, 0, i), Utils.GetLerpValue(0 + maxDusts * 0.2f, maxDusts, i));
-                                    currentDustPos = Vector2.Lerp(dustLineStart, dustLineEnd, i / (float)maxDusts) + dustVel.RotatedBy(MathHelper.PiOver2) * 6 * sine * endStartFade;
-                                    if (i == 0)
-                                        lastDustPos = currentDustPos;
-
-                                    currentDustPos = Vector2.Lerp(dustLineStart, dustLineEnd, i / (float)maxDusts) + dustVel.RotatedBy(MathHelper.PiOver2) * 55 * sine * endStartFade;
-                                    Dust dustLinger = Dust.NewDustPerfect(currentDustPos, ModContent.DustType<SquashDust>());
-                                    dustLinger.position = currentDustPos;
-                                    dustLinger.velocity = currentDustPos.DirectionTo(lastDustPos) * (Main.rand.NextBool(5) ? 4f : Main.rand.NextFloat(0.2f, 0.8f));
-                                    dustLinger.noGravity = true;
-                                    dustLinger.scale = Main.rand.NextFloat(0.8f, 1f) * 1.5f;
-                                    dustLinger.fadeIn = Main.rand.NextFloat(0.6f, 1f) * 4;
-                                    dustLinger.color = Color.Lerp(color1, color2, Utils.GetLerpValue(0, maxDusts, i));
-
-                                    lastDustPos = currentDustPos;
-                                }
-                            }
-                            for (int u = 0; u < 2; u++)
-                            {
-                                Vector2 pos = start;
-                                if (u == 0) pos = end;
-                                Particle spark2 = new CustomSpark(pos, Vector2.Zero, "CalamityMod/Particles/BloomCircle", false, 18, u != 0 ? 0.7f : 0.55f, color * (Player.Calamity().abaddonEffectVisual ? 1 : 0.3f), Vector2.One, true, true, glowOpacity: 0.85f);
-                                GeneralParticleHandler.SpawnParticle(spark2);
-                                if (targetNum > 0) // Only spawn the bloom on start position for the first arc
-                                    u++;
-                            }
-
-                            npc.AddBuff(ModContent.BuffType<BrimstoneFlames>(), debuffTime);
-                            
-                            float bestDamage = 0;
-                            // Find all the debuffs on the enemy
-                            for (int index = 0; index < npc.buffType.Length; index++)
-                            {
-                                int type = npc.buffType[index];
-                                var debuffData = BuffDatasets.DebuffDataset[type];
-
-                                // Calculate the brimstone flames damage to see if the debuffs can be transfered
-                                int bFlamesDamage = Math.Max((int)(BrimstoneFlames.debuffData.EnemyLostRegen * bestDamage), (int)BrimstoneFlames.debuffData.EnemyLostRegen);
-
-                                if (CalamityBuffSets.IsDebuff[type])
-                                {
-                                    // Find the player who has the accessory
-                                    for (int playerIndex = 0; playerIndex < Main.maxPlayers; playerIndex++)
-                                    {
-                                        Player player = Main.player[playerIndex];
-                                        if (player.active)
-                                        {
-                                            if (player.Calamity().abaddonFlameDamage > bestDamage)
-                                                bestDamage = player.Calamity().abaddonFlameDamage;
-                                        }
-                                    }
-                                    
-                                    if (debuffData == null || debuffData.EnemyLostRegen <= bFlamesDamage)
-                                        targeted.AddBuff(type, debuffTime);
-                                }
-                                // Edge case fixes for Shred and Demonic Flames
-                                if (npc.Calamity().somaShredStacks > 0 && Shred.BaseDamage <= bFlamesDamage)
-                                    targeted.AddBuff(ModContent.BuffType<Shred>(), debuffTime);
-                                int demonicFlames = ModContent.GetModBuff(ModContent.BuffType<DemonicFlames>()).Type;
-                                if (npc.HasBuff(demonicFlames))
-                                    targeted.Calamity().demonicFlamesBonusDamage = npc.Calamity().demonicFlamesBonusDamage;
-                            }
-                            targetNum++;
-                        }
-                    }
-                    if (targetNum == 0)
-                    {
-                        npc.AddBuff(ModContent.BuffType<BrimstoneFlames>(), debuffTime);
-                        Color color = Main.rand.NextBool() ? color2 : color1;
-                        Particle spark2 = new CustomSpark(npc.Center, Vector2.Zero, "CalamityMod/Particles/BloomCircle", false, 18, 0.55f, color * (Player.Calamity().abaddonEffectVisual ? 1 : 0.3f), Vector2.One, true, true, glowOpacity: 0.85f);
-                        GeneralParticleHandler.SpawnParticle(spark2);
-                        
-                    }
-                    abaddonCooldown = targetNum * 12;
-                }
+                int maxTargetNum = npc.Calamity().voidOfExtinctionEffected ? 10 : 6;
+                Projectile.NewProjectile(Player.GetSource_FromThis(), npc.Center, Vector2.Zero, debuffSpreadProj, 0, 0, Player.whoAmI, 0, npc.whoAmI, maxTargetNum);
             }
         }
 

@@ -303,6 +303,7 @@ namespace CalamityMod.NPCs
         public bool scionsCurioEffected = false;
         public bool abaddonEffected = false;
         public bool voidOfExtinctionEffected = false;
+        public bool checkPlayerBflameDamage = false;
         public int warbannerBurnTime = 0; // Determines the rate that the enemy is damaged
         public int warbannerBurnTimer = 0; // The duration of the debuff
         public int warbannerBurnStacks = 0; // The stacks increase how fast the debuff hits
@@ -582,6 +583,7 @@ namespace CalamityMod.NPCs
             myClone.scionsCurioEffected = scionsCurioEffected;
             myClone.abaddonEffected = abaddonEffected;
             myClone.voidOfExtinctionEffected = voidOfExtinctionEffected;
+            myClone.checkPlayerBflameDamage = checkPlayerBflameDamage;
             myClone.warbannerBurnTime = warbannerBurnTime;
             myClone.warbannerBurnTimer = warbannerBurnTimer;
             myClone.warbannerBurnStacks = warbannerBurnStacks;
@@ -3136,7 +3138,8 @@ namespace CalamityMod.NPCs
                 if (!Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].head))
                     npc.ai[3] = 0f;
             }
-
+            if (!brimstoneFlames && !checkPlayerBflameDamage)
+                checkPlayerBflameDamage = true;
             if (demonicFlames)
                 demonicFlamesClearTimer = 0;
             else
