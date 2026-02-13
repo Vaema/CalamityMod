@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Packets;
 using CalamityMod.Packets.Entities;
 using CalamityMod.Particles;
@@ -128,7 +129,10 @@ public class FalseBrain : ModNPC, ILocalizedModType
     {
         if (!BeenHit)
         {
-            BrainIllusionHitPacket.Send(NPC.whoAmI, player.whoAmI);
+            if (Main.netMode == NetmodeID.SinglePlayer)
+                Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<TelekineticBlast>(), 50, 0.5f, -1, player.whoAmI, 5, NPC.whoAmI);
+            else
+                BrainIllusionHitPacket.Send(NPC.whoAmI, player.whoAmI);
             NPC.dontTakeDamage = true;
         }
     }
@@ -137,7 +141,10 @@ public class FalseBrain : ModNPC, ILocalizedModType
     {
         if (!BeenHit && !projectile.Calamity().IgnoreBoCIllusions && projectile.owner != -1)
         {
-            BrainIllusionHitPacket.Send(NPC.whoAmI, projectile.owner);
+            if(Main.netMode == NetmodeID.SinglePlayer)
+                Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<TelekineticBlast>(), 50, 0.5f, -1, projectile.owner, 5, NPC.whoAmI);
+            else
+                BrainIllusionHitPacket.Send(NPC.whoAmI, projectile.owner);
             NPC.dontTakeDamage = true;
         }
     }
