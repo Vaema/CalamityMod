@@ -13,6 +13,7 @@ namespace CalamityMod.Projectiles.Rogue
         public override LocalizedText DisplayName => this.GetLocalization(IsPerfect ? "Perfect" : "Standard");
 
         internal const float TargetingRange = 600f;
+        internal const int MaxHits = 3;
 
         internal static float HitboxRadius = 60.0f;
         internal static float PlacementRandomness = 12f;
@@ -55,7 +56,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (Projectile.timeLeft > Lifetime - HitboxDuration)
+            if (Projectile.timeLeft > Lifetime - HitboxDuration && Projectile.numHits < MaxHits)
                 Projectile.penetrate++;
         }
 
