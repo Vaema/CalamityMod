@@ -130,7 +130,7 @@ public class FalseBrain : ModNPC, ILocalizedModType
         if (!BeenHit)
         {
             if (Main.netMode == NetmodeID.SinglePlayer)
-                Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<TelekineticBlast>(), 50, 0.5f, -1, player.whoAmI, 5, NPC.whoAmI);
+                Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<TelekineticBlast>(), 50, 0.5f, -1, player.whoAmI, 8, NPC.whoAmI);
             else
                 BrainIllusionHitPacket.Send(NPC.whoAmI, player.whoAmI);
             NPC.dontTakeDamage = true;
@@ -142,7 +142,7 @@ public class FalseBrain : ModNPC, ILocalizedModType
         if (!BeenHit && !projectile.Calamity().IgnoreBoCIllusions && projectile.owner != -1)
         {
             if(Main.netMode == NetmodeID.SinglePlayer)
-                Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<TelekineticBlast>(), 50, 0.5f, -1, projectile.owner, 5, NPC.whoAmI);
+                Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<TelekineticBlast>(), 50, 0.5f, -1, projectile.owner, 8, NPC.whoAmI);
             else
                 BrainIllusionHitPacket.Send(NPC.whoAmI, projectile.owner);
             NPC.dontTakeDamage = true;

@@ -151,7 +151,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
     #region Bloodletting
     internal static int BloodlettingDuration => 675;
-    internal static Vector2 HoverDistance => new (420f, 270f);
+    internal static Vector2 HoverDistance => new (420f, 300f);
     internal static float HoverEndHeight => 300f;
     internal static int IchorRate => CalamityWorld.death ? 9 : 10;
     internal static float IchorSpread => 1.5f;
@@ -354,6 +354,8 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         }
         else
             NPC.defense = (int)(NPC.defDefense * Phase1DefenseMultiplier);
+
+        NPC.extraValue = 0;
 
         #region Targeting
         if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
@@ -1858,7 +1860,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         else if (endTime < DashPrepTime)
         {
             if (endTime == 0)
-                NPC.velocity = Vector2.UnitX * AttackSign * 8f;
+                NPC.velocity = Vector2.UnitX * AttackSign * 10f;
             else
             {
                 Vector2 goalPos = Target.Center - Vector2.UnitY * HoverEndHeight;
@@ -2469,24 +2471,24 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
                 NPC.Opacity = 1 - (TeleportTime / (TeleportDuration / 2f));
             }
-            else if (startTime < 90 + IllusionDashSpinDuration + 30 + IllusionDashFakeoutTeleportDuration + 30)
+            else if (startTime <= 150 + IllusionDashSpinDuration + 30 + IllusionDashFakeoutTeleportDuration + 30)
             {
                 NPC.velocity *= 0.9f;
-                if (startTime % 15 == 0 && startTime > 45 + IllusionDashSpinDuration + 30 + IllusionDashFakeoutTeleportDuration)
+                if (startTime % 15 == 5 && startTime > 60 + IllusionDashSpinDuration + 30 + IllusionDashFakeoutTeleportDuration)
                 {
-                    for (int i = 0; i < 2; i++)
+                    for (int i = 0; i < (CalamityWorld.death ? 2 : 1); i++)
                     {
                         Vector2 dir = NPC.DirectionTo(Target.Center);
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            Vector2 initialDir = dir.RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 4f, MathHelper.Pi / 4f));
-                            Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, initialDir * Main.rand.NextFloat(10f, 25f), ProjectileID.BloodNautilusShot, BloodShotDamage, 0.5f, ai0: dir.ToRotation() + MathHelper.TwoPi, ai1: initialDir.ToRotation());
+                            Vector2 initialDir = dir.RotatedBy(MathHelper.Pi + Main.rand.NextFloat(-0.01f, 0.01f));
+                            Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center + Main.rand.NextVector2Circular(NPC.width, NPC.width), initialDir * Main.rand.NextFloat(6f, 8f), ProjectileID.BloodNautilusShot, BloodShotDamage, 0.5f, ai0: dir.ToRotation() + MathHelper.TwoPi, ai1: initialDir.ToRotation());
                         }
-                        NPC.velocity -= dir * 2f;
+                        NPC.velocity -= dir;
                     }
                 }
             }
-            else if (startTime >= 135 + IllusionDashSpinDuration + 30 + IllusionDashFakeoutTeleportDuration + 30)
+            else if (startTime >= 180 + IllusionDashSpinDuration + 30 + IllusionDashFakeoutTeleportDuration + 30)
             {
                 foreach (NPC n in Main.ActiveNPCs)
                     if (n.type == ModContent.NPCType<BrainIllusion>())
