@@ -43,9 +43,9 @@ public sealed class PrimitiveMeshCache
     public PooledPrimitiveMesh RentColored(int vertexCount, int indexCount, PrimitiveType primitiveType)
     {
         if (vertexCount <= 0)
-            throw new ArgumentOutOfRangeException(nameof(vertexCount), "You're trying to rent.. nothing?");
+            throw new ArgumentOutOfRangeException(nameof(vertexCount), "Cannot meaningfully rent zero vertices.");
         if (indexCount <= 0)
-            throw new ArgumentOutOfRangeException(nameof(indexCount), "You're trying to rent.. nothing?");
+            throw new ArgumentOutOfRangeException(nameof(indexCount), "Cannot meaningfully rent an index buffer of size zero.");
         if (vertexCount > short.MaxValue)
             throw new ArgumentOutOfRangeException(nameof(vertexCount), "Vertex count exceeds index buffer range.");
 
