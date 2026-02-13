@@ -355,11 +355,6 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         else
             NPC.defense = (int)(NPC.defDefense * Phase1DefenseMultiplier);
 
-        if (AIState <= BrainAIState.SurfaceSpawnAnimation)
-            NPC.damage = 0;
-        else
-            NPC.damage = NPC.defDamage;
-
         #region Targeting
         if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
         {
@@ -559,6 +554,8 @@ public class BrainOfCthulhuAI : VanillaAIOverride
     
     private void SpawnAnimation()
     {
+        NPC.damage = 0;
+
         if (SpawnTime != 0) //BoC should begin appearing
         {
             float d = Main.LocalPlayer.DistanceSQ(NPC.Center);
@@ -638,6 +635,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                     BrainOfCthulhuSystem.ScreenBlurStrength = 0f;
                     BoCDrawOffset = Vector2.Zero;
                     AIState = BrainAIState.Phase1Idle;
+                    NPC.damage = NPC.defDamage;
                     ResetAttackValues();
                     Time = -1;
                     SpawnTime = -1;
@@ -1041,6 +1039,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         BrainOfCthulhuSystem.ScreenBlurStrength = 0f;
 
         NPC.dontTakeDamage = false;
+        NPC.damage = 0;
 
         if (Time <= 15)
         {
@@ -1108,6 +1107,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                 OnSecondCreeperPhase = true;
                 AIState = BrainAIState.Phase1Idle;
                 Time = -1;
+                NPC.damage = NPC.defDamage;
             }
             else if (AttackCounter > -1 && wrappedCounter == 0)
             {
@@ -1304,7 +1304,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             NPC.velocity = NPC.DirectionTo(goalPos).SafeNormalize(Vector2.UnitX * -Target.direction) * 8f;
         #endregion
 
-        float delay = OnSecondCreeperPhase ? StrongSwipeDelay : LightSwipeDelay;
+        int delay = OnSecondCreeperPhase ? StrongSwipeDelay : LightSwipeDelay;
         if (Time == 0)
             AttackList.Clear();
 
@@ -1325,9 +1325,9 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                 crushCount = StrongSwipeAmount;
                 attackDelay = StrongSwipeDuration;
             }
-            int attackDur = attackDelay * crushCount;
+            int attackDur = delay + ((attackDelay + 1) * crushCount);
 
-            if (Time < delay + attackDur && Time % attackDelay == 0)
+            if (Time < attackDur && Time % attackDelay == 0)
             {
                 List<NPC> creepers = Main.npc.Where(n => n.active && n.type == NPCID.Creeper && n.AIOverride<CreeperAI>().Time == -1 && !AttackList.Contains((byte)n.whoAmI)).ToList();
                 if (creepers.Count > 1 && Main.netMode != NetmodeID.MultiplayerClient)
@@ -1369,7 +1369,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                 }
             }
 
-            if (Time > delay + attackDur + attackDelay)
+            if (Time > attackDur + attackDelay)
             {
                 Time = 0;
                 NPC.damage = NPC.defDamage;
@@ -1395,6 +1395,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         {
             AttackSign = Main.rand.NextBool() ? -1 : 1;
             AttackPosition = Target.Center;
+            AttackList.Clear();
             NPC.netUpdate = true;
 
             NPC.damage = 0;
@@ -1555,6 +1556,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         NPC.dontTakeDamage = true;
         NPC.rotation *= 0.9f;
         TeleportTime = 0;
+        NPC.damage = 0;
 
         float animCounter = Time - 60;
         if (animCounter >= 0)
@@ -1620,6 +1622,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                 ResetAttackValues();
                 AIState = BrainAIState.Phase2Idle;
                 NPC.dontTakeDamage = false;
+                NPC.damage = NPC.defDamage;
             }
         }
         else
@@ -1707,6 +1710,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             else if (Time == ChaseTime + (TeleportDuration / 2f) && !AttackFlag)
             {
                 NPC.Center = endPoint;
+                NPC.damage = NPC.defDamage;
                 DisableMultiplayerSmoothing = true;
                 AttackFlag = true;
                 NPC.netUpdate = true;
@@ -2569,20 +2573,20 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             }
 
             NPC.damage = 0;
+            NPC.dontTakeDamage = false;
 
             if (AttackFlag)
             {
                 if (AttackCounter == 0)
                 {
                     NPC.ShowNameOnHover = true;
-                    NPC.velocity = NPC.DirectionFrom(Target.Center) * 8f;
+                    NPC.velocity = NPC.DirectionFrom(Target.Center) * 4f;
                 }
                 else
                     NPC.velocity *= 0.95f;
 
                 if (AttackCounter >= IllusionTrickStunDuration)
                 {
-                    NPC.damage = NPC.defDamage;
                     SetupForNextAttack();
                     NPC.Opacity = 1f;
                     TeleportTime = 0;
@@ -2607,6 +2611,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                             continue;
 
                         n.ModNPC<FalseBrain>().BeenHit = true;
+                        n.netUpdate = true;
                     }
 
                     for (int i = 1; i <= 3; i++)
@@ -2628,7 +2633,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                     if (AttackList.Count > 0)
                     {
                         if (Main.netMode != NetmodeID.MultiplayerClient)
-                            Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<TelekineticBlast>(), 0, 0f, -1, AttackList[0], 2f);
+                            Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<TelekineticBlast>(), 0, 0f, -1, AttackList[0], 0, NPC.whoAmI);
 
                         AttackList.RemoveAt(0);
                     }
@@ -2636,12 +2641,12 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                     {
                         Vector2 direction = Target.velocity.SafeNormalize(Vector2.UnitX * Target.direction).RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 3f, MathHelper.Pi / 3f));
                         float distance = DefaultTeleportDistance;
+                        NPC.damage = NPC.defDamage;
                         AttackPosition = Target.Center + (direction * distance);
                         BoCAfterImages = [];
                         NPC.Opacity = 1f;
                         TeleportTime = 0;
                         Time = ChaseTime - 1;
-                        NPC.damage = NPC.defDamage;
                         NPC.netUpdate = true;
                         ResetAttackValues();
 
@@ -2697,6 +2702,8 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         {
             NPC.Opacity = 0f;
             BoCAfterImages = [];
+            NPC.damage = 0;
+            NPC.dontTakeDamage = true;
         }
 
         if (Time >= 180)

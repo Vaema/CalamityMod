@@ -978,7 +978,7 @@ ScourgeoftheSeas: {
 
 SeafoamBomb: {
 	DisplayName: Seafoam Bomb
-	Tooltip: 
+	Tooltip:
 		'''
 		Hurls a lightweight bomb which bursts into a foam bubble
 		Foam bubbles combine in pairs to form huge bubbles

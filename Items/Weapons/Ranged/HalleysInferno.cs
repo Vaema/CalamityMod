@@ -62,6 +62,9 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 20;
         public override void HoldItem(Player player)
         {
+            if (player.mount.Type == MountID.Drill)
+                return;
+
             if (Main.LocalPlayer == player)
             {
                 if (!Main.projectile.Any(x=> x.active && x.owner == player.whoAmI && x.type == Item.shoot))

@@ -27,17 +27,40 @@ public class TelekineticBlast : ModProjectile, ILocalizedModType
         Projectile.penetrate = -1;
         Projectile.Opacity = 1f;
         Projectile.tileCollide = false;
-        Projectile.timeLeft = 1;
+        Projectile.timeLeft = 10;
         Projectile.damage = 0;
         Projectile.scale = 1;
         Projectile.hostile = true;
+        Projectile.netImportant = true;
     }
 
     Player target => Main.player[(int)Projectile.ai[0]];
-    float debuffMultiplier => Projectile.ai[1];
+    float debuffMultiplier => Main.npc[NPCSource].type == NPCID.BrainofCthulhu ? 2f : 1f;
+    int delay { get => (int)Projectile.ai[1]; set => Projectile.ai[1] = value; }
+    int NPCSource => (int)Projectile.ai[2];
+
+    public override void OnSpawn(IEntitySource source)
+    {
+        Projectile.netUpdate = true;
+    }
 
     public override void AI()
     {
+        if (Main.npc[NPC.crimsonBoss].AIOverride<BrainOfCthulhuAI>().AttackFlag)
+        {
+            Projectile.active = false;
+            return;
+        }
+        
+        if (--delay > 0)
+            return;
+
+        if (Main.npc[NPCSource].ModNPC is FalseBrain illusion)
+        {
+            illusion.BeenHit = true;
+            Main.npc[NPCSource].netUpdate = true;
+        }
+
         for (int i = 0; i < 6; i++)
         {
             Vector2 dir = target.Center - Projectile.Center;
