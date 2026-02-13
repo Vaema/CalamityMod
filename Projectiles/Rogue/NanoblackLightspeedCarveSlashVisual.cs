@@ -20,11 +20,11 @@ namespace CalamityMod.Projectiles.Rogue
 
         #region params
         private const int VisualLifetime = 80;
-        private const int GrowTime = 8;
+        private const int GrowTime = 3;
         private const int FadeInTime = 1;
-        private const int FadeOutTime = 14;
+        private const int FadeOutTime = 5;
         private const int SlashDelay = 2;
-        private const int HoldTime = 8;
+        private const int HoldTime = 5;
         private const float FlashIntensity = 1.8f;
         private const float FlashDuration = 0.15f;
         private const float RangeMultiplier = 2.2f;
@@ -74,7 +74,9 @@ namespace CalamityMod.Projectiles.Rogue
             AlphaDestinationBlend = Blend.InverseSourceAlpha,
         };
 
-        private int GiantSlashCount
+        private int GiantSlashCount => 1;
+        // 13FEB2026: Ozzatron: previous hash function for allowing multiple visual giant slashes preserved
+        /*
         {
             get
             {
@@ -82,6 +84,7 @@ namespace CalamityMod.Projectiles.Rogue
                 return Hash(seed * 3.91f) > 0.5f ? 2 : 1;
             }
         }
+        */
 
         internal bool IsPerfect => Projectile.ai[0] == 1f;
 
@@ -238,7 +241,7 @@ namespace CalamityMod.Projectiles.Rogue
             Effect shader = CalamityShaders.NanoblackSlashShader.Value;
             float time = (float)Main.gameTimeCache.TotalGameTime.TotalSeconds;
             shader.Parameters["uTime"]?.SetValue(time);
-            Color c = NanoblackReaper.NanoblackSlashColor1;
+            Color c = IsPerfect ? NanoblackReaper.LightspeedCarveColor1 : NanoblackReaper.NanoblackSlashColor2;
             shader.Parameters["uColor"]?.SetValue(new Vector3(c.R / 255f, c.G / 255f, c.B / 255f));
             shader.Parameters["uBrightness"]?.SetValue(1f);
 
@@ -356,8 +359,8 @@ namespace CalamityMod.Projectiles.Rogue
                 float retreatProgress = MathF.Pow(retreatT, 0.4f) * (1f + RetreatOvershoot);
 
                 float colorShift = MathF.Pow(1f - smoothFadeOut, 2f);
-                Color aliveColor = NanoblackReaper.NanoblackSlashColor1;
-                Color dyingColor = NanoblackReaper.ZeroPointLineColor;
+                Color aliveColor = NanoblackReaper.LightspeedCarveColor1;
+                Color dyingColor = NanoblackReaper.LightspeedCarveColor2;
                 Color baseColor = Color.Lerp(aliveColor, dyingColor, colorShift);
 
                 float opacityFade = MathF.Pow(MathHelper.Clamp(smoothFadeOut / 0.2f, 0f, 1f), 0.3f);
@@ -428,7 +431,7 @@ namespace CalamityMod.Projectiles.Rogue
             float currentWidth = GiantSlashWidth * widthCollapse * impactWidthBoost;
 
             float opacity = MathF.Pow(MathHelper.Clamp(smoothFade / 0.15f, 0f, 1f), 0.3f) * MathF.Min(impactFlash, 2.5f);
-            Color edgeColor = NanoblackReaper.NanoblackSlashColor1 * opacity;
+            Color edgeColor = NanoblackReaper.LightspeedCarveColor1 * opacity;
 
             float retreatProgress = CalculateGiantRetreatProgress(fadeLinear);
 
@@ -489,7 +492,7 @@ namespace CalamityMod.Projectiles.Rogue
 
             scope.Draw(mesh.View);
 
-            Color c = NanoblackReaper.NanoblackSlashColor1;
+            Color c = NanoblackReaper.LightspeedCarveColor1;
             shader.Parameters["uColor"]?.SetValue(new Vector3(c.R / 255f, c.G / 255f, c.B / 255f));
             shader.Parameters["uBrightness"]?.SetValue(1f);
         }

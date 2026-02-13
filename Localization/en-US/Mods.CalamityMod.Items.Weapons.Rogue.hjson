@@ -790,7 +790,7 @@ NanoblackReaper: {
 		Nanoblack tesselations each emit an instantaneous zero-point energy strike
 		Zero-point energy strikes have 150 armor penetration and will target bosses whenever possible
 		Release <left> just as the scythe begins returning to carve through the enemy closest to your cursor at light speed
-		Light-speed carves have 150 armor penetration. If timed in a 6-frame window, they supercrit with +100% critical strike chance
+		Light-speed carves have 150 armor penetration. If timed in a 4-frame window, they supercrit with +100% critical strike chance
 		<right> with sufficient stealth to massively increase attack speed for a short time
 		Scythes thrown during flurries emit supercharged energy strikes but cannot be returned manually
 		'''
