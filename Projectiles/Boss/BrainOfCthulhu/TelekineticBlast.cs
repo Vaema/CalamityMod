@@ -46,7 +46,7 @@ public class TelekineticBlast : ModProjectile, ILocalizedModType
 
     public override void AI()
     {
-        if (Main.npc[NPC.crimsonBoss].AIOverride<BrainOfCthulhuAI>().AttackFlag)
+        if (Main.npc[NPC.crimsonBoss].AIOverride<BrainOfCthulhuAI>().AttackFlag || Main.npc[NPC.crimsonBoss].AIOverride<BrainOfCthulhuAI>().AIState == BrainOfCthulhuAI.BrainAIState.DeathAnimation)
         {
             Projectile.active = false;
             return;

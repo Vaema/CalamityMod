@@ -36,7 +36,7 @@ internal class BrainIllusionHitPacket : CalamityPacket
         NPC illusion = Main.npc[(int)bytes[0]];
         Player fool = Main.player[(int)bytes[1]];
         if(Main.dedServ)
-            Projectile.NewProjectile(illusion.GetSource_FromThis(), illusion.Center, Vector2.Zero, ModContent.ProjectileType<TelekineticBlast>(), 50, 0.5f, -1, fool.whoAmI, 5, illusion.whoAmI);
+            Projectile.NewProjectile(illusion.GetSource_FromThis(), illusion.Center, Vector2.Zero, ModContent.ProjectileType<TelekineticBlast>(), 50, 0.5f, -1, fool.whoAmI, 8, illusion.whoAmI);
         illusion.dontTakeDamage = true;
         illusion.netUpdate = true;
     }
