@@ -1041,6 +1041,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         BrainOfCthulhuSystem.ScreenBlurStrength = 0f;
 
         NPC.dontTakeDamage = false;
+        NPC.damage = 0;
 
         if (Time <= 15)
         {
@@ -1108,6 +1109,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                 OnSecondCreeperPhase = true;
                 AIState = BrainAIState.Phase1Idle;
                 Time = -1;
+                NPC.damage = NPC.defDamage;
             }
             else if (AttackCounter > -1 && wrappedCounter == 0)
             {
@@ -1555,6 +1557,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         NPC.dontTakeDamage = true;
         NPC.rotation *= 0.9f;
         TeleportTime = 0;
+        NPC.damage = 0;
 
         float animCounter = Time - 60;
         if (animCounter >= 0)
@@ -1620,6 +1623,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                 ResetAttackValues();
                 AIState = BrainAIState.Phase2Idle;
                 NPC.dontTakeDamage = false;
+                NPC.damage = NPC.defDamage;
             }
         }
         else
@@ -2569,13 +2573,14 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             }
 
             NPC.damage = 0;
+            NPC.dontTakeDamage = false;
 
             if (AttackFlag)
             {
                 if (AttackCounter == 0)
                 {
                     NPC.ShowNameOnHover = true;
-                    NPC.velocity = NPC.DirectionFrom(Target.Center) * 8f;
+                    NPC.velocity = NPC.DirectionFrom(Target.Center) * 4f;
                 }
                 else
                     NPC.velocity *= 0.95f;
@@ -2698,6 +2703,8 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         {
             NPC.Opacity = 0f;
             BoCAfterImages = [];
+            NPC.damage = 0;
+            NPC.dontTakeDamage = true;
         }
 
         if (Time >= 180)
