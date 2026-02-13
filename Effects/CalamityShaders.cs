@@ -8,6 +8,8 @@ using Terraria.ModLoader;
 namespace CalamityMod.Effects
 {
     // TODO -- This can be made into a ModSystem with simple OnModLoad and Unload hooks.
+    // TODO: SOURCEGEN: Get rid of this loader and replace references with sourcegenned references
+    
     [Autoload(Side = ModSide.Client)]
     public sealed class CalamityShaders : ModSystem
     {
@@ -264,11 +266,6 @@ namespace CalamityMod.Effects
         #endregion
         
         #region jasper's shaders
-        // this convention makes no sense and we should stop doing it
-        // i make this region to conform but i really deeply hate it
-        // it might be worth getting rid of it mostly in the sourcegen pass
-
-        // nanoblack reaper slash effect !!!!
         internal static Asset<Effect> NanoblackSlashShader;
 
         // static gaussian bloom, cannot change parameters. do not reuse this if that binds you.
@@ -532,11 +529,9 @@ namespace CalamityMod.Effects
             RegisterScreenShader(BrainOfCthulhuForcefield, "BoCShieldPass", "BrainOfCthulhuForcefield");
             #endregion
 
-            // below shader is by jasper VV do not steal!!!
             NanoblackSlashShader = LoadShader("SlashEffects/NanoblackSlash");
             RegisterMiscShader(NanoblackSlashShader, "SlashPass", "NanoblackSlash");
 
-            // also my shader!!!!!!!! also by jasper!!!!! i am the apostle of gauss himself!!!!!!!!
             GaussianBloomShader = LoadShader("SlashEffects/GaussianBloom");
             RegisterMiscShader(GaussianBloomShader, "BloomShader", "GaussianBloom");
 
