@@ -1,11 +1,8 @@
-﻿using System.Collections.Generic;
-using CalamityMod.Effects;
+﻿﻿using System.Collections.Generic;
 using CalamityMod.Graphics.Primitives;
-using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Utilities.Daybreak;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
@@ -42,53 +39,25 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.scale *= 1.01f;
         }
 
+        public float SlashWidthFunction(float completionRatio, Vector2 vertexPos) => Projectile.scale * 22f;
+
+        public Color SlashColorFunction(float completionRatio, Vector2 vertexPos) => Color.Lime * Utils.GetLerpValue(0.04f, 0.27f, completionRatio, true) * Projectile.Opacity;
+        
         public override bool PreDraw(ref Color lightColor)
         {
-            if (ControlPoints == null || ControlPoints.Length < 2)
-                return false;
+            // Draw the slash effect.
+            Main.spriteBatch.EnterShaderRegion();
+            
+            TerratomereHoldoutProj.PrepareSlashShader(Flipped);
 
-            var path = new List<Vector3>();
+            List<Vector2> points = new List<Vector2>();
             for (int i = 0; i < ControlPoints.Length; i++)
-            {
-                Vector2 worldPos = Projectile.Center + ControlPoints[i] + ControlPoints[i].SafeNormalize(Vector2.Zero) * (Projectile.scale - 1f) * 40f;
-                Vector2 screenPos = worldPos - Main.screenPosition;
-                path.Add(new Vector3(screenPos, 0f));
-            }
+                points.Add(ControlPoints[i] + ControlPoints[i].SafeNormalize(Vector2.Zero) * (Projectile.scale - 1f) * 40f);
 
-            if (path.Count < 2)
-                return false;
+            // 17MAY2024: Ozzatron: remove Terratomere rendering its trails multiple times
+            PrimitiveRenderer.RenderTrail(points, new(SlashWidthFunction, SlashColorFunction, (_,_) => Projectile.Center, shader: GameShaders.Misc["CalamityMod:ExobladeSlash"]), 65);
 
-            float width = Projectile.scale * 40f;
-            Color trailColor = Color.White * Projectile.Opacity;
-
-            PrimitiveMesh mesh = TriangleStripBuilder.BuildStrip(
-                path,
-                _ => width,
-                trailColor,
-                textured: true,
-                smoothingSegments: 4);
-
-            Effect shader = CalamityShaders.NanoblackSlashShader.Value;
-            shader.Parameters["uTime"]?.SetValue((float)Main.gameTimeCache.TotalGameTime.TotalSeconds);
-            Color tc = Terratomere.TerraColor1;
-            shader.Parameters["uColor"]?.SetValue(new Vector3(tc.R / 255f, tc.G / 255f, tc.B / 255f));
-            shader.Parameters["uBrightness"]?.SetValue(1f);
-
-            Matrix view = Main.GameViewMatrix.ZoomMatrix;
-            Matrix projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, -1f, 1f);
-
-            Main.spriteBatch.End(out var ss);
-
-            SanePrimitiveRenderer.DrawMesh(
-                Matrix.Identity,
-                view,
-                projection,
-                mesh,
-                shader,
-                blendState: BlendState.Additive);
-
-            Main.spriteBatch.Begin(ss);
-
+            Main.spriteBatch.ExitShaderRegion();
             return false;
         }
 
