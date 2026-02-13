@@ -9,6 +9,7 @@ namespace CalamityMod.Items.Placeables.SunkenSea
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 100;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<YellowCoral>();
         }
 
         public override void SetDefaults()

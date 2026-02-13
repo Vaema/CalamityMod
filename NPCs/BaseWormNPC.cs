@@ -657,6 +657,10 @@ namespace CalamityMod.NPCs
 
         public override bool? CanBeHitByItem(Player player, Item item)
         {
+            if (!Main.npc.IndexInRange((int)NPC.ai[0]))
+            {
+                return base.CanBeHitByItem(player, item);
+            }
             var canhit = Main.npc[(int)NPC.ai[0]].ModNPC.CanBeHitByItem(player, item);
             if (canhit.HasValue && !canhit.Value)
                 return false;
@@ -665,6 +669,10 @@ namespace CalamityMod.NPCs
 
         public override bool? CanBeHitByProjectile(Projectile projectile)
         {
+            if (!Main.npc.IndexInRange((int)NPC.ai[0]))
+            {
+                return base.CanBeHitByProjectile(projectile);
+            }
             var canhit = Main.npc[(int)NPC.ai[0]].ModNPC.CanBeHitByProjectile(projectile);
             if (canhit.HasValue && !canhit.Value)
                 return false;

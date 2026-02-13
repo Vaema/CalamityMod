@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.CalPlayer;
 using CalamityMod.DataStructures;
 using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -46,7 +47,7 @@ namespace CalamityMod.Projectiles.Ranged
         public bool strongEnemy = false;
         public bool normalHit = false;
 
-        public bool pullCheckValid => ((chosenTarget != null && chosenTarget.life < Projectile.damage * 28f && !calledToPull && chosenTarget.realLife == -1 && !normalHit) || Main.zenithWorld);
+        public bool pullCheckValid => chosenTarget != null && chosenTarget.life < Projectile.damage * 20f && !calledToPull && chosenTarget.realLife == -1 && !normalHit && (CalamityPlayer.areThereAnyDamnBosses ? chosenTarget.life <= chosenTarget.lifeMax / 4 : true);
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
@@ -92,12 +93,6 @@ namespace CalamityMod.Projectiles.Ranged
 
             if (Projectile.velocity.Length() < 7)
                 collideWithTiles = false;
-
-            if (Main.zenithWorld)
-            {
-                returnTime = 90;
-                Projectile.extraUpdates = 7;
-            }
 
             if (time >= returnTime * (pullCheckValid ? strongEnemy ? 1.5f : 0.9f : stuckInTarget ? 5 : 1) || ripped)
             {
@@ -255,11 +250,6 @@ namespace CalamityMod.Projectiles.Ranged
                                     closestTarget = Main.npc[index];
                                 }
                             }
-                            if (Main.zenithWorld && Main.npc[index] != null && index < 80 && Main.npc[index].realLife == -1 && Owner.ownedProjectileCounts[Type] < 80)
-                            {
-                                closestTarget = Main.npc[index];
-                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, ((closestTarget.Center - Owner.Center + closestTarget.velocity * 1.5f).SafeNormalize(Vector2.UnitX) * 18), Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner, 0, Projectile.ai[1] + 1);
-                            }
                         }
                         if (closestTarget != null)
                         {
@@ -301,7 +291,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.velocity *= 0.95f;
             }
 
-            if (collideWithTiles && Collision.SolidCollision(Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.UnitX) * 30, 4, 4) && !Main.zenithWorld && Projectile.ai[1] < 1)
+            if (collideWithTiles && Collision.SolidCollision(Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.UnitX) * 30, 4, 4) && Projectile.ai[1] < 1)
             {
                 hasHitTile = true;
                 Projectile.velocity *= -0.5f;

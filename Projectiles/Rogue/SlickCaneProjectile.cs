@@ -67,9 +67,9 @@ namespace CalamityMod.Projectiles.Rogue
             float f2 = Projectile.rotation - MathHelper.PiOver4 *
                 Math.Sign(Projectile.velocity.X) + (Projectile.spriteDirection == -1).ToInt() * MathHelper.Pi;
             float velocityMagnitude = 0f;
-            float scaleFactor = 35f;
+            float scaleFactor = 18f;
             if (Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(),
-                Projectile.Center, Projectile.Center + f2.ToRotationVector2() * scaleFactor,
+                Main.player[Projectile.owner].Center, Projectile.Center + f2.ToRotationVector2() * scaleFactor,
                 (TravelSpeed + 1f) * Projectile.scale, ref velocityMagnitude))
             {
                 return true;
@@ -142,12 +142,12 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            // Boost dmg in proportion to money, caps at 1 plat. Much higher cap in GFB cuz it would be funny
+            // Boost dmg in proportion to money, caps at 1 plat.
             if (Projectile.Calamity().stealthStrike)
             {
                 Player player = Main.player[Projectile.owner];
                 double money = Utils.CoinsCount(out bool overflow, player.inventory);
-                double cap = Main.zenithWorld ? 100000000 : 1000000;
+                double cap = 1000000;
                 if (money >= cap)
                     money = cap;
                 if (money != 0)

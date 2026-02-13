@@ -1,17 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Packets;
+using CalamityMod.Packets.Entities;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Boss.BrainOfCthulhu;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 
 namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses.BrainOfCthulhu;
 
@@ -46,18 +53,15 @@ public class FalseBrain : ModNPC, ILocalizedModType
         Music = MusicID.Boss3;
         SceneEffectPriority = (SceneEffectPriority)(-1);
 
-        NPC.localAI[0] = Main.rand.Next(6);
+        NPC.localAI[0] = Main.rand.Next(Main.getGoodWorld ? 7 : 6);
 
-        if(BrainOfCthulhuSystem.IsBrainOfCthulhuTextureVanilla)
-            NPC.localAI[1] = 1 + Main.rand.NextFloat(-0.25f, 0.25f);
-        else
-            NPC.localAI[1] = 1 + (Main.rand.NextFloat(0.25f, 0.75f) * (Main.rand.NextBool() ? -1 : 1));
+        NPC.localAI[1] = 1 + Main.rand.NextFloat(-0.25f, 0.25f);
     }
     private int Variant => (int)NPC.localAI[0];
     private float Angle => NPC.ai[0];
     private ref float Time => ref NPC.ai[1];
+    int AttackTime { get => (int)NPC.ai[2]; set => NPC.ai[2] = value; }
     internal bool BeenHit = false;
-    int AttackTime = 0;
     int SpawnTime = 60;
 
     internal static float TimeDivisor => 360f;
@@ -82,10 +86,8 @@ public class FalseBrain : ModNPC, ILocalizedModType
         {
             NPC.dontTakeDamage = true;
 
-            if (AttackTime == 60)
+            if (AttackTime++ >= 60)
                 NPC.active = false;
-
-            AttackTime++;
         }
         else
         {
@@ -102,57 +104,47 @@ public class FalseBrain : ModNPC, ILocalizedModType
         }
 
         if (SpawnTime > 0)
+            SpawnTime--;
+        else if (SpawnTime >= -30)
         {
-            if (--SpawnTime == 0)
+            Time += --SpawnTime / -30f;
+            if(SpawnTime <= -30)
                 NPC.dontTakeDamage = false;
         }
-        else if (SpawnTime > -30)
-            Time += --SpawnTime / -30f;
         else
             Time++;
     }
 
+    public override void SendExtraAI(BinaryWriter writer)
+    {
+        writer.Write(BeenHit);
+    }
+
+    public override void ReceiveExtraAI(BinaryReader reader)
+    {
+        BeenHit = reader.ReadBoolean();
+    }
+
     public override void OnHitByItem(Player player, Item item, NPC.HitInfo hit, int damageDone)
     {
-        SmiteFool(player);
+        if (!BeenHit)
+        {
+            if (Main.netMode == NetmodeID.SinglePlayer)
+                Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<TelekineticBlast>(), 50, 0.5f, -1, player.whoAmI, 8, NPC.whoAmI);
+            else
+                BrainIllusionHitPacket.Send(NPC.whoAmI, player.whoAmI);
+            NPC.dontTakeDamage = true;
+        }
     }
 
     public override void OnHitByProjectile(Projectile projectile, NPC.HitInfo hit, int damageDone)
     {
-        if (!projectile.Calamity().IgnoreBoCIllusions && projectile.owner != -1)
-            SmiteFool(Main.player[projectile.owner]);
-    }
-
-    private void SmiteFool(Player fool)
-    {
-        if (!BeenHit)
+        if (!BeenHit && !projectile.Calamity().IgnoreBoCIllusions && projectile.owner != -1)
         {
-            for (int i = 0; i < 6; i++)
-            {
-                Vector2 dir = fool.Center - NPC.Center;
-                int lifeTime = 24;
-                dir /= lifeTime / 2f * 5f;
-                dir *= i;
-                DirectionalPulseRing pulse = new(NPC.Center, dir, i % 2 == 0 ? Color.Red : Color.Orange, new Vector2(0.5f, 1), dir.ToRotation(), 0f, i / 5f, lifeTime + 8);
-                GeneralParticleHandler.SpawnParticle(pulse);
-            }
-
-            BeenHit = true;
-            SoundEngine.PlaySound(BrainOfCthulhuAI.Laugh, NPC.Center);
-            fool.AddBuff(BuffID.Darkness, 900);
-            fool.AddBuff(BuffID.Bleeding, 900);
-            fool.AddBuff(BuffID.Confused, 60);
-            int timeToAdd = 600;
-            int bbIndex = fool.buffType.ToList().IndexOf(ModContent.BuffType<BurningBlood>());
-            if (bbIndex != -1)
-            {
-                timeToAdd /= 2;
-                timeToAdd += fool.buffTime[bbIndex];
-            }
-            fool.AddBuff(ModContent.BuffType<BurningBlood>(), timeToAdd);
-
-            fool.Calamity().adrenaline = 0;
-
+            if(Main.netMode == NetmodeID.SinglePlayer)
+                Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<TelekineticBlast>(), 50, 0.5f, -1, projectile.owner, 8, NPC.whoAmI);
+            else
+                BrainIllusionHitPacket.Send(NPC.whoAmI, projectile.owner);
             NPC.dontTakeDamage = true;
         }
     }
@@ -182,33 +174,7 @@ public class FalseBrain : ModNPC, ILocalizedModType
         else
         {
             tex = TextureAssets.Npc[NPCID.BrainofCthulhu].Value;
-            frame = tex.Frame(1, 8, 0, 4 + (int)NPC.frameCounter);
-
-            switch(Variant)
-            {
-                case 0:
-                    scaleAddition = new(-0.125f, 0.25f);
-                    break;
-                case 1:
-                    scaleAddition = new(0.25f, -0.125f);
-                    break;
-                case 2:
-                    drawColor = Color.Lerp(drawColor, Color.Red.MultiplyRGB(drawColor), 0.5f);
-                    break;
-                case 3:
-                    drawColor = Color.Lerp(drawColor, Color.Orange.MultiplyRGB(drawColor), 0.5f);
-                    break;
-                case 4:
-                    drawColor = Color.Lerp(drawColor, Color.Yellow.MultiplyRGB(drawColor), 0.5f);
-                    break;
-                case 5:
-                    scaleAddition = new(0.1625f, 0.1625f);
-                    break;
-                case 6:
-                    scaleAddition = new(-0.1625f, -0.1625f);
-                    break;
-
-            }
+            frame = tex.Frame(1, 8, 0, (int)NPC.frameCounter);
         }
 
         if (SpawnTime > 0)

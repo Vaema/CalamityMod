@@ -62,6 +62,21 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
         {
             public override bool InstancePerEntity => false;
 
+
+            public override string IsArmorSet(Item head, Item body, Item legs)
+            {
+                if (head.ModItem is IDyeableShaderRenderer && head.ModItem.IsArmorSet(head, body, legs))
+                    return "DyeableShaderSet";
+
+                if (body.ModItem is IDyeableShaderRenderer && body.ModItem.IsArmorSet(head, body, legs))
+                    return "DyeableShaderSet";
+
+                if (legs.ModItem is IDyeableShaderRenderer && legs.ModItem.IsArmorSet(head, body, legs))
+                    return "DyeableShaderSet";
+
+                return "";
+            }
+
             public override void UpdateItemDye(Item item, Player player, int dye, bool hideVisual)
             {
                 if (item.ModItem is not IDyeableShaderRenderer drawer)

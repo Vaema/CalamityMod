@@ -55,6 +55,11 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public override bool? CanDamage() => (flung ? null : false);
         public override void AI()
         {
+            if (Owner.dead && !flung)
+            {
+                Projectile.Kill();
+                return;
+            }
             if (Owner.HeldItem.type != ModContent.ItemType<PulseGrenade>())
             {
                 Projectile.Kill();

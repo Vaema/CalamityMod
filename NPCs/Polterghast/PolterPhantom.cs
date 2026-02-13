@@ -171,6 +171,9 @@ namespace CalamityMod.NPCs.Polterghast
                 acceleration += revenge ? 0.035f : 0.025f;
             }
 
+            // Reset contact damage every frame
+            NPC.damage = NPC.defDamage;
+
             // Predictiveness
             Vector2 lookAt = player.Center;
             Vector2 rotationVector = lookAt - vector;
@@ -337,6 +340,9 @@ namespace CalamityMod.NPCs.Polterghast
                 }
                 else
                 {
+                    // Do not deal damage during movement to avoid cheap bullshit
+                    NPC.damage = 0;
+
                     // Random location choice
                     if (NPC.ai[0] == 0f)
                     {

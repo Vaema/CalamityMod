@@ -1,8 +1,9 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System;
+using CalamityMod.Enums;
+using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -90,6 +91,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 GeneralParticleHandler.SpawnParticle(spark3);
                 Particle spark2 = new SparkParticle(partPos, partVel, false, 24, partScale * 0.6f, Color.LightGreen);
                 GeneralParticleHandler.SpawnParticle(spark2);
+                spark2.DrawLayer = GeneralDrawLayer.AfterEverything;
             }
             Vector2 dustVel2 = new Vector2(5 * swordDirection, -5).RotatedBy(swingRotation - 1.7f * swordDirection);
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.CalPlayer;
+using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
@@ -11,6 +12,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static CalamityMod.NPCs.NormalNPCs.IceClasper;
 
 namespace CalamityMod.NPCs.NormalNPCs
 {
@@ -37,6 +39,9 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPCID.Sets.NeedsExpertScaling[Type] = true;
             NPCID.Sets.NPCBestiaryDrawModifiers bestiaryData = new NPCID.Sets.NPCBestiaryDrawModifiers() { Hide = true };
             NPCID.Sets.NPCBestiaryDrawOffset.Add(Type, bestiaryData);
+
+            NPCID.Sets.TrailingMode[NPC.type] = 7;
+            NPCID.Sets.TrailCacheLength[NPC.type] = 10;
         }
 
         public override void SetDefaults()
@@ -177,7 +182,16 @@ namespace CalamityMod.NPCs.NormalNPCs
                     {
                         NPC.damage = 0;
 
-                        NPC.velocity *= 0.94f;
+                        // Slow down before dash, emit particles that home in toward the center
+                        NPC.velocity *= 0.925f;
+                        if (Main.rand.NextBool(3))
+                        {
+                            Vector2 dustVel2 = (Vector2.UnitX).RotatedByRandom(100) * Main.rand.NextFloat(9.5f, 13f);
+                            Dust dust2 = Dust.NewDustPerfect(NPC.Center + dustVel2.SafeNormalize(Vector2.UnitX) * 150, ModContent.DustType<SquashDust>(), -dustVel2 * 1.15f, 0, default, Main.rand.NextFloat(0.9f, 1.2f));
+                            dust2.noGravity = true;
+                            dust2.fadeIn = 0.66f;
+                            dust2.color = new(0, 200, 0);
+                        }
 
                         NPC.ai[1] += 1f;
 
@@ -210,8 +224,8 @@ namespace CalamityMod.NPCs.NormalNPCs
                     {
                         NPC.damage = NPC.defDamage;
 
-                        float chargeSpeed = 22f;
-                        NPC.velocity = NPC.SafeDirectionTo(Main.player[NPC.target].Center + Main.player[NPC.target].velocity * 10f, -Vector2.UnitY) * chargeSpeed; // Slightly predictive
+                        float chargeSpeed = 28f;
+                        NPC.velocity = NPC.SafeDirectionTo(Main.player[NPC.target].Center, -Vector2.UnitY) * chargeSpeed;
                         NPC.rotation = NPC.velocity.ToRotation() + MathHelper.PiOver2;
 
                         NPC.ai[0] = 2f;
@@ -226,7 +240,6 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                         CustomSprite spriteParticle = new CustomSprite(NPC.Center - NPC.velocity, NPC.velocity * 0.8f, 10, "CalamityMod/NPCs/NormalNPCs/KingSlimeJewelEmerald", 1.2f, Color.DarkGreen.MultiplyRGBA(new Color(1f, 1f, 1f, 0f)));
                         spriteParticle.Rotation = NPC.rotation;
-
                         GeneralParticleHandler.SpawnParticle(spriteParticle);
 
                         NPC.ai[1] += 1f;
@@ -479,21 +492,32 @@ namespace CalamityMod.NPCs.NormalNPCs
             float currentLightTelegraphDuration = emeraldMode ? EmeraldLightTelegraphDuration : RubyLightTelegraphDuration;
             float currentColorTelegraphGateValue = (emeraldMode ? EmeraldChargeGateValue_Death : BoltShootGateValue_Death) - currentLightTelegraphDuration;
 
+            Asset<Texture2D> tex = ModContent.Request<Texture2D>(emeraldMode ? "CalamityMod/NPCs/NormalNPCs/KingSlimeJewelEmerald" : Texture);
+            Asset<Texture2D> tex2 = ModContent.Request<Texture2D>("CalamityMod/NPCs/NormalNPCs/KingSlimeJewelFlash");
+
             if (emeraldMode)
             {
                 if (NPC.ai[0] == 0f && NPC.ai[1] > currentColorTelegraphGateValue)
                 {
                     alph = MathHelper.Lerp(0f, 1f, (NPC.ai[1] - currentColorTelegraphGateValue) / currentLightTelegraphDuration);
                 }
+
+                if (NPC.ai[0] == 2f && CalamityClientConfig.Instance.Afterimages)
+                {
+                    for (int i = 1; i < NPC.oldPos.Length; i++)
+                    {
+                        Vector2 trailDrawPos = NPC.oldPos[i] + NPC.Size * 0.5f - screenPos;
+                        Color trailColor = Color.Lime * (1f - (float)i / NPC.oldPos.Length) * 0.3f;
+                        spriteBatch.Draw(tex.Value, trailDrawPos, null, trailColor, NPC.rotation, tex.Size() * 0.5f, NPC.scale, SpriteEffects.None, 0f);
+                    }
+                }
+
             }
             else
             {
                 if (NPC.ai[0] > currentColorTelegraphGateValue)
                     alph = MathHelper.Lerp(0f, 1f, (NPC.ai[0] - currentColorTelegraphGateValue) / currentLightTelegraphDuration);
             }
-
-            Asset<Texture2D> tex = ModContent.Request<Texture2D>(emeraldMode ? "CalamityMod/NPCs/NormalNPCs/KingSlimeJewelEmerald" : Texture);
-            Asset<Texture2D> tex2 = ModContent.Request<Texture2D>("CalamityMod/NPCs/NormalNPCs/KingSlimeJewelFlash");
 
             Main.EntitySpriteDraw(tex.Value, NPC.Center - screenPos, tex.Frame(), Color.White, NPC.rotation, tex.Frame().Center(), 1f, SpriteEffects.None);
             Main.EntitySpriteDraw(tex2.Value, NPC.Center - screenPos, tex2.Frame(), Color.Lerp(col, flashCol, alph).MultiplyRGBA(new Color(alph, alph, alph, 0f)), NPC.rotation, tex2.Frame().Center(), alph * 1.2f, SpriteEffects.None);
