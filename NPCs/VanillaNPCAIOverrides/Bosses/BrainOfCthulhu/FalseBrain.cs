@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Packets;
+using CalamityMod.Packets.Entities;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Boss.BrainOfCthulhu;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -13,6 +17,7 @@ using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 
 namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses.BrainOfCthulhu;
 
@@ -47,15 +52,15 @@ public class FalseBrain : ModNPC, ILocalizedModType
         Music = MusicID.Boss3;
         SceneEffectPriority = (SceneEffectPriority)(-1);
 
-        NPC.localAI[0] = Main.rand.Next(6);
+        NPC.localAI[0] = Main.rand.Next(Main.getGoodWorld ? 7 : 6);
 
         NPC.localAI[1] = 1 + Main.rand.NextFloat(-0.25f, 0.25f);
     }
     private int Variant => (int)NPC.localAI[0];
     private float Angle => NPC.ai[0];
     private ref float Time => ref NPC.ai[1];
+    int AttackTime { get => (int)NPC.ai[2]; set => NPC.ai[2] = value; }
     internal bool BeenHit = false;
-    int AttackTime = 0;
     int SpawnTime = 60;
 
     internal static float TimeDivisor => 360f;
@@ -80,10 +85,8 @@ public class FalseBrain : ModNPC, ILocalizedModType
         {
             NPC.dontTakeDamage = true;
 
-            if (AttackTime == 60)
+            if (AttackTime++ >= 60)
                 NPC.active = false;
-
-            AttackTime++;
         }
         else
         {
@@ -100,61 +103,41 @@ public class FalseBrain : ModNPC, ILocalizedModType
         }
 
         if (SpawnTime > 0)
+            SpawnTime--;
+        else if (SpawnTime >= -30)
         {
-            if (--SpawnTime == 0)
+            Time += --SpawnTime / -30f;
+            if(SpawnTime <= -30)
                 NPC.dontTakeDamage = false;
         }
-        else if (SpawnTime > -30)
-            Time += --SpawnTime / -30f;
         else
             Time++;
     }
 
+    public override void SendExtraAI(BinaryWriter writer)
+    {
+        writer.Write(BeenHit);
+    }
+
+    public override void ReceiveExtraAI(BinaryReader reader)
+    {
+        BeenHit = reader.ReadBoolean();
+    }
+
     public override void OnHitByItem(Player player, Item item, NPC.HitInfo hit, int damageDone)
     {
-        SmiteFool(player);
+        if (!BeenHit)
+        {
+            BrainIllusionHitPacket.Send(NPC.whoAmI, player.whoAmI);
+            NPC.dontTakeDamage = true;
+        }
     }
 
     public override void OnHitByProjectile(Projectile projectile, NPC.HitInfo hit, int damageDone)
     {
-        if (!projectile.Calamity().IgnoreBoCIllusions && projectile.owner != -1)
-            SmiteFool(Main.player[projectile.owner]);
-    }
-
-    private void SmiteFool(Player fool)
-    {
-        if (!BeenHit)
+        if (!BeenHit && !projectile.Calamity().IgnoreBoCIllusions && projectile.owner != -1)
         {
-            for (int i = 0; i < 6; i++)
-            {
-                Vector2 dir = fool.Center - NPC.Center;
-                int lifeTime = 24;
-                dir /= lifeTime / 2f * 5f;
-                dir *= i;
-                DirectionalPulseRing pulse = new(NPC.Center, dir, i % 2 == 0 ? Color.Red : Color.Orange, new Vector2(0.5f, 1), dir.ToRotation(), 0f, i / 5f, lifeTime + 8);
-                GeneralParticleHandler.SpawnParticle(pulse);
-            }
-
-            BeenHit = true;
-            SoundEngine.PlaySound(BrainOfCthulhuAI.Laugh, NPC.Center);
-            fool.AddBuff(BuffID.Darkness, 900);
-            fool.AddBuff(BuffID.Bleeding, 900);
-            fool.AddBuff(BuffID.Confused, 60);
-            int timeToAdd = 300;
-            int bbIndex = fool.buffType.ToList().IndexOf(ModContent.BuffType<BurningBlood>());
-            if (bbIndex != -1)
-            {
-                timeToAdd /= 2;
-                timeToAdd += fool.buffTime[bbIndex];
-            }
-
-            if (timeToAdd > 3600)
-                timeToAdd = 3600;
-
-            fool.AddBuff(ModContent.BuffType<BurningBlood>(), timeToAdd);
-
-            fool.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.BrainIllusion" + Main.rand.Next(1, 3 + 1)).ToNetworkText(fool.name)), 50, NPC.Center.X > fool.Center.X ? -1 : 1, cooldownCounter: 0, dodgeable: false, scalingArmorPenetration: 1f);
-
+            BrainIllusionHitPacket.Send(NPC.whoAmI, projectile.owner);
             NPC.dontTakeDamage = true;
         }
     }

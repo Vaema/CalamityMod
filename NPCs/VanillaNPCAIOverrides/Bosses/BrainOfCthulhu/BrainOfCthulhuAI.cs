@@ -2607,6 +2607,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                             continue;
 
                         n.ModNPC<FalseBrain>().BeenHit = true;
+                        n.netUpdate = true;
                     }
 
                     for (int i = 1; i <= 3; i++)
@@ -2628,7 +2629,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                     if (AttackList.Count > 0)
                     {
                         if (Main.netMode != NetmodeID.MultiplayerClient)
-                            Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<TelekineticBlast>(), 0, 0f, -1, AttackList[0], 2f);
+                            Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<TelekineticBlast>(), 0, 0f, -1, AttackList[0], 0, NPC.whoAmI);
 
                         AttackList.RemoveAt(0);
                     }
