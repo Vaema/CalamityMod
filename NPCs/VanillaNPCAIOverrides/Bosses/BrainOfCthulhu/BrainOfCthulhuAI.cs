@@ -558,6 +558,9 @@ public class BrainOfCthulhuAI : VanillaAIOverride
     {
         NPC.damage = 0;
 
+        foreach (Player p in Main.ActivePlayers)
+            p.Calamity().adrenaline = 0;
+
         if (SpawnTime != 0) //BoC should begin appearing
         {
             float d = Main.LocalPlayer.DistanceSQ(NPC.Center);
