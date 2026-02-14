@@ -168,12 +168,11 @@ namespace CalamityMod.Projectiles.Rogue
                             if (Projectile.velocity.Length() < storedStealthVel.Length())
                                 Projectile.velocity += Utils.DirectionTo(Projectile.Center, Owner.Center) * 0.1f;
                             Projectile.velocity *= 0.99f;
-                            // CIT 26JUN2025: Removing its ability to deal damage again because it's overpowered
-                            /*if (time == 180)
+                            if (time == 180) // Allow it to hit on the return trip
                             {
                                 for (int i = 0; i < Main.maxNPCs; i++)
                                     Projectile.localNPCImmunity[i] = 0;
-                            }*/
+                            }
                             if (Projectile.timeLeft <= 240)
                             {
                                 impaleDist = Vector2.One; // This is so the projectile stops dealing damage
@@ -308,7 +307,7 @@ namespace CalamityMod.Projectiles.Rogue
                 float minMult = 0.35f;
                 int hitsToMinMult = 10;
                 float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
-                modifiers.SourceDamage *= damageMult;
+                modifiers.SourceDamage *= damageMult / 2;
             }
             else if (!falling || Projectile.numHits != 0)
                 modifiers.SourceDamage *= 0.1f;
@@ -344,11 +343,17 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 if (Main.zenithWorld)
                 {
+                    // All is cleansed by The Lord
                     for (int index = 0; index < Main.npc.Length; index++)
-                    {
-                        NPC searchedTarget = Main.npc[index];
-                        searchedTarget.active = false;
-                    }
+                    { NPC searchedTarget = Main.npc[index]; searchedTarget.active = false; }
+                    for (int x = 0; x < Main.maxProjectiles; x++)
+                    { Projectile projectile = Main.projectile[x]; if (projectile.active && projectile.type != ModContent.ProjectileType<ExorcismShockwave>() && projectile.type != ModContent.ProjectileType<ExorcismProj>()) { projectile.active = false; } }
+                    for (int x = 0; x < Main.maxItems; x++)
+                    { Item item = Main.item[x]; if (item.active) { item.active = false; } }
+                    for (int x = 0; x < Main.maxDust; x++)
+                    { Dust dust = Main.dust[x]; if (dust.active) { dust.active = false; } }
+                    for (int x = 0; x < Main.maxGore; x++)
+                    { Gore gore = Main.gore[x]; if (gore.active) { gore.active = false; } }
 
                     SoundStyle gong = new("CalamityMod/Sounds/Custom/GFB/Jesus");
                     for (int i = 0; i < 2; i++)

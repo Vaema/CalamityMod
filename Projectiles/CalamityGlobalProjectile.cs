@@ -368,6 +368,9 @@ namespace CalamityMod.Projectiles
                         grapeBeer = true;
                 }
 
+                if (parent.Calamity().IgnoreBoCIllusions)
+                    IgnoreBoCIllusions = true;
+
                 // Nerf Crystal bullet shard damage by 45%
                 // Vanilla crystal shards deal 50% of the bullet's damage which is absurd, this nerfs them to 27.5%
                 if (parent.type == ProjectileID.CrystalBullet && projectile.type == ProjectileID.CrystalShard)

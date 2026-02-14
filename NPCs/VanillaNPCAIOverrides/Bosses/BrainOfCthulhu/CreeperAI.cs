@@ -525,6 +525,7 @@ public class CreeperAI : VanillaAIOverride
                 CachedValue1 = MathHelper.TwoPi / creeperCount * localCreeperID;
                 AttackPosition = NPC.Center;
                 AttackAngle = 0;
+                Time = -1;
                 NPC.netUpdate = true;
             }
         }
