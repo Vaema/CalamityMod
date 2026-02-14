@@ -25,7 +25,7 @@ using Terraria.WorldBuilding;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class AbyssalFire : ModProjectile, ILocalizedModType, IPixelatedPrimitiveRenderer
+    public class AbyssalFire : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
 
@@ -175,6 +175,9 @@ namespace CalamityMod.Projectiles.Ranged
             int beamTimer = VoidragonHoldout.ModProjectile<VoidragonHoldout>().beamTimer;
             float beamWidthInterpolant = Utils.GetLerpValue(500, 460, beamTimer, true);
 
+            if (ControlPoints is null)
+                return false;
+
             Main.spriteBatch.End(out var snapshot);
 
             var device = Main.instance.GraphicsDevice;
@@ -212,20 +215,11 @@ namespace CalamityMod.Projectiles.Ranged
             return false;
         }
 
-        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch, GeneralDrawLayer layerToRenderTo)
-        {
-          
-        }
-
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, Projectile.Center + Projectile.velocity * MaxLaserLength);
         }
 
-        public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
-        {
-            
-        }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Player Owner = Main.player[Projectile.owner];
