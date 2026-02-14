@@ -1199,12 +1199,11 @@ namespace CalamityMod.Items
                 AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
 
             // All developer wings have identical stats and no special effects
-            if (item.type == ItemID.Yoraiz0rWings || item.type == ItemID.JimsWings || item.type == ItemID.SkiphsWings ||
-                item.type == ItemID.LokisWings || item.type == ItemID.ArkhalisWings || item.type == ItemID.LeinforsWings ||
-                item.type == ItemID.BejeweledValkyrieWing || item.type == ItemID.RedsWings || item.type == ItemID.DTownsWings ||
-                item.type == ItemID.WillsWings || item.type == ItemID.CrownosWings || item.type == ItemID.CenxsWings ||
-                item.type == ItemID.FoodBarbarianWings || item.type == ItemID.GroxTheGreatWings || item.type == ItemID.GhostarsWings ||
-                item.type == ItemID.SafemanWings)
+            if (item.type == ItemID.Yoraiz0rWings || item.type == ItemID.JimsWings || item.type == ItemID.LokisWings || 
+                item.type == ItemID.ArkhalisWings || item.type == ItemID.LeinforsWings || item.type == ItemID.RedsWings || 
+                item.type == ItemID.DTownsWings || item.type == ItemID.WillsWings || item.type == ItemID.CrownosWings || 
+                item.type == ItemID.CenxsWings || item.type == ItemID.FoodBarbarianWings || item.type == ItemID.GroxTheGreatWings || 
+                item.type == ItemID.GhostarsWings || item.type == ItemID.SafemanWings)
             {
                 AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
             }
