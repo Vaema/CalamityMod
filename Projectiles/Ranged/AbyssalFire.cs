@@ -6,10 +6,13 @@ using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.DataStructures;
 using CalamityMod.Dusts;
 using CalamityMod.Effects;
+using CalamityMod.Enums;
 using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Packets.Entities;
 using CalamityMod.Particles;
+using CalamityMod.Utilities.Daybreak;
+using CalamityMod.Utilities.Daybreak.Buffers;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -22,22 +25,30 @@ using Terraria.WorldBuilding;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class AbyssalFire : ModProjectile, ILocalizedModType
+    public class AbyssalFire : ModProjectile, ILocalizedModType, IPixelatedPrimitiveRenderer
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
 
-        public Vector2[] ControlPoints = new Vector2[32];
+        public Vector2[] ControlPoints;
+
+        public static int MaxLaserControlPoints => 32;
+
+        public static int MaxLaserLength => 3330;
+
+        public static int MaxLaserWidth => 90;
+
         public Player Owner => Main.player[Projectile.owner];
+
         public Projectile VoidragonHoldout => Main.projectile[(int)Projectile.ai[0]];
+
         public ref float LaserLength => ref Projectile.ai[1];
 
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
-        public const float MaxLaserLength = 3330f;
 
         public override void SetDefaults()
         {
-            Projectile.width = Projectile.height = 75;
+            Projectile.width = Projectile.height = MaxLaserWidth;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.penetrate = -1;
@@ -45,36 +56,34 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.localNPCHitCooldown = 2;
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
-            Projectile.hide = true;
+            LaserLength = 0.05f;
         }
 
         public override void AI()
         {
             // If the owner is no longer able to cast the beam, kill it.
-            if (!Owner.channel || Owner.noItems || Owner.CCed || VoidragonHoldout is null)
+            if (Owner.CantUseHoldout() || VoidragonHoldout is null)
             {
                 Projectile.Kill();
                 return;
             }
 
-            // Set the control points for the primitive drawing.
-            for (int i = 0; i < ControlPoints.Length; i++)
-                ControlPoints[i] = Projectile.Center + Projectile.velocity * i / (ControlPoints.Length - 1f) * LaserLength;
-
-            // Grow and shrink depending on how long left the laser has to remain active.
-            int beamTimer = VoidragonHoldout.ModProjectile<VoidragonHoldout>().beamTimer;
-            if (beamTimer <= 500 && beamTimer >= 425)
-                Projectile.scale += 0.1f;
-            else if (beamTimer <= 25 && beamTimer >= 0 && Projectile.scale > 0f)
-                Projectile.scale -= 0.1f;
-            Projectile.scale = MathHelper.Clamp(Projectile.scale, 0f, 2f);
-
             // Decide where to position the laserbeam.
             Vector2 circlePointDirection = Projectile.velocity.SafeNormalize(Vector2.UnitX * Owner.direction);
-            Projectile.Center = VoidragonHoldout.ModProjectile<VoidragonHoldout>().GunTipPosition - ((Projectile.velocity * 55).RotatedBy(-0.02f * Projectile.direction));
+            Projectile.Center = VoidragonHoldout.ModProjectile<VoidragonHoldout>().GunTipPosition - ((Projectile.velocity * 12f).RotatedBy(-0.02f * Projectile.direction));
 
-            LaserLength = MaxLaserLength;
+            int beamTimer = VoidragonHoldout.ModProjectile<VoidragonHoldout>().beamTimer;
+            float beamWidthInterpolant = Utils.GetLerpValue(500, 475, beamTimer, true) * Utils.GetLerpValue(0, 25, beamTimer, true);
 
+            // Set the control points for the primitive drawing.
+            ControlPoints ??= new Vector2[MaxLaserControlPoints];
+            for (int i = 0; i < MaxLaserControlPoints; i++)
+                ControlPoints[i] = Projectile.Center + Projectile.velocity * i / (ControlPoints.Length - 1f) * MaxLaserLength;
+
+            // Grow and shrink depending on how long left the laser has to remain active.
+            Projectile.scale = MathHelper.Lerp(0f, 1f, CalamityUtils.ExpOutEasing(beamWidthInterpolant, 2));
+            LaserLength = MathHelper.Lerp(LaserLength, 1f, 0.032f);
+            
             // Update aim.
             UpdateAim();
 
@@ -82,31 +91,34 @@ namespace CalamityMod.Projectiles.Ranged
             if (Projectile.scale >= 0.25f)
             {
                 BezierCurve curve = new(ControlPoints);
+                float tipRatio = 0.042f;
                 for (int i = 0; i < 10; i++)
                 {
-                    Vector2 fireSpawnPosition = curve.Evaluate(Main.rand.NextFloat(0.05f, 1f));
-                    Vector2 fireVelocity = Projectile.velocity + Main.rand.NextVector2Circular(1f, 1f) * Main.rand.NextFloat(10f, 15f);
+                    Vector2 tipSpawnPosition = curve.Evaluate(Main.rand.NextFloat(0f, tipRatio));
+                    Vector2 bodySpawnPosition = curve.Evaluate(Main.rand.NextFloat(tipRatio, 1f));
+                    Vector2 fireVelocity = Owner.SafeDirectionTo(Main.MouseWorld).RotatedByRandom(MathHelper.ToRadians(20f)) * Main.rand.NextFloat(25f, 30f);
 
-                    Color fireColor = Color.Lerp(Color.DarkOrchid, Color.DarkMagenta, Main.rand.NextFloat());
+                    Color fireColorBackground = Color.Lerp(Color.DarkViolet, Color.Black, 0.25f);
+
                     int fireLifetime = Main.rand.Next(45, 60);
-                    float fireScale = Main.rand.NextFloat(0.45f, 1f) * Projectile.scale;
+                    float fireScale = Main.rand.NextFloat(1.75f, 2.25f) * Projectile.scale;
                     float fireOpacity = Main.rand.NextFloat(0.65f, 0.95f);
 
-                    HeavySmokeParticle abyssalFlames = new(fireSpawnPosition, fireVelocity, fireColor, fireLifetime, fireScale, fireOpacity, 0.03f, true);
-                    GeneralParticleHandler.SpawnParticle(abyssalFlames);
+                    HeavySmokeParticle abyssalFlamesBodyBackground = new(bodySpawnPosition, fireVelocity, fireColorBackground, fireLifetime, fireScale, 1f, Main.rand.NextFloat(0.02f, 0.1f) * Main.rand.NextBool().ToDirectionInt(), false);
+                    GeneralParticleHandler.SpawnParticle(abyssalFlamesBodyBackground, true, GeneralDrawLayer.BeforeProjectiles);
+
+                    HeavySmokeParticle abyssalFlamesBodyForeground = new(bodySpawnPosition, fireVelocity, Main.rand.NextBool(4) ? Color.White : Color.Purple, fireLifetime, fireScale * 0.6f, 0.8f, Main.rand.NextFloat(0.02f, 0.1f) * Main.rand.NextBool().ToDirectionInt(), true);
+                    GeneralParticleHandler.SpawnParticle(abyssalFlamesBodyForeground, true, GeneralDrawLayer.AfterProjectiles);
+
+                    HeavySmokeParticle abyssFlamesTip = new(tipSpawnPosition, fireVelocity, Color.White, fireLifetime, fireScale * 0.52f, 0.3f, Main.rand.NextFloat(0.02f, 0.1f) * Main.rand.NextBool().ToDirectionInt(), true);
+                    GeneralParticleHandler.SpawnParticle(abyssFlamesTip, true, GeneralDrawLayer.AfterProjectiles);
                 }
 
-                for (int i = 0; i < 6; i++)
+                for (int i = 0; i < 3; i++)
                 {
-                    Vector2 sparkSpawnPosition = curve.Evaluate(Main.rand.NextFloat(0.05f, 1f));
-                    Vector2 sparkVelocity = Projectile.velocity.RotatedBy(MathHelper.PiOver2 * Main.rand.NextBool().ToDirectionInt()) * Main.rand.NextFloat(9f, 18f) * Main.rand.NextVector2Circular(1f, 1f);
-
-                    Dust dust = Dust.NewDustDirect(sparkSpawnPosition, 1, 1, ModContent.DustType<LightDust>());
-                    dust.noGravity = true;
-                    dust.velocity = sparkVelocity;
-                    dust.scale = Main.rand.NextFloat(0.8f, 1.2f) * Projectile.scale;
-                    dust.color = Main.rand.NextBool() ? Color.MediumOrchid : Color.BlueViolet;
-                    dust.noLightEmittence = true;
+                    Vector2 fireVelocity = Owner.SafeDirectionTo(Main.MouseWorld).RotatedByRandom(MathHelper.ToRadians(20f)) * Main.rand.NextFloat(15f, 20f);
+                    HeavySmokeParticle whiteFlames = new(Projectile.Center - Projectile.velocity * 8f, fireVelocity, Color.White, Main.rand.Next(15, 20), 0.64f, 0.7f, Main.rand.NextFloat(0.02f, 0.1f) * Main.rand.NextBool().ToDirectionInt(), true);
+                    GeneralParticleHandler.SpawnParticle(whiteFlames, true, GeneralDrawLayer.AfterDusts);
                 }
             }
 
@@ -116,7 +128,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             // Make the beam cast light along its length. The brightness of the light is reliant on the scale of the beam.
             DelegateMethods.v3_1 = Color.DarkViolet.ToVector3() * Projectile.scale * 0.4f;
-            Utils.PlotTileLine(Projectile.Center, Projectile.Center + Projectile.velocity * LaserLength, Projectile.width * Projectile.scale, DelegateMethods.CastLight);
+            Utils.PlotTileLine(Projectile.Center, Projectile.Center + Projectile.velocity * MaxLaserLength, Projectile.width * Projectile.scale, DelegateMethods.CastLight);
         }
 
         public void UpdateAim()
@@ -137,53 +149,82 @@ namespace CalamityMod.Projectiles.Ranged
 
             Projectile.velocity = newAimDirection;
         }
-        private float PrimitiveWidthFunction(float completionRatio)
+        private float PrimitiveWidthFunction(float completionRatio, Vector2 vertexPos)
         {
             float width;
-            float maxBodyWidth = Projectile.scale * 75f;
-            float shrinkRatio = 0.275f;
+            float maxBodyWidth = Projectile.scale * MaxLaserWidth;
+            float shrinkRatio = 0.018f;
 
-            if (completionRatio < shrinkRatio)
-                width = MathF.Sin(completionRatio / shrinkRatio * MathHelper.PiOver2) * maxBodyWidth + shrinkRatio;
-            else
-                width = Utils.Remap(completionRatio, shrinkRatio, 1f, maxBodyWidth, 0f);
+            //if (completionRatio < shrinkRatio)
+            //    width = MathF.Sin(completionRatio / shrinkRatio * MathHelper.PiOver2) * maxBodyWidth + shrinkRatio;
+            //else
+            //    width = Utils.Remap(completionRatio, shrinkRatio, 1f, maxBodyWidth, 0f);
 
-            return width;
+            return maxBodyWidth * Utils.GetLerpValue(0f, 0.05f, completionRatio, true) * Utils.GetLerpValue(LaserLength, LaserLength - 0.1f, completionRatio, true);
         }
 
-        private Color PrimitiveColorFunction(float completionRatio)
+        private Color PrimitiveColorFunction(float completionRatio, Vector2 vertexPos)
         {
-            Color vibrantColor = Color.Lerp(Color.Indigo, Color.MediumPurple, (float)Math.Cos(Main.GlobalTimeWrappedHourly * 0.67f - completionRatio / LaserLength * 29f) * 0.5f + 0.5f);          
-            float opacity = Projectile.Opacity * Utils.GetLerpValue(0.97f, 0.9f, completionRatio, true) *
-                Utils.GetLerpValue(0f, MathHelper.Clamp(15f / LaserLength, 0f, 0.5f), completionRatio, true) *
-                MathF.Pow(Utils.GetLerpValue(60f, 270f, LaserLength, true), 3f);
 
-            return Color.Lerp(vibrantColor, Color.Black, 0.5f) * opacity * 2f;
+            return Color.White * Projectile.Opacity;
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Asset<Texture2D> mainStreakTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons2");
-            Asset<Texture2D> secondaryStreakTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons2");
+            Asset<Texture2D> mainStreakTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/HarshNoise");
+            int beamTimer = VoidragonHoldout.ModProjectile<VoidragonHoldout>().beamTimer;
+            float beamWidthInterpolant = Utils.GetLerpValue(500, 460, beamTimer, true);
 
-            MiscShaderData shader = GameShaders.Misc["CalamityMod:AbyssalFire"];
-            shader.Shader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly);
-            shader.Shader.Parameters["secondaryColor"].SetValue(Color.Lerp(Color.MediumPurple, Color.White, 0.65f).ToVector4());
-            shader.SetShaderTexture(mainStreakTexture);
-            Main.instance.GraphicsDevice.Textures[2] = secondaryStreakTexture.Value;
+            Main.spriteBatch.End(out var snapshot);
 
-            PrimitiveRenderer.RenderTrail(ControlPoints, new(PrimitiveWidthFunction, PrimitiveColorFunction, shader: shader), ControlPoints.Length + 12);
+            var device = Main.instance.GraphicsDevice;
+            using var lease = RenderTargetPool.Shared.Rent(
+                device,
+                Main.screenWidth / 2,
+                Main.screenHeight / 2,
+                RenderTargetDescriptor.Default
+            );
+
+            using (lease.Scope(clearColor: Color.Transparent))
+            {
+                MiscShaderData shader = GameShaders.Misc["CalamityMod:AbyssalFire"];
+                shader.Shader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly);
+                shader.Shader.Parameters["glowPower"].SetValue(0.8f);
+                shader.Shader.Parameters["overallColorStrength"].SetValue(1f - beamWidthInterpolant);
+                shader.Shader.Parameters["edgeFadeoutThreshold"].SetValue(0.46f);
+                shader.Shader.Parameters["noiseScale"].SetValue(new Vector2(4f, 0.5f));
+                shader.Shader.Parameters["innerColor"].SetValue(Color.DarkViolet.ToVector3());
+                shader.Shader.Parameters["outerColor"].SetValue(Color.Black.ToVector3());
+                shader.Shader.Parameters["overallColor"].SetValue(Color.White.ToVector3());
+                shader.Shader.Parameters["tipColor"].SetValue(Color.White.ToVector3());
+
+                device.Textures[1] = mainStreakTexture.Value;
+
+                PrimitiveRenderer.RenderTrail(ControlPoints, new(PrimitiveWidthFunction, PrimitiveColorFunction, shader: shader, useUnscaledMatrices: true, capStyle: PrimitiveCapStyle.Flat), ControlPoints.Length);
+            }
+
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+            Main.spriteBatch.Draw(lease.Target, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0f);
+            Main.spriteBatch.End();
+
+            Main.spriteBatch.Begin(snapshot);
+
             return false;
+        }
+
+        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch, GeneralDrawLayer layerToRenderTo)
+        {
+          
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
-            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, Projectile.Center + Projectile.velocity * LaserLength);
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, Projectile.Center + Projectile.velocity * MaxLaserLength);
         }
 
         public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
         {
-            overWiresUI.Add(index);
+            
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {

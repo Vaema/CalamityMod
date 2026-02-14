@@ -28,7 +28,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override void KillHoldoutLogic()
         {
             //If the player is dead, kill the holdout.
-            if (Owner.CantUseHoldout() || !PostVolley && HeldItem.type != Owner.ActiveItem().type)
+            if (Owner.CantUseHoldout() || !PostVolley && HeldItem.type != Owner.HeldItem.type)
                 Projectile.Kill();
         }
         
@@ -56,7 +56,7 @@ namespace CalamityMod.Projectiles.Ranged
                     framesBetweenShots = 6;
                     OffsetLengthFromArm -= 3f;
                     //Here we detect which ammo the bullets will use
-                    Owner.PickAmmo(Owner.ActiveItem(), out int bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out _, !Main.rand.NextBool(4));
+                    Owner.PickAmmo(Owner.HeldItem, out int bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out _, !Main.rand.NextBool(4));
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(1.5f)), ModContent.ProjectileType<ArcherfishShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                     shotCounter++;
                     //Frame time is much longer due to Archerfish working differently, and handling both the shot and the "reload" on the same step

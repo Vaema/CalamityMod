@@ -1,8 +1,15 @@
-﻿sampler noiseTexture1 : register(s1);
+﻿sampler noiseTexture : register(s1);
 sampler noiseTexture2 : register(s2);
 
 float time;
-float4 secondaryColor;
+float glowPower;
+float overallColorStrength;
+float2 noiseScale;
+float2 edgeFadeoutThreshold;
+float3 innerColor;
+float3 outerColor;
+float3 overallColor;
+float3 tipColor;
 matrix uWorldViewProjection;
 
 struct VertexShaderInput
@@ -42,30 +49,31 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
     
     // Account for texture distortion artifacts.
     coords.y = (coords.y - 0.5) / input.TextureCoordinates.z + 0.5;
+       
+    // Fade out at the horizontal and vertical ends of the streak.
+    float horizonatalDistanceFromCenter = distance(0.5, coords.y);
+    float opacity = smoothstep(0.5, 0.5 - edgeFadeoutThreshold, horizonatalDistanceFromCenter);
+
+    // Calculate the main nosie color and distortion.
+    float4 noiseDistortion = tex2D(noiseTexture, coords * float2(4, 2) + float2(time * -0.72, time * 0.51));
+    float4 noiseColor = tex2D(noiseTexture, coords * noiseScale + float2(time * -2.42 - noiseDistortion.r * 0.8, time * -1.33 + noiseDistortion.r * 0.8));
     
-     // Read the fade map as a streak.
-    float bloomFadeout = pow(sin(coords.y * 3.141), 4);
-    float4 noiseColor = tex2D(noiseTexture1, float2(frac(coords.x * 5 - time * 3.5), coords.y - time * 1.5));
-    float opacity = (0.5 + noiseColor.g) * bloomFadeout;
+    // Calculate how much a pixel should glow from the center outwards.
+    float glow = pow(0.1 / horizonatalDistanceFromCenter, glowPower);
     
-    // Calculate secondary noise colors.
-    float noiseFade2 = tex2D(noiseTexture2, float2(frac(coords.x * 2.5 - time * 2.75), coords.y)).r;
-    float4 noiseColor2 = InverseLerp(0.4, 0.5, noiseFade2 * bloomFadeout) * secondaryColor;
+    // Render as white near the tip of the flame jet, then ease into the inner and outer colors of the jet.
+    float3 flameBodyColor = lerp(tipColor, lerp(outerColor, innerColor, opacity), InverseLerp(0, 0.092, coords.x));
+    float3 finalFlameColor = lerp(flameBodyColor, overallColor, overallColorStrength);
     
-    // Fade out at the ends of the streak.
-    if (coords.x < 0.018)
-        opacity *= pow(coords.x / 0.018, 6);
-    if (coords.x > 0.95)
-        opacity *= pow(1 - (coords.x - 0.95) / 0.05, 6);
-    
-    return color * 1.4 * opacity + noiseColor2 * opacity;
+    float4 returnColor = (color * float4(finalFlameColor, 1) + noiseColor * glow) * opacity;
+    return returnColor;
 }
 
 technique Technique1
 {
     pass LaserPass
     {
-        VertexShader = compile vs_2_0 VertexShaderFunction();
-        PixelShader = compile ps_2_0 PixelShaderFunction();
+        VertexShader = compile vs_3_0 VertexShaderFunction();
+        PixelShader = compile ps_3_0 PixelShaderFunction();
     }
 }

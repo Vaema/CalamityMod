@@ -252,6 +252,9 @@ namespace CalamityMod.Effects
 
         // The distorted circular effect seen emanating from the distortion rift during DoG's fight.
         internal static Asset<Effect> DoGRiftAuraShader;
+
+        // The shader effect used for Voidragon's Abyssal Fire laser projectile.
+        internal static Asset<Effect> AbyssalFireShader;
         #endregion
 
         #region Big E's Shaders
@@ -503,6 +506,9 @@ namespace CalamityMod.Effects
 
             DoGRiftAuraShader = LoadShader("DoGRiftAuraShader");
             RegisterMiscShader(DoGRiftAuraShader, "DoGRiftAuraPass", "DoGRiftAura");
+
+            AbyssalFireShader = LoadShader("AbyssalFireShader");
+            RegisterMiscShader(AbyssalFireShader, "LaserPass", "AbyssalFire");
             #endregion
 
             #region Loading Big E's Shaders

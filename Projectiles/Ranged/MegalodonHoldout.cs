@@ -33,7 +33,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override void KillHoldoutLogic()
         {
             //If the player is dead, kill the holdout.
-            if (Owner.CantUseHoldout() || HeldItem.type != Owner.ActiveItem().type)
+            if (Owner.CantUseHoldout() || HeldItem.type != AssociatedItemID)
                 Projectile.Kill();
         }
 
@@ -78,7 +78,7 @@ namespace CalamityMod.Projectiles.Ranged
                     framesBetweenShots = 4;
                     OffsetLengthFromArm -= 3f;
                     //Here we detect which ammo the bullets will use
-                    Owner.PickAmmo(Owner.ActiveItem(), out int bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out _, !Main.rand.NextBool(4));
+                    Owner.PickAmmo(Owner.HeldItem, out int bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out _, !Main.rand.NextBool(4));
                     //Alternate between shooting bullets and water streams. We seperate it into two different projectiles due to the bullets needing to use a Global Projectile to track the damage multiplier
                     if (!swapType)
                     {
