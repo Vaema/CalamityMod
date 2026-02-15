@@ -39,8 +39,8 @@ public class BloodBomb : ModNPC, ILocalizedModType
         NPC.aiStyle = -1;
         AIType = -1;
         NPC.value = 0;
-        NPC.HitSound = SoundID.NPCHit24;
-        NPC.DeathSound = SoundID.NPCDeath27;
+        NPC.HitSound = SoundID.NPCHit1;
+        NPC.DeathSound = SoundID.NPCHit1 with { Pitch = 0.5f };
         NPC.knockBackResist = 0f;
         NPC.chaseable = false;
         NPC.noTileCollide = true;
@@ -65,6 +65,14 @@ public class BloodBomb : ModNPC, ILocalizedModType
         float vxi = goal.X / t;
 
         NPC.velocity = new Vector2(float.IsNaN(vxi) ? (goal.X > 0 ? 10 : -10) : vxi, -vyi);
+
+        for (int i = 0; i < 3; i++)
+        {
+            BloodParticle p = new(NPC.Center, NPC.velocity.RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 6f, MathHelper.Pi / 6f)) * Main.rand.NextFloat(0.5f, 1f), 32, 1f, Color.Red);
+            GeneralParticleHandler.SpawnParticle(p);
+        }
+        BloodParticle2 p2 = new(NPC.Center, NPC.velocity * 0.75f, 16, 0.5f, Color.Red);
+        GeneralParticleHandler.SpawnParticle(p2);
     }
 
     public override void AI()
@@ -91,11 +99,6 @@ public class BloodBomb : ModNPC, ILocalizedModType
             modifiers.FinalDamage *= 0;
         else
             modifiers.FinalDamage *= MathHelper.Lerp(1f, 0f, dist / 160000f);
-    }
-
-    public override bool? CanBeHitByProjectile(Projectile projectile)
-    {
-        return null;
     }
 
     public override void ModifyHitByProjectile(Projectile projectile, ref NPC.HitModifiers modifiers)

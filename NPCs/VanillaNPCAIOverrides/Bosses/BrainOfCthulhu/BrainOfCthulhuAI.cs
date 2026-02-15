@@ -41,6 +41,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
     private static SoundStyle Growl = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Growl", 2) with { PauseBehavior = PauseBehavior.PauseWithGame };
     private static SoundStyle Death = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Death_Roar") with { PauseBehavior = PauseBehavior.PauseWithGame };
     private static SoundStyle BloodShot = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_BloodShot");
+    private static SoundStyle BloodBomb = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_BloodBomb");
     private static SoundStyle BloodExplosion = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Explosion", 2);
 
 
@@ -1887,15 +1888,16 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             {
                 if (Time % IchorRate == 0)
                 {
-                    if (Time % (IchorRate * 2) == 0)
-                        SoundEngine.PlaySound(SoundID.Item17, NPC.Center);
-
                     if (Time > BloodshotRate + 30 && Time % (IchorRate * 10) == 0)
                     {
+                        SoundEngine.PlaySound(BloodBomb, NPC.Center);
                         NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<BloodBomb>(), NPC.whoAmI);
                     }
                     else
                     {
+                        if (Time % (IchorRate * 2) == 0)
+                            SoundEngine.PlaySound(SoundID.Item17, NPC.Center);
+
                         if (Main.netMode == NetmodeID.SinglePlayer)
                             Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center + NPC.velocity + Main.rand.NextVector2Circular(72, 72), new Vector2(Main.rand.NextFloat(-IchorSpread, IchorSpread), -IchorVelocity), ModContent.ProjectileType<IchorShower>(), IchorShotDamage, 0.5f);
                         else if (Main.dedServ)
