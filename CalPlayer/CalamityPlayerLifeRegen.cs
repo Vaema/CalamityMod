@@ -115,7 +115,7 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(crushDepth, 18, purity);
             ApplyDoTDebuff(astralInfection, 24, infectedJewel || hideOfDeus || purity);
             ApplyDoTDebuff(shadowflame, 30, purity);
-            ApplyDoTDebuff(brimstoneFlames, (int)MathF.Round(30 * ((abaddon || voidOfExtinction) ? (1f - Abaddon.BrimstoneFlamesReduction) : 1f)), purity);
+            ApplyDoTDebuff(brimstoneFlames, 30, purity);
             ApplyDoTDebuff(plague, (int)MathF.Round(30 * (alchFlask ? (1f - AlchemicalDecanter.PlagueReduction) : 1f)), purity);
             ApplyDoTDebuff(vHex, 30); // Has other effects
             ApplyDoTDebuff(searingLava, 30);

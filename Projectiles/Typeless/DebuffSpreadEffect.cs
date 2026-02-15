@@ -2,17 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.CalPlayer;
 using CalamityMod.DataStructures;
 using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using MonoMod.Core.Platforms;
 using Terraria;
-using Terraria.Audio;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
@@ -25,8 +20,9 @@ namespace CalamityMod.Projectiles.Typeless
         public List<int> listNPCs = new List<int>();
         public NPC lastNPC;
         public int minCooldown = 48;
+        public Color startingColor = Color.PaleTurquoise;
         public Color mainColor = Color.White;
-        public Color subColor = Color.White;
+        public Color subColor = Color.PaleTurquoise; // Once static, set to staring color
         public Color extraColor = Color.White;
         public ref float spreadCount => ref Projectile.ai[2];
         public override void SetDefaults()
@@ -55,8 +51,11 @@ namespace CalamityMod.Projectiles.Typeless
                     Color color1 = Color.Crimson;
                     Color color2 = Color.OrangeRed;
                     Color color3 = Color.Red;
-                    int debuffTime = (strong ? 120 : 90);
+                    int debuffTime = (strong ? 180 : 120);
                     int startDir = Main.rand.NextBool() ? 1 : -1;
+
+                    // Initial infliction lasts longer, hopefully reduces the power imbalance between this accessory with fast weapons vs slow weapons
+                    npc.AddBuff(ModContent.BuffType<Bane>(), debuffTime * 2);
 
                     float distanceFromCenter = areaOfEffect;
                     NPC targeted = null;
@@ -80,9 +79,7 @@ namespace CalamityMod.Projectiles.Typeless
                         targeted.Calamity().voidOfExtinctionEffected = npc.Calamity().voidOfExtinctionEffected;
                         targeted.Calamity().abaddonEffected = npc.Calamity().abaddonEffected;
 
-                        //npc.AddBuff(ModContent.BuffType<BrimstoneFlames>(), debuffTime);
-
-                        float bestDamage = Owner.Calamity().abaddonFlameDamage;
+                        float bestDamage = Owner.Calamity().abaddonDebuffDamage;
                         int heat = 0;
                         Color heatClr = Color.OrangeRed;
                         int sick = 0;
@@ -95,22 +92,24 @@ namespace CalamityMod.Projectiles.Typeless
                         Color waterClr = Color.DarkTurquoise;
                         // Find all the debuffs on the enemy
                         int debuffNum = 0;
+
                         for (int index = 0; index < npc.buffType.Length; index++)
                         {
                             int type = npc.buffType[index];
                             var debuffData = BuffDatasets.DebuffDataset[type];
 
-                            // Calculate the brimstone flames damage to see if the debuffs can be transfered
-                            int bFlamesDamage = Math.Max((int)(BrimstoneFlames.debuffData.EnemyLostRegen * bestDamage), (int)BrimstoneFlames.debuffData.EnemyLostRegen);
+                            // Calculate the Bane damage to see if the debuffs can be transfered
+                            int bDamage = Math.Max((int)(Bane.debuffData.EnemyLostRegen * bestDamage), (int)Bane.debuffData.EnemyLostRegen);
 
                             if (CalamityBuffSets.IsDebuff[type])
                             {
-                                if (debuffData == null || debuffData.EnemyLostRegen <= bFlamesDamage)
+                                if (debuffData == null || debuffData.EnemyLostRegen <= bDamage)
                                 {
                                     debuffNum++;
-                                    targeted.AddBuff(type, debuffTime);
+                                    float timeMult = debuffData == null ? 1 : Utils.Remap(debuffData.EnemyLostRegen, 0, bDamage, 5, 1);
+                                    targeted.AddBuff(type, (int)(debuffTime * timeMult));
                                 }
-                                if (debuffData != null && debuffData != BrimstoneFlames.debuffData)
+                                if (debuffData != null)
                                 {
                                     if (debuffData.HeatDebuffScaling > 0) { mainColor = Color.Lerp(mainColor, heatClr, 0.65f); heat++; }
                                     if (debuffData.SicknessDebuffScaling > 0) { mainColor = Color.Lerp(mainColor, sickClr, 0.65f); sick++; }
@@ -121,7 +120,7 @@ namespace CalamityMod.Projectiles.Typeless
                             }
                             // Edge case fixes for Shred and Demonic Flames
                             // Not ideal but not sure how else to do it
-                            if (npc.Calamity().somaShredStacks > 0 && Shred.BaseDamage <= bFlamesDamage)
+                            if (npc.Calamity().somaShredStacks > 0 && Shred.BaseDamage <= bDamage)
                                 targeted.AddBuff(ModContent.BuffType<Shred>(), debuffTime);
                             int demonicFlames = ModContent.GetModBuff(ModContent.BuffType<DemonicFlames>()).Type;
                             if (npc.HasBuff(demonicFlames))
@@ -138,11 +137,11 @@ namespace CalamityMod.Projectiles.Typeless
                         if (highest != 0)
                         {
                             // Ideally these lines would run in a random order, so that fire isn't prioritsed as an extra color, but I don't know how to do that!
-                            if (heat == highest && extraColor == Color.White) { if (subColor != Color.White) { extraColor = heatClr; } else { subColor = heatClr; } }
-                            if (sick == highest && extraColor == Color.White) { if (subColor != Color.White) { extraColor = sickClr; } else { subColor = sickClr; } }
-                            if (cold == highest && extraColor == Color.White) { if (subColor != Color.White) { extraColor = coldClr; } else { subColor = coldClr; } }
-                            if (shock == highest && extraColor == Color.White) { if (subColor != Color.White) { extraColor = shockClr; } else { subColor = shockClr; } }
-                            if (water == highest && extraColor == Color.White) { if (subColor != Color.White) { extraColor = waterClr; } else { subColor = waterClr; } }
+                            if (heat == highest && extraColor == Color.White) { if (subColor != startingColor) { extraColor = heatClr; } else { subColor = heatClr; } }
+                            if (sick == highest && extraColor == Color.White) { if (subColor != startingColor) { extraColor = sickClr; } else { subColor = sickClr; } }
+                            if (cold == highest && extraColor == Color.White) { if (subColor != startingColor) { extraColor = coldClr; } else { subColor = coldClr; } }
+                            if (shock == highest && extraColor == Color.White) { if (subColor != startingColor) { extraColor = shockClr; } else { subColor = shockClr; } }
+                            if (water == highest && extraColor == Color.White) { if (subColor != startingColor) { extraColor = waterClr; } else { subColor = waterClr; } }
                         }
 
                         VisualEffects(npc, targeted, startDir, 1 + (best.Sum() * 0.12f));
@@ -157,7 +156,6 @@ namespace CalamityMod.Projectiles.Typeless
                         return;
                     }
 
-                    //npc.AddBuff(ModContent.BuffType<BrimstoneFlames>(), debuffTime);
                     Color colorAgain = Main.rand.NextBool() ? color2 : color1;
                     Particle spark2 = new CustomSpark(npc.Center, Vector2.Zero, "CalamityMod/Particles/BloomCircle", false, 18, 0.55f, colorAgain * (Owner.Calamity().abaddonEffectVisual ? 1 : 0.3f), Vector2.One, true, true, glowOpacity: 0.85f);
                     GeneralParticleHandler.SpawnParticle(spark2);

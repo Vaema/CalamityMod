@@ -1691,3 +1691,8 @@ CnidarianSummonTagBuff: {
 	DisplayName: Cnidarian Summon Tag Buff
 	Description: you are not seeing this
 }
+
+Bane: {
+	DisplayName: Bane
+	Description: Mods.CalamityMod.Buffs.Bane.Description
+}

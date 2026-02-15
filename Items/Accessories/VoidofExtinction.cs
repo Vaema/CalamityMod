@@ -13,11 +13,8 @@ namespace CalamityMod.Items.Accessories
     {
         public new string LocalizationCategory => "Items.Accessories";
 
-        public static int CritBoost = 8;
-        public static float critScaling = 7; // How effective crit chance is at increasing debuff damage
-        public static float critDamageBoostPerDebuff = 0.02f; // 2% increased crit damage per debuff
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(CritBoost, Abaddon.BrimstoneFlamesReduction.ToPercent());
-
+        public static float critScaling = 6; // How effective crit chance is at increasing debuff damage
+        public static float critDamageBoostPerDebuff = 0.03f; // 3% increased crit damage per debuff
         public override void SetDefaults()
         {
             Item.width = 26;
@@ -42,13 +39,12 @@ namespace CalamityMod.Items.Accessories
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.voidOfExtinction = true;
             modPlayer.abaddonEffectVisual = !hideVisual;
-            player.GetCritChance<GenericDamageClass>() += CritBoost;
         }
         public override void ModifyTooltips(List<TooltipLine> list)
         {
             Player player = Main.LocalPlayer;
             if (Main.LocalPlayer != null)
-                list.FindAndReplace("[DAMAGE]", ((int)(BrimstoneFlames.debuffData.EnemyLostRegen / 2 * player.Calamity().abaddonFlameDamage)).ToString());
+                list.FindAndReplace("[DAMAGE]", ((int)(Bane.debuffData.EnemyLostRegen / 2 * player.Calamity().abaddonDebuffDamage)).ToString());
         }
     }
 }

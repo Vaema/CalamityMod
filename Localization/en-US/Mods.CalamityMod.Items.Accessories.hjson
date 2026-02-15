@@ -2,11 +2,9 @@ Abaddon: {
 	DisplayName: Abaddon
 	Tooltip:
 		'''
-		{$CommonItemTooltip.PercentIncreasedCritChance}
-		Critical strikes burn enemies with [cbuff:CalamityMod/BrimstoneFlames] that scales off of your critical strike chance
-		When critically hit, enemies spread all debuffs they are afflicted with that are weaker than your [cbuff:CalamityMod/BrimstoneFlames] to nearby enemies
-		Reduces damage taken from [cbuff:CalamityMod/BrimstoneFlames] by {1}%
-		Current [cbuff:CalamityMod/BrimstoneFlames] damage: [DAMAGE] DPS
+		Critical strikes curse enemies with [cbuff:CalamityMod/Bane] that scales off of your critical strike chance
+		When critically hit, enemies spread all debuffs they are afflicted with that are weaker than your [cbuff:CalamityMod/Bane] to nearby enemies
+		Current [cbuff:CalamityMod/Bane] damage: [DAMAGE] DPS
 		'''
 }
 
@@ -2064,12 +2062,10 @@ VoidofExtinction: {
 	DisplayName: Void of Extinction
 	Tooltip:
 		'''
-		{$CommonItemTooltip.PercentIncreasedCritChance}
-		Critical strikes burn enemies with [cbuff:CalamityMod/BrimstoneFlames] that greatly scales off of your critical strike chance
-		When critically hit, enemies spread all debuffs they are afflicted with that are weaker than your [cbuff:CalamityMod/BrimstoneFlames] to nearby enemies
-		Critical strikes deal an additional 2% damage per debuff on the enemy
-		Reduces damage taken from [cbuff:CalamityMod/BrimstoneFlames] by {1}%
-		Current [cbuff:CalamityMod/BrimstoneFlames] damage: [DAMAGE] DPS
+		Critical strikes curse enemies with [cbuff:CalamityMod/Bane] that greatly scales off of your critical strike chance
+		When critically hit, enemies spread all debuffs they are afflicted with that are weaker than your [cbuff:CalamityMod/Bane] to nearby enemies
+		Critical strikes deal an additional 3% damage per debuff on the enemy
+		Current [cbuff:CalamityMod/Bane] damage: [DAMAGE] DPS
 		'''
 }
 

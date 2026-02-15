@@ -290,6 +290,7 @@ namespace CalamityMod.NPCs
         public bool absorberAffliction = false;
         public bool irradiated = false;
         public double irradiatedContactBoost = 1.5;
+        public bool bane = false;
         public bool brimstoneFlames = false;
         public bool demonicFlames = false;
         public int demonicFlamesBonusDamage = 0;
@@ -303,7 +304,7 @@ namespace CalamityMod.NPCs
         public bool scionsCurioEffected = false;
         public bool abaddonEffected = false;
         public bool voidOfExtinctionEffected = false;
-        public bool checkPlayerBflameDamage = false;
+        public bool checkPlayerBaneDamage = false;
         public int warbannerBurnTime = 0; // Determines the rate that the enemy is damaged
         public int warbannerBurnTimer = 0; // The duration of the debuff
         public int warbannerBurnStacks = 0; // The stacks increase how fast the debuff hits
@@ -570,6 +571,7 @@ namespace CalamityMod.NPCs
             myClone.absorberAffliction = absorberAffliction;
             myClone.irradiated = irradiated;
             myClone.irradiatedContactBoost = irradiatedContactBoost;
+            myClone.bane = bane;
             myClone.brimstoneFlames = brimstoneFlames;
             myClone.demonicFlames = demonicFlames;
             myClone.demonicFlamesBonusDamage = demonicFlamesBonusDamage;
@@ -583,7 +585,7 @@ namespace CalamityMod.NPCs
             myClone.scionsCurioEffected = scionsCurioEffected;
             myClone.abaddonEffected = abaddonEffected;
             myClone.voidOfExtinctionEffected = voidOfExtinctionEffected;
-            myClone.checkPlayerBflameDamage = checkPlayerBflameDamage;
+            myClone.checkPlayerBaneDamage = checkPlayerBaneDamage;
             myClone.warbannerBurnTime = warbannerBurnTime;
             myClone.warbannerBurnTimer = warbannerBurnTimer;
             myClone.warbannerBurnStacks = warbannerBurnStacks;
@@ -777,6 +779,7 @@ namespace CalamityMod.NPCs
             irradiated = false;
             if (scionsCurioEffected)
                 irradiatedContactBoost = 2f;
+            bane = false;
             brimstoneFlames = false;
             demonicFlames = false;
             holyFlames = false;
@@ -3138,8 +3141,8 @@ namespace CalamityMod.NPCs
                 if (!Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].head))
                     npc.ai[3] = 0f;
             }
-            if (!brimstoneFlames && !checkPlayerBflameDamage)
-                checkPlayerBflameDamage = true;
+            if (!bane && !checkPlayerBaneDamage)
+                checkPlayerBaneDamage = true;
             if (demonicFlames)
                 demonicFlamesClearTimer = 0;
             else
@@ -4676,6 +4679,9 @@ namespace CalamityMod.NPCs
             if (astralInfection)
                 AstralInfectionDebuff.DrawEffects(npc, ref drawColor);
 
+            if (bane)
+                Bane.DrawEffects(npc, ref drawColor);
+
             // Brimstone Flames and Demonshade Enrage set bonus share the same visual effects
             // TODO -- change this when Demonshade is reworked
             if (brimstoneFlames || npc.HasBuff<Enraged>())
@@ -4943,6 +4949,7 @@ namespace CalamityMod.NPCs
             // All Calamity DoTs in alphabetical order
             ("CalamityMod/Buffs/DamageOverTime/AstralInfectionDebuff", NPC => NPC.Calamity().astralInfection),
             ("CalamityMod/Buffs/DamageOverTime/AuricRebuke", NPC => NPC.Calamity().auricRebuke),
+            ("CalamityMod/Buffs/DamageOverTime/Bane", NPC => NPC.Calamity().bane),
             ("CalamityMod/Buffs/DamageOverTime/BanishingFire", NPC => NPC.Calamity().banishingFire),
             ("CalamityMod/Buffs/DamageOverTime/BrainRot", NPC => NPC.Calamity().brainRot),
             ("CalamityMod/Buffs/DamageOverTime/BrimstoneFlames", NPC => NPC.Calamity().brimstoneFlames),

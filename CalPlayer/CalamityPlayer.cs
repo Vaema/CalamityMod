@@ -960,7 +960,7 @@ namespace CalamityMod.CalPlayer
         public bool abaddon = false;
         public int abaddonCooldown = 0;
         public bool abaddonEffectVisual = false;
-        public float abaddonFlameDamage = 0;
+        public float abaddonDebuffDamage = 0;
 
         public bool aeroStone = false;
         public bool lifejelly = false;
@@ -1362,6 +1362,7 @@ namespace CalamityMod.CalPlayer
         public bool armorCrunch = false;
         public bool crumble = false;
         public bool irradiated = false;
+        public bool bane = false;
         public bool brimstoneFlames = false;
         public bool weakBrimstoneFlames = false;
         public bool demonicFlames = false;
@@ -4987,10 +4988,10 @@ namespace CalamityMod.CalPlayer
 
             if (Player.Calamity().abaddon || Player.Calamity().voidOfExtinction)
             {
-                Player.Calamity().abaddonFlameDamage = (1 + Player.GetTotalCritChance(Player.GetBestClass()) * 0.01f * (Player.Calamity().voidOfExtinction ? VoidofExtinction.critScaling : Abaddon.critScaling));
+                Player.Calamity().abaddonDebuffDamage = (1 + Player.GetTotalCritChance(Player.GetBestClass()) * 0.01f * (Player.Calamity().voidOfExtinction ? VoidofExtinction.critScaling : Abaddon.critScaling));
             }
             else
-                Player.Calamity().abaddonFlameDamage = 0;
+                Player.Calamity().abaddonDebuffDamage = 0;
 
             // True melee damage from various vanilla equipment placed here.
 
