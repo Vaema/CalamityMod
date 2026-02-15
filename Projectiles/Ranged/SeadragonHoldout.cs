@@ -40,7 +40,7 @@ namespace CalamityMod.Projectiles.Ranged
                 SoundEngine.PlaySound(SoundID.Item149, Projectile.Center);
                 if (Main.netMode != NetmodeID.Server)
                 {
-                    string goreType = Main.rand.NextBool() ? "EmptyAnimosityShell" : "EmptyAnimosityShell2";
+                    string goreType = "SeadragonMag";
                     Gore.NewGore(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity.RotatedBy(2f * -Owner.direction) * Main.rand.NextFloat(0.6f, 0.7f), Mod.Find<ModGore>(goreType).Type);
                 }
                 //Set the scaling to 0 whenever it reloads
@@ -74,13 +74,19 @@ namespace CalamityMod.Projectiles.Ranged
                     framesBetweenShots = 3;
                     OffsetLengthFromArm -= 2f;
                     //Here we detect which ammo the bullets will use
-                    Owner.PickAmmo(Owner.HeldItem, out int bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out _, !Main.rand.NextBool(4));
+                    Owner.PickAmmo(Owner.HeldItem, out int bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out _);
                     //Alternate between shooting bullets and water streams. Despite not having damage scaling, the fish gain movement speed based on the scaling, so we still need a Global Projectile
                     if (!swapType)
                     {
                         Projectile scalingShot = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(1.5f)), bulletAMMO, Projectile.damage, Projectile.knockBack, Projectile.owner);
                         CalamityGlobalProjectile cgp = scalingShot.Calamity();
                         cgp.sharkBullets = true;
+                        //Only eject casings from the gun if bullets are fired, preventing too many at once
+                        if (Main.netMode != NetmodeID.Server)
+                        {
+                            string goreType = "SeadragonCasing";
+                            Gore.NewGore(Projectile.GetSource_FromAI(), Projectile.Center + (-Projectile.velocity * 6), -Projectile.velocity * 4f, Mod.Find<ModGore>(goreType).Type);
+                        }
                     }
                     if (swapType)
                     {

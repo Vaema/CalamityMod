@@ -9,6 +9,7 @@ using CalamityMod.Effects;
 using CalamityMod.Enums;
 using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Graphics.Primitives;
+using CalamityMod.NPCs;
 using CalamityMod.Packets.Entities;
 using CalamityMod.Particles;
 using CalamityMod.Utilities.Daybreak;
@@ -25,6 +26,7 @@ using Terraria.WorldBuilding;
 
 namespace CalamityMod.Projectiles.Ranged
 {
+    [PierceResistException]
     public class AbyssalFire : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";

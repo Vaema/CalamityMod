@@ -5,41 +5,66 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.Localization;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
     public class Archerfish : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+
+        public static int AmmoSavedPercent = 33;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
+
         public override void SetDefaults()
         {
             Item.width = 78;
             Item.height = 36;
             Item.damage = 16;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = 6;
-            Item.useAnimation = 6;
-            Item.channel = true;
+            Item.useTime = 11;
+            Item.useAnimation = 11;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
-            Item.knockBack = 2.5f;
+            Item.knockBack = 2f;
             Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
-            Item.UseSound = null;
+            Item.UseSound = SoundID.Item85;
             Item.autoReuse = true;
-            Item.noUseGraphic = true;
-            Item.shoot = ModContent.ProjectileType<ArcherfishHoldout>();
-            Item.shootSpeed = 2f;
+            Item.shoot = ModContent.ProjectileType<ArcherfishShot>();
+            Item.shootSpeed = 11f;
             Item.useAmmo = AmmoID.Bullet;
         }
-        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
-        public override bool RangedPrefix() => true; //Can't scale with attack speed, but should still be able to recieve Unreal
-        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.NextFloat() > 0.95f && player.ownedProjectileCounts[Item.shoot] > 0;
+
+        public override Vector2? HoldoutOffset() => new Vector2(-10, -5);
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile holdout = Projectile.NewProjectileDirect(source, position, velocity, Item.shoot, damage, knockback, player.whoAmI);
-            holdout.velocity = (player.Calamity().mouseWorld - player.MountedCenter).SafeNormalize(Vector2.Zero);
+            // Reposition to the gun's tip
+            Vector2 newPos = position + new Vector2(60f, player.direction * (Math.Abs(velocity.SafeNormalize(Vector2.Zero).X) < 0.02f ? -2f : -8f)).RotatedBy(velocity.ToRotation());
+
+            // Fires a spread of harmless bubbles
+            for (int i = 0; i < 4; i++)
+            {
+                Gore bubble = Gore.NewGorePerfect(source, newPos, velocity.RotatedByRandom(MathHelper.ToRadians(30f)) * 0.5f, 411);
+                bubble.timeLeft = 6 + Main.rand.Next(4);
+                bubble.scale = Main.rand.NextFloat(0.6f, 0.8f);
+                bubble.type = Main.rand.NextBool(3) ? 412 : 411;
+            }
+
+            // Replaces standard bullets with water jets.
+            if (type == ProjectileID.Bullet)
+                Projectile.NewProjectile(source, newPos, velocity, Item.shoot, damage, knockback, player.whoAmI);
+            else
+                Projectile.NewProjectile(source, newPos, velocity, type, damage, knockback, player.whoAmI);
+
+            // Always fires a close range water blast.
+            int waterRingDamage = (int)(damage * 0.5f);
+            float boostedKB = knockback + 5f;
+            Projectile.NewProjectile(source, newPos, velocity * 0.5f, ModContent.ProjectileType<ArcherfishRing>(), waterRingDamage, boostedKB, player.whoAmI);
+
             return false;
         }
+        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.Next(100) >= AmmoSavedPercent;
     }
 }

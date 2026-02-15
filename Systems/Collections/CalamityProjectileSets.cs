@@ -75,7 +75,8 @@ namespace CalamityMod.Systems.Collections
         /// Defaults to <see langword="false"/>.
         /// </summary>
         public static bool[] DoesNotGetHomingWithGrapeBeer = Factory.CreateBoolSet(ProjectileType<NukeOfBliss>(), ProjectileType<PrismaticEnergyBlast>(), ProjectileType<PrismEnergyBullet>(),
-            ProjectileType<PrismMine>(), ProjectileType<ScorchedEarthRocket>(), ProjectileType<UltimaRay>(), ProjectileType<SproutingArrowMain>());
+            ProjectileType<PrismMine>(), ProjectileType<ScorchedEarthRocket>(), ProjectileType<UltimaRay>(), ProjectileType<SproutingArrowMain>(), ProjectileType<MegalodonShot>(), ProjectileType<BlahajBlast>(),
+            ProjectileType<SeaDragonRocket>(), ProjectileType<VoidBlast>(), ProjectileType<AbyssalFire>());
 
         /// <summary>
         /// Determines what other projectiles this projectile will share ID-static immunity frames with. Defaults to -1, which means that it does not share immunity frames.<br/>

@@ -4,6 +4,7 @@ using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Packets.Entities;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -81,6 +82,10 @@ namespace CalamityMod.Projectiles.Ranged
             blast.localAI[1] = debuffTime;
             blast.timeLeft = 2;
             blast.DamageType = Projectile.DamageType;
+            for (int i = 0; i < 2; i++)
+            {
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Main.rand.NextVector2Circular(6f, 6f), ModContent.ProjectileType<RancorFog>(), 0, 0f, Projectile.owner, 0f, 2f);
+            }
             #region Visuals and Sounds
             SoundStyle fire = new("CalamityMod/Sounds/Item/OmicronBeam");
             SoundEngine.PlaySound(fire with { Volume = 0.9f }, Projectile.Center);

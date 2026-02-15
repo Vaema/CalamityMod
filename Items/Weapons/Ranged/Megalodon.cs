@@ -8,6 +8,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.Localization;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
@@ -15,11 +16,13 @@ namespace CalamityMod.Items.Weapons.Ranged
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public int sharkGunDamageScaling = 0;
+        public static int AmmoSavedPercent = 50;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
 
         public override void SetDefaults()
         {
             Item.width = 102;
-            Item.height = 42;
+            Item.height = 43;
             Item.damage = 58;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 4;
@@ -39,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         }
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
         public override bool RangedPrefix() => true; //Can't scale with attack speed, but should still be able to recieve Unreal
-        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.NextFloat() > 0.95f && player.ownedProjectileCounts[Item.shoot] > 0;
+        public override bool CanConsumeAmmo(Item ammo, Player player) => player.ownedProjectileCounts[Item.shoot] > 0 && Main.rand.Next(100) >= AmmoSavedPercent;
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             Projectile holdout = Projectile.NewProjectileDirect(source, position, velocity, Item.shoot, damage, knockback, player.whoAmI);
