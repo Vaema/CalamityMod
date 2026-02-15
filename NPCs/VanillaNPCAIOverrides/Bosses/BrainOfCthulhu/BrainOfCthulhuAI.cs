@@ -153,7 +153,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
     internal static int BloodlettingDuration => 675;
     internal static Vector2 HoverDistance => new (420f, 300f);
     internal static float HoverEndHeight => 300f;
-    internal static int IchorRate => CalamityWorld.death ? 9 : 10;
+    internal static int IchorRate => CalamityWorld.death ? 10 : 12;
     internal static float IchorSpread => 1.5f;
     internal static float IchorVelocity => 3f;
     internal static int BloodshotRate => 90;
@@ -1890,17 +1890,24 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                     if (Time % (IchorRate * 2) == 0)
                         SoundEngine.PlaySound(SoundID.Item17, NPC.Center);
 
-                    if(Main.netMode == NetmodeID.SinglePlayer)
-                        Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center + NPC.velocity + Main.rand.NextVector2Circular(72, 72), new Vector2(Main.rand.NextFloat(-IchorSpread, IchorSpread), -IchorVelocity), ModContent.ProjectileType<IchorShower>(), IchorShotDamage, 0.5f);
-                    else if(Main.dedServ)
+                    if (Time > BloodshotRate + 30 && Time % (IchorRate * 10) == 0)
                     {
-                        Player furthestLeft = Main.player[AttackList[0]];
-                        Player furthestRight = Main.player[AttackList[1]];
-                        float xDist = furthestRight.Center.X - furthestLeft.Center.X;
-                        int projCount = 1 + (int)(xDist / 360);
-
-                        for(int i = 0; i < projCount; i++)
+                        NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<BloodBomb>(), NPC.whoAmI);
+                    }
+                    else
+                    {
+                        if (Main.netMode == NetmodeID.SinglePlayer)
                             Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center + NPC.velocity + Main.rand.NextVector2Circular(72, 72), new Vector2(Main.rand.NextFloat(-IchorSpread, IchorSpread), -IchorVelocity), ModContent.ProjectileType<IchorShower>(), IchorShotDamage, 0.5f);
+                        else if (Main.dedServ)
+                        {
+                            Player furthestLeft = Main.player[AttackList[0]];
+                            Player furthestRight = Main.player[AttackList[1]];
+                            float xDist = furthestRight.Center.X - furthestLeft.Center.X;
+                            int projCount = 1 + (int)(xDist / 360);
+
+                            for (int i = 0; i < projCount; i++)
+                                Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center + NPC.velocity + Main.rand.NextVector2Circular(72, 72), new Vector2(Main.rand.NextFloat(-IchorSpread, IchorSpread), -IchorVelocity), ModContent.ProjectileType<IchorShower>(), IchorShotDamage, 0.5f);
+                        }
                     }
                 }
 

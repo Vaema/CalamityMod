@@ -1,0 +1,211 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Particles;
+using CalamityMod.Projectiles.Typeless;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
+using Terraria.GameContent;
+using Terraria.ID;
+using Terraria.ModLoader;
+
+namespace CalamityMod.Projectiles.Boss.BrainOfCthulhu;
+
+public class BloodBomb : ModNPC, ILocalizedModType
+{
+    public new string LocalizationCategory => "NPCs";
+
+    public override void SetStaticDefaults()
+    {
+        NPCID.Sets.ProjectileNPC[Type] = true;
+    }
+
+    public override void SetDefaults()
+    {
+        NPC.width = 30;
+        NPC.height = 30;
+        NPC.noGravity = true;
+        NPC.damage = 10;
+        NPC.defense = 5;
+        NPC.lifeMax = 60;
+        NPC.Calamity().canBreakPlayerDefense = true;
+        NPC.lavaImmune = true;
+        NPC.aiStyle = -1;
+        AIType = -1;
+        NPC.value = 0;
+        NPC.HitSound = SoundID.NPCHit24;
+        NPC.DeathSound = SoundID.NPCDeath27;
+        NPC.knockBackResist = 0f;
+        NPC.chaseable = false;
+        NPC.noTileCollide = true;
+    }
+
+    public override void OnSpawn(IEntitySource source)
+    {
+        if (source is EntitySource_Parent { Entity: NPC n })
+            NPC.ai[1] = n.whoAmI;
+        else
+            NPC.ai[1] = -1;
+
+        Vector2 goal = Main.player[0].Center - NPC.Center;
+
+        float vyi = 6;
+        float vyisq = 36;
+        float g = 0.2f;
+
+        float vyf = -MathF.Sqrt(vyisq + 2 * g * goal.Y);
+        float t = Math.Abs((vyf - vyi) / g);
+
+        float vxi = goal.X / t;
+
+        NPC.velocity = new Vector2(float.IsNaN(vxi) ? (goal.X > 0 ? 10 : -10) : vxi, -vyi);
+    }
+
+    public override void AI()
+    {
+        if (NPC.ai[0] > 1200)
+            NPC.active = false;
+
+        NPC.velocity.Y += 0.2f;
+
+        NPC.ai[0]++;
+    }
+
+    public override void ModifyHitByItem(Player player, Item item, ref NPC.HitModifiers modifiers)
+    {
+        if (modifiers.DamageType == TrueMeleeDamageClass.Instance)
+        {
+            modifiers.FinalDamage *= 1.5f;
+            return;
+        }
+
+        float dist = player.DistanceSQ(NPC.Center);
+        dist = MathHelper.Clamp(dist - 10000, 0, 160000);
+        if (dist > 160000)
+            modifiers.FinalDamage *= 0;
+        else
+            modifiers.FinalDamage *= MathHelper.Lerp(1f, 0f, dist / 160000f);
+    }
+
+    public override bool? CanBeHitByProjectile(Projectile projectile)
+    {
+        return null;
+    }
+
+    public override void ModifyHitByProjectile(Projectile projectile, ref NPC.HitModifiers modifiers)
+    {
+        if (modifiers.DamageType == TrueMeleeDamageClass.Instance)
+        {
+            modifiers.FinalDamage *= 1.5f;
+            return;
+        }
+
+        if (projectile.owner == -1)
+        {
+            modifiers.FinalDamage *= 0;
+            return;
+        }
+
+        float dist = Main.player[projectile.owner].DistanceSQ(NPC.Center);
+        dist = MathHelper.Clamp(dist - 10000, 0, 160000);
+        if (dist > 160000f)
+            modifiers.FinalDamage *= 0;
+        else
+            modifiers.FinalDamage *= MathHelper.Lerp(1f, 0f, dist / 160000f);
+    }
+
+    public override void HitEffect(NPC.HitInfo hit)
+    {
+        if(NPC.life <= 0)
+        {
+            if (NPC.ai[1] == -1)
+                NPC.ai[1] = NPC.Center.ClosestNPCAt(1200, true, true).whoAmI;
+            Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, NPC.DirectionTo(Main.npc[(int)NPC.ai[1]].Center) * 16f, ModContent.ProjectileType<BloodBombRTS>(), 40, 1f, -1, NPC.ai[1]);
+        }
+    }
+
+    public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+    {
+        float deathRatio = 1 - (NPC.life / NPC.lifeMax);
+        float time = Main.GlobalTimeWrappedHourly * (10f + (10f * deathRatio));
+        float lerp = MathF.Sin(time) / 2f + 0.5f;
+        Color color = Color.Lerp(Color.Red, Color.Yellow, lerp);
+
+        Texture2D tex = TextureAssets.Npc[Type].Value;
+        spriteBatch.Draw(tex, NPC.Center - Main.screenPosition, null, color, NPC.rotation, tex.Size() * 0.5f, 1.5f + (MathF.Sin(time) * 0.25f), 0, 0);
+        return false;
+    }
+}
+
+public class BloodBombRTS : ModProjectile, ILocalizedModType
+{
+    public new string LocalizationCategory => "Projectiles.Boss";
+    public override string Texture => "CalamityMod/Projectiles/Boss/BrainOfCthulhu/BloodBomb";
+    public override void SetStaticDefaults()
+    {
+        ProjectileID.Sets.TrailCacheLength[Type] = 8;
+        ProjectileID.Sets.TrailingMode[Type] = 2;
+    }
+
+    public override void SetDefaults()
+    {
+        Projectile.width = 30;
+        Projectile.height = 30;
+        Projectile.penetrate = 1;
+        Projectile.ignoreWater = true;
+        Projectile.tileCollide = false;
+        Projectile.damage = 10;
+        Projectile.friendly = true;
+        Projectile.hostile = false;
+        Projectile.tileCollide = false;
+        Projectile.timeLeft = 360;
+    }
+
+    public override void AI()
+    {
+        Projectile.velocity = Projectile.DirectionTo(Main.npc[(int)Projectile.ai[0]].Center) * 16f;
+    }
+
+    public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+    {
+        modifiers.SetCrit();
+    }
+
+    public override void OnKill(int timeLeft)
+    {
+        SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode, Projectile.Center);
+
+        CustomPulse explosion1 = new(Projectile.Center, Vector2.Zero, Color.OrangeRed, "CalamityMod/Particles/FlameExplosion", Vector2.One, Main.rand.NextFloat(0f, MathHelper.Pi), 0f, 0.1f, 24);
+        GeneralParticleHandler.SpawnParticle(explosion1);
+
+        CustomPulse explosion2 = new(Projectile.Center, Vector2.Zero, Color.Red, "CalamityMod/Particles/FlameExplosion", Vector2.One, Main.rand.NextFloat(0f, MathHelper.Pi), 0f, 0.075f, 24);
+        GeneralParticleHandler.SpawnParticle(explosion2);
+    }
+
+    public override bool PreDraw(ref Color lightColor)
+    {
+        Texture2D tex = TextureAssets.Projectile[Type].Value;
+
+        for (int i = 0; i < (CalamityClientConfig.Instance.Afterimages ? Projectile.oldPos.Length : 1); ++i)
+        {
+            float time = (Main.GlobalTimeWrappedHourly * 30) - (i / 2f);
+            float lerp = MathF.Sin(time) / 2f + 0.5f;
+            Color color = Color.Lerp(Color.Red, Color.Yellow, lerp);
+            float afterimageRot = Projectile.oldRot[i];
+            Vector2 drawPos = Projectile.oldPos[i] + (Projectile.Size / 2f) - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
+            if (i != 0)
+                color *= 0.75f;
+
+            // DO NOT REMOVE THESE "UNNECESSARY" FLOAT CASTS. THIS WILL BREAK THE AFTERIMAGES.
+            float interpolant = ((float)(Projectile.oldPos.Length - i) / (float)Projectile.oldPos.Length);
+            Main.spriteBatch.Draw(tex, drawPos, null, color, afterimageRot, tex.Size() * 0.5f, (Projectile.scale + MathF.Sin(time) / 2f + 0.5f) * interpolant, SpriteEffects.None, 0f);
+        }
+        return false;
+    }
+}
