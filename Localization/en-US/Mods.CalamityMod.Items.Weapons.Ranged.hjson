@@ -712,7 +712,7 @@ Megalodon: {
 	DisplayName: Megalodon
 	Tooltip:
 		'''
-		Loads a 30 round magazine of bullets and pressurized water streams that are rapidly unleashed
+		Loads a 30 round magazine of bullets and pressurized water jets that are rapidly unleashed
 		After firing, the gun unleashes a powerful homing rocket before reloading
 		Rocket damage is based on how many shots hit
 		{$CommonItemTooltip.PercentChanceToSaveAmmo}
@@ -1477,9 +1477,9 @@ Voidragon: {
 	DisplayName: Voidragon
 	Tooltip:
 		'''
-		Loads a 50 round onslaught of alternating bullets and void blasts
+		Loads a 50 round onslaught of alternating bullets and concentrated void blasts
 		Once your mag runs empty, the gun unleashes a jet of abyssal fire that annihilates anything in its path
-		The abyssal fire and lingering flames grow increasingly powerful with the amount of shots you hit
+		The abyssal fire and lingering flames grow increasingly powerful with the amount of shots hit
 		{$CommonItemTooltip.PercentChanceToSaveAmmo}
 		[c/620BB0: 'Fade to black']
 		'''

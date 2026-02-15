@@ -27,7 +27,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.penetrate = 4;
             Projectile.alpha = 255;
             Projectile.timeLeft = Lifetime;
-            Projectile.MaxUpdates = 2;
+            Projectile.MaxUpdates = 3;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.tileCollide = false;
             Projectile.localNPCHitCooldown = -1;
