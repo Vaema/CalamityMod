@@ -544,6 +544,8 @@ namespace CalamityMod.CalPlayer
         /// <summary> An additional damage multiplier applied to rogue stealth strikes. Used by Filthy Glove, Rotten Dogtooth and their upgrades. </summary>
         public double bonusStealthDamage = 0;
         public float rogueVelocity = 1f;
+
+        public int focusFlurryAttackCount = 0;
         #endregion
 
         #region Mount

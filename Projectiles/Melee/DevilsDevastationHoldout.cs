@@ -207,6 +207,9 @@ namespace CalamityMod.Projectiles.Melee
 
             AnimationProgress = Animation % useAnim;
 
+            if (isOwner && !holding && Main.netMode != NetmodeID.SinglePlayer && (int)Animation % 3 == 0)
+                Projectile.netUpdate = true;
+
             if (CanHit || postSwing)
                 mousePos = Owner.Center - aimVel;
             else
@@ -514,6 +517,7 @@ namespace CalamityMod.Projectiles.Melee
             writer.Write7BitEncodedInt(lastHitTargetIndex);
             writer.Write7BitEncodedInt(postSwingCooldown);
             writer.WriteVector2(aimVel);
+            writer.Write(Animation);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
@@ -523,6 +527,7 @@ namespace CalamityMod.Projectiles.Melee
             lastHitTargetIndex = reader.Read7BitEncodedInt();
             postSwingCooldown = reader.Read7BitEncodedInt();
             aimVel = reader.ReadVector2();
+            Animation = reader.ReadSingle();
             mousePos = Owner.Center - aimVel;
         }
     }
