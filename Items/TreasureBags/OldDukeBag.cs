@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.Placeables.Furniture.Paintings;
+using CalamityMod.Items.Placeables.Furniture.Monoliths;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
@@ -79,6 +80,7 @@ namespace CalamityMod.Items.TreasureBags
 
             // Vanity
             itemLoot.Add(ModContent.ItemType<OldDukeMask>(), 7);
+            itemLoot.Add(ModContent.ItemType<EldenDiorama>(), 10);
             itemLoot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
         }
     }

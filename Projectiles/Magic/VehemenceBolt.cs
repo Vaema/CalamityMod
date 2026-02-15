@@ -3,6 +3,7 @@ using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -30,9 +31,12 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.DamageType = DamageClass.Magic;
         }
 
-        public override void AI()
+        public override void OnSpawn(IEntitySource source)
         {
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
+        }
+        public override void AI()
+        {
             Lighting.AddLight(Projectile.Center, Color.DarkRed.ToVector3());
 
             if (Time == 0f)

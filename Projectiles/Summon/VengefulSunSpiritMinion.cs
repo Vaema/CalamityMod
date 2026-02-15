@@ -1,4 +1,5 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using System.IO;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using CalamityMod.Utilities.Daybreak;
 using Microsoft.Xna.Framework;
@@ -61,6 +62,7 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.minionSlots++;
                     minionSlotsAvaliable--;
                     MinionSlotsToAdd--;
+                    Projectile.netUpdate = true;
                 }
                 MinionSlotsToAdd = 0;
             }
@@ -106,10 +108,19 @@ namespace CalamityMod.Projectiles.Summon
                 float shootSpeed = 15f;
                 Vector2 source = Projectile.Center;
                 var velocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(Projectile.Center, target, shootSpeed, 2);
-                Projectile beam = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center - velocity, velocity, ModContent.ProjectileType<VengefulSunBeam>(), (int)(Projectile.damage * (0.75f + Projectile.minionSlots * 0.25f)), Projectile.knockBack, Projectile.owner, ai1: (Projectile.minionSlots - 1) / 9f);
+                Projectile beam = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center - velocity, velocity, ModContent.ProjectileType<VengefulSunBeam>(), (int)(Projectile.damage * (0.75f + Projectile.minionSlots * 0.25f)), Projectile.knockBack, Projectile.owner, ai1: (Projectile.minionSlots - 1) / 6f);
                 beam.DamageType = DamageClass.Summon;
                 Projectile.ai[1] += 60f / (0.75f + Projectile.minionSlots * 0.25f);
             }
+        }
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.Write(Projectile.minionSlots);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            Projectile.minionSlots = reader.ReadSingle();
         }
 
         public override bool? CanDamage() => false;
@@ -141,7 +152,7 @@ namespace CalamityMod.Projectiles.Summon
             var whiteTex = GetWhiteTex();
             var ciTex = CalamityUtils.GetTextureEfficient(ref circle, "CalamityMod/ExtraTextures/GreyscaleOpenCircleButBigger").Value;
 
-            float completion = (Projectile.minionSlots-1) / 9f;
+            float completion = (Projectile.minionSlots-1) / 6f;
             var color = Color.Lerp(Color.Yellow, Color.DarkOrange, completion);
             if (completion >= 1)
                 color = Color.LightBlue;

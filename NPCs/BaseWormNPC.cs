@@ -655,22 +655,6 @@ namespace CalamityMod.NPCs
             NPC.aiStyle = -1;
         }
 
-        public override bool? CanBeHitByItem(Player player, Item item)
-        {
-            var canhit = Main.npc[(int)NPC.ai[0]].ModNPC.CanBeHitByItem(player, item);
-            if (canhit.HasValue && !canhit.Value)
-                return false;
-            return base.CanBeHitByItem(player, item);
-        }
-
-        public override bool? CanBeHitByProjectile(Projectile projectile)
-        {
-            var canhit = Main.npc[(int)NPC.ai[0]].ModNPC.CanBeHitByProjectile(projectile);
-            if (canhit.HasValue && !canhit.Value)
-                return false;
-            return base.CanBeHitByProjectile(projectile);
-        }
-
         public override void AI()
         {
             var headNPC = Main.npc[(int)NPC.ai[0]];

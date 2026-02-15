@@ -9,6 +9,8 @@ namespace CalamityMod.UI.DialogueDisplay.DisplayEffects
     {
         public override bool FadeWhenTooFar => false;
 
+        public override float TimeToAppear => 20;
+
         public override bool DespawnWithAttachedNPC => false;
 
         public override Vector2 TextOffsetFromStart(Vector2 startPos, Vector2 textSize)
@@ -17,6 +19,24 @@ namespace CalamityMod.UI.DialogueDisplay.DisplayEffects
             Vector2 halfSize = textSize * 0.5f;
             Vector2 newPos = playerPos - halfSize + (Vector2.UnitY * (textSize.Y + 54));
             return newPos;
+        }
+
+        float OffsetAppearTime(float time, float ratio) => MathHelper.Clamp((time - (ratio * TimeToAppear / 6f)) / (TimeToAppear / 6f), 0f, 1f);
+
+        public override Vector2 AppearPositioning(Vector2 startPos, Vector2 goalPos, float time, DialogueCharacterData charData)
+        {
+            Vector2 toBoss = (goalPos - startPos).SafeNormalize(-Vector2.UnitX);
+            return Vector2.Lerp(goalPos - (new Vector2(-1, -1) * 24 * charData.Scale), goalPos, CalamityUtils.SineOutEasing(time / TimeToAppear, 1));
+        }
+
+        public override float AppearOpacity(float goalOpacity, float time, DialogueCharacterData charData)
+        {
+            return CalamityUtils.SineOutEasing(time / TimeToAppear, 1);
+        }
+
+        public override Vector2 AppearScale(Vector2 goalScale, float time, DialogueCharacterData charData)
+        {
+            return Vector2.Lerp(goalScale * 0.75f, goalScale, CalamityUtils.ExpOutEasing(time / TimeToAppear, 1));
         }
 
         float OffsetDisappearTime(float time, float ratio) => MathHelper.Clamp((time - (ratio * TimeToDisappear / 2f)) / (TimeToDisappear / 2f), 0f, 1f);

@@ -47,6 +47,8 @@ namespace CalamityMod.Projectiles.Magic
             ProjectileID.Sets.TrailCacheLength[Type] = 8;
         }
 
+        NPC target = null;
+        Player closestPlayer = null;
         public override void AI()
         {
             Vector2 goalPos = new Vector2(Projectile.ai[0], Projectile.ai[1]);
@@ -54,21 +56,31 @@ namespace CalamityMod.Projectiles.Magic
             if (Projectile.ai[2] == 0)
             {
                 float maxDist = 57600; //240^2
-                NPC target = null;
-                foreach (var item in Main.ActiveNPCs)
+                if (Projectile.FinalExtraUpdate())
                 {
-                    if (item.CanBeChasedBy(item) && item.DistanceSQ(goalPos) < maxDist)
+                    target = null;
+                    foreach (var item in Main.ActiveNPCs)
                     {
-                        maxDist = item.DistanceSQ(goalPos);
-                        target = item;
+                        if (item.CanBeChasedBy(item) && item.DistanceSQ(goalPos) < maxDist)
+                        {
+                            maxDist = item.DistanceSQ(goalPos);
+                            target = item;
+                        }
                     }
                 }
                 if (target != null)
                 {
-                    goalPos = target.Center;
-                    Projectile.ai[0] = goalPos.X;
-                    Projectile.ai[1] = goalPos.Y;
-                    Projectile.Calamity().HomingTarget = target.whoAmI;
+                    if (target.active)
+                    {
+                        goalPos = target.Center;
+                        Projectile.ai[0] = goalPos.X;
+                        Projectile.ai[1] = goalPos.Y;
+                        Projectile.Calamity().HomingTarget = target.whoAmI;
+                    }
+                    else
+                    {
+                        target = null;
+                    }
                 } else
                 {
                     Projectile.Calamity().HomingTarget = -1;
@@ -94,15 +106,18 @@ namespace CalamityMod.Projectiles.Magic
                 {
                     Projectile.rotation += 0.05f;
                     Projectile.scale = MathHelper.Min(Projectile.scale + 0.02f, 1);
-                    Player closestPlayer = null;
-                    float closestDis = 320;
-                    foreach (var player in Main.ActivePlayers)
+                    if (Projectile.FinalExtraUpdate())
                     {
-                        var dis = Projectile.Distance(player.Center);
-                        if (dis < closestDis)
+                        closestPlayer = null;
+                        float closestDis = 320*320;
+                        foreach (var player in Main.ActivePlayers)
                         {
-                            closestDis = dis;
-                            closestPlayer = player;
+                            var dis = Projectile.DistanceSQ(player.Center);
+                            if (dis < closestDis)
+                            {
+                                closestDis = dis;
+                                closestPlayer = player;
+                            }
                         }
                     }
                     if (closestPlayer != null)

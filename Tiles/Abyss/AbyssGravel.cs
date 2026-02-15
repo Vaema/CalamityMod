@@ -42,6 +42,11 @@ namespace CalamityMod.Tiles.Abyss
             num = fail ? 1 : 3;
         }
 
+        public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
+        {
+            World.Abyss.FillTileWithWater(i, j);
+        }
+
         public override void RandomUpdate(int i, int j)
         {
             Tile tile = Main.tile[i, j];

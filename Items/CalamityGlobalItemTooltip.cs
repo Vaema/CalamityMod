@@ -152,8 +152,8 @@ namespace CalamityMod.Items
 
             WhipAutomaticTooltips(item, tooltips, ref lastTooltipIndex);
             // In GFB, replace all instances of "rogue" with "rouge".
-            string[] rogueKey = new string[] { CalamityUtils.GetTextValue($"Misc.GFBRogueUppercase"), CalamityUtils.GetTextValue($"Misc.GFBRogueLowercase") };
-            string[] rougeKey = new string[] { CalamityUtils.GetTextValue($"Misc.GFBRougeUppercase"), CalamityUtils.GetTextValue($"Misc.GFBRougeLowercase") };
+            string[] rogueKey = [CalamityUtils.GetTextValue($"Misc.GFBRogueUppercase"), CalamityUtils.GetTextValue($"Misc.GFBRogueLowercase")];
+            string[] rougeKey = [CalamityUtils.GetTextValue($"Misc.GFBRougeUppercase"), CalamityUtils.GetTextValue($"Misc.GFBRougeLowercase")];
             for (int n = 0; n < rogueKey.Length; n++)
             {
                 if (Main.zenithWorld && rogueKey[n] != "")
@@ -679,6 +679,19 @@ namespace CalamityMod.Items
                 || item.type == ItemID.QueenSlimeCrystal || item.type == ItemID.MechanicalEye || item.type == ItemID.MechanicalWorm || item.type == ItemID.MechanicalSkull || item.type == ItemID.CelestialSigil)
                 EditTooltipByNum(0, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.NotConsumable"));
             #endregion
+            // Brain of Confusion, Black Belt and Master Ninja Gear have guaranteed dodges with a fixed cooldown.
+            #region Guaranteed Dodge Tooltips
+            if (item.type == ItemID.BlackBelt)
+                EditTooltipByNum(0, (line) => line.Text = CalamityUtils.GetTextValue("Common.DodgeProvided") + "\n" + CalamityUtils.GetTextValue("Common.DodgeInformation"));
+            if (item.type == ItemID.MasterNinjaGear)
+                EditTooltipByNum(1, (line) => line.Text = CalamityUtils.GetTextValue("Common.DodgeProvided") + "\n" + CalamityUtils.GetTextValue("Common.DodgeInformation"));
+            if (item.type == ItemID.BrainOfConfusion)
+            {
+                EditTooltipByNum(0, (line) => line.Text = CalamityUtils.GetTextValue("Common.DodgeProvided"));
+
+                EditTooltipByNum(2, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.DodgeInformation"));
+            }
+            #endregion
 
             // Whip tag is dynamically generated for all whips based on the SummonTagDebuffDict, so we'll remove the vanilla tag tootlips.
             #region Whip Tag removal
@@ -706,13 +719,6 @@ namespace CalamityMod.Items
             #endregion
 
             #region Accessories
-            // Brain of Confusion, Black Belt and Master Ninja Gear have guaranteed dodges with a fixed cooldown.
-            if (item.type == ItemID.BlackBelt)
-                EditTooltipByNum(0, (line) => line.Text = CalamityUtils.GetText("Vanilla.DodgeInfo").Format(BalancingConstants.BeltDodgeCooldownMin / 60, BalancingConstants.BeltDodgeCooldownMax / 60));
-            if (item.type == ItemID.MasterNinjaGear)
-                EditTooltipByNum(1, (line) => line.Text = CalamityUtils.GetText("Vanilla.DodgeInfo").Format(BalancingConstants.BeltDodgeCooldownMin / 60, BalancingConstants.BeltDodgeCooldownMax / 60));
-            if (item.type == ItemID.BrainOfConfusion)
-                EditTooltipByNum(0, (line) => line.Text = CalamityUtils.GetText("Vanilla.DodgeInfo").Format(BalancingConstants.BrainDodgeCooldownMin / 60, BalancingConstants.BrainDodgeCooldownMax / 60));
 
             // Nerfed Ancient Chisel and its upgrade.
             if (item.type == ItemID.AncientChisel)
@@ -1193,12 +1199,11 @@ namespace CalamityMod.Items
                 AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
 
             // All developer wings have identical stats and no special effects
-            if (item.type == ItemID.Yoraiz0rWings || item.type == ItemID.JimsWings || item.type == ItemID.SkiphsWings ||
-                item.type == ItemID.LokisWings || item.type == ItemID.ArkhalisWings || item.type == ItemID.LeinforsWings ||
-                item.type == ItemID.BejeweledValkyrieWing || item.type == ItemID.RedsWings || item.type == ItemID.DTownsWings ||
-                item.type == ItemID.WillsWings || item.type == ItemID.CrownosWings || item.type == ItemID.CenxsWings ||
-                item.type == ItemID.FoodBarbarianWings || item.type == ItemID.GroxTheGreatWings || item.type == ItemID.GhostarsWings ||
-                item.type == ItemID.SafemanWings)
+            if (item.type == ItemID.Yoraiz0rWings || item.type == ItemID.JimsWings || item.type == ItemID.LokisWings || 
+                item.type == ItemID.ArkhalisWings || item.type == ItemID.LeinforsWings || item.type == ItemID.RedsWings || 
+                item.type == ItemID.DTownsWings || item.type == ItemID.WillsWings || item.type == ItemID.CrownosWings || 
+                item.type == ItemID.CenxsWings || item.type == ItemID.FoodBarbarianWings || item.type == ItemID.GroxTheGreatWings || 
+                item.type == ItemID.GhostarsWings || item.type == ItemID.SafemanWings)
             {
                 AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
             }
@@ -1488,7 +1493,7 @@ namespace CalamityMod.Items
         #region Enchanted Rarity Text Drawing
         public override bool PreDrawTooltipLine(Item item, DrawableTooltipLine line, ref int yOffset)
         {
-            if (line.Name == "ItemName" && line.Mod == "Terraria" && item.type == ModContent.ItemType<XyksBlessingBlue>())
+            if (line.Name == "ItemName" && line.Mod == "Terraria" && item.type == ModContent.ItemType<XyksBlessingBlue>() && CalamityClientConfig.Instance.TextEffects)
             {
                 Color rarityColor = Color.White;
                 Vector2 basePosition = new Vector2(line.X, line.Y);
@@ -1549,7 +1554,7 @@ namespace CalamityMod.Items
 
                 return false;
             }
-            if (line.Name == "ItemName" && line.Mod == "Terraria" && item.type == ModContent.ItemType<XyksBlessingOrange>())
+            if (line.Name == "ItemName" && line.Mod == "Terraria" && item.type == ModContent.ItemType<XyksBlessingOrange>() && CalamityClientConfig.Instance.TextEffects)
             {
                 Color rarityColor = Color.White;
                 Vector2 basePosition = new Vector2(line.X, line.Y);

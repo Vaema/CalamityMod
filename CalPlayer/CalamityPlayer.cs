@@ -68,6 +68,7 @@ using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
 using CalamityMod.Systems.Collections;
 using CalamityMod.Systems.Mechanic;
+using CalamityMod.Utilities;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -83,6 +84,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using Terraria.Net;
+using Terraria.WorldBuilding;
 using static Terraria.Main;
 using static Terraria.ModLoader.ModContent;
 
@@ -93,6 +95,11 @@ namespace CalamityMod.CalPlayer
         #region Variables
 
         #region No Category
+        /// <summary>
+        /// Increments by 1 for every frame this player has existed.
+        /// </summary>
+        internal ulong universalFrameTimer = 0;
+
         /// <summary> If true, there is a boss NPC active in the world. Primary bool for checking effects that only occur if a boss is alive. </summary>
         public static bool areThereAnyDamnBosses = false;
         /// <summary> If true, there is an event actively occuring near the player. Solely used for preventing Silva Revive's cooldown from decreasing. </summary>
@@ -187,7 +194,7 @@ namespace CalamityMod.CalPlayer
             DevourerofCods //Not a fishing minigame but uses the same code as the rest
         }
         public FishingMinigames SelectedFishingMinigame = FishingMinigames.None;
-        public bool countsAsAnyWet => (Player.armor[0].type == ItemID.FishBowl || Player.wetCount > 0 || Player.wet || Player.honeyWet || Player.lavaWet);
+        public bool countsAsAnyWet => (Player.armor[0].type == ItemID.FishBowl || (Main.raining && Player.Center.Y < Main.worldSurface * 16.0) || Player.dripping || Player.wetCount > 0 || Player.wet || Player.honeyWet || Player.lavaWet);
 
         /// <summary>
         /// How many Starbursts the player has
@@ -490,9 +497,16 @@ namespace CalamityMod.CalPlayer
         public float rogueStealthMax = 0f;
         /// <summary>
         /// Temporarily provides stealth even without Rogue armor.
-        /// Max stealth is set to 10 if it's 0.
+        /// Max stealth is set to temporaryStealthMax if it's 0.
         /// </summary>
         public int temporaryStealthTimer = 0;
+        /// <summary>
+        /// Amount of temporary max stealth provided by gear
+        /// 1f = 100 max steatlh
+        /// Duration is temporaryStealthTimer
+        /// Resets to 0.1f whenever timer ends
+        /// </summary>
+        public float temporaryStealthMax = 0.1f;
         /// <summary> A multiplier to the player's stealth generation when standing still. </summary>
         public float stealthGenStandstill = 1f;
         /// <summary> A multiplier to the player's stealth generation when moving. </summary>
@@ -530,6 +544,8 @@ namespace CalamityMod.CalPlayer
         /// <summary> An additional damage multiplier applied to rogue stealth strikes. Used by Filthy Glove, Rotten Dogtooth and their upgrades. </summary>
         public double bonusStealthDamage = 0;
         public float rogueVelocity = 1f;
+
+        public int focusFlurryAttackCount = 0;
         #endregion
 
         #region Mount
@@ -937,6 +953,7 @@ namespace CalamityMod.CalPlayer
         public bool evolution = false;
         public bool v8Engine = false;
         public bool v8000Engine = false;
+        public bool procDodgeEffects = true;
         public bool nanotech = false;
         public bool deadshotBrooch = false;
         public bool shadowMinions = false;
@@ -1133,6 +1150,22 @@ namespace CalamityMod.CalPlayer
         /// <summary> Used for spawning Quiver of Nihility's void fields. </summary>
         public bool voidField = false;
         public bool copyrightInfringementShield = false;
+
+        /// <summary>
+        /// This is the maximum cooldown of general Dodge effects, in frames. Can be modified by equipment.
+        /// Defaults to 90 seconds, or 5400 frames.
+        /// </summary>
+        public int ConsumableDodgeCooldown = 0;
+        /// <summary>
+        /// A list of on dodge effects for every dodge the player has equipped.
+        /// Also used to determine the amount of dodges for cooldowns.
+        /// Returns the string for the dodge cooldown icon to use.
+        /// </summary>
+        public List<Func<Player, Player.HurtInfo,string?>> DodgeEffects = [];
+        /// <summary>
+        /// Used internally to disable Player.shadowDodge so we can use custom dodge ordering.
+        /// </summary>
+        bool storedShadowDodge = false;
         #endregion
 
         #region Armor Set
@@ -2203,15 +2236,18 @@ namespace CalamityMod.CalPlayer
                     Player.AddCooldown(Starburst.ID, MaxStratusStarburst);
                 }
             }
-            // Shields. Has to intentionally be above resetting accessories and armor or the shields would clear instantly
-            if (!roverDrive)
-                RoverDriveShieldDurability = 0;
-            if (!lunicCorpsSet)
-                LunicCorpsShieldDurability = 0;
-            if (!sponge)
-                SpongeShieldDurability = 0;
-            if (!pSoulArtifact)
-                pSoulShieldDurability = 0;
+            
+            if (Player.whoAmI == Main.myPlayer)
+            {
+                if (!roverDrive)
+                    RoverDriveShieldDurability = 0;
+                if (!lunicCorpsSet)
+                    LunicCorpsShieldDurability = 0;
+                if (!sponge)
+                    SpongeShieldDurability = 0;
+                if (!pSoulArtifact)
+                    pSoulShieldDurability = 0;
+            }
             pSoulShieldVisible = false;
             roverDrive = false;
             roverDriveShieldVisible = false;
@@ -2476,7 +2512,10 @@ namespace CalamityMod.CalPlayer
             voidField = false;
             copyrightInfringementShield = false;
 
-            daedalusReflect = false;
+            ConsumableDodgeCooldown = BalancingConstants.DodgeCooldownMax;
+            DodgeEffects = [];
+
+        daedalusReflect = false;
             daedalusSplit = false;
             daedalusAbsorb = false;
             daedalusShard = false;
@@ -2736,6 +2775,11 @@ namespace CalamityMod.CalPlayer
             pinkCandle = false;
             yellowCandle = false;
 
+            
+            //Disable Lockon when not on gamepad to prevent it being left on forever by The Pointer
+            if (!Main.gamePad)
+                LockOnHelper.ForceUsability = false;
+
             SelectedFishingMinigame = FishingMinigames.None;
 
             #region Minion Reset Effects
@@ -2885,6 +2929,7 @@ namespace CalamityMod.CalPlayer
             abyssalDivingSuitPrevious = abyssalDivingSuit;
             abyssalDivingSuit = false;
 
+            aquaticHeartPrevious = aquaticHeart;
             aquaticHeart = false;
 
             profanedCrystalStatePrevious = pscState;
@@ -3919,13 +3964,13 @@ namespace CalamityMod.CalPlayer
                         d.velocity = Main.rand.NextVector2Unit() * spreadSpeed;
 
                         Vector2 segmentTwoPos = Player.Center + segmentTwoStart + segmentTwoIncrement * interpolant;
-                        d = Dust.CloneDust(d);
+                        d = Dust.BetterCloneDust(d);
                         d.position = segmentTwoPos;
                         d.scale = Main.rand.NextFloat(1.2f, 1.8f);
                         d.velocity = Main.rand.NextVector2Unit() * spreadSpeed;
 
                         Vector2 segmentThreePos = Player.Center + segmentThreeStart + segmentThreeIncrement * interpolant;
-                        d = Dust.CloneDust(d);
+                        d = Dust.BetterCloneDust(d);
                         d.position = segmentThreePos;
                         d.scale = Main.rand.NextFloat(1.2f, 1.8f);
                         d.velocity = Main.rand.NextVector2Unit() * spreadSpeed;
@@ -4317,6 +4362,17 @@ namespace CalamityMod.CalPlayer
             if (Player.accRunSpeed < accRunSpeedMin)
                 Player.accRunSpeed = accRunSpeedMin;
 
+            if (Player.blackBelt) 
+                DodgeEffects.Add((Player, hit) => {
+                    Player.NinjaDodge();
+                    return null;
+                    }); 
+            if (Player.brainOfConfusionItem != null && !Player.brainOfConfusionItem.IsAir)
+                DodgeEffects.Add((Player, hit) => {
+                    Player.BrainOfConfusionDodge();
+                    return null;
+                    });
+
             if (Player.Transformation().Type == ItemType<Popo>())
             {
                 if (Player.whoAmI == Main.myPlayer && !snowmanNoseless)
@@ -4415,6 +4471,9 @@ namespace CalamityMod.CalPlayer
         #region PreUpdate
         public override void PreUpdate()
         {
+            // Increment the universal frame timer.
+            ++universalFrameTimer;
+            
             //Infinite flight granted by some boss attacks
             if (infiniteFlight)
                 Player.wingTime = Player.wingTimeMax;
@@ -4490,7 +4549,7 @@ namespace CalamityMod.CalPlayer
             {
                 Player.ClearBuff(BuffID.WindPushed);
             }
-            if (Player.statMana < 0)
+            if (Player.statMana < 0 && Player.Calamity().ChaosStone)
             {
                 Player.AddBuff(BuffType<ManaBurn>(), 10);
             }
@@ -4761,13 +4820,22 @@ namespace CalamityMod.CalPlayer
             {
                 float baseRecoveryRate = Main.expertMode ? BalancingConstants.LifeStealRecoveryRate_Expert : BalancingConstants.LifeStealRecoveryRate_Classic;
                 float lifeStealRecoveryRateReduction = Main.expertMode ? BalancingConstants.LifeStealRecoveryRateReduction_Expert : BalancingConstants.LifeStealRecoveryRateReduction_Classic;
+                float lifeStealCap = Main.expertMode ? BalancingConstants.LifeStealCap_Expert: BalancingConstants.LifeStealCap_Classic;
 
                 float lifeStealRecoveryRate = baseRecoveryRate - lifeStealRecoveryRateReduction;
-                if (Player.lifeSteal < -lifeStealRecoveryRate)
+                
+                if (Player.lifeSteal < lifeStealCap)
                 {
-                    int duration = (int)Math.Ceiling(Math.Abs(Player.lifeSteal) / lifeStealRecoveryRate);
-                    if (!Player.HasCooldown(LifeSteal.ID) || (cooldowns[LifeSteal.ID].duration < duration))
-                        Player.AddCooldown(LifeSteal.ID, duration);
+
+                    if (Player.Calamity().cooldowns.TryGetValue(LifeSteal.ID, out var cooldown))
+                    {
+                        cooldown.timeLeft = (int)Math.Max(0,(lifeStealCap-Math.Abs(Player.lifeSteal)));
+                    }
+                    else
+                    {
+                        Player.AddCooldown(LifeSteal.ID, (int)lifeStealCap)
+                            .timeLeft = (int)Math.Max(0, (lifeStealCap - Math.Abs(Player.lifeSteal)));
+                    }
                 }
             }
             if (moonshine)
@@ -4968,7 +5036,7 @@ namespace CalamityMod.CalPlayer
                 //Flashlight
                 //Due to being in postUpdate we need to adjust the mousepos for the player's movement that will have happened
                 var mouseworld = Main.MouseWorld + Player.position - Player.oldPosition;
-                EnhancedDarknessSystem.lights.Add(new(center: Player.Center + Player.DirectionTo(mouseworld) * 750f, rotation: Player.DirectionTo(mouseworld).ToRotation() - MathHelper.PiOver2, vectorScale: new Vector2(0.75f * abyssFlashlightWidthMultiplier, 0.75f), texture: Request<Texture2D>("CalamityMod/Particles/BloomLineFade")));
+                EnhancedDarknessSystem.lights.Add(new(center: Player.Center + Player.DirectionTo(mouseworld) * 750f, rotation: Player.DirectionTo(mouseworld).ToRotation() - MathHelper.PiOver2, vectorScale: new Vector2(0.85f * abyssFlashlightWidthMultiplier, 0.75f), texture: Request<Texture2D>("CalamityMod/Particles/BloomLineFade").Value));
             }
 
             if (lastDeerclopsPosition.HasValue)
@@ -4981,7 +5049,7 @@ namespace CalamityMod.CalPlayer
 
                 //Add the main light circle for the arena
                 DeerclopsAI.ArenaTex ??= ModContent.Request<Texture2D>(DeerclopsAI.ArenaTexPath);
-                EnhancedDarknessSystem.lights.Add(new(lastDeerclopsPosition.Value, scale: DeerclopsAI.borderScale, texture: DeerclopsAI.ArenaTex));
+                EnhancedDarknessSystem.lights.Add(new(lastDeerclopsPosition.Value, scale: DeerclopsAI.borderScale, texture: DeerclopsAI.ArenaTex.Value));
 
                 //we draw light around the player when far away so they have some visibility, although very small. This is especially nice in multiplayer. we scale opacity with distance bc it looks better
                 EnhancedDarknessSystem.lights.Add(new EnhancedDarknessSystem.LightSource(scale: 0.75f, opacity: MathHelper.Clamp(Main.LocalPlayer.DistanceSQ(lastDeerclopsPosition.Value) / (409600 /*640^2*/), 0, 1)));
@@ -5011,6 +5079,10 @@ namespace CalamityMod.CalPlayer
                     subtitletext.color = Color.Lerp(subtitleColors[1], subtitleColors[0], subtitletext.lifeTime / 120f);
                 }
             }
+
+            // Relic of Convergence defense cut
+            if (Player.ownedProjectileCounts[ModContent.ProjectileType<RelicOfConvergenceCrystal>()] > 0 && Player.HeldItem.type == ModContent.ItemType<RelicOfConvergence>())
+                Player.statDefense *= RelicOfConvergence.DefenseMultiplier;
 
             #region Managing time control
             if (Main.netMode != NetmodeID.Server && Player == Main.LocalPlayer)
@@ -5847,14 +5919,16 @@ namespace CalamityMod.CalPlayer
 
             if (temporaryStealthTimer > 0)
                 temporaryStealthTimer--;
+            else
+                temporaryStealthMax = 0.1f;
         }
 
         public void UpdateRogueStealth()
         {
             if (temporaryStealthTimer > 0)
             {
-                if (rogueStealthMax < 0.1f)
-                    rogueStealthMax = 0.1f;
+                if (rogueStealthMax < temporaryStealthMax)
+                    rogueStealthMax = temporaryStealthMax;
                 wearingRogueArmor = true;
             }
 

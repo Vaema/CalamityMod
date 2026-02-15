@@ -9,8 +9,6 @@ namespace CalamityMod.Packets
     {
         public static TETurretPacket Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.Turret;
-
         public static void Send(TEBaseTurret turret, int toClient = -1, int ignoreClient = -1)
         {
             if (turret is null)
@@ -25,7 +23,7 @@ namespace CalamityMod.Packets
             packet.Send(toClient, ignoreClient);
         }
 
-        public override void HandlePacket(in BinaryReader packet, int sender)
+        public override void HandlePacket(BinaryReader packet, int sender)
         {
             var turret = packet.ReadTileEntity<TEBaseTurret>();
             int firingTime = packet.ReadInt32();

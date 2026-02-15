@@ -205,7 +205,7 @@ namespace CalamityMod.CalPlayer
             bool spawnChance = (Main.rand.Next(100) < ArcFlashRing.LightningSpawnPercent);
             if (arcFlashRing && spawnChance)
             {
-                int damage = (int)(hit.Damage * ArcFlashRing.LightningDamageMult * (hit.Crit ? 0.5f : 1) / (Player.Calamity().adrenalineModeActive ? Player.Calamity().GetAdrenalineDamage() + 1 : 1)); // 400% damage (uneffected by crits and adrenaline)
+                int damage = (int)(hit.Damage * ArcFlashRing.LightningDamageMult * (hit.Crit ? (1 / (Player.Calamity().critDamage + 2)) : 1) / (Player.Calamity().adrenalineModeActive ? Player.Calamity().GetAdrenalineDamage() + 1 : 1)); // 400% damage (uneffected by crits and adrenaline)
 
                 Projectile bolt = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<FlashBolt>(), damage, 0f, Player.whoAmI, target.whoAmI);
                 bolt.DamageType = hit.DamageType;
@@ -411,7 +411,7 @@ namespace CalamityMod.CalPlayer
             {
                 proj.active = true; // Okay so if a projectile manually kills itself on hit, it totally breaks the bolts. to prevent this we set them to active
 
-                int damage = (int)(hit.Damage * ArcFlashRing.LightningDamageMult * (hit.Crit ? 0.5f : 1) / (Player.Calamity().adrenalineModeActive ? Player.Calamity().GetAdrenalineDamage() + 1 : 1)); // 400% damage (uneffected by crits and adrenaline)
+                int damage = (int)(hit.Damage * ArcFlashRing.LightningDamageMult * (hit.Crit ? (1 / (Player.Calamity().critDamage + 2)) : 1) / (Player.Calamity().adrenalineModeActive ? Player.Calamity().GetAdrenalineDamage() + 1 : 1)); // 400% damage (uneffected by crits and adrenaline)
 
                 Projectile bolt = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<FlashBolt>(), damage, 0f, Player.whoAmI, target.whoAmI, (globalProj.showArcFlash ? 0 : 1));
                 bolt.DamageType = hit.DamageType;
@@ -1342,7 +1342,7 @@ namespace CalamityMod.CalPlayer
                     Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, electricianGlove ? 10 : 5, 2f);
 
                 if (bloodflareThrowing && proj.CountsAsClass<ThrowingDamageClass>() && crit)
-                    Projectile.NewProjectile(Player.GetSource_OnHit(target), proj.Center, proj.velocity.SafeNormalize(Vector2.Zero) * Math.Min(proj.velocity.Length() * proj.MaxUpdates / 4f, 4f) * Main.rand.NextFloat(0.75f, 1.25f), ProjectileType<BloodstoneHealOrb>(), 4, 0f, proj.owner);
+                    Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, 2, 1.5f);
 
                 if (proj.CountsAsClass<MagicDamageClass>() && Player.HeldItem.CountsAsClass<MagicDamageClass>())
                 {

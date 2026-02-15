@@ -43,6 +43,8 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void HoldItem(Player player)
         {
             player.Calamity().mouseWorldListener = true;
+            if (player.whoAmI != Main.myPlayer)
+                return;
             if (player.Calamity().mouseRight && !player.mouseInterface && player.Calamity().killModeCooldown == 0 && !Main.mapFullscreen && !Main.blockMouse)
             {
                 SoundStyle buff = new("CalamityMod/Sounds/Item/DemonSwordKillMode");

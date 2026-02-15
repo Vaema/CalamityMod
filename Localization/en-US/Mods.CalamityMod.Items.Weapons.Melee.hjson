@@ -118,12 +118,12 @@ ArkoftheElements: {
 
 AstralPike: {
 	DisplayName: Astral Pike
-	Tooltip: Summons astral star swarms on hit
+	Tooltip: Summons astral star swarms on hit and inflicts [cbuff:CalamityMod/AstralInfectionDebuff]
 }
 
 AstralScythe: {
 	DisplayName: Astral Scythe
-	Tooltip: Shoots a scythe ring that accelerates over time
+	Tooltip: Shoots a scythe ring that accelerates over time and inflicts [cbuff:CalamityMod/AstralInfectionDebuff]
 }
 
 Ataraxia: {
@@ -646,7 +646,7 @@ GildedProboscis: {
 		The thrust begins weak, but becomes more powerful the longer it's held
 		<right> to dash forward with a mighty upstrike
 		The distance you dash depends on if you are moving with or against the dash
-		Always critically strikes
+		Always critically strikes, with critical strike chance increasing critical strike damage
 		'''
 }
 
@@ -868,7 +868,7 @@ MirrorBlade: {
 
 MonolithSword: {
 	DisplayName: Monolith Sword
-	Tooltip: ""
+	Tooltip: "{$Common.ArmorPenetration}"
 }
 
 MonstrousKnives: {
@@ -908,7 +908,7 @@ Nadir: {
 
 Nebulash: {
 	DisplayName: Nebulash
-	Tooltip: Fires a whip sword that emits particle explosions on hit
+	Tooltip: Fires a whip sword that emits particle explosions on hit and inflicts [cbuff:CalamityMod/AstralInfectionDebuff]
 }
 
 NeptunesBounty: {
@@ -1352,7 +1352,7 @@ TheMicrowave: {
 	Tooltip:
 		'''
 		{$Common.YoyoStatsInfinite}
-		Fries nearby enemies with radiation
+		Fries nearby enemies with radiation and inflicts [cbuff:CalamityMod/AstralInfectionDebuff]
 		'Cooking, Astral Infection style'
 		'''
 }
@@ -1393,7 +1393,7 @@ TitanArm: {
 	DisplayName: Titan Arm
 	Tooltip:
 		'''
-		Sends enemies straight to the stars at the speed of light
+		Sends enemies straight to the stars at the speed of light and inflicts [cbuff:CalamityMod/AstralInfectionDebuff]
 		Slap Hand but better
 		'''
 }

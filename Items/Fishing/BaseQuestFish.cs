@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Fishing
         public virtual LocalizedText Location => LocalizedText.Empty;
 
         public new string LocalizationCategory => "Items.Fishing";
-        public override LocalizedText Tooltip => Location;
+        public override LocalizedText Tooltip => CalamityUtils.GetText($"Items.Fishing.LocationTooltip").WithFormatArgs(Location);
 
         public override void SetStaticDefaults()
         {
@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Fishing
         public override void AnglerQuestChat(ref string description, ref string catchLocation)
         {
             description = this.GetLocalizedValue("QuestDescription");
-            catchLocation = Location.ToString().Replace("'", string.Empty);
+            catchLocation = Location.ToString();
         }
     }
 }

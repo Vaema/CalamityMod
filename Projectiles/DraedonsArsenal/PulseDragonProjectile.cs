@@ -125,6 +125,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             if (field.whoAmI.WithinBounds(Main.maxProjectiles))
             {
                 field.DamageType = DamageClass.MeleeNoSpeed;
+                field.usesIDStaticNPCImmunity = false;
                 field.usesLocalNPCImmunity = true;
                 field.localNPCHitCooldown = 3;
                 field.timeLeft = 12;

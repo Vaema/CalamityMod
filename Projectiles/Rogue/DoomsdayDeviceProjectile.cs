@@ -55,6 +55,11 @@ namespace CalamityMod.Projectiles.Rogue
         public override bool? CanDamage() => (flung && tileHits == 0 ? null : false);
         public override void AI()
         {
+            if (Owner.dead && !flung)
+            {
+                Projectile.Kill();
+                return;
+            }
             // The main color shifting
             float rate = (Main.GlobalTimeWrappedHourly * 6);
             List<Color> eColors = new List<Color>()

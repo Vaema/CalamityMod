@@ -9,8 +9,6 @@ namespace CalamityMod.Packets
     {
         public static TEChargingStationItemChangePacket Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.ChargingStationItemChange;
-
         public static void Send(TEChargingStation chargingStn, Item pluggedItem, int toClient = -1, int ignoreClient = -1)
         {
             if (chargingStn is null)
@@ -22,7 +20,7 @@ namespace CalamityMod.Packets
             packet.Send(toClient, ignoreClient);
         }
 
-        public override void HandlePacket(in BinaryReader packet, int sender)
+        public override void HandlePacket(BinaryReader packet, int sender)
         {
             var chargingStn = packet.ReadTileEntity<TEChargingStation>();
             Item thePlug = ItemIO.Receive(packet, readStack: true, readFavorite: true);

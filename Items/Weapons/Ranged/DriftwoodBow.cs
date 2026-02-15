@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
-            if (IsPlayerInContactWithWater(player))
+            if (player.Calamity().countsAsAnyWet)
             {
                 velocity *= 1.3f;
                 knockback += 1f;
@@ -45,7 +45,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             }
         }
 
-        public override float UseSpeedMultiplier(Player player) => IsPlayerInContactWithWater(player) ? 1.2f : 1f;
+        public override float UseSpeedMultiplier(Player player) => player.Calamity().countsAsAnyWet ? 1.2f : 1f;
 
         public override void AddRecipes()
         {
@@ -53,12 +53,6 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient<Driftwood>(10).
                 AddTile(TileID.WorkBenches).
                 Register();
-        }
-
-        private static bool IsPlayerInContactWithWater(Player player)
-        {
-            bool surface = player.Center.Y < Main.worldSurface * 16.0;
-            return (Main.raining && surface) || player.dripping || (player.wet && !player.lavaWet && !player.honeyWet);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Linq;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.GameContent.Bestiary;
@@ -12,10 +13,12 @@ namespace CalamityMod.UI.DebuffSystem
     public class BestiaryDebuffInfo : IBestiaryInfoElement, IBestiaryPrioritizedElement, ICategorizedBestiaryInfoElement
     {
         public string[] elements;
+        public bool force = false;
 
-        public BestiaryDebuffInfo(string[] elements)
+        public BestiaryDebuffInfo(string[] elements, bool force = false)
         {
             this.elements = elements;
+            this.force = force;
         }
 
         // Below base stats (damage/defense/etc)
@@ -26,7 +29,7 @@ namespace CalamityMod.UI.DebuffSystem
         public UIElement ProvideUIElement(BestiaryUICollectionInfo info)
         {
             // Don't show debuff info until stats are unlocked
-            if (info.UnlockState < BestiaryEntryUnlockState.CanShowStats_2)
+            if (info.UnlockState < BestiaryEntryUnlockState.CanShowStats_2 && !force)
             {
                 return null;
             }

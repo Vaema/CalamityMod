@@ -8,6 +8,8 @@ using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Items.Accessories
 {
+    [LegacyName("RustyMedallion")]
+
     public class ScionsCurio : ModItem, ILocalizedModType
     {
         public static int postHitDamage = 45;

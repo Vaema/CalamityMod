@@ -92,11 +92,19 @@ namespace CalamityMod.Cooldowns
         public override SoundStyle? EndSound => TheSponge.ActivationSound;
         public override bool ShouldPlayEndSound => instance.player.Calamity().sponge;
 
-        public override void Tick() => instance.player.Calamity().playedSpongeShieldSound = false;
-        // When the recharge period completes, grant 1 point of shielding immediately so the rest my refill normally.
+        public override void Tick()
+        {
+            if (instance.player.whoAmI == Main.myPlayer)
+                instance.player.Calamity().playedSpongeShieldSound = false;
+        }
+
+        // When the recharge period completes, grant 1 point of shielding immediately so the rest may refill normally.
         // The shield durability cooldown is added elsewhere, in Misc Effects.
         public override void OnCompleted()
         {
+            if (instance.player.whoAmI != Main.myPlayer)
+                return;
+
             CalamityPlayer modPlayer = instance.player.Calamity();
             if (modPlayer.SpongeShieldDurability <= 0)
                 modPlayer.SpongeShieldDurability = 1;

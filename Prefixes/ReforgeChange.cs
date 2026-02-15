@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Packets;
 using CalamityMod.World;
@@ -39,14 +40,8 @@ namespace CalamityMod.Prefixes
             if (Main.gameMenu)
                 return -1;
 
-            if (item.accessory && CalamityServerConfig.Instance.SimplifyAccessoryReforge)
-            {
-                return GetSimplifiedAccessoryReforge(item, rand, storedPrefix);
-            }
-            else if (storedPrefix != -1 && CalamityServerConfig.Instance.RemoveReforgeRNG)
-            {
+            if (storedPrefix != -1 && !item.accessory && CalamityServerConfig.Instance.RemoveReforgeRNG)
                 return GetReworkedReforge(item, rand, storedPrefix);
-            }
 
             return -1;
         }
@@ -79,6 +74,7 @@ namespace CalamityMod.Prefixes
         }
 
         #region Prefix Definition
+        [Obsolete("No longer used with the removal of the Simplify Accessory Reforge config")]
         public static int[] SimplifiedAccessoryPrefixes =
         [
             PrefixID.Warding,
@@ -92,6 +88,7 @@ namespace CalamityMod.Prefixes
             PrefixType<Dauntless>()
         ];
 
+        [Obsolete("No longer used with the removal of the Simplify Accessory Reforge config")]
         public static int[][] AccessoryPrefixTiers =
         [
             /* 0 */ [PrefixID.Hard, PrefixID.Jagged, PrefixID.Brisk, PrefixID.Wild],
@@ -194,26 +191,9 @@ namespace CalamityMod.Prefixes
             int prefix = -1;
             bool supportsLegendary = PrefixLegacy.ItemSets.SwordsHammersAxesPicks[item.type] || (item.ModItem != null && item.ModItem.MeleePrefix());
 
-            // ACCESSORIES
-            if (item.accessory)
-            {
-                int accRerolls = 0;
-                // Try to prevent the player from rolling the same modifier twice
-                do
-                {
-                    int newPrefix = IteratePrefix(rand, AccessoryPrefixTiers, currentPrefix);
-                    if (newPrefix != currentPrefix)
-                    {
-                        prefix = newPrefix;
-                        break;
-                    }
-                    accRerolls++;
-                } while (accRerolls < 20);
-            }
-
             // MELEE (includes tools and whips)
             // Melee-ranged hybrid weapons prioritize Legendary if available, otherwise go for Unreal
-            else if ((item.CountsAsClass<MeleeDamageClass>() || item.CountsAsClass<SummonMeleeSpeedDamageClass>()) && !(item.CountsAsClass<MeleeRangedHybridDamageClass>() && !supportsLegendary))
+            if ((item.CountsAsClass<MeleeDamageClass>() || item.CountsAsClass<SummonMeleeSpeedDamageClass>()) && !(item.CountsAsClass<MeleeRangedHybridDamageClass>() && !supportsLegendary))
             {
                 // Terrarian (has its own special "Legendary" for marketing reasons)
                 // Other items that want to use Legendary2 are also compatible
@@ -288,14 +268,6 @@ namespace CalamityMod.Prefixes
             // Otherwise: go up by 1 tier with every reforge, guaranteed
             int newTier = currentTier == reforgeTiers.Length - 1 ? currentTier : currentTier + 1;
             return rand.Next(reforgeTiers[newTier]);
-        }
-        #endregion
-
-        #region Simplified Accessory Reforge
-        internal static int GetSimplifiedAccessoryReforge(Item item, UnifiedRandom rand, int currentPrefix)
-        {
-            var pool = SimplifiedAccessoryPrefixes.Where(id => id != currentPrefix);
-            return pool.ElementAt(rand.Next(0, pool.Count()));
         }
         #endregion
     }

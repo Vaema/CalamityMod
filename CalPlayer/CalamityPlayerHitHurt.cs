@@ -45,6 +45,7 @@ using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems.Collections;
 using CalamityMod.UI;
+using CalamityMod.Utilities;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -57,6 +58,7 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using CalamityMod.Projectiles.Melee;
+using CalamityMod.Items.Tools;
 
 namespace CalamityMod.CalPlayer
 {
@@ -143,86 +145,7 @@ namespace CalamityMod.CalPlayer
             NetMessage.SendData(MessageID.Dodge, -1, -1, null, Player.whoAmI, 1f, 0f, 0f, 0, 0, 0);
         }
 
-        public void AbyssMirrorDodge(double dodgeDamageGateValuePercent, int dodgeDamageGateValue, int hitDamage, Player.HurtInfo info)
-        {
-            double maxCooldownDurationDamagePercent = 0.5;
-            int maxCooldownDurationDamageValue = (int)Math.Round(Player.statLifeMax2 * (maxCooldownDurationDamagePercent - dodgeDamageGateValuePercent));
-
-            // Just in case...
-            if (maxCooldownDurationDamageValue <= 0)
-                maxCooldownDurationDamageValue = 1;
-
-            float cooldownDurationScalar = MathHelper.Clamp((hitDamage - dodgeDamageGateValue) / (float)maxCooldownDurationDamageValue, 0f, 1f);
-
-            if (Player.whoAmI == Main.myPlayer && abyssalMirror && !eclipseMirror)
-            {
-                int cooldownDuration = (int)MathHelper.Lerp(BalancingConstants.MirrorDodgeCooldownMin, BalancingConstants.MirrorDodgeCooldownMax, cooldownDurationScalar);
-                Player.AddCooldown(GlobalDodge.ID, cooldownDuration, true, "abyssmirror");
-
-                // 17APR2024: Ozzatron: Abyssal Mirror is a dodge. It uses vanilla dodge iframes and benefits from Cross Necklace.
-                int abyssalMirrorDodgeIFrames = Player.ComputeDodgeIFrames();
-                Player.GiveUniversalIFrames(abyssalMirrorDodgeIFrames, true);
-
-                rogueStealth += 0.5f;
-                SoundEngine.PlaySound(SilvaArmor.ActivationSound, Player.Center);
-
-                var source = Player.GetSource_Accessory_OnHurt(FindAccessory<AbyssalMirror>(), info.DamageSource);
-                for (int i = 0; i < 10; i++)
-                {
-                    int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(55);
-
-                    int lumenyl = Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, Main.rand.NextFloat(-2f, 2f), Main.rand.NextFloat(-2f, 2f), ModContent.ProjectileType<AbyssalMirrorProjectile>(), damage, 0, Player.whoAmI);
-                    Main.projectile[lumenyl].rotation = Main.rand.NextFloat(0, 360);
-                    Main.projectile[lumenyl].frame = Main.rand.Next(0, 4);
-                    if (lumenyl.WithinBounds(Main.maxProjectiles))
-                        Main.projectile[lumenyl].DamageType = DamageClass.Generic;
-                }
-
-                // TODO -- Calamity dodges should probably not send a vanilla dodge packet considering that causes Tabi dust
-                if (Player.whoAmI == Main.myPlayer)
-                {
-                    NetMessage.SendData(MessageID.Dodge, -1, -1, null, Player.whoAmI, 1f, 0f, 0f, 0, 0, 0);
-                }
-            }
-        }
-
-        public void EclipseMirrorDodge(double dodgeDamageGateValuePercent, int dodgeDamageGateValue, int hitDamage, Player.HurtInfo info)
-        {
-            double maxCooldownDurationDamagePercent = 0.5;
-            int maxCooldownDurationDamageValue = (int)Math.Round(Player.statLifeMax2 * (maxCooldownDurationDamagePercent - dodgeDamageGateValuePercent));
-
-            // Just in case...
-            if (maxCooldownDurationDamageValue <= 0)
-                maxCooldownDurationDamageValue = 1;
-
-            float cooldownDurationScalar = MathHelper.Clamp((hitDamage - dodgeDamageGateValue) / (float)maxCooldownDurationDamageValue, 0f, 1f);
-
-            if (Player.whoAmI == Main.myPlayer && eclipseMirror)
-            {
-                int cooldownDuration = (int)MathHelper.Lerp(BalancingConstants.MirrorDodgeCooldownMin, BalancingConstants.MirrorDodgeCooldownMax, cooldownDurationScalar);
-                Player.AddCooldown(GlobalDodge.ID, cooldownDuration, true, "eclipsemirror");
-
-                // 17APR2024: Ozzatron: Eclipse Mirror is a dodge. It uses vanilla dodge iframes and benefits from Cross Necklace.
-                int eclipseMirrorDodgeIFrames = Player.ComputeDodgeIFrames();
-                Player.GiveUniversalIFrames(eclipseMirrorDodgeIFrames, true);
-
-                rogueStealth += 0.5f;
-                SoundEngine.PlaySound(SoundID.Item68, Player.Center);
-
-                var source = Player.GetSource_Accessory_OnHurt(FindAccessory<EclipseMirror>(), info.DamageSource);
-                int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(2000);
-
-                int eclipse = Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ModContent.ProjectileType<EclipseMirrorBurst>(), damage, 0, Player.whoAmI);
-                if (eclipse.WithinBounds(Main.maxProjectiles))
-                    Main.projectile[eclipse].DamageType = DamageClass.Generic;
-
-                // TODO -- Calamity dodges should probably not send a vanilla dodge packet considering that causes Tabi dust
-                if (Player.whoAmI == Main.myPlayer)
-                {
-                    NetMessage.SendData(MessageID.Dodge, -1, -1, null, Player.whoAmI, 1f, 0f, 0f, 0, 0, 0);
-                }
-            }
-        }
+        
         #endregion
 
         #region Pre Kill
@@ -250,7 +173,7 @@ namespace CalamityMod.CalPlayer
             // Xyk vanity death animation
             if (XykVisualsBlue || XykVisualsOrange)
             {
-                Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ModContent.ProjectileType<XykDeathAnim>(), Main.zenithWorld ? Main.rand.Next(5000, 50000 + 1) : 0, 0, Player.whoAmI);
+                Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ModContent.ProjectileType<XykDeathAnim>(), 0, 0, Player.whoAmI);
             }
 
             if (holyInferno)
@@ -834,6 +757,9 @@ namespace CalamityMod.CalPlayer
             if (Player.ownedProjectileCounts[ModContent.ProjectileType<EnergyShell>()] > 0 && Player.HeldItem.type == ModContent.ItemType<LionHeart>())
                 modifiers.FinalDamage *= 0.5f;
 
+            if (Player.ownedProjectileCounts[ModContent.ProjectileType<RelicOfConvergenceCrystal>()] > 0 && Player.HeldItem.type == ModContent.ItemType<RelicOfConvergence>())
+                modifiers.FinalDamage *= RelicOfConvergence.IncomingDamageMultiplier;
+
             bool lifeAndShieldCondition = Player.statLife >= Player.statLifeMax2 && (!HasAnyEnergyShield || TotalEnergyShielding >= TotalMaxShieldDurability);
             if (theBee && theBeeCooldown <= 0 && lifeAndShieldCondition)
             {
@@ -933,16 +859,8 @@ namespace CalamityMod.CalPlayer
                                 Projectile.NewProjectile(source, Player.Center + Vector2.UnitX.RotatedBy(MathHelper.TwoPi * (i / 10f)), Vector2.Zero, ModContent.ProjectileType<MirrorBlast>(), mirrorDamage, 5, Main.myPlayer, 1);
                             }
                         }
-
-                        //Doze - This gives the same iframes as vanilla dodges, including accounting for cross necklace.
-                        int evolutionIFrames = Player.ComputeDodgeIFrames();
-                        Player.GiveUniversalIFrames(evolutionIFrames, true);
-
-                        modifiers.Cancel();
                         projTypeJustHitBy = proj.type;
-
-                        int cooldownDuration = (int)MathHelper.Lerp(BalancingConstants.EvolutionReflectCooldownMin, BalancingConstants.EvolutionReflectCooldownMax, cooldownDurationScalar);
-                        Player.AddCooldown(GlobalDodge.ID, cooldownDuration);
+                        procDodgeEffects = true; //This tells the game to dodge in the Consumable Dodge step, which procs all generic dodge effects at once.
 
                         return;
                     }
@@ -1510,6 +1428,10 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
+            //Here we store the Holy Protection bool so that we can have Holy Protection run in the right order among our dodges
+            storedShadowDodge = Player.shadowDodge;
+            Player.shadowDodge = false;
+
             // If no other effects occurred, run vanilla code
             return base.FreeDodge(info);
         }
@@ -1525,8 +1447,8 @@ namespace CalamityMod.CalPlayer
             int actualDamageTaken = chaliceOfTheBloodGod ? chaliceHitOriginalDamage : info.Damage;
             bool sufficientDamageForDodging = actualDamageTaken >= dodgeDamageGateValue;
 
-            if (!Player.HasCooldown(GlobalDodge.ID) && sufficientDamageForDodging)
-            {
+            //This is in a method here so the logic below can call it in multiple places
+            void GenericDodgeEffects() {
                 double maxCooldownDurationDamagePercent = 0.5;
                 int maxCooldownDurationDamageValue = (int)Math.Round(Player.statLifeMax2 * (maxCooldownDurationDamagePercent - dodgeDamageGateValuePercent));
 
@@ -1535,26 +1457,61 @@ namespace CalamityMod.CalPlayer
                     maxCooldownDurationDamageValue = 1;
 
                 float cooldownDurationScalar = MathHelper.Clamp((actualDamageTaken - dodgeDamageGateValue) / (float)maxCooldownDurationDamageValue, 0f, 1f);
+                //Every dodge after the first reduces the dodge cooldown by 15%, stacking multiplicatively
+                float cooldownMultiplier = 1;
+                if (DodgeEffects.Count > 1)
+                    cooldownMultiplier = MathF.Pow(BalancingConstants.DodgeCooldownMultPerStack, DodgeEffects.Count - 1);
 
-                // Re-implementation of vanilla item Black Belt as a consumable dodge
-                if (Player.whoAmI == Main.myPlayer && Player.blackBelt)
+                string? IconToUse = null;
+                foreach (var dodge in DodgeEffects)
                 {
-                    Player.NinjaDodge();
-                    int cooldownDuration = (int)MathHelper.Lerp(BalancingConstants.BeltDodgeCooldownMin, BalancingConstants.BeltDodgeCooldownMax, cooldownDurationScalar);
+                    string? str = dodge(Player, info);
+                    if (str is not null)
+                        IconToUse = str;
+                }
+                //This is set after DodgeEffects in case some dodge wants to modify ConsumableDodgeCooldown, and so custom dodge icons for mirror line work
+                int cooldownDuration = (int)MathHelper.Lerp(ConsumableDodgeCooldown * cooldownMultiplier * BalancingConstants.DodgeCooldownDamageMult, ConsumableDodgeCooldown * cooldownMultiplier, cooldownDurationScalar);
+                if (IconToUse is null)
                     Player.AddCooldown(GlobalDodge.ID, cooldownDuration);
-                    return true;
-                }
+                else
+                    Player.AddCooldown(GlobalDodge.ID, cooldownDuration, true, IconToUse);
+            }
 
-                // Re-implementation of vanilla item Brain of Confusion as a consumable dodge
-                if (Player.whoAmI == Main.myPlayer && Player.brainOfConfusionItem != null && !Player.brainOfConfusionItem.IsAir)
-                {
-                    Player.BrainOfConfusionDodge();
-                    int cooldownTime = amalgam ?
-                        (int)MathHelper.Lerp(BalancingConstants.AmalgamDodgeCooldownMin, BalancingConstants.AmalgamDodgeCooldownMax, cooldownDurationScalar) :
-                        (int)MathHelper.Lerp(BalancingConstants.BrainDodgeCooldownMin, BalancingConstants.BrainDodgeCooldownMax, cooldownDurationScalar);
-                    Player.AddCooldown(GlobalDodge.ID, cooldownTime);
-                    return true;
-                }
+            //Dodge activation order is as follows:
+            // 1. Evolution dodge (which also procs Generals)
+            // 2. Spectral Veil
+            // 3. Evasion/Counter Scarf
+            // 4. Hallowed Armor
+            // 5. General Dodge
+
+            if (procDodgeEffects)
+            {
+                DodgeEffects.Add((_, _) => null); //This is to account for whatever procced the dodge when counting dodge cooldown stacking
+                GenericDodgeEffects();
+                procDodgeEffects = false;
+                return true;
+            }
+
+            if (spectralVeil && spectralVeilImmunity > 0)
+            {
+                SpectralVeilDodge();
+                return true;
+            }
+
+            if (HandleDashDodges())
+                return true;
+            // Hallowed Armor dodge
+            if (storedShadowDodge)
+            {
+                Player.ShadowDodge();
+                storedShadowDodge = false;
+                return true;
+            }
+            
+            if (!Player.HasCooldown(GlobalDodge.ID) && sufficientDamageForDodging && DodgeEffects.Count > 0)
+            {
+                GenericDodgeEffects();
+                return true;
             }
 
             //
@@ -1564,30 +1521,7 @@ namespace CalamityMod.CalPlayer
             if (Player.whoAmI != Main.myPlayer || disableAllDodges)
                 return false;
 
-            if (spectralVeil && spectralVeilImmunity > 0)
-            {
-                SpectralVeilDodge();
-                return true;
-            }
 
-            // TODO -- drag all dodge code into a CalamityPlayer sub-file dedicated to dodging and nothing else
-            if (HandleDashDodges())
-                return true;
-
-            // Mirror evades do not work if the global dodge cooldown is active. This cooldown can be triggered by either mirror.
-            if (!Player.HasCooldown(GlobalDodge.ID) && actualDamageTaken >= dodgeDamageGateValue)
-            {
-                if (eclipseMirror)
-                {
-                    EclipseMirrorDodge(dodgeDamageGateValuePercent, dodgeDamageGateValue, actualDamageTaken, info);
-                    return true;
-                }
-                else if (abyssalMirror)
-                {
-                    AbyssMirrorDodge(dodgeDamageGateValuePercent, dodgeDamageGateValue, actualDamageTaken, info);
-                    return true;
-                }
-            }
 
             return base.ConsumableDodge(info);
         }
@@ -2097,9 +2031,9 @@ namespace CalamityMod.CalPlayer
                         d.velocity = dustVel;
                         d.noGravity = true;
                         d.scale *= Main.rand.NextFloat(1.1f, 1.4f);
-                        Dust.CloneDust(d).velocity = dustVel.RotatedBy(MathHelper.PiOver2);
-                        Dust.CloneDust(d).velocity = dustVel.RotatedBy(MathHelper.Pi);
-                        Dust.CloneDust(d).velocity = dustVel.RotatedBy(MathHelper.Pi * 1.5f);
+                        Dust.BetterCloneDust(d).velocity = dustVel.RotatedBy(MathHelper.PiOver2);
+                        Dust.BetterCloneDust(d).velocity = dustVel.RotatedBy(MathHelper.Pi);
+                        Dust.BetterCloneDust(d).velocity = dustVel.RotatedBy(MathHelper.Pi * 1.5f);
                     }
                 }
 

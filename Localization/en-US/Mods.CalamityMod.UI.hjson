@@ -123,7 +123,7 @@ Cooldowns: {
 	InkBomb: Ink Bomb Cooldown
 	KillModeActive: Kill Mode Active
 	KillModeCooldown: Kill Mode Cooldown
-	LifeSteal: Life Steal Cooldown
+	LifeSteal: Life Steal Remaining
 	LionHeartShield: Energy Shell Cooldown
 	M1GarandShots: Chambered Rounds
 	MasterChefShieldDurability: MJOLNIR Shield Level
@@ -616,7 +616,6 @@ Lecherous: {
 Disenchant: Disenchant
 // Worldgen Tasks
 BetterUnderworld: Creating a smoother Underworld
-BetterShimmer: Placing shimmer in a sane location
 UnderworldStructures: Remnants of an Azafurian and Demonic war
 UnderworldTreesAndGrass: Growing Underworld flora
 UnderworldGeyserTraps: Adding an Underworld minefield

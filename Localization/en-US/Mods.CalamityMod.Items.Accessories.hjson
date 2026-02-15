@@ -39,14 +39,11 @@ AbyssalMirror: {
 	Tooltip:
 		'''
 		Enemies are less likely to target you, even in the abyss
-		Generate stealth {0}% faster when standing still and {1}% faster while moving
-		Grants the ability to dodge attacks, releasing a cloud of lumenyl fluid which damages and stuns nearby enemies
+		Generate stealth 25% faster when standing still and 12% faster while moving
+		{$Common.DodgeProvided}
+		Dodging an attack restores stealth and releases a cloud that damages and stuns nearby enemies
 		'''
-	HoldShiftTooltip:
-		'''
-		{$Common.DodgeInformation}
-		Dodging an attack gives stealth
-		'''
+	HoldShiftTooltip: "{$Common.DodgeInformation}"
 	FlavorTooltip: "'Light does not reach the depths of the ocean'"
 }
 
@@ -90,7 +87,7 @@ AmalgamatedBrain: {
 		'''
 		Taking damage confuses nearby enemies and spawns a dank creeper
 		The dank creeper flies above you, exploding into several shaderain clouds
-		Grants the ability to dodge attacks
+		{$Common.DodgeProvided}
 		After dodging, summon damage and crit chance are boosted by 10%
 		'''
 	HoldShiftTooltip: "{$Common.DodgeInformation}"
@@ -398,11 +395,10 @@ ChaosStone: {
 		'''
 		Disables automatic potion consumption
 		Items that consume mana can be used even without the required mana amount
-		Mana usage can overflow into negative mana, causing you to receive [Mana Burn]
+		Mana usage can overflow into negative mana, causing you to both receive and inflict [cbuff:CalamityMod/ManaBurn]
 		The lower your mana, the more intense the manafire burns
-		Attacks while you have [Mana Burn] inflict [Mana Burn] on enemies
-		Every 50 negative mana increases [Mana Burn] by 1% of the attack's damage
 		Negative Mana is capped at your maximum mana amount
+		Current maximum intensity with your maximum mana: -[REGEN] HP/s, and burns enemies for [DAMAGE]% of dealt damage
 		'''
 }
 
@@ -435,15 +431,6 @@ CorrosiveSpine: {
 		'''
 }
 
-UnholyTonic: {
-	DisplayName: Unholy Tonic
-	Tooltip:
-		'''
-		Increases damage reduction by 4% and defense by 6 while in the corruption
-		Grants immunity to Brain Rot
-		'''
-}
-
 CounterScarf: {
 	DisplayName: Counter Scarf
 	Tooltip:
@@ -459,15 +446,6 @@ CrawCarapace: {
 		'''
 		7% increased damage
 		Attackers take damage and are inflicted with Crumbling
-		'''
-}
-
-ViciousTonic: {
-	DisplayName: Vicious Tonic
-	Tooltip:
-		'''
-		Increases damage reduction by 4% and defense by 6 while in the crimson
-		Grants immunity to Burning Blood
 		'''
 }
 
@@ -662,13 +640,10 @@ EclipseMirror: {
 		Enemies are less likely to target you, even in the abyss
 		Stealth generates 25% faster when standing still and is boosted while moving if not attacking
 		Stealth strikes only expend 50% of your max stealth
-		Grants the ability to dodge attacks in a blast of darksun light, which inflicts extreme damage in a wide area
+		{$Common.DodgeProvided}
+		Dodging an attack restores stealth and releases a burst of highly damaging darksun light
 		'''
-	HoldShiftTooltip:
-		'''
-		{$Common.DodgeInformation}
-		Dodging an attack grants a lot of stealth
-		'''
+	HoldShiftTooltip: "{$Common.DodgeInformation}"
 	FlavorTooltip: "'Its reflection shows naught but darkness'"
 }
 
@@ -1115,7 +1090,7 @@ ManaPolarizer: {
 		Increases max mana by 50
 		Provides life regeneration and magic damage that scales based on how much mana you have
 		Lower mana means more life regeneration, but less magic damage
-		These scale from -2 to 2 HP/sec, and 5% to 15% damage
+		These scale from -2 to 2 HP/sec, and 15% to 5% damage
 		The provided regeneration is halved when under Mana Sickness
 		Magic projectiles steal enemy life while holding a magic weapon
 		'''
@@ -1198,7 +1173,7 @@ Nucleogenesis: {
 	DisplayName: Nucleogenesis
 	Tooltip:
 		'''
-		Increases your max number of mininons by 4
+		Increases your max number of minions by 4
 		Grants immunity to Shadowflame and Irradiated
 		15% increased summon damage, and increased minion knockback
 		Minions inflict a variety of debuffs
@@ -1737,9 +1712,10 @@ StatisNinjaBelt: {
 	Tooltip:
 		'''
 		Provides a high-speed dash
-		10% increased movement speed, 32% increased jump speed, allows auto-jump, and negates fall damage
+		10% increased movement speed, 32% increased jump speed and negates fall damage
 		Increases movement acceleration and deceleration by 1.6x
-		Grants the ability to swim[TOGGLE] and dodge attacks
+		Allows the user to swim[TOGGLE] and auto jump
+		{$Common.DodgeProvided}
 		[c/aaaaaa:Shift-<right> this item in your inventory to toggle the] [i:ClimbingClaws] [c/aaaaaa:Climbing Claws]
 		'''
 	ToggleEffect: ", climb walls,"
@@ -1751,10 +1727,10 @@ StatisVoidSash: {
 	Tooltip:
 		'''
 		Provides a high-speed dash
-		20% increased movement speed, 32% increased jump speed, allows auto-jump, and negates fall damage
+		20% increased movement speed, 32% increased jump speed, and negates fall damage
 		Increases movement acceleration and deceleration by 1.85x
-		Grants the ability to swim[TOGGLE] and dodge attacks
-		Visual effects are reduced if visibility is disabled
+		Allows the user to swim[TOGGLE] and auto jump
+		{$Common.DodgeProvided}
 		[c/aaaaaa:Shift-<right> this item in your inventory to toggle the] [i:ClimbingClaws] [c/aaaaaa:Climbing Claws]
 		'''
 	ToggleEffect: ", climb walls,"
@@ -1880,11 +1856,11 @@ TheAmalgam: {
 	DisplayName: The Amalgam
 	Tooltip:
 		'''
-		All attacks inflict a variety of debuffs, 200% increased elemental debuff damage
+		All attacks inflict a variety of debuffs, 300% increased elemental debuff damage
 		Most buffs last twice as long, and persist after dying
 		Taking damage confuses nearby enemies and spawns a dank creeper
 		The dank creeper flies above you, exploding into several shaderain clouds
-		Grants the ability to dodge attacks
+		{$Common.DodgeProvided}
 		After dodging, summon damage and crit chance are boosted by 10%
 		'You have no idea how it's staying together'
 		'''
@@ -1951,6 +1927,17 @@ TheFirstShadowflame: {
 		'''
 }
 
+ThePointer: {
+	DisplayName: The Pointer
+	Tooltip:
+		'''
+		Allows automatic targeting of enemies
+		Press [KEY] to cycle through targets near your mouse
+		After cycling through all close enemies, the next press will disable it
+		'Great for cats!'
+		'''
+}
+
 TheSponge: {
 	DisplayName: The Sponge
 	Tooltip:
@@ -2007,6 +1994,15 @@ TrinketofChi: {
 		'''
 }
 
+UnholyTonic: {
+	DisplayName: Unholy Tonic
+	Tooltip:
+		'''
+		Increases damage reduction by 4% and defense by 6 while in the corruption
+		Grants immunity to Brain Rot
+		'''
+}
+
 UnstableGraniteCore: {
 	DisplayName: Unstable Granite Core
 	Tooltip:
@@ -2051,6 +2047,15 @@ VeneratedLocket: {
 		Rogue projectiles summon a clone from above the cursor
 		Stealth strikes unleash a ring of seeking cosmilite knives
 		'You'll never be alone, no matter where you go'
+		'''
+}
+
+ViciousTonic: {
+	DisplayName: Vicious Tonic
+	Tooltip:
+		'''
+		Increases damage reduction by 4% and defense by 6 while in the crimson
+		Grants immunity to Burning Blood
 		'''
 }
 
@@ -2155,14 +2160,14 @@ GhostBracelet: {
 	Tooltip: Wow.... It looks at me with its hollow eyes full of curiosity
 }
 
-GoldenBomb: {
-	DisplayName: Golden Bomb
-	Tooltip: "'I AM THE BOMB'"
-}
-
 HapuFruit: {
 	DisplayName: Ha-pu Fruit
 	Tooltip: "'A fruit that calms your nerves (may have unintended side effects)'"
+}
+
+LittleE: {
+	DisplayName: Little E
+	Tooltip: "'That's a little version of me, {0}. I want you to have it.'"
 }
 
 LucisSight: {
@@ -2187,6 +2192,11 @@ Popo: {
 SharkyPlush: {
 	DisplayName: Sharky Plush
 	Tooltip: "[c/696969:'Look out, for the force without form...']"
+}
+
+GlimmeringRibbon: {
+	DisplayName: Glimmering Ribbon
+	Tooltip: "'We are born colorless. It's the people we meet who give us color.'"
 }
 
 TheComb: {

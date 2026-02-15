@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 78;
             Item.height = 78;
-            Item.damage = 240;
+            Item.damage = 310;
             Item.DamageType = DamageClass.Melee;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useAnimation = Item.useTime = 20;
@@ -106,7 +106,8 @@ namespace CalamityMod.Items.Weapons.Melee
                 }
                 if (completion >= 0.65f && spawnProj)
                 {
-                    Projectile.NewProjectile(player.GetSource_FromThis(), player.Center, shootDir, Item.shoot, Item.damage, Item.knockBack, player.whoAmI, 0f);
+                    if (!player.Calamity().bladeArmEnchant) // Manually remove projectiles when Tainted
+                        Projectile.NewProjectile(player.GetSource_FromThis(), player.Center, shootDir, Item.shoot, Item.damage, Item.knockBack, player.whoAmI, 0f);
 
                     Particle swipe = new CustomSpark(player.Center - shootDir * 5, shootDir.RotatedBy(0.4f * (dir * (swingCount % 2 == 0 ? 1 : -1))) * 2.5f, "CalamityMod/Particles/VerticalSmearLarge", false, (int)(14 / player.GetAttackSpeed(DamageClass.Melee)), 0.6f, clr, new Vector2(1f, 1f), true, false, 0, false, false);
                     GeneralParticleHandler.SpawnParticle(swipe);

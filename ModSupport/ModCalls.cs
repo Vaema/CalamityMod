@@ -1792,7 +1792,7 @@ namespace CalamityMod
                     {
                         if (args.Length < 1)
                             return new ArgumentNullException(nameof(args), "ERROR: Must specify a bool parameter");
-                        if (args[0] is not bool aiOverrideEnabled)
+                        if (args[1] is not bool aiOverrideEnabled)
                             return new ArgumentException("ERROR: The third argument to \"SetVanillaAIOverrideEnabled\" must be a bool.");
                         CalamityVanillaAIOverrideNPC.Enabled = aiOverrideEnabled;
                         return null;

@@ -31,8 +31,8 @@ namespace CalamityMod.Items.Potions.Alcohol
         {
             Item.DefaultToFood(14, 48, ModContent.BuffType<RedWineBuff>(), CalamityUtils.MinutesToFrames(6));
 
-            Item.value = Item.sellPrice(silver: 30);
-            Item.rare = ItemRarityID.LightRed;
+            Item.value = Item.sellPrice(silver: 2);
+            Item.rare = ItemRarityID.Pink;
         }
         public override void AddRecipes()
         {

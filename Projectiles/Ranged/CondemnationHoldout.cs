@@ -170,13 +170,13 @@ namespace CalamityMod.Projectiles.Ranged
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D texture = TextureAssets.Projectile[Type].Value;
-            Vector2 drawPosition = Projectile.Center - Main.screenPosition + new Vector2(0, -3);
+            Vector2 drawPosition = Projectile.Center - Main.screenPosition;
 
             float randSize = Main.rand.NextFloat(0.9f, 1f);
             Color drawColor = Projectile.GetAlpha(lightColor);
-            float drawRotation = Projectile.rotation + (Projectile.direction == -1 ? MathHelper.Pi : 0f);
+            float drawRotation = Projectile.rotation + (Projectile.direction == -1 ? MathHelper.Pi : 0f) - (Owner.gravDir == -1 ? MathHelper.Pi * Owner.direction : 0f);
             Vector2 rotationPoint = texture.Size() * 0.5f;
-            SpriteEffects flipSprite = Projectile.direction == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            SpriteEffects flipSprite = (Projectile.spriteDirection * Owner.gravDir == -1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
             if (homing)
             {

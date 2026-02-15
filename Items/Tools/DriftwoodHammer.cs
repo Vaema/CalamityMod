@@ -35,18 +35,14 @@ namespace CalamityMod.Items.Tools
         // The tool is mechanically faster when wet.
         public override float UseTimeMultiplier(Player player)
         {
-            bool surface = player.Center.Y < Main.worldSurface * 16.0;
-            bool GetEffects = ((Main.raining && surface) || player.dripping || (player.wet && !player.lavaWet && !player.honeyWet));
-            if (GetEffects)
+            if (player.Calamity().countsAsAnyWet)
                 return (float)FasterUseTime / NormalUseTime;
             return base.UseTimeMultiplier(player);
         }
 
         public override void MeleeEffects(Player player, Rectangle hitbox)
         {
-            bool surface = player.Center.Y < Main.worldSurface * 16.0;
-            bool GetEffects = ((Main.raining && surface) || player.dripping || (player.wet && !player.lavaWet && !player.honeyWet));
-            if (GetEffects)
+            if (player.Calamity().countsAsAnyWet)
                 Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.MagnetSphere);
         }
 

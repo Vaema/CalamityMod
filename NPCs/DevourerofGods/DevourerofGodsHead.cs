@@ -46,7 +46,7 @@ namespace CalamityMod.NPCs.DevourerofGods
     [LongDistanceNetSync]
     public class DevourerofGodsHead : ModNPC
     {
-        public static Color SpecialMoveColor => Color.Lerp(Color.Fuchsia, Color.Cyan, MathHelper.SmoothStep(0, 1, (MathF.Sin(Main.GlobalTimeWrappedHourly * 2) + 1) * 0.5f));
+        public static Color SpecialMoveColor => !CalamityClientConfig.Instance.TextEffects ? Color.Cyan : Color.Lerp(Color.Fuchsia, Color.Cyan, MathHelper.SmoothStep(0, 1, (MathF.Sin(Main.GlobalTimeWrappedHourly * 2) + 1) * 0.5f));
 
         public static int phase1IconIndex;
         public static int phase2IconIndex;
@@ -798,6 +798,8 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                             if (NPC.Opacity >= 1f)
                             {
+                                // Don't do contact damage while flying away after laser walls
+                                NPC.damage = 0;
                                 NPC.Opacity = 1f;
                                 laserWallPhase = (int)LaserWallPhase.SetUp;
 
@@ -814,13 +816,9 @@ namespace CalamityMod.NPCs.DevourerofGods
                                         string key = "Mods.CalamityMod.Status.Boss.DoGPhase3";
                                         Color messageColor = Color.Cyan;
                                         CalamityUtils.BroadcastLocalizedText(key, messageColor);
-                                        /*                                        
-                                        var ctid = CombatText.NewText(NPC.Hitbox, messageColor, Language.GetTextValue(key), true);
-                                        if (ctid < Main.maxCombatText)
-                                            player.Calamity().subtitletext = Main.combatText[ctid];
-                                        player.Calamity().subtitleColors = new Color[] { Color.Cyan, Color.Fuchsia };
-                                        */
-                                        DialogueDisplaySystem.StartDialogue("Mods.CalamityMod.DevourerOfGods.Phases", NPC, 3, 120, false, new BossText());
+                                        Vector2 start = GetRiftLocation();
+
+                                        DialogueDisplaySystem.StartDialogue("Mods.CalamityMod.DevourerOfGods.Phases", start, 3, 120, false, new BossText());
                                     }
 
                                     spawnedGuardians3 = true;
@@ -2303,6 +2301,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             AwaitingPhase2Teleport = false;
             NPC.Opacity = 1f - (postTeleportTimer / 255f);
             NPC.velocity = Vector2.Normalize(AdjustedPlayerCenter(10) - NPC.Center) * chargeVelocity;
+            NPC.damage = NPC.defDamage;
             NPC.ForceNetUpdate(false);
             NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) + MathHelper.PiOver2;
             foreach (NPC n in Main.ActiveNPCs)
@@ -2795,28 +2794,8 @@ namespace CalamityMod.NPCs.DevourerofGods
             if (hurtInfo.Damage <= 0)
                 return;
 
-            if (target.Calamity().dogTextCooldown <= 0 && !BossRushEvent.BossRushActive)
+            if (!DialogueDisplaySystem.ContainsDialogueKey("Mods.CalamityMod.DevourerOfGods.Phases") && target.Calamity().dogTextCooldown <= 0 && !BossRushEvent.BossRushActive)
             {
-                /*
-                string[] headHitKeys = new string[]
-                {
-                    "Mods.CalamityMod.Status.Boss.DoGHead1",
-                    "Mods.CalamityMod.Status.Boss.DoGHead2",
-                    "Mods.CalamityMod.Status.Boss.DoGHead3",
-                    "Mods.CalamityMod.Status.Boss.DoGHead4",
-                    "Mods.CalamityMod.Status.Boss.DoGHead5",
-                    "Mods.CalamityMod.Status.Boss.DoGHead6",
-                    "Mods.CalamityMod.Status.Boss.DoGHead7",
-                    "Mods.CalamityMod.Status.Boss.DoGHead8",
-                    "Mods.CalamityMod.Status.Boss.DoGHead9",
-                    "Mods.CalamityMod.Status.Boss.DoGHead10",
-                    "Mods.CalamityMod.Status.Boss.DoGHead11",
-                    "Mods.CalamityMod.Status.Boss.DoGHead12",
-                    "Mods.CalamityMod.Status.Boss.DoGHead13",
-                };
-                Color messageColor = Color.Cyan;
-                Rectangle location = new Rectangle((int)NPC.position.X, (int)NPC.position.Y, NPC.width, NPC.height);
-                */
                 var counter = target.Calamity().DoGHeadHitCounter;
                 string DialogueGroup;
                 int DialogueIndex;
@@ -2825,17 +2804,17 @@ namespace CalamityMod.NPCs.DevourerofGods
                     DialogueGroup = "Mods.CalamityMod.DevourerOfGods.Death";
                     if (counter == 0)
                         if (NPC.GetLifePercent() <= 0.25f)
-                            DialogueIndex = 4;// text = "Mods.CalamityMod.Status.Boss.DoGHeadDeath5"; //All that running just to die to a single touch?
+                            DialogueIndex = 4; //All that running just to die to a single touch?
                         else
                             DialogueIndex = 0;// text = "Mods.CalamityMod.Status.Boss.DoGHeadDeath1"; //Tasteless slop.
                     else if (NPC.GetLifePercent() <= 0.25f || counter >= 10)
-                        DialogueIndex = 3;// text = "Mods.CalamityMod.Status.Boss.DoGHeadDeath4"; //WEAK.
+                        DialogueIndex = 3; //WEAK.
                     else if (Phase2Started)
-                        DialogueIndex = 2;// text = "Mods.CalamityMod.Status.Boss.DoGHeadDeath3"; //And STAY dead!
+                        DialogueIndex = 2; //And STAY dead!
                     else if (!spawnedGuardians)
-                        DialogueIndex = 0;// text = "Mods.CalamityMod.Status.Boss.DoGHeadDeath1"; //Tasteless slop.
+                        DialogueIndex = 0; //Tasteless slop.
                     else
-                        DialogueIndex = 1;// text = "Mods.CalamityMod.Status.Boss.DoGHeadDeath2"; //A feast worthy of a god!
+                        DialogueIndex = 1; //A feast worthy of a god!
                 }
                 else
                 {
@@ -2843,33 +2822,27 @@ namespace CalamityMod.NPCs.DevourerofGods
                     {
                         DialogueGroup = "Mods.CalamityMod.DevourerOfGods.Running";
                         if (NPC.GetLifePercent() <= 0.25f)
-                            DialogueIndex = 1;// text = "Mods.CalamityMod.Status.Boss.DoGHeadRunning2"; //WHAT'S THE PROBLEM?! CAN'T RUN ANYMORE?!
+                            DialogueIndex = 1; //WHAT'S THE PROBLEM?! CAN'T RUN ANYMORE?!
                         else
-                            DialogueIndex = 0;// text = "Mods.CalamityMod.Status.Boss.DoGHeadRunning"; //You can't run forever!
+                            DialogueIndex = 0; //You can't run forever!
                     }
                     else
                     {
                         DialogueGroup = "Mods.CalamityMod.DevourerOfGods.Head";
                         if (counter > 9)
-                            DialogueIndex = Main.rand.Next(10, 13);// text = headHitKeys[Main.rand.Next(10, 13)]; //DogHead11-13
+                            DialogueIndex = Main.rand.Next(10, 13); //DogHead11-13
                         else if (counter == 9)
                             DialogueIndex = 10;//text = headHitKeys[9]; //DogHead10
                         else if (counter > 4)
-                            DialogueIndex = Main.rand.Next(4, 9);//text = headHitKeys[Main.rand.Next(4, 9)]; //DogHead5-9
+                            DialogueIndex = Main.rand.Next(4, 9); //DogHead5-9
                         else
-                            DialogueIndex = Main.rand.Next(0, 4);//text = headHitKeys[Main.rand.Next(0, 4)]; //DogHead1-4
+                            DialogueIndex = Main.rand.Next(0, 4); //DogHead1-4
                     }
                 }
 
-                /*
-                var ctid = CombatText.NewText(location, messageColor, Language.GetTextValue(text), true);
-                if (ctid < Main.maxCombatText)
-                    target.Calamity().subtitletext = Main.combatText[ctid];
-                target.Calamity().subtitleColors = new Color[] { Color.Cyan, Color.Fuchsia };
-                target.Calamity().dogTextCooldown = 60;
-                */
-
                 DialogueDisplaySystem.StartDialogueOnClient(DialogueGroup, NPC, DialogueIndex, 60, false, new BossText());
+                target.Calamity().dogTextCooldown = 90;
+
             }
             target.Calamity().DoGHeadHitCounter++;
         }

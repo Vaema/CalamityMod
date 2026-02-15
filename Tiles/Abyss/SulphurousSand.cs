@@ -58,10 +58,24 @@ namespace CalamityMod.Tiles.Abyss
             {
                 if (!Main.tile[i, tileLocationY].HasTile)
                 {
-                    if (!CalamityPlayer.areThereAnyDamnBosses && Main.tile[i, tileLocationY].LiquidAmount == 255 && Main.tile[i, tileLocationY - 1].LiquidAmount == 255 &&
-                        Main.tile[i, tileLocationY - 2].LiquidAmount == 255 && !Main.tile[i, tileLocationY - 2].HasTile && Main.netMode != NetmodeID.MultiplayerClient)
+                    if (Main.netMode != NetmodeID.MultiplayerClient && !CalamityPlayer.areThereAnyDamnBosses)
                     {
-                        Projectile.NewProjectile(new EntitySource_WorldEvent(), (float)(i * 16 + 16), (float)(tileLocationY * 16 + 16), 0f, -0.1f, ModContent.ProjectileType<SulphuricAcidBubble>(), 0, 2f, Main.myPlayer);
+                        bool nearby = false;
+                        Vector2 tileWorldPos = new Vector2(i, tileLocationY).ToWorldCoordinates();
+                        foreach (Player player in Main.ActivePlayers)
+                        {
+
+                            if (!player.dead && !player.ghost && player.DistanceSQ(tileWorldPos) < 4000000f) // Don't spawn Acid Bubbles if no players are nearby
+                            {
+                                nearby = true;
+                                break;
+                            }
+                        }
+                        if (nearby && Main.tile[i, tileLocationY].LiquidAmount == 255 && Main.tile[i, tileLocationY - 1].LiquidAmount == 255 &&
+                            Main.tile[i, tileLocationY - 2].LiquidAmount == 255 && !Main.tile[i, tileLocationY - 2].HasTile)
+                        {
+                            Projectile.NewProjectile(new EntitySource_WorldEvent(), (float)(i * 16 + 16), (float)(tileLocationY * 16 + 16), 0f, -0.1f, ModContent.ProjectileType<SulphuricAcidBubble>(), 0, 2f, Main.myPlayer);
+                        }
                     }
 
                     if (i < 250 || i > Main.maxTilesX - 250)

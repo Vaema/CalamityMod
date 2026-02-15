@@ -4,6 +4,7 @@ using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
@@ -11,6 +12,10 @@ namespace CalamityMod.Items.Weapons.Melee
     public class MonolithSword : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+
+        public static int ArmorPenetration = 15;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(ArmorPenetration);
+
         public override void SetDefaults()
         {
             Item.damage = 30;
@@ -25,7 +30,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.useTurn = true;
             Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
-            Item.ArmorPenetration = 15;
+            Item.ArmorPenetration = ArmorPenetration;
         }
         public override void UseItemHitbox(Player player, ref Rectangle hitbox, ref bool noHitbox)
         {

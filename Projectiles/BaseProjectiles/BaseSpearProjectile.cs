@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.BaseProjectiles
@@ -20,6 +21,31 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         // Also, be careful with the move and reelback speed. If they're bad values,
         // the spear might end up detaching from or impaling the player.
 
+        private float GetSyncedItemAnimation(Player player)
+        {
+            float itemAnimation = player.itemAnimation;
+
+            if (Main.netMode != NetmodeID.SinglePlayer && Main.myPlayer == Projectile.owner)
+            {
+                if (Projectile.ai[1] != itemAnimation)
+                {
+                    Projectile.ai[1] = itemAnimation;
+                    Projectile.netUpdate = true;
+                }
+            }
+
+            if (Main.netMode == NetmodeID.SinglePlayer || Main.myPlayer == Projectile.owner)
+                return itemAnimation;
+
+            if (Projectile.ai[1] > 0f)
+                Projectile.localAI[1] = 1f;
+
+            if (Projectile.localAI[1] == 1f)
+                return Projectile.ai[1];
+
+            return Math.Max(1f, player.itemAnimationMax);
+        }
+
         public virtual void Behavior()
         {
             if (SpearAiType == SpearType.TypicalSpear)
@@ -28,6 +54,9 @@ namespace CalamityMod.Projectiles.BaseProjectiles
                 // localAI[0] = Special effect 0-1 flag value. Actived right before the spear goes backward.
 
                 Player player = Main.player[Projectile.owner];
+
+                float itemAnimationMax = Math.Max(1f, player.itemAnimationMax);
+                float syncedItemAnimation = GetSyncedItemAnimation(player);
 
                 // Adjust owner stats based on this projectile
                 player.ChangeDir(Projectile.direction);
@@ -47,7 +76,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
                     Projectile.netUpdate = true;
                 }
                 // Reel back
-                if (player.itemAnimation < player.itemAnimationMax / 3)
+                if (syncedItemAnimation < itemAnimationMax / 3f)
                 {
                     Projectile.ai[0] -= ReelbackSpeed;
 
@@ -67,7 +96,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 
                 // If at the end of the animation, kill the projectile.
                 //Checking if == 0 is too late, lets the projectile linger into chained item uses.
-                if (player.itemAnimation <= 1)
+                if (syncedItemAnimation <= 1f)
                     Projectile.Kill();
 
                 Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2 + MathHelper.PiOver4;
@@ -77,6 +106,9 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             else if (SpearAiType == SpearType.GhastlyGlaiveSpear)
             {
                 Player player = Main.player[Projectile.owner];
+
+                float itemAnimationMax = Math.Max(1f, player.itemAnimationMax);
+                float syncedItemAnimation = GetSyncedItemAnimation(player);
 
                 Vector2 playerRelativePoint = player.RotatedRelativePoint(player.MountedCenter, true);
 
@@ -92,7 +124,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
                 if (!player.frozen)
                 {
                     // Pretty much the same as regular spears.
-                    if (Main.player[Projectile.owner].itemAnimation < Main.player[Projectile.owner].itemAnimationMax / 3)
+                    if (syncedItemAnimation < itemAnimationMax / 3f)
                     {
                         if (Projectile.localAI[0] == 0f && EffectBeforeReelback != null && Main.myPlayer == Projectile.owner)
                         {
@@ -113,7 +145,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
                     {
                         Projectile.localAI[0] -= 1f;
                     }
-                    float inverseAnimationCompletion = 1f - (player.itemAnimation / (float)player.itemAnimationMax);
+                    float inverseAnimationCompletion = 1f - (syncedItemAnimation / itemAnimationMax);
                     float originalVelocityDirection = Projectile.velocity.ToRotation();
                     float originalVelocitySpeed = Projectile.velocity.Length();
 
