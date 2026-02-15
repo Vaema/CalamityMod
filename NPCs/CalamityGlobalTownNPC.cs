@@ -325,6 +325,7 @@ namespace CalamityMod.NPCs
             "Fera", // <@!195850711567826945> (juneark_)
             "Gwenhwyvar", // <@!291342874497515531> (diamondnife)
             "Daxie", // <@!465438861103988737> (daxie626)
+            "Zora", // <@!752687500656640030> (oxytoxy365)
         ];
         // Town Slimes
         private static readonly string[] ClumsySlimeNames = null;
