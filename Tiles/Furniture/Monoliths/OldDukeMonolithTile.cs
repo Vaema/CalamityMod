@@ -19,7 +19,7 @@ namespace CalamityMod.Tiles.Furniture.Monoliths
         public override int TileHeight => 8;
         public override int AnimationFrameCount => 24;
         public override int AnimationDelay => 6;
-        public override int CursorItemType => ModContent.ItemType<OldDukeMonolith>();
+        public override int CursorItemType => ModContent.ItemType<EldenDiorama>();
 
         public static Asset<Texture2D> Numbers;
         public override void SetStaticDefaults()
@@ -45,9 +45,9 @@ namespace CalamityMod.Tiles.Furniture.Monoliths
             TileObjectData.newTile.CoordinateHeights = [16, 16, 16, 16, 16, 16, 16, 16];
             TileObjectData.addTile(Type);
 
-            AddMapEntry(new Color(54, 54, 54));
+            AddMapEntry(new Color(99, 133, 48));
 
-            DustType = DustID.TerraBlade;
+            DustType = DustID.ToxicBubble;
         }
 
         public override void NearbyEffects(int i, int j, bool closer, bool monolithEnabled, Player localPlayer)

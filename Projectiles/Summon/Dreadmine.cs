@@ -22,7 +22,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.alpha = 255;
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
-            Projectile.timeLeft = 3600;
+            Projectile.timeLeft = 600;
             Projectile.DamageType = DamageClass.Summon;
         }
 
@@ -66,18 +66,10 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.velocity.X = Projectile.velocity.X - 0.002f * yflag;
                 Projectile.velocity.Y = Projectile.velocity.Y - 0.002f * xflag;
             }
-            Projectile.ai[0] += 1f;
-            if (Projectile.ai[0] > 5400f)
+            Projectile.ai[2] += 1f;
+            if (Projectile.ai[2] > 5400f)
             {
                 Projectile.ai[1] = 1f;
-                if (Projectile.ai[0] < 5500f)
-                {
-                    return;
-                }
-                if (Projectile.owner == Main.myPlayer)
-                {
-                    Projectile.Kill();
-                }
             }
             else
             {
@@ -110,7 +102,7 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     playerDist *= 1.7f;
                 }
-                Projectile.ai[0] += playerDist;
+                Projectile.ai[2] += playerDist;
                 if (Projectile.alpha > 0)
                 {
                     Projectile.alpha -= 25;

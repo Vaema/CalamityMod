@@ -67,6 +67,10 @@ namespace CalamityMod.Tiles.Ores
             }
         }
 
+        public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
+        {
+            World.Abyss.FillTileWithWater(i, j);
+        }
         public override bool CanExplode(int i, int j)
         {
             return false;

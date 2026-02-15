@@ -145,19 +145,16 @@ namespace CalamityMod.Tiles.DraedonStructures
             else if (t.IsHalfBlock)
                 spriteBatch.Draw(tex, drawOffset + Vector2.UnitY * 8f, new Rectangle(frameXPos, frameYPos, 16, 16), drawColor, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
 
-            // Draws the Smart Cursor Highlight. Not 100% accurate, but its close enough
+            // Draws the Smart Cursor Highlight.
             Color highlightColor;
             if (TileID.Sets.HasOutlines[Type] && Main.InSmartCursorHighlightArea(i, j, out var actuallySelected))
             {
-                if (actuallySelected)
+                int avgBrightness = (drawColor.R + drawColor.G + drawColor.B) / 3;
+                if (avgBrightness > 10)
                 {
-                    highlightColor = new Color(252, 252, 84);
+                    highlightColor = Colors.GetSelectionGlowColor(actuallySelected, avgBrightness);
+                    spriteBatch.Draw(TextureAssets.HighlightMask[Type].Value, drawOffset, new Rectangle(frameXPos, frameYPos, 16, 16), highlightColor, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
                 }
-                else
-                {
-                    highlightColor = new Color(125, 125, 125);
-                }
-                spriteBatch.Draw(TextureAssets.HighlightMask[Type].Value, drawOffset, new Rectangle(frameXPos, frameYPos, 16, 16), highlightColor, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
             }
 
 

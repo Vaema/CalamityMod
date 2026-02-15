@@ -183,6 +183,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Particle smoke = new HeavySmokeParticle(Projectile.Center + randVel, randVel, Color.Black, Main.rand.Next(20, 25 + 1), Main.rand.NextFloat(0.9f, 2.3f), 0.7f);
                     GeneralParticleHandler.SpawnParticle(smoke);
                 }
+
                 for (int i = 0; i < 2; i++)
                 {
                     //Explosion effect

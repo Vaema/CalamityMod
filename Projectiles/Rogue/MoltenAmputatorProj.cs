@@ -258,7 +258,7 @@ namespace CalamityMod.Projectiles.Rogue
                     }
                 }
             }
-            if (pulled && (pulledTimer < 10 || Owner.Calamity().amputatorBuff > 0) && !AMPUTATE && !Projectile.Calamity().stealthStrike)
+            if (pulled && (pulledTimer < 10 || Owner.Calamity().focusFlurryAttackCount > 0) && !AMPUTATE && !Projectile.Calamity().stealthStrike)
             {
                 // Amputate them
                 Projectile strike = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), Projectile.damage * 7, 0f, Owner.whoAmI, target.whoAmI, 1f);

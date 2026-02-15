@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using CalamityMod.Dusts;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
@@ -167,7 +168,7 @@ namespace CalamityMod.Projectiles.Ranged
             // Spawns the projectile.
             if (Main.myPlayer == Projectile.owner)
             {
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootDirection * projSpeed * velocityMultiplier, ProjectileType<NukeOfBliss>(), damage, knockback, Projectile.owner, rocketType);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootDirection * projSpeed * velocityMultiplier, ProjectileType<NukeOfBliss>(), damage, knockback, Projectile.owner, rocketType);
                 PostFireCooldown = Owner.itemAnimationMax;
                 Owner.SetScreenshake(5f);
             }
@@ -229,7 +230,7 @@ namespace CalamityMod.Projectiles.Ranged
             Texture2D texture2 = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/BlissfulBombardierGlow").Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Color drawColor = Projectile.GetAlpha(lightColor);
-            float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);
+            float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f) - (Owner.gravDir == -1 ? MathHelper.Pi * Owner.direction : 0f);
             Vector2 rotationPoint = texture.Size() * 0.5f;
             SpriteEffects flipSprite = (Projectile.spriteDirection * Owner.gravDir == -1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 

@@ -152,7 +152,6 @@ namespace CalamityMod.NPCs.DevourerofGods
             NPC.life = Main.npc[(int)NPC.ai[2]].life;
             NPC.lifeMax = Main.npc[(int)NPC.ai[2]].lifeMax;
 
-
             // Percent life remaining
             float lifeRatio = Main.npc[(int)NPC.ai[2]].life / (float)Main.npc[(int)NPC.ai[2]].lifeMax;
 
@@ -248,6 +247,9 @@ namespace CalamityMod.NPCs.DevourerofGods
                 else
                     NPC.Opacity = Main.npc[(int)NPC.ai[2]].Opacity;
             }
+
+            // Copy the damage state of the head
+            NPC.damage = Main.npc[(int)NPC.ai[2]].damage == 0 ? 0 : NPC.defDamage;
 
             Vector2 segmentDirection = NPC.Center;
             float playerXDist = player.position.X + (player.width / 2);

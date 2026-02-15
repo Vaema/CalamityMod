@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using CalamityMod.Items.Placeables.FurnitureWulfrum;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -20,7 +21,6 @@ namespace CalamityMod.Items.Materials
             Item.maxStack = Item.CommonMaxStack;
             Item.value = Item.sellPrice(copper: 10);
             Item.rare = ItemRarityID.Blue;
-            Item.ammo = Item.type;
         }
         public override void AddRecipes()
         {
@@ -28,6 +28,11 @@ namespace CalamityMod.Items.Materials
                 AddIngredient<StormlionMandible>().
                 AddIngredient<WulfrumMetalScrap>().
                 AddTile(TileID.WorkBenches).
+                Register();
+
+            CreateRecipe().
+                AddIngredient<AnodizedWulfrumPlatform>(2).
+                DisableDecraft().
                 Register();
         }
         //Added to avoid making the recipes really repetitive and nonsensical. It also makes the new metal color make sense. Adds a bit of flavor to the Wulfrum Recipes

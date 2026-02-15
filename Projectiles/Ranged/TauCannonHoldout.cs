@@ -344,6 +344,10 @@ namespace CalamityMod.Projectiles.Ranged
             float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);
             Vector2 rotationPoint = texture.Size() * 0.5f;
             SpriteEffects flipSprite = Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            if (Owner.gravDir == -1f)
+            {
+                flipSprite |= SpriteEffects.FlipVertically;
+            }
 
             if (Projectile.timeLeft > CoolingDownTime || KeepRefreshingLifetime == true)
             {

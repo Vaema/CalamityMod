@@ -46,7 +46,7 @@ namespace CalamityMod.NPCs.DevourerofGods
     [LongDistanceNetSync]
     public class DevourerofGodsHead : ModNPC
     {
-        public static Color SpecialMoveColor => Color.Lerp(Color.Fuchsia, Color.Cyan, MathHelper.SmoothStep(0, 1, (MathF.Sin(Main.GlobalTimeWrappedHourly * 2) + 1) * 0.5f));
+        public static Color SpecialMoveColor => !CalamityClientConfig.Instance.TextEffects ? Color.Cyan : Color.Lerp(Color.Fuchsia, Color.Cyan, MathHelper.SmoothStep(0, 1, (MathF.Sin(Main.GlobalTimeWrappedHourly * 2) + 1) * 0.5f));
 
         public static int phase1IconIndex;
         public static int phase2IconIndex;
@@ -798,6 +798,8 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                             if (NPC.Opacity >= 1f)
                             {
+                                // Don't do contact damage while flying away after laser walls
+                                NPC.damage = 0;
                                 NPC.Opacity = 1f;
                                 laserWallPhase = (int)LaserWallPhase.SetUp;
 
@@ -2299,6 +2301,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             AwaitingPhase2Teleport = false;
             NPC.Opacity = 1f - (postTeleportTimer / 255f);
             NPC.velocity = Vector2.Normalize(AdjustedPlayerCenter(10) - NPC.Center) * chargeVelocity;
+            NPC.damage = NPC.defDamage;
             NPC.ForceNetUpdate(false);
             NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) + MathHelper.PiOver2;
             foreach (NPC n in Main.ActiveNPCs)

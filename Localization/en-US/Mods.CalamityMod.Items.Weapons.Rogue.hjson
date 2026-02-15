@@ -39,6 +39,7 @@ AuroradicalThrow: {
 		Launches a star that splits after a short period of time
 		Split stars home in on nearby enemies after a few seconds
 		Stealth strikes summon a meteor upon enemy impact
+		Inflicts [cbuff:CalamityMod/AstralInfectionDebuff]
 		'''
 }
 
@@ -557,6 +558,7 @@ HeavenfallenStardisk: {
 		Throws a stardisk upwards which then launches itself towards your mouse cursor
 		Explodes into a star of astral bolts on hit
 		Stealth strikes rain astral energy bolts from the sky
+		Inflicts [cbuff:CalamityMod/AstralInfectionDebuff]
 		'''
 }
 
@@ -668,6 +670,7 @@ LeonidProgenitor: {
 		Throws a bombshell that explodes, summoning a meteor to impact the site
 		Press <right> to throw a spread of gravity affected comets that explode, leaving behind a star
 		Stealth strikes lob a bombshell that additionally splits into comets on hit
+		Inflicts [cbuff:CalamityMod/AstralInfectionDebuff]
 		'''
 }
 
@@ -783,9 +786,13 @@ NanoblackReaper: {
 	DisplayName: Nanoblack Reaper
 	Tooltip:
 		'''
-		Unleashes a storm of nanoblack energy blades
-		Blades target bosses whenever possible
-		Stealth strikes cause the scythe to create a large amount of homing afterimages instead of energy blades
+		Throws a scythe which rapidly forms a swarm of nanoblack tesselations from hard light
+		Nanoblack tesselations each emit an instantaneous zero-point energy strike
+		Zero-point energy strikes have 150 armor penetration and will target bosses whenever possible
+		Release <left> just as the scythe begins returning to carve through the enemy closest to your cursor at light speed
+		Light-speed carves have 150 armor penetration. If timed in a 4-frame window, they supercrit with +100% critical strike chance
+		<right> with sufficient stealth to massively increase attack speed for a short time
+		Scythes thrown during flurries emit supercharged energy strikes but cannot be returned manually
 		'''
 	HoldShiftTooltip:
 		'''
@@ -867,7 +874,7 @@ RadiantStar: {
 	DisplayName: Radiant Star
 	Tooltip:
 		'''
-		Throws daggers that explode and split after a while
+		Throws daggers that explode and split after a while and inflict [cbuff:CalamityMod/AstralInfectionDebuff]
 		Stealth strikes split more with a devastating explosion that sucks enemies in
 		'''
 }
@@ -904,7 +911,7 @@ RegulusRiot: {
 	DisplayName: Regulus Riot
 	Tooltip:
 		'''
-		Fires a swift homing disk
+		Fires a swift homing disk that inflicts [cbuff:CalamityMod/AstralInfectionDebuff]
 		Stealth strikes explode into energy stars
 		'''
 }
@@ -975,21 +982,12 @@ ScourgeoftheSeas: {
 
 SeafoamBomb: {
 	DisplayName: Seafoam Bomb
-	Tooltip: "[GFB]"
-	TooltipNormal:
+	Tooltip:
 		'''
 		Hurls a lightweight bomb which bursts into a foam bubble
 		Foam bubbles combine in pairs to form huge bubbles
 		Huge bubbles pop into small homing suds after a delay
 		Stealth strikes are cluster bombs that release eight normal bombs
-		'''
-	TooltipGFB:
-		'''
-		Rapidly hurls a lightweight bomb which bursts into a foam bubble
-		Foam bubbles combine in pairs to form huge bubbles
-		Huge bubbles pop into small homing suds after a delay
-		Stealth strikes are cluster bombs that release 38 normal bombs
-		[c/256b93:'Right back in S tier!']
 		'''
 }
 
@@ -1129,7 +1127,7 @@ StellarKnife: {
 	DisplayName: Stellar Knife
 	Tooltip:
 		'''
-		Throws knives that stop middair and then home into enemies
+		Throws knives that stop middair and then home into enemies, inflicting [cbuff:CalamityMod/AstralInfectionDebuff]
 		Stealth strikes throw a volley of 10 knives in a spread
 		'ZA WARUDO'
 		'''
@@ -1333,6 +1331,7 @@ Vega: {
 		Stealth strikes conjure an image of Lyra to deal immense damage in an area
 		<right> to consume 20 Starbursts and immediately perform a stealth strike, regardless of your current Stealth
 		This strike calls all star fragments to attack the damaged foe and inflicts [cbuff:CalamityMod/Voidfrost]
+		Consuming Starbursts with Vega allows using stealth for 10 seconds, even without rogue armor
 		'The final song of a misunderstood genius... or just a madman'
 		'''
 }

@@ -50,6 +50,12 @@ namespace CalamityMod.Projectiles.Summon
 
         private bool HasSpawned;
 
+        public override void SetStaticDefaults()
+        {
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
+        }
+
         public override void SetDefaults()
         {
             base.SetDefaults();

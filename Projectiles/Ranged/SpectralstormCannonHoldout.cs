@@ -183,21 +183,26 @@ namespace CalamityMod.Projectiles.Ranged
         {
             Texture2D texture = TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
-            float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);
+            float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f) - (Owner.gravDir == -1 ? MathHelper.Pi * Owner.direction : 0f);
             Vector2 rotationPoint = texture.Size() * 0.5f;
             SpriteEffects flipSprite = (Projectile.spriteDirection * Owner.gravDir == -1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
             Color tintColor = displayOverheat ? Color.Black :
                 BuiltHeat >= WarningTime ? Color.Lerp(Color.LightSalmon, Color.White, MathF.Abs(MathF.Sin(Owner.miscCounter * MathHelper.Pi / 30f))) : Color.LightSalmon;
             float opacity = Utils.GetLerpValue(0, WarningTime, BuiltHeat, true);
 
-            Projectile.DrawBackglow(Color.HotPink * opacity, 4f, null, null, (Projectile.spriteDirection * Owner.gravDir == -1) ? SpriteEffects.FlipVertically : SpriteEffects.None);
+            for (int i = 0; i < 16; i++)
+            {
+                Color auraColor = Color.HotPink * opacity * 0.6f;
+                Vector2 drawOffset = ((MathHelper.TwoPi * i / 16f).ToRotationVector2() * 5);
+                Main.EntitySpriteDraw(texture, drawPosition + drawOffset, null, auraColor, drawRotation, rotationPoint, Projectile.scale, flipSprite);
+            }
 
             CalamityUtils.EnterShaderRegion(Main.spriteBatch);
             GameShaders.Misc["CalamityMod:BasicTint"].UseOpacity((displayOverheat ? 1f : opacity) * 0.45f);
             GameShaders.Misc["CalamityMod:BasicTint"].UseColor(tintColor);
             GameShaders.Misc["CalamityMod:BasicTint"].Apply();
 
-            Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(lightColor), drawRotation, rotationPoint, Projectile.scale * Owner.gravDir, flipSprite);
+            Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(lightColor), drawRotation, rotationPoint, Projectile.scale, flipSprite);
             CalamityUtils.ExitShaderRegion(Main.spriteBatch);
             return false;
         }
