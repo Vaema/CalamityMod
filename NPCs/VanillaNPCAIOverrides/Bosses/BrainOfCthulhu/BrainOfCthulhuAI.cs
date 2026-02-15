@@ -2488,13 +2488,15 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                 NPC.velocity *= 0.9f;
                 if (startTime % 15 == 5 && startTime > 60 + IllusionDashSpinDuration + 30 + IllusionDashFakeoutTeleportDuration)
                 {
+                    Vector2 dir = NPC.DirectionTo(Target.Center);
+
                     for (int i = 0; i < (CalamityWorld.death ? 2 : 1); i++)
                     {
-                        Vector2 dir = NPC.DirectionTo(Target.Center);
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             Vector2 initialDir = dir.RotatedBy(MathHelper.Pi + Main.rand.NextFloat(-0.01f, 0.01f));
-                            Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center + Main.rand.NextVector2Circular(NPC.width, NPC.width), initialDir * Main.rand.NextFloat(6f, 8f), ProjectileID.BloodNautilusShot, BloodShotDamage, 0.5f, ai0: dir.ToRotation() + MathHelper.TwoPi, ai1: initialDir.ToRotation());
+                            Vector2 spawnPos = NPC.Center + (dir.RotatedBy(MathHelper.PiOver2) * Main.rand.NextFloat(-NPC.width, NPC.width) - (dir * 48));
+                            Projectile.NewProjectile(NPC.GetSource_FromThis(), spawnPos, initialDir * Main.rand.NextFloat(6f, 8f), ProjectileID.BloodNautilusShot, BloodShotDamage, 0.5f, ai0: dir.ToRotation() + MathHelper.TwoPi, ai1: initialDir.ToRotation());
                         }
                         NPC.velocity -= dir;
                     }
