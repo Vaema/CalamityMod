@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.Summon;
 using CalamityMod.Dusts;
@@ -19,9 +20,10 @@ namespace CalamityMod.Projectiles.Summon
         public ref float AttackDelay => ref Projectile.ai[0];
         public ref float RestOffsetAngle => ref Projectile.ai[1];
         public ref float KnifeType => ref Projectile.ai[2]; // 1 - Crystal, 2 - Stone, 3 - Fire
-        public Color color1 = Color.White;
+        public Color bladeColor = Color.White;
         public int attackCooldown = 0;
         public int attacksDone = 0;
+        private bool justHit = false;
         public NPC potentialTarget;
         public float moveSmoothing = 50;
         public float damageMult = 1;
@@ -49,23 +51,36 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.DamageType = DamageClass.Summon;
         }
 
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.Write(attackCooldown);
+            writer.Write(attacksDone);
+            writer.Write(justHit);
+        }
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            attackCooldown = reader.ReadInt32();
+            attacksDone = reader.ReadInt32();
+            justHit = reader.ReadBoolean();
+        }
+
         public override void AI()
         {
             switch (KnifeType)
             {
                 case 1: // Crystal
-                    color1 = Color.Orchid;
+                    bladeColor = Color.Orchid;
                     Projectile.extraUpdates = 1;
                     damageMult = 0.5f;
                     Projectile.ArmorPenetration = 40;
                     break;
                 case 2: // Rock
-                    color1 = Color.OrangeRed;
+                    bladeColor = Color.OrangeRed;
                     Projectile.extraUpdates = 2;
                     damageMult = 3;
                     break;
                 default: // Flame
-                    color1 = Color.Orange;
+                    bladeColor = Color.Orange;
                     damageMult = 1;
                     Projectile.ArmorPenetration = 20;
                     break;
@@ -82,11 +97,46 @@ namespace CalamityMod.Projectiles.Summon
                 storedPos = potentialTarget.Center;
             }
 
+            // On-hit visuals
+            if (justHit)
+            {
+                if (KnifeType == 1)
+                {
+                    SoundEngine.PlaySound(SoundID.DD2_WitherBeastCrystalImpact with { Volume = 0.7f, Pitch = attacksDone * 0.05f }, Projectile.Center);
+                    if (attacksDone >= 6)
+                    {
+                        for (int i = 0; i < 9; i++)
+                        {
+                            Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedByRandom(0.5f) * Main.rand.NextFloat(10f, 20f));
+                            dust.noGravity = true;
+                            dust.scale = Main.rand.NextFloat(1.25f, 1.75f);
+                            dust.color = Color.Orchid;
+                            dust.noLightEmittence = true;
+                        }
+                        for (int i = 0; i < 4; i++)
+                        {
+                            Particle spark = new CustomSpark(Projectile.Center, (Projectile.velocity.SafeNormalize(Vector2.UnitX)).RotatedByRandom(0.6f) * Main.rand.NextFloat(15f, 20f), "CalamityMod/Particles/ProvidenceMarkParticle", false, 25, Main.rand.NextFloat(1.35f, 1.6f), Color.Orchid, new Vector2(1.3f, 0.5f), true, false, 0, false, false, Main.rand.NextFloat(0.25f, 0.35f));
+                            GeneralParticleHandler.SpawnParticle(spark);
+                        }
+                    }
+                }
+                if (KnifeType == 2)
+                {
+                    SoundStyle slam = new("CalamityMod/Sounds/NPCHit/RavagerRockPillarHit", 2);
+                    SoundEngine.PlaySound(slam with { Volume = 0.4f, Pitch = Main.rand.NextFloat(-0.25f, -0.15f), MaxInstances = -1 }, Projectile.Center);
+                    for (int i = 0; i < 7; i++)
+                    {
+                        Particle spark = new CustomSpark(Projectile.Center, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(1f, 5f), "CalamityMod/Projectiles/Typeless/ArtifactOfResilienceShard6", false, Main.rand.Next(15, 25 + 1), Main.rand.NextFloat(0.75f, 1.2f), Color.White, new Vector2(1.3f, 0.5f), false, false, Main.rand.NextFloat(-5, 5), false, false);
+                        GeneralParticleHandler.SpawnParticle(spark);
+                    }
+                }
+            }
+
             if (potentialTarget != null)
             {
                 if (KnifeType == 1 && attacksDone > 0 && Utils.Distance(Projectile.Center, storedPos) < 150 && attackCooldown == 0)
                 {
-                    Particle spark = new GlowSparkParticle(Projectile.Center, -Projectile.velocity * 0.1f, false, 20, 0.03f, color1 * 0.55f, new Vector2(0.8f, 2.3f), true, false, 0.45f);
+                    Particle spark = new GlowSparkParticle(Projectile.Center, -Projectile.velocity * 0.1f, false, 20, 0.03f, bladeColor * 0.55f, new Vector2(0.8f, 2.3f), true, false, 0.45f);
                     GeneralParticleHandler.SpawnParticle(spark);
                 }
                 if (KnifeType == 2 && attackCooldown == 0)
@@ -102,7 +152,7 @@ namespace CalamityMod.Projectiles.Summon
                         Dust dust = Dust.NewDustPerfect(Projectile.Center, memesHatesLists ? 278 : ModContent.DustType<LightDust>(), -Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedByRandom(0.4f) * Main.rand.NextFloat(1f, 4f));
                         dust.noGravity = !memesHatesLists;
                         dust.scale = Main.rand.NextFloat(0.55f, 1.1f);
-                        dust.color = color1;
+                        dust.color = bladeColor;
                     }
                 }
                 if (KnifeType == 3)
@@ -255,38 +305,16 @@ namespace CalamityMod.Projectiles.Summon
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            justHit = true;
             if (KnifeType == 1)
             {
                 AttackDelay = 15;
                 attacksDone++;
-                SoundEngine.PlaySound(SoundID.DD2_WitherBeastCrystalImpact with { Volume = 0.7f, Pitch = attacksDone * 0.05f }, Projectile.Center);
                 if (attacksDone >= 6)
-                {
-                    for (int i = 0; i < 9; i++)
-                    {
-                        Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedByRandom(0.5f) * Main.rand.NextFloat(10f, 20f));
-                        dust.noGravity = true;
-                        dust.scale = Main.rand.NextFloat(1.25f, 1.75f);
-                        dust.color = Color.Orchid;
-                        dust.noLightEmittence = true;
-                    }
-                    for (int i = 0; i < 4; i++)
-                    {
-                        Particle spark = new CustomSpark(Projectile.Center, (Projectile.velocity.SafeNormalize(Vector2.UnitX)).RotatedByRandom(0.6f) * Main.rand.NextFloat(15f, 20f), "CalamityMod/Particles/ProvidenceMarkParticle", false, 25, Main.rand.NextFloat(1.35f, 1.6f), Color.Orchid, new Vector2(1.3f, 0.5f), true, false, 0, false, false, Main.rand.NextFloat(0.25f, 0.35f));
-                        GeneralParticleHandler.SpawnParticle(spark);
-                    }
                     attackCooldown = Main.rand.Next(80, 95 + 1);
-                }
             }
             if (KnifeType == 2)
             {
-                SoundStyle slam = new("CalamityMod/Sounds/NPCHit/RavagerRockPillarHit", 2);
-                SoundEngine.PlaySound(slam with { Volume = 0.4f, Pitch = Main.rand.NextFloat(-0.25f, -0.15f), MaxInstances = -1 }, Projectile.Center);
-                for (int i = 0; i < 7; i++)
-                {
-                    Particle spark = new CustomSpark(Projectile.Center, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(1f, 5f), "CalamityMod/Projectiles/Typeless/ArtifactOfResilienceShard6", false, Main.rand.Next(15, 25 + 1), Main.rand.NextFloat(0.75f, 1.2f), Color.White, new Vector2(1.3f, 0.5f), false, false, Main.rand.NextFloat(-5, 5), false, false);
-                    GeneralParticleHandler.SpawnParticle(spark);
-                }
                 Projectile.velocity = (-Projectile.velocity.SafeNormalize(Vector2.UnitX) * 15).RotatedByRandom(0.7f);
                 attackCooldown = Main.rand.Next(45, 60 + 1);
             }
@@ -296,11 +324,9 @@ namespace CalamityMod.Projectiles.Summon
                     attackCooldown = 5;
                 target.AddBuff(ModContent.BuffType<HolyFlames>(), 180);
             }
+            Projectile.netUpdate = true;
         }
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
-            modifiers.SourceDamage *= damageMult;
-        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.SourceDamage *= damageMult;
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<HolyFlames>(), 180);
 
@@ -316,7 +342,7 @@ namespace CalamityMod.Projectiles.Summon
             if (KnifeType == 3)
                 tex = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/DazzlingStabber3").Value;
 
-            Projectile.DrawProjectileWithBackglow(color1 with { A = 0 }, lightColor, 3.5f, tex);
+            Projectile.DrawProjectileWithBackglow(bladeColor with { A = 0 }, lightColor, 3.5f, tex);
 
             return false;
         }
