@@ -40,6 +40,8 @@ namespace CalamityMod.CalPlayer.Dashes
         public override void OnDashEffects(Player player)
         {
             Time = 0;
+
+            // Burst of evenly spaced but random velocity dusts
             for (int m = 0; m < 6; m++)
             {
                 float fxFade = Utils.GetLerpValue(5, 15, Math.Abs(player.velocity.X), true);
@@ -55,6 +57,29 @@ namespace CalamityMod.CalPlayer.Dashes
                 dust2.noGravity = true;
                 dust2.fadeIn = 0.5f;
             }
+
+            // Thruster prim
+            int beamCount = 3;
+            float maxAngle = MathHelper.ToRadians(10f);
+
+            Vector2 baseDir = -player.velocity.SafeNormalize(Vector2.UnitX);
+
+            for (int i = -1; i < beamCount; i++)
+            {
+                float t = i / (float)(beamCount - 1);
+
+                float centered = t * 2f - 1f;
+
+                float angleOffset = centered * maxAngle;
+
+                Vector2 dir = baseDir.RotatedBy(angleOffset);
+
+                float sizeFactor = 1f - Math.Abs(centered) * 0.7f;
+
+                ThrusterParticle particle = new ThrusterParticle(player, dir, 16, 120f * sizeFactor, 1);
+                GeneralParticleHandler.SpawnParticle(particle, false, GeneralDrawLayer.BeforeProjectiles);
+            }
+
             SoundStyle sound = V8000Engine.DashSound;
             SoundEngine.PlaySound(sound with { Volume = 0.5f, Pitch = Main.rand.NextFloat(-0.4f, -0.3f) }, player.Center);
         }
@@ -79,7 +104,7 @@ namespace CalamityMod.CalPlayer.Dashes
                 Color primaryColor = Color.Lerp(Color.DodgerBlue, Color.LightSkyBlue, fadeInLerp);
                 Particle beamBody = new CustomSpark(player.Center, -player.velocity * 0.15f, "CalamityMod/Particles/BloomCircle", false, 7, 0.65f - 0.3f * fadeInLerp, primaryColor * 0.8f, new Vector2(1.1f - 0.4f * fadeInLerp, 0.8f + 0.6f * fadeInLerp), true, true, shrinkSpeed: 0.6f);
                 GeneralParticleHandler.SpawnParticle(beamBody);
-                Particle beamCore = new CustomSpark(player.Center, -player.velocity * 0.15f, "CalamityMod/Particles/BloomCircle", false, 5, 0.35f - 0.15f * fadeInLerp, Color.Lerp(primaryColor, Color.White, 0.6f), new Vector2(0.7f, 1.4f), true, true, shrinkSpeed: 0.6f);
+                Particle beamCore = new CustomSpark(player.Center, -player.velocity * 0.15f, "CalamityMod/Particles/BloomCircle", false, 5, 0.35f - 0.15f * fadeInLerp, Color.Lerp(primaryColor, Color.White, 0.6f), new Vector2(0.5f, 1.4f), true, true, shrinkSpeed: 0.6f);
                 GeneralParticleHandler.SpawnParticle(beamCore);
 
                 // Horizontal dust

@@ -1,12 +1,15 @@
 ﻿using System;
 using CalamityMod.Dusts;
 using CalamityMod.Enums;
+using CalamityMod.Graphics.Renderers;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameContent.Drawing;
+using Terraria.GameContent.Items;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -32,6 +35,8 @@ namespace CalamityMod.CalPlayer.Dashes
         public override void OnDashEffects(Player player)
         {
             Time = 0;
+
+            // Burst of evenly spaced but random velocity dusts
             for (int m = 0; m < 6; m++)
             {
                 float fxFade = Utils.GetLerpValue(5, 15, Math.Abs(player.velocity.X), true);
@@ -41,12 +46,35 @@ namespace CalamityMod.CalPlayer.Dashes
                 Color trailColor = Main.rand.NextBool(3) ? Color.Firebrick : Color.OrangeRed;
 
                 int dustStyle = ModContent.DustType<SquashDust>();
-                Dust dust2 = Dust.NewDustPerfect(trailPos, dustStyle, -player.velocity.SafeNormalize(Vector2.UnitX) * Main.rand.NextFloat(4, 13));
-                dust2.scale = Main.rand.NextFloat(0.75f, 1.2f);
+                Dust dust2 = Dust.NewDustPerfect(trailPos, dustStyle, -player.velocity.SafeNormalize(Vector2.UnitX) * Main.rand.NextFloat(5, 16));
+                dust2.scale = Main.rand.NextFloat(0.8f, 1.3f);
                 dust2.color = trailColor;
                 dust2.noGravity = true;
                 dust2.fadeIn = 0.5f;
             }
+
+            // Thruster prim
+            int beamCount = 3;
+            float maxAngle = MathHelper.ToRadians(10f);
+
+            Vector2 baseDir = -player.velocity.SafeNormalize(Vector2.UnitX);
+
+            for (int i = -1; i < beamCount; i++)
+            {
+                float t = i / (float)(beamCount - 1);
+
+                float centered = t * 2f - 1f;
+
+                float angleOffset = centered * maxAngle;
+
+                Vector2 dir = baseDir.RotatedBy(angleOffset);
+
+                float sizeFactor = 1f - Math.Abs(centered) * 0.7f;
+
+                ThrusterParticle particle = new ThrusterParticle(player, dir, 12, 100f * sizeFactor, 0); 
+                GeneralParticleHandler.SpawnParticle(particle, false, GeneralDrawLayer.BeforeProjectiles);
+            }
+
             SoundStyle sound = V8Engine.DashSound;
             SoundEngine.PlaySound(sound with { Volume = 0.5f, Pitch = Main.rand.NextFloat(-0.4f, -0.3f) }, player.Center);
         }
@@ -70,7 +98,7 @@ namespace CalamityMod.CalPlayer.Dashes
             Color primaryColor = Color.Lerp(Color.Firebrick, Color.OrangeRed, fadeInLerp);
             Particle beamBody = new CustomSpark(player.Center, -player.velocity * 0.15f, "CalamityMod/Particles/BloomCircle", false, 7, 0.65f - 0.3f * fadeInLerp, primaryColor * 0.8f, new Vector2(1.1f - 0.4f * fadeInLerp, 0.8f + 0.6f * fadeInLerp), true, false, shrinkSpeed: 0.6f);
             GeneralParticleHandler.SpawnParticle(beamBody);
-            Particle beamCore = new CustomSpark(player.Center, -player.velocity * 0.15f, "CalamityMod/Particles/BloomCircle", false, 5, 0.35f - 0.15f * fadeInLerp, Color.Lerp(primaryColor, Color.White, 0.6f), new Vector2(0.7f, 1.4f), true, false, shrinkSpeed: 0.6f);
+            Particle beamCore = new CustomSpark(player.Center, -player.velocity * 0.15f, "CalamityMod/Particles/BloomCircle", false, 5, 0.35f - 0.15f * fadeInLerp, Color.Lerp(primaryColor, Color.White, 0.6f), new Vector2(0.5f, 1.2f), true, false, shrinkSpeed: 0.6f);
             GeneralParticleHandler.SpawnParticle(beamCore);
 
 
