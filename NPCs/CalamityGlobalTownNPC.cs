@@ -136,6 +136,7 @@ namespace CalamityMod.NPCs
             "Cybil", // <@!486507232666845185> (Captain Doofus#????)
             "Ruth", // <@!1001307586068492388> (briny_coffee)
             "Kanna", // <@!730203712898859018> (cosmoredeathwish)
+            "Elliada", // <@!865554691345874954> (cti971)
         ];
         private static readonly string[] DyeTraderNames = null;
         private static readonly string[] GoblinTinkererNames =
