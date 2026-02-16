@@ -25,6 +25,7 @@ namespace CalamityMod.Projectiles.Typeless
         public Color subColor = Color.PaleTurquoise; // Once static, set to staring color
         public Color extraColor = Color.White;
         public ref float spreadCount => ref Projectile.ai[2];
+        public ref float time => ref Projectile.ai[0];
         public override void SetDefaults()
         {
             Projectile.width = Projectile.height = 1;
@@ -41,7 +42,7 @@ namespace CalamityMod.Projectiles.Typeless
 
             if (npc != null && spreadCount != 0)
             {
-                if (Owner.Calamity().abaddonCooldown % 9 == 0)
+                if (time % 9 == 0)
                 {
                     listNPCs.Add(npc.whoAmI);
                     Projectile.Center = npc.Center;
@@ -160,7 +161,7 @@ namespace CalamityMod.Projectiles.Typeless
                     Particle spark2 = new CustomSpark(npc.Center, Vector2.Zero, "CalamityMod/Particles/BloomCircle", false, 18, 0.55f, colorAgain * (Owner.Calamity().abaddonEffectVisual ? 1 : 0.3f), Vector2.One, true, true, glowOpacity: 0.85f);
                     GeneralParticleHandler.SpawnParticle(spark2);
 
-                    if (Owner.Calamity().abaddonCooldown == 0)
+                    if (Owner.Calamity().abaddonCooldown <= 0)
                         Owner.Calamity().abaddonCooldown = minCooldown * 2;
                     spreadCount--;
                 }
@@ -170,6 +171,7 @@ namespace CalamityMod.Projectiles.Typeless
                 KillSelf();
                 return;
             }
+            time++;
         }
         public void KillSelf()
         {

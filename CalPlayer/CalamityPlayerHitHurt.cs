@@ -28,7 +28,6 @@ using CalamityMod.Items.Armor.Tarragon;
 using CalamityMod.Items.Armor.Victide;
 using CalamityMod.Items.Armor.Wulfrum;
 using CalamityMod.Items.Potions;
-using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Melee;
@@ -51,7 +50,6 @@ using CalamityMod.UI;
 using CalamityMod.Utilities;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using Mono.Cecil;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Chat;
@@ -691,6 +689,7 @@ namespace CalamityMod.CalPlayer
             {
                 int maxTargetNum = npc.Calamity().voidOfExtinctionEffected ? 10 : 6;
                 Projectile.NewProjectile(Player.GetSource_FromThis(), npc.Center, Vector2.Zero, debuffSpreadProj, 0, 0, Player.whoAmI, 0, npc.whoAmI, maxTargetNum);
+                abaddonCooldown = -1; // Prevents multiple projectiles hitting on the same frame from spawning multiple of these
             }
         }
 
