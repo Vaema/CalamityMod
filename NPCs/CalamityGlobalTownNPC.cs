@@ -278,6 +278,7 @@ namespace CalamityMod.NPCs
         [
             "Emmett",
             "Bagman", // <@!701831892990820383> (supportcrispy)
+            "Old Man Scrooge", // <@!1392141158255427655> (vortexgaming18)
         ];
         private static readonly string[] TravelingMerchantNames =
         [
