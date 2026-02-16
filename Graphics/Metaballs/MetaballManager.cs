@@ -120,8 +120,15 @@ namespace CalamityMod.Graphics.Metaballs
                     Main.screenPosition -= offset;
 
                     // Draw the metaball's raw contents with the shader.
-                    Main.spriteBatch.Draw(metaball.LayerTargets[i].Target, offset, Color.White);
-                    
+                    // If using Odd Mushroom, clone the drawing to each point.
+                    Color metaballDraw = Main.LocalPlayer.Calamity().trippy ? Main.DiscoColor : Color.White;
+                    Main.spriteBatch.Draw(metaball.LayerTargets[i].Target, offset, metaballDraw);
+                    if (Main.LocalPlayer.Calamity().trippy)
+                    {
+                        Main.spriteBatch.Draw(metaball.LayerTargets[i].Target, offset, null, metaballDraw, 0f, Vector2.Zero, 1f, SpriteEffects.FlipHorizontally, 0f);
+                        Main.spriteBatch.Draw(metaball.LayerTargets[i].Target, offset, null, metaballDraw, 0f, Vector2.Zero, 1f, SpriteEffects.FlipVertically, 0f);
+                        Main.spriteBatch.Draw(metaball.LayerTargets[i].Target, offset, null, metaballDraw, 0f, Vector2.Zero, 1f, SpriteEffects.FlipHorizontally | SpriteEffects.FlipVertically, 0f);
+                    }
                 }
             }
 
