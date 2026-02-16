@@ -409,7 +409,7 @@ namespace CalamityMod.NPCs
         [
             "Bear", // <@!183424826407518208> (lilac_vrt_olligoci)
             "Storm", // <@!620383533516718085> (airwaveslr)
-            "Hognar the Wicked", // <@!766511001356468237> (xzier_tengal)
+            "Hognar", // <@!766511001356468237> (xzier_tengal)
             "Saffie", // <@!319753595161411584> (CDMusic)
             "Willow", // <@!319753595161411584> (CDMusic)
             "Maine", // <@!731141759484297226> (trianglepixel)
@@ -427,7 +427,6 @@ namespace CalamityMod.NPCs
         private static readonly string[] TownCatSilverNames =
         [
             "Archie", // <@!303022375191183360> (jackshiz)
-            "Hognar the Wicked", // <@!766511001356468237> (xzier_tengal)
         ];
         private static readonly string[] TownCatWhiteNames = null;
 
