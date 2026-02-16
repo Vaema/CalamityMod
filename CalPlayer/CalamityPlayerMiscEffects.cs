@@ -1689,10 +1689,9 @@ namespace CalamityMod.CalPlayer
             }
 
             // The fire boots debuff boosts
-            if (hellfireTreads)
-                HeatDebuffMultiplier += 0.5f;
-            else if (flameWakerBoots)
-                HeatDebuffMultiplier += 0.25f;
+            // bootLevel exists SO THAT THEY DO NOT STACK. Please help me maintain my sanity so we're not "fixing" this issue seventy times
+            if (bootLevel > 0)
+                HeatDebuffMultiplier += 0.25f * bootLevel;
 
             if (rOfResilienceEffect > 0)
                 rOfResilienceEffect--;

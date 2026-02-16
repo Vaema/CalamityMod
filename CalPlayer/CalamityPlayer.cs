@@ -2538,6 +2538,7 @@ namespace CalamityMod.CalPlayer
             fairyBoots = false;
             flameWakerBoots = false;
             hellfireTreads = false;
+            bootLevel = 0;
             sSpiritAmulet = false;
             dOfTheDeep = false;
             oceanCrest = false;
