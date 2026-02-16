@@ -8,7 +8,6 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Utilities.Terraria.Utilities;
 
 namespace CalamityMod.Buffs.DamageOverTime
 {
@@ -27,18 +26,23 @@ namespace CalamityMod.Buffs.DamageOverTime
             BuffID.Sets.LongerExpertDebuff[Type] = true;
             BuffDatasets.DebuffDataset[Type] = debuffData;
         }
+        public static ActiveEntityIterator<Player> ActivePlayers
+        {
+            get
+            {
+                return new ActiveEntityIterator<Player>((ReadOnlySpan<Player>)Main.player.AsSpan<Player>(0, (int)byte.MaxValue));
+            }
+        }
         public static void BaneNPCLifeRegen(NPC npc, int buffType, ref int buffIndex, ref int damage)
         {
             var cnpc = npc.Calamity();
             bool effected = (cnpc.abaddonEffected || cnpc.voidOfExtinctionEffected);
             bool strong = cnpc.voidOfExtinctionEffected;
             int baseDoTValue = (int)debuffData.EnemyLostRegen;
-            if (effected && cnpc.checkPlayerBaneDamage)
+            if (effected)
             {
-                for (int playerIndex = 0; playerIndex < Main.maxPlayers; playerIndex++)
+                foreach (var player in Main.ActivePlayers)
                 {
-                    Player player = Main.player[playerIndex];
-                    if (player.active)
                     {
                         float improvedDamage = baseDoTValue * player.Calamity().abaddonDebuffDamage;
                         if (improvedDamage > baseDoTValue && (player.Calamity().abaddon || player.Calamity().voidOfExtinction))
@@ -47,7 +51,6 @@ namespace CalamityMod.Buffs.DamageOverTime
                         }
                     }
                 }
-                cnpc.checkPlayerBaneDamage = false;
             }
             cnpc.ApplyDPSDebuff(baseDoTValue, baseDoTValue / 20, ref npc.lifeRegen, ref damage);
         }

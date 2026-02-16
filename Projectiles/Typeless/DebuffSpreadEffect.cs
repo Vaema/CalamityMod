@@ -106,7 +106,7 @@ namespace CalamityMod.Projectiles.Typeless
                                 if (debuffData == null || debuffData.EnemyLostRegen <= bDamage)
                                 {
                                     debuffNum++;
-                                    float timeMult = debuffData == null ? 1 : Utils.Remap(debuffData.EnemyLostRegen, 0, bDamage, 5, 1);
+                                    float timeMult = (debuffData == null || (debuffData != null && debuffData == Bane.debuffData)) ? 1 : Utils.Remap(debuffData.EnemyLostRegen, 0, bDamage, 5, 1);
                                     targeted.AddBuff(type, (int)(debuffTime * timeMult));
                                 }
                                 if (debuffData != null)
@@ -179,7 +179,7 @@ namespace CalamityMod.Projectiles.Typeless
         }
         public void VisualEffects(NPC npc, NPC targeted, int startDirection, float effectPower)
         {
-            Vector2 start = npc.Center + Main.rand.NextVector2Circular(npc.width / 2, npc.height / 2);
+            Vector2 start = npc.Center;
             Vector2 end = targeted.Center;
             if (Owner.Calamity().abaddonEffectVisual)
             {
