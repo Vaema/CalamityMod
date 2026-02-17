@@ -3811,6 +3811,14 @@ namespace CalamityMod.CalPlayer
                 if (godSlayer && !Player.pulley && Player.grappling[0] == -1 && !Player.tongued && !Player.mount.Active && !Player.HasCooldown(GodSlayerDash.ID) && Player.dashDelay == 0)
                 {
                     godSlayerDashHotKeyPressed = true;
+                    foreach (Projectile p in Main.ActiveProjectiles)
+                    {
+                        if (p.type == ProjectileType<RelicOfDeliveranceSpear>() && Player.whoAmI == p.owner)
+                        {
+                            (p.ModProjectile as RelicOfDeliveranceSpear).KillProj();
+                            return;
+                        }
+                    }
                 }
             }
 
