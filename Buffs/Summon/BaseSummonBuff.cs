@@ -37,8 +37,8 @@ namespace CalamityMod.Buffs.Summon
 
         public override void Update(Player player, ref int buffIndex)
         {
-            BuffOwner ??= player;
-            BuffModdedOwner ??= player.Calamity();
+            BuffOwner = player;
+            BuffModdedOwner = player.Calamity();
 
             if (player.ownedProjectileCounts[MinionProjectileType] > 0)
                 MinionBool = true;
