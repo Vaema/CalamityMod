@@ -328,7 +328,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.CrimsandBallGun, defaultIFrames },
                 { ProjectileID.CrimsonHeart, defaultIFrames },
                 { ProjectileID.CrimsonSpray, defaultIFrames },
-                { ProjectileID.CrystalDart, Do( ExtraUpdatesExact(2), LocalIFrames(-1)) },
+                { ProjectileID.CrystalDart, Do(ExtraUpdatesExact(2), LocalIFrames(-1)) },
                 { ProjectileID.CrystalLeaf, defaultIFrames },
                 { ProjectileID.CrystalLeafShot, defaultIFrames },
                 { ProjectileID.CrystalPulse, defaultIFrames },
@@ -338,7 +338,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.CrystalVileShardHead, defaultIFrames },
                 { ProjectileID.CrystalVileShardShaft, defaultIFrames },
                 { ProjectileID.CursedArrow, defaultIFrames },
-                { ProjectileID.CursedDart, Do( ExtraUpdatesExact(1), LocalIFrames(20)) },
+                { ProjectileID.CursedDart, Do(ExtraUpdatesExact(1), LocalIFrames(20)) },
                 { ProjectileID.CursedDartFlame, defaultIFrames },
                 { ProjectileID.CursedFlameFriendly, defaultIFrames },
                 { ProjectileID.CursedFlare, defaultIFrames },
@@ -397,7 +397,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.IceBlock, defaultIFrames },
                 { ProjectileID.IceBolt, defaultIFrames },
                 { ProjectileID.IchorArrow, defaultIFrames },
-                { ProjectileID.IchorDart, Do( ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
+                { ProjectileID.IchorDart, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
                 { ProjectileID.JackOLantern, defaultIFrames },
                 { ProjectileID.JavelinFriendly, defaultIFrames },
                 { ProjectileID.JestersArrow, defaultIFrames },
@@ -412,13 +412,9 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.LavaSnowmanRocket, defaultIFrames },
                 { ProjectileID.Leaf, defaultIFrames },
                 { ProjectileID.LifeCrystalBoulder, defaultIFrames },
-                { ProjectileID.MagicMissile, Do(IDStaticIFrames(8)) }, // Has an exception in Vanilla iframe code, uses 8 iframes
                 { ProjectileID.MagnetSphereBolt, defaultIFrames },
                 { ProjectileID.MedusaHead, defaultIFrames },
                 { ProjectileID.MedusaHeadRay, defaultIFrames },
-                { ProjectileID.Meteor1, Do(IDStaticIFrames(5)) }, // Has an exception in Vanilla iframe code, uses 5 iframes
-                { ProjectileID.Meteor2, Do(IDStaticIFrames(5)) }, // Has an exception in Vanilla iframe code, uses 5 iframes
-                { ProjectileID.Meteor3, Do(IDStaticIFrames(5)) }, // Has an exception in Vanilla iframe code, uses 5 iframes
                 { ProjectileID.MinecartMechLaser, defaultIFrames },
                 { ProjectileID.MiniBoulder, defaultIFrames },
                 { ProjectileID.MiniMinotaur, defaultIFrames },
@@ -441,8 +437,6 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.NailFriendly, Do(IDStaticIFrames(1)) }, // Has an exception in Vanilla iframe code, uses 1 iframe
                 { ProjectileID.NebulaArcanumExplosionShot, defaultIFrames },
                 { ProjectileID.NebulaArcanumExplosionShotShard, defaultIFrames },
-                { ProjectileID.NebulaBlaze1, Do(IDStaticIFrames(5)) }, // Has an exception in Vanilla iframe code, uses 5 iframes
-                { ProjectileID.NebulaBlaze2, Do(IDStaticIFrames(5)) }, // Has an exception in Vanilla iframe code, uses 5 iframes
                 { ProjectileID.NettleBurstEnd, defaultIFrames },
                 { ProjectileID.NettleBurstLeft, defaultIFrames },
                 { ProjectileID.NettleBurstRight, defaultIFrames },
@@ -466,7 +460,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.PhantasmArrow, defaultIFrames },
                 { ProjectileID.PineNeedleFriendly, defaultIFrames },
                 { ProjectileID.PlatinumCoin, defaultIFrames },
-                { ProjectileID.PoisonDart,  Do( ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
+                { ProjectileID.PoisonDart, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
                 { ProjectileID.PoisonDartBlowgun, defaultIFrames },
                 { ProjectileID.PoisonDartTrap, defaultIFrames },
                 { ProjectileID.PoisonedKnife, defaultIFrames },
@@ -549,7 +543,6 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.StickyDynamite, defaultIFrames },
                 { ProjectileID.StickyGrenade, defaultIFrames },
                 { ProjectileID.StormTigerGem, defaultIFrames },
-                { ProjectileID.Stynger, Do(IDStaticIFrames(7)) }, // Has an exception in Vanilla iframe code, uses 7 iframes
                 { ProjectileID.StyngerShrapnel, defaultIFrames },
                 { ProjectileID.TentacleSpike, defaultIFrames },
                 { ProjectileID.ThornChakram, defaultIFrames },
@@ -566,7 +559,6 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.ToxicFlask, defaultIFrames },
                 { ProjectileID.Truffle, defaultIFrames },
                 { ProjectileID.TruffleSpore, defaultIFrames },
-                { ProjectileID.Typhoon, Do(IDStaticIFrames(6)) }, // Has an exception in Vanilla iframe code, uses 6 iframes
                 { ProjectileID.UFOLaser, defaultIFrames },
                 { ProjectileID.UFOMinion, defaultIFrames },
                 { ProjectileID.UnholyArrow, defaultIFrames },
