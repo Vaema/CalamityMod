@@ -1458,7 +1458,6 @@ namespace CalamityMod.CalPlayer
         public bool redWine = false;
         public float redWineStoredY = 0;
         public bool grapeBeer = false;
-        public int grapeBeerTimer = 0;
         public bool moonshine = false;
         public bool rum = false;
         public bool whiskey = false;
@@ -2746,8 +2745,6 @@ namespace CalamityMod.CalPlayer
             vodka = false;
             redWine = false;
             grapeBeer = false;
-            if (grapeBeerTimer > 0)
-                grapeBeerTimer--;
             moonshine = false;
             rum = false;
             whiskey = false;

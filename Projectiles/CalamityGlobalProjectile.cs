@@ -336,7 +336,7 @@ namespace CalamityMod.Projectiles
                 {
                     if (player.Calamity().grapeBeer && (item.useAmmo == AmmoID.Bullet || item.useAmmo == AmmoID.Arrow || item.useAmmo == AmmoID.Dart || item.useAmmo == AmmoID.Rocket))
                     {
-                        if (player.heldProj != projectile.whoAmI && projectile.aiStyle != ProjAIStyleID.HeldProjectile && projectile.damage > 0 && player.Calamity().grapeBeerTimer < 5 && !CalamityProjectileSets.DoesNotGetHomingWithGrapeBeer[projectile.type])
+                        if (player.heldProj != projectile.whoAmI && projectile.aiStyle != ProjAIStyleID.HeldProjectile && projectile.damage > 0 && !CalamityProjectileSets.DoesNotGetHomingWithGrapeBeer[projectile.type])
                             ApplyGrapeBeer();
                         else
                             grapeBeer = true;
@@ -357,7 +357,7 @@ namespace CalamityMod.Projectiles
                 //Grape Beer homing
                 if (parent.Calamity().grapeBeer)
                 {
-                    if (Main.player[projectile.owner].heldProj != projectile.whoAmI && projectile.aiStyle != ProjAIStyleID.HeldProjectile && projectile.damage > 0 && Main.player[projectile.owner].Calamity().grapeBeerTimer < 5 && !CalamityProjectileSets.DoesNotGetHomingWithGrapeBeer[projectile.type])
+                    if (Main.player[projectile.owner].heldProj != projectile.whoAmI && projectile.aiStyle != ProjAIStyleID.HeldProjectile && projectile.damage > 0 && !CalamityProjectileSets.DoesNotGetHomingWithGrapeBeer[projectile.type])
                         ApplyGrapeBeer();
                     else
                         grapeBeer = true;
