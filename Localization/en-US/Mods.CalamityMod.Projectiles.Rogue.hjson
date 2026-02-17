@@ -178,9 +178,16 @@ MeteorFistMeteorite.DisplayName: Meteorite REALLY Gud For A Lot Of Shtuff
 MoltenAmputatorProj.DisplayName: Molten Amputator
 MycorootProj.DisplayName: Mycoroot
 MythrilKnifeProjectile.DisplayName: Mythril Knife
+
+NanoblackLightspeedCarve: {
+	Perfect: Wrath of the Superluminae
+	Standard: Light-speed Carve
+}
+
 NanoblackMain.DisplayName: Nanoblack Reaper
-NanoblackSplit.DisplayName: Nanoblack Blade
-NanoblackStealthSplit.DisplayName: Nanoblack Afterimage
+NanoblackPiercingStrike.DisplayName: Zero-Point Energy Strike
+NanoblackStrike.DisplayName: Zero-Point Energy Strike
+NanoblackTesselation.DisplayName: Nanoblack Tesselation
 NastyChollaBol.DisplayName: Nasty Cholla
 NastyChollaNeedle.DisplayName: Cactus Needle
 OrichalcumSpikedGemstoneProjectile.DisplayName: Orichalcum Gemstone
@@ -325,3 +332,4 @@ WrathwingCinder.DisplayName: Wrathwing Eruption
 WrathwingFireball.DisplayName: Wrathwing Fireball
 WrathwingSpear.DisplayName: Wrathwing
 WulfrumKnifeProj.DisplayName: Wulfrum Knife
+NanoblackLightspeedCarveSlashVisual.DisplayName: Nanoblack Light-speed Carve Visuals

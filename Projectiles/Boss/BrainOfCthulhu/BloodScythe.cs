@@ -97,22 +97,17 @@ public class BloodScythe : ModProjectile, ILocalizedModType
         if (!ChildSafety.Disabled)
             drawColor = Main.DiscoColor;
 
-        if (CalamityClientConfig.Instance.Afterimages)
+        for (int i = 0; i < (CalamityClientConfig.Instance.Afterimages ? Projectile.oldPos.Length : 1); ++i)
         {
-            for (int i = 0; i < Projectile.oldPos.Length; ++i)
-            {
-                float afterimageRot = Projectile.oldRot[i];
-                drawPos = Projectile.oldPos[i] + (Projectile.Size / 2f) - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
-                if (i != 0)
-                    drawColor *= 0.9f;
+            float afterimageRot = Projectile.oldRot[i];
+            drawPos = Projectile.oldPos[i] + (Projectile.Size / 2f) - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
+            if (i != 0)
+                drawColor *= 0.9f;
 
-                // DO NOT REMOVE THESE "UNNECESSARY" FLOAT CASTS. THIS WILL BREAK THE AFTERIMAGES.
-                float interpolant = ((float)(Projectile.oldPos.Length - i) / (float)Projectile.oldPos.Length);
-                Main.spriteBatch.Draw(tex, drawPos, null, drawColor, afterimageRot, tex.Size() * 0.5f, Projectile.scale * interpolant, SpriteEffects.None, 0f);
-            }
+            // DO NOT REMOVE THESE "UNNECESSARY" FLOAT CASTS. THIS WILL BREAK THE AFTERIMAGES.
+            float interpolant = ((float)(Projectile.oldPos.Length - i) / (float)Projectile.oldPos.Length);
+            Main.spriteBatch.Draw(tex, drawPos, null, drawColor, afterimageRot, tex.Size() * 0.5f, Projectile.scale * interpolant, SpriteEffects.None, 0f);
         }
-        //else
-        //    Main.EntitySpriteDraw(tex, drawPos, tex.Frame(), drawColor, Projectile.rotation, tex.Size() * 0.5f, Projectile.scale, SpriteEffects.None, 0);
 
         Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
 

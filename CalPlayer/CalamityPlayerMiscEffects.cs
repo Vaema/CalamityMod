@@ -49,6 +49,7 @@ using CalamityMod.NPCs;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.Astral;
 using CalamityMod.NPCs.Crags;
+using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.Other;
 using CalamityMod.NPCs.PlagueEnemies;
@@ -635,7 +636,7 @@ namespace CalamityMod.CalPlayer
             }
 
 
-            if (cinnamonRoll)
+            if (cinnamonRoll && !(Main.getGoodWorld && Main.npc.Any(x=> x.active && x.type == ModContent.NPCType<DevourerofGodsHead>())))
             {
                 if (dashStart)
                     Player.velocity.X *= 3;
@@ -1689,10 +1690,9 @@ namespace CalamityMod.CalPlayer
             }
 
             // The fire boots debuff boosts
-            if (hellfireTreads)
-                HeatDebuffMultiplier += 0.5f;
-            else if (flameWakerBoots)
-                HeatDebuffMultiplier += 0.25f;
+            // bootLevel exists SO THAT THEY DO NOT STACK. Please help me maintain my sanity so we're not "fixing" this issue seventy times
+            if (bootLevel > 0)
+                HeatDebuffMultiplier += 0.25f * bootLevel;
 
             if (rOfResilienceEffect > 0)
                 rOfResilienceEffect--;
@@ -1860,7 +1860,7 @@ namespace CalamityMod.CalPlayer
 
             if (sSpiritAmulet)
             {
-                int spawnTime = 65; // Time between energy spawns
+                int spawnTime = 75; // Time between energy spawns
                 int energyCap = 8; // Max number of energies that can be alive at a time
 
                 Projectile projectile = null;
@@ -1877,7 +1877,7 @@ namespace CalamityMod.CalPlayer
                         }
                     }
                     if (energyCount > 0)
-                        sSpiritAmuletTimer = -spawnTime; // The spawn cooldown after launching energies is twice as long
+                        sSpiritAmuletTimer = -spawnTime * 3; // The spawn cooldown after launching energies is much longer
                 }
                 int numOfEnergy = 0;
                 for (int x = 0; x < Main.maxProjectiles; x++) // Get a count of energies in idle mode
@@ -2117,29 +2117,26 @@ namespace CalamityMod.CalPlayer
                 zapActivity += 1;
                 if (zapActivity <= 300 && zapActivity % 30 == 0)
                 {
-                    for (int arcProjCount = 0; arcProjCount < 3; arcProjCount++)
+                    float maxDistance = 300f;
+                    int target = -1;
+                    foreach (NPC npc in Main.ActiveNPCs)
                     {
-                        float maxDistance = 300f;
-                        int target = -1;
-                        foreach (NPC npc in Main.ActiveNPCs)
+                        float targetDist = Vector2.Distance(npc.Center, Player.Center);
+                        if (targetDist < maxDistance && npc.Calamity().arcZapCooldown == 0 && npc.CanBeChasedBy())
                         {
-                            float targetDist = Vector2.Distance(npc.Center, Player.Center);
-                            if (targetDist < maxDistance && npc.Calamity().arcZapCooldown == 0 && npc.CanBeChasedBy())
-                            {
-                                maxDistance = targetDist;
-                                target = npc.whoAmI;
-                            }
+                            maxDistance = targetDist;
+                            target = npc.whoAmI;
                         }
+                    }
 
-                        if (target > 0)
-                        {
-                            unstableSelectedTarget = Main.npc[target];
-                            unstableSelectedTarget.Calamity().arcZapCooldown = 18;
-                            int damage = (int)Player.GetBestClassDamage().ApplyTo(18);
+                    if (target > 0)
+                    {
+                        unstableSelectedTarget = Main.npc[target];
+                        unstableSelectedTarget.Calamity().arcZapCooldown = 25;
+                        int damage = (int)Player.GetBestClassDamage().ApplyTo(15);
 
-                            Projectile.NewProjectile(Player.GetSource_FromThis(), new Vector2(Player.Center.X, Player.Center.Y - 20f), new Vector2(0f, -2f), ModContent.ProjectileType<ArcZap>(), damage, 0f, Player.whoAmI, target, 3f);
-                            target = -1;
-                        }
+                        Projectile.NewProjectile(Player.GetSource_FromThis(), new Vector2(Player.Center.X, Player.Center.Y - 20f), new Vector2(0f, -2f), ModContent.ProjectileType<ArcZap>(), damage, 0f, Player.whoAmI, target, 5f);
+                        target = -1;
                     }
                 }
                 else if (zapActivity > 600)
@@ -2246,8 +2243,6 @@ namespace CalamityMod.CalPlayer
 
             if (arsenalCooldown > 0)
                 arsenalCooldown--;
-            if (Main.zenithWorld)
-                arsenalCooldown = 0;
             if (killModeCooldown > 0)
                 killModeCooldown--;
             if (ascendantInsigniaCooldown > 0 && ascendantInsigniaBuffTime <= 0)
@@ -2288,6 +2283,8 @@ namespace CalamityMod.CalPlayer
                 raiderSoundCooldown--;
             if (astralStarRainCooldown > 0)
                 astralStarRainCooldown--;
+            if (AbaddonCooldown > 0)
+                AbaddonCooldown--;
             if (VoidCooldown > 0)
                 VoidCooldown--;
             if (ursaSergeantCooldown > 0)

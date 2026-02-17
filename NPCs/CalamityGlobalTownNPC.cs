@@ -136,6 +136,7 @@ namespace CalamityMod.NPCs
             "Cybil", // <@!486507232666845185> (Captain Doofus#????)
             "Ruth", // <@!1001307586068492388> (briny_coffee)
             "Kanna", // <@!730203712898859018> (cosmoredeathwish)
+            "Elliada", // <@!865554691345874954> (cti971)
         ];
         private static readonly string[] DyeTraderNames = null;
         private static readonly string[] GoblinTinkererNames =
@@ -278,6 +279,7 @@ namespace CalamityMod.NPCs
         [
             "Emmett",
             "Bagman", // <@!701831892990820383> (supportcrispy)
+            "Old Man Scrooge", // <@!1392141158255427655> (vortexgaming18)
         ];
         private static readonly string[] TravelingMerchantNames =
         [
@@ -325,6 +327,7 @@ namespace CalamityMod.NPCs
             "Fera", // <@!195850711567826945> (juneark_)
             "Gwenhwyvar", // <@!291342874497515531> (diamondnife)
             "Daxie", // <@!465438861103988737> (daxie626)
+            "Zora", // <@!752687500656640030> (oxytoxy365)
         ];
         // Town Slimes
         private static readonly string[] ClumsySlimeNames = null;
@@ -408,7 +411,7 @@ namespace CalamityMod.NPCs
         [
             "Bear", // <@!183424826407518208> (lilac_vrt_olligoci)
             "Storm", // <@!620383533516718085> (airwaveslr)
-            "Hognar the Wicked", // <@!766511001356468237> (xzier_tengal)
+            "Hognar", // <@!766511001356468237> (xzier_tengal)
             "Saffie", // <@!319753595161411584> (CDMusic)
             "Willow", // <@!319753595161411584> (CDMusic)
             "Maine", // <@!731141759484297226> (trianglepixel)
@@ -426,7 +429,6 @@ namespace CalamityMod.NPCs
         private static readonly string[] TownCatSilverNames =
         [
             "Archie", // <@!303022375191183360> (jackshiz)
-            "Hognar the Wicked", // <@!766511001356468237> (xzier_tengal)
         ];
         private static readonly string[] TownCatWhiteNames = null;
 

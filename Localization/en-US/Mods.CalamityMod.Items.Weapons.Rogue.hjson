@@ -786,9 +786,13 @@ NanoblackReaper: {
 	DisplayName: Nanoblack Reaper
 	Tooltip:
 		'''
-		Unleashes a storm of nanoblack energy blades
-		Blades target bosses whenever possible
-		Stealth strikes cause the scythe to create a large amount of homing afterimages instead of energy blades
+		Throws a scythe which rapidly forms a swarm of nanoblack tesselations from hard light
+		Nanoblack tesselations each emit an instantaneous zero-point energy strike
+		Zero-point energy strikes have 150 armor penetration and will target bosses whenever possible
+		Release <left> just as the scythe begins returning to carve through the enemy closest to your cursor at light speed
+		Light-speed carves have 150 armor penetration. If timed in a 4-frame window, they supercrit with +100% critical strike chance
+		<right> with sufficient stealth to massively increase attack speed for a short time
+		Scythes thrown during flurries emit supercharged energy strikes but cannot be returned manually
 		'''
 	HoldShiftTooltip:
 		'''
@@ -978,21 +982,12 @@ ScourgeoftheSeas: {
 
 SeafoamBomb: {
 	DisplayName: Seafoam Bomb
-	Tooltip: "[GFB]"
-	TooltipNormal:
+	Tooltip:
 		'''
 		Hurls a lightweight bomb which bursts into a foam bubble
 		Foam bubbles combine in pairs to form huge bubbles
 		Huge bubbles pop into small homing suds after a delay
 		Stealth strikes are cluster bombs that release eight normal bombs
-		'''
-	TooltipGFB:
-		'''
-		Rapidly hurls a lightweight bomb which bursts into a foam bubble
-		Foam bubbles combine in pairs to form huge bubbles
-		Huge bubbles pop into small homing suds after a delay
-		Stealth strikes are cluster bombs that release 38 normal bombs
-		[c/256b93:'Right back in S tier!']
 		'''
 }
 

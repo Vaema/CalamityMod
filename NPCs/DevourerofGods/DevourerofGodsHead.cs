@@ -798,6 +798,8 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                             if (NPC.Opacity >= 1f)
                             {
+                                // Don't do contact damage while flying away after laser walls
+                                NPC.damage = 0;
                                 NPC.Opacity = 1f;
                                 laserWallPhase = (int)LaserWallPhase.SetUp;
 
@@ -2299,6 +2301,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             AwaitingPhase2Teleport = false;
             NPC.Opacity = 1f - (postTeleportTimer / 255f);
             NPC.velocity = Vector2.Normalize(AdjustedPlayerCenter(10) - NPC.Center) * chargeVelocity;
+            NPC.damage = NPC.defDamage;
             NPC.ForceNetUpdate(false);
             NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) + MathHelper.PiOver2;
             foreach (NPC n in Main.ActiveNPCs)
