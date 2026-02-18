@@ -626,7 +626,7 @@ DynamoStemCells: {
 		'''
 		10% increased ranged damage and movement speed
 		Ranged weapons fire a powerful mini swarmer every 3 seconds
-		Reduces damage taken from Dragonfire and Electrified
+		Reduces damage taken from Dragonfire
 		'''
 }
 
