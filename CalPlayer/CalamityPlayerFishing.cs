@@ -246,7 +246,7 @@ namespace CalamityMod.CalPlayer
                 return;
 
             // Add top priorities of our own
-            if (DownedBossSystem.downedLeviathan && attempt.legendary && poolSize > 1000)
+            if (DownedBossSystem.downedLeviathan && attempt.legendary && poolSize > 1000 && !Main.rand.NextBool(3))
             {
                 itemDrop = ModContent.ItemType<Floodtide>();
                 return;
