@@ -199,7 +199,7 @@ namespace CalamityMod.Projectiles.Typeless
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 540);
+            target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 90);
             Projectile.netUpdate = true;
         }
         public override void OnKill(int timeLeft)
