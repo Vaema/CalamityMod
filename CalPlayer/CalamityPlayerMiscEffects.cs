@@ -1892,7 +1892,7 @@ namespace CalamityMod.CalPlayer
                 {
                     if (numOfEnergy < energyCap)
                     {
-                        int energyDamage = (int)Player.GetBestClassDamage().ApplyTo(4);
+                        int energyDamage = (int)Player.GetBestClassDamage().ApplyTo(8);
                         Projectile energy = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, (Vector2.One * 4).RotatedByRandom(MathHelper.TwoPi), ModContent.ProjectileType<AmuletEnergy>(), energyDamage, 0f, Player.whoAmI, 0, numOfEnergy);
                         if (numOfEnergy + 1 == energyCap && Player.Calamity().sSpiritAmuletVisual)
                         {
