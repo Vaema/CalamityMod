@@ -20,9 +20,9 @@ namespace CalamityMod.Projectiles.Typeless
         public List<int> listNPCs = new List<int>();
         public NPC lastNPC;
         public int minCooldown = 48;
-        public Color startingColor = Color.PaleTurquoise;
+        public static Color startingColor = Color.Turquoise;
         public Color mainColor = Color.White;
-        public Color subColor = Color.PaleTurquoise; // Once static, set to staring color
+        public Color subColor = startingColor;
         public Color extraColor = Color.White;
         public ref float spreadCount => ref Projectile.ai[2];
         public ref float time => ref Projectile.ai[0];
@@ -46,6 +46,7 @@ namespace CalamityMod.Projectiles.Typeless
                 {
                     listNPCs.Add(npc.whoAmI);
                     Projectile.Center = npc.Center;
+                    mainColor = Color.White;
 
                     bool strong = npc.Calamity().voidOfExtinctionEffected;
                     float areaOfEffect = (strong ? 1400 : 800);
@@ -117,6 +118,10 @@ namespace CalamityMod.Projectiles.Typeless
                                     if (debuffData.ColdDebuffScaling > 0) { mainColor = Color.Lerp(mainColor, coldClr, 0.65f); cold++; }
                                     if (debuffData.ElectricDebuffScaling > 0) { mainColor = Color.Lerp(mainColor, shockClr, 0.65f); shock++; }
                                     if (debuffData.WaterDebuffScaling > 0) { mainColor = Color.Lerp(mainColor, waterClr, 0.65f); water++; }
+                                    if (new List<int> { heat, sick, cold, shock, water }.Max() == 0)
+                                    {
+                                        mainColor = Color.Orange;
+                                    }
                                 }
                             }
                             // Edge case fixes for Shred and Demonic Flames
@@ -177,6 +182,8 @@ namespace CalamityMod.Projectiles.Typeless
         {
             if (Owner.Calamity().abaddonCooldown > minCooldown)
                 Owner.Calamity().abaddonCooldown = minCooldown;
+            if (Owner.Calamity().abaddonCooldown < 0)
+                Owner.Calamity().abaddonCooldown = 0;
             Projectile.Kill();
         }
         public void VisualEffects(NPC npc, NPC targeted, int startDirection, float effectPower)

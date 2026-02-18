@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -11,9 +12,14 @@ namespace CalamityMod.Particles
         public override string Texture => "CalamityMod/Particles/BaneParticle";
         public Color InitialColor;
         public Color EndColor;
+        public Color glowColor = Color.White;
         public bool AffectedByGravity;
         public bool FadeIn = false;
         public float FadeInScale = 0f;
+        public float SineRate = 0;
+        public float SineIntensity = 0;
+        public float Sine = 0;
+        public int sineTime = 0;
 
         public string NewTexture;
         public float ActiveRotation;
@@ -30,7 +36,7 @@ namespace CalamityMod.Particles
 
         public override int FrameVariants => 5;
 
-        public BaneParticle(Vector2 relativePosition, Vector2 velocity, bool affectedByGravity, int lifetime, float scale, Color color, Color colorEnd, Vector2 stretch, bool useAddativeBlend = false, float activeRotation = 0, float speedReduction = 0.95f, float extraRotation = 0, bool fadeIn = false, bool affectedByLight = true, float shrinkSpeed = 0)
+        public BaneParticle(Vector2 relativePosition, Vector2 velocity, bool affectedByGravity, int lifetime, float scale, Color color, Color colorEnd, Vector2 stretch, bool useAddativeBlend = false, float activeRotation = 0, float speedReduction = 0.95f, float extraRotation = 0, float sineRate = 1, float sineIntensity = 0, bool fadeIn = false, bool affectedByLight = false, float shrinkSpeed = 0)
         {
             Position = relativePosition;
             Velocity = velocity;
@@ -46,6 +52,10 @@ namespace CalamityMod.Particles
             ShrinkSpeed = shrinkSpeed;
             SpeedReduction = speedReduction;
             ExtraRotation = extraRotation;
+            SineRate = sineRate;
+            SineIntensity = sineIntensity;
+            sineTime = Main.rand.Next(0, 400 + 1);
+
 
             AltVisual = useAddativeBlend;
 
@@ -62,8 +72,7 @@ namespace CalamityMod.Particles
             if (!FadeIn)
             {
                 Scale *= 0.95f;
-                InitialColor = Color.Lerp(InitialColor, EndColor, (float)Math.Pow(LifetimeCompletion, 3D));
-                Color = Color.Lerp(InitialColor, Color.Transparent, (float)Math.Pow(LifetimeCompletion, 3D));
+                Color = Color.Lerp(InitialColor, EndColor, LifetimeCompletion);
             }
             else
             {
@@ -90,15 +99,25 @@ namespace CalamityMod.Particles
 
             Stretch.X *= (1 - 0.2f * ShrinkSpeed);
             Stretch.Y *= (1 + 0.2f * ShrinkSpeed);
-        }
 
+            Sine = (float)Math.Sin((sineTime * SineRate) / MathHelper.Pi) * SineIntensity;
+            sineTime++;
+        }
         public override void CustomDraw(SpriteBatch spriteBatch)
         {
+
             Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Particles/BaneParticleGlow").Value;
             int frameWidth = 18;
             int frameHeight = 18;
             int frameSpacing = frameHeight + 2;
             Rectangle frame = new Rectangle(0, frameSpacing * Variant, frameWidth, frameHeight);
+
+            Texture2D texture2 = ModContent.Request<Texture2D>("CalamityMod/Particles/BaneParticle").Value;
+            int frameWidth2 = 14;
+            int frameHeight2 = 10;
+            int frameSpacing2 = frameHeight2 + 2;
+            Rectangle frame2 = new Rectangle(0, frameSpacing2 * Variant, frameWidth2, frameHeight2);
+
             Vector2 scale = Stretch * Scale;
 
             Color col = Color;
@@ -107,8 +126,9 @@ namespace CalamityMod.Particles
             {
                 col = Lighting.GetColor((Position / 16).ToPoint()).MultiplyRGB(Color);
             }
-
-            spriteBatch.Draw(texture, Position - Main.screenPosition, frame, col, Rotation + ExtraRotation, frame.Size() * 0.5f, scale, 0, 0f);
+            float fadeOut = (1 - (float)Math.Pow(LifetimeCompletion, 3D));
+            spriteBatch.Draw(texture, Position - Main.screenPosition + Vector2.UnitX * Sine, frame, col * fadeOut, Rotation + ExtraRotation, frame.Size() * 0.5f, scale, 0, 0f);
+            spriteBatch.Draw(texture2, Position - Main.screenPosition + Vector2.UnitX * Sine, frame2, Color.Lerp(glowColor, col, 0.2f) * 0.75f * fadeOut, Rotation + ExtraRotation, frame2.Size() * 0.5f, scale * 0.95f, 0, 0f);
         }
     }
 }
