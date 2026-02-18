@@ -8,6 +8,7 @@ using CalamityMod.Particles;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -21,9 +22,33 @@ public class BloodBomb : ModNPC, ILocalizedModType
 {
     public new string LocalizationCategory => "NPCs";
 
+    internal static Asset<Texture2D> BloodBombYellow;
+    internal static Texture2D BloodBombGlow;
+
     public override void SetStaticDefaults()
     {
         NPCID.Sets.ProjectileNPC[Type] = true;
+        BloodBombYellow = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/BrainOfCthulhu/BloodBomb2");
+    }
+
+    internal static Texture2D GetBombGlow()
+    {
+        if (BloodBombGlow == null)
+        {
+            var tex = new Texture2D(Main.graphics.GraphicsDevice, BloodBombYellow.Value.Width, BloodBombYellow.Value.Height);
+
+            var BaseArray = new Color[tex.Width * tex.Height];
+            var ColorArray = new Color[tex.Width * tex.Height];
+            BloodBombYellow.Value.GetData(BaseArray);
+            for (var i = 0; i < BaseArray.Length; i++)
+            {
+                ColorArray[i] = new Color(255, 255, 255) * (((float)BaseArray[i].A) / 255f);
+            }
+            tex.SetData(ColorArray);
+            BloodBombGlow = tex;
+        }
+
+        return BloodBombGlow;
     }
 
     public override void SetDefaults()
@@ -44,6 +69,7 @@ public class BloodBomb : ModNPC, ILocalizedModType
         NPC.knockBackResist = 0f;
         NPC.chaseable = false;
         NPC.noTileCollide = true;
+        NPC.ShowNameOnHover = false;
     }
 
     public override void OnSpawn(IEntitySource source)
@@ -68,10 +94,10 @@ public class BloodBomb : ModNPC, ILocalizedModType
 
         for (int i = 0; i < 3; i++)
         {
-            BloodParticle p = new(NPC.Center, NPC.velocity.RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 6f, MathHelper.Pi / 6f)) * Main.rand.NextFloat(0.5f, 1f), 32, 1f, Color.Red);
+            BloodParticle p = new(NPC.Center, NPC.velocity.RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 6f, MathHelper.Pi / 6f)) * Main.rand.NextFloat(2f, 3f), 32, 1f, Color.Red);
             GeneralParticleHandler.SpawnParticle(p);
         }
-        BloodParticle2 p2 = new(NPC.Center, NPC.velocity * 0.75f, 16, 0.5f, Color.Red);
+        BloodParticle2 p2 = new(NPC.Center, NPC.velocity * 2.5f, 16, 0.5f, Color.Red);
         GeneralParticleHandler.SpawnParticle(p2);
     }
 
@@ -81,6 +107,19 @@ public class BloodBomb : ModNPC, ILocalizedModType
             NPC.active = false;
 
         NPC.velocity.Y += 0.2f;
+
+        NPC.rotation += Math.Sign(NPC.velocity.X) * (NPC.velocity.Length()) * 0.01f;
+
+        if (NPC.ai[0] % 3 == 0)
+        {
+            float deathRatio = 1 - (NPC.life / NPC.lifeMax);
+            float time = Main.GlobalTimeWrappedHourly * (10f + (10f * deathRatio));
+            float lerp = MathF.Sin(time) / 2f + 0.5f;
+            Color color = Color.Lerp(Color.Red, Color.Yellow, lerp);
+
+            BloodParticle p = new(NPC.Center + Main.rand.NextVector2Circular(NPC.width, NPC.height), (-NPC.velocity).RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 6f, MathHelper.Pi / 6f)) * Main.rand.NextFloat(0.25f, 0.75f), Main.rand.Next(10, 17), Main.rand.NextFloat(0.5f, 1f), color);
+            GeneralParticleHandler.SpawnParticle(p);
+        }
 
         NPC.ai[0]++;
     }
@@ -138,10 +177,18 @@ public class BloodBomb : ModNPC, ILocalizedModType
         float deathRatio = 1 - (NPC.life / NPC.lifeMax);
         float time = Main.GlobalTimeWrappedHourly * (10f + (10f * deathRatio));
         float lerp = MathF.Sin(time) / 2f + 0.5f;
-        Color color = Color.Lerp(Color.Red, Color.Yellow, lerp);
 
-        Texture2D tex = TextureAssets.Npc[Type].Value;
-        spriteBatch.Draw(tex, NPC.Center - Main.screenPosition, null, color, NPC.rotation, tex.Size() * 0.5f, 1.5f + (MathF.Sin(time) * 0.25f), 0, 0);
+        Texture2D baseTex = TextureAssets.Npc[Type].Value;
+        Texture2D overlayTex = BloodBombYellow.Value;
+
+        Vector2 drawPos = NPC.Center - Main.screenPosition + Main.rand.NextVector2CircularEdge((2 * deathRatio), (2 * deathRatio));
+        float scale = 1.5f + (MathF.Sin(time) * 0.25f);
+
+        if (Main.LocalPlayer.HasBuff(BuffID.Hunter))
+            spriteBatch.Draw(GetBombGlow(), drawPos, null, Color.OrangeRed, NPC.rotation, BloodBombGlow.Size() * 0.5f, scale + 0.15f, 0, 0);
+
+        spriteBatch.Draw(baseTex, drawPos, null, Color.White, NPC.rotation, baseTex.Size() * 0.5f, scale, 0, 0);
+        spriteBatch.Draw(overlayTex, drawPos, null, Color.White * lerp, NPC.rotation, overlayTex.Size() * 0.5f, scale, 0, 0);
         return false;
     }
 }
@@ -172,7 +219,9 @@ public class BloodBombRTS : ModProjectile, ILocalizedModType
 
     public override void AI()
     {
-        Projectile.velocity = Projectile.DirectionTo(Main.npc[(int)Projectile.ai[0]].Center) * 16f;
+        NPC npc = Main.npc[(int)Projectile.ai[0]];
+        if(npc.active && !npc.dontTakeDamage)
+            Projectile.velocity = Projectile.DirectionTo(npc.Center) * 16f;
     }
 
     public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
@@ -194,12 +243,14 @@ public class BloodBombRTS : ModProjectile, ILocalizedModType
     public override bool PreDraw(ref Color lightColor)
     {
         Texture2D tex = TextureAssets.Projectile[Type].Value;
+        Texture2D overlayTex = BloodBomb.BloodBombYellow.Value;
+
 
         for (int i = 0; i < (CalamityClientConfig.Instance.Afterimages ? Projectile.oldPos.Length : 1); ++i)
         {
             float time = (Main.GlobalTimeWrappedHourly * 30) - (i / 2f);
             float lerp = MathF.Sin(time) / 2f + 0.5f;
-            Color color = Color.Lerp(Color.Red, Color.Yellow, lerp);
+            Color color = Color.White;
             float afterimageRot = Projectile.oldRot[i];
             Vector2 drawPos = Projectile.oldPos[i] + (Projectile.Size / 2f) - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
             if (i != 0)
@@ -207,7 +258,9 @@ public class BloodBombRTS : ModProjectile, ILocalizedModType
 
             // DO NOT REMOVE THESE "UNNECESSARY" FLOAT CASTS. THIS WILL BREAK THE AFTERIMAGES.
             float interpolant = ((float)(Projectile.oldPos.Length - i) / (float)Projectile.oldPos.Length);
-            Main.spriteBatch.Draw(tex, drawPos, null, color, afterimageRot, tex.Size() * 0.5f, (Projectile.scale + MathF.Sin(time) / 2f + 0.5f) * interpolant, SpriteEffects.None, 0f);
+            Main.spriteBatch.Draw(tex, drawPos, null, color * (1 - lerp), afterimageRot, tex.Size() * 0.5f, (Projectile.scale + MathF.Sin(time) / 2f + 0.5f) * interpolant, SpriteEffects.None, 0f);
+            Main.spriteBatch.Draw(overlayTex, drawPos, null, color * lerp, afterimageRot, overlayTex.Size() * 0.5f, (Projectile.scale + MathF.Sin(time) / 2f + 0.5f) * interpolant, SpriteEffects.None, 0f);
+
         }
         return false;
     }
