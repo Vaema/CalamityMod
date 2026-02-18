@@ -1399,6 +1399,9 @@ namespace CalamityMod.CalPlayer
                         Player.lavaTime++;
                 }
             }
+            // Extra DoT in the lava of the crags. Negated by Flame-licked Shell.
+            else if (ZoneCalamity && !flameLickedShell)
+                    Player.AddBuff(ModContent.BuffType<SearingLava>(), 2, false);
 
             // Release irradiated slimes from the sky during the Acid Rain event.
             if (Player.whoAmI == Main.myPlayer)
