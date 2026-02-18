@@ -13,7 +13,6 @@ AbyssalDivingGear: {
 	Tooltip:
 		'''
 		Reduces the damage caused by the pressure of the abyss while out of breath
-		Removes the bleed effect caused by the abyss
 		Grants the ability to swim and greatly extends underwater breathing
 		Provides light underwater and extra mobility on ice
 		Provides a moderate amount of light and reduces breath loss in the abyss

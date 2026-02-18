@@ -41,6 +41,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
     private static SoundStyle Growl = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Growl", 2) with { PauseBehavior = PauseBehavior.PauseWithGame };
     private static SoundStyle Death = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Death_Roar") with { PauseBehavior = PauseBehavior.PauseWithGame };
     private static SoundStyle BloodShot = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_BloodShot");
+    private static SoundStyle BloodBomb = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_BloodBomb");
     private static SoundStyle BloodExplosion = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Explosion", 2);
 
 
@@ -153,7 +154,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
     internal static int BloodlettingDuration => 675;
     internal static Vector2 HoverDistance => new (420f, 300f);
     internal static float HoverEndHeight => 300f;
-    internal static int IchorRate => CalamityWorld.death ? 9 : 10;
+    internal static int IchorRate => CalamityWorld.death ? 10 : 12;
     internal static float IchorSpread => 1.5f;
     internal static float IchorVelocity => 3f;
     internal static int BloodshotRate => 90;
@@ -1887,20 +1888,28 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             {
                 if (Time % IchorRate == 0)
                 {
-                    if (Time % (IchorRate * 2) == 0)
-                        SoundEngine.PlaySound(SoundID.Item17, NPC.Center);
-
-                    if(Main.netMode == NetmodeID.SinglePlayer)
-                        Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center + NPC.velocity + Main.rand.NextVector2Circular(72, 72), new Vector2(Main.rand.NextFloat(-IchorSpread, IchorSpread), -IchorVelocity), ModContent.ProjectileType<IchorShower>(), IchorShotDamage, 0.5f);
-                    else if(Main.dedServ)
+                    if (Time > BloodshotRate + 30 && Time % (IchorRate * 10) == 0)
                     {
-                        Player furthestLeft = Main.player[AttackList[0]];
-                        Player furthestRight = Main.player[AttackList[1]];
-                        float xDist = furthestRight.Center.X - furthestLeft.Center.X;
-                        int projCount = 1 + (int)(xDist / 360);
+                        SoundEngine.PlaySound(BloodBomb, NPC.Center);
+                        NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<BloodBomb>(), NPC.whoAmI);
+                    }
+                    else
+                    {
+                        if (Time % (IchorRate * 2) == 0)
+                            SoundEngine.PlaySound(SoundID.Item17, NPC.Center);
 
-                        for(int i = 0; i < projCount; i++)
+                        if (Main.netMode == NetmodeID.SinglePlayer)
                             Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center + NPC.velocity + Main.rand.NextVector2Circular(72, 72), new Vector2(Main.rand.NextFloat(-IchorSpread, IchorSpread), -IchorVelocity), ModContent.ProjectileType<IchorShower>(), IchorShotDamage, 0.5f);
+                        else if (Main.dedServ)
+                        {
+                            Player furthestLeft = Main.player[AttackList[0]];
+                            Player furthestRight = Main.player[AttackList[1]];
+                            float xDist = furthestRight.Center.X - furthestLeft.Center.X;
+                            int projCount = 1 + (int)(xDist / 360);
+
+                            for (int i = 0; i < projCount; i++)
+                                Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center + NPC.velocity + Main.rand.NextVector2Circular(72, 72), new Vector2(Main.rand.NextFloat(-IchorSpread, IchorSpread), -IchorVelocity), ModContent.ProjectileType<IchorShower>(), IchorShotDamage, 0.5f);
+                        }
                     }
                 }
 
@@ -2479,13 +2488,15 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                 NPC.velocity *= 0.9f;
                 if (startTime % 15 == 5 && startTime > 60 + IllusionDashSpinDuration + 30 + IllusionDashFakeoutTeleportDuration)
                 {
+                    Vector2 dir = NPC.DirectionTo(Target.Center);
+
                     for (int i = 0; i < (CalamityWorld.death ? 2 : 1); i++)
                     {
-                        Vector2 dir = NPC.DirectionTo(Target.Center);
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             Vector2 initialDir = dir.RotatedBy(MathHelper.Pi + Main.rand.NextFloat(-0.01f, 0.01f));
-                            Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center + Main.rand.NextVector2Circular(NPC.width, NPC.width), initialDir * Main.rand.NextFloat(6f, 8f), ProjectileID.BloodNautilusShot, BloodShotDamage, 0.5f, ai0: dir.ToRotation() + MathHelper.TwoPi, ai1: initialDir.ToRotation());
+                            Vector2 spawnPos = NPC.Center + (dir.RotatedBy(MathHelper.PiOver2) * Main.rand.NextFloat(-NPC.width, NPC.width) - (dir * 48));
+                            Projectile.NewProjectile(NPC.GetSource_FromThis(), spawnPos, initialDir * Main.rand.NextFloat(6f, 8f), ProjectileID.BloodNautilusShot, BloodShotDamage, 0.5f, ai0: dir.ToRotation() + MathHelper.TwoPi, ai1: initialDir.ToRotation());
                         }
                         NPC.velocity -= dir;
                     }
