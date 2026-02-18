@@ -186,7 +186,7 @@ namespace CalamityMod.Projectiles.Summon
                 if (healShots != 0 && attackCooldown != maxRechargeTime && (attackCooldown % (maxRechargeTime / (healShots + 1)) == 0))
                 {
                     Vector2 vel = ((Projectile.Center - player.Center) - player.velocity * 10).SafeNormalize(Vector2.UnitX) * -10;
-                    Projectile healStar = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, vel, ModContent.ProjectileType<HolyLight>(), 0, Projectile.knockBack, Projectile.owner, 0, 10, 5);
+                    Projectile healStar = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, vel, ModContent.ProjectileType<HolyLight>(), 0, Projectile.knockBack, Projectile.owner, 0, 5, 5);
                     healStar.extraUpdates = 2;
                     SoundStyle fireHeal = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianDash");
                     SoundEngine.PlaySound(fireHeal with { Volume = 0.7f, Pitch = 0.3f }, Projectile.Center);
