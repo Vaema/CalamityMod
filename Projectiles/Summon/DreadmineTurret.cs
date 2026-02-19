@@ -67,8 +67,9 @@ namespace CalamityMod.Projectiles.Summon
                         {
                             Projectile.NewProjectile(Projectile.GetSource_FromThis(), center, Vector2.Zero, ModContent.ProjectileType<Dreadmine>(), Projectile.damage, Projectile.knockBack, Projectile.owner,Projectile.whoAmI);
                             mineAmt++;
-                            i -= 0.75f; // This will cause it to run more loops when mines fail, but still eventually get up to the cap of 5 mines per activation even if no spots to spawn can be found.
                         }
+                        else
+                            i -= 0.75f; // This will cause it to run more loops when mines fail, but still eventually get up to the cap of 5 mines per activation even if no spots to spawn can be found.
                     }
                     else
                     {
