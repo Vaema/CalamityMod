@@ -1693,6 +1693,10 @@ namespace CalamityMod.CalPlayer
 
         private void ModifyHurtInfo_Calamity(ref Player.HurtInfo info)
         {
+            // Don't run any of this code if the hit was cancelled.
+            if (info.Cancelled)
+                return;
+
             // Boss Rush's damage floor is implemented as a dirty modifier
             // TODO -- implementing this correctly would require fully reimplementing all of DR and ADR
             if (BossRushEvent.BossRushActive)

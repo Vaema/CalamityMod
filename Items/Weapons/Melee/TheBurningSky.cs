@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameContent.Prefixes;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -44,6 +45,8 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
+        public override bool RangedPrefix() => true; //class identity is fake
+        public override bool MeleePrefix() => false;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
