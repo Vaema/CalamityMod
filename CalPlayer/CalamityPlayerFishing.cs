@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
@@ -30,7 +31,6 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.UI;
 
 namespace CalamityMod.CalPlayer
 {
@@ -49,15 +49,15 @@ namespace CalamityMod.CalPlayer
                 // If the player does get a crate (can be from the reroll above), give it increased chances of being rarer
                 if (attempt.crate)
                 {
-            		int uncommonRate = Math.Clamp(240 / attempt.fishingLevel, 3, 240); // Iron/Mythril (originally 300)
+                    int uncommonRate = Math.Clamp(240 / attempt.fishingLevel, 3, 240); // Iron/Mythril (originally 300)
                     attempt.uncommon = Main.rand.NextBool(uncommonRate);
 
                     // These roll result bools are individually stored for the rarifying visuals
-            		int rareRate = Math.Clamp(840 / attempt.fishingLevel, 4, 840); // Biome (originally 1050)
+                    int rareRate = Math.Clamp(840 / attempt.fishingLevel, 4, 840); // Biome (originally 1050)
                     bool rareRoll = Main.rand.NextBool(rareRate);
                     attempt.rare = rareRoll;
 
-            		int veryRareRate = Math.Clamp(1800 / attempt.fishingLevel, 5, 1800); // Golden/Titanium (originally 2250)
+                    int veryRareRate = Math.Clamp(1800 / attempt.fishingLevel, 5, 1800); // Golden/Titanium (originally 2250)
                     bool veryRareRoll = Main.rand.NextBool(veryRareRate);
                     attempt.veryrare = veryRareRoll;
 
@@ -85,6 +85,13 @@ namespace CalamityMod.CalPlayer
             }
         }
         #endregion
+
+        public override bool? CanConsumeBait(Item bait)
+        {
+            if (bait.type == ModContent.ItemType<BloodwormItem>())
+                return true;
+            return null;
+        }
 
         #region Catch Fish
         public override void CatchFish(FishingAttempt attempt, ref int itemDrop, ref int npcSpawn, ref AdvancedPopupRequest sonar, ref Vector2 sonarPosition)
@@ -128,7 +135,7 @@ namespace CalamityMod.CalPlayer
             // Fishing in lava overrides the rest of logic
             if (lava)
             {
-                 // Don't do anything if you can't fish in lava
+                // Don't do anything if you can't fish in lava
                 if (!attempt.CanFishInLava)
                     return;
 
@@ -177,7 +184,8 @@ namespace CalamityMod.CalPlayer
             // Old Duke spawn
             if (canSulphurFish && bait == ModContent.ItemType<BloodwormItem>() && !BossRushEvent.BossRushActive)
             {
-                npcSpawn = ModContent.NPCType<OldDuke>();
+                if (!Main.projectile.Any(x => x.active && x.aiStyle == ProjAIStyleID.Bobber && x.ai[1] != 0 && x.localAI[1] == ModContent.NPCType<OldDuke>() * -1))
+                    npcSpawn = ModContent.NPCType<OldDuke>();
                 itemDrop = -1;
                 sonar.Text = "";
                 return;

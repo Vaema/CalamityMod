@@ -2969,6 +2969,10 @@ namespace CalamityMod.Projectiles
                     {
                         NPC.SpawnOnPlayer(owner.whoAmI, 370);
                     }
+                    else
+                    {
+                        NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, owner.whoAmI, 370f);
+                    }
                     projectile.ai[0] = 2f;
                 }
                 else if (projectile.localAI[1] < 1)
