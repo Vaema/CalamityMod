@@ -4968,7 +4968,7 @@ namespace CalamityMod.NPCs
             ("CalamityMod/Buffs/StatDebuffs/MarkedforDeath", NPC => NPC.Calamity().markedForDeath),
             ("CalamityMod/Buffs/StatDebuffs/PearlAura", NPC => NPC.Calamity().pearlAura),
             ("CalamityMod/Buffs/StatDebuffs/ProfanedWeakness", NPC => NPC.Calamity().relicOfResilienceWeakness),
-            ("CalamityMod/Buffs/StatBuffs/SmashedEvilDebuff", NPC => NPC.HasBuff<SmashedEvil>()),
+            ("CalamityMod/Buffs/StatBuffs/SmashedEvil", NPC => NPC.HasBuff<SmashedEvil>()),
             ("CalamityMod/Buffs/StatDebuffs/TemporalSadness", NPC => NPC.Calamity().temporalSadness),
             ("CalamityMod/Buffs/StatDebuffs/TimeDistortion", NPC => NPC.Calamity().timeDistortion),
             ("CalamityMod/Buffs/StatDebuffs/WhisperingDeath", NPC => NPC.Calamity().whisperingDeath),
