@@ -1400,6 +1400,9 @@ namespace CalamityMod.CalPlayer
                         Player.lavaTime++;
                 }
             }
+            // Extra DoT in the lava of the crags. Negated by Flame-licked Shell.
+            else if (ZoneCalamity && !flameLickedShell)
+                    Player.AddBuff(ModContent.BuffType<SearingLava>(), 2, false);
 
             // Release irradiated slimes from the sky during the Acid Rain event.
             if (Player.whoAmI == Main.myPlayer)
@@ -1890,7 +1893,7 @@ namespace CalamityMod.CalPlayer
                 {
                     if (numOfEnergy < energyCap)
                     {
-                        int energyDamage = (int)Player.GetBestClassDamage().ApplyTo(22);
+                        int energyDamage = (int)Player.GetBestClassDamage().ApplyTo(8);
                         Projectile energy = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, (Vector2.One * 4).RotatedByRandom(MathHelper.TwoPi), ModContent.ProjectileType<AmuletEnergy>(), energyDamage, 0f, Player.whoAmI, 0, numOfEnergy);
                         if (numOfEnergy + 1 == energyCap && Player.Calamity().sSpiritAmuletVisual)
                         {

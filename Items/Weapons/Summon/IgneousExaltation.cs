@@ -14,8 +14,8 @@ namespace CalamityMod.Items.Weapons.Summon
 {
     public class IgneousExaltation : ModItem, ILocalizedModType
     {
-        public static int ChargeDuration = 30;
-        public static int ChargeCooldown = 120;
+        public static int ChargeDuration => 25;
+        public static int ChargeCooldown => 120;
         public new string LocalizationCategory => "Items.Weapons.Summon";
         private static Texture2D BladeOutline = null;
         public static Texture2D GetBladeOutlineTex()
@@ -45,7 +45,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.width = 52;
             Item.height = 50;
-            Item.damage = 34;
+            Item.damage = 30;
             Item.mana = 10;
             Item.useAnimation = Item.useTime = 36;
             Item.useStyle = ItemUseStyleID.Shoot;

@@ -71,7 +71,7 @@ namespace CalamityMod.Tiles.Abyss
                 {
                     return;
                 }
-                if (!WorldGen.EmptyTileCheck(i - 1, i + 1, trueStartingPositionY - 20, trueStartingPositionY, Type))
+                if (!WorldGen.EmptyTileCheck(i - 1, i + 1, trueStartingPositionY - 20, trueStartingPositionY-1, Type))
                 {
                     return;
                 }

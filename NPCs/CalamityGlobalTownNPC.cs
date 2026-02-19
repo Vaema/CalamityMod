@@ -1253,7 +1253,7 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.ArmsDealer)
             {
-                shop.AddWithCustomValue(ItemType<M1Garand>(), Item.buyPrice(gold: 20), Condition.DownedSkeletron)
+                shop.Add<M1Garand>(Condition.DownedSkeletron)
                 .Add<P90>(Condition.Hardmode)
                 .AddWithCustomValue(ItemID.Boomstick, Item.buyPrice(gold: 25), Condition.DownedQueenBee)
                 .AddWithCustomValue(ItemID.Uzi, Item.buyPrice(gold: 50), Condition.DownedPlantera);

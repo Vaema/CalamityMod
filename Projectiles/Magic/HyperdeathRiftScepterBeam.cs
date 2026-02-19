@@ -45,6 +45,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.scale = 2;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
+            Projectile.DamageType = DamageClass.Magic;
         }
         public override void AI()
         {
