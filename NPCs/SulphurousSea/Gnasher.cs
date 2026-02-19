@@ -5,7 +5,6 @@ using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.World;
-using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -33,13 +32,11 @@ namespace CalamityMod.NPCs.SulphurousSea
             NPC.height = 36;
             NPC.defense = 30;
             NPC.lifeMax = 50;
-            NPC.knockBackResist = 0.25f;
-            NPC.aiStyle = -1;
-            AIType = -1;
+            NPC.aiStyle = NPCAIStyleID.Fighter;
+            AIType = NPCID.Crab;
             NPC.value = Item.buyPrice(copper: 60);
             NPC.HitSound = SoundID.NPCHit50;
             NPC.DeathSound = SoundID.NPCDeath54;
-            NPC.chaseable = false;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<GnasherBanner>();
             NPC.Calamity().VulnerableToHeat = false;
@@ -57,94 +54,55 @@ namespace CalamityMod.NPCs.SulphurousSea
             });
         }
 
-        public override void SendExtraAI(BinaryWriter writer)
-        {
-            writer.Write(NPC.chaseable);
-        }
-
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
-            NPC.chaseable = reader.ReadBoolean();
-        }
-
         public override void AI()
         {
-            float detectRange = Main.player[NPC.target].Calamity().GetAbyssAggro(120f);
-
-            if (NPC.wet)
+            NPC.spriteDirection = (NPC.direction > 0) ? -1 : 1;
+            float targetDist = (Main.player[NPC.target].Center - NPC.Center).Length();
+            targetDist *= 0.0025f;
+            if ((double)targetDist > 1.5)
             {
-                CalamityRegularEnemyAI.PassiveSwimmingAI(NPC, Mod, 0, detectRange, 0.15f, 0.1f, 6f, 4f, 0.1f, false);
+                targetDist = 1.5f;
+            }
+            float maxVelocity;
+            if (Main.expertMode)
+            {
+                maxVelocity = 2.5f - targetDist;
             }
             else
             {
-                NPC.noGravity = false;
-
-                if (NPC.justHit || (!Main.player[NPC.target].dead && (Main.player[NPC.target].Center - NPC.Center).Length() < detectRange && Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height)))
-                    NPC.chaseable = true;
-
-                float deceleration = 0.8f;
-
-                if (NPC.chaseable && Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height) && !Main.player[NPC.target].dead)
+                maxVelocity = 2.25f - targetDist;
+            }
+            maxVelocity *= (CalamityWorld.death ? 1.2f : CalamityWorld.revenge ? 1f : 0.8f);
+            if (NPC.velocity.X < -maxVelocity || NPC.velocity.X > maxVelocity)
+            {
+                if (NPC.velocity.Y == 0f)
                 {
-                    NPC.TargetClosest();
-
-                    NPC.spriteDirection = (NPC.direction > 0) ? -1 : 1;
-
-                    float distanceFromTarget = MathHelper.Clamp((Main.player[NPC.target].Center - NPC.Center).Length() * 0.0025f, 0f, 1.5f);
-                    float velocityMultiplier = CalamityWorld.death ? 1.2f : CalamityWorld.revenge ? 1f : 0.8f;
-                    float maxVelocity = ((Main.expertMode ? 2.5f : 2.25f) - distanceFromTarget) * velocityMultiplier;
-                    float accelerationX = CalamityWorld.death ? 0.7f : CalamityWorld.revenge ? 0.6f : 0.5f;
-
-                    if (NPC.velocity.X < -maxVelocity || NPC.velocity.X > maxVelocity)
-                    {
-                        if (NPC.velocity.Y == 0f)
-                            NPC.velocity *= deceleration;
-                    }
-                    else if (NPC.velocity.X < maxVelocity && NPC.direction == 1)
-                    {
-                        NPC.velocity.X += accelerationX;
-                        if (NPC.velocity.X > maxVelocity)
-                            NPC.velocity.X = maxVelocity;
-                    }
-                    else if (NPC.velocity.X > -maxVelocity && NPC.direction == -1)
-                    {
-                        NPC.velocity.X -= accelerationX;
-                        if (NPC.velocity.X < -maxVelocity)
-                            NPC.velocity.X = -maxVelocity;
-                    }
-                }
-                else
-                {
-                    NPC.TargetClosest(false);
-
-                    if (NPC.velocity != Vector2.Zero)
-                    {
-                        NPC.velocity *= deceleration;
-                        if (NPC.velocity.Length() < 0.1f)
-                            NPC.velocity = Vector2.Zero;
-                    }
+                    NPC.velocity *= 0.8f;
                 }
             }
-        }
-
-        public override bool? CanBeHitByProjectile(Projectile projectile)
-        {
-            if (projectile.minion && !projectile.Calamity().overridesMinionDamagePrevention)
-                return NPC.chaseable;
-
-            return null;
+            else if (NPC.velocity.X < maxVelocity && NPC.direction == 1)
+            {
+                NPC.velocity.X = NPC.velocity.X + 1f;
+                if (NPC.velocity.X > maxVelocity)
+                {
+                    NPC.velocity.X = maxVelocity;
+                }
+            }
+            else if (NPC.velocity.X > -maxVelocity && NPC.direction == -1)
+            {
+                NPC.velocity.X = NPC.velocity.X - 1f;
+                if (NPC.velocity.X < -maxVelocity)
+                {
+                    NPC.velocity.X = -maxVelocity;
+                }
+            }
         }
 
         public override void FindFrame(int frameHeight)
         {
-            if (NPC.velocity == Vector2.Zero)
-            {
-                NPC.frame.Y = 0;
-                return;
-            }
-
-            NPC.frameCounter += NPC.chaseable ? 0.15f : 0.075f;
-            NPC.frameCounter %= Main.npcFrameCount[Type];
+            NPC.frameCounter += 0.15f;
+            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
