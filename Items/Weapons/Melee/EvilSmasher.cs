@@ -24,14 +24,19 @@ namespace CalamityMod.Items.Weapons.Melee
             base.SetDefaults();
             Item.width = 64;
             Item.height = 66;
-            Item.damage = 750;
-            Item.DamageType = TrueMeleeDamageClass.Instance;
+            Item.damage = 200;
+            Item.DamageType = AverageDamageClass.Instance;
             Item.useAnimation = Item.useTime = 120;
             Item.channel = true;
             Item.knockBack = 6f;
             Item.autoReuse = true;
             Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
+        }
+        public override void UpdateInventory(Player player)
+        {
+            AnimationTime = 300;
+            base.UpdateInventory(player);
         }
 
         public override void Update(ref float gravity, ref float maxFallSpeed)

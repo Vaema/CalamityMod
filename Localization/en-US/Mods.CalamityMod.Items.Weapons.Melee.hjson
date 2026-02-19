@@ -461,7 +461,6 @@ EvilSmasher: {
 		Channels a powerful hammer strike with the capability to crush all evil
 		Striking a tile with the hammer strike will cause an explosion and push you back
 		Striking enemies provides inflicts [cbuff:CalamityMod/SmashedEvil] on both the user and target
-		[cbuff:CalamityMod/SmashedEvil] strengthens players and weakens enemies
 		Charging strikes increases damage, explosion radius, and [cbuff:CalamityMod/SmashedEvil] duration
 		'EViL! sMaSH eVIl! SmAsh... ER!'
 		'''

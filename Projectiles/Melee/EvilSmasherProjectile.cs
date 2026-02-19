@@ -66,7 +66,7 @@ namespace CalamityMod.Projectiles.Melee
             if (inStartup)
             {
                 Projectile.damage = (int)(Projectile.originalDamage * (timer / (float)(StartupTime-1)));
-                Owner.velocity.X *= 0.95f;
+                Owner.velocity.X *= 0.97f;
             }
             if (inStartup && !Owner.channel && timer > 30)
             {
@@ -171,8 +171,8 @@ namespace CalamityMod.Projectiles.Melee
 
                 SoundEngine.PlaySound(SoundID.Item69 with { Volume = 1f, LimitsArePerVariant = false, MaxInstances = 1 });
             }
-                target.AddBuff(ModContent.BuffType<SmashedEvil>(), (int)MathHelper.Lerp(60, 600, Projectile.damage / (float)Projectile.originalDamage));
-            Owner.AddBuff(ModContent.BuffType<SmashedEvil>(), (int)MathHelper.Lerp(60, 600, Projectile.damage / (float)Projectile.originalDamage));
+                target.AddBuff(ModContent.BuffType<SmashedEvil>(), (int)MathHelper.Lerp(60, 900, Projectile.damage / (float)Projectile.originalDamage));
+            Owner.AddBuff(ModContent.BuffType<SmashedEvil>(), (int)MathHelper.Lerp(60, 900, Projectile.damage / (float)Projectile.originalDamage));
         }
 
         public override bool PreDraw(ref Color lightColor)
