@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Accessories
     {
         public new string LocalizationCategory => "Items.Accessories";
 
-        public static float DashDelayModifier = 2f;
+        public static float DashDelayModifier = 4f;
 
         public static SoundStyle DashSound = new("CalamityMod/Sounds/Item/V8Boost");
 

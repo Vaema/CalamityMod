@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Accessories
     {
         public new string LocalizationCategory => "Items.Accessories";
 
-        public static float DashDelayModifier = 1.6f;
+        public static float DashDelayModifier = 3.5f;
         public const int ShieldSlamDamage = 900;
         public const float ShieldSlamKnockback = 0.4f;
         public const int ShieldSlamIFrames = 14; // While this has more i-frames than Elysian's dash, the dash speed sets this one back comparitively
