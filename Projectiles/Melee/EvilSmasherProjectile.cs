@@ -78,7 +78,20 @@ namespace CalamityMod.Projectiles.Melee
                 timer--;
                 if (!playedChargeSound) {
                     SoundEngine.PlaySound(SoundID.Item178,Projectile.Center);
-                    playedChargeSound = true; 
+                    playedChargeSound = true;
+                    for (int i = 0; i < 5; i++)
+                    {
+                        int sparkLifetime = Main.rand.Next(8, 12);
+                        float sparkScale = Main.rand.NextFloat(0.5f, 1f);
+                        var sparkColor = Main.rand.NextBool() ? Color.Purple : Color.Red;
+
+                        if (Main.rand.NextBool(5))
+                            sparkScale *= 1.4f;
+
+                        Vector2 sparkVelocity = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * MathHelper.Lerp(10, 30, Main.rand.NextFloat());
+                        SparkParticle spark = new SparkParticle(Projectile.Center + angle * 30, sparkVelocity, false, sparkLifetime, sparkScale, sparkColor);
+                        GeneralParticleHandler.SpawnParticle(spark);
+                    }
                 }
             }
             if (!hasSmashedTile && inSwing && SwingCompletion > 0.275f)
@@ -163,8 +176,8 @@ namespace CalamityMod.Projectiles.Melee
                     SparkParticle spark = new SparkParticle(target.Center, sparkVelocity, false, sparkLifetime, sparkScale, sparkColor);
                     GeneralParticleHandler.SpawnParticle(spark);
 
-                    SoundEngine.PlaySound(SoundID.DeerclopsRubbleAttack with {Volume = 0.5f,LimitsArePerVariant = false, MaxInstances = 1});
                 }
+                SoundEngine.PlaySound(SoundID.DeerclopsRubbleAttack with { Volume = 0.5f, LimitsArePerVariant = false, MaxInstances = 1 });
             }
             else if (!hasSmashedTile)
             {
