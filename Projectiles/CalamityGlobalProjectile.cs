@@ -18,8 +18,10 @@ using CalamityMod.Items.Armor.Daedalus;
 using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.NPCs;
+using CalamityMod.NPCs.OldDuke;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
 using CalamityMod.Packets.Entities;
@@ -3313,13 +3315,23 @@ namespace CalamityMod.Projectiles
                                 if (cplayer.mouseRight && projectile.ai[1] == 0 && owner.miscCounter % 10 == 0)
                                 {
                                     owner.lifeRegenCount -= 600; // -5 health per 10 ticks
-
-                                    Item baitItem;
-                                    owner.Fishing_GetBait(out baitItem);
+                                    owner.Fishing_GetBait(out Item baitItem);
 
                                     // Diminishing returns on bait power beyond 75
                                     int baitPower = baitItem?.bait ?? 0;
-                                    if (baitPower > 75)
+                                    if (baitItem?.type == ItemID.TruffleWorm)
+                                    {
+                                        projectile.ai[0] = 1;
+                                        projectile.localAI[1] = 1;
+                                        ReelTheBobberChecks();
+                                    }
+                                    else if (baitItem?.type == ItemType<BloodwormItem>())
+                                    {
+                                        projectile.ai[0] = 1;
+                                        projectile.localAI[1] = NPCType<OldDuke>() * -1;
+                                        ReelTheBobberChecks();
+                                    }
+                                    else if (baitPower > 75)
                                     {
                                         baitPower = (int)Math.Pow((baitPower - 75), 0.5f) + 75;
                                     }
