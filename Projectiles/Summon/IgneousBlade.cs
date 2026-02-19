@@ -162,9 +162,6 @@ namespace CalamityMod.Projectiles.Summon
 
         public void LaunchAtTargetPos()
         {
-            Projectile.damage = Projectile.originalDamage;
-            if (Projectile.penetrate > 10) //First 5 hits do 2x damage
-                Projectile.damage *= 2;
             int chargeTime = IgneousExaltation.ChargeDuration * 2;
             int chargeLength = 2000;
             float circleWidth = Math.Min(75, Owner.ownedProjectileCounts[Type] * 4);
@@ -195,9 +192,14 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            if (Projectile.penetrate >= 10) // First 5 hits deal 2x dmg
+                modifiers.SourceDamage *= 2;
+        }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (Projectile.penetrate >= 40 && CurrentState != AIState.CircleOwner) //The first 10 hits per launch can spawn blades
+            if (Projectile.penetrate >= 10 && CurrentState != AIState.CircleOwner) //The first 5 hits per launch can spawn blades
                 if (Main.myPlayer == Projectile.owner)
                 {
                     for (int i = 0; i < 1; i++)
