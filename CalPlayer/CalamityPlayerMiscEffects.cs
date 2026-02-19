@@ -1146,10 +1146,10 @@ namespace CalamityMod.CalPlayer
                             DialogueDisplaySystem.RemoveDialogue(DialogueDisplaySystem.GetSlot(type));
                         DialogueDisplaySystem.StartDialogueOnClient(type, new Vector2(tilePos.X * 16 + 16, tilePos.Y * 16), DemonAltarDialogueCounter, 180, false, new AltarText());
                         DemonAltarDialogueCounter++;
-                        DemonAltarDialogueCooldown = 240;
+                        DemonAltarDialogueCooldown = 300;
                         if (DemonAltarDialogueCounter >= 4)
                         {
-                            DemonAltarDialogueCooldown = 1200;
+                            DemonAltarDialogueCooldown = 3600;
                             DemonAltarDialogueCounter = 0;
                         }
                         return;
