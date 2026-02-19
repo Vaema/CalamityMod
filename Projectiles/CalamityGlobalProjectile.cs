@@ -3333,6 +3333,7 @@ namespace CalamityMod.Projectiles
                                     {
                                         projectile.ai[0] = 1;
                                         projectile.localAI[1] = NPCType<OldDuke>() * -1;
+                                        baitPower = 4444; // Manually set the power to the displayed value
                                         ReelTheBobberChecks();
                                     }
                                     else if (baitPower > 75)
