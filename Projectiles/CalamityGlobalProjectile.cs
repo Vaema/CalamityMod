@@ -3313,7 +3313,18 @@ namespace CalamityMod.Projectiles
                                 if (cplayer.mouseRight && projectile.ai[1] == 0 && owner.miscCounter % 10 == 0)
                                 {
                                     owner.lifeRegenCount -= 600; // -5 health per 10 ticks
-                                    var projID = Projectile.NewProjectile(projectile.GetSource_FromThis(), Main.npc[(int)PersistentFishingData].Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), (int)owner.GetBestClassDamage().ApplyTo(owner.HeldItem.fishingPole + owner.fishingSkill + owner.ChooseAmmo(owner.HeldItem).bait), 0f, owner.whoAmI, Main.npc[(int)PersistentFishingData].whoAmI);
+
+                                    Item baitItem;
+                                    owner.Fishing_GetBait(out baitItem);
+
+                                    // Diminishing returns on bait power beyond 75
+                                    int baitPower = baitItem?.bait ?? 0;
+                                    if (baitPower > 75)
+                                    {
+                                        baitPower = (int)Math.Pow((baitPower - 75), 0.5f) + 75;
+                                    }
+
+                                    var projID = Projectile.NewProjectile(projectile.GetSource_FromThis(), Main.npc[(int)PersistentFishingData].Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), (int)owner.GetBestClassDamage().ApplyTo(owner.HeldItem.fishingPole + owner.fishingSkill + baitPower), 0f, owner.whoAmI, Main.npc[(int)PersistentFishingData].whoAmI);
                                     if (Main.projectile.IndexInRange(projID))
                                     {
                                         Main.projectile[projID].ArmorPenetration = 100; //This should ignore almost all armor
