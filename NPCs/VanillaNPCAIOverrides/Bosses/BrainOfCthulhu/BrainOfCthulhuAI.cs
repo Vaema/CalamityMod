@@ -1891,7 +1891,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                     if (Time > BloodshotRate + 30 && Time % (IchorRate * 10) == 0)
                     {
                         SoundEngine.PlaySound(BloodBomb, NPC.Center);
-                        if (Main.netMode != NetmodeID.MultiplayerClient)of 
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
                             NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<BloodBomb>(), NPC.whoAmI);
                     }
                     else
