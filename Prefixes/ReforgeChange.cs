@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Packets;
 using CalamityMod.World;
@@ -193,7 +194,7 @@ namespace CalamityMod.Prefixes
 
             // MELEE (includes tools and whips)
             // Melee-ranged hybrid weapons prioritize Legendary if available, otherwise go for Unreal
-            if ((item.CountsAsClass<MeleeDamageClass>() || item.CountsAsClass<SummonMeleeSpeedDamageClass>()) && !(item.CountsAsClass<MeleeRangedHybridDamageClass>() && !supportsLegendary))
+            if ((item.CountsAsClass<MeleeDamageClass>() || item.CountsAsClass<SummonMeleeSpeedDamageClass>()) && !(item.CountsAsClass<MeleeRangedHybridDamageClass>() && !supportsLegendary) && !(item.type == ItemType<TheBurningSky>()))
             {
                 // Terrarian (has its own special "Legendary" for marketing reasons)
                 // Other items that want to use Legendary2 are also compatible
@@ -218,8 +219,8 @@ namespace CalamityMod.Prefixes
                 }
             }
 
-            // RANGED
-            else if (item.CountsAsClass<RangedDamageClass>())
+            // RANGED (and also Burning Sky)
+            else if (item.CountsAsClass<RangedDamageClass>() || item.type == ItemType<TheBurningSky>())
             {
                 prefix = IteratePrefix(rand, RangedPrefixTiers, currentPrefix);
             }
