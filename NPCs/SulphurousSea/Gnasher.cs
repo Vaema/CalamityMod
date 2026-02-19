@@ -160,8 +160,8 @@ namespace CalamityMod.NPCs.SulphurousSea
             if (spawnInfo.PlayerSafe)
                 return 0f;
 
-            if (spawnInfo.Player.Calamity().ZoneSulphur && spawnInfo.Water)
-                return 0.2f;
+            if (spawnInfo.Player.Calamity().ZoneSulphur)
+                return 0.1f;
 
             return 0f;
         }
