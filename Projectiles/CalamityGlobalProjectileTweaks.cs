@@ -412,9 +412,13 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.LavaSnowmanRocket, defaultIFrames },
                 { ProjectileID.Leaf, defaultIFrames },
                 { ProjectileID.LifeCrystalBoulder, defaultIFrames },
+                { ProjectileID.MagicMissile, Do(IDStaticIFrames(8), SingleHitImmunity) }, // Has an exception in Vanilla iframe code, uses 8 iframes
                 { ProjectileID.MagnetSphereBolt, defaultIFrames },
                 { ProjectileID.MedusaHead, defaultIFrames },
                 { ProjectileID.MedusaHeadRay, defaultIFrames },
+                { ProjectileID.Meteor1, Do(IDStaticIFrames(5), SingleHitImmunity) }, // Has an exception in Vanilla iframe code, uses 5 iframes
+                { ProjectileID.Meteor2, Do(IDStaticIFrames(5), SingleHitImmunity) }, // Has an exception in Vanilla iframe code, uses 5 iframes
+                { ProjectileID.Meteor3, Do(IDStaticIFrames(5), SingleHitImmunity) }, // Has an exception in Vanilla iframe code, uses 5 iframes
                 { ProjectileID.MinecartMechLaser, defaultIFrames },
                 { ProjectileID.MiniBoulder, defaultIFrames },
                 { ProjectileID.MiniMinotaur, defaultIFrames },
@@ -437,6 +441,8 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.NailFriendly, Do(IDStaticIFrames(1)) }, // Has an exception in Vanilla iframe code, uses 1 iframe
                 { ProjectileID.NebulaArcanumExplosionShot, defaultIFrames },
                 { ProjectileID.NebulaArcanumExplosionShotShard, defaultIFrames },
+                { ProjectileID.NebulaBlaze1, Do(IDStaticIFrames(5), SingleHitImmunity) }, // Has an exception in Vanilla iframe code, uses 5 iframes
+                { ProjectileID.NebulaBlaze2, Do(IDStaticIFrames(5), SingleHitImmunity) }, // Has an exception in Vanilla iframe code, uses 5 iframes
                 { ProjectileID.NettleBurstEnd, defaultIFrames },
                 { ProjectileID.NettleBurstLeft, defaultIFrames },
                 { ProjectileID.NettleBurstRight, defaultIFrames },
@@ -543,6 +549,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.StickyDynamite, defaultIFrames },
                 { ProjectileID.StickyGrenade, defaultIFrames },
                 { ProjectileID.StormTigerGem, defaultIFrames },
+                { ProjectileID.Stynger, Do(IDStaticIFrames(7), SingleHitImmunity) }, // Has an exception in Vanilla iframe code, uses 7 iframes
                 { ProjectileID.StyngerShrapnel, defaultIFrames },
                 { ProjectileID.TentacleSpike, defaultIFrames },
                 { ProjectileID.ThornChakram, defaultIFrames },
@@ -856,6 +863,18 @@ namespace CalamityMod.Projectiles
             }
         }
         internal static IProjectileTweak ScaleRatio(float f) => new ScaleRatioRule(f);
+        #endregion
+
+        #region Single Hit Immunity
+        internal class SingleHitImmunityRule : IProjectileTweak
+        {
+            internal readonly bool flag = false;
+
+            public SingleHitImmunityRule(bool imm) => flag = imm;
+            public bool AppliesTo(Projectile proj) => true;
+            public void ApplyTweak(Projectile proj) => proj.appliesImmunityTimeOnSingleHits = flag;
+        }
+        internal static IProjectileTweak SingleHitImmunity => new SingleHitImmunityRule(true);
         #endregion
 
         #region Tile Collide
