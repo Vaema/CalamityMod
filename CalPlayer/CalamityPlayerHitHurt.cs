@@ -461,6 +461,25 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Modify Hit NPC
+
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            if (springStool)
+            {
+                if (Main.LocalPlayer.Top.Y < target.Top.Y)
+                {
+                    // Effective +10% crit chance. Increasing crit chance additively through manual rolling is scuffed for crossmod compatability, feel free to improve it if you know a better way
+                    float finalCritChance = Player.GetTotalCritChance(modifiers.DamageType) + 100f;
+
+                    if (Main.rand.NextFloat(1f, 101f) <= finalCritChance)
+                        modifiers.SetCrit();
+
+                    else
+                        modifiers.DisableCrit();
+                }
+            }
+        }
+
         public override void ModifyHitNPCWithItem(Item item, NPC target, ref NPC.HitModifiers modifiers)
         {
             modifiers.CritDamage += critDamage;

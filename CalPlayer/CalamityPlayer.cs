@@ -8,6 +8,7 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer.Dashes;
+using CalamityMod.CalPlayer.DrawLayers;
 using CalamityMod.Cooldowns;
 using CalamityMod.DataStructures;
 using CalamityMod.Dusts;
@@ -72,6 +73,7 @@ using CalamityMod.Utilities;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -863,6 +865,7 @@ namespace CalamityMod.CalPlayer
         public bool tesla = false;
         public bool teslaVisuals = true;
         public bool cryogenSoul = false;
+        public bool springStool = false;
         public bool ascendantInsignia = false;
         public int ascendantInsigniaBuffTime = 0;
         public int ascendantInsigniaCooldown = 0;
@@ -2411,6 +2414,7 @@ namespace CalamityMod.CalPlayer
             tesla = false;
             teslaVisuals = true;
             cryogenSoul = false;
+            springStool = false;
             ascendantInsignia = false;
             magmaStoneVisuals = true;
             eGauntlet = false;
@@ -4966,6 +4970,37 @@ namespace CalamityMod.CalPlayer
                 Lighting.AddLight(Player.Center, Light * (0.55f + (oceanCrestTimer * 0.0035f)));
             }
 
+            if (springStool)
+            {          
+
+                if (springStool)
+                {
+                    bool holdingUp = Player.controlUp;
+                    bool standingStill = Player.velocity.Y == 0 && Player.velocity.X == 0;
+
+                    if (holdingUp && standingStill && !Player.mount.Active)
+                    {
+                        // Vertical displacement when using Spring Stool
+                        int boost = 61;
+
+                        Player.portableStoolInfo.HasAStool = true;
+                        Player.portableStoolInfo.IsInUse = true;
+                        Player.portableStoolInfo.HeightBoost = boost;
+                        Player.portableStoolInfo.VisualYOffset = boost;
+                        Player.portableStoolInfo.MapYOffset = boost;
+
+                        Player.UpdatePortableStoolUsage();
+
+                    }
+                    else
+                    {
+                        // Stool still exists even if not being used
+                        Player.portableStoolInfo.HasAStool = true;
+                    }
+
+                }
+            }
+
             if (rampartOfDeities)
             {
                 // Ice Barrier buff inherited from Frozen Turtle Shell
@@ -5022,6 +5057,8 @@ namespace CalamityMod.CalPlayer
 
         public override void PostUpdate()
         {
+            Main.NewText(Main.LocalPlayer.Top.Y);
+
             if (ZoneAbyss && Main.netMode != NetmodeID.Server)
             {
                 //Main aura
@@ -6243,6 +6280,20 @@ namespace CalamityMod.CalPlayer
             SquareParticle square2 = new SquareParticle(position2, Player.velocity * (0.15f + Main.rand.NextFloat(0.1f)), false, 15, 1.7f + Main.rand.NextFloat(0.6f), Color.Cyan * 1.5f);
             GeneralParticleHandler.SpawnParticle(square1);
             GeneralParticleHandler.SpawnParticle(square2);
+        }
+
+        public override void Load()
+        {
+            // Hook into the vanilla stool drawing method to remove it
+            On_PlayerDrawLayers.DrawPlayer_03_PortableStool += HideStepStool;
+        }
+
+        private void HideStepStool(On_PlayerDrawLayers.orig_DrawPlayer_03_PortableStool orig, ref PlayerDrawSet drawInfo)
+        {
+            if (drawInfo.drawPlayer.GetModPlayer<CalamityPlayer>().springStool)
+                return;
+
+            orig(ref drawInfo);
         }
         #endregion
 
