@@ -18,7 +18,7 @@ namespace CalamityMod.Projectiles.Typeless
 
         public const int TotalFrames = 41;
 
-        public override string Texture => "CalamityMod/Projectiles/Typeless/BossRushTier2Animation";
+        public override string Texture => "CalamityMod/Projectiles/Typeless/BossRushTier1Animation";
 
         public override void SetDefaults()
         {
@@ -45,6 +45,10 @@ namespace CalamityMod.Projectiles.Typeless
                 float volume = 2.8f;
                 switch (Tier)
                 {
+                    // Tier 1 doesn't have its own sound yet.
+                    case 1:
+                        SoundEngine.PlaySound(Tier2TransitionSound with { Volume = volume }, Main.LocalPlayer.Center);
+                        break;
                     case 2:
                         SoundEngine.PlaySound(Tier2TransitionSound with { Volume = volume }, Main.LocalPlayer.Center);
                         break;
