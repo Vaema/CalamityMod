@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.Typeless
                     SoundEngine.PlaySound(BossRushEvent.TerminusDeactivationSound, Main.LocalPlayer.Center);
 
                 float lifetime = Utils.GetLerpValue(0f, 30f, Time, true);
-                if (Time % 5f == 45f)
+                if (Time % 5f == 4f)
                     BossRushEvent.SyncStartTimer((int)MathHelper.Lerp(0f, BossRushEvent.StartEffectTotalTime, 1f - lifetime));
 
                 MoonlordDeathDrama.RequestLight(Utils.GetLerpValue(0f, 15f, Time, true), Main.LocalPlayer.Center);
