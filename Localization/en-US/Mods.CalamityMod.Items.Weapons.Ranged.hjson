@@ -1328,7 +1328,7 @@ TelluricGlare: {
 	Tooltip:
 		'''
 		Rapidly fires volleys of arrows
-		Every other arrow is converted into radiant greatarrows which pierce but quicky dissapear after striking
+		Every other arrow is converted into radiant greatarrows which pierce but quicky disappear after striking
 		Wooden arrows are converted into more powerful greatarrows that deal increased damage
 		'''
 }
