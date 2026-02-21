@@ -61,7 +61,7 @@ AntiMaterielRifle: {
 	Tooltip:
 		'''
 		Converts musket balls into .50 caliber sniper rounds that rip apart enemy defense and DR
-		Critical hits unleash a second swarm of 5 bullets
+		Unleashes a second swarm of bullets on hit, with additional bullets on critical strikes
 		'''
 }
 
