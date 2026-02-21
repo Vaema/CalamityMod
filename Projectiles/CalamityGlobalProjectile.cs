@@ -3622,9 +3622,10 @@ namespace CalamityMod.Projectiles
                             if (TimerToCatch <= 0)
                             {
                                 projectile.FishingCheck();
-                                if (projectile.ai[1] < 0 && !(projectile.lavaWet && !owner.accLavaFishing))
+                                var fishingCond = Main.player[projectile.owner].GetFishingConditions();
+                                bool canLavaFish = ItemID.Sets.CanFishInLava[fishingCond.PoleItemType] || ItemID.Sets.IsLavaBait[fishingCond.BaitItemType] || Main.player[projectile.owner].accLavaFishing;
+                                if (projectile.ai[1] < 0 && !(projectile.lavaWet && !canLavaFish))
                                 {
-
                                     CaughtItemID = (int)projectile.localAI[1];
                                     projectile.ai[1] = 0;
                                     projectile.localAI[1] = 0;
