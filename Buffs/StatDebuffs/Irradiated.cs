@@ -1,4 +1,5 @@
-﻿using CalamityMod.DataStructures;
+﻿using System;
+using CalamityMod.DataStructures;
 using CalamityMod.Projectiles.Magic;
 using Terraria;
 using Terraria.ID;
@@ -44,7 +45,7 @@ namespace CalamityMod.Buffs.StatDebuffs
             if (projectileCount > 0)
                 cnpc.ApplyDPSDebuff(projectileCount * baseIrradiatedDoTValue, projectileCount * 4, ref npc.lifeRegen, ref damage);
             else
-                cnpc.ApplyDPSDebuff(baseIrradiatedDoTValue, baseIrradiatedDoTValue / 20, ref npc.lifeRegen, ref damage);
+                cnpc.ApplyDPSDebuff(baseIrradiatedDoTValue, Math.Max((int)(baseIrradiatedDoTValue * debuffData.MultiplierDamageTickSize),debuffData.MinimumDamageTickSize), ref npc.lifeRegen, ref damage);
         }
         public override void SetStaticDefaults()
         {
