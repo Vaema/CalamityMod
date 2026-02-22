@@ -81,7 +81,7 @@ namespace CalamityMod.Graphics.Metaballs
         }
         public override GeneralDrawLayer DrawLayer => GeneralDrawLayer.BeforeProjectiles;
 
-        public override Color EdgeColor => new Color(67, 17, 17);
+        public override Color EdgeColor => !ChildSafety.Disabled ? Color.CornflowerBlue : new Color(67, 17, 17);
 
         public override void Update()
         {
@@ -118,7 +118,7 @@ namespace CalamityMod.Graphics.Metaballs
                 Vector2 scale = modScale * particle.Size / texture2d.Width;
                 var frame = texture2d.Frame(1, particle.MaxFrames, 0, particle.CurrentFrame);
                 Vector2 origin = frame.Size() * 0.5f;
-                Main.spriteBatch.Draw(texture2d, drawPosition, frame, (!ChildSafety.Disabled ? Color.CornflowerBlue : Color.White), particle.rotation, origin, scale, SpriteEffects.None, 0f);
+                Main.spriteBatch.Draw(texture2d, drawPosition, frame, !ChildSafety.Disabled ? Color.Black : Color.White, particle.rotation, origin, scale, SpriteEffects.None, 0f);
             }
         }
     }
