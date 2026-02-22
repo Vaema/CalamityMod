@@ -1391,7 +1391,7 @@ namespace CalamityMod.Systems
 
             r = Recipe.Create(ItemID.Bacon);
             r.AddIngredient<PiggyItem>();
-            r.AddTile(TileID.Hellforge);
+            r.AddTile(TileID.CookingPots);
             r.Register();
             r.DisableDecraft();
         }
