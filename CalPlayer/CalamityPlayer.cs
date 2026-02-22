@@ -1110,6 +1110,7 @@ namespace CalamityMod.CalPlayer
         public int spectralVeilImmunity = 0;
         /// <summary> Check for if the player has Plagued Fuel Pack OR Blunder Booster equipped. </summary>
         public bool hasJetpack = false;
+        public bool hasEngineDash = false;
         public bool plaguedFuelPack = false;
         public bool blunderBooster = false;
         public bool blunderBoosterVisibility = true;
@@ -2639,6 +2640,7 @@ namespace CalamityMod.CalPlayer
             sandCloak = false;
             spectralVeil = false;
             hasJetpack = false;
+            hasEngineDash = false;
             plaguedFuelPack = false;
             blunderBooster = false;
             blunderBoosterVisibility = true;
