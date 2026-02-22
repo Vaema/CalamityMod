@@ -13,7 +13,7 @@ namespace CalamityMod.Items.SummonItems
     {
         public new string LocalizationCategory => "Items.SummonItems";
 
-        private const int SpoofBaitNumber = 4444;
+        public const int SpoofBaitNumber = 4444;
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 3;
