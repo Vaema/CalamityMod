@@ -51,7 +51,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 if (Main.rand.NextBool(3))
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(3) ? 130 : 60, -Projectile.velocity.RotatedByRandom(0.1f) * Main.rand.NextFloat(0.01f, 0.3f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, !ChildSafety.Disabled ? DustID.Cloud : (Main.rand.NextBool(3) ? 130 : 60), -Projectile.velocity.RotatedByRandom(0.1f) * Main.rand.NextFloat(0.01f, 0.3f));
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(0.5f, 0.9f);
                     if (dust.type == 130)
