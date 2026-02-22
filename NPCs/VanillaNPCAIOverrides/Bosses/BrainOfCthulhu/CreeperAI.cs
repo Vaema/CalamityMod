@@ -587,7 +587,7 @@ public class CreeperAI : VanillaAIOverride
             ConnectionOpacity = BringOpacityTo(ConnectionOpacity, 0f, 0.05f);
         
         float slowDown = (1 - MathHelper.Clamp((bossCounter - OrbitDuration) / 30f, 0f, 1f));
-        AttackAngle += (BaseRotationSpeed * (MathHelper.Lerp(1f, 0.5f, CreeperAmountRatio) + (bocAI.OnSecondCreeperPhase ? 1f : 0.5f))) * slowDown * bocAI.AttackSign;
+        AttackAngle += (BaseRotationSpeed * (MathHelper.Lerp(1f, 0.5f, CreeperAmountRatio) + (bocAI.OnSecondCreeperPhase ? 0.75f : 0.5f))) * slowDown * bocAI.AttackSign;
         Vector2 rotation = Vector2.UnitX.RotatedBy(CachedValue1 + AttackAngle) * dist;
 
         if (bossCounter < OrbitSetupDuration)
