@@ -278,7 +278,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 NPC.velocity = new Vector2(60, 0);
             if (Main.zenithWorld)
                 NPC.scale *= 1.5f;
-            if (Main.getGoodWorld)
+            if (Main.zenithWorld)
                 NPC.takenDamageMultiplier = 2;
 
 
