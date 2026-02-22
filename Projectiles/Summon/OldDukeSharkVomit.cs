@@ -13,7 +13,7 @@ namespace CalamityMod.Projectiles.Summon
         public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionShot[Type] = true;
+            ProjectileID.Sets.SentryShot[Type] = true;
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         }
 
