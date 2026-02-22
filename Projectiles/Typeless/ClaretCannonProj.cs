@@ -57,15 +57,23 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<Laceration>(), ClaretCannon.ClaretCooldownMax / 2);
-            target.AddBuff(BuffID.BetsysCurse, ClaretCannon.ClaretCooldownMax);
+            var player = Main.player[Projectile.owner];
+
+            int cooldown = 600;
+            if (player.HeldItem.ModItem is IClaretCannonInstance cooldownWeapon)
+                cooldown = cooldownWeapon.CooldownMax;
+
+            target.AddBuff(ModContent.BuffType<Laceration>(), cooldown / 2);
+            target.AddBuff(BuffID.BetsysCurse, cooldown);
+
             if (Projectile.penetrate == -1)
                 return;
-            var player = Main.player[Projectile.owner];
+
             for (var i = 0; i < 20; i++)
             {
                 Projectile.NewProjectile(Projectile.GetSource_OnHit(target), Projectile.Center, -Projectile.velocity.SafeNormalize(Vector2.Zero).RotatedByRandom(1) * Main.rand.NextFloat(2.75f, 5.25f), ModContent.ProjectileType<BloodstoneHealOrb>(), 20, 0f, player.whoAmI);
             }
+
             Projectile.position = Projectile.Center;
             Projectile.Size = new Vector2(352);
             Projectile.Center = Projectile.position;
