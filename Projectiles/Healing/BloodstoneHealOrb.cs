@@ -107,7 +107,7 @@ namespace CalamityMod.Projectiles.Healing
                 player.lifeRegenTime += 3*PotionTime; //if Potion Sickness is full, each orb speeds up natural regen
             }
 
-            Particle ring = new CustomPulse(player.Center, Vector2.Zero, (!ChildSafety.Disabled ? Main.DiscoColor : new Color(255, 32, 32)) * 0.75f, "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, 0, 0.01f, 0.05f, 20);
+            Particle ring = new CustomPulse(player.Center, Vector2.Zero, (!ChildSafety.Disabled ? Color.CornflowerBlue : new Color(255, 32, 32)) * 0.75f, "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, 0, 0.01f, 0.05f, 20);
             GeneralParticleHandler.SpawnParticle(ring);
         }
 

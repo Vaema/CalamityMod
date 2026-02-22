@@ -67,7 +67,7 @@ namespace CalamityMod.Projectiles.Ranged
             float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
 
             // Lighting
-            Lighting.AddLight(Projectile.Center, (!ChildSafety.Disabled ? Main.DiscoColor : Color.Red).ToVector3() * 0.7f);
+            Lighting.AddLight(Projectile.Center, (!ChildSafety.Disabled ? Color.CornflowerBlue : Color.Red).ToVector3() * 0.7f);
 
             // Dust
             Projectile.localAI[0] += 1f;
@@ -83,7 +83,7 @@ namespace CalamityMod.Projectiles.Ranged
                 }
                 if (Projectile.localAI[0] % 2 == 0)
                 {
-                    Particle spark = new CustomSpark(Projectile.Center - Projectile.velocity * 2, -Projectile.velocity * 0.01f, "CalamityMod/Particles/BloomLineFade", false, 6, 0.025f, (!ChildSafety.Disabled ? Main.DiscoColor : Color.Firebrick), new Vector2(1, 1), true, true, shrinkSpeed: 1.4f, glowOpacity: 0.4f);
+                    Particle spark = new CustomSpark(Projectile.Center - Projectile.velocity * 2, -Projectile.velocity * 0.01f, "CalamityMod/Particles/BloomLineFade", false, 6, 0.025f, (!ChildSafety.Disabled ? Color.CornflowerBlue : Color.Firebrick), new Vector2(1, 1), true, true, shrinkSpeed: 1.4f, glowOpacity: 0.4f);
                     GeneralParticleHandler.SpawnParticle(spark);
                 }
             }
@@ -98,7 +98,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Dust dust = Dust.NewDustPerfect(Projectile.Center, dustType, (Projectile.velocity * 2).RotatedByRandom(0.3) * velMulti);
                 dust.noGravity = true;
                 dust.scale = Main.rand.NextFloat(0.75f, 0.95f);
-                dust.color = (!ChildSafety.Disabled ? Main.DiscoColor : Color.Firebrick);
+                dust.color = (!ChildSafety.Disabled ? Color.CornflowerBlue : Color.Firebrick);
                 dust.noLightEmittence = true;
                 dust.noLight = true;
                 dust.fadeIn = 15;

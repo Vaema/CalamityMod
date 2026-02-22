@@ -100,7 +100,7 @@ namespace CalamityMod.Projectiles.Melee
                             Projectile.NewProjectile(Projectile.GetSource_OnHit(target), target.Center, -angle.RotatedByRandom(spreadAmount) * 3.5f * Main.rand.NextFloat(0.75f, 1.25f), ModContent.ProjectileType<BloodstoneHealOrb>(), 20, 0f, player.whoAmI);
 
                         }
-                        Particle bloodsplosion2 = new CustomPulse(target.Center, Vector2.Zero, (!ChildSafety.Disabled ? Main.DiscoColor : new Color(255, 32, 32)) * 0.75f, "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, Main.rand.NextFloat(-15f, 15f), 0.03f, 0.155f, 40);
+                        Particle bloodsplosion2 = new CustomPulse(target.Center, Vector2.Zero, (!ChildSafety.Disabled ? Color.CornflowerBlue : new Color(255, 32, 32)) * 0.75f, "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, Main.rand.NextFloat(-15f, 15f), 0.03f, 0.155f, 40);
                         GeneralParticleHandler.SpawnParticle(bloodsplosion2);
                         SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/BloodPactCrit") { Volume = 0.5f }, player.Center);
                     }

@@ -34,12 +34,12 @@ namespace CalamityMod.Projectiles.Magic
                 SoundEngine.PlaySound(hitSound with { Volume = 0.5f }, Projectile.Center);
                 for (int i = 0; i <= 14; i++)
                 {
-                    BloodParticle blood = new BloodParticle(Projectile.Center, new Vector2(15, 15).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 0.9f) + new Vector2(0, -7), 60, Main.rand.NextFloat(0.4f, 0.65f), (!ChildSafety.Disabled ? Main.DiscoColor : Color.Red));
+                    BloodParticle blood = new BloodParticle(Projectile.Center, new Vector2(15, 15).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 0.9f) + new Vector2(0, -7), 60, Main.rand.NextFloat(0.4f, 0.65f), (!ChildSafety.Disabled ? Color.CornflowerBlue : Color.Red));
                     GeneralParticleHandler.SpawnParticle(blood);
                 }
-                Particle bloodsplosion = new CustomPulse(Projectile.Center, Vector2.Zero, (!ChildSafety.Disabled ? Main.DiscoColor : Color.DarkRed), "CalamityMod/Particles/DetailedExplosion", Vector2.One, Main.rand.NextFloat(-15f, 15f), 0.16f, 0.87f, (int)(Viscera.BoomLifetime * 0.38f), false);
+                Particle bloodsplosion = new CustomPulse(Projectile.Center, Vector2.Zero, (!ChildSafety.Disabled ? Color.CornflowerBlue : Color.DarkRed), "CalamityMod/Particles/DetailedExplosion", Vector2.One, Main.rand.NextFloat(-15f, 15f), 0.16f, 0.87f, (int)(Viscera.BoomLifetime * 0.38f), false);
                 GeneralParticleHandler.SpawnParticle(bloodsplosion);
-                Particle bloodsplosion2 = new CustomPulse(Projectile.Center, Vector2.Zero, (!ChildSafety.Disabled ? Main.DiscoColor : new Color(255, 32, 32)), "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, Main.rand.NextFloat(-15f, 15f), 0.03f, 0.155f, Viscera.BoomLifetime);
+                Particle bloodsplosion2 = new CustomPulse(Projectile.Center, Vector2.Zero, (!ChildSafety.Disabled ? Color.CornflowerBlue : new Color(255, 32, 32)), "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, Main.rand.NextFloat(-15f, 15f), 0.03f, 0.155f, Viscera.BoomLifetime);
                 GeneralParticleHandler.SpawnParticle(bloodsplosion2);
 
                 Projectile.ai[0] = 1f;
@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Magic
             for (int i = 0; i <= 2; i++)
             {
                 float speed = Projectile.ai[1] > 0 ? 25 : 15;
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, (!ChildSafety.Disabled ? DustID.RainbowMk2 : (Main.rand.NextBool() ? 60 : DustID.Blood)));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, (!ChildSafety.Disabled ? DustID.Cloud : (Main.rand.NextBool() ? 60 : DustID.Blood)));
                 dust.scale = Main.rand.NextFloat(1f, 2f) * Utils.GetLerpValue(0, Viscera.BoomLifetime, Projectile.timeLeft, true);
                 dust.velocity = new Vector2(speed, speed).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 0.9f);
                 dust.noGravity = true;

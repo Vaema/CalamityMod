@@ -46,7 +46,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             for (int i = 0; i < 15; i++)
             {
-                Dust blood = Dust.NewDustDirect(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Blood, Projectile.velocity.X * 0.1f, Projectile.velocity.Y * 0.1f);
+                Dust blood = Dust.NewDustDirect(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, !ChildSafety.Disabled ? DustID.Cloud : DustID.Blood, Projectile.velocity.X * 0.1f, Projectile.velocity.Y * 0.1f);
                 blood.velocity = Main.rand.NextVector2Circular(1f, 2f);
                 blood.noGravity = true;
             }
@@ -64,7 +64,7 @@ namespace CalamityMod.Projectiles.Summon
             int startY = frameHeight * Projectile.frame;
             Rectangle sourceRectangle = new Rectangle(0, startY, texture.Width, frameHeight);
             Vector2 origin = sourceRectangle.Size() / 2f;
-            Color drawColor = Main.DiscoColor;
+            Color drawColor = Color.CornflowerBlue;
             drawColor *= Projectile.Opacity;
 
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), sourceRectangle, drawColor, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);

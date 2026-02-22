@@ -55,7 +55,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void AI()
         {
-            Lighting.AddLight(Projectile.Center, (!ChildSafety.Disabled ? Main.DiscoColor : Color.Lerp(Color.Red, Color.White, 0.85f)).ToVector3() * 0.5f * Utils.GetLerpValue(255, 0, Projectile.alpha, true));
+            Lighting.AddLight(Projectile.Center, (!ChildSafety.Disabled ? Color.CornflowerBlue : Color.Lerp(Color.Red, Color.White, 0.85f)).ToVector3() * 0.5f * Utils.GetLerpValue(255, 0, Projectile.alpha, true));
             if (time == 0)
             {
                 stuckTimer = Main.rand.Next(100, 120 + 1);
@@ -69,10 +69,10 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
                 if ((time % 2 == 0 || !canStick) && time > 5)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.UnitX) * 3 + Main.rand.NextVector2Circular(6, 6), !ChildSafety.Disabled ? DustID.RainbowMk2 : DustID.Blood, (-Projectile.velocity.SafeNormalize(Vector2.UnitX) * 4).RotatedByRandom(0.3f) * Main.rand.NextFloat(0.1f, 0.8f), 100, default, Main.rand.NextFloat(0.8f, 1.4f) * (canStick ? 1 : 1.3f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.UnitX) * 3 + Main.rand.NextVector2Circular(6, 6), !ChildSafety.Disabled ? DustID.Cloud : DustID.Blood, (-Projectile.velocity.SafeNormalize(Vector2.UnitX) * 4).RotatedByRandom(0.3f) * Main.rand.NextFloat(0.1f, 0.8f), 100, default, Main.rand.NextFloat(0.8f, 1.4f) * (canStick ? 1 : 1.3f));
                     dust.noGravity = true;
                     Particle blood = new CustomSpark(Projectile.Center, -Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedByRandom(canStick ? 0.3f : 0.1f) * Main.rand.NextFloat(5f, 8f), "CalamityMod/Particles/LargeBloom",
-                            false, 8, Main.rand.NextFloat(0.055f, 0.07f), (!ChildSafety.Disabled ? Main.DiscoColor : Color.Lerp(Color.DarkRed, Color.Black, Main.rand.NextFloat(0, 0.5f))) * 0.7f, new Vector2(0.7f, 1f), false, shrinkSpeed: 0.8f);
+                            false, 8, Main.rand.NextFloat(0.055f, 0.07f), (!ChildSafety.Disabled ? Color.CornflowerBlue : Color.Lerp(Color.DarkRed, Color.Black, Main.rand.NextFloat(0, 0.5f))) * 0.7f, new Vector2(0.7f, 1f), false, shrinkSpeed: 0.8f);
                     GeneralParticleHandler.SpawnParticle(blood);
                 }
                 if (time > 90 && canStick)
@@ -112,12 +112,12 @@ namespace CalamityMod.Projectiles.Rogue
 
                     for (int i = 0; i <= 7; i++)
                     {
-                        Dust dust = Dust.NewDustPerfect(Projectile.Center, !ChildSafety.Disabled ? DustID.RainbowMk2 : DustID.Blood, (storedVelocity * 2.5f).RotatedByRandom(0.7) * Main.rand.NextFloat(0.1f, 0.8f), 0, default, Main.rand.NextFloat(0.9f, 1.8f));
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center, !ChildSafety.Disabled ? DustID.Cloud : DustID.Blood, (storedVelocity * 2.5f).RotatedByRandom(0.7) * Main.rand.NextFloat(0.1f, 0.8f), 0, default, Main.rand.NextFloat(0.9f, 1.8f));
                         dust.noGravity = false;
                     }
                     for (int i = 0; i <= 3; i++)
                     {
-                        Particle spark = new AltSparkParticle(Projectile.Center, (storedVelocity * 4.5f).RotatedByRandom(0.7) * Main.rand.NextFloat(0.1f, 0.8f) + new Vector2(0, -2), true, 20, 0.5f, (!ChildSafety.Disabled ? Main.DiscoColor : Color.DarkRed) * 0.7f);
+                        Particle spark = new AltSparkParticle(Projectile.Center, (storedVelocity * 4.5f).RotatedByRandom(0.7) * Main.rand.NextFloat(0.1f, 0.8f) + new Vector2(0, -2), true, 20, 0.5f, (!ChildSafety.Disabled ? Color.CornflowerBlue : Color.DarkRed) * 0.7f);
                         GeneralParticleHandler.SpawnParticle(spark);
                     }
                     SoundStyle sound = new("CalamityMod/Sounds/NPCHit/PerfSmallHit", 3);
