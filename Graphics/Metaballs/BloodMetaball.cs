@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Graphics.Metaballs
@@ -117,7 +118,7 @@ namespace CalamityMod.Graphics.Metaballs
                 Vector2 scale = modScale * particle.Size / texture2d.Width;
                 var frame = texture2d.Frame(1, particle.MaxFrames, 0, particle.CurrentFrame);
                 Vector2 origin = frame.Size() * 0.5f;
-                Main.spriteBatch.Draw(texture2d, drawPosition, frame, Color.White, particle.rotation, origin, scale, SpriteEffects.None, 0f);
+                Main.spriteBatch.Draw(texture2d, drawPosition, frame, (!ChildSafety.Disabled ? Main.DiscoColor : Color.White), particle.rotation, origin, scale, SpriteEffects.None, 0f);
             }
         }
     }

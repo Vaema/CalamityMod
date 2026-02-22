@@ -5,6 +5,7 @@ using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Graphics.Metaballs
@@ -96,9 +97,9 @@ namespace CalamityMod.Graphics.Metaballs
                 Vector2 scale = Vector2.One * particle.Size / tex.Size();
 
                 float pureRedInterpolant = Utils.GetLerpValue(25f, 60f, particle.Size, true) * pureRedIntensity;
-                Color drawColor = Color.Lerp(EdgeColor, Color.DarkRed, pureRedInterpolant).MultiplyRGBA(new Color(1f, 1f, 1f, opacity));
+                Color drawColor = Color.Lerp(!ChildSafety.Disabled ? Main.DiscoColor : EdgeColor, (!ChildSafety.Disabled ? Main.DiscoColor : Color.DarkRed), pureRedInterpolant).MultiplyRGBA(new Color(1f, 1f, 1f, opacity));
 
-                Main.spriteBatch.Draw(tex, drawPosition, null, drawColor, 0f, origin, scale, SpriteEffects.None, 0f);
+                Main.spriteBatch.Draw(tex, drawPosition, null, (!ChildSafety.Disabled ? Main.DiscoColor : drawColor), 0f, origin, scale, SpriteEffects.None, 0f);
             }
         }
     }

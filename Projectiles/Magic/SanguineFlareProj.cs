@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -74,12 +75,12 @@ namespace CalamityMod.Projectiles.Magic
                 }
 
                 float particleSize = (dmgMult * 5 + 5)/2f;
-                Particle beam3 = new CustomSpark(Projectile.Center, -Projectile.velocity * 0.1f, "CalamityMod/Particles/PearlParticleGlow", false, 10, 0.05f * particleSize, Color.DarkRed, new Vector2(0.5f, 1), false, false, 0, false, false, 0f);
+                Particle beam3 = new CustomSpark(Projectile.Center, -Projectile.velocity * 0.1f, "CalamityMod/Particles/PearlParticleGlow", false, 10, 0.05f * particleSize, (!ChildSafety.Disabled ? Main.DiscoColor : Color.DarkRed), new Vector2(0.5f, 1), false, false, 0, false, false, 0f);
                 GeneralParticleHandler.SpawnParticle(beam3);
 
                 if (Main.rand.NextBool(8))
                 {
-                    Particle beam4 = new CustomSpark(Projectile.Center, Projectile.velocity * 0.1f, "CalamityMod/Particles/WaterFoam", false, 5, 0.01f * particleSize, Color.Red, new Vector2(1f, 1), true, false, Main.rand.NextFloat(-10, 10), false, false, 0f);
+                    Particle beam4 = new CustomSpark(Projectile.Center, Projectile.velocity * 0.1f, "CalamityMod/Particles/WaterFoam", false, 5, 0.01f * particleSize, (!ChildSafety.Disabled ? Main.DiscoColor : Color.Red), new Vector2(1f, 1), true, false, Main.rand.NextFloat(-10, 10), false, false, 0f);
                     GeneralParticleHandler.SpawnParticle(beam4);
                 }
             }
@@ -101,7 +102,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
             for (int i = 0; i < 3; i++)
             {
-                int brimDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 1.2f);
+                int brimDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (!ChildSafety.Disabled ? DustID.RainbowMk2 : (int)CalamityDusts.Brimstone), 0f, 0f, 100, default, 1.2f);
                 Main.dust[brimDust].velocity *= 3f;
                 if (Main.rand.NextBool())
                 {
@@ -111,10 +112,10 @@ namespace CalamityMod.Projectiles.Magic
             }
             for (int j = 0; j < 6; j++)
             {
-                int brimDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 1.7f);
+                int brimDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (!ChildSafety.Disabled ? DustID.RainbowMk2 : (int)CalamityDusts.Brimstone), 0f, 0f, 100, default, 1.7f);
                 Main.dust[brimDust2].noGravity = true;
                 Main.dust[brimDust2].velocity *= 5f;
-                brimDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 1f);
+                brimDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (!ChildSafety.Disabled ? DustID.RainbowMk2 : (int)CalamityDusts.Brimstone), 0f, 0f, 100, default, 1f);
                 Main.dust[brimDust2].velocity *= 2f;
             }
         }
@@ -140,9 +141,9 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.timeLeft = 2;
                 Projectile.velocity *= 0;
                 Projectile.damage /= 2;
-                Particle bloodsplosion = new CustomPulse(Projectile.Center, Vector2.Zero, Color.DarkRed*0.75f, "CalamityMod/Particles/DetailedExplosion", Vector2.One, Main.rand.NextFloat(-15f, 15f), 0.16f*dmgMult/5f, 0.87f * dmgMult / 5f, (int)(40 * 0.38f), false);
+                Particle bloodsplosion = new CustomPulse(Projectile.Center, Vector2.Zero, (!ChildSafety.Disabled ? Main.DiscoColor : Color.DarkRed) * 0.75f, "CalamityMod/Particles/DetailedExplosion", Vector2.One, Main.rand.NextFloat(-15f, 15f), 0.16f*dmgMult/5f, 0.87f * dmgMult / 5f, (int)(40 * 0.38f), false);
                 GeneralParticleHandler.SpawnParticle(bloodsplosion);
-                Particle bloodsplosion2 = new CustomPulse(Projectile.Center, Vector2.Zero, new Color(255, 32, 32)*0.5f, "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, Main.rand.NextFloat(-15f, 15f), 0.03f * dmgMult / 5f, 0.155f * dmgMult / 5f, 40);
+                Particle bloodsplosion2 = new CustomPulse(Projectile.Center, Vector2.Zero, (!ChildSafety.Disabled ? Main.DiscoColor : new Color(255, 32, 32)) * 0.5f, "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, Main.rand.NextFloat(-15f, 15f), 0.03f * dmgMult / 5f, 0.155f * dmgMult / 5f, 40);
                 GeneralParticleHandler.SpawnParticle(bloodsplosion2);
             }
         }
@@ -158,7 +159,7 @@ namespace CalamityMod.Projectiles.Magic
             for (int i = 0; i < 1; i++)
             {
                 //Photoviscerator drawcode, edited slightly
-                    Color color = Color.DarkRed * (dmgMult/5f);
+                    Color color = (!ChildSafety.Disabled ? Main.DiscoColor : Color.DarkRed) * (dmgMult/5f);
                 color.A = 0;
                 Vector2 drawPosition = Projectile.oldPos[i]+Projectile.Size /2f + lightTexture.Size() * 0.5f - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY) + new Vector2(-32.5f, -32.5f); //Last vector is to offset the circle so that it is displayed where the hitbox actually is, instead of a bit down and to the right.
                 Color outerColor = color;

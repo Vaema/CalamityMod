@@ -4,6 +4,7 @@ using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -43,7 +44,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
             if (time % 8 == 0 && time > 40)
             {
-                Particle spark = new CustomSpark(Projectile.Center - Projectile.velocity + Main.rand.NextVector2Circular(20, 20), -Projectile.velocity * Main.rand.NextFloat(0.1f, 0.4f), "CalamityMod/Projectiles/Boss/OldDukeGore", false, Main.rand.Next(9, 20 + 1), Main.rand.NextFloat(0.4f, 0.6f), Color.Lerp(Color.White, Color.Chartreuse, 0.5f) * Main.rand.NextFloat(0.55f, 0.7f) * Utils.GetLerpValue(255, 0, Projectile.alpha), new Vector2(1, 1), false, false, Main.rand.NextFloat(-1f, 1f));
+                Particle spark = new CustomSpark(Projectile.Center - Projectile.velocity + Main.rand.NextVector2Circular(20, 20), -Projectile.velocity * Main.rand.NextFloat(0.1f, 0.4f), "CalamityMod/Projectiles/Boss/OldDukeGore", false, Main.rand.Next(9, 20 + 1), Main.rand.NextFloat(0.4f, 0.6f), (!ChildSafety.Disabled ? Main.DiscoColor : Color.Lerp(Color.White, Color.Chartreuse, 0.5f)) * Main.rand.NextFloat(0.55f, 0.7f) * Utils.GetLerpValue(255, 0, Projectile.alpha), new Vector2(1, 1), false, false, Main.rand.NextFloat(-1f, 1f));
                 GeneralParticleHandler.SpawnParticle(spark);
             }
             if (Main.rand.NextBool(15))
@@ -55,7 +56,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
             if (Main.rand.NextBool(3))
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.UnitX) * 3 + Main.rand.NextVector2Circular(6, 6), DustID.Blood, (-Projectile.velocity.SafeNormalize(Vector2.UnitX) * 4).RotatedByRandom(0.3f) * Main.rand.NextFloat(0.1f, 0.8f), 100, default, Main.rand.NextFloat(0.8f, 1.4f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.UnitX) * 3 + Main.rand.NextVector2Circular(6, 6), !ChildSafety.Disabled ? DustID.RainbowMk2 : DustID.Blood, (-Projectile.velocity.SafeNormalize(Vector2.UnitX) * 4).RotatedByRandom(0.3f) * Main.rand.NextFloat(0.1f, 0.8f), 100, default, Main.rand.NextFloat(0.8f, 1.4f));
                 dust.noGravity = true;
                 dust.alpha = (int)MathHelper.Clamp(Projectile.alpha, 0, 255);
             }
