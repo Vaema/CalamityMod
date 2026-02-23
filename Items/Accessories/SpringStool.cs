@@ -1,4 +1,5 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.Collections.Generic;
+using CalamityMod.CalPlayer;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -8,6 +9,9 @@ namespace CalamityMod.Items.Accessories
     public class SpringStool : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
+        public override void ModifyTooltips(List<TooltipLine> list) => list.IntegrateHotkey(CalamityKeybinds.SpringStoolJumpHotKey);
+
+        public static int JumpCooldown = CalamityUtils.SecondsToFrames(5);
 
         public override void SetDefaults()
         {

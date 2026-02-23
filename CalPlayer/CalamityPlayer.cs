@@ -866,6 +866,7 @@ namespace CalamityMod.CalPlayer
         public bool teslaVisuals = true;
         public bool cryogenSoul = false;
         public bool springStool = false;
+        public int springStoolTimer = 0;
         public bool ascendantInsignia = false;
         public int ascendantInsigniaBuffTime = 0;
         public int ascendantInsigniaCooldown = 0;
@@ -2415,6 +2416,7 @@ namespace CalamityMod.CalPlayer
             teslaVisuals = true;
             cryogenSoul = false;
             springStool = false;
+            springStoolTimer = 0;
             ascendantInsignia = false;
             magmaStoneVisuals = true;
             eGauntlet = false;
@@ -3660,6 +3662,7 @@ namespace CalamityMod.CalPlayer
                     }
                 }
             }
+
             if (CalamityKeybinds.BoosterDashHotKey.JustPressed && hasJetpack && Main.myPlayer == Player.whoAmI && rogueStealth >= rogueStealthMax * 0.25f &&
                 wearingRogueArmor && rogueStealthMax > 0 && !Player.HasCooldown(RogueBooster.ID) && !Player.mount.Active)
             {
@@ -4571,6 +4574,27 @@ namespace CalamityMod.CalPlayer
         #region PreUpdateMovement
         public override void PreUpdateMovement()
         {
+            if (springStoolTimer > 0)
+            {
+                springStoolTimer--;
+
+                if (Player.whoAmI == Main.myPlayer)
+                {
+                    float launchPower = 18f * Utils.GetLerpValue(0, 10, springStoolTimer, true);
+                    Player.velocity.Y = -launchPower;
+
+                    // Prevent vanilla jump logic from interfering
+                    Player.jump = 0;
+                    Player.fallStart = (int)(Player.position.Y / 16f);
+
+                    if (Main.rand.NextBool(2))
+                    {
+                        Dust d = Dust.NewDustDirect(Player.BottomLeft, Player.width, 4, DustID.Cloud, 0, 2f);
+                        d.velocity.X *= 0.5f;
+                        d.noGravity = true;
+                    }
+                }
+            }
 
             // Rain armor set effects
             if (rainSet)
@@ -4970,37 +4994,6 @@ namespace CalamityMod.CalPlayer
                 Lighting.AddLight(Player.Center, Light * (0.55f + (oceanCrestTimer * 0.0035f)));
             }
 
-            if (springStool)
-            {          
-
-                if (springStool)
-                {
-                    bool holdingUp = Player.controlUp;
-                    bool standingStill = Player.velocity.Y == 0 && Player.velocity.X == 0;
-
-                    if (holdingUp && standingStill && !Player.mount.Active)
-                    {
-                        // Vertical displacement when using Spring Stool
-                        int boost = 61;
-
-                        Player.portableStoolInfo.HasAStool = true;
-                        Player.portableStoolInfo.IsInUse = true;
-                        Player.portableStoolInfo.HeightBoost = boost;
-                        Player.portableStoolInfo.VisualYOffset = boost;
-                        Player.portableStoolInfo.MapYOffset = boost;
-
-                        Player.UpdatePortableStoolUsage();
-
-                    }
-                    else
-                    {
-                        // Stool still exists even if not being used
-                        Player.portableStoolInfo.HasAStool = true;
-                    }
-
-                }
-            }
-
             if (rampartOfDeities)
             {
                 // Ice Barrier buff inherited from Frozen Turtle Shell
@@ -5041,6 +5034,68 @@ namespace CalamityMod.CalPlayer
                 if (gSabaton && Player.whoAmI == Main.myPlayer)
                     Player.jumpSpeedBoost += 2f;
             }
+
+            if (CalamityKeybinds.SpringStoolJumpHotKey.JustPressed && springStool && Main.myPlayer == Player.whoAmI && !Player.HasCooldown(Stooldown.ID) && !Player.mount.Active)
+            {
+                springStoolTimer = 12;
+
+                Player.AddCooldown(Stooldown.ID, SpringStool.JumpCooldown, true);
+
+                SoundEngine.PlaySound(SoundID.Item61 with { Pitch = 0.3f, Volume = 0.8f }, Player.Center);
+            }
+
+            if (springStool)
+            {
+                bool holdingUp = Player.controlUp;
+                bool standingStill = Player.velocity.Y == 0 && Math.Abs(Player.velocity.X) < 0.1f;
+
+                if (holdingUp && standingStill && !Player.mount.Active)
+                {
+                    int boost = 61; 
+                    if (IsVanillaStoolEquipped(Player)) 
+                        boost += 24; 
+
+                    Player.portableStoolInfo.HasAStool = true;
+                    Player.portableStoolInfo.IsInUse = true;
+                    Player.portableStoolInfo.HeightBoost = boost;
+                    Player.portableStoolInfo.VisualYOffset = boost;
+                    Player.portableStoolInfo.MapYOffset = boost;
+                    
+                    // Forces the player into the stool-standing frame
+                    Player.UpdatePortableStoolUsage();
+                }
+                else
+                {
+                    // Ensures the player can use the stool if they stop moving/hold up
+                    Player.portableStoolInfo.HasAStool = true;
+                }
+            }
+        }
+
+
+        private void HandleStoolStacking(On_PlayerDrawLayers.orig_DrawPlayer_03_PortableStool orig, ref PlayerDrawSet drawInfo)
+        {
+            if (springStool)
+            {
+                if (IsVanillaStoolEquipped(drawInfo.drawPlayer))
+                {
+                    orig(ref drawInfo);
+                    return;
+                }
+                return;
+            }
+
+            orig(ref drawInfo);
+        }
+
+        private bool IsVanillaStoolEquipped(Player player)
+        {
+            for (int k = 2; k < 12; k++)
+            {
+                if (player.armor[k].type == ItemID.PortableStool)
+                    return true;
+            }
+            return false;
         }
         #endregion
 
@@ -5057,8 +5112,6 @@ namespace CalamityMod.CalPlayer
 
         public override void PostUpdate()
         {
-            Main.NewText(Main.LocalPlayer.Top.Y);
-
             if (ZoneAbyss && Main.netMode != NetmodeID.Server)
             {
                 //Main aura
@@ -6284,17 +6337,10 @@ namespace CalamityMod.CalPlayer
 
         public override void Load()
         {
-            // Hook into the vanilla stool drawing method to remove it
-            On_PlayerDrawLayers.DrawPlayer_03_PortableStool += HideStepStool;
+            // Hook directly into vanilla's stool drawing
+            On_PlayerDrawLayers.DrawPlayer_03_PortableStool += HandleStoolStacking;
         }
 
-        private void HideStepStool(On_PlayerDrawLayers.orig_DrawPlayer_03_PortableStool orig, ref PlayerDrawSet drawInfo)
-        {
-            if (drawInfo.drawPlayer.GetModPlayer<CalamityPlayer>().springStool)
-                return;
-
-            orig(ref drawInfo);
-        }
         #endregion
 
         #region Mana Consumption Effects
