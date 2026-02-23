@@ -1127,7 +1127,7 @@ StellarKnife: {
 	DisplayName: Stellar Knife
 	Tooltip:
 		'''
-		Throws knives that stop middair and then home into enemies, inflicting [cbuff:CalamityMod/AstralInfectionDebuff]
+		Throws knives that stop midair and then home into enemies, inflicting [cbuff:CalamityMod/AstralInfectionDebuff]
 		Stealth strikes throw a volley of 10 knives in a spread
 		'ZA WARUDO'
 		'''

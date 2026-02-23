@@ -79,7 +79,11 @@ DeathExpandedInfo:
 	'''
 Malice: Malice
 MaliceShortInfo: "[c/f08080:For those who wish for suffering. Can only be enabled in Legendary Mode]"
-MaliceExpandedInfo: "[c/a34e4e:Enemies have Death Mode and For The Worthy behavior with Legendary Mode stats]"
+MaliceExpandedInfo: 
+    '''
+    [c/a34e4e:Enemies have Death Mode and For The Worthy behavior with Legendary Mode stats]
+    [c/a34e4e:This difficulty is not to be taken seriously]
+    '''
 // Calamity Health Bar
 ExoTwinsNameNormal: XS-01 Artemis and XS-03 Apollo
 ExoTwinsNameHekate: Eyes of XB-∞ Hekate

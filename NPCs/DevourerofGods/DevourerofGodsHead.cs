@@ -278,7 +278,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 NPC.velocity = new Vector2(60, 0);
             if (Main.zenithWorld)
                 NPC.scale *= 1.5f;
-            if (Main.getGoodWorld)
+            if (Main.zenithWorld)
                 NPC.takenDamageMultiplier = 2;
 
 
@@ -2291,6 +2291,11 @@ namespace CalamityMod.NPCs.DevourerofGods
                 {
                     NPC.ai[3] = 4;
                     NPC.SimpleStrikeNPC(10000, 1);
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        int bType = Main.rand.Next(0, 2);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), LaserWallDamage, 0, Main.myPlayer, 0.45f, 300, bType);
+                    }
                 }
             }
             else
