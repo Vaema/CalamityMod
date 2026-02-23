@@ -856,7 +856,7 @@ namespace CalamityMod.CalPlayer
                             int mirrorDamage = (int)MathHelper.Min(actualProjDamage, 1000) * 50;
                             for (var i = 0; i < 5; i++)
                             {
-                                Projectile.NewProjectile(source, Player.Center + Vector2.UnitX.RotatedBy(MathHelper.TwoPi * (i / 10f)), Vector2.Zero, ModContent.ProjectileType<MirrorBlast>(), mirrorDamage, 5, Main.myPlayer, 1);
+                                Projectile.NewProjectile(source, Player.Center + Vector2.UnitX.RotatedBy(MathHelper.TwoPi * (i / 5f)), Vector2.Zero, ModContent.ProjectileType<MirrorBlast>(), mirrorDamage, 5, Main.myPlayer, 1);
                             }
                         }
                         projTypeJustHitBy = proj.type;
@@ -1309,7 +1309,7 @@ namespace CalamityMod.CalPlayer
 
             if (alchFlask)
             {
-                for (int i = 0; i < 9; i++)
+                for (int i = 0; i < (Player.strongBees ? 12 : 9); i++)
                 {
                     int seekerDamage = (int)Player.GetBestClassDamage().ApplyTo(15);
 

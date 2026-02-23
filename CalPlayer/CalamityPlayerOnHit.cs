@@ -702,7 +702,7 @@ namespace CalamityMod.CalPlayer
                 bee.ArmorPenetration = 20;
                 bee.penetrate = 2;
                 bee.extraUpdates = 1;
-                AlchFlaskCooldown = 7;
+                AlchFlaskCooldown = Player.strongBees ? 6 : 7;
             }
 
             bool lifeAndShieldCondition = Player.statLife >= Player.statLifeMax2 && (!HasAnyEnergyShield || TotalEnergyShielding >= TotalMaxShieldDurability);
