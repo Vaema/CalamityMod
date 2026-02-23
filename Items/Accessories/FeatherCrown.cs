@@ -33,6 +33,7 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.featherCrown = true;
+            modPlayer.mageCrownVisibility = !hideVisual;
             player.GetDamage<MagicDamageClass>() += (0.02f * modPlayer.mageCrownCount); //2% per feather, up to 10%
             player.manaCost -= (0.01f * modPlayer.mageCrownCount); //1% per feather, up to 5%
             if (modPlayer.mageCrownCount == 5)

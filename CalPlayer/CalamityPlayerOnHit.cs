@@ -1193,7 +1193,7 @@ namespace CalamityMod.CalPlayer
                 }
                 if(featherCrown && mageCrownCount == 5)
                 {
-                    target.AddBuff(BuffID.Frostburn, 180);
+                    target.AddBuff(BuffType<StaticDischarge>(), 120);
                 }
             }
             if (summon)

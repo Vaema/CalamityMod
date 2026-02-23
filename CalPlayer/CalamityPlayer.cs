@@ -1095,9 +1095,9 @@ namespace CalamityMod.CalPlayer
         public bool eclipseMirror = false;
         public bool featherCrown = false;
         public bool moonCrown = false;
+        public bool mageCrownVisibility = false;
         public int mageCrownTimer = 0;
         public int mageCrownCount = 0;
-        public int crownShatterTimer = 0;
         public bool dragonScales = false;
         public bool gloveOfPrecision = false;
         public bool gloveOfRecklessness = false;
@@ -2631,6 +2631,7 @@ namespace CalamityMod.CalPlayer
             eclipseMirror = false;
             featherCrown = false;
             moonCrown = false;
+            mageCrownVisibility = false;
             dragonScales = false;
             gloveOfPrecision = false;
             gloveOfRecklessness = false;
@@ -3125,7 +3126,6 @@ namespace CalamityMod.CalPlayer
             theBeeCooldown = 0;
             scuttlerCooldown = 0;
             mageCrownTimer = 0;
-            crownShatterTimer = 0;
             wingProjectileCooldown = 0;
             hallowedRuneCooldown = 0;
             sulphurBubbleCooldown = 0;
@@ -4855,13 +4855,12 @@ namespace CalamityMod.CalPlayer
                 int manaCost = Player.GetManaCost(Player.HeldItem);
                 if (Player.statMana < manaCost)
                 {
-                    if (moonCrown)
+                    if (moonCrown || featherCrown)
                     {
-                        if (mageCrownCount > 0 && crownShatterTimer == 0)
+                        if (mageCrownCount > 0)
                         {
-                            mageCrownCount = -5;
+                            mageCrownCount = 0;
                             mageCrownTimer = 300;
-                            crownShatterTimer = 45;
                         }
                         if (mageCrownCount < 0) mageCrownCount = 0;
                     }

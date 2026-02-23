@@ -16,6 +16,8 @@ namespace CalamityMod.Projectiles.Magic
     public class MoonSigil : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
+        public Player Owner => Main.player[Projectile.owner];
+        public bool visuals => Owner.Calamity().mageCrownVisibility; // Enables/disables visuals and sounds based on accessory visibility
         public override void SetDefaults()
         {
             Projectile.width = 20;
@@ -104,11 +106,14 @@ namespace CalamityMod.Projectiles.Magic
         {
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
+            if (visuals)
+            {
+                SoundEngine.PlaySound(SoundID.Item8, player.Center);
+            }
             if (modPlayer.mageCrownCount == 10)
             {
                 SoundEngine.PlaySound(SoundID.DD2_DarkMageHealImpact with { Volume = 1.3f }, player.Center);
             }
-
         }   
         public override void OnKill(int timeLeft)
         {
@@ -165,30 +170,14 @@ namespace CalamityMod.Projectiles.Magic
             Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
-            if (modPlayer.mageCrownCount >= 10)
+            if (modPlayer.mageCrownCount >= 10 && visuals)
             {
                 for (int i = 0; i < 4; i++)
                 {
                     Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, (Color.Teal * 0.5f) with { A = 0 }, Projectile.rotation, texture.Size() * 0.5f, Projectile.scale * 1.1f, SpriteEffects.None, 0f);
                 }
             }
-            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, texture.Size() * 0.5f, Projectile.scale * 0.9f, SpriteEffects.None, 0);
-            Main.spriteBatch.Draw
-            (
-                texture,
-                new Vector2
-                (
-                    Projectile.position.X - Main.screenPosition.X + Projectile.width * 0.5f,
-                    Projectile.position.Y - Main.screenPosition.Y + Projectile.height - 20 * 0.5f
-                ),
-                new Rectangle(0, 0, 20, 20),
-                Color.White,
-                Projectile.rotation,
-                new Vector2(10, 10),
-                Projectile.scale * 0.9f,
-                SpriteEffects.None,
-                0f
-            );
+            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor) * (visuals ? 1f : 0.5f), Projectile.rotation, texture.Size() * 0.5f, Projectile.scale * 0.9f, SpriteEffects.None, 0);
             return false;
         }
         public override bool? CanDamage() => false;

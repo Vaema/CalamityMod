@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using CalamityMod.CalPlayer;
+using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -13,6 +16,8 @@ namespace CalamityMod.Projectiles.Magic
     {
         public new string LocalizationCategory => "Projectiles.Magic";
         public override string Texture => "CalamityMod/Projectiles/Magic/StickyFeather";
+        public Player Owner => Main.player[Projectile.owner];
+        public bool visuals => Owner.Calamity().mageCrownVisibility; // Enables/disables visuals and sounds based on accessory visibility
         public override void SetDefaults()
         {
             Projectile.width = 10;
@@ -100,6 +105,21 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.spriteDirection = Projectile.direction;
 
         }
+        public override void OnSpawn(IEntitySource source)
+        {
+            Player player = Main.player[Projectile.owner];
+            CalamityPlayer modPlayer = player.Calamity();
+            if (visuals)
+            {
+                SoundEngine.PlaySound(SoundID.Item20, player.Center);
+            }
+            if (modPlayer.mageCrownCount == 5)
+            {
+                SoundStyle max = new("CalamityMod/Sounds/Item/AscendantOff");
+                SoundEngine.PlaySound(max with { volume = 0.6f }, player.Center);
+            }
+        }
+
         public override void OnKill(int timeLeft)
         {
             float dustSp = 0.2f;
@@ -118,6 +138,15 @@ namespace CalamityMod.Projectiles.Magic
                 dustD += 90;
                 dustSp = 0.2f;
             }
+            Player player = Main.player[Projectile.owner];
+            CalamityPlayer modPlayer = player.Calamity();
+            //Ensures the breaking sound doesn't play when the player removes the accessory
+            if (modPlayer.featherCrown)
+            {
+                SoundEngine.PlaySound(SoundID.Item109);
+                SoundStyle aud = new("CalamityMod/Sounds/Item/MittFail");
+                SoundEngine.PlaySound(aud with { Volume = 1f, Pitch = 0 }, Projectile.Center);
+            }
         }
         public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)
         {
@@ -132,14 +161,14 @@ namespace CalamityMod.Projectiles.Magic
             Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
-            if (modPlayer.mageCrownCount == 5)
+            if (modPlayer.mageCrownCount == 5 && visuals)
             {
                 for (int i = 0; i < 6; i++)
                 {
                     Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, (Color.Teal * 0.5f) with { A = 0 }, Projectile.rotation, texture.Size() * 0.5f, Projectile.scale * 1.01f, SpriteEffects.None, 0f);
                 }
             }
-            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, texture.Size() * 0.5f, Projectile.scale * 0.9f, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor) * (visuals ? 1f : 0.5f), Projectile.rotation, texture.Size() * 0.5f, Projectile.scale * 0.9f, SpriteEffects.None, 0);
             return false;
         }
         public override bool? CanDamage() => false;
