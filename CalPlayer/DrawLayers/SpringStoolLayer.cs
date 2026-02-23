@@ -34,9 +34,9 @@ namespace CalamityMod.CalPlayer.DrawLayers
             Player drawPlayer = drawInfo.drawPlayer;
 
             // Load textures if null
-            stoolTexture ??= ModContent.Request<Texture2D>("CalamityMod/ExtraJumps/SpringStoolBottom");
-            springTexture ??= ModContent.Request<Texture2D>("CalamityMod/ExtraJumps/SpringStoolSpring");
-            topTexture ??= ModContent.Request<Texture2D>("CalamityMod/ExtraJumps/SpringStoolTop");
+            stoolTexture ??= ModContent.Request<Texture2D>("CalamityMod/CalPlayer/DrawLayers/SpringStoolBottom");
+            springTexture ??= ModContent.Request<Texture2D>("CalamityMod/CalPlayer/DrawLayers/SpringStoolSpring");
+            topTexture ??= ModContent.Request<Texture2D>("CalamityMod/CalPlayer/DrawLayers/SpringStoolTop");
 
             Texture2D stoolTex = stoolTexture.Value;
             Texture2D springTex = springTexture.Value;

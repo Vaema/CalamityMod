@@ -4586,13 +4586,6 @@ namespace CalamityMod.CalPlayer
                     // Prevent vanilla jump logic from interfering
                     Player.jump = 0;
                     Player.fallStart = (int)(Player.position.Y / 16f);
-
-                    if (Main.rand.NextBool(2))
-                    {
-                        Dust d = Dust.NewDustDirect(Player.BottomLeft, Player.width, 4, DustID.Cloud, 0, 2f);
-                        d.velocity.X *= 0.5f;
-                        d.noGravity = true;
-                    }
                 }
             }
 
@@ -5039,7 +5032,11 @@ namespace CalamityMod.CalPlayer
             {
                 springStoolTimer = 12;
 
-                Player.AddCooldown(Stooldown.ID, SpringStool.JumpCooldown, true);
+                Player.AddCooldown(Stooldown.ID, (int) SpringStool.JumpCooldown / 10, true);
+
+                Vector2 spawnPos = Player.Bottom + new Vector2(0f, -60f);
+
+                Projectile.NewProjectile(Player.GetSource_FromThis(), spawnPos, new Vector2(Main.rand.NextFloat(-1f, 1f), 2f), ModContent.ProjectileType<SpringStoolJumpFX>(), 0, 0f, Player.whoAmI);
 
                 SoundEngine.PlaySound(SoundID.Item61 with { Pitch = 0.3f, Volume = 0.8f }, Player.Center);
             }
@@ -5075,24 +5072,37 @@ namespace CalamityMod.CalPlayer
 
         private void HandleStoolStacking(On_PlayerDrawLayers.orig_DrawPlayer_03_PortableStool orig, ref PlayerDrawSet drawInfo)
         {
-            if (springStool)
+            bool isUsingStool = drawInfo.drawPlayer.portableStoolInfo.IsInUse;
+            var modPlayer = drawInfo.drawPlayer.GetModPlayer<CalamityPlayer>();
+            bool hasSpring = modPlayer.springStool;
+
+            if (!isUsingStool)
             {
-                if (IsVanillaStoolEquipped(drawInfo.drawPlayer))
-                {
-                    orig(ref drawInfo);
-                    return;
-                }
+                orig(ref drawInfo);
                 return;
             }
 
-            orig(ref drawInfo);
+            if (!hasSpring)
+            {
+                orig(ref drawInfo);
+                return;
+            }
+
+            if (IsVanillaStoolEquipped(drawInfo.drawPlayer))
+            {
+                orig(ref drawInfo);
+                return;
+            }
+
+            return;
         }
 
         private bool IsVanillaStoolEquipped(Player player)
         {
-            for (int k = 2; k < 12; k++)
+            for (int k = 3; k <= 12; k++)
             {
                 if (player.armor[k].type == ItemID.PortableStool)
+
                     return true;
             }
             return false;
