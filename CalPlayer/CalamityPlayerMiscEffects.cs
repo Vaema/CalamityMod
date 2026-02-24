@@ -4788,7 +4788,7 @@ namespace CalamityMod.CalPlayer
                         {
                             totalDefenseDamage = 0;
                             defenseDamageRecoveryFrames = 0;
-                            totalDefenseDamageRecoveryFrames = DefenseDamageBaseRecoveryTime * (moonshine ? 2 : 1);
+                            totalDefenseDamageRecoveryFrames = DefenseDamageBaseRecoveryTime;
                             defenseDamageDelayFrames = 0;
                         }
                     }
