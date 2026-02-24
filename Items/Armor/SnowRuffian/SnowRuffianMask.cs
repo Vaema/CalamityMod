@@ -10,7 +10,7 @@ namespace CalamityMod.Items.Armor.SnowRuffian
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
 
-        public static int RangedCritBoost = 4;
+        public static int RangedCritBoost = 3;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedCritBoost);
 
         // Set Bonus
@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Armor.SnowRuffian
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
-            Item.defense = 3; // 12
+            Item.defense = 2; // 9
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ModContent.ItemType<SnowRuffianChestplate>() && legs.type == ModContent.ItemType<SnowRuffianGreaves>();

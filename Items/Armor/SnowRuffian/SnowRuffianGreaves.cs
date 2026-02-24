@@ -10,7 +10,7 @@ namespace CalamityMod.Items.Armor.SnowRuffian
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
 
-        public static int RangedCritBoost = 4;
+        public static int RangedCritBoost = 3;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedCritBoost);
 
         public override void SetDefaults()
@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Armor.SnowRuffian
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
-            Item.defense = 4; //12
+            Item.defense = 3; //9
         }
 
         public override void UpdateEquip(Player player) => player.GetCritChance<RangedDamageClass>() += RangedCritBoost;
