@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Armor.SnowRuffian
             Item.defense = 3; //9
         }
 
-        public override void UpdateEquip(Player player) => player.GetCritChance<RangedDamageClass>() += RangedDamageBoost;
+        public override void UpdateEquip(Player player) => player.GetDamage<RangedDamageClass>() += RangedDamageBoost;
 
         public override void AddRecipes()
         {
