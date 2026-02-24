@@ -2,6 +2,7 @@
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -42,7 +43,7 @@ namespace CalamityMod.Projectiles.Ranged
             float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
 
             // Lighting
-            Lighting.AddLight(Projectile.Center, Color.Red.ToVector3() * 0.5f);
+            Lighting.AddLight(Projectile.Center, (!ChildSafety.Disabled ? Color.CornflowerBlue : Color.Red).ToVector3() * 0.5f);
 
             // Dust
             Projectile.localAI[0] += 1f;
@@ -50,7 +51,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 if (Main.rand.NextBool(3))
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(3) ? 130 : 60, -Projectile.velocity.RotatedByRandom(0.1f) * Main.rand.NextFloat(0.01f, 0.3f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, !ChildSafety.Disabled ? DustID.Cloud : (Main.rand.NextBool(3) ? 130 : 60), -Projectile.velocity.RotatedByRandom(0.1f) * Main.rand.NextFloat(0.01f, 0.3f));
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(0.5f, 0.9f);
                     if (dust.type == 130)
@@ -58,7 +59,7 @@ namespace CalamityMod.Projectiles.Ranged
                 }
                 if (targetDist < 1400f)
                 {
-                    SparkParticle spark = new SparkParticle(Projectile.Center - Projectile.velocity, -Projectile.velocity * 0.01f, false, 4, 0.4f, Color.Firebrick);
+                    SparkParticle spark = new SparkParticle(Projectile.Center - Projectile.velocity, -Projectile.velocity * 0.01f, false, 4, 0.4f, !ChildSafety.Disabled ? Color.CornflowerBlue : Color.Firebrick);
                     GeneralParticleHandler.SpawnParticle(spark);
                 }
             }
@@ -71,7 +72,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             if (Projectile.localAI[0] > 6f)
             {
-                CalamityUtils.DrawAfterimagesFromEdge(Projectile, 0, Color.Red);
+                CalamityUtils.DrawAfterimagesFromEdge(Projectile, 0, (!ChildSafety.Disabled ? Color.CornflowerBlue : Color.Red));
             }
             return true;
         }
@@ -92,7 +93,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 for (int k = 0; k < 3; k++)
                 {
-                    BloodParticle blood = new BloodParticle(Projectile.Center, new Vector2(6.5f, 6.5f).RotatedByRandom(100) * Main.rand.NextFloat(0.8f, 1.2f), Main.rand.Next(8, 10 + 1), Main.rand.NextFloat(0.7f, 0.9f), Color.Red);
+                    BloodParticle blood = new BloodParticle(Projectile.Center, new Vector2(6.5f, 6.5f).RotatedByRandom(100) * Main.rand.NextFloat(0.8f, 1.2f), Main.rand.Next(8, 10 + 1), Main.rand.NextFloat(0.7f, 0.9f), !ChildSafety.Disabled ? Color.CornflowerBlue : Color.Red);
                     GeneralParticleHandler.SpawnParticle(blood);
 
                     int dustType = ModContent.DustType<DiamondDust>();
@@ -100,7 +101,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Dust dust = Dust.NewDustPerfect(Projectile.Center, dustType, (-Projectile.velocity * 4).RotatedByRandom(0.4) * velMulti);
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(0.55f, 0.65f);
-                    dust.color = Color.Firebrick;
+                    dust.color = !ChildSafety.Disabled ? Color.CornflowerBlue : Color.Firebrick;
                     dust.noLightEmittence = true;
                     dust.noLight = true;
                     dust.fadeIn = 15;
@@ -113,12 +114,12 @@ namespace CalamityMod.Projectiles.Ranged
         {
             for (int k = 0; k < 3; k++)
             {
-                SparkParticle spark = new SparkParticle(Projectile.Center, -Projectile.velocity.RotatedByRandom(0.5) * Main.rand.NextFloat(1f, 3f), false, Main.rand.Next(5, 7 + 1), Main.rand.NextFloat(0.4f, 0.6f), Color.Red);
+                SparkParticle spark = new SparkParticle(Projectile.Center, -Projectile.velocity.RotatedByRandom(0.5) * Main.rand.NextFloat(1f, 3f), false, Main.rand.Next(5, 7 + 1), Main.rand.NextFloat(0.4f, 0.6f), !ChildSafety.Disabled ? Color.CornflowerBlue : Color.Red);
                 GeneralParticleHandler.SpawnParticle(spark);
             }
             for (int k = 0; k < 8; k++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(3) ? 130 : 60, new Vector2(3, 3).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1.5f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, (!ChildSafety.Disabled ? DustID.Cloud : (Main.rand.NextBool(3) ? 130 : 60)), new Vector2(3, 3).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1.5f));
                 dust.noGravity = true;
                 dust.scale = Main.rand.NextFloat(0.5f, 0.9f);
                 if (dust.type == 130)
