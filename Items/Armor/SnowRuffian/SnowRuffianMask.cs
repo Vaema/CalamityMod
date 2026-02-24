@@ -43,7 +43,7 @@ namespace CalamityMod.Items.Armor.SnowRuffian
             player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusFrostburnDuration.FramesToSeconds());
         }
 
-        public override void UpdateEquip(Player player) => player.GetCritChance<RangedDamageClass>() += RangedCritBoost;
+        public override void UpdateEquip(Player player) => player.GetCritChance<RangedDamageClass>() += RangedDamageBoost;
 
         public override void AddRecipes()
         {
