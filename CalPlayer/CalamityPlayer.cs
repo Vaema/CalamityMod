@@ -1118,6 +1118,7 @@ namespace CalamityMod.CalPlayer
         public bool scionsCurio = false;
         public bool scionsCurioGotHit = false;
         public bool scionsCurioVisuals = false;
+        public float scionsCurioDebuffDamage = 0;
         public bool miniOldDuke = false;
         public bool miniOldDukeVanity = false;
         public bool starbusterCore = false;
@@ -4989,6 +4990,13 @@ namespace CalamityMod.CalPlayer
                     }
                 }
             }
+
+            if (scionsCurio)
+            {
+                scionsCurioDebuffDamage = Player.GetTotalDamage(DamageClass.Ranged).ApplyTo(Irradiated.debuffData.EnemyLostRegen * (1 + Player.GetTotalCritChance(DamageClass.Ranged) * 0.01f));
+            }
+            else
+                scionsCurioDebuffDamage = 0;
 
             // True melee damage from various vanilla equipment placed here.
 

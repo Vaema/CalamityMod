@@ -10,12 +10,12 @@ namespace CalamityMod.Items.Armor.SnowRuffian
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
 
-        public static int RangedCritBoost = 3;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedCritBoost);
+        public static float RangedDamageBoost = 0.05f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedDamageBoost.ToPercent());
 
         // Set Bonus
         public static float GlideFallSpeedMult = 0.9f;
-        public static int SetBonusFrostburnDuration = CalamityUtils.SecondsToFrames(3);
+        public static int SetBonusFrostburnDuration = CalamityUtils.SecondsToFrames(2);
 
         public override void Load()
         {
@@ -43,7 +43,7 @@ namespace CalamityMod.Items.Armor.SnowRuffian
             player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusFrostburnDuration.FramesToSeconds());
         }
 
-        public override void UpdateEquip(Player player) => player.GetCritChance<RangedDamageClass>() += RangedCritBoost;
+        public override void UpdateEquip(Player player) => player.GetCritChance<RangedDamageClass>() += RangedDamageBoost;
 
         public override void AddRecipes()
         {

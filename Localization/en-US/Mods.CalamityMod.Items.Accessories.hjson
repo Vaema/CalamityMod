@@ -1526,10 +1526,11 @@ ScionsCurio: {
 	DisplayName: Scions Curio
 	Tooltip:
 		'''
-		Ranged hits increase the effectiveness of the Irradiated debuff
-		Irradiated damage over time scales off of your ranged damage and crit chance
-		On kill, enemies burst, spreading Irradiated
+		Ranged hits increase the effectiveness of [cbuff:CalamityMod/Irradiated]
+		[cbuff:CalamityMod/Irradiated] damage over time scales off of your ranged damage and crit chance
+		On kill, enemies burst, spreading [cbuff:CalamityMod/Irradiated]
 		Taking damage causes the curio to explode in retaliation
+		Current [cbuff:CalamityMod/Irradiated] damage: [DAMAGE]
 		'''
 }
 

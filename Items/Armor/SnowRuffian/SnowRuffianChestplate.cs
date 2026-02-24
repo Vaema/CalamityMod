@@ -10,7 +10,7 @@ namespace CalamityMod.Items.Armor.SnowRuffian
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
 
-        public static int RangedCritBoost = 3;
+        public static int RangedCritBoost = 4;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedCritBoost);
 
         public override void Load()
