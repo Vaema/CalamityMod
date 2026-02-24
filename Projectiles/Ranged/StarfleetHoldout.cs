@@ -28,7 +28,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public int time = 0;
         public int lastUseTime = 0;
-        public static int perfectLeniancy = 2;
+        public static int perfectLeniancy = 3;
         public static int goodLeniancy = perfectLeniancy + 6;
         public static int starburstPerfectTime = 23;
         public ref float shootingCooldown => ref Projectile.ai[0];
@@ -45,6 +45,7 @@ namespace CalamityMod.Projectiles.Ranged
         public Color c2 = new Color(222, 225, 146);
         public Color c3 = new Color(255, 233, 146);
         public Color shiftColor;
+        public Vector2 gunBackPosition;
         public ref float starburstCooldown => ref Projectile.ai[2];
         public bool naildriver => ((starburstTimer <= starburstPerfectTime + perfectLeniancy) && (starburstTimer >= starburstPerfectTime - perfectLeniancy)); // if within perfect frame window
         public bool scattershot => !naildriver && ((starburstTimer <= starburstPerfectTime + goodLeniancy) && (starburstTimer >= starburstPerfectTime - goodLeniancy)); // If within early or late frame window
@@ -170,6 +171,8 @@ namespace CalamityMod.Projectiles.Ranged
             SoundStyle shotgunFire = new("CalamityMod/Sounds/Item/StarfleetFire");
             for (int i = 0; i < (naildriver ? 2 : 1); i++)
                 SoundEngine.PlaySound(shotgunFire with { Volume = (naildriver && i == 0 ? 0.3f : 0.6f), Pitch = ((naildriver && i == 0) ? 0f : 0.2f), MaxInstances = 2 }, Projectile.Center);
+            if (naildriver)
+                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/HellkiteFullCharge") with { Volume = 0.7f, Pitch = 1.3f, MaxInstances = 2 }, Projectile.Center);
             // Perfects have longer cooldown
             int cooldown = (naildriver ? naildriverCooldown : lastUseTime);
             recoilTimerMax = cooldown;
@@ -191,7 +194,30 @@ namespace CalamityMod.Projectiles.Ranged
                     shotgun.extraUpdates = starExtraUpdates;
                 }
             }
-            
+
+            for (int b = 0; b < 24; b++)
+            {
+                int parts2 = 4;
+                for (int i = 0; i < parts2; i++)
+                {
+                    float power = Main.rand.NextFloat(0.2f, 1f);
+                    Vector2 vel = (MathHelper.TwoPi * i / parts2).ToRotationVector2().RotatedBy(Projectile.rotation) * 12f;
+                    float size = (0.8f) * Main.rand.NextFloat(0.9f, 1.1f) * (1.1f - power);
+                    int dustStyle = DustType<SquashDust>();
+                    Dust dust = Dust.NewDustPerfect(gunBackPosition, dustStyle);
+                    dust.scale = size;
+                    dust.velocity = vel * power * (0.7f);
+                    dust.noGravity = true;
+                    dust.color = GetRandomColor();
+                    dust.fadeIn = naildriver ? -0.6f : 0f;
+
+                    if (b == 0)
+                    {
+                        Particle aura = new CustomSpark(gunBackPosition, Vector2.Zero, "CalamityMod/Particles/BloomCircle", false, naildriver ? 35 : 20, 0.5f, shiftColor, new Vector2(0.65f, 1f), glowCenter: true, glowOpacity: 0.8f, glowCenterScale: 0.85f, extraRotation: Projectile.rotation + (i % 2 == 0 ? MathHelper.PiOver2 : 0), shrinkSpeed: 0.1f);
+                        GeneralParticleHandler.SpawnParticle(aura);
+                    }
+                }
+            }
             for (int i = 0; i < 25; i++)
             {
                 float variance = Main.rand.NextFloat(-0.7f, 0.7f);
@@ -274,8 +300,11 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override bool PreDraw(ref Color lightColor)
         {
+            gunBackPosition = Projectile.Center - Projectile.velocity * 22f + Projectile.velocity.RotatedBy(MathHelper.PiOver2 * Projectile.direction) * -2;
+            
             if (time < 2)
                 return false;
+
             Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D glowTexture = Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/StarfleetGlow").Value;
             Texture2D orb = Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;

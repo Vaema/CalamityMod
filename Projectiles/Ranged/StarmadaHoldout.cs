@@ -29,7 +29,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public int time = 0;
         public int lastUseTime = 0;
-        public static int perfectLeniancy = 2;
+        public static int perfectLeniancy = 3;
         public static int goodLeniancy = perfectLeniancy + 6;
         public static int starburstPerfectTime = 23;
         public float frontRecoil = 0;
@@ -226,7 +226,8 @@ namespace CalamityMod.Projectiles.Ranged
                 SoundStyle shotgunFire = new("CalamityMod/Sounds/Item/StarmadaFire");
                 for (int i = 0; i < (naildriver ? 2 : 1); i++)
                     SoundEngine.PlaySound(shotgunFire with { Volume = (naildriver && i == 0 ? 0.3f : 0.6f), Pitch = ((naildriver && i == 0) ? -0.2f : 0f), MaxInstances = 2 }, Projectile.Center);
-
+                if (naildriver)
+                    SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/HellkiteFullCharge") with { Volume = 0.7f, Pitch = 1.2f + 0.1f * gunPower, MaxInstances = 2 }, Projectile.Center);
                 for (int b = 0; b < 24; b++)
                 {
                     int parts2 = 4;
@@ -241,11 +242,11 @@ namespace CalamityMod.Projectiles.Ranged
                         dust.velocity = vel * power * (0.7f + gunPower * 0.2f);
                         dust.noGravity = true;
                         dust.color = GetRandomColor();
-                        dust.fadeIn = 0f;
+                        dust.fadeIn = naildriver ? -0.5f : 0f;
 
                         if (b == 0)
                         {
-                            Particle aura = new CustomSpark(gunBackPosition, Vector2.Zero, "CalamityMod/Particles/BloomCircle", false, 20, size * 0.9f, shiftColor, new Vector2(0.65f, 1f), glowCenter: true, glowOpacity: 0.8f, glowCenterScale: 0.85f, extraRotation: Projectile.rotation + (i % 2 == 0 ? MathHelper.PiOver2 : 0), shrinkSpeed: 0.1f);
+                            Particle aura = new CustomSpark(gunBackPosition, Vector2.Zero, "CalamityMod/Particles/BloomCircle", false, naildriver ? 35 : 20, (0.8f + 0.35f * gunPower) * 0.85f, shiftColor, new Vector2(0.65f, 1f), glowCenter: true, glowOpacity: 0.8f, glowCenterScale: 0.85f, extraRotation: Projectile.rotation + (i % 2 == 0 ? MathHelper.PiOver2 : 0), shrinkSpeed: 0.1f);
                             GeneralParticleHandler.SpawnParticle(aura);
                         }
                     }
