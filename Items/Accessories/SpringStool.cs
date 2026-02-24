@@ -61,7 +61,7 @@ namespace CalamityMod.Items.Accessories
             {
                 springStoolTimer = 12;
 
-                Player.AddCooldown(Stooldown.ID, (int)SpringStool.JumpCooldown, true);
+                Player.AddCooldown(Stooldown.ID, (int)SpringStool.JumpCooldown * 2, true);
                 hasGroundedSinceJump = false;
 
 
@@ -172,7 +172,7 @@ namespace CalamityMod.Items.Accessories
                 if (Main.LocalPlayer.Top.Y < target.Top.Y)
                 {
                     // Effective +10% crit chance. Increasing crit chance additively through manual rolling is scuffed for crossmod compatability, feel free to improve it if you know a better way
-                    float finalCritChance = Player.GetTotalCritChance(modifiers.DamageType) + 100f;
+                    float finalCritChance = Player.GetTotalCritChance(modifiers.DamageType) + 10f;
 
                     if (Main.rand.NextFloat(1f, 101f) <= finalCritChance)
                         modifiers.SetCrit();
