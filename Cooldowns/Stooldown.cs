@@ -1,6 +1,12 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using CalamityMod.Items.Accessories;
+using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
+using Terraria.ID;
 using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Cooldowns
 {
@@ -15,8 +21,8 @@ namespace CalamityMod.Cooldowns
         }
         public override LocalizedText DisplayName => CalamityUtils.GetText($"UI.Cooldowns.{ID}");
         public override string Texture => "CalamityMod/Cooldowns/Stooldown";
-        public override Color OutlineColor => new Color(197, 165, 108);
-        public override Color CooldownStartColor => new Color(144, 84, 29);
+        public override Color OutlineColor => Color.SandyBrown;
+        public override Color CooldownStartColor => Color.Brown;
         public override Color CooldownEndColor => Color.Khaki;
 
         public override SoundStyle? EndSound => new("CalamityMod/Sounds/Item/AscendantOff");

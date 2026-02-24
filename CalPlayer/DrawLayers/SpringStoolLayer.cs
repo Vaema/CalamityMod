@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CalamityMod.ExtraJumps;
+using CalamityMod.Items.Accessories;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -25,7 +26,7 @@ namespace CalamityMod.CalPlayer.DrawLayers
         public override bool GetDefaultVisibility(PlayerDrawSet drawInfo)
         {
             // Only draw if the player is holding Up and still
-            return drawInfo.drawPlayer.GetModPlayer<CalamityPlayer>().springStool &&
+            return drawInfo.drawPlayer.GetModPlayer<SpringStoolPlayer>().springStool &&
                    drawInfo.drawPlayer.portableStoolInfo.IsInUse;
         }
 

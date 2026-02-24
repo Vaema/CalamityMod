@@ -865,8 +865,6 @@ namespace CalamityMod.CalPlayer
         public bool tesla = false;
         public bool teslaVisuals = true;
         public bool cryogenSoul = false;
-        public bool springStool = false;
-        public int springStoolTimer = 0;
         public bool ascendantInsignia = false;
         public int ascendantInsigniaBuffTime = 0;
         public int ascendantInsigniaCooldown = 0;
@@ -2415,8 +2413,6 @@ namespace CalamityMod.CalPlayer
             tesla = false;
             teslaVisuals = true;
             cryogenSoul = false;
-            springStool = false;
-            springStoolTimer = 0;
             ascendantInsignia = false;
             magmaStoneVisuals = true;
             eGauntlet = false;
@@ -4574,21 +4570,6 @@ namespace CalamityMod.CalPlayer
         #region PreUpdateMovement
         public override void PreUpdateMovement()
         {
-            if (springStoolTimer > 0)
-            {
-                springStoolTimer--;
-
-                if (Player.whoAmI == Main.myPlayer)
-                {
-                    float launchPower = 18f * Utils.GetLerpValue(0, 10, springStoolTimer, true);
-                    Player.velocity.Y = -launchPower;
-
-                    // Prevent vanilla jump logic from interfering
-                    Player.jump = 0;
-                    Player.fallStart = (int)(Player.position.Y / 16f);
-                }
-            }
-
             // Rain armor set effects
             if (rainSet)
             {
@@ -5027,85 +5008,6 @@ namespace CalamityMod.CalPlayer
                 if (gSabaton && Player.whoAmI == Main.myPlayer)
                     Player.jumpSpeedBoost += 2f;
             }
-
-            if (CalamityKeybinds.SpringStoolJumpHotKey.JustPressed && springStool && Main.myPlayer == Player.whoAmI && !Player.HasCooldown(Stooldown.ID) && !Player.mount.Active)
-            {
-                springStoolTimer = 12;
-
-                Player.AddCooldown(Stooldown.ID, (int) SpringStool.JumpCooldown / 10, true);
-
-                Vector2 spawnPos = Player.Bottom + new Vector2(0f, -60f);
-
-                Projectile.NewProjectile(Player.GetSource_FromThis(), spawnPos, new Vector2(Main.rand.NextFloat(-1f, 1f), 2f), ModContent.ProjectileType<SpringStoolJumpFX>(), 0, 0f, Player.whoAmI);
-
-                SoundEngine.PlaySound(SoundID.Item61 with { Pitch = 0.3f, Volume = 0.8f }, Player.Center);
-            }
-
-            if (springStool)
-            {
-                bool holdingUp = Player.controlUp;
-                bool standingStill = Player.velocity.Y == 0 && Math.Abs(Player.velocity.X) < 0.1f;
-
-                if (holdingUp && standingStill && !Player.mount.Active)
-                {
-                    int boost = 61; 
-                    if (IsVanillaStoolEquipped(Player)) 
-                        boost += 24; 
-
-                    Player.portableStoolInfo.HasAStool = true;
-                    Player.portableStoolInfo.IsInUse = true;
-                    Player.portableStoolInfo.HeightBoost = boost;
-                    Player.portableStoolInfo.VisualYOffset = boost;
-                    Player.portableStoolInfo.MapYOffset = boost;
-                    
-                    // Forces the player into the stool-standing frame
-                    Player.UpdatePortableStoolUsage();
-                }
-                else
-                {
-                    // Ensures the player can use the stool if they stop moving/hold up
-                    Player.portableStoolInfo.HasAStool = true;
-                }
-            }
-        }
-
-
-        private void HandleStoolStacking(On_PlayerDrawLayers.orig_DrawPlayer_03_PortableStool orig, ref PlayerDrawSet drawInfo)
-        {
-            bool isUsingStool = drawInfo.drawPlayer.portableStoolInfo.IsInUse;
-            var modPlayer = drawInfo.drawPlayer.GetModPlayer<CalamityPlayer>();
-            bool hasSpring = modPlayer.springStool;
-
-            if (!isUsingStool)
-            {
-                orig(ref drawInfo);
-                return;
-            }
-
-            if (!hasSpring)
-            {
-                orig(ref drawInfo);
-                return;
-            }
-
-            if (IsVanillaStoolEquipped(drawInfo.drawPlayer))
-            {
-                orig(ref drawInfo);
-                return;
-            }
-
-            return;
-        }
-
-        private bool IsVanillaStoolEquipped(Player player)
-        {
-            for (int k = 3; k <= 12; k++)
-            {
-                if (player.armor[k].type == ItemID.PortableStool)
-
-                    return true;
-            }
-            return false;
         }
         #endregion
 
@@ -6343,12 +6245,6 @@ namespace CalamityMod.CalPlayer
             SquareParticle square2 = new SquareParticle(position2, Player.velocity * (0.15f + Main.rand.NextFloat(0.1f)), false, 15, 1.7f + Main.rand.NextFloat(0.6f), Color.Cyan * 1.5f);
             GeneralParticleHandler.SpawnParticle(square1);
             GeneralParticleHandler.SpawnParticle(square2);
-        }
-
-        public override void Load()
-        {
-            // Hook directly into vanilla's stool drawing
-            On_PlayerDrawLayers.DrawPlayer_03_PortableStool += HandleStoolStacking;
         }
 
         #endregion
