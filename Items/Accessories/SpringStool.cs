@@ -61,7 +61,7 @@ namespace CalamityMod.Items.Accessories
             {
                 springStoolTimer = 12;
 
-                Player.AddCooldown(Stooldown.ID, (int)SpringStool.JumpCooldown * 2, true);
+                Player.AddCooldown(Stooldown.ID, (int)SpringStool.JumpCooldown, true);
                 hasGroundedSinceJump = false;
 
 

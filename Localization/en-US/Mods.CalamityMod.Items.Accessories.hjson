@@ -1666,6 +1666,17 @@ SpiritGlyph: {
 		'''
 }
 
+SpringStool: {
+	DisplayName: Spring Stool
+	Tooltip:
+		'''
+		Hold Up to reach higher
+		Press [KEY] to jump super high
+		Super jumps can only be performed once every 25 seconds
+		+10% critical strike chance when striking enemies below you
+		'''
+}
+
 StarbusterCore: {
 	DisplayName: Starbuster Core
 	Tooltip:
@@ -2212,16 +2223,5 @@ XyksBlessingOrange: {
 		<right> to transform
 		'Even so, the march of time waits for none. Recall that feeling of fulfillment, and show it to the world.
 		[c/E1B65F:Prove that it was never a waste.']
-		'''
-}
-
-SpringStool: {
-	DisplayName: Spring Stool
-	Tooltip:
-		'''
-		Hold Up to reach higher
-		Press [KEY] to jump super high
-		This jump has a cooldown and can only be used once per time airborne
-		+10% critical strike chance when striking enemies below you
 		'''
 }
