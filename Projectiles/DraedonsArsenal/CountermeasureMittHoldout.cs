@@ -103,7 +103,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Vector2 handPos = Owner.GetBackHandPosition(CompositeArmStretchAmount.None, Owner.compositeBackArm.rotation) + (Owner.compositeBackArm.rotation + MathHelper.PiOver2).ToRotationVector2() * 9;
             
             // Every laser has collision for the single hitbox, so it works more like a large wide piercing single beam
-            float beamLength = 1500 * Projectile.scale;
+            float beamLength = 2000 * Projectile.scale;
             float beamThickness = 20 * Projectile.scale;
             float fingerLength = 6 * Projectile.scale;
             float _ = float.NaN;
