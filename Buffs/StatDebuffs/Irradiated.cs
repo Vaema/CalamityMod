@@ -1,4 +1,5 @@
-﻿using CalamityMod.DataStructures;
+﻿using System;
+using CalamityMod.DataStructures;
 using CalamityMod.Projectiles.Magic;
 using Terraria;
 using Terraria.ID;
@@ -33,10 +34,9 @@ namespace CalamityMod.Buffs.StatDebuffs
                     Player player = Main.player[playerIndex];
                     if (player.active)
                     {
-                        float playerRangedDamage = player.GetTotalDamage(DamageClass.Ranged).ApplyTo(baseIrradiatedDoTValue * (1 + player.GetTotalCritChance(DamageClass.Ranged) * 0.01f));
-                        if (playerRangedDamage > baseIrradiatedDoTValue && player.Calamity().scionsCurio)
+                        if (player.Calamity().scionsCurioDebuffDamage > baseIrradiatedDoTValue && player.Calamity().scionsCurio)
                         {
-                            baseIrradiatedDoTValue = (int)playerRangedDamage;
+                            baseIrradiatedDoTValue = (int)player.Calamity().scionsCurioDebuffDamage;
                         }
                     }
                 }
@@ -44,7 +44,7 @@ namespace CalamityMod.Buffs.StatDebuffs
             if (projectileCount > 0)
                 cnpc.ApplyDPSDebuff(projectileCount * baseIrradiatedDoTValue, projectileCount * 4, ref npc.lifeRegen, ref damage);
             else
-                cnpc.ApplyDPSDebuff(baseIrradiatedDoTValue, baseIrradiatedDoTValue / 20, ref npc.lifeRegen, ref damage);
+                cnpc.ApplyDPSDebuff(baseIrradiatedDoTValue, Math.Max((int)(baseIrradiatedDoTValue * debuffData.MultiplierDamageTickSize),debuffData.MinimumDamageTickSize), ref npc.lifeRegen, ref damage);
         }
         public override void SetStaticDefaults()
         {

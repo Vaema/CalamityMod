@@ -48,18 +48,17 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             Projectile.MaxUpdates = MaxUpdates;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 6 * MaxUpdates;
-
         }
 
         public override void SendExtraAI(BinaryWriter writer)
         {
             writer.Write(chargeProgress);
         }
-
         public override void ReceiveExtraAI(BinaryReader reader)
         {
-            chargeProgress = reader.ReadInt32();
+            chargeProgress = reader.ReadSingle();
         }
+
         public override void AI()
         {
             if (sawDir == 0)

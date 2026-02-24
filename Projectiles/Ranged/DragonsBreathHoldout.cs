@@ -64,7 +64,7 @@ namespace CalamityMod.Projectiles.Ranged
                     SoundEngine.PlaySound(bigShot with { PitchVariance = 0.15f, Volume = 0.75f }, Projectile.Center);
 
                     if (Main.myPlayer == Projectile.owner)
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, (Projectile.velocity.SafeNormalize(Vector2.UnitX) * 6).RotatedBy(-2.3f * Projectile.direction), ModContent.ProjectileType<DragonsBreathMag>(), Main.zenithWorld ? 250000 : 1, Projectile.knockBack, Projectile.owner, 1);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, (Projectile.velocity.SafeNormalize(Vector2.UnitX) * 6).RotatedBy(-2.3f * Projectile.direction), ModContent.ProjectileType<DragonsBreathMag>(), 1, Projectile.knockBack, Projectile.owner, 1);
                     hasLaunchedMag = true;
                 }
             }

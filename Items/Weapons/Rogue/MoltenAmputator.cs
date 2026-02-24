@@ -38,7 +38,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             {
                 if (player.Calamity().StealthStrikeAvailable())
                 {
-                    player.Calamity().amputatorBuff = 30;
+                    player.Calamity().focusFlurryAttackCount = 30;
                     player.Calamity().ConsumeStealthByAttacking();
                     SoundStyle buff = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianRay");
                     SoundEngine.PlaySound(buff with { Volume = 1f, Pitch = Main.rand.NextFloat(0.2f, 0.3f) }, player.Center);
@@ -67,24 +67,24 @@ namespace CalamityMod.Items.Weapons.Rogue
         }
         public override float UseSpeedMultiplier(Player player)
         {
-            return (player.Calamity().amputatorBuff > 0 ? 3f : 1);
+            return (player.Calamity().focusFlurryAttackCount > 0 ? 3f : 1);
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            bool fastToss = player.Calamity().amputatorBuff > 0;
+            bool fastToss = player.Calamity().focusFlurryAttackCount > 0;
             
             SoundStyle fire = new("CalamityMod/Sounds/Item/SpearofDestiny");
-            SoundEngine.PlaySound(fire with { Volume = 0.5f, Pitch = (player.Calamity().amputatorBuff > 0 ? -0.4f + (player.Calamity().amputatorBuff * 0.02f) : Main.rand.NextFloat(-0.4f, -0.65f)) }, position);
+            SoundEngine.PlaySound(fire with { Volume = 0.5f, Pitch = (player.Calamity().focusFlurryAttackCount > 0 ? -0.4f + (player.Calamity().focusFlurryAttackCount * 0.02f) : Main.rand.NextFloat(-0.4f, -0.65f)) }, position);
             // Since the positioning of the scythe is important, its velocity is based on your mouse position
             Vector2 staticSpeed = Utils.DirectionTo(position, position + velocity) * Utils.Distance(position, player.ClampedMouseWorld()) * 0.022f;
             // "fast toss" is the stealth, if you need to change stealth values, change those
             int fastTossDamage = (int)(damage * 0.65f);
-            Projectile scythe = Projectile.NewProjectileDirect(source, position, staticSpeed.RotatedByRandom((player.Calamity().amputatorBuff > 0 ? 0.7f : 0)), type, fastToss ? fastTossDamage : damage, knockback, player.whoAmI, 0, 0, 0);
+            Projectile scythe = Projectile.NewProjectileDirect(source, position, staticSpeed.RotatedByRandom((player.Calamity().focusFlurryAttackCount > 0 ? 0.7f : 0)), type, fastToss ? fastTossDamage : damage, knockback, player.whoAmI, 0, 0, 0);
             if (fastToss)
             {
                 scythe.extraUpdates = 6;
                 scythe.Calamity().stealthStrike = true;
-                player.Calamity().amputatorBuff--;
+                player.Calamity().focusFlurryAttackCount--;
             }
             player.Calamity().ConsumeStealthByAttacking();
             

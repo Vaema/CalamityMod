@@ -18,6 +18,7 @@ namespace CalamityMod.Projectiles.Ranged
         public float shineRot = 0;
         public bool onSpawn = true;
         public ref float time => ref Projectile.ai[2];
+        private const int MaxTime = 600;
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.TrailCacheLength[Type] = 15;
@@ -31,7 +32,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.penetrate = 2;
-            Projectile.timeLeft = 600;
+            Projectile.timeLeft = MaxTime;
             Projectile.extraUpdates = 3;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
@@ -62,6 +63,11 @@ namespace CalamityMod.Projectiles.Ranged
                 shineRot = Main.rand.NextFloat(-5, 5);
                 onSpawn = false;
             }
+            // Handles spawning flash effect when bouncing off enemies/tiles
+            if (time == 0 && Projectile.timeLeft < MaxTime)
+            {
+                MakeFlash(false);
+            }
             shineRot += Math.Sign(shineRot) * 0.05f;
 
             Player Owner = Main.player[Projectile.owner];
@@ -81,6 +87,53 @@ namespace CalamityMod.Projectiles.Ranged
             time++;
         }
 
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            float damageMult = Projectile.numHits == 0 ? 1 : 0.3f;
+            modifiers.SourceDamage *= damageMult;
+        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            time = 0;
+            Projectile.velocity = Vector2.Lerp(Utils.DirectionFrom(Projectile.Center, target.Center) * 12, Vector2.UnitY * -7, 0.75f).RotatedByRandom(0.25f);
+            Projectile.netUpdate = true;
+        }
+        public override bool OnTileCollide(Vector2 oldVelocity)
+        {
+            time = 0;
+            if (Projectile.velocity.X != oldVelocity.X)
+            {
+                Projectile.velocity.X = -oldVelocity.X;
+            }
+            if (Projectile.velocity.Y != oldVelocity.Y)
+            {
+                Projectile.velocity.Y = -oldVelocity.Y;
+            }
+            if (Projectile.velocity.X < 2 && Projectile.velocity.X > 0)
+                Projectile.velocity.X = 2;
+            if (Projectile.velocity.X > -2 && Projectile.velocity.X < 0)
+                Projectile.velocity.X = -2;
+            if (Projectile.velocity.Y < 2 && Projectile.velocity.Y > 0)
+                Projectile.velocity.Y = 2;
+            if (Projectile.velocity.Y > -2 && Projectile.velocity.Y < 0)
+                Projectile.velocity.Y = -2;
+
+            Projectile.velocity *= 0.97f;
+
+            int expectedDamage = Math.Max((int)(Projectile.damage * 1.13f), Projectile.damage + 2);
+            Projectile.damage = expectedDamage;
+
+            if (bounces <= 0)
+            {
+                Projectile.Kill();
+                return false;
+            }
+            for (int i = 0; i < Main.maxNPCs; i++)
+                Projectile.localNPCImmunity[i] = 0;
+            bounces--;
+            return false;
+        }
+
         public override bool PreDraw(ref Color lightColor)
         {
             float sine = (float)Math.Sin(Projectile.timeLeft * 0.175f / MathHelper.Pi);
@@ -92,13 +145,8 @@ namespace CalamityMod.Projectiles.Ranged
             Main.EntitySpriteDraw(shine.Value, Projectile.Center - Main.screenPosition, null, Color.White with { A = 0 } * 0.6f, Projectile.rotation + shineRot, shine.Size() / 2f, new Vector2(1 + 0.9f * -trueSine, 1 + 0.9f * trueSine) * Projectile.scale * 0.13f, SpriteEffects.None, 0);
             return false;
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            time = 0;
-            Projectile.velocity = Vector2.Lerp(Utils.DirectionFrom(Projectile.Center, target.Center) * 12, Vector2.UnitY * -7, 0.75f).RotatedByRandom(0.25f);
-            makeDust(false);
-        }
-        public void makeDust(bool onlyFlash) // This is basically the tile/hit effects
+
+        public void MakeFlash(bool onlyFlash) // This is basically the tile/hit effects
         {
             if (!onlyFlash)
             {
@@ -127,51 +175,8 @@ namespace CalamityMod.Projectiles.Ranged
                 dust.noLightEmittence = true;
             }
             // Doesn't actually do damage, just an aoe for knockback
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<FlashRoundFlash>(), 5, 0f, Projectile.owner);
-        }
-        public override bool OnTileCollide(Vector2 oldVelocity)
-        {
-            time = 0;
-            if (Projectile.velocity.X != oldVelocity.X)
-            {
-                Projectile.velocity.X = -oldVelocity.X;
-            }
-            if (Projectile.velocity.Y != oldVelocity.Y)
-            {
-                Projectile.velocity.Y = -oldVelocity.Y;
-            }
-            if (Projectile.velocity.X < 2 && Projectile.velocity.X > 0)
-                Projectile.velocity.X = 2;
-            if (Projectile.velocity.X > -2 && Projectile.velocity.X < 0)
-                Projectile.velocity.X = -2;
-            if (Projectile.velocity.Y < 2 && Projectile.velocity.Y > 0)
-                Projectile.velocity.Y = 2;
-            if (Projectile.velocity.Y > -2 && Projectile.velocity.Y < 0)
-                Projectile.velocity.Y = -2;
-
-            Projectile.velocity *= 0.97f;
-
-            int expectedDamage = Math.Max((int)(Projectile.damage * 1.13f), Projectile.damage + 2);
-            Projectile.damage = expectedDamage;
-
-            makeDust(false);
-            if (bounces <= 0)
-            {
-                Projectile.Kill();
-                return false;
-            }
-            for (int i = 0; i < Main.maxNPCs; i++)
-                Projectile.localNPCImmunity[i] = 0;
-            bounces--;
-            return false;
-        }
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
-            float damageMult = (Projectile.numHits == 0 ? 1 : 0.3f);
-            modifiers.SourceDamage *= damageMult;
-        }
-        public override void OnKill(int timeLeft)
-        {
+            if (Main.myPlayer == Projectile.owner)
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<FlashRoundFlash>(), 5, 0f, Projectile.owner);
         }
     }
 }

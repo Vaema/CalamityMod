@@ -193,10 +193,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     switch (aggressionLevel)
                     {
                         case 6:
-                            velocity += 4f;
+                            velocity += 3f;
                             break;
                         case 5:
-                            velocity += 2f;
+                            velocity += 1.5f;
                             break;
                         case 4:
                             break;
@@ -273,10 +273,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     switch (aggressionLevel)
                     {
                         case 6:
-                            velocity += 4f;
+                            velocity += 3f;
                             break;
                         case 5:
-                            velocity += 2f;
+                            velocity += 1.5f;
                             break;
                         case 4:
                             break;
@@ -711,10 +711,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         switch (aggressionLevel)
                         {
                             case 6:
-                                calamityGlobalNPC.newAI[1] -= 180f;
+                                calamityGlobalNPC.newAI[1] -= 120f;
                                 break;
                             case 5:
-                                calamityGlobalNPC.newAI[1] -= 90f;
+                                calamityGlobalNPC.newAI[1] -= 60f;
                                 break;
                             case 4:
                                 break;
@@ -835,13 +835,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 bool shootThirdBolt = attackTimer == phaseAttackTime;
                 switch (aggressionLevel)
                 {
-                    // Higher aggression gives the phantasmal bolts predictive aim
                     case 6:
-                        aimDirection = Main.player[NPC.target].Center + Main.player[NPC.target].velocity * 30f - NPC.Center;
-                        break;
                     case 5:
-                        aimDirection = Main.player[NPC.target].Center + Main.player[NPC.target].velocity * 20f - NPC.Center;
-                        break;
                     case 4:
                         break;
                     case 3:
@@ -874,8 +869,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     float velocity = 6.25f;
                     switch (aggressionLevel)
                     {
+                        // Higher aggression increases the speed of phantasmal bolts
                         case 6:
+                            velocity += 1.5f;
+                            break;
                         case 5:
+                            velocity += 0.75f;
+                            break;
                         case 4:
                             break;
                         // Lower aggression reduces the speed of phantasmal bolts
@@ -1074,10 +1074,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 switch (aggressionLevel)
                 {
                     case 6:
-                        divisor = 3f;
+                        divisor = 4f;
                         break;
                     case 5:
-                        divisor = 4f;
+                        divisor = 5f;
                         break;
                     case 4:
                         break;
@@ -1200,10 +1200,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         switch (aggressionLevel)
                         {
                             case 6:
-                                velocity += 4f;
+                                velocity += 3f;
                                 break;
                             case 5:
-                                velocity += 2f;
+                                velocity += 1.5f;
                                 break;
                             case 4:
                                 break;
@@ -1233,10 +1233,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     switch (aggressionLevel)
                     {
                         case 6:
-                            divisor = 15;
+                            divisor = 20;
                             break;
                         case 5:
-                            divisor = 20;
+                            divisor = 25;
                             break;
                         case 4:
                             break;
@@ -1276,10 +1276,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         switch (aggressionLevel)
                         {
                             case 6:
-                                velocity += 4f;
+                                velocity += 3f;
                                 break;
                             case 5:
-                                velocity += 2f;
+                                velocity += 1.5f;
                                 break;
                             case 4:
                                 break;
@@ -1372,10 +1372,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         switch (aggressionLevel)
                         {
                             case 6:
-                                velocity += 4f;
+                                velocity += 3f;
                                 break;
                             case 5:
-                                velocity += 2f;
+                                velocity += 1.5f;
                                 break;
                             case 4:
                                 break;
@@ -1410,10 +1410,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         switch (aggressionLevel)
                         {
                             case 6:
-                                velocity += 4f;
+                                velocity += 3f;
                                 break;
                             case 5:
-                                velocity += 2f;
+                                velocity += 1.5f;
                                 break;
                             case 4:
                                 break;
@@ -1450,13 +1450,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 bool shootThirdBolt = handAttackTimer == phaseAttackTime;
                 switch (aggressionLevel)
                 {
-                    // Higher aggression gives the phantasmal bolts predictive aim
                     case 6:
-                        aimDirection = Main.player[NPC.target].Center + Main.player[NPC.target].velocity * 30f - NPC.Center;
-                        break;
                     case 5:
-                        aimDirection = Main.player[NPC.target].Center + Main.player[NPC.target].velocity * 20f - NPC.Center;
-                        break;
                     case 4:
                         break;
                     // Lower aggression fires less phantasmal bolts
@@ -1489,8 +1484,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     float velocity = 6.25f;
                     switch (aggressionLevel)
                     {
+                        // Higher aggression increases the speed of phantasmal bolts
                         case 6:
+                            velocity += 1.5f;
+                            break;
                         case 5:
+                            velocity += 0.75f;
+                            break;
                         case 4:
                             break;
                         // Lower aggression reduces the speed of phantasmal bolts

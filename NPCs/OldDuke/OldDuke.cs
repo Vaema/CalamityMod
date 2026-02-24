@@ -617,6 +617,8 @@ namespace CalamityMod.NPCs.OldDuke
                     CalamityUtils.AddScreenshakeAt(NPC.Center, 14);
                     SoundEngine.PlaySound(SoundID.DD2_BetsyFlameBreath.WithPitchOffset(-0.5f), NPC.Center);
                     SoundEngine.PlaySound(DashSoundP3, NPC.Center);
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                        CalamityUtils.BossAwakenMessage(NPC.whoAmI);
                 }
 
                 if (NPC.ai[2] >= 75f)

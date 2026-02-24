@@ -525,6 +525,10 @@ namespace CalamityMod.Events
             // Handle dialogue as appropriate.
             BossRushDialogueSystem.Tick();
 
+            // Tier 1 animation between Xeroc's initial dialogue and the first boss.
+            if (BossRushSpawnCountdown == 179 && EndTimer == 0 && CurrentlyFoughtBoss == NPCID.KingSlime)
+                CreateTierAnimation(1);
+
             // Disable the stupid credits sequence.
             if (CreditsRollEvent.IsEventOngoing)
                 CreditsRollEvent.SetRemainingTimeDirect(1);

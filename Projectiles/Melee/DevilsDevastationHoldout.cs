@@ -119,7 +119,7 @@ namespace CalamityMod.Projectiles.Melee
                     Vector2 vel = (MathHelper.TwoPi * i / 4f).ToRotationVector2() * 2;
                     Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), lastHitTarget.Center, vel.RotatedBy(MathHelper.ToRadians(45)), ModContent.ProjectileType<DevilsStrike>(), 0, 0f, Owner.whoAmI, 1, 0);
                 }
-                Projectile strike = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), lastHitTarget.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), (int)(Projectile.damage * 1.5f), 0f, Owner.whoAmI, lastHitTarget.whoAmI, 0);
+                Projectile strike = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), lastHitTarget.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), (int)(Projectile.damage * 1.666f), 0f, Owner.whoAmI, lastHitTarget.whoAmI, 0);
                 strike.DamageType = DamageClass.Melee;
                 SoundStyle dieSound = new("CalamityMod/Sounds/Item/LanceofDestinyStrong");
                 SoundEngine.PlaySound(dieSound with { Volume = 0.9f, Pitch = 0.3f }, lastHitTarget.Center);
@@ -206,6 +206,9 @@ namespace CalamityMod.Projectiles.Melee
             }
 
             AnimationProgress = Animation % useAnim;
+
+            if (isOwner && !holding && Main.netMode != NetmodeID.SinglePlayer && (int)Animation % 3 == 0)
+                Projectile.netUpdate = true;
 
             if (CanHit || postSwing)
                 mousePos = Owner.Center - aimVel;
@@ -514,6 +517,7 @@ namespace CalamityMod.Projectiles.Melee
             writer.Write7BitEncodedInt(lastHitTargetIndex);
             writer.Write7BitEncodedInt(postSwingCooldown);
             writer.WriteVector2(aimVel);
+            writer.Write(Animation);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
@@ -523,6 +527,7 @@ namespace CalamityMod.Projectiles.Melee
             lastHitTargetIndex = reader.Read7BitEncodedInt();
             postSwingCooldown = reader.Read7BitEncodedInt();
             aimVel = reader.ReadVector2();
+            Animation = reader.ReadSingle();
             mousePos = Owner.Center - aimVel;
         }
     }

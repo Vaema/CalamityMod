@@ -174,7 +174,7 @@ namespace CalamityMod.CalPlayer
             // Xyk vanity death animation
             if (XykVisualsBlue || XykVisualsOrange)
             {
-                Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ModContent.ProjectileType<XykDeathAnim>(), Main.zenithWorld ? Main.rand.Next(5000, 50000 + 1) : 0, 0, Player.whoAmI);
+                Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ModContent.ProjectileType<XykDeathAnim>(), 0, 0, Player.whoAmI);
             }
 
             if (holyInferno)
@@ -857,7 +857,7 @@ namespace CalamityMod.CalPlayer
                             int mirrorDamage = (int)MathHelper.Min(actualProjDamage, 1000) * 50;
                             for (var i = 0; i < 5; i++)
                             {
-                                Projectile.NewProjectile(source, Player.Center + Vector2.UnitX.RotatedBy(MathHelper.TwoPi * (i / 10f)), Vector2.Zero, ModContent.ProjectileType<MirrorBlast>(), mirrorDamage, 5, Main.myPlayer, 1);
+                                Projectile.NewProjectile(source, Player.Center + Vector2.UnitX.RotatedBy(MathHelper.TwoPi * (i / 5f)), Vector2.Zero, ModContent.ProjectileType<MirrorBlast>(), mirrorDamage, 5, Main.myPlayer, 1);
                             }
                         }
                         projTypeJustHitBy = proj.type;
@@ -1308,7 +1308,7 @@ namespace CalamityMod.CalPlayer
 
             if (alchFlask)
             {
-                for (int i = 0; i < 9; i++)
+                for (int i = 0; i < (Player.strongBees ? 12 : 9); i++)
                 {
                     int seekerDamage = (int)Player.GetBestClassDamage().ApplyTo(15);
 
@@ -1675,6 +1675,10 @@ namespace CalamityMod.CalPlayer
 
         private void ModifyHurtInfo_Calamity(ref Player.HurtInfo info)
         {
+            // Don't run any of this code if the hit was cancelled.
+            if (info.Cancelled)
+                return;
+
             // Boss Rush's damage floor is implemented as a dirty modifier
             // TODO -- implementing this correctly would require fully reimplementing all of DR and ADR
             if (BossRushEvent.BossRushActive)
@@ -1987,7 +1991,7 @@ namespace CalamityMod.CalPlayer
                 double halfDefense = Player.statDefense / 2.0;
                 if (bloodflareCore)
                     specialDefenseDmgMinimum += halfDefense;
-                if (moonshine) //Moonshine also halves defense damage recovery alongside forcing 50% of defense as defense damage
+                if (moonshine) //Moonshine also reduces defense damage recovery by 2/3 alongside forcing 50% of defense as defense damage
                     specialDefenseDmgMinimum += halfDefense;
                 int netMitigation = hurtInfo.SourceDamage - hurtInfo.Damage;
                 double standardDefenseDamage = netMitigation * defenseDamageRatio;
@@ -2806,7 +2810,8 @@ namespace CalamityMod.CalPlayer
                 defenseDamageRecoveryFrames = 0;
 
             // Directly add the base defense damage recovery time to whatever recovery time the player already has.
-            totalDefenseDamageRecoveryFrames = defenseDamageRecoveryFrames + DefenseDamageBaseRecoveryTime;
+            int baseTime = DefenseDamageBaseRecoveryTime * (moonshine ? 3 : 1);
+            totalDefenseDamageRecoveryFrames = defenseDamageRecoveryFrames + baseTime;
             if (totalDefenseDamageRecoveryFrames > DefenseDamageMaxRecoveryTime)
                 totalDefenseDamageRecoveryFrames = DefenseDamageMaxRecoveryTime;
 

@@ -78,6 +78,7 @@ namespace CalamityMod.Items.Placeables.Furniture.Paintings
             "PokerFace",
             "Raesh",
             "Sagittariod",
+            "sixtydegrees",
             "StipulateVenus",
             "Sunny",
             "_tofu",

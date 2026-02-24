@@ -32,7 +32,7 @@ namespace CalamityMod.Items.PermanentBoosters
             Item.useAnimation = Item.useTime = 30;
             Item.UseSound = UseSound;
             Item.useStyle = ItemUseStyleID.HoldUp;
-            Item.value = Item.sellPrice(gold: 30);
+            Item.value = Item.sellPrice(gold: 24);
             Item.rare = ItemRarityID.Yellow;
         }
 

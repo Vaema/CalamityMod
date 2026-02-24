@@ -18,8 +18,10 @@ using CalamityMod.Items.Armor.Daedalus;
 using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.NPCs;
+using CalamityMod.NPCs.OldDuke;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
 using CalamityMod.Packets.Entities;
@@ -336,7 +338,7 @@ namespace CalamityMod.Projectiles
                 {
                     if (player.Calamity().grapeBeer && (item.useAmmo == AmmoID.Bullet || item.useAmmo == AmmoID.Arrow || item.useAmmo == AmmoID.Dart || item.useAmmo == AmmoID.Rocket))
                     {
-                        if (player.heldProj != projectile.whoAmI && projectile.aiStyle != ProjAIStyleID.HeldProjectile && projectile.damage > 0 && player.Calamity().grapeBeerTimer < 5 && !CalamityProjectileSets.DoesNotGetHomingWithGrapeBeer[projectile.type])
+                        if (player.heldProj != projectile.whoAmI && projectile.aiStyle != ProjAIStyleID.HeldProjectile && projectile.damage > 0 && !CalamityProjectileSets.DoesNotGetHomingWithGrapeBeer[projectile.type])
                             ApplyGrapeBeer();
                         else
                             grapeBeer = true;
@@ -357,11 +359,14 @@ namespace CalamityMod.Projectiles
                 //Grape Beer homing
                 if (parent.Calamity().grapeBeer)
                 {
-                    if (Main.player[projectile.owner].heldProj != projectile.whoAmI && projectile.aiStyle != ProjAIStyleID.HeldProjectile && projectile.damage > 0 && Main.player[projectile.owner].Calamity().grapeBeerTimer < 5 && !CalamityProjectileSets.DoesNotGetHomingWithGrapeBeer[projectile.type])
+                    if (Main.player[projectile.owner].heldProj != projectile.whoAmI && projectile.aiStyle != ProjAIStyleID.HeldProjectile && projectile.damage > 0 && !CalamityProjectileSets.DoesNotGetHomingWithGrapeBeer[projectile.type])
                         ApplyGrapeBeer();
                     else
                         grapeBeer = true;
                 }
+
+                if (parent.Calamity().IgnoreBoCIllusions)
+                    IgnoreBoCIllusions = true;
 
                 // Nerf Crystal bullet shard damage by 45%
                 // Vanilla crystal shards deal 50% of the bullet's damage which is absurd, this nerfs them to 27.5%
@@ -2959,6 +2964,10 @@ namespace CalamityMod.Projectiles
                     {
                         NPC.SpawnOnPlayer(owner.whoAmI, 370);
                     }
+                    else
+                    {
+                        NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, owner.whoAmI, 370f);
+                    }
                     projectile.ai[0] = 2f;
                 }
                 else if (projectile.localAI[1] < 1)
@@ -3305,7 +3314,29 @@ namespace CalamityMod.Projectiles
                                 if (cplayer.mouseRight && projectile.ai[1] == 0 && owner.miscCounter % 10 == 0)
                                 {
                                     owner.lifeRegenCount -= 600; // -5 health per 10 ticks
-                                    var projID = Projectile.NewProjectile(projectile.GetSource_FromThis(), Main.npc[(int)PersistentFishingData].Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), (int)owner.GetBestClassDamage().ApplyTo(owner.HeldItem.fishingPole + owner.fishingSkill + owner.ChooseAmmo(owner.HeldItem).bait), 0f, owner.whoAmI, Main.npc[(int)PersistentFishingData].whoAmI);
+                                    owner.Fishing_GetBait(out Item baitItem);
+
+                                    // Diminishing returns on bait power beyond 75
+                                    int baitPower = baitItem?.bait ?? 0;
+                                    if (baitItem?.type == ItemID.TruffleWorm)
+                                    {
+                                        projectile.ai[0] = 1;
+                                        projectile.localAI[1] = 1;
+                                        ReelTheBobberChecks();
+                                    }
+                                    else if (baitItem?.type == ItemType<BloodwormItem>())
+                                    {
+                                        projectile.ai[0] = 1;
+                                        projectile.localAI[1] = NPCType<OldDuke>() * -1;
+                                        baitPower = BloodwormItem.SpoofBaitNumber; // Manually set the power to the displayed value
+                                        ReelTheBobberChecks();
+                                    }
+                                    else if (baitPower > 75)
+                                    {
+                                        baitPower = (int)Math.Pow((baitPower - 75), 0.5f) + 75;
+                                    }
+
+                                    var projID = Projectile.NewProjectile(projectile.GetSource_FromThis(), Main.npc[(int)PersistentFishingData].Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), (int)owner.GetBestClassDamage().ApplyTo(owner.HeldItem.fishingPole + owner.fishingSkill + baitPower), 0f, owner.whoAmI, Main.npc[(int)PersistentFishingData].whoAmI);
                                     if (Main.projectile.IndexInRange(projID))
                                     {
                                         Main.projectile[projID].ArmorPenetration = 100; //This should ignore almost all armor
@@ -3586,9 +3617,10 @@ namespace CalamityMod.Projectiles
                             if (TimerToCatch <= 0)
                             {
                                 projectile.FishingCheck();
-                                if (projectile.ai[1] < 0 && !(projectile.lavaWet && !owner.accLavaFishing))
+                                var fishingCond = Main.player[projectile.owner].GetFishingConditions();
+                                bool canLavaFish = ItemID.Sets.CanFishInLava[fishingCond.PoleItemType] || ItemID.Sets.IsLavaBait[fishingCond.BaitItemType] || Main.player[projectile.owner].accLavaFishing;
+                                if (projectile.ai[1] < 0 && !(projectile.lavaWet && !canLavaFish))
                                 {
-
                                     CaughtItemID = (int)projectile.localAI[1];
                                     projectile.ai[1] = 0;
                                     projectile.localAI[1] = 0;
@@ -4693,7 +4725,7 @@ namespace CalamityMod.Projectiles
             {
                 var player = Main.player[projectile.owner];
                 float burnRatio = (-player.statMana / 100) * ChaosStone.DamageMultPer100Mana;
-                target.Calamity().manaBurn += damageDone * burnRatio * (player.Calamity().oldFashioned ? OldFashioned.DamageBoostMultiplier : 1) * (player.Calamity().ivDrip ? IVDripOnTheRocks.DamageBoostMultiplier : 1);
+                target.Calamity().manaBurn += damageDone * burnRatio * (player.Calamity().oldFashioned ? OldFashioned.DamageBoostMultiplier : 1) * (player.Calamity().ivDrip ? IVDripOnTheRocks.DamageBoostMultiplier : 1) * (player.Calamity().vodka ? 1+Vodka.DebuffBoost : 1);
                 target.Calamity().playerManaBurnIntensity = -player.statMana / (float)player.statManaMax2;
                 if (Main.netMode != NetmodeID.SinglePlayer)
                     ManaBurnSyncPacket.Send(target);
