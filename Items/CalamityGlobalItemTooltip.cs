@@ -679,6 +679,19 @@ namespace CalamityMod.Items
                 || item.type == ItemID.QueenSlimeCrystal || item.type == ItemID.MechanicalEye || item.type == ItemID.MechanicalWorm || item.type == ItemID.MechanicalSkull || item.type == ItemID.CelestialSigil)
                 EditTooltipByNum(0, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.NotConsumable"));
             #endregion
+            // Brain of Confusion, Black Belt and Master Ninja Gear have guaranteed dodges with a fixed cooldown.
+            #region Guaranteed Dodge Tooltips
+            if (item.type == ItemID.BlackBelt)
+                EditTooltipByNum(0, (line) => line.Text = CalamityUtils.GetTextValue("Common.DodgeProvided") + "\n" + CalamityUtils.GetTextValue("Common.DodgeInformation"));
+            if (item.type == ItemID.MasterNinjaGear)
+                EditTooltipByNum(1, (line) => line.Text = CalamityUtils.GetTextValue("Common.DodgeProvided") + "\n" + CalamityUtils.GetTextValue("Common.DodgeInformation"));
+            if (item.type == ItemID.BrainOfConfusion)
+            {
+                EditTooltipByNum(0, (line) => line.Text = CalamityUtils.GetTextValue("Common.DodgeProvided"));
+
+                EditTooltipByNum(2, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.DodgeInformation"));
+            }
+            #endregion
 
             // Whip tag is dynamically generated for all whips based on the SummonTagDebuffDict, so we'll remove the vanilla tag tootlips.
             #region Whip Tag removal
@@ -706,13 +719,6 @@ namespace CalamityMod.Items
             #endregion
 
             #region Accessories
-            // Brain of Confusion, Black Belt and Master Ninja Gear have guaranteed dodges with a fixed cooldown.
-            if (item.type == ItemID.BlackBelt)
-                EditTooltipByNum(0, (line) => line.Text = CalamityUtils.GetText("Vanilla.DodgeInfo").Format(BalancingConstants.BeltDodgeCooldownMin / 60, BalancingConstants.BeltDodgeCooldownMax / 60));
-            if (item.type == ItemID.MasterNinjaGear)
-                EditTooltipByNum(1, (line) => line.Text = CalamityUtils.GetText("Vanilla.DodgeInfo").Format(BalancingConstants.BeltDodgeCooldownMin / 60, BalancingConstants.BeltDodgeCooldownMax / 60));
-            if (item.type == ItemID.BrainOfConfusion)
-                EditTooltipByNum(0, (line) => line.Text = CalamityUtils.GetText("Vanilla.DodgeInfo").Format(BalancingConstants.BrainDodgeCooldownMin / 60, BalancingConstants.BrainDodgeCooldownMax / 60));
 
             // Nerfed Ancient Chisel and its upgrade.
             if (item.type == ItemID.AncientChisel)
@@ -935,20 +941,6 @@ namespace CalamityMod.Items
 
             #region DD2 Armor
             // Nerf sets that are too strong
-            if (item.type == ItemID.SquireGreaves)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("SquireGreaves"));
-
-            if (item.type == ItemID.HuntressWig)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("10%", "15%"));
-            if (item.type == ItemID.HuntressJerkin)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("20%", "15%"));
-
-            if (item.type == ItemID.ApprenticeHat)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ApprenticeHat"));
-            if (item.type == ItemID.ApprenticeRobe)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ApprenticeRobe"));
-            if (item.type == ItemID.ApprenticeTrousers)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ApprenticeTrousers"));
 
             if (item.type == ItemID.SquireAltHead)
                 EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("10%", "15%"));
@@ -956,18 +948,6 @@ namespace CalamityMod.Items
                 EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("30%", "20%"));
             if (item.type == ItemID.SquireAltPants)
                 EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("20%", "15%"));
-
-            if (item.type == ItemID.HuntressAltShirt)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("25%", "20%"));
-            if (item.type == ItemID.HuntressAltPants)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("25%", "20%"));
-
-            if (item.type == ItemID.ApprenticeAltHead)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("15%", "10%"));
-            if (item.type == ItemID.ApprenticeAltShirt)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("25%", "20%"));
-            if (item.type == ItemID.ApprenticeAltPants)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("25%", "15%"));
 
             // Tweaks into Rogue
             // Monk armor
@@ -1193,12 +1173,11 @@ namespace CalamityMod.Items
                 AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
 
             // All developer wings have identical stats and no special effects
-            if (item.type == ItemID.Yoraiz0rWings || item.type == ItemID.JimsWings || item.type == ItemID.SkiphsWings ||
-                item.type == ItemID.LokisWings || item.type == ItemID.ArkhalisWings || item.type == ItemID.LeinforsWings ||
-                item.type == ItemID.BejeweledValkyrieWing || item.type == ItemID.RedsWings || item.type == ItemID.DTownsWings ||
-                item.type == ItemID.WillsWings || item.type == ItemID.CrownosWings || item.type == ItemID.CenxsWings ||
-                item.type == ItemID.FoodBarbarianWings || item.type == ItemID.GroxTheGreatWings || item.type == ItemID.GhostarsWings ||
-                item.type == ItemID.SafemanWings)
+            if (item.type == ItemID.Yoraiz0rWings || item.type == ItemID.JimsWings || item.type == ItemID.LokisWings || 
+                item.type == ItemID.ArkhalisWings || item.type == ItemID.LeinforsWings || item.type == ItemID.RedsWings || 
+                item.type == ItemID.DTownsWings || item.type == ItemID.WillsWings || item.type == ItemID.CrownosWings || 
+                item.type == ItemID.CenxsWings || item.type == ItemID.FoodBarbarianWings || item.type == ItemID.GroxTheGreatWings || 
+                item.type == ItemID.GhostarsWings || item.type == ItemID.SafemanWings)
             {
                 AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
             }

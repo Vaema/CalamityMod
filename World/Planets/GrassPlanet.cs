@@ -18,8 +18,8 @@ namespace CalamityMod.World.Planets
     {
         private ushort[] oreTypes = new ushort[]
         {
-            GenVars.copper == TileID.Copper ? (Main.getGoodWorld ? TileID.Palladium : TileID.Tin) : (Main.getGoodWorld ? TileID.Cobalt : TileID.Copper),
-            GenVars.iron == TileID.Iron ? (Main.getGoodWorld ? TileID.Palladium : TileID.Lead) : (Main.getGoodWorld ? TileID.Cobalt : TileID.Iron)
+            GenVars.copper == TileID.Copper ? (Main.zenithWorld ? TileID.Palladium : TileID.Tin) : (Main.zenithWorld ? TileID.Cobalt : TileID.Copper),
+            GenVars.iron == TileID.Iron ? (Main.zenithWorld ? TileID.Palladium : TileID.Lead) : (Main.zenithWorld ? TileID.Cobalt : TileID.Iron)
         };
 
         public override bool Place(Point origin, StructureMap structures)

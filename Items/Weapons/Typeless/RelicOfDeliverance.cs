@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Typeless;
+﻿using CalamityMod.CalPlayer.Dashes;
+using CalamityMod.Projectiles.Typeless;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -40,6 +41,6 @@ namespace CalamityMod.Items.Weapons.Typeless
         // Terraria seems to really dislike high crit values in SetDefaults
         public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 55;
 
-        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0 && player.Calamity().DashID != GodslayerArmorDash.ID;
     }
 }

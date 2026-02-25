@@ -69,7 +69,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
             else if (Owner.controlUseTile)
             {
-                if (ShotTimer <= 0 && Owner.Calamity().AvaliableStarburst > 0)
+                if (ShotTimer <= 0 && Owner.Calamity().AvaliableStarburst > 1)
                 {
                     ShotTimer = 4;
                     var spawnpos = Projectile.Center;
@@ -97,8 +97,8 @@ namespace CalamityMod.Projectiles.Ranged
                     for (var i = 0; i < 5; i++)
                         GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(spawnpos + dir * 36, (dir * Halley.shootSpeed).RotatedByRandom(0.75f) * Main.rand.NextFloat(0.5f, 1.5f), false, 7, 0.02f, drawColor, new Vector2(0.5f, 1f)));
                     if (Projectile.owner == Main.myPlayer)
-                        Projectile.NewProjectile(Owner.GetSource_ItemUse_WithPotentialAmmo(Halley, AmmoID.Gel), spawnpos + dir * 16,dir * Halley.shootSpeed * 0.75f, ModContent.ProjectileType<HalleysStarburst>(), (int)Owner.GetDamage(DamageClass.Ranged).ApplyTo(Halley.damage), Halley.knockBack, Projectile.owner, color);
-                    Owner.Calamity().StratusStarburst--;
+                        Projectile.NewProjectile(Owner.GetSource_ItemUse_WithPotentialAmmo(Halley, AmmoID.Gel), spawnpos + dir * 16,dir * Halley.shootSpeed * HalleysInferno.StarburstVelMult, ModContent.ProjectileType<HalleysStarburst>(), (int)(Owner.GetDamage(DamageClass.Ranged).ApplyTo(Halley.damage) * HalleysInferno.StarburstDmgMult), Halley.knockBack, Projectile.owner, color);
+                    Owner.Calamity().StratusStarburst -= 2;
                     SoundEngine.PlaySound(HalleysInferno.ShootSound);
                     RecoilAmount = 4;
                 }

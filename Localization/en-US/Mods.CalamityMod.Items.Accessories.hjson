@@ -13,7 +13,6 @@ AbyssalDivingGear: {
 	Tooltip:
 		'''
 		Reduces the damage caused by the pressure of the abyss while out of breath
-		Removes the bleed effect caused by the abyss
 		Grants the ability to swim and greatly extends underwater breathing
 		Provides light underwater and extra mobility on ice
 		Provides a moderate amount of light and reduces breath loss in the abyss
@@ -39,14 +38,11 @@ AbyssalMirror: {
 	Tooltip:
 		'''
 		Enemies are less likely to target you, even in the abyss
-		Generate stealth {0}% faster when standing still and {1}% faster while moving
-		Grants the ability to dodge attacks, releasing a cloud of lumenyl fluid which damages and stuns nearby enemies
+		Generate stealth 25% faster when standing still and 12% faster while moving
+		{$Common.DodgeProvided}
+		Dodging an attack restores stealth and releases a cloud that damages and stuns nearby enemies
 		'''
-	HoldShiftTooltip:
-		'''
-		{$Common.DodgeInformation}
-		Dodging an attack gives stealth
-		'''
+	HoldShiftTooltip: "{$Common.DodgeInformation}"
 	FlavorTooltip: "'Light does not reach the depths of the ocean'"
 }
 
@@ -90,7 +86,7 @@ AmalgamatedBrain: {
 		'''
 		Taking damage confuses nearby enemies and spawns a dank creeper
 		The dank creeper flies above you, exploding into several shaderain clouds
-		Grants the ability to dodge attacks
+		{$Common.DodgeProvided}
 		After dodging, summon damage and crit chance are boosted by 10%
 		'''
 	HoldShiftTooltip: "{$Common.DodgeInformation}"
@@ -630,7 +626,7 @@ DynamoStemCells: {
 		'''
 		10% increased ranged damage and movement speed
 		Ranged weapons fire a powerful mini swarmer every 3 seconds
-		Reduces damage taken from Dragonfire and Electrified
+		Reduces damage taken from Dragonfire
 		'''
 }
 
@@ -643,13 +639,10 @@ EclipseMirror: {
 		Enemies are less likely to target you, even in the abyss
 		Stealth generates 25% faster when standing still and is boosted while moving if not attacking
 		Stealth strikes only expend 50% of your max stealth
-		Grants the ability to dodge attacks in a blast of darksun light, which inflicts extreme damage in a wide area
+		{$Common.DodgeProvided}
+		Dodging an attack restores stealth and releases a burst of highly damaging darksun light
 		'''
-	HoldShiftTooltip:
-		'''
-		{$Common.DodgeInformation}
-		Dodging an attack grants a lot of stealth
-		'''
+	HoldShiftTooltip: "{$Common.DodgeInformation}"
 	FlavorTooltip: "'Its reflection shows naught but darkness'"
 }
 
@@ -1096,7 +1089,7 @@ ManaPolarizer: {
 		Increases max mana by 50
 		Provides life regeneration and magic damage that scales based on how much mana you have
 		Lower mana means more life regeneration, but less magic damage
-		These scale from -2 to 2 HP/sec, and 15% to 5% damage
+		These scale from -2 to +2 HP/s, and 15% to 5% damage
 		The provided regeneration is halved when under Mana Sickness
 		Magic projectiles steal enemy life while holding a magic weapon
 		'''
@@ -1533,10 +1526,11 @@ ScionsCurio: {
 	DisplayName: Scions Curio
 	Tooltip:
 		'''
-		Ranged hits increase the effectiveness of the Irradiated debuff
-		Irradiated damage over time scales off of your ranged damage and crit chance
-		On kill, enemies burst, spreading Irradiated
+		Ranged hits increase the effectiveness of [cbuff:CalamityMod/Irradiated]
+		[cbuff:CalamityMod/Irradiated] damage over time scales off of your ranged damage and crit chance
+		On kill, enemies burst, spreading [cbuff:CalamityMod/Irradiated]
 		Taking damage causes the curio to explode in retaliation
+		Current [cbuff:CalamityMod/Irradiated] damage: [DAMAGE]
 		'''
 }
 
@@ -1718,9 +1712,10 @@ StatisNinjaBelt: {
 	Tooltip:
 		'''
 		Provides a high-speed dash
-		10% increased movement speed, 32% increased jump speed, allows auto-jump, and negates fall damage
+		10% increased movement speed, 32% increased jump speed and negates fall damage
 		Increases movement acceleration and deceleration by 1.6x
-		Grants the ability to swim[TOGGLE] and dodge attacks
+		Allows the user to swim[TOGGLE] and auto jump
+		{$Common.DodgeProvided}
 		[c/aaaaaa:Shift-<right> this item in your inventory to toggle the] [i:ClimbingClaws] [c/aaaaaa:Climbing Claws]
 		'''
 	ToggleEffect: ", climb walls,"
@@ -1732,10 +1727,10 @@ StatisVoidSash: {
 	Tooltip:
 		'''
 		Provides a high-speed dash
-		20% increased movement speed, 32% increased jump speed, allows auto-jump, and negates fall damage
+		20% increased movement speed, 32% increased jump speed, and negates fall damage
 		Increases movement acceleration and deceleration by 1.85x
-		Grants the ability to swim[TOGGLE] and dodge attacks
-		Visual effects are reduced if visibility is disabled
+		Allows the user to swim[TOGGLE] and auto jump
+		{$Common.DodgeProvided}
 		[c/aaaaaa:Shift-<right> this item in your inventory to toggle the] [i:ClimbingClaws] [c/aaaaaa:Climbing Claws]
 		'''
 	ToggleEffect: ", climb walls,"
@@ -1861,11 +1856,11 @@ TheAmalgam: {
 	DisplayName: The Amalgam
 	Tooltip:
 		'''
-		All attacks inflict a variety of debuffs, 300% increased elemental debuff damage
+		All attacks inflict a variety of debuffs, 200% increased elemental debuff damage
 		Most buffs last twice as long, and persist after dying
 		Taking damage confuses nearby enemies and spawns a dank creeper
 		The dank creeper flies above you, exploding into several shaderain clouds
-		Grants the ability to dodge attacks
+		{$Common.DodgeProvided}
 		After dodging, summon damage and crit chance are boosted by 10%
 		'You have no idea how it's staying together'
 		'''
@@ -2155,6 +2150,11 @@ HapuFruit: {
 	Tooltip: "'A fruit that calms your nerves (may have unintended side effects)'"
 }
 
+LittleE: {
+	DisplayName: Little E
+	Tooltip: "'That's a little version of me, {0}. I want you to have it.'"
+}
+
 LucisSight: {
 	DisplayName: Luci's Sight
 	Tooltip: "'Fashionable glasses? In Earthia's current economy?!'"
@@ -2177,6 +2177,11 @@ Popo: {
 SharkyPlush: {
 	DisplayName: Sharky Plush
 	Tooltip: "[c/696969:'Look out, for the force without form...']"
+}
+
+GlimmeringRibbon: {
+	DisplayName: Glimmering Ribbon
+	Tooltip: "'We are born colorless. It's the people we meet who give us color.'"
 }
 
 TheComb: {

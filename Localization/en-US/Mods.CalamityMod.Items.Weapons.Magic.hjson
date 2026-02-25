@@ -611,11 +611,7 @@ PhoenixFlameBarrage: {
 
 Photosynthesis: {
 	DisplayName: Photosynthesis
-	Tooltip:
-		'''
-		Casts a brilliant ray that dissolves into energy on enemy hits
-		More energy is created the farther along the ray the hit enemy is
-		'''
+	Tooltip: Casts a brilliant ray that dissolves into energy on enemy hits
 }
 
 PlagueStaff: {
@@ -963,7 +959,7 @@ UnstableCastersGauntlet: {
 		'''
 	HoldShiftTooltip:
 		'''
-		[c/DBD7CA:Ordo] sigils always land critical strikes and pierce infinitely
+		[c/DBD7CA:Ordo] sigils always land critical strikes
 		[c/ABB6D4:Perdito] sigils ignore 25 points of enemy defense
 		[c/E89B8E:Ignis] sigils inflict Daybroken
 		[c/8ECBE8:Aqua] sigils inflict Crush Depth

@@ -20,7 +20,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
         private Player Owner => Main.player[Projectile.owner];
 
         // projectile.localAI[1] is the Aura Charge of the red lightning aura
-        // Minimum value is zero. Maximum value is 200.
+        // Minimum value is zero. Maximum value is 150.
         // The aura turns on and begins damaging enemies at 20 charge.
         // The yoyo "supercharges" at 50 charge.
         // Its size caps out at 100 charge.
@@ -176,7 +176,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                 {
                     // The aura's direct damage scales with its charge and with melee stats.
                     float chargeRatio = AuraCharge / MaxCharge;
-                    int auraDamage = TheOracle.AuraBaseDamage + (int)(chargeRatio * (TheOracle.AuraMaxDamage - TheOracle.AuraBaseDamage));
+                    int auraDamage = (int)(Projectile.damage * MathHelper.Lerp(TheOracle.AuraBaseDamageMult, TheOracle.AuraMaxDamageMult, chargeRatio));
                     DealAuraDamage(auraRadius, auraDamage);
                 }
 
@@ -301,7 +301,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             }
         }
 
-        private void DealAuraDamage(float radius, int baseDamage)
+        private void DealAuraDamage(float radius, int damage)
         {
             if (Projectile.owner != Main.myPlayer)
                 return;
@@ -324,10 +324,9 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                 if (dist <= radius)
                 {
                     target.AddBuff(ModContent.BuffType<AuricRebuke>(), 300);
-                    int finalDamage = (int)owner.GetTotalDamage<MeleeDamageClass>().ApplyTo(baseDamage);
                     if (Projectile.owner == Main.myPlayer)
                     {
-                        Projectile p = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), finalDamage, 0f, Projectile.owner, target.whoAmI);
+                        Projectile p = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), damage, 0f, Projectile.owner, target.whoAmI);
                         if (p.whoAmI.WithinBounds(Main.maxProjectiles))
                             p.DamageType = DamageClass.MeleeNoSpeed;
                     }
@@ -338,9 +337,6 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
         private void FireAuricOrbs()
         {
             int numOrbs = 3;
-            int orbID = ModContent.ProjectileType<Orbacle>();
-            int orbDamage = Projectile.damage;
-            float orbKB = 8f;
             float angleVariance = MathHelper.TwoPi / numOrbs;
             float spinOffsetAngle = MathHelper.Pi / (2f * numOrbs);
             Vector2 posVec = new Vector2(2f, 0f).RotatedByRandom(MathHelper.TwoPi);
@@ -351,8 +347,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                 Vector2 velocity = new Vector2(posVec.X, posVec.Y).RotatedBy(spinOffsetAngle);
                 velocity.Normalize();
                 velocity *= 18f;
-                if (Projectile.owner == Main.myPlayer)
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + posVec, velocity, orbID, orbDamage, orbKB, Main.myPlayer, 0.0f, 0.0f);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + posVec, velocity, ModContent.ProjectileType<Orbacle>(), Projectile.damage, 8f, Main.myPlayer, 0.0f, 0.0f);
             }
         }
         public override void OnKill(int timeLeft)

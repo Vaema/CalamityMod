@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useAmmo = AmmoID.Bullet;
             Item.noUseGraphic = true;
 
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(gold: 20); // Sold by Arms Dealer
             Item.rare = ItemRarityID.Orange;
         }
 

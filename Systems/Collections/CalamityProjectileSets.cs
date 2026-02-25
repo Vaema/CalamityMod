@@ -47,8 +47,8 @@ namespace CalamityMod.Systems.Collections
         /// Used to allow the projectile to inflict Plague while wearing the Plaguebringer armor.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        public static bool[] IsFriendlyBeeProjectile = Factory.CreateBoolSet(ProjectileID.GiantBee, ProjectileID.Bee, ProjectileID.Wasp, ProjectileType<PlaguenadeBee>(),
-                ProjectileType<PlaguePrincess>(), ProjectileType<BabyPlaguebringer>(), ProjectileType<PlagueBeeSmall>());
+        public static bool[] IsFriendlyBeeProjectile = Factory.CreateBoolSet(ProjectileID.GiantBee, ProjectileID.Bee, ProjectileID.Wasp, ProjectileID.Hornet,ProjectileID.HornetStinger, ProjectileType<PlaguenadeBee>(),
+                ProjectileType<PlaguePrincess>(), ProjectileType<BabyPlaguebringer>(), ProjectileType<PlagueBeeSmall>(), ProjectileType<BetterHornetStinger>(), ProjectileType<BasicPlagueBee>());
 
         /// <summary>
         /// If <see langword="true"/> for a projectile type, then that projectile is a bomb or other explosive which is not a weapon.<br/>
@@ -75,7 +75,7 @@ namespace CalamityMod.Systems.Collections
         /// Defaults to <see langword="false"/>.
         /// </summary>
         public static bool[] DoesNotGetHomingWithGrapeBeer = Factory.CreateBoolSet(ProjectileType<NukeOfBliss>(), ProjectileType<PrismaticEnergyBlast>(), ProjectileType<PrismEnergyBullet>(),
-            ProjectileType<PrismMine>(), ProjectileType<ScorchedEarthRocket>());
+            ProjectileType<PrismMine>(), ProjectileType<ScorchedEarthRocket>(), ProjectileType<UltimaRay>(), ProjectileType<SproutingArrowMain>());
 
         /// <summary>
         /// Determines what other projectiles this projectile will share ID-static immunity frames with. Defaults to -1, which means that it does not share immunity frames.<br/>

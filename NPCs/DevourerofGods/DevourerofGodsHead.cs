@@ -278,7 +278,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 NPC.velocity = new Vector2(60, 0);
             if (Main.zenithWorld)
                 NPC.scale *= 1.5f;
-            if (Main.getGoodWorld)
+            if (Main.zenithWorld)
                 NPC.takenDamageMultiplier = 2;
 
 
@@ -798,6 +798,8 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                             if (NPC.Opacity >= 1f)
                             {
+                                // Don't do contact damage while flying away after laser walls
+                                NPC.damage = 0;
                                 NPC.Opacity = 1f;
                                 laserWallPhase = (int)LaserWallPhase.SetUp;
 
@@ -2289,6 +2291,11 @@ namespace CalamityMod.NPCs.DevourerofGods
                 {
                     NPC.ai[3] = 4;
                     NPC.SimpleStrikeNPC(10000, 1);
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        int bType = Main.rand.Next(0, 2);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), LaserWallDamage, 0, Main.myPlayer, 0.45f, 300, bType);
+                    }
                 }
             }
             else
@@ -2299,6 +2306,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             AwaitingPhase2Teleport = false;
             NPC.Opacity = 1f - (postTeleportTimer / 255f);
             NPC.velocity = Vector2.Normalize(AdjustedPlayerCenter(10) - NPC.Center) * chargeVelocity;
+            NPC.damage = NPC.defDamage;
             NPC.ForceNetUpdate(false);
             NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) + MathHelper.PiOver2;
             foreach (NPC n in Main.ActiveNPCs)

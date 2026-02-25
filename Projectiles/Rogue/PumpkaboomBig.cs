@@ -155,7 +155,7 @@ namespace CalamityMod.Projectiles.Rogue
 
                 if (Main.myPlayer == Projectile.owner)
                 {
-                    if (completion >= 1 || hasReachedFullCharge)
+                    if (completion >= 1)
                     {
                         time = -1;
                         Projectile.Center = Owner.Center;
@@ -165,48 +165,20 @@ namespace CalamityMod.Projectiles.Rogue
                         flungState = 1f;
                         Projectile.netUpdate = true;
                     }
-                    else
-                    {
-                        if (Main.mouseLeft && !hasStoppedHolding)
-                        {
-                            if (completion >= 0.7f && completion <= 0.8f)
-                            {
-                                time--;
-                                if (charge < 1)
-                                    charge += 0.5f;
-
-                                if (charge >= 1 && !hasReachedFullCharge)
-                                {
-                                    SoundEngine.PlaySound(SoundID.Item1, Projectile.Center);
-                                    hasReachedFullCharge = true;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            if (!hasReachedFullCharge)
-                            {
-                                Projectile.localAI[1] = 5;
-                                flungState = -1f;
-                                Projectile.Kill();
-                            }
-                            hasStoppedHolding = true;
-                        }
-                    }
 
                     Owner.direction = Math.Sign(Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld).X);
                 }
 
                 float grenadeRot = 0;
-                if (completion >= 0.7f)
+                if (completion <= 0.75f)
                 {
-                    float completionLerp = (float)Math.Pow(Utils.GetLerpValue(0.7f, 1f, completion, true), 7);
-                    grenadeRot = MathHelper.ToRadians(MathHelper.Lerp(-75, 130f, completionLerp) * Owner.direction);
+                    float completionLerp = (float)Math.Pow(Utils.GetLerpValue(0f, 0.75f, completion, true), 2);
+                    grenadeRot = MathHelper.ToRadians(MathHelper.Lerp(120, -75f, completionLerp) * Owner.direction);
                 }
                 else
                 {
-                    float completionLerp = (float)Math.Pow(Utils.GetLerpValue(0f, 0.7f, completion, true), 2);
-                    grenadeRot = MathHelper.ToRadians(MathHelper.Lerp(120, -75f, completionLerp) * Owner.direction);
+                    float releaseLerp = (float)Math.Pow(Utils.GetLerpValue(0.75f, 1f, completion, true), 3);
+                    grenadeRot = MathHelper.ToRadians(MathHelper.Lerp(-75f, 30f, releaseLerp) * Owner.direction);
                 }
 
                 Vector2 mouseDir = (Main.myPlayer == Projectile.owner) ? Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld) : Projectile.velocity.SafeNormalize(Vector2.UnitX);
@@ -394,14 +366,28 @@ namespace CalamityMod.Projectiles.Rogue
 
                 int useAnim = Owner.HeldItem.useAnimation > 0 ? Owner.HeldItem.useAnimation : 30;
                 float completion = time / (useAnim * 0.7f);
-                float completionLerp2 = (float)Math.Pow(Utils.GetLerpValue(0f, 0.7f, completion, true), 2);
-                float grenadeRot = MathHelper.ToRadians(MathHelper.Lerp(120, -75f, completionLerp2) * Owner.direction);
+                float grenadeRot;
+
+                if (completion <= 0.75f)
+                {
+                    float completionLerp = (float)Math.Pow(Utils.GetLerpValue(0f, 0.75f, completion, true), 2);
+                    grenadeRot = MathHelper.ToRadians(MathHelper.Lerp(120, -75f, completionLerp) * Owner.direction);
+                }
+                else
+                {
+                    float releaseLerp = (float)Math.Pow(Utils.GetLerpValue(0.75f, 1f, completion, true), 3);
+                    grenadeRot = MathHelper.ToRadians(MathHelper.Lerp(-75f, 30f, releaseLerp) * Owner.direction);
+                }
+
                 Vector2 mouseDir = (Main.myPlayer == Projectile.owner) ? Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld) : Projectile.velocity.SafeNormalize(Vector2.UnitX);
                 grenadeRot += mouseDir.ToRotation();
+
                 Vector2 grenadePos = Owner.GetFrontHandPosition(Player.CompositeArmStretchAmount.Full, grenadeRot) + new Vector2(Owner.direction == 1 ? 5 : 5, Owner.direction == 1 ? -38 : 22).RotatedBy(grenadeRot);
+
                 drawPosition = grenadePos - Main.screenPosition;
-                drawRotation = grenadeRot - MathHelper.ToRadians(25 * completionLerp2) + (Owner.direction == 1 ? MathHelper.ToRadians(180) : 0);
+                drawRotation = grenadeRot + (Owner.direction == 1 ? MathHelper.ToRadians(180) : 0);
             }
+
             else 
             {
                 if (stuckState == 1f)

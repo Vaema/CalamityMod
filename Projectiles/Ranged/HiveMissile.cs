@@ -155,8 +155,10 @@ namespace CalamityMod.Projectiles.Ranged
                     dust2.noGravity = true;
                     dust2.color = Main.rand.NextBool(3) ? EffectsColor : StaticEffectsColor;
                 }
-
-                for (int k = 0; k < (isClusterRocket ? 3f : 2f); k++)
+                var projAmount = isClusterRocket ? 3f : 2f;
+                if (Main.player[Projectile.owner].strongBees && Main.rand.NextBool())
+                    projAmount++;
+                for (int k = 0; k < projAmount; k++)
                 {
                     int BEES = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, new Vector2(4, 10).RotatedByRandom(4) * Main.rand.NextFloat(0.2f, 0.8f), ModContent.ProjectileType<BasicPlagueBee>(), (int)(Projectile.damage * (isClusterRocket ? 0.2f : 0.3f)), 0f, Projectile.owner, 0f, 0f, isClusterRocket ? 2f : 1f);
                     if (BEES.WithinBounds(Main.maxProjectiles))

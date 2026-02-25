@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Cooldowns;
@@ -155,6 +155,9 @@ namespace CalamityMod.Projectiles.Melee
                 Animation--;
 
             AnimationProgress = Animation % useAnim;
+
+            if (isOwner && !holding && Main.netMode != NetmodeID.SinglePlayer && (int)Animation % 3 == 0)
+                Projectile.netUpdate = true;
 
             if (CanHit || postSwing)
                 mousePos = Owner.Center - aimVel;
@@ -394,15 +397,19 @@ namespace CalamityMod.Projectiles.Melee
         public override void SendExtraAI(BinaryWriter writer)
         {
             writer.Write(willDie);
+            writer.Write7BitEncodedInt(useAnim);
             writer.Write7BitEncodedInt(postSwingCooldown);
             writer.WriteVector2(aimVel);
+            writer.Write(Animation);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
             willDie = reader.ReadBoolean();
+            useAnim = reader.Read7BitEncodedInt();
             postSwingCooldown = reader.Read7BitEncodedInt();
             aimVel = reader.ReadVector2();
+            Animation = reader.ReadSingle();
             mousePos = Owner.Center - aimVel;
         }
     }

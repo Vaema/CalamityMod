@@ -194,7 +194,7 @@ namespace CalamityMod.CalPlayer
             DevourerofCods //Not a fishing minigame but uses the same code as the rest
         }
         public FishingMinigames SelectedFishingMinigame = FishingMinigames.None;
-        public bool countsAsAnyWet => (Player.armor[0].type == ItemID.FishBowl || (Main.raining && Player.Center.Y < Main.worldSurface * 16.0) || Player.dripping || Player.wetCount > 0 || Player.wet || Player.honeyWet || Player.lavaWet);
+        public bool countsAsAnyWet => (Player.armor[0].type == ItemID.FishBowl || (Main.IsItRaining && Player.Center.Y < Main.worldSurface * 16.0) || Player.dripping || Player.wetCount > 0 || Player.wet || Player.honeyWet || Player.lavaWet);
 
         /// <summary>
         /// How many Starbursts the player has
@@ -544,6 +544,8 @@ namespace CalamityMod.CalPlayer
         /// <summary> An additional damage multiplier applied to rogue stealth strikes. Used by Filthy Glove, Rotten Dogtooth and their upgrades. </summary>
         public double bonusStealthDamage = 0;
         public float rogueVelocity = 1f;
+
+        public int focusFlurryAttackCount = 0;
         #endregion
 
         #region Mount
@@ -949,6 +951,7 @@ namespace CalamityMod.CalPlayer
         public bool seraphTracers = false;
         public bool frostFlare = false;
         public bool evolution = false;
+        public bool procDodgeEffects = true;
         public bool nanotech = false;
         public bool deadshotBrooch = false;
         public bool shadowMinions = false;
@@ -1115,6 +1118,7 @@ namespace CalamityMod.CalPlayer
         public bool scionsCurio = false;
         public bool scionsCurioGotHit = false;
         public bool scionsCurioVisuals = false;
+        public float scionsCurioDebuffDamage = 0;
         public bool miniOldDuke = false;
         public bool miniOldDukeVanity = false;
         public bool starbusterCore = false;
@@ -1145,6 +1149,22 @@ namespace CalamityMod.CalPlayer
         /// <summary> Used for spawning Quiver of Nihility's void fields. </summary>
         public bool voidField = false;
         public bool copyrightInfringementShield = false;
+
+        /// <summary>
+        /// This is the maximum cooldown of general Dodge effects, in frames. Can be modified by equipment.
+        /// Defaults to 90 seconds, or 5400 frames.
+        /// </summary>
+        public int ConsumableDodgeCooldown = 0;
+        /// <summary>
+        /// A list of on dodge effects for every dodge the player has equipped.
+        /// Also used to determine the amount of dodges for cooldowns.
+        /// Returns the string for the dodge cooldown icon to use.
+        /// </summary>
+        public List<Func<Player, Player.HurtInfo,string?>> DodgeEffects = [];
+        /// <summary>
+        /// Used internally to disable Player.shadowDodge so we can use custom dodge ordering.
+        /// </summary>
+        bool storedShadowDodge = false;
         #endregion
 
         #region Armor Set
@@ -1439,7 +1459,6 @@ namespace CalamityMod.CalPlayer
         public bool redWine = false;
         public float redWineStoredY = 0;
         public bool grapeBeer = false;
-        public int grapeBeerTimer = 0;
         public bool moonshine = false;
         public bool rum = false;
         public bool whiskey = false;
@@ -2489,7 +2508,10 @@ namespace CalamityMod.CalPlayer
             voidField = false;
             copyrightInfringementShield = false;
 
-            daedalusReflect = false;
+            ConsumableDodgeCooldown = BalancingConstants.DodgeCooldownMax;
+            DodgeEffects = [];
+
+        daedalusReflect = false;
             daedalusSplit = false;
             daedalusAbsorb = false;
             daedalusShard = false;
@@ -2516,6 +2538,7 @@ namespace CalamityMod.CalPlayer
             fairyBoots = false;
             flameWakerBoots = false;
             hellfireTreads = false;
+            bootLevel = 0;
             sSpiritAmulet = false;
             dOfTheDeep = false;
             oceanCrest = false;
@@ -2723,8 +2746,6 @@ namespace CalamityMod.CalPlayer
             vodka = false;
             redWine = false;
             grapeBeer = false;
-            if (grapeBeerTimer > 0)
-                grapeBeerTimer--;
             moonshine = false;
             rum = false;
             whiskey = false;
@@ -3788,6 +3809,14 @@ namespace CalamityMod.CalPlayer
                 if (godSlayer && !Player.pulley && Player.grappling[0] == -1 && !Player.tongued && !Player.mount.Active && !Player.HasCooldown(GodSlayerDash.ID) && Player.dashDelay == 0)
                 {
                     godSlayerDashHotKeyPressed = true;
+                    foreach (Projectile p in Main.ActiveProjectiles)
+                    {
+                        if (p.type == ProjectileType<RelicOfDeliveranceSpear>() && Player.whoAmI == p.owner)
+                        {
+                            (p.ModProjectile as RelicOfDeliveranceSpear).KillProj();
+                            return;
+                        }
+                    }
                 }
             }
 
@@ -4327,6 +4356,17 @@ namespace CalamityMod.CalPlayer
             Player.accRunSpeed += Player.accRunSpeed * moveSpeedBonus * 0.16f;
             if (Player.accRunSpeed < accRunSpeedMin)
                 Player.accRunSpeed = accRunSpeedMin;
+
+            if (Player.blackBelt) 
+                DodgeEffects.Add((Player, hit) => {
+                    Player.NinjaDodge();
+                    return null;
+                    }); 
+            if (Player.brainOfConfusionItem != null && !Player.brainOfConfusionItem.IsAir)
+                DodgeEffects.Add((Player, hit) => {
+                    Player.BrainOfConfusionDodge();
+                    return null;
+                    });
 
             if (Player.Transformation().Type == ItemType<Popo>())
             {
@@ -4950,6 +4990,13 @@ namespace CalamityMod.CalPlayer
                     }
                 }
             }
+
+            if (scionsCurio)
+            {
+                scionsCurioDebuffDamage = Player.GetTotalDamage(DamageClass.Ranged).ApplyTo(Irradiated.debuffData.EnemyLostRegen * (1 + Player.GetTotalCritChance(DamageClass.Ranged) * 0.01f));
+            }
+            else
+                scionsCurioDebuffDamage = 0;
 
             // True melee damage from various vanilla equipment placed here.
 

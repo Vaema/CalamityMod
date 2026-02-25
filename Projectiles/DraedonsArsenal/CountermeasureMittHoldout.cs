@@ -103,7 +103,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Vector2 handPos = Owner.GetBackHandPosition(CompositeArmStretchAmount.None, Owner.compositeBackArm.rotation) + (Owner.compositeBackArm.rotation + MathHelper.PiOver2).ToRotationVector2() * 9;
             
             // Every laser has collision for the single hitbox, so it works more like a large wide piercing single beam
-            float beamLength = 1500 * Projectile.scale;
+            float beamLength = 2000 * Projectile.scale;
             float beamThickness = 20 * Projectile.scale;
             float fingerLength = 6 * Projectile.scale;
             float _ = float.NaN;
@@ -153,6 +153,13 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         {
             if (hitTimer > 0)
                 hitTimer--;
+
+            if (Owner.dead)
+            {
+                EndSounds();
+                Projectile.Kill();
+                return;
+            }
 
             Owner.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Full, (alteredRotation + MathHelper.PiOver2 * -Projectile.direction) + (Owner.direction == -1 ? MathHelper.Pi : 0));
 
@@ -555,8 +562,9 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 Main.EntitySpriteDraw(finger, basePosition - Main.screenPosition, null, fingerColor, alteredRotation + rot, fingerOrgin, fingerScale, SpriteEffects.None);
 
                 Vector2 velocity = (alteredRotation + rot).ToRotationVector2();
-                Main.EntitySpriteDraw(laser, basePosition - Main.screenPosition + velocity * 545 * Projectile.scale, null, Effects.ArsenalEffects.ArsenalLaserColor with { A = 0 } * fx, velocity.ToRotation() + MathHelper.PiOver2, laser.Size() / 2, new Vector2(2.5f * randSize * fx, 55f) * Projectile.scale * 0.01f, SpriteEffects.FlipVertically);
-                Main.EntitySpriteDraw(laser2, basePosition - Main.screenPosition + velocity * 545 * Projectile.scale, null, Color.Lerp(Effects.ArsenalEffects.ArsenalLaserColor, Color.White, 0.3f) with { A = 0 } * fx, velocity.ToRotation() + MathHelper.PiOver2, laser2.Size() / 2, new Vector2(0.4f * Math.Min(fx, 1), 55f) * Projectile.scale * 0.01f, SpriteEffects.FlipVertically);
+                float laserLength = 2.5f;
+                Main.EntitySpriteDraw(laser, basePosition - Main.screenPosition + velocity * 542 * laserLength * Projectile.scale, null, Effects.ArsenalEffects.ArsenalLaserColor with { A = 0 } * fx, velocity.ToRotation() + MathHelper.PiOver2, laser.Size() / 2, new Vector2(2.5f * randSize * fx, 55 * laserLength) * Projectile.scale * 0.01f, SpriteEffects.FlipVertically);
+                Main.EntitySpriteDraw(laser2, basePosition - Main.screenPosition + velocity * 542 * laserLength * Projectile.scale, null, Color.Lerp(Effects.ArsenalEffects.ArsenalLaserColor, Color.White, 0.3f) with { A = 0 } * fx, velocity.ToRotation() + MathHelper.PiOver2, laser2.Size() / 2, new Vector2(0.4f * Math.Min(fx, 1), 55 * laserLength) * Projectile.scale * 0.01f, SpriteEffects.FlipVertically);
 
                 for (int y = 0; y < 2; y++)
                     Main.EntitySpriteDraw(bloom, basePosition - Main.screenPosition + velocity * 7 * Projectile.scale, null, Color.Lerp(Effects.ArsenalEffects.ArsenalLaserColor, Color.White, y) with { A = 0 } * (fx - 1), velocity.ToRotation() + MathHelper.PiOver2, bloom.Size() / 2, new Vector2(2 + 0.05f * (fx + 25), 1) * Projectile.scale * MathHelper.Lerp(fx, 1, 0.7f) * (0.03f - 0.01f * y), SpriteEffects.FlipVertically);
