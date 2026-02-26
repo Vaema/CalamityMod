@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Summon
@@ -57,7 +58,7 @@ namespace CalamityMod.Projectiles.Summon
                 Time++;
                 if (Main.rand.NextBool())
                 {
-                    Dust dust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.Blood, Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f, 100);
+                    Dust dust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, !ChildSafety.Disabled ? DustID.Cloud : DustID.Blood, Projectile.velocity.X * 0.2f, Projectile.velocity.Y * 0.2f, 100);
                     if (Main.rand.NextBool(3))
                     {
                         dust.noGravity = true;

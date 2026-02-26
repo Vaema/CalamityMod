@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Critters
             Item.DefaultToCapturedCritter(ModContent.NPCType<BabyCannonballJellyfish>());
             Item.value = Item.sellPrice(silver: 10);
             Item.rare = ItemRarityID.Green;
-            Item.damage = 400;
+            Item.damage = 300;
         }
     }
 }

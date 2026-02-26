@@ -73,7 +73,7 @@ namespace CalamityMod.Items.Weapons.Melee
             }
             if (player.Calamity().demonSwordKillMode && player.ownedProjectileCounts[ModContent.ProjectileType<ExaltedOathbladeHoldout>()] <= 0 && player.Calamity().killModeCooldown == KillMode.cooldownMax + KillMode.buffMax)
             {
-                Projectile.NewProjectile(player.GetSource_FromThis(), player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<ExaltedOathbladeHoldout>(), Item.damage * 14, Item.knockBack, player.whoAmI, 0, throwCount); //This used to be 23x damage.
+                Projectile.NewProjectile(player.GetSource_FromThis(), player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<ExaltedOathbladeHoldout>(), Item.damage * 16, Item.knockBack, player.whoAmI, 0, throwCount);
             }
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

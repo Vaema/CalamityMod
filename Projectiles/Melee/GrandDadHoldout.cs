@@ -250,14 +250,14 @@ namespace CalamityMod.Projectiles.Melee
 
                 // Launch the suckers
                 Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
-                float launchPower = (Main.zenithWorld ? 50 : 30) * (rightClicked ? 2 : 1);
+                float launchPower = 30 * (rightClicked ? 2 : 1);
                 target.MoveNPC(launchVel, launchPower * 0.5f, true);
 
                 // Remove knockback resist, just like it used to
                 target.knockBackResist = 1;
 
-                // Apply tile collison damage (is boosted on GFB and even further if both final bosses are gone)
-                float damageMults = ((DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs) ? 5 : 1) * (Main.zenithWorld ? 77 : 1) * (rightClicked ? 3 : 1);
+                // Apply tile collison damage (is boosted even further if both final bosses are gone)
+                float damageMults = ((DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs) ? 5 : 1) * (rightClicked ? 3 : 1);
                 int damage = (int)(Projectile.damage * damageMults);
                 target.GetGlobalNPC<CalamityTileCollisionHarmNPC>().ApplyCollisionDamage(target, Owner, damage, launchVel * launchPower, 5f, true);
             }

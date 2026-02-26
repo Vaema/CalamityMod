@@ -250,6 +250,9 @@ namespace CalamityMod.NPCs.DevourerofGods
                     NPC.Opacity = Main.npc[(int)NPC.ai[2]].Opacity;
             }
 
+            // Copy the damage state of the head
+            NPC.damage = Main.npc[(int)NPC.ai[2]].damage == 0 ? 0 : NPC.defDamage;
+
             NPC aheadSegment = Main.npc[(int)NPC.ai[1]];
             Vector2 directionToNextSegment = aheadSegment.Center - NPC.Center;
             if (aheadSegment.rotation != NPC.rotation)
@@ -345,7 +348,6 @@ namespace CalamityMod.NPCs.DevourerofGods
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)
         {
-
             if (Main.npc[(int)NPC.ai[2]].dontTakeDamage)
                 return false;
             cooldownSlot = ImmunityCooldownID.Bosses;

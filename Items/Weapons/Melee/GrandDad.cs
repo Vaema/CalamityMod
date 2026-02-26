@@ -75,7 +75,8 @@ namespace CalamityMod.Items.Weapons.Melee
             if (time == 0 && Item.velocity.Y != 0)
             {
                 oldVel = Item.velocity;
-                Item.velocity = new Vector2(Math.Sign(Item.velocity.X) * 20, -10);
+                if (!hitFloor)
+                    Item.velocity = new Vector2(Math.Sign(Item.velocity.X) * 20, -10);
             }
             if (oldVel.Y != 0 && Item.velocity.Y == 0)
             {
@@ -87,6 +88,7 @@ namespace CalamityMod.Items.Weapons.Melee
                     float blastSize = 150 * power;
                     float minMultiplier = 0.3f;
                     int hitsToMinMult = 8;
+                    hitFloor = true;
                     Projectile blast = Projectile.NewProjectileDirect(Item.GetSource_FromThis(), place, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(Item.damage * 2 * power), -35 * power, -1, blastSize, minMultiplier, hitsToMinMult);
                     blast.timeLeft = 5;
 
@@ -123,7 +125,8 @@ namespace CalamityMod.Items.Weapons.Melee
                     highestSpeed = Item.velocity.Y;
             }
 
-            gravity = 0;
+            if (Item.velocity.Y != 0)
+                gravity = 0;
             maxFallSpeed = 75;
             oldVel = Item.velocity;
         }

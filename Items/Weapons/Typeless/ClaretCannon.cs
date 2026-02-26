@@ -1,23 +1,37 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System;
+using System.Reflection;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria.ModLoader;
-using System;
 
 namespace CalamityMod.Items.Weapons.Typeless
 {
-    public class ClaretCannon : ModItem, ILocalizedModType
+    public interface IClaretCannonInstance
     {
-        public new string LocalizationCategory => "Items.Weapons.Typeless";
+        int CooldownMax { get; }
+    }
 
+    public class ClaretCannonPlayer : ModPlayer
+    {
         public int ClaretCooldown = 0;
 
-        public static int ClaretCooldownMax = 600;
+        public override void ResetEffects()
+        {
+            if (ClaretCooldown > 0)
+                ClaretCooldown--;
+        }
+    }
+
+    public class ClaretCannon : ModItem, IClaretCannonInstance, ILocalizedModType
+    {
+        public new string LocalizationCategory => "Items.Weapons.Typeless";
+        public int CooldownMax => 600;
 
         public float baseUseDir = 0;
         public override void SetDefaults()
@@ -42,12 +56,6 @@ namespace CalamityMod.Items.Weapons.Typeless
 
         public override Vector2? HoldoutOffset() => new Vector2(-5, 0);
 
-        public override void UpdateInventory(Player player)
-        {
-            ClaretCooldown--;
-            if (ClaretCooldown < 0)
-                ClaretCooldown = 0;   
-        }
         public override void AddRecipes()
         {
             CreateRecipe().
@@ -58,9 +66,7 @@ namespace CalamityMod.Items.Weapons.Typeless
 
         public override bool CanUseItem(Player player)
         {
-            if (ClaretCooldown > 0)
-                return false;
-            return true;
+            return player.GetModPlayer<ClaretCannonPlayer>().ClaretCooldown <= 0;
         }
 
         public override void UseAnimation(Player player)
@@ -77,15 +83,18 @@ namespace CalamityMod.Items.Weapons.Typeless
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            baseUseDir = player.itemRotation; 
-            ClaretCooldown = ClaretCooldownMax;
+            baseUseDir = player.itemRotation;
+            player.GetModPlayer<ClaretCannonPlayer>().ClaretCooldown = CooldownMax;
+
             Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
             return false;
         }
 
         public override void PostDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
-            float fill = ClaretCooldown / (float)ClaretCooldownMax;
+            int currentCooldown = Main.LocalPlayer.GetModPlayer<ClaretCannonPlayer>().ClaretCooldown;
+            float fill = currentCooldown / (float)CooldownMax;
+
             if (fill <= 0)
                 return;
 

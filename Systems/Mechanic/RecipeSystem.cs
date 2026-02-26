@@ -1347,7 +1347,7 @@ namespace CalamityMod.Systems
 
             r = Recipe.Create(ItemID.Bacon);
             r.AddIngredient<PiggyItem>();
-            r.AddTile(TileID.Hellforge);
+            r.AddTile(TileID.CookingPots);
             r.Register();
             r.DisableDecraft();
         }
@@ -1512,7 +1512,7 @@ namespace CalamityMod.Systems
             r = Recipe.Create(ItemID.WaterWalkingBoots);
             r.AddIngredient(ItemID.Leather, 5);
             r.AddIngredient(ItemID.WaterWalkingPotion, 5);
-            r.AddTile(TileID.Anvils);
+            r.AddTile(TileID.Loom);
             r.Register();
 
             // Lava Charm

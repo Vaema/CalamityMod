@@ -1,9 +1,12 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
+using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -24,10 +27,28 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override void AI()
         {
+            // Visual effects
+            if (Projectile.ai[0] == 0f)
+            {
+                SoundStyle hitSound = new("CalamityMod/Sounds/NPCKilled/PerfLargeDeath");
+                SoundEngine.PlaySound(hitSound with { Volume = 0.5f }, Projectile.Center);
+                for (int i = 0; i <= 14; i++)
+                {
+                    BloodParticle blood = new BloodParticle(Projectile.Center, new Vector2(15, 15).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 0.9f) + new Vector2(0, -7), 60, Main.rand.NextFloat(0.4f, 0.65f), (!ChildSafety.Disabled ? Color.CornflowerBlue : Color.Red));
+                    GeneralParticleHandler.SpawnParticle(blood);
+                }
+                Particle bloodsplosion = new CustomPulse(Projectile.Center, Vector2.Zero, (!ChildSafety.Disabled ? Color.CornflowerBlue : Color.DarkRed), "CalamityMod/Particles/DetailedExplosion", Vector2.One, Main.rand.NextFloat(-15f, 15f), 0.16f, 0.87f, (int)(Viscera.BoomLifetime * 0.38f), false);
+                GeneralParticleHandler.SpawnParticle(bloodsplosion);
+                Particle bloodsplosion2 = new CustomPulse(Projectile.Center, Vector2.Zero, (!ChildSafety.Disabled ? Color.CornflowerBlue : new Color(255, 32, 32)), "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, Main.rand.NextFloat(-15f, 15f), 0.03f, 0.155f, Viscera.BoomLifetime);
+                GeneralParticleHandler.SpawnParticle(bloodsplosion2);
+
+                Projectile.ai[0] = 1f;
+            }
+
             for (int i = 0; i <= 2; i++)
             {
                 float speed = Projectile.ai[1] > 0 ? 25 : 15;
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 60 : DustID.Blood);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, (!ChildSafety.Disabled ? DustID.Cloud : (Main.rand.NextBool() ? 60 : DustID.Blood)));
                 dust.scale = Main.rand.NextFloat(1f, 2f) * Utils.GetLerpValue(0, Viscera.BoomLifetime, Projectile.timeLeft, true);
                 dust.velocity = new Vector2(speed, speed).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 0.9f);
                 dust.noGravity = true;

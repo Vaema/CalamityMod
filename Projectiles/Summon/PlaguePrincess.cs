@@ -73,6 +73,9 @@ namespace CalamityMod.Projectiles.Summon
             // Decide frames.
             DecideFrames();
 
+            if (Owner.strongBees)
+                Projectile.damage = (int)(Projectile.damage * 1.167f); //Minions recalculate every frame so this won't scale infinitely.
+
             // Reset afterimages, extra updates, and i-frames.
             UseAfterimages = false;
             Projectile.MaxUpdates = 1;

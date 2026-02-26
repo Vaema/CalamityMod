@@ -1,4 +1,4 @@
-﻿using CalamityMod.Items.Weapons.Melee;
+﻿﻿using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
