@@ -1266,10 +1266,10 @@ namespace CalamityMod.CalPlayer
             }
             if (amalgam)
             {
-                target.AddBuff(BuffID.Daybreak, 120);
-                target.AddBuff(BuffType<Nightwither>(), 120);
+                target.AddBuff(BuffType<Daybroken>(), 120);
+                target.AddBuff(BuffID.Frostburn2, 120);
                 target.AddBuff(BuffType<Plague>(), 120);
-                target.AddBuff(BuffType<VermillionFlux>(), 120);
+                target.AddBuff(BuffID.Electrified, 120);
                 target.AddBuff(BuffType<CrushDepth>(), 120);
             }
             if (frostFlare)
