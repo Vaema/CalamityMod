@@ -1266,7 +1266,7 @@ namespace CalamityMod.CalPlayer
             }
             if (amalgam)
             {
-                target.AddBuff(BuffType<Daybroken>(), 120);
+                target.AddBuff(BuffType<BrimstoneFlames>(), 120);
                 target.AddBuff(BuffID.Frostburn2, 120);
                 target.AddBuff(BuffType<Plague>(), 120);
                 target.AddBuff(BuffID.Electrified, 120);
