@@ -431,7 +431,7 @@ namespace CalamityMod.Projectiles
             if (ProjectileID.Sets.LightPet[projectile.type] && Main.LocalPlayer.Calamity().ZoneAbyss)
                 EnhancedDarknessSystem.lights.Add(new() { center = projectile.Center, scale = 1 });
 
-            if (projectile.bobber && projectile.type != ProjectileType<VictideBobber>() && RunFishingMinigames(projectile))
+            if (projectile.bobber && projectile.type != ProjectileType<VictideBobber>() && RunFishingMinigames(projectile) && !Main.LocalPlayer.dead)
                 return false;
             //Reset the Homing Target immediately before AI can re-set it on applicable projectiles
             HomingTarget = -1;
@@ -3316,6 +3316,12 @@ namespace CalamityMod.Projectiles
                             {
                                 projectile.Center = Main.npc[(int)PersistentFishingData].Center + PersistentFishingDataVector2;
                                 projectile.velocity = Vector2.Zero;
+
+                                if (owner.Distance(Main.npc[(int)PersistentFishingData].Center) > 1450) // Slightly before when fishing lines stop rendering due to distance from target
+                                {
+                                    projectile.ai[0] = 1;
+                                }
+
                                 if (cplayer.mouseRight && projectile.ai[1] == 0 && owner.miscCounter % 10 == 0)
                                 {
                                     owner.lifeRegenCount -= 600; // -5 health per 10 ticks
