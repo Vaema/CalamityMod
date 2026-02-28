@@ -16,10 +16,19 @@ Frostburn2: {
 }
 
 // Frostburn deals the same damage to players and enemies
-Frostburn.ItemTooltipEnemy: Cold - 8 DPS
+Frostburn: {
+	ItemTooltipPlayer: Cold - 8 DPS
+	ItemTooltipEnemy: Cold - 8 DPS
+}
+
 OnFire3.ItemTooltipEnemy: Heat - 15 DPS
+
 // On Fire deals the same damage to players and enemies
-OnFire.ItemTooltipEnemy: Heat - 6 DPS
+OnFire: {
+	ItemTooltipPlayer: Heat - 6 DPS
+	ItemTooltipEnemy: Heat - 6 DPS
+}
+
 Ichor.ItemTooltipEnemy: -10 defense
 Oiled.ItemTooltipEnemy:
 	'''
@@ -27,7 +36,7 @@ Oiled.ItemTooltipEnemy:
 	Only does damage when paired with another Heat debuff
 	'''
 Poisoned.ItemTooltipEnemy: Sickness - 6 DPS
-PotionSickness.ItemTooltipEnemy: ""
+PotionSickness.ItemTooltipPlayer: ""
 Slimed.ItemTooltipEnemy: Enhances Heat debuff damage
 Wet.ItemTooltipEnemy: Enhances Electric debuff damage
 

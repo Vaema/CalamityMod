@@ -304,7 +304,7 @@ DragonbloodDisgorger: {
 		'''
 		Summons a skeletal dragon and her two children
 		Baby spits burst into blood orbs upon hitting an enemy
-		Picking up these blood orbs reduces the duration of [cbuff:PotionSickness]
+		Picking up these blood orbs reduces the duration of [cbuffplr:PotionSickness]
 		Requires 6 minion slots to be summoned
 		There can only be one family at a time
 		'''

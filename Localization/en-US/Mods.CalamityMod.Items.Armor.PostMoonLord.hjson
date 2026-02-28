@@ -669,7 +669,7 @@ TarragonHeadMelee: {
 		'''
 	SetBonusEffect:
 		'''
-		Taking damage gives [cbuff:CalamityMod/TarraLifeRegen], which grants +{0} HP/s life regen
+		Taking damage gives [cbuffplr:CalamityMod/TarraLifeRegen], which grants +{0} HP/s life regen
 		{1} to cloak yourself in life energy that heavily reduces enemy contact damage for {2} seconds
 		This has a {3} second cooldown
 		{$TarragonBreastplate.CommonSetBonus}
