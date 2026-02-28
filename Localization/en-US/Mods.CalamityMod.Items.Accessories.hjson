@@ -220,8 +220,8 @@ AsgardianAegis: {
 	Tooltip:
 		'''
 		{$Common.KnockbackImmunity}
-		Allows the ability to dash, empowered by a cosmic inferno
-		This dash can ram through enemies without taking damage
+		Allows the ability to ram dash, empowered by a cosmic inferno
+		This dash can ram through enemies without taking damage, inflicting [cbuff:CalamityMod/GodSlayerInferno]
 		'''
 }
 
@@ -258,7 +258,7 @@ Baroclaw: {
 	Tooltip:
 		'''
 		10% increased damage and 5% increased damage reduction
-		Attackers take high damage and are inflicted with Armor Crunch and Crush Depth
+		Attackers take high damage and are inflicted with [cbuff:CalamityMod/ArmorCrunch] and [cbuff:CalamityMod/CrushDepth]
 		'''
 }
 
@@ -364,9 +364,9 @@ Calamity: {
 	Tooltip:
 		'''
 		Lights your cursor ablaze with the Witch's flames, engulfing it in a blazing aura
-		Enemies touching the blaze take immense damage and are inflicted with Vulnerability Hex
+		Enemies touching the blaze take immense damage and are inflicted with [cbuff:CalamityMod/VulnerabilityHex]
 		Focusing an enemy for 2.5 seconds curses them, ascending Vulnerability Hex to its True form
-		Foes afflicted with True Vulnerability Hex take 1.15x damage from all sources
+		Foes afflicted with [cbuff:CalamityMod/TrueVulnerabilityHex] take 1.15x damage from all sources
 		This effect is increased to 2.5x for the blazing cursor itself
 		Equip in a vanity slot to change the cursor without dealing damage
 		These changes work in conjunction with the Rainbow Cursor
@@ -425,7 +425,7 @@ CorrosiveSpine: {
 		'''
 		5% increased movement speed
 		25% increased Sickness and Water debuff damage
-		All attacks irradiate enemies and reduces the severity of the sulphuric waters
+		All attacks inflict [cbuff:CalamityMod/Irradiated] and reduces the severity of the sulphuric waters
 		You burst into radioactive clouds when struck
 		'''
 }
@@ -444,7 +444,7 @@ CrawCarapace: {
 	Tooltip:
 		'''
 		7% increased damage
-		Attackers take damage and are inflicted with Crumbling
+		Attackers take damage and are inflicted with [cbuff:CalamityMod/Crumbling]
 		'''
 }
 
@@ -569,9 +569,9 @@ DiamondOfTheDeep: {
 		Dash to disperse the spirits and have them attack enemies
 		When dispersed [c/CB7AD7:below 50% life], the spirits support you instead
 		The spirits appear in order and have different effects based on color:
-		[c/3CB371: Explodes on impact and inflicts Crush Depth] / [c/CB7AD7:Heals for 8 HP]
-		[c/FF4500: Pierces enemies and inflicts Hellfire] / [c/CB7AD7:Increases defense by 10 temporarily]
-		[c/1E90FF: Hits multiple times and inflicts Hadopelagic Pressure] / [c/CB7AD7:Heals 5% of max HP]
+		[c/3CB371: Explodes on impact and inflicts] [cbuff:CalamityMod/CrushDepth] / [c/CB7AD7:Heals for 8 HP]
+		[c/FF4500: Pierces enemies and inflicts] [cbuff:OnFire3] / [c/CB7AD7:Increases defense by 10 temporarily]
+		[c/1E90FF: Hits multiple times and inflicts] [cbuff:CalamityMod/HadopelagicPressure] / [c/CB7AD7:Heals 5% of max HP]
 		Spirits are transparent and silent when visibility is toggled off
 		'''
 }
@@ -669,7 +669,7 @@ ElementalGauntlet: {
 	DisplayName: Elemental Gauntlet
 	Tooltip:
 		'''
-		Melee attacks and projectiles inflict Elemental Mix
+		Melee attacks and projectiles inflict [cbuff:CalamityMod/ElementalMix]
 		15% increased melee damage and melee speed
 		5% increased melee critical strike chance
 		20% increased true melee damage and increased melee knockback
@@ -689,7 +689,7 @@ ElysianAegis: {
 		'''
 		{$Common.KnockbackImmunity}
 		Allows the ability to dash, empowered by holy fire
-		This dash can ram through enemies without taking damage
+		This dash can ram through enemies without taking damage, inflicting [cbuff:CalamityMod/HolyFlames]
 		'Blessed by the Profaned Flame'
 		'''
 }
@@ -811,7 +811,7 @@ FungalSymbiote: {
 	Tooltip:
 		'''
 		You grow mushrooms on the grass beneath you
-		Consuming mushrooms provides the Mushy buff, granting 5 defense and +1 HP/s life regen
+		Consuming mushrooms provides the [cbuff:CalamityMod/Mushy] buff, granting 5 defense and +1 HP/s life regen
 		10% increased damage while you have the Mushy buff
 		'''
 }
@@ -821,7 +821,7 @@ GiantPearl: {
 	Tooltip:
 		'''
 		You have a light aura around you
-		Enemies within the aura are slowed down
+		Enemies within the aura are afflicted with [cbuff:CalamityMod/PearlAura] and slowed down
 		Enemies that remain within the aura are bombarded by homing prism shards
 		{$Common.AbyssGlow}
 		'''
@@ -925,7 +925,7 @@ HideofAstrumDeus: {
 		True melee strikes drops astral stars from the sky
 		Releases an explosion and temporarily increases true melee damage by 30% when damaged
 		Boost duration scales with the amount of damage you took, up to 10 seconds
-		Nullifies the Astral Infection debuff
+		Nullifies the Astral Infection
 		'''
 }
 
@@ -934,7 +934,7 @@ HoneyDew: {
 	Tooltip:
 		'''
 		+10 max life
-		Grants the Honey buff
+		Grants the [cbuff:Honey] buff
 		Sickness debuff durations are halved
 		'''
 }
@@ -966,7 +966,7 @@ InfectedJewel: {
 		Grants 12 defense and +2 HP/s life regen while afflicted with any debuff
 		Granted defense fades away quickly when not afflicted with any debuffs
 		Each debuff beyond the first grants 4 additional defense
-		Nullifies the Astral Infection debuff
+		Nullifies the Astral Infection
 		'A beautiful gemstone tarnished by spaceborne rot'
 		'''
 }
@@ -1024,7 +1024,7 @@ JellyChargedBattery: {
 	Tooltip:
 		'''
 		Increases your max number of minions by 1, and summon damage by 7%
-		Minion attacks create orbs of static discharge
+		Minion attacks create orbs of [cbuff:CalamityMod/StaticDischarge]
 		'''
 }
 
@@ -1047,7 +1047,7 @@ LeviathanAmbergris: {
 	Tooltip:
 		'''
 		120% increased initial dash velocity, 33% faster dash cooldown, and greatly increased dash deceleration
-		Your dashes are empowered by water, knocking back and damaging nearby enemies with viscous currents
+		Your dashes are empowered by water, knocking back and damaging enemies with viscous currents that inflict [cbuff:CalamityMod/RiptideDebuff]
 		Visual effects are reduced if visibility is disabled
 		'''
 }
@@ -1066,7 +1066,7 @@ LivingDew: {
 	Tooltip:
 		'''
 		+25 max life
-		Grants the Honey buff
+		Grants the [cbuff:Honey] buff
 		Fire and sickness debuff durations are halved
 		'''
 }
@@ -1163,8 +1163,8 @@ NuclearFuelRod: {
 	Tooltip:
 		'''
 		Increases your max number of minions by 1
-		Minions release an irradiated aura on enemy hits
-		Grants immunity to Irradiated
+		Minions release an [cbuff:CalamityMod/Irradiated] aura on enemy hits
+		Grants immunity to [cbuff:CalamityMod/Irradiated]
 		'''
 }
 
@@ -1173,7 +1173,7 @@ Nucleogenesis: {
 	Tooltip:
 		'''
 		Increases your max number of minions by 4
-		Grants immunity to Shadowflame and Irradiated
+		Grants immunity to [cbuff:ShadowFlame] and [cbuff:CalamityMod/Irradiated]
 		15% increased summon damage, and increased minion knockback
 		Minions inflict a variety of debuffs
 		Minions spawn damaging sparks on enemy hits
@@ -1243,7 +1243,7 @@ OrnateShield: {
 	Tooltip:
 		'''
 		Allows the ability to dash
-		This dash can ram through enemies without taking damage
+		This dash can ram through enemies without taking damage, inflicting [cbuff:Frostburn2]
 		'''
 }
 
@@ -1338,7 +1338,7 @@ ProfanedSoulCrystal: {
 		'''
 		Provides passive buffs depending on the time of day
 		Greatly boosts the power of the Guardian's relics
-		Grants additional effects if you have {0} minion slots
+		Grants additional effects if you have {0} unused minion slots
 		Summons your own personal Guardians to fight alongside you
 		All non-summon attacks are transformed, and are empowered if no minions are active
 		[c/ffa680:Melee] [c/ffd2bf:attacks become a barrage of spears]
@@ -1477,7 +1477,7 @@ RottenBrain: {
 
 RottenDogtooth: {
 	DisplayName: Rotten Dogtooth
-	Tooltip: Stealth strikes inflict Crumbling for 2.5 seconds and deal 8% more damage
+	Tooltip: Stealth strikes inflict [cbuff:CalamityMod/Crumbling] and deal 8% more damage
 }
 
 RoverDrive: {
@@ -1632,9 +1632,9 @@ SlagsplitterPauldron: {
 	DisplayName: Slagsplitter Pauldron
 	Tooltip:
 		'''
-		Your dashes become empowered by flame, erupting on contact with enemies
+		Your dashes become empowered by [cbuff:OnFire3], erupting on contact with enemies
 		Grants immunity to knockback and 10% damage reduction while dashing
-		Enemies hit by your dashes have their armor crushed
+		Enemies hit by your dashes are afflicted with [cbuff:CalamityMod/ArmorCrunch]
 		Visual effects are reduced if visibility is disabled
 		'''
 }
@@ -1672,7 +1672,7 @@ StarbusterCore: {
 	Tooltip:
 		'''
 		Increases your max number of minions by 1
-		Summons release an astral explosion on enemy hits
+		Summons release an [cbuff:CalamityMod/AstralInfectionDebuff] explosion on enemy hits
 		'''
 }
 
@@ -1682,7 +1682,7 @@ StarTaintedGenerator: {
 		'''
 		Increases your max number of minions by 2, and summon damage by 7%
 		Minion attacks spawn astral explosions and inflict several debuffs
-		Grants immunity to Irradiated
+		Grants immunity to [cbuff:CalamityMod/Irradiated]
 		Does not stack with downgrades
 		'''
 }
@@ -1702,7 +1702,7 @@ StatisCurse: {
 		'''
 		Increases your max number of minions by 3, and summon damage by 12%
 		Increased minion knockback
-		Minion attacks inflict Shadowflame, and grants immunity to Shadowflame
+		Minion attacks inflict [cbuff:ShadowFlame], and grants immunity to [cbuff:ShadowFlame]
 		Does not stack with downgrades
 		'''
 }
@@ -1835,7 +1835,7 @@ TeslasAmulet: {
 		'''
 		Generates an electrifying field that slows enemies
 		The field has reduced opacity if visibility is disabled
-		Reduces the duration of the Static Discharge debuff
+		Reduces the duration of [cbuff:CalamityMod/StaticDischarge]
 		'''
 }
 
@@ -1845,7 +1845,7 @@ TheAbsorber: {
 		'''
 		{$Common.KnockbackImmunity}
 		{0}% increased movement and jump speed
-		Attackers take immense damage and are afflicted with a crippling sickness debuff
+		Attackers take immense damage and are afflicted with [cbuff:CalamityMod/AbsorberAffliction]
 		Using a healing potion will spawn a green aura that lasts for {1} seconds
 		Walking into the aura removes all debuffs once and grants {2} HP/s regen, {3}% damage, and {4}% damage reduction
 		{5}% of the damage from enemy attacks is converted into healing
@@ -1923,7 +1923,7 @@ TheFirstShadowflame: {
 	Tooltip:
 		'''
 		Increases your max number of minions by 1
-		Minion attacks inflict Shadowflame, and grants immunity to Shadowflame
+		Minion attacks inflict [cbuff:ShadowFlame], and grants immunity to [cbuff:ShadowFlame]
 		'''
 }
 
@@ -1977,7 +1977,7 @@ ToxicHeart: {
 	DisplayName: Toxic Heart
 	Tooltip:
 		'''
-		Your heart beats with the plague, pulsing outside of your body
+		Your heart beats with the [cbuff:CalamityMod/Plague], pulsing outside of your body
 		Pulse frequency scale with regen, and pulses that kill enemies pulse again to heal you
 		50% increased Sickness debuff damage
 		Effects are transparent and silent if visibility is disabled
@@ -2018,7 +2018,7 @@ VampiricTalisman: {
 		'''
 		Rogue critical strikes steal enemy life
 		Stealth strikes grant 15% critical strike chance and increased lifesteal to non-stealth strikes for 10 seconds
-		Stealth strikes inflict Heavy Bleeding and Armor Crunch, and deal 8% more damage
+		Stealth strikes inflict [cbuff:CalamityMod/HeavyBleeding] and [cbuff:CalamityMod/ArmorCrunch], and deal 8% more damage
 		'Possessing the talisman makes you yearn for blood'
 		'''
 	YearningForBlood: THIS ENDLESS HUNGER WON'T END
@@ -2073,7 +2073,7 @@ VoltaicJelly: {
 	Tooltip:
 		'''
 		Increases your max number of minions by 1
-		Minion attacks inflict Static Discharge
+		Minion attacks inflict [cbuff:CalamityMod/StaticDischarge]
 		'''
 }
 
@@ -2083,7 +2083,7 @@ WarbanneroftheRighteous: {
 		'''
 		Multiplies all damage based on how close you are to enemies
 		Maximum damage boost is 15%, minimum damage boost is -15%
-		Emit a blazing aura that burns and repels nearby enemies
+		Emit a blazing aura that burns and repels nearby enemies with [cbuff:CalamityMod/HolyFlames]
 		Enemies take increasing damage the closer they are to you and the longer they are near you
 		Effects are transparent and silent if visibility is disabled
 		'''

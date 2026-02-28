@@ -1099,6 +1099,7 @@ MarkedforDeath: {
 PearlAura: {
 	DisplayName: Pearl Aura
 	Description: Slowed down
+	ItemTooltip: Slows enemies
 }
 
 ProfanedWeakness: {

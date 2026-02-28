@@ -127,6 +127,7 @@ namespace CalamityMod
         public static Color ElectricDebuffColor => new(255, 245, 0);
         public static Color BuffColor => new(255, 105, 237);
         public static Color TypelessDebuffColor => new(230, 202, 250);
+        public static Color GodSlayerInfernoColor => new(241, 107, 250);
         public static Color VulnHexDebuffColor => new(196, 35, 43);
         public static Color MiracleBlightDebuffColor => Main.DiscoColor;
 
@@ -136,6 +137,7 @@ namespace CalamityMod
         {
             var color = TypelessDebuffColor;
 
+            // God Slayer Inferno, Vulnerability Hex, and Miracle Blight receive special colors
             if (debuffId == ModContent.BuffType<VulnerabilityHex>() || debuffId == ModContent.BuffType<TrueVulnerabilityHex>())
             {
                 color = Color.Lerp(VulnHexDebuffColor, FireDebuffColor, (MathF.Sin(Main.GlobalTimeWrappedHourly * 2) + 1) / 4f);
@@ -144,6 +146,13 @@ namespace CalamityMod
             {
                 color = MiracleBlightDebuffColor;
             }
+            else if (debuffId == ModContent.BuffType<GodSlayerInferno>())
+            {
+                color = GodSlayerInfernoColor;
+            }
+            // Color debuffs based on their element type in the vulnerability and resistance system
+            // If a debuff has multiple types, the colors are mixed
+            // If a debuff is typeless, is gets the typeless color
             else if (BuffDatasets.DebuffDataset[debuffId] is not null)
             {
                 if (!debuffColorWeightsCache.TryGetValue(debuffId, out var weights))
@@ -180,6 +189,9 @@ namespace CalamityMod
                     color = new Color(normalColor);
                 }
             }
+            // If this is actually a beneficial buff, color it as so
+            else if (!Main.debuff[debuffId])
+                color = BuffColor;
 
             return color;
         }
