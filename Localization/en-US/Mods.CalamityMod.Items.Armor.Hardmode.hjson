@@ -425,7 +425,7 @@ PlagueReaperVest: {
 	Tooltip:
 		'''
 		{$CommonItemTooltip.PercentIncreasedRangedDamage}
-		Grants immunity to the Plague
+		Grants immunity to [cbuffplr:CalamityMod/Plague]
 		'''
 }
 

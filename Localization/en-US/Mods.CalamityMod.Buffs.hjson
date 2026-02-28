@@ -869,6 +869,7 @@ DivineBless: {
 EmpyreanWrath: {
 	DisplayName: Empyrean Wrath
 	Description: Wrath of the cosmos
+	ItemTooltipPlayer: Increases damage and critical strike chance
 }
 
 Encased: {

@@ -338,7 +338,7 @@ EmpyreanMask: {
 		'''
 		{$Common.RogueStealth}
 		Rogue projectiles have special effects on enemy hits
-		Imbued with cosmic wrath when you are damaged
+		Imbued with [cbuffplr:CalamityMod/EmpyreanWrath] when you are damaged or while below {1}% life
 		'''
 }
 
@@ -500,7 +500,7 @@ OmegaBlueChestplate: {
 		'''
 		{$CommonItemTooltip.PercentIncreasedDamage} and {$CommonItemTooltip.PercentIncreasedCritChance@1}
 		{$CommonItemTooltip.PercentChanceToSaveAmmo@2}
-		Your attacks inflict Hadopelagic Pressure
+		Your attacks inflict [cbuff:CalamityMod/HadopelagicPressure]
 		No positive life regen
 		'''
 }
