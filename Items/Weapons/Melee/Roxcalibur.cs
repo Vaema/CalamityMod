@@ -61,7 +61,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 .AddIngredient(ItemID.SoulofNight, 10)
                 .AddIngredient<EssenceofHavoc>(5)
                 .AddIngredient(ItemID.Obsidian, 10)
-                .AddIngredient(ItemID.StoneBlock, 100)
+                .AddRecipeGroup("AnyStoneBlock", 100)
                 .AddIngredient(ItemID.Amethyst, 2)
                 .AddTile(TileID.Anvils)
                 .Register();
