@@ -308,6 +308,7 @@ SearingLava: {
 ShellfishClaps: {
 	DisplayName: Shellfish Claps
 	Description: Clamfest
+	ItemTooltipEnemy: Typeless - 75 DPS for each Shellfish minion
 }
 
 Shred: {
@@ -319,6 +320,7 @@ Shred: {
 SnapClamDebuff: {
 	DisplayName: Clammed
 	Description: Clapped by Snap Clams
+	ItemTooltipEnemy: Typeless - 7.5 DPS for each latched clam
 }
 
 StaticDischarge: {
@@ -787,6 +789,7 @@ AeolianEarthBuff: {
 		You are strengthened by primordial powers
 		Damage reduction increased by {0}%, damage increased by {1}%, and massively buffed mana regen
 		'''
+	ItemTooltipPlayer: Increases damage, damage reduction, and mana regeneration
 }
 
 Afflicted: {
@@ -853,6 +856,7 @@ ChiRegenBuff: {
 CoralSymbiosis: {
 	DisplayName: Coral Symbiosis
 	Description: Coral Spout charges up faster and deals {0} extra damage
+	ItemTooltipPlayer: Increases Coral Spout's charge rate and damage
 }
 
 CosmicFreeze: {
@@ -1001,6 +1005,7 @@ SandsWindBuff: {
 		You are strengthened by the powers of sand
 		Defense increased by {0}, damage increased by {1}%, and greatly buffed mana regen 
 		'''
+	ItemTooltipPlayer: Increases damage, defense, and mana regeneration
 }
 
 SilvaRevival: {
@@ -1160,7 +1165,7 @@ ProfanedWeakness: {
 TemporalSadness: {
 	DisplayName: Temporal Sadness
 	Description: You are crying
-	ItemTooltipEnemy: Freezes enemies
+	ItemTooltipEnemy: Slows enemies
 }
 
 TimeDistortion: {
@@ -1193,6 +1198,7 @@ WitherDebuff: {
 		Withered...
 		Defense decreased by {0}
 		'''
+	ItemTooltipPlayer: Decreases defense
 }
 
 // Summons

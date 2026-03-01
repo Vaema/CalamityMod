@@ -2,7 +2,7 @@ Aestheticus: {
 	DisplayName: Aestheticus
 	Tooltip:
 		'''
-		Fires crystals that explode and slow enemies down
+		Fires crystals that explode and inflict [cbuff:CalamityMod/Vaporfied]
 		This weapon scales with all your damage stats at once
 		'''
 }

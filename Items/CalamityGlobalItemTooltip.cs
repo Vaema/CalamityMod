@@ -290,7 +290,8 @@ namespace CalamityMod.Items
                 {
                     if (snippet is BuffTagEnemyEffectHandler.Snippet enemy)
                     {
-                        buffIdsInTooltip.Add(enemy.BuffId, 0);
+                        if (!buffIdsInTooltip.ContainsKey(enemy.BuffId))
+                            buffIdsInTooltip.Add(enemy.BuffId, 0);
                     }
                     else if (snippet is BuffTagPlayerEffectHandler.Snippet player)
                     {

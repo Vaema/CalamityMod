@@ -346,7 +346,7 @@ MolluskShellmet: {
 	SetBonus:
 		'''
 		{0}% increased damage reduction
-		Two shellfishes aid you in combat
+		Two shellfishes aid you in combat, inflicting [cbuff:CalamityMod/ShellfishClaps]
 		'''
 }
 

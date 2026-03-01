@@ -12,7 +12,7 @@ CursedInferno: {
 
 Frostburn2: {
 	ItemTooltipPlayer: Cold - 8 DPS
-	ItemTooltipEnemy: Cold - 50 DPS
+	ItemTooltipEnemy: Cold - 25 DPS
 }
 
 // Frostburn deals the same damage to players and enemies
@@ -39,6 +39,8 @@ Poisoned.ItemTooltipEnemy: Sickness - 6 DPS
 PotionSickness.ItemTooltipPlayer: ""
 Slimed.ItemTooltipEnemy: Enhances Heat debuff damage
 Wet.ItemTooltipEnemy: Enhances Electric debuff damage
+Confused.ItemTooltipEnemy: Reverses movement
+Webbed.ItemTooltipEnemy: Slows enemies
 
 Electrified: {
 	ItemTooltipPlayer: Electric - 4 DPS. Deals 5x damage to moving players
