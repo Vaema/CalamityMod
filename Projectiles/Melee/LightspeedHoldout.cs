@@ -74,6 +74,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.height = 94;
             Projectile.friendly = true;
             Projectile.DamageType = TrueMeleeNoSpeedDamageClass.Instance;
+            Projectile.ContinuouslyUpdateDamageStats = true;
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.penetrate = -1;

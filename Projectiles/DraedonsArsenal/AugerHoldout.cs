@@ -38,6 +38,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Projectile.width = Projectile.height = 100;
             Projectile.friendly = true;
             Projectile.DamageType = TrueMeleeDamageClass.Instance;
+            Projectile.ContinuouslyUpdateDamageStats = true;
             Projectile.timeLeft = 5;
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
