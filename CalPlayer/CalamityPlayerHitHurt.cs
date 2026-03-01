@@ -2366,7 +2366,7 @@ namespace CalamityMod.CalPlayer
                 Player.AddBuff(BuffID.Honey, 300, false);
 
             // Handle hit effects from the gem tech armor set.
-            Player.Calamity().GemTechState.PlayerOnHitEffects((int)hurtInfo.Damage);
+            Player.Calamity().GemTechState.PlayerOnHitEffects(hurtInfo);
 
             if (Player.whoAmI == Main.myPlayer)
             {
