@@ -21,6 +21,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = 100;
             Item.height = 100;
             Item.damage = 180;
+            Item.crit = 8;
             Item.knockBack = 13f;
             Item.DamageType = DamageClass.Melee;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -39,10 +40,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.channel = true;
         }
 
-        public override void ModifyWeaponCrit(Player player, ref float crit)
-        {
-            crit += 8f;
-        }
         public override bool CanUseItem(Player player) => Main.hardMode && player.ownedProjectileCounts[Item.shoot] < 1;
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

@@ -22,6 +22,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.height = 44;
             Item.damage = 115;
             Item.DamageType = DamageClass.Ranged;
+            Item.crit = 6;
             Item.useTime = 60;
             Item.useAnimation = 60;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -34,9 +35,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ModContent.ProjectileType<ShardshockerCrystal>();
             Item.shootSpeed = 50f;
         }
-
-        // Terraria seems to really dislike high crit values in SetDefaults
-        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 6;
 
         public override Vector2? HoldoutOffset() => new Vector2(-10, 0);
 
