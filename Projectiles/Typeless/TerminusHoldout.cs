@@ -28,8 +28,8 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void SetDefaults()
         {
-            Projectile.width = 50;
-            Projectile.height = 50;
+            Projectile.width = 70;
+            Projectile.height = 80;
             Projectile.aiStyle = -1;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
@@ -130,6 +130,8 @@ namespace CalamityMod.Projectiles.Typeless
             int dustCount = (int)Math.Round(MathHelper.SmoothStep(1f, 5f, Time / Lifetime));
             float outwardness = MathHelper.SmoothStep(40f, 150f, Time / Lifetime);
             float dustScale = MathHelper.Lerp(1.15f, 1.725f, Time / Lifetime);
+            float colorTime = Time / Lifetime * Main.rand.NextFloat(0.65f, 1f);
+
             for (int i = 0; i < dustCount; i++)
             {
                 Vector2 spawnPosition = Projectile.Center + Main.rand.NextVector2Unit() * outwardness * Main.rand.NextFloat(0.75f, 1.1f);
@@ -138,7 +140,7 @@ namespace CalamityMod.Projectiles.Typeless
                 Dust paleMagic = Dust.NewDustPerfect(spawnPosition, DustID.PortalBoltTrail);
                 paleMagic.velocity = dustVelocity;
                 paleMagic.scale = dustScale * Main.rand.NextFloat(0.75f, 1.15f);
-                paleMagic.color = Color.Lerp(Color.LightCoral, Color.White, Time / Lifetime * Main.rand.NextFloat(0.65f, 1f));
+                paleMagic.color = Main.zenithWorld ? Color.Lerp(Color.LightCoral, Color.White, colorTime) : Color.Lerp(Color.Violet, Color.Goldenrod, colorTime);
                 paleMagic.noGravity = true;
                 paleMagic.noLight = true;
             }
@@ -169,8 +171,8 @@ namespace CalamityMod.Projectiles.Typeless
             SpriteEffects direction = Projectile.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
             if (Time >= 150f)
             {
-                float outwardness = MathHelper.SmoothStep(1f, 15f, Utils.GetLerpValue(150f, Lifetime - 30f, Time, true));
-                Color afterimageColor = Color.Lerp(baseColor, Color.LightCoral, Utils.GetLerpValue(150f, 195f, Time, true)) * 0.225f;
+                float outwardness = MathHelper.SmoothStep(0f, 12f, Utils.GetLerpValue(150f, Lifetime - 30f, Time, true));
+                Color afterimageColor = Color.Lerp(baseColor, Color.PaleGoldenrod, Utils.GetLerpValue(150f, 195f, Time, true)) * 0.225f;
                 afterimageColor.A = 0;
 
                 for (int i = 0; i < 10; i++)
@@ -179,9 +181,34 @@ namespace CalamityMod.Projectiles.Typeless
                     Main.EntitySpriteDraw(texture, baseDrawPosition + drawOffset, null, afterimageColor, 0f, origin, Projectile.scale, direction, 0);
                 }
             }
-            Main.EntitySpriteDraw(texture, baseDrawPosition, null, baseColor, 0f, origin, Projectile.scale, direction, 0);
 
+            Main.EntitySpriteDraw(texture, baseDrawPosition, null, baseColor, 0f, origin, Projectile.scale, direction, 0);
             return false;
+        }
+
+        public override void PostDraw(Color lightColor)
+        {
+            if (Main.zenithWorld)
+                return;
+
+            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Items/SummonItems/TerminusGlow").Value;
+            Vector2 baseDrawPosition = Projectile.Center - Main.screenPosition;
+            Vector2 origin = texture.Size() * 0.5f;
+            SpriteEffects direction = Projectile.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+
+            if (Time >= 75f)
+            {
+                float outwardness = MathHelper.SmoothStep(0f, 4f, Utils.GetLerpValue(75f, Lifetime - 30f, Time, true));
+
+                for (int i = 0; i < 3; i++)
+                {
+                    Vector2 drawOffset = (MathHelper.TwoPi * i / 4f + Main.GlobalTimeWrappedHourly * 4.4f).ToRotationVector2() * outwardness;
+
+                    Main.EntitySpriteDraw(texture, baseDrawPosition + drawOffset, null, new Color(56, 12, 115, 0), 0f, origin, Projectile.scale, direction, 0);
+                }
+            }
+
+            Main.EntitySpriteDraw(texture, baseDrawPosition, null, Color.White, 0f, origin, Projectile.scale, direction, 0);
         }
     }
 }

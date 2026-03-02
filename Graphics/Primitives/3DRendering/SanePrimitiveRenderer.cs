@@ -180,23 +180,28 @@ public static class SanePrimitiveRenderer
 
     public static void Initialize()
     {
-        if (_graphicsDevice == null)
-            throw new ArgumentNullException(nameof(_graphicsDevice));
-
-        _effect?.Dispose();
-        _effect = new BasicEffect(_graphicsDevice)
+        Main.RunOnMainThread(() =>
         {
-            VertexColorEnabled = true,
-            TextureEnabled = true,
-            LightingEnabled = false,
-            FogEnabled = false,
-            Texture = TextureAssets.Logo.Value
-        };
+            if (_graphicsDevice == null)
+                throw new ArgumentNullException(nameof(_graphicsDevice));
+            
+            _effect?.Dispose();
+            _effect = new BasicEffect(_graphicsDevice)
+            {
+                VertexColorEnabled = true,
+                TextureEnabled = true,
+                LightingEnabled = false,
+                FogEnabled = false,
+                Texture = TextureAssets.Logo.Value
+            };
+        });
     }
 
     public static void Dispose()
     {
-        _effect?.Dispose();
+        Main.RunOnMainThread(() =>
+        _effect?.Dispose()
+        );
     }
 
     /// <summary>

@@ -941,20 +941,6 @@ namespace CalamityMod.Items
 
             #region DD2 Armor
             // Nerf sets that are too strong
-            if (item.type == ItemID.SquireGreaves)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("SquireGreaves"));
-
-            if (item.type == ItemID.HuntressWig)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("10%", "15%"));
-            if (item.type == ItemID.HuntressJerkin)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("20%", "15%"));
-
-            if (item.type == ItemID.ApprenticeHat)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ApprenticeHat"));
-            if (item.type == ItemID.ApprenticeRobe)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ApprenticeRobe"));
-            if (item.type == ItemID.ApprenticeTrousers)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ApprenticeTrousers"));
 
             if (item.type == ItemID.SquireAltHead)
                 EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("10%", "15%"));
@@ -962,18 +948,6 @@ namespace CalamityMod.Items
                 EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("30%", "20%"));
             if (item.type == ItemID.SquireAltPants)
                 EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("20%", "15%"));
-
-            if (item.type == ItemID.HuntressAltShirt)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("25%", "20%"));
-            if (item.type == ItemID.HuntressAltPants)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("25%", "20%"));
-
-            if (item.type == ItemID.ApprenticeAltHead)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("15%", "10%"));
-            if (item.type == ItemID.ApprenticeAltShirt)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("25%", "20%"));
-            if (item.type == ItemID.ApprenticeAltPants)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("25%", "15%"));
 
             // Tweaks into Rogue
             // Monk armor

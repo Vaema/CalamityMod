@@ -1664,6 +1664,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
         if (Time <= ChaseTime)
         {
+            NPC.damage = NPC.defDamage;
             float speedUp = MathHelper.Clamp((Time - 10) / 10f, 0f, 1f);
             float slowDown = 1 - MathHelper.Clamp((Time - (ChaseTime - 15)) / 15f, 0f, 1f);
             float angleChange = MathHelper.Lerp(MathHelper.Pi / 24f, 0f, MathHelper.Clamp(Time / (ChaseTime * 0.666f), 0f, 1f));
@@ -1676,6 +1677,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                 Vector2 direction = Target.velocity.SafeNormalize(Vector2.UnitX * Target.direction).RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 3f, MathHelper.Pi / 3f));
                 AttackPosition = Target.Center + (direction * DefaultTeleportDistance);
                 BoCAfterImages = [];
+                NPC.damage = 0;
                 NPC.netUpdate = true;
             }
             else
@@ -1687,6 +1689,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         else
         {
             TeleportDuration = IdleTeleportDuration;
+            NPC.damage = 0;
 
             Vector2 endPoint = AttackPosition;
 
@@ -1950,6 +1953,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
             if (endTime == 0)
                 SoundEngine.PlaySound(Roar, NPC.Center);
+
             if (endTime >= DashPrepTime)
             {
                 if (endTime < DashPrepTime + DashReelbackTime)
@@ -1985,6 +1989,8 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
     private void SanguineScythes()
     {
+        NPC.damage = 0;
+
         #region Attack Ending
         if (AttackCounter > SanguineTeleportCount)
         {
@@ -2289,6 +2295,8 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
     private void IllusionDash()
     {
+        NPC.damage = 0;
+
         #region Attack Start
         if (Time < IllusionDashTeleportDuration)
         {

@@ -196,7 +196,7 @@ namespace CalamityMod.CalPlayer
             DevourerofCods //Not a fishing minigame but uses the same code as the rest
         }
         public FishingMinigames SelectedFishingMinigame = FishingMinigames.None;
-        public bool countsAsAnyWet => (Player.armor[0].type == ItemID.FishBowl || (Main.raining && Player.Center.Y < Main.worldSurface * 16.0) || Player.dripping || Player.wetCount > 0 || Player.wet || Player.honeyWet || Player.lavaWet);
+        public bool countsAsAnyWet => (Player.armor[0].type == ItemID.FishBowl || (Main.IsItRaining && Player.Center.Y < Main.worldSurface * 16.0) || Player.dripping || Player.wetCount > 0 || Player.wet || Player.honeyWet || Player.lavaWet);
 
         /// <summary>
         /// How many Starbursts the player has
@@ -1120,6 +1120,7 @@ namespace CalamityMod.CalPlayer
         public bool scionsCurio = false;
         public bool scionsCurioGotHit = false;
         public bool scionsCurioVisuals = false;
+        public float scionsCurioDebuffDamage = 0;
         public bool miniOldDuke = false;
         public bool miniOldDukeVanity = false;
         public bool starbusterCore = false;
@@ -4991,6 +4992,13 @@ namespace CalamityMod.CalPlayer
                     }
                 }
             }
+
+            if (scionsCurio)
+            {
+                scionsCurioDebuffDamage = Player.GetTotalDamage(DamageClass.Ranged).ApplyTo(Irradiated.debuffData.EnemyLostRegen * (1 + Player.GetTotalCritChance(DamageClass.Ranged) * 0.01f));
+            }
+            else
+                scionsCurioDebuffDamage = 0;
 
             // True melee damage from various vanilla equipment placed here.
 

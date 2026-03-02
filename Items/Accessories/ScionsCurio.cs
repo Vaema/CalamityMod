@@ -1,4 +1,6 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.Collections.Generic;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.CalPlayer;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -33,6 +35,12 @@ namespace CalamityMod.Items.Accessories
             {
                 Projectile.NewProjectileDirect(player.GetSource_FromThis(), player.Center, Vector2.Zero, ProjectileType<ScionsCurioMini>(), 0, 0f, player.whoAmI);
             }
+        }
+        public override void ModifyTooltips(List<TooltipLine> list)
+        {
+            Player player = Main.LocalPlayer;
+            if (Main.LocalPlayer != null)
+                list.FindAndReplace("[DAMAGE]", ((int)(player.Calamity().scionsCurioDebuffDamage / 2)).ToString() + " DPS");
         }
     }
 }

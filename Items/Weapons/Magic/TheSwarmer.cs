@@ -33,26 +33,30 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            for (int i = 0; i <= 3; i++)
+            int beeAmount = player.strongBees ? 3 : 2;
+            for (int i = 0; i <= beeAmount; i++)
             {
                 float SpeedX = velocity.X + (float)Main.rand.Next(-35, 36) * 0.05f;
                 float SpeedY = velocity.Y + (float)Main.rand.Next(-35, 36) * 0.05f;
-                int wasps = Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, damage, 0f, player.whoAmI);
+                int wasps = Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, player.strongBees ? damage+5 : damage, 0f, player.whoAmI);
                 if (wasps.WithinBounds(Main.maxProjectiles))
-                {
-                    Main.projectile[wasps].penetrate = 1;
+                {;
                     Main.projectile[wasps].DamageType = DamageClass.Magic;
+                    Main.projectile[wasps].idStaticNPCHitCooldown = 5;
+                    if (player.strongBees)
+                        Main.projectile[wasps].ArmorPenetration += 5;
+
                 }
             }
-            for (int i = 0; i <= 3; i++)
+            for (int i = 0; i <= beeAmount; i++)
             {
                 float SpeedX2 = velocity.X + (float)Main.rand.Next(-35, 36) * 0.05f;
                 float SpeedY2 = velocity.Y + (float)Main.rand.Next(-35, 36) * 0.05f;
                 int bees = Projectile.NewProjectile(source, position.X, position.Y, SpeedX2, SpeedY2, player.beeType(), player.beeDamage(Item.damage), player.beeKB(0f), player.whoAmI);
                 if (bees.WithinBounds(Main.maxProjectiles))
                 {
-                    Main.projectile[bees].penetrate = 1;
                     Main.projectile[bees].DamageType = DamageClass.Magic;
+                    Main.projectile[bees].idStaticNPCHitCooldown = 5;
                 }
             }
             return false;

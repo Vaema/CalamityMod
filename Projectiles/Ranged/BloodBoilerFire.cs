@@ -1,12 +1,13 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Healing;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Projectiles.Healing;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -52,7 +53,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 int bloodLifetime = Main.rand.Next(22, 36);
                 float bloodScale = Main.rand.NextFloat(0.6f, 0.8f);
-                Color bloodColor = Main.rand.NextBool() ? Color.Firebrick : Color.Red;
+                Color bloodColor = (!ChildSafety.Disabled ? Color.CornflowerBlue : (Main.rand.NextBool() ? Color.Firebrick : Color.Red));
 
                 float randomSpeedMultiplier = Main.rand.NextFloat(0.8f, 1.55f);
                 Vector2 bloodVelocity = Projectile.velocity.RotatedByRandom(0.5) * randomSpeedMultiplier + new Vector2(0, -3);
@@ -65,19 +66,19 @@ namespace CalamityMod.Projectiles.Ranged
                 //BloodBoilerMetaball2.SpawnParticle(Projectile.Center, particleSize * 2.3f);
                 //BloodBoilerMetaball.SpawnParticle(Projectile.Center, particleSize * 1.7f);
 
-                Particle beam3 = new CustomSpark(Projectile.Center, -Projectile.velocity * 0.1f, "CalamityMod/Particles/PearlParticleGlow", false, 10, 0.05f * particleSize, Color.DarkRed, new Vector2(0.5f, 1), false, false, 0, false, false, 0f);
+                Particle beam3 = new CustomSpark(Projectile.Center, -Projectile.velocity * 0.1f, "CalamityMod/Particles/PearlParticleGlow", false, 10, 0.05f * particleSize, (!ChildSafety.Disabled ? Color.CornflowerBlue : Color.DarkRed), new Vector2(0.5f, 1), false, false, 0, false, false, 0f);
                 GeneralParticleHandler.SpawnParticle(beam3);
 
                 if (Main.rand.NextBool(8))
                 {
-                    Particle beam4 = new CustomSpark(Projectile.Center, Projectile.velocity * 0.1f, "CalamityMod/Particles/WaterFoam", false, 5, 0.01f * particleSize, Color.Red, new Vector2(1f, 1), true, false, Main.rand.NextFloat(-10, 10), false, false, 0f);
+                    Particle beam4 = new CustomSpark(Projectile.Center, Projectile.velocity * 0.1f, "CalamityMod/Particles/WaterFoam", false, 5, 0.01f * particleSize, (!ChildSafety.Disabled ? Color.CornflowerBlue : Color.Red), new Vector2(1f, 1), true, false, Main.rand.NextFloat(-10, 10), false, false, 0f);
                     GeneralParticleHandler.SpawnParticle(beam4);
                 }
 
 
                 if (Main.rand.NextBool(6) && Projectile.ai[1] == 0f)
                 {
-                    Color smokeColor = Main.rand.NextBool() ? Color.Red : Color.Firebrick;
+                    Color smokeColor = (!ChildSafety.Disabled ? Color.CornflowerBlue : (Main.rand.NextBool() ? Color.Firebrick : Color.Red));
                     Vector2 smokePosition = Projectile.Center + Main.rand.NextVector2Circular(5 + Time * 0.3f, 5 + Time * 0.3f);
                     float smokeScale = Main.rand.NextFloat(0.5f, 1.6f);
                     float smokeOpacity = 170 + -Time * 0.6f;
@@ -90,7 +91,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 if (Main.rand.NextBool(9))
                 {
-                    DirectionalPulseRing pulse = new DirectionalPulseRing(Projectile.Center + Main.rand.NextVector2Circular(7 + Time * 0.4f, 7 + Time * 0.4f), Vector2.Zero, Main.rand.NextBool(3) ? Color.Red : Color.Firebrick, new Vector2(1, 1), 0, Main.rand.NextFloat(0.02f, 0.07f) + Time * 0.0006f, 0f, 35);
+                    DirectionalPulseRing pulse = new DirectionalPulseRing(Projectile.Center + Main.rand.NextVector2Circular(7 + Time * 0.4f, 7 + Time * 0.4f), Vector2.Zero, (!ChildSafety.Disabled ? Color.CornflowerBlue : (Main.rand.NextBool(3) ? Color.Red : Color.Firebrick)), new Vector2(1, 1), 0, Main.rand.NextFloat(0.02f, 0.07f) + Time * 0.0006f, 0f, 35);
                     GeneralParticleHandler.SpawnParticle(pulse);
                 }
             }
@@ -115,10 +116,10 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.velocity = -bloodCloudReturn.RotatedBy(Projectile.ai[2] == 5 ? -0.7f : 0.7f) * 1.2f;
                 for (int i = 0; i <= 5; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity * 2 + Main.rand.NextVector2Circular(35, 35), Main.rand.NextBool(3) ? 60 : 296, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(0.5f)) * Main.rand.NextFloat(1.7f, 3.2f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity * 2 + Main.rand.NextVector2Circular(35, 35), !ChildSafety.Disabled ? DustID.Cloud : Main.rand.NextBool(3) ? 60 : 296, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(0.5f)) * Main.rand.NextFloat(1.7f, 3.2f));
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(1.2f, 2f);
-                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity * 2 + Main.rand.NextVector2Circular(35, 35), Main.rand.NextBool(3) ? 60 : 296, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(35f)) * Main.rand.NextFloat(0.1f, 1.7f));
+                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity * 2 + Main.rand.NextVector2Circular(35, 35), !ChildSafety.Disabled ? DustID.Cloud : Main.rand.NextBool(3) ? 60 : 296, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(35f)) * Main.rand.NextFloat(0.1f, 1.7f));
                     dust2.noGravity = true;
                     dust2.scale = Main.rand.NextFloat(1.2f, 2f);
                 }
@@ -139,7 +140,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                 Projectile.extraUpdates = 5;
                 bool dustEffect = Main.rand.NextBool(3) ? false : true;
-                int dustColor = dustEffect ? 296 : 60;
+                int dustColor = (!ChildSafety.Disabled ? DustID.Cloud : (dustEffect ? 296 : 60));
                 Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(dustEffect ? 0 : 5, dustEffect ? 0 : 5), dustColor);
                 dust.scale = dustEffect ? Main.rand.NextFloat(1.1f, 1.45f) : Main.rand.NextFloat(0.9f, 1.2f);
                 dust.velocity = dustEffect ? Projectile.velocity * Main.rand.NextFloat(0.2f, 0.4f) : Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(0.7f, 1.2f);

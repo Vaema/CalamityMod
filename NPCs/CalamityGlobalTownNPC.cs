@@ -115,6 +115,7 @@ namespace CalamityMod.NPCs
             "Storm Havik", // <@!1013452363178197072> (fishnotduck)
             "Magorfis Splunt the Greater Finklejim", // <@!147490809334333440> (eidolbyssus)
             "Perrin", // <@!253764551139393537> (easyperrin)
+            "Dorkyy", // <@!427765391662514185> (dorkblaze01)
         ];
         private static readonly string[] CyborgNames =
         [
@@ -304,6 +305,7 @@ namespace CalamityMod.NPCs
             "Mixcoatl", // <@!284775927294984203> (.sharzz)
             "Amnesia Wapers", // <@!326821498323075073> (retardedadvicefromaretard)
             "Tequila", // <@!889175547744239677> (thecrispistofnuggets)
+            "Bee Movie Script", // <@!407949998173454341> (literally_jesuschrist)
         ];
         private static readonly string[] WizardNames =
         [
