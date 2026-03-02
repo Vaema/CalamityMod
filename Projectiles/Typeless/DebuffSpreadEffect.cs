@@ -20,7 +20,7 @@ namespace CalamityMod.Projectiles.Typeless
         public List<int> listNPCs = new List<int>();
         public NPC lastNPC;
         public int minCooldown = 48;
-        public static Color startingColor = Color.Turquoise;
+        public static Color startingColor = Bane.baneColor2;
         public Color mainColor = Color.White;
         public Color subColor = startingColor;
         public Color extraColor = Color.White;
@@ -48,11 +48,8 @@ namespace CalamityMod.Projectiles.Typeless
                     Projectile.Center = npc.Center;
                     mainColor = Color.White;
 
-                    bool strong = npc.Calamity().voidOfExtinctionEffected;
+                    bool strong = npc.Calamity().apollyonEffected;
                     float areaOfEffect = (strong ? 1400 : 800);
-                    Color color1 = Color.Crimson;
-                    Color color2 = Color.OrangeRed;
-                    Color color3 = Color.Red;
                     int debuffTime = (strong ? 180 : 120);
                     int startDir = Main.rand.NextBool() ? 1 : -1;
 
@@ -78,10 +75,10 @@ namespace CalamityMod.Projectiles.Typeless
 
                     if (targeted != null)
                     {
-                        targeted.Calamity().voidOfExtinctionEffected = npc.Calamity().voidOfExtinctionEffected;
+                        targeted.Calamity().apollyonEffected = npc.Calamity().apollyonEffected;
                         targeted.Calamity().abaddonEffected = npc.Calamity().abaddonEffected;
 
-                        float bestDamage = Owner.Calamity().abaddonDebuffDamage;
+                        float bestDamage = Owner.Calamity().playerBaneDebuffDamage;
                         int heat = 0;
                         Color heatClr = Color.OrangeRed;
                         int sick = 0;
@@ -120,7 +117,7 @@ namespace CalamityMod.Projectiles.Typeless
                                     if (debuffData.WaterDebuffScaling > 0) { mainColor = Color.Lerp(mainColor, waterClr, 0.65f); water++; }
                                     if (new List<int> { heat, sick, cold, shock, water }.Max() == 0)
                                     {
-                                        mainColor = Color.Orange;
+                                        mainColor = Bane.baneColor1;
                                     }
                                 }
                             }
@@ -161,10 +158,6 @@ namespace CalamityMod.Projectiles.Typeless
                         KillSelf();
                         return;
                     }
-
-                    Color colorAgain = Main.rand.NextBool() ? color2 : color1;
-                    Particle spark2 = new CustomSpark(npc.Center, Vector2.Zero, "CalamityMod/Particles/BloomCircle", false, 18, 0.55f, colorAgain * (Owner.Calamity().abaddonEffectVisual ? 1 : 0.3f), Vector2.One, true, true, glowOpacity: 0.85f);
-                    GeneralParticleHandler.SpawnParticle(spark2);
 
                     if (Owner.Calamity().abaddonCooldown <= 0)
                         Owner.Calamity().abaddonCooldown = minCooldown * 2;
@@ -256,7 +249,7 @@ namespace CalamityMod.Projectiles.Typeless
             {
                 Vector2 pos = start;
                 if (u == 0) pos = end;
-                Particle spark3 = new CustomSpark(pos, Vector2.Zero, "CalamityMod/Particles/BloomCircle", false, 18, u != 0 ? 0.7f : 0.55f, mainColor * (Owner.Calamity().abaddonEffectVisual ? 1 : 0.3f), Vector2.One, true, true, glowOpacity: 0.85f);
+                Particle spark3 = new CustomSpark(pos, Vector2.Zero, "CalamityMod/Particles/BloomCircle", false, 18, u != 0 ? 0.7f : 0.55f, (u == 0 ? subColor : mainColor) * (Owner.Calamity().abaddonEffectVisual ? 1 : 0.3f), Vector2.One, true, true, glowOpacity: 0.85f);
                 GeneralParticleHandler.SpawnParticle(spark3);
             }
         }

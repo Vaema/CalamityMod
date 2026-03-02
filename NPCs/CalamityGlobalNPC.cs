@@ -291,6 +291,7 @@ namespace CalamityMod.NPCs
         public bool irradiated = false;
         public double irradiatedContactBoost = 1.5;
         public bool bane = false;
+        public float baneVisual = 0;
         public bool brimstoneFlames = false;
         public bool demonicFlames = false;
         public int demonicFlamesBonusDamage = 0;
@@ -303,7 +304,7 @@ namespace CalamityMod.NPCs
         public int antlionCloudDebuffTimer = 0;
         public bool scionsCurioEffected = false;
         public bool abaddonEffected = false;
-        public bool voidOfExtinctionEffected = false;
+        public bool apollyonEffected = false;
         public int warbannerBurnTime = 0; // Determines the rate that the enemy is damaged
         public int warbannerBurnTimer = 0; // The duration of the debuff
         public int warbannerBurnStacks = 0; // The stacks increase how fast the debuff hits
@@ -571,6 +572,7 @@ namespace CalamityMod.NPCs
             myClone.irradiated = irradiated;
             myClone.irradiatedContactBoost = irradiatedContactBoost;
             myClone.bane = bane;
+            myClone.baneVisual = baneVisual;
             myClone.brimstoneFlames = brimstoneFlames;
             myClone.demonicFlames = demonicFlames;
             myClone.demonicFlamesBonusDamage = demonicFlamesBonusDamage;
@@ -583,7 +585,7 @@ namespace CalamityMod.NPCs
             myClone.antlionCloudDebuffTimer = antlionCloudDebuffTimer;
             myClone.scionsCurioEffected = scionsCurioEffected;
             myClone.abaddonEffected = abaddonEffected;
-            myClone.voidOfExtinctionEffected = voidOfExtinctionEffected;
+            myClone.apollyonEffected = apollyonEffected;
             myClone.warbannerBurnTime = warbannerBurnTime;
             myClone.warbannerBurnTimer = warbannerBurnTimer;
             myClone.warbannerBurnStacks = warbannerBurnStacks;
@@ -3215,6 +3217,11 @@ namespace CalamityMod.NPCs
                 }
                 warbannerBurnTime--;
             }
+            float fadeSpeed = 0.15f;
+            if (bane)
+                baneVisual = MathHelper.Lerp(baneVisual, 1, fadeSpeed);
+            else if (baneVisual > 0)
+                baneVisual = MathHelper.Lerp(baneVisual, 0, fadeSpeed);
 
             if (veriumDoomTimer > 0)
                 veriumDoomTimer--;
@@ -4670,7 +4677,7 @@ namespace CalamityMod.NPCs
             if (astralInfection)
                 AstralInfectionDebuff.DrawEffects(npc, ref drawColor);
 
-            if (bane)
+            if (bane || baneVisual > 0.05f)
                 Bane.DrawEffects(npc, ref drawColor);
 
             // Brimstone Flames and Demonshade Enrage set bonus share the same visual effects

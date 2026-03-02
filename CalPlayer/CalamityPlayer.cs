@@ -962,7 +962,7 @@ namespace CalamityMod.CalPlayer
         public bool abaddon = false;
         public int abaddonCooldown = 0;
         public bool abaddonEffectVisual = false;
-        public float abaddonDebuffDamage = 0;
+        public float playerBaneDebuffDamage = 0;
 
         public bool aeroStone = false;
         public bool lifejelly = false;
@@ -1035,7 +1035,7 @@ namespace CalamityMod.CalPlayer
         public bool IsFirstDashFrame = true;
         public int fallingBootVelCheckTimer = 0;
         public bool voidOfCalamity = false;
-        public bool voidOfExtinction = false;
+        public bool apollyon = false;
         public bool eArtifact = false;
         public bool dArtifact = false;
         public bool auricSArtifact = false;
@@ -2462,7 +2462,7 @@ namespace CalamityMod.CalPlayer
             crawCarapace = false;
             baroclaw = false;
             voidOfCalamity = false;
-            voidOfExtinction = false;
+            apollyon = false;
             eArtifact = false;
             dArtifact = false;
             auricSArtifact = false;
@@ -2657,6 +2657,7 @@ namespace CalamityMod.CalPlayer
             armorCrunch = false;
             crumble = false;
             irradiated = false;
+            bane = false;
             brimstoneFlames = false;
             witheredDebuff = false;
             absorberAffliction = false;
@@ -3143,6 +3144,7 @@ namespace CalamityMod.CalPlayer
             armorCrunch = false;
             crumble = false;
             irradiated = false;
+            bane = false;
             brimstoneFlames = false;
             witheredDebuff = false;
             absorberAffliction = false;
@@ -5001,6 +5003,13 @@ namespace CalamityMod.CalPlayer
             }
             else
                 scionsCurioDebuffDamage = 0;
+
+            if (Player.Calamity().abaddon || Player.Calamity().apollyon)
+            {
+                Player.Calamity().playerBaneDebuffDamage = (1 + Player.GetTotalCritChance(Player.GetBestClass()) * 0.01f * (Player.Calamity().apollyon ? Apollyon.critScaling : Abaddon.critScaling));
+            }
+            else
+                Player.Calamity().playerBaneDebuffDamage = 0;
 
             // True melee damage from various vanilla equipment placed here.
 

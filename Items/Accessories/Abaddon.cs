@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Accessories
         {
             Player player = Main.LocalPlayer;
             if (Main.LocalPlayer != null)
-                list.FindAndReplace("[DAMAGE]", ((int)(Bane.debuffData.EnemyLostRegen / 2 * player.Calamity().abaddonDebuffDamage)).ToString());
+                list.FindAndReplace("[DAMAGE]", ((int)(Bane.debuffData.EnemyLostRegen / 2 * player.Calamity().playerBaneDebuffDamage)).ToString());
         }
     }
 }

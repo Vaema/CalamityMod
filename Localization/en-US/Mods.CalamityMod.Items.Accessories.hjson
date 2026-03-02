@@ -152,6 +152,17 @@ AngelTreads: {
 		'''
 }
 
+Apollyon: {
+	DisplayName: Apollyon
+	Tooltip:
+		'''
+		Critical strikes curse enemies with [cbuff:CalamityMod/Bane] that greatly scales off of your critical strike chance
+		When critically hit, enemies spread all debuffs they are afflicted with that are weaker than your [cbuff:CalamityMod/Bane] to nearby enemies
+		Critical strikes deal an additional 3% damage per debuff on the enemy
+		Current [cbuff:CalamityMod/Bane] damage: [DAMAGE] DPS
+		'''
+}
+
 AquaticEmblem: {
 	DisplayName: Aquatic Emblem
 	Tooltip:
@@ -2055,17 +2066,6 @@ VoidofCalamity: {
 		'''
 		12% increased damage
 		Brimstone fire rains down after getting hit
-		'''
-}
-
-VoidofExtinction: {
-	DisplayName: Void of Extinction
-	Tooltip:
-		'''
-		Critical strikes curse enemies with [cbuff:CalamityMod/Bane] that greatly scales off of your critical strike chance
-		When critically hit, enemies spread all debuffs they are afflicted with that are weaker than your [cbuff:CalamityMod/Bane] to nearby enemies
-		Critical strikes deal an additional 3% damage per debuff on the enemy
-		Current [cbuff:CalamityMod/Bane] damage: [DAMAGE] DPS
 		'''
 }
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -105,7 +104,6 @@ namespace CalamityMod.Particles
         }
         public override void CustomDraw(SpriteBatch spriteBatch)
         {
-
             Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Particles/BaneParticleGlow").Value;
             int frameWidth = 18;
             int frameHeight = 18;

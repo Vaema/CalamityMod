@@ -122,6 +122,7 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(demonicFlames, 33, purity); // Never inflicted on the player
             ApplyDoTDebuff(laceration, 36, purity);
             ApplyDoTDebuff(daybroken, 40, purity);
+            ApplyDoTDebuff(bane, 40, purity);
             ApplyDoTDebuff(nightwither, 40, purity);
             ApplyDoTDebuff(holyFlames, 40, purity);
             ApplyDoTDebuff(voidfrost, 40, purity);
