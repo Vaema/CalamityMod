@@ -747,7 +747,6 @@ HolyCollider: {
 		Charged swings create four lingering flares that float around the point of impact
 		Striking a flare with an uncharged strike will push it around and extend its lifetime
 		Charged swings can empower flares, turning them into massive fireballs on hit and launching them to your cursor
-		Holding <right> while swinging will repeatedly do uncharged slashes that create a spread of flames on hit
 		'''
 }
 
