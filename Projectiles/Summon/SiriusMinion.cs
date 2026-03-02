@@ -89,11 +89,16 @@ namespace CalamityMod.Projectiles.Summon
             SpawnEffect(); // Does a dust spawn effect.
             ShootTarget(target); // If there's a target, shoot at the target.
 
-            if (target is not null && Owner.miscCounter % 30 == 0) {
-
-                if (moddedOwner.StratusStarburst <= CalamityPlayer.MaxStratusStarburst)
+            if (target is not null)
+            {
+                moddedOwner.StarburstSpawnFrameCounter += Projectile.minionSlots / (float)CalamityUtils.SecondsToFrames(3f); //0.33 starbursts per seconds per minion slot
+                while (moddedOwner.StarburstSpawnFrameCounter >= 1 && moddedOwner.StratusStarburst <= CalamityPlayer.MaxStratusStarburst)
+                {
+                    moddedOwner.StratusStarburst++;
                     moddedOwner.StarburstEntities.Add(new StarburstEntity(Projectile.Center));
-                moddedOwner.StratusStarburst++;
+                    moddedOwner.StarburstSpawnFrameCounter--;
+                }
+                
             }
             Lighting.AddLight(Projectile.Center, 0.5f, 0.5f, 1f); // Passively makes blue light.
 

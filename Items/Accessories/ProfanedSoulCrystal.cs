@@ -427,17 +427,9 @@ namespace CalamityMod.Items.Accessories
                         player.Calamity().profanedSoulWeaponUsage = 0;
                     }
                     int manaCost = (int)(100 * player.manaCost);
-                    if (player.statMana < manaCost && player.Calamity().profanedSoulWeaponUsage == 0)
-                    {
-                        if (player.manaFlower)
-                        {
-                            player.QuickMana();
-                        }
-                    }
-                    if (player.statMana >= manaCost && player.Calamity().profanedSoulWeaponUsage == 0 && !player.silence)
+                    if (player.Calamity().profanedSoulWeaponUsage == 0 && !player.silence && player.CheckMana(manaCost, true))
                     {
                         player.manaRegenDelay = (int)player.maxRegenDelay;
-                        player.statMana -= manaCost;
                         correctedVelocity *= 25f;
                         SoundEngine.PlaySound(SoundID.Item20, player.Center);
                         int magefireBaseDamage = 900;

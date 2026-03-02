@@ -19,11 +19,6 @@ namespace CalamityMod.Projectiles.Melee
         public const int Lifetime = 30;
         public override string Texture => "CalamityMod/Projectiles/StarProj";
 
-        public override void SetStaticDefaults()
-        {
-            ProjectileID.Sets.MinionShot[Type] = true;
-        }
-
         public override void SetDefaults()
         {
             Projectile.width = Projectile.height = 14;

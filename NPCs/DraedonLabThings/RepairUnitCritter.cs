@@ -137,13 +137,10 @@ namespace CalamityMod.NPCs.DraedonLabThings
             }
             Time++;
 
-            foreach (Player player in Main.ActivePlayers)
+            // Force bestiary unlock
+            if (Main.netMode != NetmodeID.MultiplayerClient && Main.BestiaryTracker.Kills.GetKillCount(NPC) <= 0)
             {
-                if (NPC.Hitbox.Intersects(player.HitboxForBestiaryNearbyCheck))
-                {
-                    Main.BestiaryTracker.Kills.RegisterKill(NPC);
-                    break;
-                }
+                Main.BestiaryTracker.Kills.RegisterKill(NPC);
             }
         }
         public override bool? CanFallThroughPlatforms() => CurrentState == BehaviorState.WalkOnWalls;

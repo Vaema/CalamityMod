@@ -11,7 +11,7 @@ namespace CalamityMod.Items.Fishing.AstralCatches
 
         public static int CooldownReducedPerKill = 180;
         public static int MaxCooldown = 300;
-        public static int BaseSwipeDamage = 200;
+        public static int BaseSwipeDamage = 325; // About 65 dps
 
         public override void SetDefaults()
         {

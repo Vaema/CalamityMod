@@ -275,17 +275,17 @@ namespace CalamityMod.Projectiles.Typeless
             float height = 1;
             Texture2D tex;
             if (wingNum == 0)
-                tex = ModContent.Request<Texture2D>("CalamityMod/Particles/XykWing2").Value;
+                tex = moddedOwner.XykVisualsOrange ? ModContent.Request<Texture2D>("CalamityMod/Particles/XykWingOrange2").Value : ModContent.Request<Texture2D>("CalamityMod/Particles/XykWingBlue2").Value;
             else if (wingNum == topWingNum || iAmTopWing)
             {
                 height = 1.5f;
-                tex = ModContent.Request<Texture2D>("CalamityMod/Particles/XykWing1").Value;
+                tex = moddedOwner.XykVisualsOrange ? ModContent.Request<Texture2D>("CalamityMod/Particles/XykWingOrange1").Value : ModContent.Request<Texture2D>("CalamityMod/Particles/XykWingBlue1").Value;
             }
             else
             {
                 width = 2;
                 height = 1f + 0.1f * wingNum;
-                tex = ModContent.Request<Texture2D>("CalamityMod/Particles/XykWing3").Value;
+                tex = moddedOwner.XykVisualsOrange ? ModContent.Request<Texture2D>("CalamityMod/Particles/XykWingOrange3").Value : ModContent.Request<Texture2D>("CalamityMod/Particles/XykWingBlue3").Value;
             }
 
             Texture2D glow = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;

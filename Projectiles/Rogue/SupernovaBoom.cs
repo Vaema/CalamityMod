@@ -116,15 +116,6 @@ namespace CalamityMod.Projectiles.Rogue
             }
             if (currentFrame == 13)
             {
-                if (Main.zenithWorld)
-                {
-                    if (Vector2.Distance(Owner.Center, Projectile.Center) < radius)
-                    {
-                        Vector2 velToApply = Owner.Center.DirectionFrom(Projectile.Center).SafeNormalize(Vector2.UnitX) * 30;
-                        Owner.velocity = velToApply + (velToApply.Y <= 0 ? new Vector2(0, -15) : Vector2.Zero);
-                    }
-                }
-
                 Projectile.velocity = Vector2.Zero;
                 Owner.SetScreenshake(5f);
 
@@ -166,13 +157,8 @@ namespace CalamityMod.Projectiles.Rogue
                 }
 
             }
-            if (currentFrame < 13) // suck in enemies, or you if it's GFB
+            if (currentFrame < 13) // suck in enemies
             {
-                if (Main.zenithWorld)
-                {
-                    if (Vector2.Distance(Owner.Center, Projectile.Center) > 40 && Vector2.Distance(Owner.Center, Projectile.Center) < 600)
-                        Owner.Center += Owner.Center.DirectionTo(Projectile.Center).SafeNormalize(Vector2.UnitX) * 22;
-                }
                 for (int i = 0; i < Main.maxNPCs; i++)
                 {
                     NPC target = Main.npc[i];

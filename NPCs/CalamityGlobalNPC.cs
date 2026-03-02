@@ -898,11 +898,6 @@ namespace CalamityMod.NPCs
             {
                 ActiveWaterDebuffMultiplier += 1;
             }
-
-            if (npc.HasBuff<SearingLava>()) //Searing Lava is so hot it makes cold less strong
-            {
-                ActiveColdDebuffMultiplier -= 0.5f;
-            }
             if (VulnerableToHeat.HasValue)
             {
                 if (VulnerableToHeat.Value)

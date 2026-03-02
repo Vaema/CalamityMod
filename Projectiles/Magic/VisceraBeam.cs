@@ -1,12 +1,13 @@
-﻿using CalamityMod.Items.Weapons.Magic;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Healing;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Projectiles.Healing;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -15,6 +16,7 @@ namespace CalamityMod.Projectiles.Magic
         public new string LocalizationCategory => "Projectiles.Magic";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
+        private int storedPenetrate;
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.TrailCacheLength[Type] = 20;
@@ -28,7 +30,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.ignoreWater = true;
-            Projectile.penetrate = 7;
+            storedPenetrate = Projectile.penetrate = 7;
             Projectile.MaxUpdates = 100;
             Projectile.timeLeft = 900;
             Projectile.usesLocalNPCImmunity = true;
@@ -47,7 +49,7 @@ namespace CalamityMod.Projectiles.Magic
             }
             for (int i = 0; i <= 15; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 60 : DustID.Blood);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, (!ChildSafety.Disabled ? DustID.Cloud : (Main.rand.NextBool() ? 60 : DustID.Blood)));
                 dust.position = Projectile.Center;
                 dust.scale = Main.rand.NextFloat(0.8f, 1.3f);
                 dust.velocity = new Vector2(7, 7).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 0.9f);
@@ -62,41 +64,15 @@ namespace CalamityMod.Projectiles.Magic
 
             if (Projectile.ai[1] > 0)
             {
-                SoundStyle hitSound = new("CalamityMod/Sounds/NPCKilled/PerfLargeDeath");
-                SoundEngine.PlaySound(hitSound with { Volume = 0.5f }, Projectile.Center);
-                for (int i = 0; i <= 14; i++)
-                {
-                    BloodParticle blood = new BloodParticle(Projectile.Center, new Vector2(15, 15).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 0.9f) + new Vector2(0, -7), 60, Main.rand.NextFloat(0.4f, 0.65f), Color.Red);
-                    GeneralParticleHandler.SpawnParticle(blood);
-                }
-
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<VisceraBoom>(), (int)(Projectile.damage * 0.75f), Projectile.knockBack * 4, Projectile.owner, 0f, Projectile.ai[1]);
-
-                Particle bloodsplosion = new CustomPulse(Projectile.Center, Vector2.Zero, Color.DarkRed, "CalamityMod/Particles/DetailedExplosion", Vector2.One, Main.rand.NextFloat(-15f, 15f), 0.16f, 0.87f, (int)(Viscera.BoomLifetime * 0.38f), false);
-                GeneralParticleHandler.SpawnParticle(bloodsplosion);
-                Particle bloodsplosion2 = new CustomPulse(Projectile.Center, Vector2.Zero, new Color(255, 32, 32), "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, Main.rand.NextFloat(-15f, 15f), 0.03f, 0.155f, Viscera.BoomLifetime);
-                GeneralParticleHandler.SpawnParticle(bloodsplosion2);
-            }
-            else
-            {
-                SoundStyle hitSound = new("CalamityMod/Sounds/NPCHit/PerfLargeHit", 3);
-                SoundEngine.PlaySound(hitSound with { Volume = 0.7f }, Projectile.Center);
-
-                for (int i = 0; i <= 6; i++)
-                {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 60 : DustID.Blood);
-                    dust.scale = Main.rand.NextFloat(0.7f, 1.4f);
-                    dust.velocity = Projectile.velocity.RotatedByRandom(0.5) * Main.rand.NextFloat(0.8f, 1.9f);
-                    dust.noGravity = true;
-                }
-            }
-            if (Projectile.ai[2] < 1){ 
-            for (int i = 0; i < 2; i++) {
-                Projectile.NewProjectile(Projectile.GetSource_OnHit(target), Projectile.Center, -Projectile.velocity.SafeNormalize(Vector2.Zero).RotatedByRandom(0.5f) * Main.rand.NextFloat(3, 5), ModContent.ProjectileType<BloodstoneHealOrb>(), 5, 0f, Projectile.owner);
-            }
-            Projectile.ai[2]++;
             }
 
+            if (Projectile.ai[2] < 1)
+            { 
+                for (int i = 0; i < 2; i++)
+                    Projectile.NewProjectile(Projectile.GetSource_OnHit(target), Projectile.Center, -Projectile.velocity.SafeNormalize(Vector2.Zero).RotatedByRandom(0.5f) * Main.rand.NextFloat(3, 5), ModContent.ProjectileType<BloodstoneHealOrb>(), 5, 0f, Projectile.owner);
+                Projectile.ai[2]++;
+            }
         }
 
         public override void AI()
@@ -107,6 +83,22 @@ namespace CalamityMod.Projectiles.Magic
             if (Projectile.ai[1] > 0)
                 Projectile.penetrate = 1;
 
+            // On-hit effects of piercing beams
+            if (Projectile.ai[1] == 0f && Projectile.penetrate != storedPenetrate)
+            {
+                SoundStyle hitSound = new("CalamityMod/Sounds/NPCHit/PerfLargeHit", 3);
+                SoundEngine.PlaySound(hitSound with { Volume = 0.7f }, Projectile.Center);
+
+                for (int i = 0; i <= 6; i++)
+                {
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, (!ChildSafety.Disabled ? DustID.Cloud : (Main.rand.NextBool() ? 60 : DustID.Blood)));
+                    dust.scale = Main.rand.NextFloat(0.7f, 1.4f);
+                    dust.velocity = Projectile.velocity.RotatedByRandom(0.5) * Main.rand.NextFloat(0.8f, 1.9f);
+                    dust.noGravity = true;
+                }
+                storedPenetrate = Projectile.penetrate;
+            }
+
             Projectile.localAI[0] += 1f;
             if (Projectile.localAI[0] == 16f)
             {
@@ -114,7 +106,7 @@ namespace CalamityMod.Projectiles.Magic
                 {
                     for (int i = 0; i <= 25; i++)
                     {
-                        Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 60 : DustID.Blood);
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center, (!ChildSafety.Disabled ? DustID.Cloud : (Main.rand.NextBool() ? 60 : DustID.Blood)));
                         dust.scale = Main.rand.NextFloat(0.9f, 1.9f);
                         dust.velocity = Projectile.velocity.RotatedByRandom(0.6) * Main.rand.NextFloat(1.8f, 2.9f);
                         dust.noGravity = true;
@@ -124,7 +116,7 @@ namespace CalamityMod.Projectiles.Magic
                 {
                     for (int i = 0; i <= 10; i++)
                     {
-                        Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 60 : DustID.Blood);
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center, (!ChildSafety.Disabled ? DustID.Cloud : (Main.rand.NextBool() ? 60 : DustID.Blood)));
                         dust.scale = Main.rand.NextFloat(0.7f, 1.4f);
                         dust.velocity = Projectile.velocity.RotatedByRandom(0.6) * Main.rand.NextFloat(0.8f, 1.9f);
                         dust.noGravity = true;
@@ -133,16 +125,16 @@ namespace CalamityMod.Projectiles.Magic
             }
             if (Projectile.localAI[0] > 16f)
             {
-                int bloody = Dust.NewDust(Projectile.Center, 1, 1, DustID.Blood);
+                int bloody = Dust.NewDust(Projectile.Center, 1, 1, (!ChildSafety.Disabled ? DustID.Cloud : DustID.Blood));
                 Main.dust[bloody].position = Projectile.Center + Main.rand.NextVector2Circular(8, 8);
                 Main.dust[bloody].scale = Main.rand.NextFloat(0.3f, 0.8f);
                 Main.dust[bloody].velocity = -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.6f);
                 Main.dust[bloody].noGravity = true;
                 if (Projectile.localAI[0] % 3 == 0 && targetDist < 1400f)
                 {
-                    AltSparkParticle spark = new AltSparkParticle(Projectile.Center - Projectile.velocity * 0.5f, Projectile.velocity * 0.01f, false, 7, 0.8f, Color.DarkRed);
+                    AltSparkParticle spark = new AltSparkParticle(Projectile.Center - Projectile.velocity * 0.5f, Projectile.velocity * 0.01f, false, 7, 0.8f, (!ChildSafety.Disabled ? Color.CornflowerBlue : Color.DarkRed));
                     GeneralParticleHandler.SpawnParticle(spark);
-                    SparkParticle spark2 = new SparkParticle(Projectile.Center - Projectile.velocity * 0.5f, Projectile.velocity * 0.01f, false, 4, 0.65f, Color.Red);
+                    SparkParticle spark2 = new SparkParticle(Projectile.Center - Projectile.velocity * 0.5f, Projectile.velocity * 0.01f, false, 4, 0.65f, (!ChildSafety.Disabled ? Color.CornflowerBlue : Color.Red));
                     GeneralParticleHandler.SpawnParticle(spark2);
                 }
             }

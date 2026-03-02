@@ -139,8 +139,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnKill(int timeLeft)
         {
-            // Only do rocket effects for the owner client side
-            if (Projectile.owner != Main.myPlayer)
+            // Don't do rocket effects on the server
+            if (Main.dedServ)
                 return;
 
             var info = new CalamityUtils.RocketBehaviorInfo((int)RocketID)

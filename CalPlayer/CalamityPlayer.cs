@@ -194,7 +194,7 @@ namespace CalamityMod.CalPlayer
             DevourerofCods //Not a fishing minigame but uses the same code as the rest
         }
         public FishingMinigames SelectedFishingMinigame = FishingMinigames.None;
-        public bool countsAsAnyWet => (Player.armor[0].type == ItemID.FishBowl || (Main.raining && Player.Center.Y < Main.worldSurface * 16.0) || Player.dripping || Player.wetCount > 0 || Player.wet || Player.honeyWet || Player.lavaWet);
+        public bool countsAsAnyWet => (Player.armor[0].type == ItemID.FishBowl || (Main.IsItRaining && Player.Center.Y < Main.worldSurface * 16.0) || Player.dripping || Player.wetCount > 0 || Player.wet || Player.honeyWet || Player.lavaWet);
 
         /// <summary>
         /// How many Starbursts the player has
@@ -544,6 +544,8 @@ namespace CalamityMod.CalPlayer
         /// <summary> An additional damage multiplier applied to rogue stealth strikes. Used by Filthy Glove, Rotten Dogtooth and their upgrades. </summary>
         public double bonusStealthDamage = 0;
         public float rogueVelocity = 1f;
+
+        public int focusFlurryAttackCount = 0;
         #endregion
 
         #region Mount
@@ -1119,6 +1121,7 @@ namespace CalamityMod.CalPlayer
         public bool scionsCurio = false;
         public bool scionsCurioGotHit = false;
         public bool scionsCurioVisuals = false;
+        public float scionsCurioDebuffDamage = 0;
         public bool miniOldDuke = false;
         public bool miniOldDukeVanity = false;
         public bool starbusterCore = false;
@@ -1459,7 +1462,6 @@ namespace CalamityMod.CalPlayer
         public bool redWine = false;
         public float redWineStoredY = 0;
         public bool grapeBeer = false;
-        public int grapeBeerTimer = 0;
         public bool moonshine = false;
         public bool rum = false;
         public bool whiskey = false;
@@ -2539,6 +2541,7 @@ namespace CalamityMod.CalPlayer
             fairyBoots = false;
             flameWakerBoots = false;
             hellfireTreads = false;
+            bootLevel = 0;
             sSpiritAmulet = false;
             dOfTheDeep = false;
             oceanCrest = false;
@@ -2748,8 +2751,6 @@ namespace CalamityMod.CalPlayer
             vodka = false;
             redWine = false;
             grapeBeer = false;
-            if (grapeBeerTimer > 0)
-                grapeBeerTimer--;
             moonshine = false;
             rum = false;
             whiskey = false;
@@ -3812,6 +3813,14 @@ namespace CalamityMod.CalPlayer
                 if (godSlayer && !Player.pulley && Player.grappling[0] == -1 && !Player.tongued && !Player.mount.Active && !Player.HasCooldown(GodSlayerDash.ID) && Player.dashDelay == 0)
                 {
                     godSlayerDashHotKeyPressed = true;
+                    foreach (Projectile p in Main.ActiveProjectiles)
+                    {
+                        if (p.type == ProjectileType<RelicOfDeliveranceSpear>() && Player.whoAmI == p.owner)
+                        {
+                            (p.ModProjectile as RelicOfDeliveranceSpear).KillProj();
+                            return;
+                        }
+                    }
                 }
             }
 
@@ -4986,16 +4995,16 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            if (Player.Calamity().abaddon || Player.Calamity().voidOfExtinction)
+            if (scionsCurio)
             {
-                Player.Calamity().abaddonDebuffDamage = (1 + Player.GetTotalCritChance(Player.GetBestClass()) * 0.01f * (Player.Calamity().voidOfExtinction ? VoidofExtinction.critScaling : Abaddon.critScaling));
+                scionsCurioDebuffDamage = Player.GetTotalDamage(DamageClass.Ranged).ApplyTo(Irradiated.debuffData.EnemyLostRegen * (1 + Player.GetTotalCritChance(DamageClass.Ranged) * 0.01f));
             }
             else
-                Player.Calamity().abaddonDebuffDamage = 0;
+                scionsCurioDebuffDamage = 0;
 
             // True melee damage from various vanilla equipment placed here.
 
-                // Titan Glove and ALL upgrades.
+            // Titan Glove and ALL upgrades.
             if (Player.kbGlove)
                 Player.GetDamage<TrueMeleeDamageClass>() += 0.1f;
 

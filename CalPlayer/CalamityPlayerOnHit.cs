@@ -702,7 +702,7 @@ namespace CalamityMod.CalPlayer
                 bee.ArmorPenetration = 20;
                 bee.penetrate = 2;
                 bee.extraUpdates = 1;
-                AlchFlaskCooldown = 7;
+                AlchFlaskCooldown = Player.strongBees ? 6 : 7;
             }
 
             bool lifeAndShieldCondition = Player.statLife >= Player.statLifeMax2 && (!HasAnyEnergyShield || TotalEnergyShielding >= TotalMaxShieldDurability);
@@ -1335,7 +1335,7 @@ namespace CalamityMod.CalPlayer
                     if (manaOverloader)
                     {
                         double healMult = 0.1D - proj.numHits * 0.025D;
-                        Player.SpawnLifeStealProjectile(target, proj, ProjectileType<ManaPolarizerHealOrb>(), (int)Math.Round(damage * healMult), 1.5f);
+                        Player.SpawnLifeStealProjectile(target, proj, ProjectileType<ManaPolarizerHealOrb>(), (int)Math.Round(damage * healMult), 1.75f);
                     }
 
                     if (ataxiaMage)
