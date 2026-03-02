@@ -4479,6 +4479,10 @@ namespace CalamityMod.CalPlayer
             if (HasCustomDash && UsedDash.IsOmnidirectional)
                 Player.maxFallSpeed = 50f;
 
+            // If the player isn't moving yet is still dashing, disable the dash (prevents weird hook jank)
+            if (Player.velocity == Vector2.Zero && Player.dashDelay == -1)
+                Player.dashDelay = 0;
+
             tailFrameUp++;
             if (tailFrameUp == 8)
             {
