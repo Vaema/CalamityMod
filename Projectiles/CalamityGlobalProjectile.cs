@@ -4310,7 +4310,7 @@ namespace CalamityMod.Projectiles
                     {
                         Vector2 targetDirection = projectile.SafeDirectionTo(target.Center);
 
-                        float trackingSpeed = Vector2.Dot(targetDirection, projectile.velocity.SafeNormalize(Vector2.UnitX)) > 0.85f ? 0.0125f : 0f;
+                        float trackingSpeed = Vector2.Dot(targetDirection, projectile.velocity.SafeNormalize(Vector2.UnitX)) > 0.835f ? 0.01325f : 0f; // Delicate values, please test changes you make to them
 
                         Vector2 currVelocity = projectile.velocity;
 
