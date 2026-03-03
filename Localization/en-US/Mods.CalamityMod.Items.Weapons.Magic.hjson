@@ -657,7 +657,7 @@ PrimordialEarth: {
 	DisplayName: Primordial Earth
 	Tooltip:
 		'''
-		Casts two enchanted blasts of sand that coverge with each other and explode
+		Casts two enchanted blasts of sand that converge with each other and explode
 		Casting this spell at max mana while without mana sickness will cause it to give you and any player it hits the {$Buffs.SandsWindBuff.DisplayName} buff
 		The {$Buffs.SandsWindBuff.DisplayName} buff increases your defense by {0}, damage by {1}%, and greatly buffs mana regen
 		'''
