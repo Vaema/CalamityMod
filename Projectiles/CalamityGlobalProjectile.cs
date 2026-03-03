@@ -192,7 +192,6 @@ namespace CalamityMod.Projectiles
         /// Used by Arterial Assault, Deific Amulet's stars, and certain sand projectiles from the Sand Gun.
         /// </summary>
         public float conditionalHomingRange = 0f;
-
         public float conditionalHomingVelocity = 12f;
         public float conditionalHomingInertia = 20f;
 
