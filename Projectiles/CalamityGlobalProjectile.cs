@@ -193,6 +193,9 @@ namespace CalamityMod.Projectiles
         /// </summary>
         public float conditionalHomingRange = 0f;
 
+        public float conditionalHomingVelocity = 12f;
+        public float conditionalHomingInertia = 20f;
+
         /// <summary>
         /// Whether or not this proj was spawned with grape beer on
         /// this does NOT mean it has grape beer homing!
@@ -4295,10 +4298,27 @@ namespace CalamityMod.Projectiles
                     arcFlashCooldown--;
                 if (arcFlashCooldown == 0)
                     showArcFlash = true;
-                if (conditionalHomingRange > 0f && Main.player[projectile.owner].heldProj != projectile.whoAmI && projectile.aiStyle != ProjAIStyleID.HeldProjectile)
+                if (conditionalHomingRange > 0f && Main.player[projectile.owner].heldProj != projectile.whoAmI && projectile.aiStyle != ProjAIStyleID.HeldProjectile && !grapeBeer)
                 {
-                    CalamityUtils.HomeInOnNPC(projectile, !projectile.tileCollide, conditionalHomingRange, 12f, 20f,true);
+                    CalamityUtils.HomeInOnNPC(projectile, !projectile.tileCollide, conditionalHomingRange, conditionalHomingVelocity, conditionalHomingInertia, true);
                 }
+
+                // Grape beer-specific homing. If the projectile is aligned a certain amount to the direction to the target, it will home in.
+                else if (conditionalHomingRange > 0f && Main.player[projectile.owner].heldProj != projectile.whoAmI && projectile.aiStyle != ProjAIStyleID.HeldProjectile && grapeBeer)
+                {
+                    NPC target = projectile.Center.ClosestNPCAt(conditionalHomingRange);
+                    if (target is not null)
+                    {
+                        Vector2 targetDirection = projectile.SafeDirectionTo(target.Center);
+
+                        float trackingSpeed = Vector2.Dot(targetDirection, projectile.velocity.SafeNormalize(Vector2.UnitX)) > 0.85f ? 0.0125f : 0f;
+
+                        Vector2 currVelocity = projectile.velocity;
+
+                        projectile.velocity = projectile.velocity.ToRotation().AngleTowards(targetDirection.ToRotation(), trackingSpeed).ToRotationVector2() * currVelocity.Length();
+                    }
+                }
+
                 if (brimstoneBullets)
                 {
                     PointParticle spark = new PointParticle(projectile.Center + projectile.velocity * 3, projectile.velocity, false, 2, 0.9f, Color.Crimson * 0.7f);
