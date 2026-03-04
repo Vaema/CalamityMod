@@ -722,8 +722,8 @@ namespace CalamityMod.CalPlayer
         public bool drawnAnyShieldThisFrame = false;
 
         // TODO -- Some way to show the player their total shield points.
-        public int TotalEnergyShielding => RoverDriveShieldDurability + LunicCorpsShieldDurability + pSoulShieldDurability + SpongeShieldDurability;
-        public int TotalMaxShieldDurability => (roverDrive ? RoverDrive.ShieldDurabilityMax : 0) + (lunicCorpsSet ? LunicCorpsHelmet.ShieldDurabilityMax : 0) + (profanedCrystalBuffs ? ProfanedSoulCrystal.ShieldDurabilityMax : ((pSoulArtifact && !profanedCrystal) ? ProfanedSoulArtifact.ShieldDurabilityMax : 0)) + (sponge ? TheSponge.ShieldDurabilityMax : 0);
+        public int TotalEnergyShielding => RoverDriveShieldDurability + LunicCorpsShieldDurability + pSoulShieldDurability + SpongeShieldDurability + (Starshield > 0 ? StratusStarburst : 0);
+        public int TotalMaxShieldDurability => (roverDrive ? RoverDrive.ShieldDurabilityMax : 0) + (lunicCorpsSet ? LunicCorpsHelmet.ShieldDurabilityMax : 0) + (profanedCrystalBuffs ? ProfanedSoulCrystal.ShieldDurabilityMax : ((pSoulArtifact && !profanedCrystal) ? ProfanedSoulArtifact.ShieldDurabilityMax : 0)) + (sponge ? TheSponge.ShieldDurabilityMax : 0) + (Starshield > 0 ? 100 : 0);
 
         public int RoverDriveShieldDurability = 0;
         public int LunicCorpsShieldDurability = 0;

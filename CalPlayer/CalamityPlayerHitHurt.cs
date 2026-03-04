@@ -1887,10 +1887,6 @@ namespace CalamityMod.CalPlayer
                     Rectangle location = new Rectangle((int)Player.position.X, (int)Player.position.Y - 16, Player.width, Player.height);
                     CombatText.NewText(location, Color.LightBlue, Language.GetTextValue(shieldDamageText));
 
-                    // Give the player iframes for taking a shield hit, regardless of whether or not the shields broke.
-                    int shieldHitIFrames = Player.ComputeHitIFrames(info);
-                    Player.GiveIFrames(info.CooldownCounter, shieldHitIFrames, true);
-
                     // Spawn particles when hit with the shields up, regardless of whether or not the shields broke.
                     // More particles spawn if a shield broke.
                     if (pSoulArtifact)
@@ -1961,6 +1957,10 @@ namespace CalamityMod.CalPlayer
                 // If the shields completely absorbed the hit, then delete the hit using reflection.
                 if (shieldsFullyAbsorbedHit)
                 {
+                    // Give the player iframes for taking a shield hit
+                    int shieldHitIFrames = Player.ComputeHitIFrames(info);
+                    Player.GiveIFrames(info.CooldownCounter, shieldHitIFrames, true);
+
                     freeDodgeFromShieldAbsorption = true;
 
                     // Cancel defense damage, if it was going to occur this frame.
