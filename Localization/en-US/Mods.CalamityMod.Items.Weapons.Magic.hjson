@@ -781,6 +781,7 @@ SHPC: {
 		{0}
 		Press <right> to use the machine as a vacuum, pulling in lingering souls
 		Once released, a torrent of soul lasers is discharged scaling with the number of souls pulled in
+		Shift-Right Click this item in your inventory to eject the currently loaded Soul
 		'''
 	// These are the soul effect descriptions, the number is the item ID of the soul
 	NoSoul: "[c/808080:There is currently no soul type injected into the weapon]"
