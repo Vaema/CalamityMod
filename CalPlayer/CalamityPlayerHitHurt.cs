@@ -1888,8 +1888,8 @@ namespace CalamityMod.CalPlayer
                     CombatText.NewText(location, Color.LightBlue, Language.GetTextValue(shieldDamageText));
 
                     // Give the player iframes for taking a shield hit, regardless of whether or not the shields broke.
-                    int shieldHitIFrames = Player.ComputeHitIFrames(info);
-                    Player.GiveIFrames(info.CooldownCounter, shieldHitIFrames, true);
+                    //int shieldHitIFrames = Player.ComputeHitIFrames(info);
+                    //Player.GiveIFrames(info.CooldownCounter, shieldHitIFrames, true);
 
                     // Spawn particles when hit with the shields up, regardless of whether or not the shields broke.
                     // More particles spawn if a shield broke.

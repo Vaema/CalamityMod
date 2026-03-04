@@ -249,18 +249,45 @@ namespace CalamityMod.Projectiles
                 #endregion
 
                 #region CATEGORY 4: Defense Damage support
-                { ProjectileID.Cthulunado, defenseDamage }, // Duke Fishron's larger Sharknados
-                { ProjectileID.DD2BetsyFlameBreath, defenseDamage },
+                
+                //Deerclops
                 { ProjectileID.DeerclopsIceSpike, defenseDamage },
-                { ProjectileID.FairyQueenSunDance, defenseDamage }, // Empress of Light's Sun Dance
-                { ProjectileID.FlamingScythe, defenseDamage }, // Pumpking orange spinning scythes
-                { ProjectileID.InfernoHostileBlast, defenseDamage }, // Diabolist inferno fork explosions
-                { ProjectileID.PaladinsHammerHostile, defenseDamage },
+                { ProjectileID.DeerclopsRangedProjectile, defenseDamage },
+
+                //Skeletron Prime
+                { ProjectileID.BombSkeletronPrime, defenseDamage },
+                { ProjectileID.RocketSkeleton, defenseDamage }, // Skeleton Commando rockets, reused by Rev+ Skeletron Prime
+                //Fishron
+                { ProjectileID.Cthulunado, defenseDamage },
+                { ProjectileID.Sharknado, defenseDamage },
+                //Betsy
+                { ProjectileID.DD2BetsyFireball, defenseDamage },
+                { ProjectileID.DD2BetsyFlameBreath, defenseDamage },
+                //Cultist
+                { ProjectileID.CultistBossFireBall, defenseDamage },
+                { ProjectileID.CultistBossLightningOrbArc, defenseDamage }, // Also used by storm weaver
+                // Empress of Light
+                { ProjectileID.FairyQueenLance, defenseDamage },
+                { ProjectileID.FairyQueenSunDance, defenseDamage },
+                { ProjectileID.HallowBossRainbowStreak, defenseDamage },
+                { ProjectileID.HallowBossLastingRainbow, defenseDamage },
+                //Storm Weaver
+                { ProjectileID.FrostWave, defenseDamage }, // Ice Queen frost waves, reused by Storm Weaver
+                //Moon Lord
                 { ProjectileID.PhantasmalDeathray, defenseDamage },
                 { ProjectileID.PhantasmalSphere, defenseDamage },
+                //Queen Slime
+                { ProjectileID.QueenSlimeSmash, defenseDamage },
+                //Martian Saucer
                 { ProjectileID.SaucerDeathray, defenseDamage },
-                { ProjectileID.Sharknado, defenseDamage },
-                { ProjectileID.ThornBall, Do(Main.zenithWorld ? IgnoreWater : DontIgnoreWater, DefenseDamage) }, // Plantera bouncing thorn balls
+                { ProjectileID.SaucerMissile, defenseDamage },
+                //Plantera
+                { ProjectileID.ThornBall, Do(Main.zenithWorld ? IgnoreWater : DontIgnoreWater, DefenseDamage) },
+                //Misc
+                { ProjectileID.FlamingScythe, defenseDamage }, //Pumpking scythes
+                { ProjectileID.CannonballHostile, defenseDamage },
+                { ProjectileID.Spike, defenseDamage }, // Santank spike balls
+                { ProjectileID.Present, defenseDamage }, //Santank presents
                 #endregion
 
                 #region CATEGORY 5: ID-Static Immunity Frame changes
