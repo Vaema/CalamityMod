@@ -848,7 +848,7 @@ namespace CalamityMod.CalPlayer
                     float cooldownDurationScalar = MathHelper.Clamp((actualProjDamage - dodgeDamageGateValue) / (float)maxCooldownDurationDamageValue, 0f, 1f);
 
                     // The Evolution
-                    if (evolution)
+                    if (evolution && !Player.HasBuff<SilvaRevival>())
                     {
                         if (Player.whoAmI == Main.myPlayer)
                         {
@@ -2408,10 +2408,10 @@ namespace CalamityMod.CalPlayer
                 if (dAmulet)
                 {
                     var source = Player.GetSource_Accessory_OnHurt(FindAccessory<DeificAmulet>(), hurtInfo.DamageSource);
-                    int projAmount = (rampartOfDeities ? 12 : 6);
+                    var projAmount = (rampartOfDeities ? 12 : 6) * (Player.strongBees ? 1.5f : 1f);
                     for (int n = 0; n < projAmount; n++)
                     {
-                        int deificProjDamage = (int)(Player.GetBestClassDamage().ApplyTo(DeificAmulet.StarDamage) * (Player.strongBees ? 0.85f : 1f));
+                        int deificProjDamage = (int)(Player.GetBestClassDamage().ApplyTo(DeificAmulet.StarDamage));
 
                         Projectile onHitProj = Main.projectile[Projectile.NewProjectile(source, Player.Center, new Vector2(0,-15 * (rampartOfDeities && n % 2 == 0 ? 0.75f: 1.25f)).RotatedBy(MathHelper.TwoPi/projAmount*n), ModContent.ProjectileType<AstralStar>(), deificProjDamage, 4f, Player.whoAmI)];
                         if (onHitProj.whoAmI.WithinBounds(Main.maxProjectiles))
@@ -2422,8 +2422,6 @@ namespace CalamityMod.CalPlayer
                             onHitProj.tileCollide = false;
                             onHitProj.extraUpdates = 1;
                             onHitProj.Calamity().conditionalHomingRange = 600f;
-                            if (Player.strongBees)
-                                onHitProj.penetrate += 1;
                         }
                     }
                 }
