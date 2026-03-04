@@ -810,6 +810,7 @@ namespace CalamityMod.CalPlayer
 
         #region Accessory
         public bool shieldOfTheHighRulerDashVelocityBoosted = false;
+        public bool yharimsGift = false;
         public bool luxorsGift = false;
         public bool luxorHit = false;
         public bool luxorsGiftVanity = false;
@@ -2350,6 +2351,7 @@ namespace CalamityMod.CalPlayer
             blazingCursorDamage = false;
             blazingCursorVisuals = false;
 
+            yharimsGift = false;
             luxorsGift = false;
             luxorsGiftVanity = false;
             fungalSymbiote = false;

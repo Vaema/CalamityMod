@@ -460,6 +460,14 @@ namespace CalamityMod.CalPlayer
         }
         #endregion
 
+        #region OnHitNPC
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            if (Player.Calamity().yharimsGift)
+                target.AddBuff(ModContent.BuffType<AuricRebuke>(),120);
+        }
+        #endregion
+
         #region Modify Hit NPC
         public override void ModifyHitNPCWithItem(Item item, NPC target, ref NPC.HitModifiers modifiers)
         {
