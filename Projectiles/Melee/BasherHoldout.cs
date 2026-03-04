@@ -98,7 +98,7 @@ namespace CalamityMod.Projectiles.Melee
             if (!Owner.CantUseHoldout(false))
                 Projectile.timeLeft = 5;
 
-            Projectile.scale = Owner.GetMeleeScale();
+            Projectile.scale = Owner.GetMeleeScale() + 0.1f;
             toMouse = Utils.DirectionTo(Owner.Center, Owner.ClampedMouseWorld());
 
             Positioning(toMouse);
@@ -107,12 +107,12 @@ namespace CalamityMod.Projectiles.Melee
 
             if (enabledHitbox > 0)
             {
-                bladefx = MathHelper.Lerp(bladefx, 1, 0.6f / Projectile.MaxUpdates);
+                bladefx = MathHelper.Lerp(bladefx, 1, 0.5f / Projectile.MaxUpdates * Owner.meleeSpeed);
                 if (Projectile.FinalExtraUpdate())
                     enabledHitbox--;
             }
             else
-                bladefx = MathHelper.Lerp(bladefx, 0, 0.7f / Projectile.MaxUpdates);
+                bladefx = MathHelper.Lerp(bladefx, 0, 0.55f / Projectile.MaxUpdates * Owner.meleeSpeed);
 
             if (attackTimer == -1 || time < 25)
             {
@@ -131,7 +131,7 @@ namespace CalamityMod.Projectiles.Melee
 
                 float lerp = Utils.GetLerpValue(cooldown, -1, attackTimer, true);
 
-                float lerpSpeed = 0.2f / Projectile.MaxUpdates;
+                float lerpSpeed = 0.2f / Projectile.MaxUpdates * Owner.meleeSpeed;
                 float maxAngle = MathHelper.PiOver4;
                 if (swingCount % 2 == 0)
                     angledHold = MathHelper.Lerp(angledHold, maxAngle, lerpSpeed);
@@ -193,12 +193,12 @@ namespace CalamityMod.Projectiles.Melee
                     
                 }
 
-                if (lerp > 0.5f) // Halfway through make the hitbox and sound
+                if (lerp > 0.4f) // Partway through make the hitbox and sound
                 {
                     if (makeSound)
                     {
-                        enabledHitbox = 10;
-                        SoundEngine.PlaySound(SoundID.DD2_MonkStaffSwing with { Volume = 0.6f, Pitch = Main.rand.NextFloat(-0.35f, -0.55f) }, Projectile.Center);
+                        enabledHitbox = 8;
+                        SoundEngine.PlaySound(SoundID.DD2_MonkStaffSwing with { Volume = 0.75f, Pitch = Main.rand.NextFloat(-0.35f, -0.55f) }, Projectile.Center);
                         makeSound = false;
                     }
                 }
@@ -222,10 +222,10 @@ namespace CalamityMod.Projectiles.Melee
                 Owner.SetScreenshake(2f);
 
                 SoundStyle bash1 = new("CalamityMod/Sounds/Item/DampExplosion");
-                SoundEngine.PlaySound(bash1 with { Volume = 0.35f, Pitch = 0.7f }, Projectile.Center);
+                SoundEngine.PlaySound(bash1 with { Volume = 0.45f, Pitch = 0.7f }, Projectile.Center);
                 SoundStyle bash2 = new("CalamityMod/Sounds/NPCHit/RavagerRockPillarHit", 3);
-                SoundEngine.PlaySound(bash2 with { Volume = 0.65f, Pitch = -0.2f }, Projectile.Center);
-                SoundEngine.PlaySound(SoundID.DrumTomHigh with { Volume = 0.45f, Pitch = -0.9f }, Projectile.Center);
+                SoundEngine.PlaySound(bash2 with { Volume = 0.75f, Pitch = -0.2f }, Projectile.Center);
+                SoundEngine.PlaySound(SoundID.DrumTomHigh with { Volume = 0.55f, Pitch = -0.9f }, Projectile.Center);
 
                 Vector2 playerLaunchVel = -toMouse * 10;
                 Owner.velocity = playerLaunchVel;
@@ -258,7 +258,7 @@ namespace CalamityMod.Projectiles.Melee
             if (time < 3)
                 return false;
 
-            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/Basher").Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D swoosh = ModContent.Request<Texture2D>("CalamityMod/Particles/VerticalSmearThin").Value;
 
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
