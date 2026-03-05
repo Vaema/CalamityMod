@@ -241,7 +241,7 @@ GrapeBeer: {
 	Tooltip:
 		'''
 		Bullets, Arrows, Darts, and Rockets gain homing
-		Projectiles deal less damage the further the enemy is.
+		Projectiles deal less damage the further the enemy is
 		This reaches a minimum of {0}x damage at {1} tiles away
 		{$Common.AlcoholWarning}
 		'''
