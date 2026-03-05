@@ -674,7 +674,7 @@ AstralInjectionBuff: {
 
 BaguetteBuff: {
 	DisplayName: Baguette
-	Description: Goes well with Red Wine
+	Description: Life regeneration reduced by 2 HP/s
 }
 
 BloodfinBoost: {
