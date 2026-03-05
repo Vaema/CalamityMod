@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection.Metadata;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Rogue;
@@ -57,6 +58,21 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.velocity.Y += 0.22f;
 
             Projectile.ai[0]++;
+            //Copied from violence/chalice
+            if (Main.rand.NextFloat() < Projectile.ai[0] / Projectile.ai[1] && Projectile.FinalExtraUpdate())
+            {
+                int bloodLifetime = Main.rand.Next(5, 15);
+                float bloodScale = Main.rand.NextFloat(0.6f, 0.8f);
+                Color bloodColor = Color.Lerp(Color.Yellow, Color.Goldenrod, Main.rand.NextFloat());
+                bloodColor = Color.Lerp(bloodColor, new Color(51, 22, 94), Main.rand.NextFloat(0.65f));
+
+                float randomSpeedMultiplier = Main.rand.NextFloat(1.25f, 2.25f);
+                Vector2 bloodVelocity = Main.rand.NextVector2Unit()  * randomSpeedMultiplier;
+                bloodVelocity.Y -= 5f;
+                BloodParticle blood = new BloodParticle(Projectile.Center, bloodVelocity.RotatedBy(Projectile.rotation + MathHelper.PiOver4 * Projectile.spriteDirection), bloodLifetime, bloodScale, bloodColor);
+                GeneralParticleHandler.SpawnParticle(blood);
+            }
+
             if (Projectile.ai[0] > Projectile.ai[1] || Projectile.timeLeft == 2)
             {
                 if (Projectile.ai[2] == 1)
@@ -76,6 +92,23 @@ namespace CalamityMod.Projectiles.Rogue
                 {
                     var d = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LemonNadeExplodeDust>(),Main.rand.NextVector2CircularEdge(15,15) * Main.rand.NextFloat(0.25f,1f),Scale:Main.rand.NextFloat(0.75f,1.25f));
                 }
+                var exactBloodCount = 10;
+                // Code copied from Violence/chalice.
+                float bloodVelMult = 6;
+                for (int i = 0; i < exactBloodCount; ++i)
+                {
+                    int bloodLifetime = Main.rand.Next(22, 36);
+                    float bloodScale = Main.rand.NextFloat(0.6f, 1.2f);
+                    Color bloodColor = Color.Lerp(Color.Yellow, Color.Goldenrod, Main.rand.NextFloat());
+                    bloodColor = Color.Lerp(bloodColor, new Color(51, 22, 94), Main.rand.NextFloat(0.65f));
+
+                    float randomSpeedMultiplier = Main.rand.NextFloat(1.25f, 2.25f);
+                    Vector2 bloodVelocity = Main.rand.NextVector2Unit() * bloodVelMult * randomSpeedMultiplier;
+                    bloodVelocity.Y -= 5f;
+                    BloodParticle blood = new BloodParticle(Projectile.Center, bloodVelocity, bloodLifetime, bloodScale, bloodColor);
+                    GeneralParticleHandler.SpawnParticle(blood);
+                }
+
                 SoundEngine.PlaySound(SoundID.Item62 with {pitch = 1f },Projectile.Center);
                 SoundEngine.PlaySound(SoundID.Item111 with { pitch = 0.5f }, Projectile.Center);
                 Projectile.Kill();

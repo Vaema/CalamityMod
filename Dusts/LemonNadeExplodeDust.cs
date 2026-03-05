@@ -19,7 +19,7 @@ namespace CalamityMod.Dusts
                 {
                     case 0: return new Color(54, 54, 54);
                     case 1: return new Color(76, 36, 36);
-                    case 2: return new Color(132, 106, 56);
+                    case 2: return new Color(132, 72, 56);
                     case 3: return new Color(50, 45, 37);
                 }
                 return Color.White;

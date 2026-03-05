@@ -49,6 +49,7 @@ namespace CalamityMod.Projectiles.Rogue
             swingTime -= StartupTime + CooldownTime;
             OffsetDistance = 24;
             modplayer.swingNum = 0;
+            RotateInStartup = 1;
         }
 
         public override void AdditionalAI()
@@ -98,6 +99,20 @@ namespace CalamityMod.Projectiles.Rogue
                     Projectile.timeLeft++;
                 }
             }
+            // Code copied from Violence / Chalice.
+            float bloodVelMult = 1;
+            if (Main.rand.NextFloat() < explodeTimer/explodeTimeGoal && Projectile.Opacity > 0 && Projectile.FinalExtraUpdate())
+            {
+                int bloodLifetime = Main.rand.Next(5, 15);
+                float bloodScale = Main.rand.NextFloat(0.6f, 0.8f);
+                Color bloodColor = Color.Lerp(Color.Yellow, Color.Goldenrod, Main.rand.NextFloat());
+                bloodColor = Color.Lerp(bloodColor, new Color(51, 22, 94), Main.rand.NextFloat(0.65f));
+                float randomSpeedMultiplier = Main.rand.NextFloat(1.25f, 2.25f);
+                Vector2 bloodVelocity = Main.rand.NextVector2Unit() * bloodVelMult * randomSpeedMultiplier;
+                bloodVelocity.Y -= 5f;
+                BloodParticle blood = new BloodParticle(Projectile.Center, bloodVelocity.RotatedBy(Projectile.rotation + MathHelper.PiOver4 * Projectile.spriteDirection), bloodLifetime, bloodScale, bloodColor);
+                GeneralParticleHandler.SpawnParticle(blood);
+            }
             if (explodeTimer >= explodeTimeGoal && inCooldown && !Projectile.FinalExtraUpdate())
             {
                 timer--;
@@ -124,7 +139,9 @@ namespace CalamityMod.Projectiles.Rogue
         public override float SwingFunction()
         {
             if (inStartup)
-                return MathHelper.ToRadians(MathHelper.SmoothStep(swingWidth * -0.33f, swingWidth * -0.7f, MathF.Pow(StartupCompletion, 4f)));
+            {
+                return swingWidth * -0.5f + (MathF.Sin(Main.GlobalTimeWrappedHourly * 30) * 0.2f);
+            }
             if (inCooldown)
                 return MathHelper.ToRadians(MathHelper.Lerp(swingWidth * 0.2f, swingWidth * 0.33f, 1 - MathF.Pow(1 - CooldownCompletion, 3f)));
             return MathHelper.ToRadians(MathHelper.SmoothStep(swingWidth * -0.7f, swingWidth * 0.2f, SwingCompletion));
