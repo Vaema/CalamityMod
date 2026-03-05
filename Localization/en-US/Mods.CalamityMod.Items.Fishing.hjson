@@ -1,4 +1,4 @@
-﻿// Quest fish tooltips
+// Quest fish tooltips
 CaughtInAstral: Caught in the Astral Infection
 CaughtInBrimstoneCrag: Caught in the Brimstone Crag
 CaughtInSnow: Caught in Tundra
@@ -393,6 +393,11 @@ WulfrumRod: {
 }
 
 // Bait
+RageBait: {
+	DisplayName: Rage Bait
+	Tooltip: The absolute best bait on the market! And for so cheap too...
+}
+
 GrandMarquisBait: {
 	DisplayName: Grand Marquis Bait
 	Tooltip: ""

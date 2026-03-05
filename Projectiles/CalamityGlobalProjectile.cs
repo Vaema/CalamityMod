@@ -16,6 +16,7 @@ using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Ammo;
 using CalamityMod.Items.Armor.Daedalus;
 using CalamityMod.Items.Armor.Reaver;
+using CalamityMod.Items.Fishing;
 using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.SummonItems;
@@ -55,6 +56,7 @@ using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using Terraria.Utilities;
 using Terraria.WorldBuilding;
+using static Terraria.ID.ContentSamples.CreativeHelper;
 using static Terraria.ModLoader.ModContent;
 using NanotechProjectile = CalamityMod.Projectiles.Typeless.Nanotech;
 
@@ -3050,6 +3052,8 @@ namespace CalamityMod.Projectiles
             //localAI[1] - The timer for fish to try and bite the hook. When it exceeds 660, it resets to 0.
             //If ai[1] is not 0, this is set to the item ID of the hooked item/NPC
             //If hooking an NPC, this is set to the NPC ID but negative. Still need to find how this gets treated upon reeling in.
+            
+            owner.Fishing_GetBait(out Item baitItem);
             switch (owner.Calamity().SelectedFishingMinigame)
             {
                 case CalamityPlayer.FishingMinigames.ScrapBobber:
@@ -3319,7 +3323,6 @@ namespace CalamityMod.Projectiles
                                 if (cplayer.mouseRight && projectile.ai[1] == 0 && owner.miscCounter % 10 == 0)
                                 {
                                     owner.lifeRegenCount -= 600; // -5 health per 10 ticks
-                                    owner.Fishing_GetBait(out Item baitItem);
 
                                     // Diminishing returns on bait power beyond 75
                                     int baitPower = baitItem?.bait ?? 0;
@@ -3690,6 +3693,30 @@ namespace CalamityMod.Projectiles
                     }
 
             }
+
+            bool alreadyJunk = projectile.ai[1] == ItemID.OldShoe || projectile.ai[1] == ItemID.FishingSeaweed || projectile.ai[1] == ItemID.TinCan;
+            // When using rage bait, gives a chance that your items turn to junk
+            if (baitItem?.type == ModContent.ItemType<RageBait>() && projectile.ai[0] == 1 && !alreadyJunk && Main.rand.NextBool(RageBait.junkChance))
+            {
+                var junk = Main.rand.Next(3) switch
+                {
+                    0 => ItemID.OldShoe,
+                    1 => ItemID.FishingSeaweed,
+                    _ => ItemID.TinCan,
+                };
+
+                SoundStyle epicFail = new("CalamityMod/Sounds/Item/Swine", 2);
+                SoundEngine.PlaySound(epicFail with { Volume = 0.9f, Pitch = 0.3f }, projectile.Center);
+
+                for (int i = 0; i < 15; i++)
+                {
+                    Particle spray = new CustomSpark(projectile.Center + Vector2.UnitX * Main.rand.NextFloat(-10, 10), -Vector2.UnitY * Main.rand.NextFloat(3, 8), "CalamityMod/Particles/BloomCircle", true, Main.rand.Next(18, 24) * 5, Main.rand.NextFloat(0.3f, 0.5f), Color.Lerp(Color.Gray, Color.White, Main.rand.NextFloat(0, 0.7f)) * 0.3f, new Vector2(0.8f, 1f), true, false, 0, false, false);
+                    GeneralParticleHandler.SpawnParticle(spray);
+                }
+
+                projectile.ai[1] = junk;
+            }
+
             return false;
         }
         #endregion
