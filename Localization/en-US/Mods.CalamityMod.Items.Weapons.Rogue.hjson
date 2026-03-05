@@ -1394,3 +1394,15 @@ Pumpkaboom: {
 		Stealth strikes throw larger pumpkins which pull enemies in before releasing a larger explosion
 		'''
 }
+
+LemonNade: {
+	DisplayName: Lemon 'nade
+	Tooltip:
+		'''
+		Disables normal stealth generation
+		Hold <left> to pull the pin and generate stealth, and release to throw
+		The longer it is held, the shorter the fuse once the 'nade is thrown
+		Stealth strikes explode into exploding lemon seeds
+		'Burn their house down!'
+		'''
+}
