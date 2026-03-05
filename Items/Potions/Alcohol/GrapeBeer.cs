@@ -11,9 +11,11 @@ namespace CalamityMod.Items.Potions.Alcohol
     public class GrapeBeer : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Potions";
-
-        public static float CritLoss = 50;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(CritLoss);
+        public static float CloseRangeDistance = 160;
+        public static float LongRangeDistance = 800;
+        public static float CloseRangeDamage = 1f;
+        public static float LongRangeDamage = 0.5f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(LongRangeDamage,LongRangeDistance/16f);
 
         public override void SetStaticDefaults()
         {
