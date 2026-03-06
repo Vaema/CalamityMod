@@ -267,7 +267,6 @@ namespace CalamityMod.NPCs
             "Faith", // <@!509050283871961123> (toasty1007)
             "Xsiana", // <@!625780237489143839> (lokistic)
             "Lain", // <@!655201622863118337> (literallyadeerfr)
-            "Hamis", // <@!608455754093035521> (haefer)
             "Brio Scarlet", // <@!358576903701004289> (brio_scarlet)
             "Vanessa", // <@!638901548591611945> (mediocreking)
         ];
@@ -333,6 +332,7 @@ namespace CalamityMod.NPCs
             "Gwenhwyvar", // <@!291342874497515531> (diamondnife)
             "Daxie", // <@!465438861103988737> (daxie626)
             "Zora", // <@!752687500656640030> (oxytoxy365)
+            "Summer", // <@!608455754093035521> (haefer)
         ];
         // Town Slimes
         private static readonly string[] ClumsySlimeNames = null;
