@@ -1,18 +1,8 @@
-﻿using System;
-using System.Reflection.Metadata;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.CalPlayer;
-using CalamityMod.Dusts;
-using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Packets.Entities;
+﻿using CalamityMod.Dusts;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.BaseProjectiles;
-using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -43,9 +33,13 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.localNPCHitCooldown = 10;
         }
 
+        ref float ExplodeTimer => ref Projectile.ai[0];
+        ref float ExplodeTimeMax => ref Projectile.ai[1];
+        ref float AIState => ref Projectile.ai[2];
+
         public override void AI()
         {
-            if (Projectile.ai[2] == 1)
+            if (AIState == 1)
             {
                 Projectile.idStaticNPCHitCooldown = 2;
                 Projectile.usesIDStaticNPCImmunity = true;
@@ -54,12 +48,12 @@ namespace CalamityMod.Projectiles.Rogue
 
             Projectile.rotation += 0.175f * Projectile.direction;
 
-            if (Projectile.timeLeft < 280 && Projectile.ai[2] != 1)
+            if (Projectile.timeLeft < 280 && AIState != 1)
                 Projectile.velocity.Y += 0.22f;
 
-            Projectile.ai[0]++;
+            ExplodeTimer++;
             //Copied from violence/chalice
-            if (Main.rand.NextFloat() < Projectile.ai[0] / Projectile.ai[1] && Projectile.FinalExtraUpdate())
+            if (Main.rand.NextFloat() < ExplodeTimer / ExplodeTimeMax && Projectile.FinalExtraUpdate())
             {
                 int bloodLifetime = Main.rand.Next(5, 15);
                 float bloodScale = Main.rand.NextFloat(0.6f, 0.8f);
@@ -67,30 +61,30 @@ namespace CalamityMod.Projectiles.Rogue
                 bloodColor = Color.Lerp(bloodColor, new Color(51, 22, 94), Main.rand.NextFloat(0.65f));
 
                 float randomSpeedMultiplier = Main.rand.NextFloat(1.25f, 2.25f);
-                Vector2 bloodVelocity = Main.rand.NextVector2Unit()  * randomSpeedMultiplier;
+                Vector2 bloodVelocity = Main.rand.NextVector2Unit() * randomSpeedMultiplier;
                 bloodVelocity.Y -= 5f;
                 BloodParticle blood = new BloodParticle(Projectile.Center, bloodVelocity.RotatedBy(Projectile.rotation + MathHelper.PiOver4 * Projectile.spriteDirection), bloodLifetime, bloodScale, bloodColor);
                 GeneralParticleHandler.SpawnParticle(blood);
             }
 
-            if (Projectile.ai[0] > Projectile.ai[1] || Projectile.timeLeft == 2)
+            if (ExplodeTimer > ExplodeTimeMax || Projectile.timeLeft == 2)
             {
-                if (Projectile.ai[2] == 1)
+                if (AIState == 1)
                     Projectile.damage = Projectile.originalDamage;
                 if (Projectile.Calamity().stealthStrike)
                 {
                     var frags = 6f;
                     for (var i = 0; i < frags; i++)
-                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.UnitY.RotatedBy(i/frags * MathHelper.TwoPi) * -10, ModContent.ProjectileType<LemonNadeProjectile>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 20,1);
+                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.UnitY.RotatedBy(i / frags * MathHelper.TwoPi) * -10, ModContent.ProjectileType<LemonNadeProjectile>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 20, 1);
                 }
                 Projectile.Resize(360, 360);
                 Projectile.ResetLocalNPCHitImmunity();
-                Projectile.damage *= 10;
+                Projectile.damage *= 5;
                 Projectile.Damage();
 
                 for (var i = 0; i < 40; i++)
                 {
-                    var d = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LemonNadeExplodeDust>(),Main.rand.NextVector2CircularEdge(15,15) * Main.rand.NextFloat(0.25f,1f),Scale:Main.rand.NextFloat(0.75f,1.25f));
+                    var d = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LemonNadeExplodeDust>(), Main.rand.NextVector2CircularEdge(15, 15) * Main.rand.NextFloat(0.25f, 1f), Scale: Main.rand.NextFloat(0.75f, 1.25f));
                 }
                 var exactBloodCount = 10;
                 // Code copied from Violence/chalice.
@@ -109,7 +103,7 @@ namespace CalamityMod.Projectiles.Rogue
                     GeneralParticleHandler.SpawnParticle(blood);
                 }
 
-                SoundEngine.PlaySound(SoundID.Item62 with {pitch = 1f },Projectile.Center);
+                SoundEngine.PlaySound(SoundID.Item62 with { pitch = 1f }, Projectile.Center);
                 SoundEngine.PlaySound(SoundID.Item111 with { pitch = 0.5f }, Projectile.Center);
                 Projectile.Kill();
 
@@ -118,11 +112,11 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            if (Projectile.ai[2] == 1)
+            if (AIState == 1)
             {
                 Main.instance.LoadItem(ItemID.PumpkinSeed);
                 var tex = TextureAssets.Item[ItemID.PumpkinSeed];
-                Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.velocity.ToRotation() - MathHelper.PiOver2, tex.Size() * 0.5f, Projectile.scale,0);
+                Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.velocity.ToRotation() - MathHelper.PiOver2, tex.Size() * 0.5f, Projectile.scale, 0);
                 return false;
             }
             return true;
@@ -136,8 +130,8 @@ namespace CalamityMod.Projectiles.Rogue
         {
             Projectile.velocity.X *= -0.65f;
             Projectile.velocity.Y = -3f;
-            if (Projectile.ai[1] - Projectile.ai[0] < 30)
-                Projectile.ai[0] += 15;
+            if (ExplodeTimeMax - ExplodeTimer < 30)
+                ExplodeTimer += 15;
         }
 
 

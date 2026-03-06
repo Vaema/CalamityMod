@@ -1,6 +1,6 @@
 ﻿using CalamityMod.Items.Materials;
+using CalamityMod.Projectiles.Melee.Spears;
 using CalamityMod.Projectiles.Rogue;
-using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -13,38 +13,30 @@ namespace CalamityMod.Items.Weapons.Rogue
     {
         public override void SetDefaults()
         {
-            Item.width = Item.height = 34;
-            Item.damage = 260;
-            Item.knockBack = 5f;
-            Item.useAnimation = Item.useTime = 25;
-            Item.useStyle = ItemUseStyleID.Swing;
+            Item.width = 32;
+            Item.height = 32;
+            Item.damage = 600;
             Item.DamageType = RogueDamageClass.Instance;
             Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<SealedSingularityProj>();
-            Item.shootSpeed = 14f;
-
-            Item.noMelee = Item.noUseGraphic = true;
-            Item.UseSound = SoundID.Item106;
-
-            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
-            Item.rare = ModContent.RarityType<Turquoise>();
-            Item.Calamity().donorItem = true;
+            Item.noMelee = true;
+            Item.noUseGraphic = true;
+            Item.useTime = 30;
+            Item.useAnimation = 30;
+            Item.useStyle = ItemUseStyleID.Swing;
+            Item.knockBack = 3;
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
+            Item.rare = ItemRarityID.LightRed;
+            Item.UseSound = SoundID.Item1;
+            Item.channel = true;
+            Item.shootSpeed = 13f;
+            Item.shoot = ModContent.ProjectileType<SealedSingularityHoldout>();
         }
 
-        public override float StealthDamageMultiplier => 0.75f;
-
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        public override void HoldItem(Player player)
         {
-            if (player.Calamity().StealthStrikeAvailable())
-            {
-                int stealth = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
-                if (stealth.WithinBounds(Main.maxProjectiles))
-                    Main.projectile[stealth].Calamity().stealthStrike = true;
-                return false;
-            }
-            return true;
+            if (player.ownedProjectileCounts[Item.shoot] <= 0)
+                player.Calamity().rogueStealth = 0;
         }
-
         public override void AddRecipes()
         {
             CreateRecipe().

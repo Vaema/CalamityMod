@@ -246,7 +246,8 @@ SeafoamBombProj.DisplayName: Seafoam Bomb
 SeafoamBubble.DisplayName: Seafoam Bubble
 SealedSingularityBlackhole.DisplayName: Sealed Blackhole
 SealedSingularityGore.DisplayName: Sealed Singularity Fragment
-SealedSingularityProj.DisplayName: Sealed Singularity
+SealedSingularityHoldout.DisplayName: Sealed Singularity
+SealedSingularityProjectile.DisplayName: Sealed Singularity
 SeraphimAngelicLight.DisplayName: Light Orb
 SeraphimAngelicLight2.DisplayName: Light Orb
 SeraphimBeamLarge.DisplayName: Holy Beam

@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 32;
             Item.height = 32;
-            Item.damage = 75;
+            Item.damage = 10;
             Item.DamageType = RogueDamageClass.Instance;
             Item.autoReuse = true;
             Item.noMelee = true;
@@ -31,24 +31,16 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shootSpeed = 13f;
             Item.shoot = ModContent.ProjectileType<LemonNadeHoldout>();
         }
-        public override float StealthVelocityMultiplier => 1f;
-
-        public override float StealthDamageMultiplier => 1f;
-        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 4;
 
         public override void HoldItem(Player player)
         {
             if (player.ownedProjectileCounts[Item.shoot] <= 0)
                 player.Calamity().rogueStealth = 0;
         }
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            return true;
-        }
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<Supernova>().
+                AddIngredient(ItemID.Grenade).
                 AddIngredient(ItemID.Lemon).
                 Register();
         }
