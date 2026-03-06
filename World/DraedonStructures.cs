@@ -366,8 +366,7 @@ namespace CalamityMod.World
                 //copied the desert position code from the sunken sea's generation so the lab always generates within the sunken sea properly
                 for (int y = Main.maxTilesY - 200; y >= Main.worldSurface; y--)
                 {
-                    if (Main.tile[placementPositionX, y].WallType == ModContent.WallType<NavystoneWall>() ||
-                    Main.tile[placementPositionX, y].WallType == ModContent.WallType<EutrophicSandWall>())
+                    if (Main.tile[placementPositionX, y].WallType == ModContent.WallType<NavystoneWall>())
                     {
                         sunkenSeaY = y - 80; //offset so it generates nicely
                         break;
