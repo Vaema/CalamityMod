@@ -1,8 +1,12 @@
 ﻿using System;
 using CalamityMod.Dusts;
+using CalamityMod.NPCs.CeaselessVoid;
 using CalamityMod.Systems.Graphic.PixelationSystem;
+using CalamityMod.Utilities.Daybreak;
+using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -17,6 +21,8 @@ namespace CalamityMod.Projectiles.Rogue
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/SealedSingularity";
 
+        //Trans flag colors with name containing "girlswag" or having a gender change pot in inventory at donor request 
+        public static Color BorderColor => Main.LocalPlayer.name.Contains("girlswag") || Main.LocalPlayer.HasItemInAnyInventory(ItemID.GenderChangePotion) ? Color.Lerp(Color.Pink, Color.LightBlue, (MathF.Sin(Main.GlobalTimeWrappedHourly * 3) + 1) * 0.5f) : new Color(59, 2, 120);
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.TrailCacheLength[Type] = 3;
@@ -73,6 +79,17 @@ namespace CalamityMod.Projectiles.Rogue
                 {
                     Projectile.velocity *= 1 + Math.Clamp(Timer / TimerMax, 0f, 1f) * 2f;
                 }
+                if (Timer % 10 == 0 && Main.myPlayer == Projectile.owner && Timer < TimerMax - (Stealth ? 120 : 90))
+                {
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + new Vector2(Stealth ? 380 : 255, 0).RotatedByRandom(MathHelper.TwoPi), Vector2.Zero, ModContent.ProjectileType<SealedSingularityRock>(), 0, 0, Projectile.owner, Projectile.whoAmI);
+                    var v = new Vector2(Stealth ? 380 : 255, 0).RotatedByRandom(MathHelper.TwoPi);
+                    Dust.NewDustPerfect(Projectile.Center + v, DustID.Clentaminator_Purple, -v / 100f);
+                }
+                if (TimerMax - Timer == 330)
+                {
+                    SoundEngine.PlaySound(CeaselessVoid.BuildupSound with { pitch = 0.75f, MaxInstances = 10, Volume = 0.2f }, Projectile.Center);
+                }
+
             }
 
             if (AIState == 2)
@@ -90,7 +107,7 @@ namespace CalamityMod.Projectiles.Rogue
             if (Timer > TimerMax && AIState == 0)
             {
                 var sizee = Stealth ? 900 : 600;
-                Projectile.localNPCHitCooldown = 60;
+                Projectile.localNPCHitCooldown = 30;
                 Projectile.ResetLocalNPCHitImmunity();
                 Projectile.tileCollide = false;
                 Timer = 0;
@@ -104,10 +121,18 @@ namespace CalamityMod.Projectiles.Rogue
                 Timer = 0;
                 TimerMax = 300;
                 Projectile.ResetLocalNPCHitImmunity();
+                for (int index = 0; index < 3; ++index)
+                {
+                    float SpeedX = -Projectile.velocity.X * Main.rand.Next(40, 70) * 0.01f + Main.rand.Next(-20, 21) * 0.4f;
+                    float SpeedY = -Projectile.velocity.Y * Main.rand.Next(40, 70) * 0.01f + Main.rand.Next(-20, 21) * 0.4f;
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X + SpeedX, Projectile.Center.Y + SpeedY, SpeedX, SpeedY, ModContent.ProjectileType<SealedSingularityGore>(), 20, 0f, Projectile.owner, index, 0f);
+                }
+                SoundEngine.PlaySound(CeaselessVoid.DeathSound with { pitch = 1f, Volume = Stealth ? 0.5f : 0.2f }, Projectile.Center);
             }
 
             if (Timer >= TimerMax && AIState == 2)
             {
+                Projectile.Resize(300, 300);
                 Projectile.ResetLocalNPCHitImmunity();
                 Projectile.Damage();
 
@@ -115,23 +140,57 @@ namespace CalamityMod.Projectiles.Rogue
                 {
                     var d = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LemonNadeExplodeDust>(), Main.rand.NextVector2CircularEdge(15, 15) * Main.rand.NextFloat(0.25f, 1f), Scale: Main.rand.NextFloat(0.5f, 1f));
                 }
-
                 SoundEngine.PlaySound(SoundID.Item62 with { pitch = 1f }, Projectile.Center);
                 SoundEngine.PlaySound(SoundID.Item111 with { pitch = 0.5f }, Projectile.Center);
-                for (int index = 0; index < 3; ++index)
-                {
-                    float SpeedX = -Projectile.velocity.X * Main.rand.Next(40, 70) * 0.01f + Main.rand.Next(-20, 21) * 0.4f;
-                    float SpeedY = -Projectile.velocity.Y * Main.rand.Next(40, 70) * 0.01f + Main.rand.Next(-20, 21) * 0.4f;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X + SpeedX, Projectile.Center.Y + SpeedY, SpeedX, SpeedY, ModContent.ProjectileType<SealedSingularityGore>(), 20, 0f, Projectile.owner, index, 0f);
-                }
+
                 Projectile.Kill();
             }
         }
 
+        private static Texture2D OutlineTex
+        {
+            get
+            {
+                if (field == null)
+                {
+                    var texture = TextureAssets.Projectile[ModContent.ProjectileType<SealedSingularityProjectile>()].Value;
+                    field = new Texture2D(Main.graphics.GraphicsDevice, texture.Width, texture.Height);
+
+                    var BaseArray = new Color[field.Width * field.Height];
+                    var ColorArray = new Color[field.Width * field.Height];
+                    texture.GetData(BaseArray);
+                    for (var i = 0; i < BaseArray.Length; i++)
+                    {
+                        ColorArray[i] = new Color(255, 255, 255) * (((float)BaseArray[i].A) / 255f);
+                    }
+                    field.SetData(ColorArray);
+                }
+                return field;
+            }
+            set;
+        }
+        private static Asset<Texture2D> VoidTex => field ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/SealedSingularityBlackhole");
         public override bool PreDraw(ref Color lightColor)
         {
             if (AIState == 1)
-                PixelationManager.AddPixelatedDrawer((matrix) => DrawAuraOutside(this, matrix), Enums.GeneralDrawLayer.AfterEverything);
+            {
+                for (float i = 0; i < MathHelper.TwoPi; i += MathHelper.PiOver2)
+                {
+                    var pos = Projectile.Center - Main.screenPosition;
+                    float rot = Projectile.rotation;
+                    var frame = TextureAssets.Projectile[Type].Frame(1, 1, 0, 0);
+                    float scale = 1f;
+                    float borderOp = MathF.Pow(Projectile.Opacity, 2);
+                    Main.spriteBatch.Draw(OutlineTex, pos + new Vector2(6 * Timer / TimerMax, 0).RotatedBy(i), frame, BorderColor * borderOp, rot, frame.Size() * 0.5f, scale, SpriteEffects.None, 0);
+                }
+                PixelationManager.AddPixelatedDrawer((matrix) => DrawAuraOutside(this, matrix), Enums.GeneralDrawLayer.AfterNPCs);
+            }
+            if (AIState == 2)
+            {
+                var frame = VoidTex.Frame(1, 7, 0, (int)(Timer * 0.2f % 7));
+                Main.EntitySpriteDraw(VoidTex.Value, Projectile.Center - Main.screenPosition, frame, Color.White, 0, frame.Size() * 0.5f, Projectile.scale, 0);
+                return false;
+            }
             Main.EntitySpriteDraw(TextureAssets.Projectile[Type].Value, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, TextureAssets.Projectile[Type].Size() * 0.5f, Projectile.scale, 0);
             return false;
         }
@@ -147,8 +206,8 @@ namespace CalamityMod.Projectiles.Rogue
             GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons"), 1);
             GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].Apply();
             Texture2D telegraphBase = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomRing").Value;
-            Main.EntitySpriteDraw(telegraphBase, drawPosition, null, Color.White * mproj.Projectile.Opacity * 0.75f * Math.Clamp(mproj.Timer / 15f, 0f, 1f), mproj.Projectile.whoAmI, telegraphBase.Size() / 2f, (mproj.Stealth ? 900f : 600f) * mproj.Projectile.Opacity / telegraphBase.Width * Math.Clamp(1 - (mproj.Timer - mproj.TimerMax + 15) / 15f, 0f, 1f), 0, 0);
-            Main.EntitySpriteDraw(telegraphBase, drawPosition, null, new Color(36, 0, 66) * mproj.Projectile.Opacity * 0.75f * Math.Clamp(mproj.Timer / 15f, 0f, 1f), mproj.Projectile.whoAmI, telegraphBase.Size() / 2f, (mproj.Stealth ? 900f : 600f) * mproj.Projectile.Opacity / telegraphBase.Width * Math.Clamp(1 - (mproj.Timer - mproj.TimerMax + 15) / 15f, 0f, 1f), 0, 0);
+            Main.EntitySpriteDraw(telegraphBase, drawPosition, null, Color.White * mproj.Projectile.Opacity * 0.25f * Math.Clamp(mproj.Timer / 15f, 0f, 1f), mproj.Projectile.whoAmI, telegraphBase.Size() / 2f, (mproj.Stealth ? 900f : 600f) * mproj.Projectile.Opacity / telegraphBase.Width * Math.Clamp(1 - (mproj.Timer - mproj.TimerMax + 15) / 15f, 0f, 1f), 0, 0);
+            Main.EntitySpriteDraw(telegraphBase, drawPosition, null, BorderColor * mproj.Projectile.Opacity * 0.5f * Math.Clamp(mproj.Timer / 15f, 0f, 1f), mproj.Projectile.whoAmI, telegraphBase.Size() / 2f, (mproj.Stealth ? 900f : 600f) * mproj.Projectile.Opacity / telegraphBase.Width * Math.Clamp(1 - (mproj.Timer - mproj.TimerMax + 15) / 15f, 0f, 1f), 0, 0);
             Main.spriteBatch.ExitShaderRegion(matrix: matrix);
         }
 
@@ -187,6 +246,10 @@ namespace CalamityMod.Projectiles.Rogue
                                 targetID = target.whoAmI;
                             }
                         }
+                        if (AIState == 1)
+                        {
+                            target.MoveNPC(target.DirectionTo(Projectile.Center), Stealth ? 18 : 4, true);
+                        }
                         return;
                     }
                 case 2:
@@ -204,7 +267,7 @@ namespace CalamityMod.Projectiles.Rogue
             switch (AIState)
             {
                 case 1:
-                    modifiers.SourceDamage /= 6;
+                    modifiers.SourceDamage /= 20;
                     return;
                 case 2:
                     modifiers.SourceDamage *= 2;

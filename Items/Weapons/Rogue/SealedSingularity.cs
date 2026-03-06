@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 32;
             Item.height = 32;
-            Item.damage = 600;
+            Item.damage = 425;
             Item.DamageType = RogueDamageClass.Instance;
             Item.autoReuse = true;
             Item.noMelee = true;
@@ -30,6 +30,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.channel = true;
             Item.shootSpeed = 13f;
             Item.shoot = ModContent.ProjectileType<SealedSingularityHoldout>();
+            Item.Calamity().donorItem = true;
         }
 
         public override void HoldItem(Player player)
