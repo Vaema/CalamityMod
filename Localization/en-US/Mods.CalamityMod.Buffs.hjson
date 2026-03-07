@@ -1765,12 +1765,13 @@ CnidarianSummonTagBuff: {
 SmashedEvil: {
 	DisplayName: Smashed Evil
 	Description: Increased damage, movement speed, and regeneration
-	ItemTooltip:
+	ItemTooltipEnemy:
 		'''
-		- On Enemies -
-		All Types - 20 DPS
+		All types - 20 DPS
 		+5 damage taken
-		- On Players -
+		'''
+	ItemTooltipPlayer:
+		'''
 		Regen returns to full strength 200% faster
 		10% increased damage
 		20% increased movement speed
