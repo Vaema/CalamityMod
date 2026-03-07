@@ -251,7 +251,7 @@ ManaBurn: {
 	ItemTooltipEnemy:
 		'''
 		Typeless
-		Every 100 negative mana reduces your life regen by 4 HP/s, but burns enemies for 3% of dealt damage
+		Every 100 negative mana reduces your life regen by 4 HP/s, but burns enemies for 5% of dealt damage
 		'''
 }
 
