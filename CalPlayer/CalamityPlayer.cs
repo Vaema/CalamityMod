@@ -454,6 +454,9 @@ namespace CalamityMod.CalPlayer
         public int consecutiveCaughtFish = 0;
         public float WeakTimeFreezeUseTimer = 0;
         public bool WeakTimeFreezeInUse = false;
+
+        public int DemonAltarDialogueCounter = 0;
+        public int DemonAltarDialogueCooldown = 0;
         #endregion
 
         #region Sound
@@ -2641,6 +2644,9 @@ namespace CalamityMod.CalPlayer
             blunderBooster = false;
             blunderBoosterVisibility = true;
             veneratedLocket = false;
+
+            if (DemonAltarDialogueCooldown > 0)
+                DemonAltarDialogueCooldown--;
 
             alcoholPoisoning = false;
             shadowflame = false;
