@@ -1007,6 +1007,16 @@ ArmorCrunch: {
 	ItemTooltip: Damage Reduction is 15% less effective
 }
 
+Bane: {
+	DisplayName: Bane
+	Description: An ancient curse envelops you
+	ItemTooltip:
+		'''
+		Typeless - Variable DPS
+		Does not scale with debuff multipliers
+		'''
+}
+
 Crumbling: {
 	DisplayName: Crumbling
 	Description: Your armor is damaged
