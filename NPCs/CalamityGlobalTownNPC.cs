@@ -322,6 +322,7 @@ namespace CalamityMod.NPCs
             "Mike Cyclops", // <@!702327497475227741> (seichoseicho)
             "Derin", // <@!466703979695308820> (god_15)
             "Umbara", // <@!450062421294579712> (umbaraeclipse)
+            "Reyloth Grey", // <@!255043013116428298> (pantyslack)
         ];
         private static readonly string[] ZoologistNames =
         [
