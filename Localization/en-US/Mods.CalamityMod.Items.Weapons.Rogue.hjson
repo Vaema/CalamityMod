@@ -339,8 +339,10 @@ DuststormInABottle: {
 	DisplayName: Duststorm in a Bottle
 	Tooltip:
 		'''
-		Explodes into a dust cloud
-		Stealth strikes form a more intense and longer lasting dust cloud
+		Disables normal stealth generation
+		Throws a bottle filled with high-pressure dust that shatters on impact with a target or after a short fuse
+		Hold <left> to generate stealth, but burn through the bottle's fuse
+		Stealth strikes cause the bottle to leak dust clouds instead of shattering
 		'''
 }
 

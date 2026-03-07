@@ -23,6 +23,21 @@ namespace CalamityMod.Projectiles.Rogue
 
         //Trans flag colors with name containing "girlswag" or having a gender change pot in inventory at donor request 
         public static Color BorderColor => Main.LocalPlayer.name.Contains("girlswag") || Main.LocalPlayer.HasItemInAnyInventory(ItemID.GenderChangePotion) ? Color.Lerp(Color.Pink, Color.LightBlue, (MathF.Sin(Main.GlobalTimeWrappedHourly * 3) + 1) * 0.5f) : new Color(59, 2, 120);
+
+        public static Color RandomColor
+        {
+            get
+            {
+                switch (Main.rand.Next(4))
+                {
+                    case 0: return new Color(91, 47, 113);
+                    case 1: return new Color(119, 74, 165);
+                    case 2: return new Color(58, 58, 58);
+                    case 3: return new Color(123, 115, 142);
+                }
+                return Color.White;
+            }
+        }
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.TrailCacheLength[Type] = 3;
@@ -49,7 +64,6 @@ namespace CalamityMod.Projectiles.Rogue
         ref float Timer => ref Projectile.ai[0];
         ref float TimerMax => ref Projectile.ai[1];
         ref float AIState => ref Projectile.ai[2];
-
         bool Stealth => Projectile.Calamity().stealthStrike;
 
         int bounceCooldown = 0;
@@ -71,6 +85,7 @@ namespace CalamityMod.Projectiles.Rogue
             if (AIState == 1)
             {
                 Projectile.timeLeft++;
+                Projectile.rotation += 0.175f * Projectile.direction;
                 Projectile.velocity = new Vector2(
                     MathF.Sin(Timer),
                     MathF.Sin(Timer * 0.7f)
@@ -136,9 +151,9 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.ResetLocalNPCHitImmunity();
                 Projectile.Damage();
 
-                for (var i = 0; i < 20; i++)
+                for (var i = 0; i < (Stealth? 80 : 40); i++)
                 {
-                    var d = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LemonNadeExplodeDust>(), Main.rand.NextVector2CircularEdge(15, 15) * Main.rand.NextFloat(0.25f, 1f), Scale: Main.rand.NextFloat(0.5f, 1f));
+                    var d = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LemonNadeExplodeDust>(), Main.rand.NextVector2CircularEdge(15, 15) * Main.rand.NextFloat(0.25f, Stealth? 1.5f : 1f), Scale: Main.rand.NextFloat(0.5f, 1.5f), newColor: RandomColor);
                 }
                 SoundEngine.PlaySound(SoundID.Item62 with { pitch = 1f }, Projectile.Center);
                 SoundEngine.PlaySound(SoundID.Item111 with { pitch = 0.5f }, Projectile.Center);

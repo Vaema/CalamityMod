@@ -11,7 +11,7 @@ namespace CalamityMod.Dusts
     public class LemonNadeExplodeDust : ModDust
     {
         public override string Texture => "CalamityMod/Particles/LemonNadeExplode";
-        Color RandomColor 
+        Color RandomColor
         {
             get
             {
@@ -27,7 +27,8 @@ namespace CalamityMod.Dusts
         }
         public override void OnSpawn(Dust dust)
         {
-            dust.color = RandomColor;
+            if (dust.color == Color.Transparent)
+                dust.color = RandomColor;
             dust.dataAsFloat = 0.75f;
             dust.rotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
         }
@@ -41,7 +42,7 @@ namespace CalamityMod.Dusts
             dust.dataAsFloat *= 0.96f;
             dust.position += dust.velocity;
             dust.velocity *= 0.925f;
-            dust.rotation += MathF.Sin(dust.dustIndex * 0.1f)*0.2f * dust.dataAsFloat;
+            dust.rotation += MathF.Sin(dust.dustIndex * 0.1f) * 0.2f * dust.dataAsFloat;
             if (dust.dataAsFloat <= 0.01f)
                 dust.active = false;
             return false;
