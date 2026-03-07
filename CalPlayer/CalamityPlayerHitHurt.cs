@@ -465,6 +465,14 @@ namespace CalamityMod.CalPlayer
         {
             if (Player.Calamity().yharimsGift)
                 target.AddBuff(ModContent.BuffType<AuricRebuke>(),120);
+
+            int debuffSpreadProj = ModContent.ProjectileType<DebuffSpreadEffect>();
+            if ((Player.Calamity().abaddon || Player.Calamity().apollyon) && (target.Calamity().abaddonEffected || target.Calamity().apollyonEffected) && hit.Crit && abaddonCooldown == 0 && Player.ownedProjectileCounts[debuffSpreadProj] == 0)
+            {
+                int maxTargetNum = target.Calamity().apollyonEffected ? 10 : 6;
+                Projectile.NewProjectile(Player.GetSource_FromThis(), target.Center, Vector2.Zero, debuffSpreadProj, 0, 0, Player.whoAmI, 0, target.whoAmI, maxTargetNum);
+                abaddonCooldown = -1; // Prevents multiple projectiles hitting on the same frame from spawning multiple of these
+            }
         }
         #endregion
 
@@ -475,6 +483,28 @@ namespace CalamityMod.CalPlayer
             {
                 //This is essentially 10 AP, but independent of armor amount
                 modifiers.FlatBonusDamage += 5;
+            }
+
+            if (Player.Calamity().apollyon)
+            {
+                target.Calamity().apollyonEffected = true;
+                // Check here for the amount of debuffs on enemy
+                int numOfDebuffs = 0;
+                for (int index = 0; index < target.buffType.Length; index++)
+                {
+                    int type = target.buffType[index];
+                    var debuffData = BuffDatasets.DebuffDataset[type];
+                    if (debuffData != null)
+                        numOfDebuffs++;
+                }
+                modifiers.CritDamage += Apollyon.critDamageBoostPerDebuff * numOfDebuffs;
+            }
+            else if (Player.Calamity().abaddon)
+                target.Calamity().abaddonEffected = true;
+            else
+            {
+                target.Calamity().abaddonEffected = false;
+                target.Calamity().apollyonEffected = false;
             }
         }
         public override void ModifyHitNPCWithItem(Item item, NPC target, ref NPC.HitModifiers modifiers)
@@ -668,45 +698,7 @@ namespace CalamityMod.CalPlayer
                     modifiers.FinalDamage *= BalancingConstants.SummonerCrossClassNerf;
             }
         }
-
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
-            #region Abaddon and VoE effects
-            if (Player.Calamity().apollyon)
-            {
-                target.Calamity().apollyonEffected = true;
-                // Check here for the amount of debuffs on enemy
-                int numOfDebuffs = 0;
-                for (int index = 0; index < target.buffType.Length; index++)
-                {
-                    int type = target.buffType[index];
-                    var debuffData = BuffDatasets.DebuffDataset[type];
-                    if (debuffData != null)
-                        numOfDebuffs++;
-                }
-                modifiers.CritDamage += Apollyon.critDamageBoostPerDebuff * numOfDebuffs;
-            }
-            else if (Player.Calamity().abaddon)
-                target.Calamity().abaddonEffected = true;
-            else
-            {
-                target.Calamity().abaddonEffected = false;
-                target.Calamity().apollyonEffected = false;
-            }
-            #endregion
-        }
         #endregion
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            NPC npc = target;
-            int debuffSpreadProj = ModContent.ProjectileType<DebuffSpreadEffect>();
-            if ((Player.Calamity().abaddon || Player.Calamity().apollyon) && (npc.Calamity().abaddonEffected || npc.Calamity().apollyonEffected) && hit.Crit && abaddonCooldown == 0 && Player.ownedProjectileCounts[debuffSpreadProj] == 0)
-            {
-                int maxTargetNum = npc.Calamity().apollyonEffected ? 10 : 6;
-                Projectile.NewProjectile(Player.GetSource_FromThis(), npc.Center, Vector2.Zero, debuffSpreadProj, 0, 0, Player.whoAmI, 0, npc.whoAmI, maxTargetNum);
-                abaddonCooldown = -1; // Prevents multiple projectiles hitting on the same frame from spawning multiple of these
-            }
-        }
 
         #region Modify Hit By NPC
         public override void ModifyHitByNPC(NPC npc, ref Player.HurtModifiers modifiers)
