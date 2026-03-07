@@ -52,6 +52,8 @@ Drops: {
 // Other conditions
 HasFlareGun: While holding a Flare Gun upgrade
 LacewingBestiary: When at least 40% of the Bestiary has been completed
+CrescentMoons: During a crescent moon
+GibbousMoons: During a gibbous moon
 HasRogueArmor: While wearing rogue armor
 HasWings: While wearing wings
 InAstral: In the Astral Infection

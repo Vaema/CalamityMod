@@ -950,6 +950,7 @@ namespace CalamityMod.Items
 
         public override void ModifyItemScale(Item item, Player player, ref float scale)
         {
+            // Xyk 3MARCH2026: Doesn't work on any non use style 1 items currently, Doze will fix it
             if (item.CountsAsClass<MeleeDamageClass>() && player.HasBuff(BuffID.Tipsy))
                 scale += 0.15f;
         }

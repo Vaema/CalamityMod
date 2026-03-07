@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.DataStructures;
 using CalamityMod.UI.CalamitasEnchants;
 using Microsoft.Xna.Framework;
@@ -130,6 +131,7 @@ namespace CalamityMod
         public static Color GodSlayerInfernoColor => new(241, 107, 250);
         public static Color VulnHexDebuffColor => new(196, 35, 43);
         public static Color MiracleBlightDebuffColor => Main.DiscoColor;
+        public static Color SmashedEvilDebuffColor => Color.Lerp(new Color(162, 88, 231), new Color(221, 66, 97), MathHelper.SmoothStep(0, 1, (MathF.Sin(Main.GlobalTimeWrappedHourly * 2) + 1) * 0.5f));
 
         private static readonly Dictionary<int, List<(Color, float)>> debuffColorWeightsCache = [];
 
@@ -153,6 +155,11 @@ namespace CalamityMod
             // Color debuffs based on their element type in the vulnerability and resistance system
             // If a debuff has multiple types, the colors are mixed
             // If a debuff is typeless, is gets the typeless color
+
+            else if (debuffId == ModContent.BuffType<SmashedEvil>() && CalamityClientConfig.Instance.TextEffects)
+            {
+                color = SmashedEvilDebuffColor;
+            }
             else if (BuffDatasets.DebuffDataset[debuffId] is not null)
             {
                 if (!debuffColorWeightsCache.TryGetValue(debuffId, out var weights))

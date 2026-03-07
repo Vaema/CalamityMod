@@ -89,6 +89,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
+            Projectile.ContinuouslyUpdateDamageStats = true;
             Projectile.timeLeft = Terratomere.SwingTime;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.MaxUpdates = 2;

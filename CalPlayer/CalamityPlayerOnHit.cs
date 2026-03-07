@@ -695,14 +695,14 @@ namespace CalamityMod.CalPlayer
 
             if (alchFlask && AlchFlaskCooldown == 0 && proj.type != ProjectileType<BasicPlagueBee>())
             {
-                int seekerDamage = (int)Player.GetBestClassDamage().ApplyTo(10);
+                int seekerDamage = (int)Player.GetBestClassDamage().ApplyTo(Player.strongBees ? 15 : 10);
                 Vector2 seekerVelocity = new Vector2(5, 5).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1.2f);
 
                 Projectile bee = Projectile.NewProjectileDirect(source, position, seekerVelocity, ProjectileType<BasicPlagueBee>(), seekerDamage, 0f, Player.whoAmI, -20, 30, 2);
                 bee.ArmorPenetration = 20;
                 bee.penetrate = 2;
                 bee.extraUpdates = 1;
-                AlchFlaskCooldown = Player.strongBees ? 6 : 7;
+                AlchFlaskCooldown =  7;
             }
 
             bool lifeAndShieldCondition = Player.statLife >= Player.statLifeMax2 && (!HasAnyEnergyShield || TotalEnergyShielding >= TotalMaxShieldDurability);
@@ -1266,10 +1266,10 @@ namespace CalamityMod.CalPlayer
             }
             if (amalgam)
             {
-                target.AddBuff(BuffID.Daybreak, 120);
-                target.AddBuff(BuffType<Nightwither>(), 120);
+                target.AddBuff(BuffType<BrimstoneFlames>(), 120);
+                target.AddBuff(BuffID.Frostburn2, 120);
                 target.AddBuff(BuffType<Plague>(), 120);
-                target.AddBuff(BuffType<VermillionFlux>(), 120);
+                target.AddBuff(BuffID.Electrified, 120);
                 target.AddBuff(BuffType<CrushDepth>(), 120);
             }
             if (frostFlare)

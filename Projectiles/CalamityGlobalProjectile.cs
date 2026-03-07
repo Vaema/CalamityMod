@@ -192,6 +192,8 @@ namespace CalamityMod.Projectiles
         /// Used by Arterial Assault, Deific Amulet's stars, and certain sand projectiles from the Sand Gun.
         /// </summary>
         public float conditionalHomingRange = 0f;
+        public float conditionalHomingVelocity = 12f;
+        public float conditionalHomingInertia = 20f;
 
         /// <summary>
         /// Whether or not this proj was spawned with grape beer on
@@ -431,7 +433,7 @@ namespace CalamityMod.Projectiles
             if (ProjectileID.Sets.LightPet[projectile.type] && Main.LocalPlayer.Calamity().ZoneAbyss)
                 EnhancedDarknessSystem.lights.Add(new() { center = projectile.Center, scale = 1 });
 
-            if (projectile.bobber && projectile.type != ProjectileType<VictideBobber>() && RunFishingMinigames(projectile))
+            if (projectile.bobber && projectile.type != ProjectileType<VictideBobber>() && RunFishingMinigames(projectile) && !Main.LocalPlayer.dead)
                 return false;
             //Reset the Homing Target immediately before AI can re-set it on applicable projectiles
             HomingTarget = -1;
@@ -3316,6 +3318,12 @@ namespace CalamityMod.Projectiles
                             {
                                 projectile.Center = Main.npc[(int)PersistentFishingData].Center + PersistentFishingDataVector2;
                                 projectile.velocity = Vector2.Zero;
+
+                                if (owner.Distance(Main.npc[(int)PersistentFishingData].Center) > 1450) // Slightly before when fishing lines stop rendering due to distance from target
+                                {
+                                    projectile.ai[0] = 1;
+                                }
+
                                 if (cplayer.mouseRight && projectile.ai[1] == 0 && owner.miscCounter % 10 == 0)
                                 {
                                     owner.lifeRegenCount -= 600; // -5 health per 10 ticks
@@ -4289,10 +4297,27 @@ namespace CalamityMod.Projectiles
                     arcFlashCooldown--;
                 if (arcFlashCooldown == 0)
                     showArcFlash = true;
-                if (conditionalHomingRange > 0f && Main.player[projectile.owner].heldProj != projectile.whoAmI && projectile.aiStyle != ProjAIStyleID.HeldProjectile)
+                if (conditionalHomingRange > 0f && Main.player[projectile.owner].heldProj != projectile.whoAmI && projectile.aiStyle != ProjAIStyleID.HeldProjectile && !grapeBeer)
                 {
-                    CalamityUtils.HomeInOnNPC(projectile, !projectile.tileCollide, conditionalHomingRange, 12f, 20f,true);
+                    CalamityUtils.HomeInOnNPC(projectile, !projectile.tileCollide, conditionalHomingRange, conditionalHomingVelocity, conditionalHomingInertia, true);
                 }
+
+                // Grape beer-specific homing. If the projectile is aligned a certain amount to the direction to the target, it will home in.
+                else if (conditionalHomingRange > 0f && Main.player[projectile.owner].heldProj != projectile.whoAmI && projectile.aiStyle != ProjAIStyleID.HeldProjectile && grapeBeer)
+                {
+                    NPC target = projectile.Center.ClosestNPCAt(conditionalHomingRange);
+                    if (target is not null)
+                    {
+                        Vector2 targetDirection = projectile.SafeDirectionTo(target.Center);
+
+                        float trackingSpeed = Vector2.Dot(targetDirection, projectile.velocity.SafeNormalize(Vector2.UnitX)) > 0.835f ? 0.01325f : 0f; // Delicate values, please test changes you make to them
+
+                        Vector2 currVelocity = projectile.velocity;
+
+                        projectile.velocity = projectile.velocity.ToRotation().AngleTowards(targetDirection.ToRotation(), trackingSpeed).ToRotationVector2() * currVelocity.Length();
+                    }
+                }
+
                 if (brimstoneBullets)
                 {
                     PointParticle spark = new PointParticle(projectile.Center + projectile.velocity * 3, projectile.velocity, false, 2, 0.9f, Color.Crimson * 0.7f);

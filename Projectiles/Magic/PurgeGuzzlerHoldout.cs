@@ -35,6 +35,13 @@ namespace CalamityMod.Projectiles.Magic
 
         public Color color1 = Color.Goldenrod;
         public Color color2 = Color.Orange;
+
+        public override void SetDefaults()
+        {
+            base.SetDefaults();
+            Projectile.DamageType = DamageClass.Magic;
+        }
+
         public override void KillHoldoutLogic()
         {
             if (!isOnCooldown && (Owner.CantUseHoldout(false) || HeldItem.type != Owner.HeldItem.type))

@@ -460,7 +460,23 @@ namespace CalamityMod.CalPlayer
         }
         #endregion
 
+        #region OnHitNPC
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            if (Player.Calamity().yharimsGift)
+                target.AddBuff(ModContent.BuffType<AuricRebuke>(),120);
+        }
+        #endregion
+
         #region Modify Hit NPC
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            if (target.HasBuff<SmashedEvil>())
+            {
+                //This is essentially 10 AP, but independent of armor amount
+                modifiers.FlatBonusDamage += 5;
+            }
+        }
         public override void ModifyHitNPCWithItem(Item item, NPC target, ref NPC.HitModifiers modifiers)
         {
             modifiers.CritDamage += critDamage;
@@ -848,7 +864,7 @@ namespace CalamityMod.CalPlayer
                     float cooldownDurationScalar = MathHelper.Clamp((actualProjDamage - dodgeDamageGateValue) / (float)maxCooldownDurationDamageValue, 0f, 1f);
 
                     // The Evolution
-                    if (evolution)
+                    if (evolution && !Player.HasBuff<SilvaRevival>())
                     {
                         if (Player.whoAmI == Main.myPlayer)
                         {
@@ -1887,10 +1903,6 @@ namespace CalamityMod.CalPlayer
                     Rectangle location = new Rectangle((int)Player.position.X, (int)Player.position.Y - 16, Player.width, Player.height);
                     CombatText.NewText(location, Color.LightBlue, Language.GetTextValue(shieldDamageText));
 
-                    // Give the player iframes for taking a shield hit, regardless of whether or not the shields broke.
-                    int shieldHitIFrames = Player.ComputeHitIFrames(info);
-                    Player.GiveIFrames(info.CooldownCounter, shieldHitIFrames, true);
-
                     // Spawn particles when hit with the shields up, regardless of whether or not the shields broke.
                     // More particles spawn if a shield broke.
                     if (pSoulArtifact)
@@ -1961,6 +1973,10 @@ namespace CalamityMod.CalPlayer
                 // If the shields completely absorbed the hit, then delete the hit using reflection.
                 if (shieldsFullyAbsorbedHit)
                 {
+                    // Give the player iframes for taking a shield hit
+                    int shieldHitIFrames = Player.ComputeHitIFrames(info);
+                    Player.GiveIFrames(info.CooldownCounter, shieldHitIFrames, true);
+
                     freeDodgeFromShieldAbsorption = true;
 
                     // Cancel defense damage, if it was going to occur this frame.
@@ -2366,7 +2382,7 @@ namespace CalamityMod.CalPlayer
                 Player.AddBuff(BuffID.Honey, 300, false);
 
             // Handle hit effects from the gem tech armor set.
-            Player.Calamity().GemTechState.PlayerOnHitEffects((int)hurtInfo.Damage);
+            Player.Calamity().GemTechState.PlayerOnHitEffects(hurtInfo);
 
             if (Player.whoAmI == Main.myPlayer)
             {
@@ -2408,10 +2424,10 @@ namespace CalamityMod.CalPlayer
                 if (dAmulet)
                 {
                     var source = Player.GetSource_Accessory_OnHurt(FindAccessory<DeificAmulet>(), hurtInfo.DamageSource);
-                    int projAmount = (rampartOfDeities ? 12 : 6);
+                    var projAmount = (rampartOfDeities ? 12 : 6) * (Player.strongBees ? 1.5f : 1f);
                     for (int n = 0; n < projAmount; n++)
                     {
-                        int deificProjDamage = (int)(Player.GetBestClassDamage().ApplyTo(DeificAmulet.StarDamage) * (Player.strongBees ? 0.85f : 1f));
+                        int deificProjDamage = (int)(Player.GetBestClassDamage().ApplyTo(DeificAmulet.StarDamage));
 
                         Projectile onHitProj = Main.projectile[Projectile.NewProjectile(source, Player.Center, new Vector2(0,-15 * (rampartOfDeities && n % 2 == 0 ? 0.75f: 1.25f)).RotatedBy(MathHelper.TwoPi/projAmount*n), ModContent.ProjectileType<AstralStar>(), deificProjDamage, 4f, Player.whoAmI)];
                         if (onHitProj.whoAmI.WithinBounds(Main.maxProjectiles))
@@ -2422,8 +2438,6 @@ namespace CalamityMod.CalPlayer
                             onHitProj.tileCollide = false;
                             onHitProj.extraUpdates = 1;
                             onHitProj.Calamity().conditionalHomingRange = 600f;
-                            if (Player.strongBees)
-                                onHitProj.penetrate += 1;
                         }
                     }
                 }

@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Potions.Alcohol
     {
         public new string LocalizationCategory => "Items.Potions";
 
-        public static float CritLoss = 75;
+        public static float CritLoss = 50;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(CritLoss);
 
         public override void SetStaticDefaults()
