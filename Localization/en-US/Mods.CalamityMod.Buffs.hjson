@@ -1066,10 +1066,11 @@ ArmorCrunch: {
 Bane: {
 	DisplayName: Bane
 	Description: An ancient curse envelops you
-	ItemTooltip:
+	ItemTooltipEnemy:
 		'''
-		Typeless - Variable DPS
+		Typeless - 45 DPS
 		Does not scale with debuff multipliers
+		Scales based on your critical strike chance
 		'''
 }
 
