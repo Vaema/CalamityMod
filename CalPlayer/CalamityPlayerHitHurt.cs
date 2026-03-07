@@ -8,6 +8,7 @@ using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Cooldowns;
+using CalamityMod.DataStructures;
 using CalamityMod.Dusts;
 using CalamityMod.Enums;
 using CalamityMod.Events;
@@ -27,7 +28,7 @@ using CalamityMod.Items.Armor.Tarragon;
 using CalamityMod.Items.Armor.Victide;
 using CalamityMod.Items.Armor.Wulfrum;
 using CalamityMod.Items.Potions;
-using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Items.Tools;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Rogue;
@@ -40,6 +41,7 @@ using CalamityMod.NPCs.Providence;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Typeless;
@@ -52,13 +54,11 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.Chat;
 using Terraria.DataStructures;
-using Terraria.Graphics.Shaders;
 using Terraria.GameContent.Creative;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using CalamityMod.Projectiles.Melee;
-using CalamityMod.Items.Tools;
 
 namespace CalamityMod.CalPlayer
 {
@@ -668,7 +668,45 @@ namespace CalamityMod.CalPlayer
                     modifiers.FinalDamage *= BalancingConstants.SummonerCrossClassNerf;
             }
         }
+
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            #region Abaddon and VoE effects
+            if (Player.Calamity().apollyon)
+            {
+                target.Calamity().apollyonEffected = true;
+                // Check here for the amount of debuffs on enemy
+                int numOfDebuffs = 0;
+                for (int index = 0; index < target.buffType.Length; index++)
+                {
+                    int type = target.buffType[index];
+                    var debuffData = BuffDatasets.DebuffDataset[type];
+                    if (debuffData != null)
+                        numOfDebuffs++;
+                }
+                modifiers.CritDamage += Apollyon.critDamageBoostPerDebuff * numOfDebuffs;
+            }
+            else if (Player.Calamity().abaddon)
+                target.Calamity().abaddonEffected = true;
+            else
+            {
+                target.Calamity().abaddonEffected = false;
+                target.Calamity().apollyonEffected = false;
+            }
+            #endregion
+        }
         #endregion
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            NPC npc = target;
+            int debuffSpreadProj = ModContent.ProjectileType<DebuffSpreadEffect>();
+            if ((Player.Calamity().abaddon || Player.Calamity().apollyon) && (npc.Calamity().abaddonEffected || npc.Calamity().apollyonEffected) && hit.Crit && abaddonCooldown == 0 && Player.ownedProjectileCounts[debuffSpreadProj] == 0)
+            {
+                int maxTargetNum = npc.Calamity().apollyonEffected ? 10 : 6;
+                Projectile.NewProjectile(Player.GetSource_FromThis(), npc.Center, Vector2.Zero, debuffSpreadProj, 0, 0, Player.whoAmI, 0, npc.whoAmI, maxTargetNum);
+                abaddonCooldown = -1; // Prevents multiple projectiles hitting on the same frame from spawning multiple of these
+            }
+        }
 
         #region Modify Hit By NPC
         public override void ModifyHitByNPC(NPC npc, ref Player.HurtModifiers modifiers)
