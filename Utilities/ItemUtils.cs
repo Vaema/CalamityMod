@@ -152,14 +152,14 @@ namespace CalamityMod
             {
                 color = GodSlayerInfernoColor;
             }
-            // Color debuffs based on their element type in the vulnerability and resistance system
-            // If a debuff has multiple types, the colors are mixed
-            // If a debuff is typeless, is gets the typeless color
-
             else if (debuffId == ModContent.BuffType<SmashedEvil>() && CalamityClientConfig.Instance.TextEffects)
             {
                 color = SmashedEvilDebuffColor;
             }
+
+            // Color debuffs based on their element type in the vulnerability and resistance system
+            // If a debuff has multiple types, the colors are mixed
+            // If a debuff is typeless, is gets the typeless color
             else if (BuffDatasets.DebuffDataset[debuffId] is not null)
             {
                 if (!debuffColorWeightsCache.TryGetValue(debuffId, out var weights))
