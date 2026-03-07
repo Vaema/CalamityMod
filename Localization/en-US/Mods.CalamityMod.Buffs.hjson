@@ -194,13 +194,6 @@ CrushDepth: {
 	ItemTooltipEnemy: Water - 50 DPS
 }
 
-RiptideDebuff: {
-	DisplayName: Riptide
-	Description: Lashed at by powerful waters
-	ItemTooltipPlayer: Water - 3 DPS
-	ItemTooltipEnemy: Water - 15 DPS
-}
-
 Dragonfire: {
 	DisplayName: Dragonfire
 	Description: Engulfed by roaring flames
@@ -223,7 +216,7 @@ HadopelagicPressure: {
 		Water - 20 DPS
 		Increases breath loss rate in the Abyss
 		'''
-	ItemTooltipEnemy: Water - 200 DPS
+	ItemTooltipEnemy: Water - 175 DPS
 }
 
 HeavyBleeding: {
@@ -283,6 +276,13 @@ Plague: {
 	ItemTooltipEnemy: Sickness - 50 DPS
 }
 
+RiptideDebuff: {
+	DisplayName: Riptide
+	Description: Lashed at by powerful waters
+	ItemTooltipPlayer: Water - 3 DPS
+	ItemTooltipEnemy: Water - 15 DPS
+}
+
 SagePoison: {
 	DisplayName: Sage Poison
 	Description: Poisoned
@@ -334,7 +334,7 @@ SulphuricPoisoning: {
 	DisplayName: Sulphuric Poisoning
 	Description: The acidic water burns away your flesh
 	ItemTooltipPlayer: Sickness - 3 DPS
-	ItemTooltipEnemy: Sickness - 120 DPS
+	ItemTooltipEnemy: Sickness - 175 DPS
 }
 
 TrueVulnerabilityHex: {
@@ -367,14 +367,14 @@ VermillionFlux: {
 	DisplayName: Vermillion Flux
 	Description: Sharp arcs of scarlet course through you
 	ItemTooltipPlayer: Electric - 5 DPS. Deals 5x damage against moving players
-	ItemTooltipEnemy: Electric - 50 DPS. Deals 4x damage against moving targets
+	ItemTooltipEnemy: Electric - 37.5 DPS. Deals 4x damage against moving targets
 }
 
 Voidfrost: {
 	DisplayName: Voidfrost
 	Description: The emptiness of space devours all warmth and life
 	ItemTooltipPlayer: Cold - 20 DPS
-	ItemTooltipEnemy: Cold - 200 DPS
+	ItemTooltipEnemy: Cold - 250 DPS
 }
 
 VulnerabilityHex: {

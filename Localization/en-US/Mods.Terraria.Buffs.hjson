@@ -44,7 +44,7 @@ Webbed.ItemTooltipEnemy: Slows enemies
 
 Electrified: {
 	ItemTooltipPlayer: Electric - 4 DPS. Deals 5x damage to moving players
-	ItemTooltipEnemy: Electric - 10.5 DPS. Deals 4x damage to moving targets
+	ItemTooltipEnemy: Electric - 15 DPS. Deals 4x damage to moving targets
 }
 
 Honey.ItemTooltipPlayer:
