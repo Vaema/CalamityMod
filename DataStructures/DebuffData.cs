@@ -421,7 +421,7 @@ namespace CalamityMod.DataStructures
         };
         public static DebuffData Electrified = new DebuffData(DebuffBehavior.Electric)
         {
-            EnemyLostRegen = 21,
+            EnemyLostRegen = 30, // 15 dps stationary, 60 dps moving
             EnemyVanillaRegenToCancelOut = 8,
             ElectricDebuffScaling = 1
         };

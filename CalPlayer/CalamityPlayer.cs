@@ -454,6 +454,9 @@ namespace CalamityMod.CalPlayer
         public int consecutiveCaughtFish = 0;
         public float WeakTimeFreezeUseTimer = 0;
         public bool WeakTimeFreezeInUse = false;
+
+        public int DemonAltarDialogueCounter = 0;
+        public int DemonAltarDialogueCooldown = 0;
         #endregion
 
         #region Sound
@@ -722,8 +725,8 @@ namespace CalamityMod.CalPlayer
         public bool drawnAnyShieldThisFrame = false;
 
         // TODO -- Some way to show the player their total shield points.
-        public int TotalEnergyShielding => RoverDriveShieldDurability + LunicCorpsShieldDurability + pSoulShieldDurability + SpongeShieldDurability;
-        public int TotalMaxShieldDurability => (roverDrive ? RoverDrive.ShieldDurabilityMax : 0) + (lunicCorpsSet ? LunicCorpsHelmet.ShieldDurabilityMax : 0) + (profanedCrystalBuffs ? ProfanedSoulCrystal.ShieldDurabilityMax : ((pSoulArtifact && !profanedCrystal) ? ProfanedSoulArtifact.ShieldDurabilityMax : 0)) + (sponge ? TheSponge.ShieldDurabilityMax : 0);
+        public int TotalEnergyShielding => RoverDriveShieldDurability + LunicCorpsShieldDurability + pSoulShieldDurability + SpongeShieldDurability + (Starshield > 0 ? StratusStarburst : 0);
+        public int TotalMaxShieldDurability => (roverDrive ? RoverDrive.ShieldDurabilityMax : 0) + (lunicCorpsSet ? LunicCorpsHelmet.ShieldDurabilityMax : 0) + (profanedCrystalBuffs ? ProfanedSoulCrystal.ShieldDurabilityMax : ((pSoulArtifact && !profanedCrystal) ? ProfanedSoulArtifact.ShieldDurabilityMax : 0)) + (sponge ? TheSponge.ShieldDurabilityMax : 0) + (Starshield > 0 ? 100 : 0);
 
         public int RoverDriveShieldDurability = 0;
         public int LunicCorpsShieldDurability = 0;
@@ -810,6 +813,7 @@ namespace CalamityMod.CalPlayer
 
         #region Accessory
         public bool shieldOfTheHighRulerDashVelocityBoosted = false;
+        public bool yharimsGift = false;
         public bool luxorsGift = false;
         public bool luxorHit = false;
         public bool luxorsGiftVanity = false;
@@ -2353,6 +2357,7 @@ namespace CalamityMod.CalPlayer
             blazingCursorDamage = false;
             blazingCursorVisuals = false;
 
+            yharimsGift = false;
             luxorsGift = false;
             luxorsGiftVanity = false;
             fungalSymbiote = false;
@@ -2644,6 +2649,9 @@ namespace CalamityMod.CalPlayer
             blunderBooster = false;
             blunderBoosterVisibility = true;
             veneratedLocket = false;
+
+            if (DemonAltarDialogueCooldown > 0)
+                DemonAltarDialogueCooldown--;
 
             alcoholPoisoning = false;
             shadowflame = false;
@@ -4484,6 +4492,10 @@ namespace CalamityMod.CalPlayer
 
             if (HasCustomDash && UsedDash.IsOmnidirectional)
                 Player.maxFallSpeed = 50f;
+
+            // If the player isn't moving yet is still dashing, disable the dash (prevents weird hook jank)
+            if (Player.velocity == Vector2.Zero && Player.dashDelay == -1)
+                Player.dashDelay = 0;
 
             tailFrameUp++;
             if (tailFrameUp == 8)

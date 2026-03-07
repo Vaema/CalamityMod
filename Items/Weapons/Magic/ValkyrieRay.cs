@@ -30,6 +30,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.damage = 115;
             Item.knockBack = 8.5f;
             Item.DamageType = DamageClass.Magic;
+            Item.crit = 11;
             Item.mana = 17;
             Item.useTime = ChargeFrames + CooldownFrames;
             Item.useAnimation = ChargeFrames + CooldownFrames;
@@ -44,8 +45,6 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shootSpeed = 25f;
             Item.autoReuse = true;
         }
-
-        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 11;
 
         public override void AddRecipes()
         {

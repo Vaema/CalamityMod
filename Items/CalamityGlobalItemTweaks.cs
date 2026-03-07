@@ -211,7 +211,7 @@ namespace CalamityMod.Items
                 { ItemID.RedRyder, Do(DamageExact(24)) },
                 { ItemID.RedsYoyo, Do(DamageExact(48)) }, // Red's Throw and Valkyrie Yoyo have the same stats
                 { ItemID.RocketLauncher, Do(DamageExact(60), ShootSpeedExact(9)) },
-                { ItemID.Sandgun, Do(DamageExact(22), UseExact(20)) },
+                { ItemID.Sandgun, Do(UseExact(20)) },
                 { ItemID.SapphireStaff, Do(DamageExact(25)) },
                 { ItemID.ScourgeoftheCorruptor, Do(DamageExact(63)) },
                 { ItemID.Seedler, Do(UseMeleeSpeed, DamageExact(45), ShootSpeedExact(16)) },

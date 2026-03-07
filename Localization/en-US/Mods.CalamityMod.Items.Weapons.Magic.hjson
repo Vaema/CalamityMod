@@ -657,7 +657,7 @@ PrimordialEarth: {
 	DisplayName: Primordial Earth
 	Tooltip:
 		'''
-		Casts two enchanted blasts of sand that coverge with each other and explode
+		Casts two enchanted blasts of sand that converge with each other and explode
 		Casting this spell at max mana while without mana sickness will cause it to give you and any player it hits the {$Buffs.SandsWindBuff.DisplayName} buff
 		The {$Buffs.SandsWindBuff.DisplayName} buff increases your defense by {0}, damage by {1}%, and greatly buffs mana regen
 		'''
@@ -781,6 +781,7 @@ SHPC: {
 		{0}
 		Press <right> to use the machine as a vacuum, pulling in lingering souls
 		Once released, a torrent of soul lasers is discharged scaling with the number of souls pulled in
+		Shift-Right Click this item in your inventory to eject the currently loaded Soul
 		'''
 	// These are the soul effect descriptions, the number is the item ID of the soul
 	NoSoul: "[c/808080:There is currently no soul type injected into the weapon]"
@@ -1028,7 +1029,7 @@ VividClarity: {
 		'''
 		Fires five randomized rays of exo-energy towards the cursor
 		On enemy and tile hits, beams either explode into a big flash,
-		summon an additonal laser from the sky, or split into energy orbs
+		summon an additional laser from the sky, or split into energy orbs
 		'Its majesty inspires a stroke of unparalleled genius'
 		'''
 }

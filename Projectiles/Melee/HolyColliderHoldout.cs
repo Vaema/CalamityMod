@@ -82,7 +82,7 @@ namespace CalamityMod.Projectiles.Melee
             AnimationProgress = Animation % (chargedSwing ? (int)(storedUseAnim * 1.2f) : storedUseAnim);
 
             DrawUnconditionally = false;
-            bool cantUse = (Owner.Calamity().mouseRight || Owner == null || !Owner.active || Owner.dead || Main.mouseLeftRelease || Owner.CCed || Owner.noItems);
+            bool cantUse = ( Owner == null || !Owner.active || Owner.dead || Main.mouseLeftRelease || Owner.CCed || Owner.noItems);
 
             if (CanHit || postSwing)
                 mousePos = Owner.Center - aimVel;
@@ -406,10 +406,10 @@ namespace CalamityMod.Projectiles.Melee
                     SoundStyle hitSound = new("CalamityMod/Sounds/Item/HolyColliderSmallHit");
                     SoundEngine.PlaySound(hitSound with { Volume = 0.85f, PitchVariance = 0.25f }, Projectile.Center);
 
-                    for (int i = 0; i < 8; i++)
+                    for (int i = 0; i < 6; i++)
                     {
                         // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
-                        Projectile fadedFire = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -11).RotatedByRandom(0.6f) * Main.rand.NextFloat(0.3f, 1f), ModContent.ProjectileType<HolyColliderHolyFire>(), (int)(Projectile.damage * 0.05), Projectile.knockBack, Projectile.owner, 10, target.whoAmI);
+                        Projectile fadedFire = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -11).RotatedByRandom(0.6f) * Main.rand.NextFloat(0.3f, 1f), ModContent.ProjectileType<HolyColliderHolyFire>(), (int)(Projectile.damage * 0.01), Projectile.knockBack, Projectile.owner, 10, target.whoAmI);
                         fadedFire.timeLeft = Main.rand.Next(40, 55 + 1);
                     }
                 }
@@ -445,7 +445,7 @@ namespace CalamityMod.Projectiles.Melee
             float minMult = 0.25f;
             int hitsToMinMult = 10;
             float damageMult = Utils.Remap(pierceReduction, 0, hitsToMinMult, 1, minMult, true);
-            modifiers.SourceDamage *= (chargedSwing ? 1f : 0.5f) * damageMult;
+            modifiers.SourceDamage *= (chargedSwing ? 1f : 0.2f) * damageMult;
         }
         public override bool PreDraw(ref Color lightColor)
         {

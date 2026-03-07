@@ -35,6 +35,12 @@ namespace CalamityMod.Projectiles.Magic
         public int CooldownTime => 20 * (deservesMana ? 2 : 1);
         private const int FishShineTime = 150;
 
+        public override void SetDefaults()
+        {
+            base.SetDefaults();
+            Projectile.DamageType = DamageClass.Magic;
+        }
+
         public override void KillHoldoutLogic()
         {
             if (HeldItem.type != Owner.HeldItem.type || Owner.dead)
