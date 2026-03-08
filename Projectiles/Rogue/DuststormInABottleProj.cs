@@ -52,7 +52,6 @@ namespace CalamityMod.Projectiles.Rogue
             Lighting.AddLight(Projectile.Center, new Vector3(1, 1, 1));
             Timer++;
             gravTimer++;
-            bounceCooldown--;
 
             Projectile.rotation += 0.175f * Projectile.direction * Projectile.velocity.Length();
             if (gravTimer > 20)
