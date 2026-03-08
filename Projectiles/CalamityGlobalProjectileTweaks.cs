@@ -249,45 +249,31 @@ namespace CalamityMod.Projectiles
                 #endregion
 
                 #region CATEGORY 4: Defense Damage support
-                
-                //Deerclops
-                { ProjectileID.DeerclopsIceSpike, defenseDamage },
-                { ProjectileID.DeerclopsRangedProjectile, defenseDamage },
-
-                //Skeletron Prime
                 { ProjectileID.BombSkeletronPrime, defenseDamage },
-                { ProjectileID.RocketSkeleton, defenseDamage }, // Skeleton Commando rockets, reused by Rev+ Skeletron Prime
-                //Fishron
+                { ProjectileID.CannonballHostile, defenseDamage },
                 { ProjectileID.Cthulunado, defenseDamage },
-                { ProjectileID.Sharknado, defenseDamage },
-                //Betsy
+                { ProjectileID.CultistBossFireBall, defenseDamage },
+                { ProjectileID.CultistBossLightningOrbArc, defenseDamage }, // Also used by Storm Weaver
                 { ProjectileID.DD2BetsyFireball, defenseDamage },
                 { ProjectileID.DD2BetsyFlameBreath, defenseDamage },
-                //Cultist
-                { ProjectileID.CultistBossFireBall, defenseDamage },
-                { ProjectileID.CultistBossLightningOrbArc, defenseDamage }, // Also used by storm weaver
-                // Empress of Light
-                { ProjectileID.FairyQueenLance, defenseDamage },
-                { ProjectileID.FairyQueenSunDance, defenseDamage },
-                { ProjectileID.HallowBossRainbowStreak, defenseDamage },
-                { ProjectileID.HallowBossLastingRainbow, defenseDamage },
-                //Storm Weaver
+                { ProjectileID.DeerclopsIceSpike, defenseDamage },
+                { ProjectileID.DeerclopsRangedProjectile, defenseDamage },
+                { ProjectileID.FairyQueenLance, defenseDamage }, // EoL lance
+                { ProjectileID.FairyQueenSunDance, defenseDamage }, // EoL sun dance
+                { ProjectileID.FlamingScythe, defenseDamage }, // Pumpking scythes
                 { ProjectileID.FrostWave, defenseDamage }, // Ice Queen frost waves, reused by Storm Weaver
-                //Moon Lord
+                { ProjectileID.HallowBossRainbowStreak, defenseDamage }, // EoL rainbow bolt
+                { ProjectileID.HallowBossLastingRainbow, defenseDamage }, // EoL everlasting rainbow
                 { ProjectileID.PhantasmalDeathray, defenseDamage },
                 { ProjectileID.PhantasmalSphere, defenseDamage },
-                //Queen Slime
+                { ProjectileID.Present, defenseDamage }, // Santa-NK1 presents
                 { ProjectileID.QueenSlimeSmash, defenseDamage },
-                //Martian Saucer
+                { ProjectileID.RocketSkeleton, defenseDamage }, // Skeleton Commando rockets, reused by Rev+ Skeletron Prime
                 { ProjectileID.SaucerDeathray, defenseDamage },
                 { ProjectileID.SaucerMissile, defenseDamage },
-                //Plantera
+                { ProjectileID.Sharknado, defenseDamage },
+                { ProjectileID.Spike, defenseDamage }, // Santa-NK1 spike balls
                 { ProjectileID.ThornBall, Do(Main.zenithWorld ? IgnoreWater : DontIgnoreWater, DefenseDamage) },
-                //Misc
-                { ProjectileID.FlamingScythe, defenseDamage }, //Pumpking scythes
-                { ProjectileID.CannonballHostile, defenseDamage },
-                { ProjectileID.Spike, defenseDamage }, // Santank spike balls
-                { ProjectileID.Present, defenseDamage }, //Santank presents
                 #endregion
 
                 #region CATEGORY 5: ID-Static Immunity Frame changes
