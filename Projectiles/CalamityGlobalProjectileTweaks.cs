@@ -254,7 +254,6 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.Cthulunado, defenseDamage },
                 { ProjectileID.CultistBossFireBall, defenseDamage },
                 { ProjectileID.CultistBossLightningOrbArc, defenseDamage }, // Also used by Storm Weaver
-                { ProjectileID.DD2BetsyFireball, defenseDamage },
                 { ProjectileID.DD2BetsyFlameBreath, defenseDamage },
                 { ProjectileID.DeerclopsIceSpike, defenseDamage },
                 { ProjectileID.DeerclopsRangedProjectile, defenseDamage },
