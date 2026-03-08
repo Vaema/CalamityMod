@@ -144,7 +144,6 @@ namespace CalamityMod.Projectiles.Melee
             }
             if (Projectile.frame > 3)
                 Projectile.frame = 0;
-            Main.NewText(Projectile.timeLeft);
 
             time++;
         }

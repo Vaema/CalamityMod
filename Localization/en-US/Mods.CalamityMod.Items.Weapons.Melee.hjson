@@ -166,7 +166,7 @@ BansheeHook: {
 
 Basher: {
 	DisplayName: Basher
-	Tooltip: Swings a rotten club that inflicts [cbuff:Poisoned] and [cbuff:CalamityMod/Irradiated] while knocking you back in the process
+	Tooltip: Swings a rotten club that inflicts [cbuff:CalamityMod/Irradiated] while knocking you back in the process
 }
 
 BladecrestOathsword: {
