@@ -1007,6 +1007,16 @@ ArmorCrunch: {
 	ItemTooltip: Damage Reduction is 15% less effective
 }
 
+Bane: {
+	DisplayName: Bane
+	Description: An ancient curse envelops you
+	ItemTooltip:
+		'''
+		Typeless - Variable DPS
+		Does not scale with debuff multipliers
+		'''
+}
+
 Crumbling: {
 	DisplayName: Crumbling
 	Description: Your armor is damaged
@@ -1700,4 +1710,19 @@ SeaKingsAssurance: {
 CnidarianSummonTagBuff: {
 	DisplayName: Cnidarian Summon Tag Buff
 	Description: you are not seeing this
+}
+
+SmashedEvil: {
+	DisplayName: Smashed Evil
+	Description: Increased damage, movement speed, and regeneration
+	ItemTooltip:
+		'''
+		- On Enemies -
+		All Types - 20 DPS
+		+5 damage taken
+		- On Players -
+		Regen returns to full strength 200% faster
+		10% increased damage
+		20% increased movement speed
+		'''
 }

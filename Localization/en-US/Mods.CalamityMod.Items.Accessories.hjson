@@ -2,9 +2,9 @@ Abaddon: {
 	DisplayName: Abaddon
 	Tooltip:
 		'''
-		{$CommonItemTooltip.PercentIncreasedCritChance}
-		Critical strikes explode, igniting nearby foes with [cbuff:CalamityMod/BrimstoneFlames]
-		Reduces damage taken from [cbuff:CalamityMod/BrimstoneFlames] by {1}%
+		Critical strikes curse enemies with [cbuff:CalamityMod/Bane] that scales off of your critical strike chance
+		When critically hit, enemies spread all debuffs they are afflicted with that are weaker than your [cbuff:CalamityMod/Bane] to nearby enemies
+		Current [cbuff:CalamityMod/Bane] damage: [DAMAGE] DPS
 		'''
 }
 
@@ -149,6 +149,17 @@ AngelTreads: {
 		Grants immunity to fire blocks and {2} seconds of immunity to lava
 		Reduces damage from touching lava
 		'Extreme speed!'
+		'''
+}
+
+Apollyon: {
+	DisplayName: Apollyon
+	Tooltip:
+		'''
+		Critical strikes curse enemies with [cbuff:CalamityMod/Bane] that greatly scales off of your critical strike chance
+		When critically hit, enemies spread all debuffs they are afflicted with that are weaker than your [cbuff:CalamityMod/Bane] to nearby enemies
+		Critical strikes deal an additional 3% damage per debuff on the enemy
+		Current [cbuff:CalamityMod/Bane] damage: [DAMAGE] DPS
 		'''
 }
 
@@ -2055,16 +2066,6 @@ VoidofCalamity: {
 		'''
 		12% increased damage
 		Brimstone fire rains down after getting hit
-		'''
-}
-
-VoidofExtinction: {
-	DisplayName: Void of Extinction
-	Tooltip:
-		'''
-		{$CommonItemTooltip.PercentIncreasedCritChance}
-		Critical strikes explode, igniting nearby foes with [cbuff:CalamityMod/BrimstoneFlames]
-		Reduces damage taken from [cbuff:CalamityMod/BrimstoneFlames] by {1}%
 		'''
 }
 

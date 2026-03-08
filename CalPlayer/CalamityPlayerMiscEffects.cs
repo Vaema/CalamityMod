@@ -69,6 +69,8 @@ using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using CalamityMod.Tiles.FurnitureAuric;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.UI;
+using CalamityMod.UI.DialogueDisplay;
+using CalamityMod.UI.DialogueDisplay.DisplayEffects;
 using CalamityMod.Utilities;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -1139,8 +1141,39 @@ namespace CalamityMod.CalPlayer
             }
         }
 
+        private void DemonAltarTalking()
+        {
+
+            for (var h = -15; h < 15; h++)
+            {
+                for (var j = -15; j < 15; j++)
+                {
+                    var tilePos = Player.Center.ToTileCoordinates() + new Point(h, j);
+                    if (Main.tile[tilePos.X, tilePos.Y].TileType == TileID.DemonAltar)
+                    {
+                        string type = WorldGen.crimson ? "Mods.CalamityMod.EvilSmasher.CrimsonAltar" : "Mods.CalamityMod.EvilSmasher.DemonAltar";
+                        if (DialogueDisplaySystem.ContainsDialogueKey(type))
+                            DialogueDisplaySystem.RemoveDialogue(DialogueDisplaySystem.GetSlot(type));
+                        DialogueDisplaySystem.StartDialogueOnClient(type, new Vector2(tilePos.X * 16 + 16, tilePos.Y * 16), DemonAltarDialogueCounter, 180, false, new AltarText());
+                        DemonAltarDialogueCounter++;
+                        DemonAltarDialogueCooldown = 300;
+                        if (DemonAltarDialogueCounter >= 4)
+                        {
+                            DemonAltarDialogueCooldown = 3600;
+                            DemonAltarDialogueCounter = 0;
+                        }
+                        return;
+                    }
+                }
+            }
+        }
         private void MiscEffects()
         {
+            if (Player.inventory.Any(x => x.type == ItemID.Pwnhammer) && !Player.inventory.Any(x => x.type == ModContent.ItemType<EvilSmasher>()) && Player.adjTile[TileID.DemonAltar] && DemonAltarDialogueCooldown <= 0 && Player.miscCounter % 30 == 0)
+            {
+                DemonAltarTalking();
+            }
+
             //Mana Burn update
             if (ManaBurnFireDrawer != null)
             {
@@ -2250,8 +2283,6 @@ namespace CalamityMod.CalPlayer
                 raiderSoundCooldown--;
             if (astralStarRainCooldown > 0)
                 astralStarRainCooldown--;
-            if (AbaddonCooldown > 0)
-                AbaddonCooldown--;
             if (VoidCooldown > 0)
                 VoidCooldown--;
             if (ursaSergeantCooldown > 0)
