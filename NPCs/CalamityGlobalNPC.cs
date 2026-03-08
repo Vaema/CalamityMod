@@ -1017,6 +1017,7 @@ namespace CalamityMod.NPCs
                     dmg += 480; // 240 DPS
                     blazingStarShredTimer--;
                 }
+                dmg = (int)ActiveTypelessDebuffMultiplier.ApplyTo(dmg);
                 npc.lifeRegenCount -= dmg;
                 if (damage < dmg / 12) // 1/6th of the DPS dealt by Glaive Shred shows up as the indicator, unless another debuff does more per tick
                     damage = dmg / 12;

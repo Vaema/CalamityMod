@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Accessories
     {
         public new string LocalizationCategory => "Items.Accessories";
 
-        public static float critScaling = 7.5f; // How effective crit chance is at increasing debuff damage
+        public static float critScaling = 8f; // How effective crit chance is at increasing debuff damage
         public static float critDamageBoostPerDebuff = 0.03f; // 3% increased crit damage per debuff
         public override void SetDefaults()
         {
