@@ -268,13 +268,13 @@ namespace CalamityMod.Projectiles.Melee
             Vector2 rotationPoint = (Owner.direction == -1) ? new Vector2(texture.Width, texture.Height) : new Vector2(0, texture.Height);
             SpriteEffects flipSprite = (Owner.direction == -1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
-            Vector2 placeAdjust = (drawRotation + MathHelper.PiOver2).ToRotationVector2() * 2.5f;
             Color clr = Color.Tan;
             int swingCountFlip = (swingCount % 2 == 0 ? 1 : 3) + Owner.direction == 0 ? 2 : 0;
             Vector2 vel2 = Projectile.velocity.RotatedBy(MathHelper.PiOver2);
             float extraRot = MathHelper.PiOver4 * 1.2f * (swingCount % 2 == 0 ? (Owner.direction == -1 ? 1 : -1) : (Owner.direction == -1 ? -1 : 1));
             float swooshDrawRotation = vel2.ToRotation() + extraRot;
             SpriteEffects swooshFlipSprite = (swingCount % 2 == 0 ? (Owner.direction == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None) : (Owner.direction == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally));
+            Vector2 placeAdjust = (drawRotation + MathHelper.PiOver2).ToRotationVector2() * 2.5f + ((swingCount % 2 == 0 ? new Vector2(-6, 0) : new Vector2(-2, 0)).RotatedBy(drawRotation) * Owner.direction);
 
             Main.EntitySpriteDraw(swoosh, drawPosition + Projectile.velocity.RotatedBy(extraRot) * 12.5f, null, clr with { A = 0 } * bladefx * 0.4f, swooshDrawRotation, swoosh.Size() * 0.5f, Projectile.scale * 0.5f, swooshFlipSprite); //flipSprite | (swingCount % 2 == 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally)
 
