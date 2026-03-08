@@ -180,7 +180,7 @@ namespace CalamityMod.Items.Accessories
                 // When hitting a target below you
                 if (Main.LocalPlayer.Top.Y < target.Top.Y)
                 {
-                    // Effective +8% crit chance. Increasing crit chance additively through manual rolling is scuffed for crossmod compatability, feel free to improve it if you know a cleaner way
+                    // Effective +5% crit chance. Increasing crit chance additively through manual rolling is scuffed for crossmod compatability, feel free to improve it if you know a cleaner way
                     float finalCritChance = Player.GetTotalCritChance(modifiers.DamageType) + SpringStool.CritRateBoostAboveTargets;
 
                     if (Main.rand.NextFloat(1f, 101f) <= finalCritChance)
