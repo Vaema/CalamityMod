@@ -249,18 +249,31 @@ namespace CalamityMod.Projectiles
                 #endregion
 
                 #region CATEGORY 4: Defense Damage support
-                { ProjectileID.Cthulunado, defenseDamage }, // Duke Fishron's larger Sharknados
+                { ProjectileID.BombSkeletronPrime, defenseDamage },
+                { ProjectileID.CannonballHostile, defenseDamage },
+                { ProjectileID.Cthulunado, defenseDamage },
+                { ProjectileID.CultistBossFireBall, defenseDamage },
+                { ProjectileID.CultistBossLightningOrbArc, defenseDamage }, // Also used by Storm Weaver
+                { ProjectileID.DD2BetsyFireball, defenseDamage },
                 { ProjectileID.DD2BetsyFlameBreath, defenseDamage },
                 { ProjectileID.DeerclopsIceSpike, defenseDamage },
-                { ProjectileID.FairyQueenSunDance, defenseDamage }, // Empress of Light's Sun Dance
-                { ProjectileID.FlamingScythe, defenseDamage }, // Pumpking orange spinning scythes
-                { ProjectileID.InfernoHostileBlast, defenseDamage }, // Diabolist inferno fork explosions
-                { ProjectileID.PaladinsHammerHostile, defenseDamage },
+                { ProjectileID.DeerclopsRangedProjectile, defenseDamage },
+                { ProjectileID.FairyQueenLance, defenseDamage }, // EoL lance
+                { ProjectileID.FairyQueenSunDance, defenseDamage }, // EoL sun dance
+                { ProjectileID.FlamingScythe, defenseDamage }, // Pumpking scythes
+                { ProjectileID.FrostWave, defenseDamage }, // Ice Queen frost waves, reused by Storm Weaver
+                { ProjectileID.HallowBossRainbowStreak, defenseDamage }, // EoL rainbow bolt
+                { ProjectileID.HallowBossLastingRainbow, defenseDamage }, // EoL everlasting rainbow
                 { ProjectileID.PhantasmalDeathray, defenseDamage },
                 { ProjectileID.PhantasmalSphere, defenseDamage },
+                { ProjectileID.Present, defenseDamage }, // Santa-NK1 presents
+                { ProjectileID.QueenSlimeSmash, defenseDamage },
+                { ProjectileID.RocketSkeleton, defenseDamage }, // Skeleton Commando rockets, reused by Rev+ Skeletron Prime
                 { ProjectileID.SaucerDeathray, defenseDamage },
+                { ProjectileID.SaucerMissile, defenseDamage },
                 { ProjectileID.Sharknado, defenseDamage },
-                { ProjectileID.ThornBall, Do(Main.zenithWorld ? IgnoreWater : DontIgnoreWater, DefenseDamage) }, // Plantera bouncing thorn balls
+                { ProjectileID.Spike, defenseDamage }, // Santa-NK1 spike balls
+                { ProjectileID.ThornBall, Do(Main.zenithWorld ? IgnoreWater : DontIgnoreWater, DefenseDamage) },
                 #endregion
 
                 #region CATEGORY 5: ID-Static Immunity Frame changes
