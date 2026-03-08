@@ -366,8 +366,8 @@ Vaporfied: {
 VermillionFlux: {
 	DisplayName: Vermillion Flux
 	Description: Sharp arcs of scarlet course through you
-	ItemTooltipPlayer: Electric - 5 DPS. Deals 5x damage against moving players
-	ItemTooltipEnemy: Electric - 37.5 DPS. Deals 4x damage against moving targets
+	ItemTooltipPlayer: Electric - 5 DPS. 5x damage to moving players
+	ItemTooltipEnemy: Electric - 37.5 DPS. 4x damage to moving targets
 }
 
 Voidfrost: {
