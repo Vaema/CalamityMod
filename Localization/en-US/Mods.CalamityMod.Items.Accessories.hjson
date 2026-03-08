@@ -1848,7 +1848,8 @@ TeslasAmulet: {
 	DisplayName: Tesla's Amulet
 	Tooltip:
 		'''
-		Generates an electrifying field that slows enemies
+		Generates an electrifying field around you
+		The field inflicts [cbuff:CalamityMod/StaticDischarge] and [cbuff:CalamityMod/GalvanicCorrosion]
 		The field has reduced opacity if visibility is disabled
 		Reduces the duration of [cbuffplr:CalamityMod/StaticDischarge]
 		'''
