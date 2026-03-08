@@ -2220,9 +2220,6 @@ namespace CalamityMod.CalPlayer
                     LoseAdrenalineOnHurt(hurtInfo, false);
                 }
 
-                if (evilSmasherBoost > 0)
-                    evilSmasherBoost -= 1;
-
                 if (trinketOfChi)
                     chiBuffTimer = 0;
 

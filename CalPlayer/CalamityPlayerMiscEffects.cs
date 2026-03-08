@@ -3543,11 +3543,6 @@ namespace CalamityMod.CalPlayer
                 if (Player.HeldItem.type != ModContent.ItemType<PridefulHuntersPlanarRipper>())
                     planarSpeedBoost = 0;
             }
-            if (evilSmasherBoost > 0)
-            {
-                if (Player.HeldItem.type != ModContent.ItemType<EvilSmasher>())
-                    evilSmasherBoost = 0;
-            }
 
             // Flight time boosts
             double flightTimeMult = 1D +

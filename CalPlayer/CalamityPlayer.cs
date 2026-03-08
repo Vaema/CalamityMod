@@ -334,11 +334,6 @@ namespace CalamityMod.CalPlayer
         public int arpeggioCooldown = 0;
         /// <summary> Cooldown variable which prevents using Burning Sea during its "burn-out" mechanic. </summary>
         public int burningSeaBurnOut = 0;
-        /// <summary>
-        /// How many stacks of Evil Smasher's boost the player has. This increases the weapon's damage, use speed, and knockback.<br/>
-        /// Getting hit decreases this by 1. Switching to a different item resets this to 0.
-        /// </summary>
-        public int evilSmasherBoost = 0;
         /// <summary> Cooldown variable for spawning Plague Tainted SMG's drones from left-click bullets. </summary>
         public int plagueTaintedSMGDroneCooldown = 0;
         /// <summary> Cooldown variable which prevents using Firestorm Cannon or Spectralstorm Cannon during their overheat periods. </summary>
@@ -3440,7 +3435,6 @@ namespace CalamityMod.CalPlayer
             CurrentlyViewedHologramText = string.Empty;
             #endregion
 
-            evilSmasherBoost = 0;
             burningSeaBurnOut = 0;
             flareGunOverheat = 0;
             hellbornShots = 0;
