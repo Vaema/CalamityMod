@@ -326,15 +326,6 @@ namespace CalamityMod.CalPlayer
         public int deadSunCounter = 6;
         public int DragonsBreathAudioCooldown = 0;
         public int DragonsBreathAudioCooldown2 = 0;
-        public int darklightEnergy = 0;
-        public int darklightEnergyTimer = 0;
-        public bool darklightEnergyPaused = false;
-        public bool darklightEnergyMaxFXPlayed = false;
-        private int lucreciaParticleTimer = 0;
-        public int elementalMastery = 0;
-        public int elementalMasteryTimer = 0;
-        public bool elementalMasteryPaused = false;
-        public bool elementalMasterySFXPlayed = false;
         public float unstableCastersGauntletVis = 0;
         public int unstableCastersGauntletVisTimer = 0;
         public int PhotoAudioCooldown = 0;
@@ -3453,8 +3444,6 @@ namespace CalamityMod.CalPlayer
             burningSeaBurnOut = 0;
             flareGunOverheat = 0;
             hellbornShots = 0;
-            darklightEnergy = 0;
-            elementalMastery = 0;
             garandShots = 0;
             persecutedEnchantSummonTimer = 0;
             momentumCapacitorTime = 0;
