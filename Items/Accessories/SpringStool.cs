@@ -7,6 +7,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -15,8 +16,10 @@ namespace CalamityMod.Items.Accessories
     {
         public new string LocalizationCategory => "Items.Accessories";
         public override void ModifyTooltips(List<TooltipLine> list) => list.IntegrateHotkey(CalamityKeybinds.SpringStoolJumpHotKey);
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs((JumpCooldown).FramesToSeconds(), (CritRateBoostAboveTargets));
 
-        public static int JumpCooldown = CalamityUtils.SecondsToFrames(25);
+        public static int JumpCooldown = CalamityUtils.SecondsToFrames(20);
+        public static float CritRateBoostAboveTargets = 5f;
 
         public override void SetDefaults()
         {
@@ -55,15 +58,22 @@ namespace CalamityMod.Items.Accessories
             On_PlayerDrawLayers.DrawPlayer_03_PortableStool += HandleStoolStacking;
         }
 
+        public override void PostUpdate()
+        {
+            bool theCollisionCheck = Collision.TileCollision(Player.position + Vector2.UnitY, Vector2.Zero, Player.width, Player.height, fallThrough: false, fall2: false).Y == 0f;
+
+            if ((Player.velocity.Y == 0 && theCollisionCheck) || Player.grappling[0] >= 0)
+                hasGroundedSinceJump = true;
+        }
+
         public override void PostUpdateEquips()
         {
-            if (CalamityKeybinds.SpringStoolJumpHotKey.JustPressed && springStool && Main.myPlayer == Player.whoAmI && !Player.HasCooldown(Stooldown.ID) && !Player.mount.Active)
+            if (CalamityKeybinds.SpringStoolJumpHotKey.JustPressed && springStool && Main.myPlayer == Player.whoAmI && !Player.HasCooldown(Stooldown.ID) && !Player.mount.Active && hasGroundedSinceJump)
             {
                 springStoolTimer = 12;
 
                 Player.AddCooldown(Stooldown.ID, (int)SpringStool.JumpCooldown, true);
                 hasGroundedSinceJump = false;
-
 
                 Vector2 spawnPos = Player.Bottom + new Vector2(0f, -60f);
 
@@ -76,7 +86,6 @@ namespace CalamityMod.Items.Accessories
                     // Spawn a step stool copy with a random velocity. Only works if step stool is equipped as well as spring stool.
                     Projectile.NewProjectile(Player.GetSource_FromThis(), spawnPos, new Vector2(Main.rand.NextBool() ? Main.rand.NextFloat(6f, 7f) : Main.rand.NextFloat(-6f, -7f), Main.rand.NextFloat(-8f, -10f)), ModContent.ProjectileType<StepStoolBonusFX>(), 0, 0f, Player.whoAmI);
                 }
-
             }
 
             if (springStool)
@@ -99,6 +108,7 @@ namespace CalamityMod.Items.Accessories
                     // Forces the player into the stool-standing frame
                     Player.UpdatePortableStoolUsage();
                 }
+
                 else
                 {
                     // Ensures the player can use the stool if they stop moving/hold up
@@ -147,9 +157,6 @@ namespace CalamityMod.Items.Accessories
 
         public override void PreUpdateMovement()
         {
-            if (Player.velocity.Y == 0 || Player.sliding || Player.grappling[0] >= 0)
-                hasGroundedSinceJump = true;
-
             if (springStoolTimer > 0)
             {
                 springStoolTimer--;
@@ -157,7 +164,7 @@ namespace CalamityMod.Items.Accessories
                 if (Player.whoAmI == Main.myPlayer)
                 {
                     float launchPower = 20f * Utils.GetLerpValue(0, 10, springStoolTimer, true);
-                    Player.velocity.Y = -launchPower;
+                    Player.velocity.Y = -launchPower * Player.gravDir;
 
                     // Prevent vanilla jump logic from interfering
                     Player.jump = 0;
@@ -165,14 +172,16 @@ namespace CalamityMod.Items.Accessories
                 }
             }
         }
+
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (springStool)
             {
+                // When hitting a target below you
                 if (Main.LocalPlayer.Top.Y < target.Top.Y)
                 {
-                    // Effective +10% crit chance. Increasing crit chance additively through manual rolling is scuffed for crossmod compatability, feel free to improve it if you know a better way
-                    float finalCritChance = Player.GetTotalCritChance(modifiers.DamageType) + 10f;
+                    // Effective +8% crit chance. Increasing crit chance additively through manual rolling is scuffed for crossmod compatability, feel free to improve it if you know a cleaner way
+                    float finalCritChance = Player.GetTotalCritChance(modifiers.DamageType) + SpringStool.CritRateBoostAboveTargets;
 
                     if (Main.rand.NextFloat(1f, 101f) <= finalCritChance)
                         modifiers.SetCrit();
@@ -182,10 +191,18 @@ namespace CalamityMod.Items.Accessories
                 }
             }
         }
+
         public override void ResetEffects()
         {
             springStool = false;
             springStoolTimer = 0;
+        }
+
+        public override void UpdateDead()
+        {
+            springStool = false;
+            springStoolTimer = 0;
+            hasGroundedSinceJump = true;
         }
     }
 }

@@ -2,6 +2,7 @@
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using rail;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ModLoader;
@@ -130,7 +131,7 @@ namespace CalamityMod.Projectiles.Typeless
 
             Vector2 scale = new Vector2(Projectile.scale, Projectile.scale * Projectile.ai[1]);
 
-            Main.EntitySpriteDraw(texture, drawPos, sourceRect, Projectile.GetAlpha(lightColor), Projectile.rotation, drawOrigin, scale, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(texture, drawPos, sourceRect, Projectile.GetAlpha(lightColor), Projectile.rotation + (Main.player[Projectile.owner].gravDir == -1 ? MathHelper.Pi : 0), drawOrigin, scale, SpriteEffects.None, 0);
             return false;    
         }
     }

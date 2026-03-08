@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.Typeless
             Texture2D texture = TextureAssets.Extra[102].Value;
             Vector2 origin = texture.Size() / 2f;
 
-            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, Color.White * OpacityMultiplier, Projectile.rotation, origin, Projectile.scale * 1.25f, SpriteEffects.None);
+            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, Color.White * OpacityMultiplier, Projectile.rotation + (Main.player[Projectile.owner].gravDir == -1 ? MathHelper.Pi : 0), origin, Projectile.scale * 1.25f, SpriteEffects.None);
 
             return false;
         }
