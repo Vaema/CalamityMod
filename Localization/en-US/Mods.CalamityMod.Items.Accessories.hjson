@@ -4,8 +4,10 @@ Abaddon: {
 		'''
 		Critical strikes curse enemies with [cbuff:CalamityMod/Bane] that scales off of your critical strike chance
 		When critically hit, enemies spread all debuffs they are afflicted with that are weaker than your [cbuff:CalamityMod/Bane] to nearby enemies
-		Current [cbuff:CalamityMod/Bane] damage: [DAMAGE] DPS
+		[DAMAGELINE]
 		'''
+	Equipped: Current [cbuff:CalamityMod/Bane] damage: {0} DPS
+	Unequipped: Equip this accessory to view your current [cbuff:CalamityMod/Bane] damage
 }
 
 AbyssalDivingGear: {
@@ -159,8 +161,10 @@ Apollyon: {
 		Critical strikes curse enemies with [cbuff:CalamityMod/Bane] that greatly scales off of your critical strike chance
 		When critically hit, enemies spread all debuffs they are afflicted with that are weaker than your [cbuff:CalamityMod/Bane] to nearby enemies
 		Critical strikes deal an additional 3% damage per debuff on the enemy
-		Current [cbuff:CalamityMod/Bane] damage: [DAMAGE] DPS
+		[DAMAGELINE]
 		'''
+	Equipped: Current [cbuff:CalamityMod/Bane] damage: {0} DPS
+	Unequipped: Equip this accessory to view your current [cbuff:CalamityMod/Bane] damage
 }
 
 AquaticEmblem: {
