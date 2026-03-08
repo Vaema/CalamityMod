@@ -733,20 +733,6 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            if (abaddon && crit && AbaddonCooldown <= 0 && !voidOfExtinction)
-            {
-                AbaddonCooldown = 15;
-                int AbaddonExploDamage = (int)Player.GetBestClassDamage().ApplyTo(Abaddon.AbaddonExploDamage);
-                Projectile.NewProjectile(source, position, Vector2.Zero, ProjectileType<AbaddonCrit>(), AbaddonExploDamage, 0f, Player.whoAmI);
-            }
-
-            if (voidOfExtinction && crit && VoidCooldown <= 0)
-            {
-                VoidCooldown = 15;
-                int VoidExploDamage = (int)Player.GetBestClassDamage().ApplyTo(VoidofExtinction.VoidExploDamage);
-                Projectile.NewProjectile(source, position, Vector2.Zero, ProjectileType<VoidofExtinctionCrit>(), VoidExploDamage, 0f, Player.whoAmI);
-            }
-
             if (ursaSergeant && ursaSergeantCooldown <= 0)
             {
                 ursaSergeantCooldown = UrsaSergeant.MaxCooldown;
