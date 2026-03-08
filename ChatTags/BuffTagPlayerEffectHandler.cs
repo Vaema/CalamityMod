@@ -1,8 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-
 using ReLogic.Graphics;
-
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -11,18 +9,17 @@ using Terraria.UI.Chat;
 
 namespace CalamityMod.ChatTags
 {
-    public sealed class CalamityBuffTagHandler : AbstractTagHandler<CalamityBuffTagHandler>
+    public sealed class BuffTagPlayerEffectHandler : AbstractTagHandler<BuffTagPlayerEffectHandler>
     {
         public sealed class Snippet(int buffId) : TextSnippet
         {
             private const float IconSize = 26f;
-            
+
             public int BuffId => buffId;
 
-            // TODO: Include check for config option when it gets added.
             public bool DrawIcon => true;
 
-            public override bool UniqueDraw(bool justCheckingString, out Vector2 size, SpriteBatch spriteBatch, Vector2 position = new Vector2(), Color color = new Color(), float scale = 1)
+            public override bool UniqueDraw(bool justCheckingString, out Vector2 size, SpriteBatch spriteBatch, Vector2 position = default, Color color = default, float scale = 1)
             {
                 size = new Vector2(GetStringLength(FontAssets.MouseText.Value), IconSize);
 
@@ -41,7 +38,7 @@ namespace CalamityMod.ChatTags
                         if (Main.netMode != NetmodeID.Server && !Main.dedServ)
                         {
                             var texture = TextureAssets.Buff[BuffId];
-                            spriteBatch.Draw(texture.Value, new Rectangle((int)position.X, (int)position.Y - 2, (int)IconSize, (int)IconSize), null, Color.White);   
+                            spriteBatch.Draw(texture.Value, new Rectangle((int)position.X, (int)position.Y - 2, (int)IconSize, (int)IconSize), null, Color.White);
                         }
 
                         position.X += IconSize;
@@ -61,8 +58,8 @@ namespace CalamityMod.ChatTags
                 return size * Scale;
             }
         }
-        
-        protected override string[] TagNames { get; } = ["cbuff"];
+
+        protected override string[] TagNames { get; } = ["cbuffplr"];
 
         public override TextSnippet Parse(string text, Color baseColor = new(), string options = null)
         {
@@ -70,13 +67,13 @@ namespace CalamityMod.ChatTags
             {
                 return new Snippet(buffId);
             }
-            
+
             if (BuffID.Search.TryGetId(text, out buffId))
             {
                 return new Snippet(buffId);
             }
-            
-            return new  TextSnippet(text);
+
+            return new TextSnippet(text);
         }
     }
 }

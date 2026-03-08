@@ -315,7 +315,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 if (pingAnimationTimer <= PingAnimationDuration)
                 {
-                    Texture2D pingTexture = Main.zenithWorld ? ModContent.Request<Texture2D>("CalamityMod/Particles/MammothParticle").Value :  ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/M1GarandPingText").Value;
+                    Texture2D pingTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/M1GarandPingText").Value;
                     Vector2 origin = pingTexture.Size() * 0.5f;
                     Vector2 pingDrawPosition;
 

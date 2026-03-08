@@ -2,7 +2,7 @@ Aestheticus: {
 	DisplayName: Aestheticus
 	Tooltip:
 		'''
-		Fires crystals that explode and slow enemies down
+		Fires crystals that explode and inflict [cbuff:CalamityMod/Vaporfied]
 		This weapon scales with all your damage stats at once
 		'''
 }
@@ -14,8 +14,8 @@ ClaretCannon: {
 		Fires a hypercondensed claret round
 		The round explodes upon striking an enemy and releases blood orbs
 		The explosion shreds enemies, inflicting [cbuff:CalamityMod/Laceration] and dramatically reducing their defense
-		Picking up the blood orbs will reduce [cbuff:PotionSickness] when possible
-		If you do not have [cbuff:PotionSickness], your natural regeneration will be enhanced
+		Picking up the blood orbs will reduce [cbuffplr:PotionSickness] when possible
+		If you do not have [cbuffplr:PotionSickness], your natural regeneration will be enhanced
 		Can only fire once every 10 seconds
 		'''
 }

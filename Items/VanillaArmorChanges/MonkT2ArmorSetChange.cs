@@ -24,14 +24,13 @@ namespace CalamityMod.Items.VanillaArmorChanges
         public override void ApplyHeadPieceEffect(Player player)
         {
             player.GetAttackSpeed<MeleeDamageClass>() -= 0.2f;
-            player.Calamity().rogueVelocity += 0.15f; // Replace melee speed with rogue velocity.
+            player.Calamity().rogueVelocity += 0.2f; // Replace melee speed with rogue velocity.
         }
 
         public override void ApplyBodyPieceEffect(Player player) 
         {
             player.GetDamage<MeleeDamageClass>() -= 0.2f;
-            player.GetDamage<RogueDamageClass>() += 0.15f; // Replace melee damage with rogue damage.
-            player.GetDamage<SummonDamageClass>() -= 0.05f; // Small nerf to summon damage.
+            player.GetDamage<RogueDamageClass>() += 0.2f; // Replace melee damage with rogue damage.
         }
 
         public override void ApplyLegPieceEffect(Player player)

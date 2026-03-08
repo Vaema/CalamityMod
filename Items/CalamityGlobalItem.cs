@@ -961,6 +961,7 @@ namespace CalamityMod.Items
 
         public override void ModifyItemScale(Item item, Player player, ref float scale)
         {
+            // Xyk 3MARCH2026: Doesn't work on any non use style 1 items currently, Doze will fix it
             if (item.CountsAsClass<MeleeDamageClass>() && player.HasBuff(BuffID.Tipsy))
                 scale += 0.15f;
         }
@@ -1049,31 +1050,9 @@ namespace CalamityMod.Items
                     player.GetAttackSpeed<MeleeDamageClass>() += 0.05f;
                     break;
 
-                case ItemID.SquireGreaves:
-                    player.GetDamage<SummonDamageClass>() -= 0.05f;
-                    break;
 
-                case ItemID.HuntressWig:
-                    player.GetCritChance<RangedDamageClass>() += 5;
-                    break;
 
-                case ItemID.HuntressJerkin:
-                    player.GetDamage<RangedDamageClass>() -= 0.05f;
-                    player.GetDamage<SummonDamageClass>() -= 0.05f;
-                    break;
 
-                case ItemID.ApprenticeHat:
-                    player.GetDamage<MagicDamageClass>() -= 0.1f;
-                    break;
-
-                case ItemID.ApprenticeRobe:
-                    player.GetDamage<SummonDamageClass>() -= 0.05f;
-                    player.GetDamage<MagicDamageClass>() += 0.05f;
-                    break;
-
-                case ItemID.ApprenticeTrousers:
-                    player.GetCritChance<MagicDamageClass>() -= 5;
-                    break;
 
                 case ItemID.ShroomiteBreastplate:
                     player.GetDamage<RangedDamageClass>() -= 0.05f;
@@ -1092,28 +1071,6 @@ namespace CalamityMod.Items
                 case ItemID.SquireAltPants:
                     player.GetCritChance<MeleeDamageClass>() -= 5;
                     player.GetDamage<SummonDamageClass>() -= 0.05f;
-                    break;
-
-                case ItemID.HuntressAltShirt:
-                    player.GetDamage<RangedDamageClass>() -= 0.05f;
-                    player.GetDamage<SummonDamageClass>() -= 0.05f;
-                    break;
-
-                case ItemID.HuntressAltPants:
-                    player.GetDamage<SummonDamageClass>() -= 0.05f;
-                    break;
-
-                case ItemID.ApprenticeAltHead:
-                    player.GetDamage<MagicDamageClass>() -= 0.05f;
-                    player.GetDamage<SummonDamageClass>() -= 0.05f;
-                    break;
-
-                case ItemID.ApprenticeAltShirt:
-                    player.GetDamage<SummonDamageClass>() -= 0.05f;
-                    break;
-
-                case ItemID.ApprenticeAltPants:
-                    player.GetCritChance<MagicDamageClass>() -= 10;
                     break;
 
                 case ItemID.SolarFlareHelmet:

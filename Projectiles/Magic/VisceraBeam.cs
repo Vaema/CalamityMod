@@ -1,12 +1,13 @@
-﻿using CalamityMod.Items.Weapons.Magic;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Healing;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Audio;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Projectiles.Healing;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -48,7 +49,7 @@ namespace CalamityMod.Projectiles.Magic
             }
             for (int i = 0; i <= 15; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 60 : DustID.Blood);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, (!ChildSafety.Disabled ? DustID.Cloud : (Main.rand.NextBool() ? 60 : DustID.Blood)));
                 dust.position = Projectile.Center;
                 dust.scale = Main.rand.NextFloat(0.8f, 1.3f);
                 dust.velocity = new Vector2(7, 7).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 0.9f);
@@ -90,7 +91,7 @@ namespace CalamityMod.Projectiles.Magic
 
                 for (int i = 0; i <= 6; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 60 : DustID.Blood);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, (!ChildSafety.Disabled ? DustID.Cloud : (Main.rand.NextBool() ? 60 : DustID.Blood)));
                     dust.scale = Main.rand.NextFloat(0.7f, 1.4f);
                     dust.velocity = Projectile.velocity.RotatedByRandom(0.5) * Main.rand.NextFloat(0.8f, 1.9f);
                     dust.noGravity = true;
@@ -105,7 +106,7 @@ namespace CalamityMod.Projectiles.Magic
                 {
                     for (int i = 0; i <= 25; i++)
                     {
-                        Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 60 : DustID.Blood);
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center, (!ChildSafety.Disabled ? DustID.Cloud : (Main.rand.NextBool() ? 60 : DustID.Blood)));
                         dust.scale = Main.rand.NextFloat(0.9f, 1.9f);
                         dust.velocity = Projectile.velocity.RotatedByRandom(0.6) * Main.rand.NextFloat(1.8f, 2.9f);
                         dust.noGravity = true;
@@ -115,7 +116,7 @@ namespace CalamityMod.Projectiles.Magic
                 {
                     for (int i = 0; i <= 10; i++)
                     {
-                        Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool() ? 60 : DustID.Blood);
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center, (!ChildSafety.Disabled ? DustID.Cloud : (Main.rand.NextBool() ? 60 : DustID.Blood)));
                         dust.scale = Main.rand.NextFloat(0.7f, 1.4f);
                         dust.velocity = Projectile.velocity.RotatedByRandom(0.6) * Main.rand.NextFloat(0.8f, 1.9f);
                         dust.noGravity = true;
@@ -124,16 +125,16 @@ namespace CalamityMod.Projectiles.Magic
             }
             if (Projectile.localAI[0] > 16f)
             {
-                int bloody = Dust.NewDust(Projectile.Center, 1, 1, DustID.Blood);
+                int bloody = Dust.NewDust(Projectile.Center, 1, 1, (!ChildSafety.Disabled ? DustID.Cloud : DustID.Blood));
                 Main.dust[bloody].position = Projectile.Center + Main.rand.NextVector2Circular(8, 8);
                 Main.dust[bloody].scale = Main.rand.NextFloat(0.3f, 0.8f);
                 Main.dust[bloody].velocity = -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.6f);
                 Main.dust[bloody].noGravity = true;
                 if (Projectile.localAI[0] % 3 == 0 && targetDist < 1400f)
                 {
-                    AltSparkParticle spark = new AltSparkParticle(Projectile.Center - Projectile.velocity * 0.5f, Projectile.velocity * 0.01f, false, 7, 0.8f, Color.DarkRed);
+                    AltSparkParticle spark = new AltSparkParticle(Projectile.Center - Projectile.velocity * 0.5f, Projectile.velocity * 0.01f, false, 7, 0.8f, (!ChildSafety.Disabled ? Color.CornflowerBlue : Color.DarkRed));
                     GeneralParticleHandler.SpawnParticle(spark);
-                    SparkParticle spark2 = new SparkParticle(Projectile.Center - Projectile.velocity * 0.5f, Projectile.velocity * 0.01f, false, 4, 0.65f, Color.Red);
+                    SparkParticle spark2 = new SparkParticle(Projectile.Center - Projectile.velocity * 0.5f, Projectile.velocity * 0.01f, false, 4, 0.65f, (!ChildSafety.Disabled ? Color.CornflowerBlue : Color.Red));
                     GeneralParticleHandler.SpawnParticle(spark2);
                 }
             }

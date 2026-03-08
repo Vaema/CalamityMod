@@ -177,22 +177,8 @@ namespace CalamityMod.Items.BaseItems
             {
                 currentTransformation.ModifyDrawInfo(ref drawInfo);
 
-                if (currentTransformation.EquipSlots.Any(s => s.Type == EquipType.Head))
-                {
-                    drawInfo.headGlowMask = -1;
-                    drawInfo.helmetOffset = Vector2.Zero;
-                }
-
-                if (currentTransformation.EquipSlots.Any(s => s.Type == EquipType.Body))
-                {
-                    drawInfo.bodyGlowMask = -1;
-                }
-
-                if (currentTransformation.EquipSlots.Any(s => s.Type == EquipType.Legs))
-                {
-                    drawInfo.legsGlowMask = -1;
-                    drawInfo.legsOffset = Vector2.Zero;
-                }
+                // CIT 24FEB2026: Previously, this hook also reset glowmasks and offsets on the head, body, and legs.
+                // This has been removed, as it resulted in index OOB crashes due to the original armor being drawn for one frame.
             }
         }
 

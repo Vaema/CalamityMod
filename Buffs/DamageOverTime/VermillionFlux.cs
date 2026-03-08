@@ -12,7 +12,7 @@ namespace CalamityMod.Buffs.DamageOverTime
     {
         public static DebuffData debuffData = new DebuffData(DebuffData.DebuffBehavior.Electric)
         {
-            EnemyLostRegen = 100,
+            EnemyLostRegen = 75, //150 dps when moving, 37.5 dps when stationary
             ElectricDebuffScaling = 1
         };
         public override void SetStaticDefaults()

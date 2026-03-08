@@ -1,9 +1,9 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.WorldBuilding;
 
 namespace CalamityMod.DataStructures
 {
@@ -224,7 +224,8 @@ namespace CalamityMod.DataStructures
                     .CombineWith(ApplyScalingToStatModifer(cnpc.ActiveElectricDebuffMultiplier, ElectricDebuffScaling)
                  ))))
                  :
-                 cnpc.ActiveTypelessDebuffMultiplier;
+                 // Bane doesn't scale with debuff multipliers. This should be implemented as a default feature you can apply to debuffs at some point.
+                 buffType == ModContent.BuffType<Bane>() ? cnpc.ActiveTypelessDebuffMultiplier : StatModifier.Default;
 
             //Ensure at least 25% effectiveness
             if (totalScaling.Multiplicative <= 0.25f)
@@ -257,7 +258,8 @@ namespace CalamityMod.DataStructures
                     .CombineWith(ApplyScalingToStatModifer(cnpc.ActiveElectricDebuffMultiplier, ElectricDebuffScaling)
                  ))))
                  :
-                 cnpc.ActiveTypelessDebuffMultiplier;
+                 // Bane doesn't scale with debuff multipliers. This should be implemented as a default feature you can apply to debuffs at some point.
+                 buffType == ModContent.BuffType<Bane>() ? cnpc.ActiveTypelessDebuffMultiplier : StatModifier.Default;
 
             //Ensure at least 25% effectiveness
             if (totalScaling.Multiplicative <= 0.25f)
@@ -419,7 +421,7 @@ namespace CalamityMod.DataStructures
         };
         public static DebuffData Electrified = new DebuffData(DebuffBehavior.Electric)
         {
-            EnemyLostRegen = 21,
+            EnemyLostRegen = 30, // 15 dps stationary, 60 dps moving
             EnemyVanillaRegenToCancelOut = 8,
             ElectricDebuffScaling = 1
         };
