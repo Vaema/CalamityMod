@@ -8,7 +8,6 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer.Dashes;
-using CalamityMod.CalPlayer.DrawLayers;
 using CalamityMod.Cooldowns;
 using CalamityMod.DataStructures;
 using CalamityMod.Dusts;
@@ -73,7 +72,6 @@ using CalamityMod.Utilities;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -3659,7 +3657,6 @@ namespace CalamityMod.CalPlayer
                     }
                 }
             }
-
             if (CalamityKeybinds.BoosterDashHotKey.JustPressed && hasJetpack && Main.myPlayer == Player.whoAmI && rogueStealth >= rogueStealthMax * 0.25f &&
                 wearingRogueArmor && rogueStealthMax > 0 && !Player.HasCooldown(RogueBooster.ID) && !Player.mount.Active)
             {
@@ -4571,6 +4568,7 @@ namespace CalamityMod.CalPlayer
         #region PreUpdateMovement
         public override void PreUpdateMovement()
         {
+
             // Rain armor set effects
             if (rainSet)
             {
@@ -6254,7 +6252,6 @@ namespace CalamityMod.CalPlayer
             GeneralParticleHandler.SpawnParticle(square1);
             GeneralParticleHandler.SpawnParticle(square2);
         }
-
         #endregion
 
         #region Mana Consumption Effects
