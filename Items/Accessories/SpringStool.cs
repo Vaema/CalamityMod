@@ -36,7 +36,7 @@ namespace CalamityMod.Items.Accessories
         {
             CreateRecipe().
                 AddIngredient(ItemID.PortableStool).
-                AddIngredient(ItemID.CopperBar, 3).
+                AddRecipeGroup("AnyCopperBar", 3).
                 AddTile(TileID.Anvils).
                 Register();
         }
