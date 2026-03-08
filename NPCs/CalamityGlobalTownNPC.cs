@@ -249,6 +249,7 @@ namespace CalamityMod.NPCs
             "Mr. Bones", // <@!359215912856977408> (jaybones.)
             "Freakbob", // <@!377863128140087296> (jevilamv)
             "Bone Cold Steve Austin", // <@!282704860992897024> (raendrag_of_rovan)
+            "Them Bones", // <@!322208584534589450> (dogvtf)
         ];
         private static readonly string[] SteampunkerNames =
         [
