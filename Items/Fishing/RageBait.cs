@@ -7,7 +7,7 @@ namespace CalamityMod.Items.Fishing
     public class RageBait : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Fishing";
-        public static int junkChance = 3; // 1/x chance to turn items to junk
+        public static (int, int) junkChance = (2, 3); // x/x Chance to turn items to junk
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 5;
@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Fishing
             Item.height = 12;
             Item.maxStack = Item.CommonMaxStack;
             Item.rare = ItemRarityID.Blue;
-            Item.value = Item.sellPrice(silver: 2);
+            Item.value = Item.sellPrice(copper: 1);
             Item.bait = 100;
             Item.consumable = true;
         }
