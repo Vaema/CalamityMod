@@ -33,7 +33,7 @@ AngelicShotgun: {
 	DisplayName: Angelic Shotgun
 	Tooltip:
 		'''
-		Each shot casts a radiant beam of holy light from the sky
+		Each shot casts a radiant beam of [cbuff:CalamityMod/HolyFlames] from the sky
 		Musket balls convert into hallow-point rounds which also empower the beam
 		'Fighting 'til the war's won'
 		'''
@@ -45,8 +45,8 @@ Animosity: {
 	Tooltip: "[GFB]"
 	TooltipNormal:
 		'''
-		Fires a shotgun blast with a tight spread which is imbued with Brimstone Flames
-		Press <right> to fire a powerful brimstone round that inflicts Whispering Death
+		Fires a shotgun blast with a tight spread which is imbued with [cbuff:CalamityMod/BrimstoneFlames]
+		Press <right> to fire a powerful brimstone round that inflicts [cbuff:CalamityMod/WhisperingDeath]
 		'''
 	TooltipGFB:
 		'''
@@ -109,7 +109,7 @@ ArterialAssault: {
 		'''
 		Fires a group of 5 homing blood arrows
 		These blood arrows burst into blood orbs upon striking an enemy
-		Picking up these blood orbs reduces the duration of [cbuff:PotionSickness]
+		Picking up these blood orbs reduces the duration of [cbuffplr:PotionSickness]
 		'''
 }
 
@@ -127,7 +127,7 @@ Auralis: {
 	DisplayName: Auralis
 	Tooltip:
 		'''
-		Fires a high speed glowing bullet that reduces enemy protection
+		Fires a high speed glowing bullet that inflicts [cbuff:CalamityMod/MarkedforDeath]
 		Press <right> to zoom out
 		Standing still provides increasing damage bonuses up to 25%
 		Standing still for 5 or more seconds while using the scope ability will summon an aurora
@@ -171,7 +171,7 @@ BlightSpewer: {
 	DisplayName: Blight Spewer
 	Tooltip:
 		'''
-		Fires clouds of plague nanomachines that stick to tiles
+		Fires clouds of [cbuff:CalamityMod/Plague] nanomachines that stick to tiles
 		Nanomachines aggressively lock onto nearby enemies
 		{$CommonItemTooltip.PercentChanceToSaveAmmo}
 		'''
@@ -182,7 +182,7 @@ BlissfulBombardier: {
 	Tooltip:
 		'''
 		Launches a crystalline missile high into the sky, raining holy fire on the cursor
-		The missile relentlessly seeks out a target before bursting into a massive explosion
+		The missile relentlessly seeks out a target before bursting into a massive [cbuff:CalamityMod/HolyFlames] explosion
 		'''
 }
 
@@ -191,7 +191,7 @@ BloodBoiler: {
 	Tooltip:
 		'''
 		Fires twin streams of bloodfire that returns to you
-		Returning bloodfire reduces [cbuff:PotionSickness] if it struck an enemy
+		Returning bloodfire reduces [cbuffplr:PotionSickness] if it struck an enemy
 		Uses your health as ammo
 		20% chance to save health
 		'''
@@ -236,7 +236,7 @@ Buzzkill: {
 	Tooltip:
 		'''
 		Hold <left> to rev up a buzzsaw that deals close-range damage
-		Release to fire the buzzsaw, which bounces off tiles and lacerates foes
+		Release to fire the buzzsaw, which bounces off tiles and causes [cbuff:CalamityMod/HeavyBleeding] in foes
 		Revving up the saws increases their damage and allows them to pierce more enemies
 		'Not to be confused with the Sawed-On Shotgun'
 		'''
@@ -244,7 +244,7 @@ Buzzkill: {
 
 ChickenCannon: {
 	DisplayName: Chicken Cannon
-	Tooltip: Fires chicken flares which create enormous incendiary explosions
+	Tooltip: Fires chicken flares which create enormous incendiary explosions of [cbuff:CalamityMod/Dragonfire]
 }
 
 ChromaticEruption: {
@@ -266,7 +266,7 @@ CleansingBlaze: {
 	DisplayName: Cleansing Blaze
 	Tooltip:
 		'''
-		Unleashes a torrent of flames which can pass through tiles
+		Unleashes a torrent of [cbuff:CalamityMod/GodSlayerInferno] flames which can pass through tiles
 		Uses gel for ammo
 		'''
 }
@@ -328,7 +328,7 @@ CorinthPrime: {
 
 CorrodedCaustibow: {
 	DisplayName: Corroded Caustibow
-	Tooltip: Converts wooden arrows into slow, powerful shells that trail an irradiated aura
+	Tooltip: Converts wooden arrows into slow, powerful shells that trail an [cbuff:CalamityMod/Irradiated] aura
 }
 
 CrackshotColt: {
@@ -384,9 +384,9 @@ DragonsBreath: {
 	DisplayName: Dragon's Breath
 	Tooltip:
 		'''
-		Fires dragon fireballs at an accelerating pace
+		Fires [cbuff:CalamityMod/Dragonfire] fireballs at an accelerating pace
 		Upon firing for long enough, you will begin using a cartridge of energy
-		While using a cartridge you will shoot a draconic beam of fire that doesn't consume ammo
+		While using a cartridge you will shoot a draconic beam of [cbuff:CalamityMod/Dragonfire] that doesn't consume ammo
 		Once a cartridge has been ejected you will return to the original fire rate
 		{$CommonItemTooltip.PercentChanceToSaveAmmo}
 		'''
@@ -416,7 +416,7 @@ EternalBlizzard: {
 
 Eviscerator: {
 	DisplayName: Eviscerator
-	Tooltip: Converts musket balls into fast-moving blood clots
+	Tooltip: Converts musket balls into fast-moving blood clots that cause [cbuff:CalamityMod/BurningBlood]
 }
 
 FetidEmesis: {
@@ -554,7 +554,7 @@ HavocsBreath: {
 	DisplayName: Havoc's Breath
 	Tooltip:
 		'''
-		Projects cone-shaped blasts of scorching brimstone fire
+		Projects cone-shaped blasts of scorching [cbuff:CalamityMod/BrimstoneFlames]
 		Uses gel for ammo
 		'''
 }
@@ -563,7 +563,7 @@ HeavenlyGale: {
 	DisplayName: Heavenly Gale
 	Tooltip:
 		'''
-		Fires a rapid stream of supercharged exo-crystals
+		Fires a rapid stream of supercharged exo-crystals that inflict [cbuff:CalamityMod/MiracleBlight]
 		Holding the bow and waiting for some time before firing causes the crystals to become more powerful
 		If the crystals are sufficiently powerful enough they will summon torrents of exo-lightning above whatever target they hit
 		'''
@@ -603,7 +603,7 @@ Hydra: {
 	DisplayName: Hydra
 	Tooltip:
 		'''
-		Fires a spread of 4 toxic bullets
+		Fires a spread of 4 [cbuff:Venom] bullets
 		Grows a gun-head every 3 seconds, up to a maximum of 3 heads
 		Press <left> to command any existing heads to fire
 		Press <right> to launch the heads for powerful explosive damage
@@ -633,7 +633,7 @@ Kingsbane: {
 		'''
 		After revving up, rapidly fire bullets
 		When you stop firing you will release a barrage of auric bullets
-		Auric bullets aggressively home in on enemies and ignore 50 points of defense
+		Auric bullets aggressively home in on enemies, ignore 50 points of defense, and inflict [cbuff:CalamityMod/AuricRebuke]
 		Constantly consumes ammo while in use
 		{$CommonItemTooltip.PercentChanceToSaveAmmo}
 		'''
@@ -644,7 +644,7 @@ Leviatitan: {
 	Tooltip:
 		'''
 		Fires high velocity aqua blasts
-		Releases homing aberrations that shred enemy defense every six shots
+		Releases homing aberrations that cause [cbuff:CalamityMod/ArmorCrunch] every six shots
 		<right> to vomit a meteor that explodes on hit
 		'The L in LMG stands for Leviathan'
 		'''
@@ -684,7 +684,7 @@ MagnomalyCannon: {
 	DisplayName: Magnomaly Cannon
 	Tooltip:
 		'''
-		Launches a powerful exo rocket to nuke anything and everything
+		Launches a powerful exo rocket to nuke anything and everything with [cbuff:CalamityMod/MiracleBlight]
 		Rockets are surrounded by an invisible damaging aura and split into damaging beams on hit
 		{$CommonItemTooltip.PercentChanceToSaveAmmo}
 		'''
@@ -695,7 +695,7 @@ Malevolence: {
 	Tooltip:
 		'''
 		Fires two arrows at once
-		Converts wooden arrows into plague arrows that explode into bees
+		Converts wooden arrows into [cbuff:CalamityMod/Plague] arrows that explode into bees
 		'''
 }
 
@@ -885,14 +885,14 @@ PearlGod: {
 
 PestilentDefiler: {
 	DisplayName: Pestilent Defiler
-	Tooltip: Converts musket balls into plague rounds that explode and split apart on hit
+	Tooltip: Converts musket balls into [cbuff:CalamityMod/Plague] rounds that explode and split apart on hit
 }
 
 Photoviscerator: {
 	DisplayName: Photoviscerator
 	Tooltip:
 		'''
-		Emits a continuous beam of exo radiation that disintegrates everything
+		Emits a continuous beam of [cbuff:CalamityMod/MiracleBlight] radiation that disintegrates everything
 		Press <right> to fire homing exo flares which stick to and incinerate enemies
 		Uses gel for ammo
 		The beam has a {0}% chance to save ammo
@@ -903,7 +903,7 @@ PlagueTaintedSMG: {
 	DisplayName: Plague Tainted SMG
 	Tooltip:
 		'''
-		Shoots plague bullets that spawn drones on critical hits
+		Shoots [cbuff:CalamityMod/Plague] bullets that spawn drones on critical hits
 		Bullets deal more damage and knockback the closer the enemy is
 		Drones have a much higher crit chance upon hitting a plagued enemy
 		Press <right> to fire a drone swarm
@@ -942,7 +942,7 @@ PridefulHuntersPlanarRipper: {
 	Tooltip:
 		'''
 		Every fourth shot deals 135% damage
-		Converts musket balls into lightning bolts
+		Converts musket balls into [cbuff:Electrified] lightning bolts
 		Lightning bolts travel extremely fast and explode on enemy kills
 		Lightning bolt crits grant a stacking speed boost to the player
 		This stacks up to 20 percent bonus movement speed and acceleration
@@ -955,7 +955,7 @@ PristineFury: {
 	DisplayName: Pristine Fury
 	Tooltip:
 		'''
-		Fires an intense helix of flames that burst into a column of smoke
+		Fires an intense helix of [cbuff:CalamityMod/HolyFlames] that burst into a column of smoke
 		<right> to disperse a limited supply of flammable crystalline powder that restores over time
 		Powder can be ignited, causing it to explode for extra damage
 		Both helix flames and other nearby explosions can ignite the powder
@@ -1078,7 +1078,7 @@ SepticSkewer: {
 	Tooltip:
 		'''
 		Launches a vile chained harpoon infested with toxins
-		Harpoons stick into enemies and inflict Sulphuric Poisoning for a long time
+		Harpoons stick into enemies and inflict [cbuff:CalamityMod/SulphuricPoisoning] for a long time
 		After being impaled for one second, harpoons rip themselves back out and spray damaging gores
 		Press <right> to manually rip out all harpoons, dealing bonus damage
 		Enemies close to death are dragged back with returning harpoons and executed when they reach you
@@ -1090,7 +1090,7 @@ Shadethrower: {
 	DisplayName: Shadethrower
 	Tooltip:
 		'''
-		Spits clouds of shade which afflict enemies with brain rot
+		Spits clouds of shade which afflict enemies with [cbuff:CalamityMod/BrainRot]
 		Uses gel for ammo
 		'''
 }
@@ -1151,10 +1151,10 @@ SomaPrime: {
 	Tooltip:
 		'''
 		This weapon can supercrit if its crit chance is over 100%
-		All bullets fired have a 5% chance to inflict Shred, a stacking bleed debuff
-		Critical strikes deal 3x damage instead of 2x by default and have a 30% chance to inflict Shred
-		Shred deals 600 DPS per stack and scales with your ranged stats
-		Damage ticks of Shred can critically strike for 3x damage and can supercrit
+		All bullets fired have a 5% chance to inflict [cbuff:CalamityMod/Shred], a stacking bleed debuff
+		Critical strikes deal 3x damage instead of 2x by default and have a 30% chance to inflict [cbuff:CalamityMod/Shred]
+		[cbuff:CalamityMod/Shred] deals 600 DPS per stack and scales with your ranged stats
+		Damage ticks of [cbuff:CalamityMod/Shred] can critically strike for 3x damage and can supercrit
 		Replaces musket balls with enhanced High Velocity Bullets
 		{$CommonItemTooltip.PercentChanceToSaveAmmo}
 		'''
@@ -1264,7 +1264,7 @@ SulphuricAcidCannon: {
 	Tooltip:
 		'''
 		Fires homing Acid Rockets
-		Acid Rockets stick to enemies and explode into toxic mist after a short delay
+		Acid Rockets stick to enemies and explode into [cbuff:CalamityMod/SulphuricPoisoning] mist after a short delay
 		'''
 }
 
@@ -1280,6 +1280,7 @@ SuperradiantSlaughterer: {
 		'''
 		Hold <left> to rev up an elemental buzzsaw that deals close-range damage
 		Release <left> to fire the buzzsaw which bounces off tiles, releasing homing bolts when returning depending on hits
+		Buzzsaws inflict [cbuff:CalamityMod/ElementalMix] and [cbuff:CalamityMod/Laceration]
 		Revving up the saw increases its damage and allows it to pierce more enemies
 		'''
 	AltInfo:
@@ -1335,7 +1336,7 @@ TelluricGlare: {
 
 TheBallista: {
 	DisplayName: The Ballista
-	Tooltip: Converts wooden arrows into greatarrows that crush enemy armor and break into shards
+	Tooltip: Converts wooden arrows into greatarrows that cause [cbuff:CalamityMod/ArmorCrunch] and break into shards
 }
 
 TheBlunderbass: {
@@ -1351,9 +1352,9 @@ TheHive: {
 	DisplayName: The Hive
 	Tooltip:
 		'''
-		Launches a wide spread of 4 missiles that explode on contact with enemies and tiles
+		Launches a wide spread of 4 [cbuff:CalamityMod/Plague] missiles that explode on contact with enemies and tiles
 		Charging the launcher decreases the spread and increases the velocity of the missile barrage
-		Fully charging the launcher will cause it to fire a nuke to decimate a massive area on impact
+		Fully charging the launcher will cause it to fire a [cbuff:CalamityMod/Plague] nuke to decimate a massive area on impact
 		'''
 }
 
@@ -1364,7 +1365,7 @@ TheJailor: {
 
 TheMaelstrom: {
 	DisplayName: The Maelstrom
-	Tooltip: Fires charged Reaper Sharks that explode into water
+	Tooltip: Fires charged Reaper Sharks that cause [cbuff:CalamityMod/HadopelagicPressure] water explosions
 }
 
 ThePack: {
@@ -1376,7 +1377,7 @@ ThermoclineBlaster: {
 	DisplayName: Thermocline Blaster
 	Tooltip:
 		'''
-		Alternates between firing bullets imbued with fire and ice
+		Alternates between firing bullets imbued with [cbuff:OnFire3] and [cbuff:Frostburn2]
 		Any bullet type can be imbued when fired from this gun
 		'''
 }
@@ -1426,7 +1427,7 @@ TitaniumRailgun: {
 
 Toxibow: {
 	DisplayName: Toxibow
-	Tooltip: Converts wooden arrows into slow arrows that inflict irradiated
+	Tooltip: Converts wooden arrows into slow arrows that inflict [cbuff:CalamityMod/Irradiated]
 }
 
 TyrannysEnd: {
@@ -1434,7 +1435,7 @@ TyrannysEnd: {
 	Tooltip:
 		'''
 		Converts musket balls into .70 caliber sniper rounds that deal devastating damage
-		Inflicts Marked for Death on enemy hits and bypasses defense
+		Inflicts [cbuff:CalamityMod/MarkedforDeath] on enemy hits and bypasses defense
 		Critical hits summon a swarm of 6 additional bullets
 		'Pierce the heart of even the most heavily-armored foe'
 		'''
@@ -1445,8 +1446,7 @@ Ultima: {
 	Tooltip:
 		'''
 		Casts a continuous stream of plasma bolts
-		Over time the bolts are replaced with powerful lasers
-		Bolts power up into solid beams as you continue shooting
+		Over time bolts power up into solid beams that inflict [cbuff:CalamityMod/ElementalMix] as you continue shooting
 		{$CommonItemTooltip.PercentChanceToSaveAmmo}
 		'''
 }
@@ -1474,7 +1474,7 @@ Voidragon: {
 	DisplayName: Voidragon
 	Tooltip:
 		'''
-		Fires void blasts that explode every other shot
+		Fires [cbuff:CalamityMod/Voidfrost] blasts that explode every other shot
 		Shoots demon flame tentacles alongside every shot
 		Void blasts consume no ammo and bullets have a {0}% chance to save ammo
 		'''
