@@ -1058,6 +1058,21 @@ namespace CalamityMod.CalPlayer
                         break;
                 }
             }
+            if (modProj.stealthStrike && nanotechHitCooldown <= 0 && modProj.stealthStrikeHitCount < 3)
+            {
+                bool spawnedFlares = false;
+                if (nanotech)
+                {
+                    for (int i = 0; i < 3; i++)
+                    {
+                        Vector2 source = new Vector2(position.X + Main.rand.Next(-201, 201), Main.screenPosition.Y - 600f - Main.rand.Next(50));
+                        Vector2 velocity = (position - source) / 40f;
+                        int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(110);
+                        Projectile.NewProjectile(spawnSource, source, velocity, ProjectileType<NanoFlare>(), damage, 3f, proj.owner);
+                    }
+                }
+                nanotechHitCooldown = spawnedFlares ? 15 : 60;
+            }
 
             if (titanHeartSet && modProj.stealthStrike && titanCooldown <= 0 && modProj.stealthStrikeHitCount < 3)
             {

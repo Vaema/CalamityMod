@@ -948,6 +948,7 @@ namespace CalamityMod.CalPlayer
         public bool evolution = false;
         public bool procDodgeEffects = true;
         public bool nanotech = false;
+        public int nanotechHitCooldown = 0;
         public bool deadshotBrooch = false;
         public bool shadowMinions = false;
         public bool holyMinions = false;
@@ -2412,6 +2413,7 @@ namespace CalamityMod.CalPlayer
             frostFlare = false;
             evolution = false;
             nanotech = false;
+            nanotechHitCooldown = 0;
             deadshotBrooch = false;
             tesla = false;
             teslaVisuals = true;
