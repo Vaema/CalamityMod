@@ -37,11 +37,11 @@ namespace CalamityMod.Items.Accessories
             player.statManaMax2 += 70;
             player.GetDamage<MagicDamageClass>() += (0.02f * modPlayer.mageCrownCount); //2% per moon sigil, up to 20%
             player.manaCost -= (0.01f * modPlayer.mageCrownCount); //1% per moon sigil, up to 10%
-            if (modPlayer.mageCrownCount >= 4) //I know this looks weird but the count starts at 0
+            if (modPlayer.mageCrownCount >= 5) //At 5 sigils, grant a mana regen bonus
             {
                 player.manaRegenBonus += 10;
             }
-            if (modPlayer.mageCrownCount == 10) //I don't know why it's like this
+            if (modPlayer.mageCrownCount >= 10) //At 10 sigils, grant 10% crit. Nightwither infliction is handed in CalPlayerOnHit
             {
                 player.GetCritChance<MagicDamageClass>() += 10;
             }

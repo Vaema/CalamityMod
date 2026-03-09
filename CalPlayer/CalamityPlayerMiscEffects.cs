@@ -1997,7 +1997,7 @@ namespace CalamityMod.CalPlayer
             }
             if (featherCrown && !moonCrown)
             {
-                int MaxSigils = 4;
+                int MaxSigils = 4; //Starts at 0, so cap is 5
                 if (mageCrownTimer == 0)
                 {
                     if (mageCrownCount <= MaxSigils)

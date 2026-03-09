@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CalamityMod.CalPlayer;
-using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -24,7 +24,6 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.height = 10;
             Projectile.scale = 0.8f;
             Projectile.friendly = true;
-            Projectile.penetrate = -1;
             Projectile.ignoreWater = true;
             Projectile.timeLeft = 18000;
             Projectile.penetrate = -1;
@@ -57,10 +56,10 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.rotation += MathHelper.ToRadians(1.3f);
 
             int cap = modPlayer.mageCrownCount;
-            int excessCount = Main.player[Projectile.owner].ownedProjectileCounts[Type] - cap;
-            if (excessCount > cap)
+            if (Owner.ownedProjectileCounts[Type] > cap)
             {
                 Projectile.Kill();
+                return;
             }
             int feathers = 0;
             int featherAmt = 0;
@@ -111,7 +110,7 @@ namespace CalamityMod.Projectiles.Magic
             CalamityPlayer modPlayer = player.Calamity();
             if (visuals)
             {
-                SoundEngine.PlaySound(SoundID.Item20, player.Center);
+                SoundEngine.PlaySound(SoundID.Item20 with { volume = 0.6f }, player.Center);
             }
             if (modPlayer.mageCrownCount == 5)
             {
@@ -138,14 +137,25 @@ namespace CalamityMod.Projectiles.Magic
                 dustD += 90;
                 dustSp = 0.2f;
             }
+            if (!Main.dedServ)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    Particle dust = new GlowOrbParticle(Projectile.Center, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(2.5f, 3), false, 20, Main.rand.NextFloat(0.5f, 0.65f), Main.rand.NextBool(5) ? Color.AliceBlue : Color.DodgerBlue, true, false, false);
+                    GeneralParticleHandler.SpawnParticle(dust);
+                }
+            }
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
             //Ensures the breaking sound doesn't play when the player removes the accessory
             if (modPlayer.featherCrown)
             {
-                SoundEngine.PlaySound(SoundID.Item109);
+                SoundStyle f = new("CalamityMod/Sounds/Item/MeldShoot");
+                SoundEngine.PlaySound(f with { Volume = 0.35f, Pitch = 0.95f }, Projectile.Center);
                 SoundStyle aud = new("CalamityMod/Sounds/Item/MittFail");
-                SoundEngine.PlaySound(aud with { Volume = 1f, Pitch = 0 }, Projectile.Center);
+                SoundEngine.PlaySound(aud with { Volume = 0.6f, Pitch = 0 }, Projectile.Center);
+                SoundStyle shed = new("CalamityMod/Sounds/Item/FeatherBreak");
+                SoundEngine.PlaySound(shed with { Volume = 1f, Pitch = 0 }, Projectile.Center);
             }
         }
         public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)

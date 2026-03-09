@@ -34,7 +34,6 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.timeLeft = 18000;
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
-            Projectile.timeLeft *= 5;
             Projectile.DamageType = DamageClass.Magic;
         }
 

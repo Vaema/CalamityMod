@@ -55,10 +55,10 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.rotation += MathHelper.ToRadians(1.3f);
 
             int cap = modPlayer.mageCrownCount;
-            int excessCount = Main.player[Projectile.owner].ownedProjectileCounts[Type] - cap;
-            if (excessCount > cap)
+            if (Owner.ownedProjectileCounts[Type] > cap)
             {
                 Projectile.Kill();
+                return;
             }
             int sigils = 0;
             int sigilAmt = 0;
