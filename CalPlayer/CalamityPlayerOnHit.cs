@@ -1182,7 +1182,7 @@ namespace CalamityMod.CalPlayer
                     target.AddBuff(BuffType<StaticDischarge>(), 120);
                 }
             }
-            if (summon)
+            if (summon && !whip)
             {
                 if (pSoulArtifact && !profanedCrystal)
                     target.AddBuff(BuffType<HolyFlames>(), 300);
