@@ -262,6 +262,7 @@ namespace CalamityMod.NPCs
             "Kreutz", // <@!553445849149997056> (red_r_kreutz)
             "Cathlyn", // <@!156672312425316352> (xaqult)
             "Eunice", // <@!358376627400605699> (srmg267)
+            "Zera", // <@!543914166969172106> (zer0_0_0_0)
         ];
         private static readonly string[] StylistNames =
         [
