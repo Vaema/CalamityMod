@@ -1300,8 +1300,6 @@ namespace CalamityMod.CalPlayer
         public bool daedalusCrystal = false;
         /// <summary> Hydrothermic armor's summoner set bonus minion. </summary>
         public bool chaosSpirit = false;
-        /// <summary> Demonshade armor's set bonus minion. </summary>
-        public bool redDevil = false;
         public bool GemTechSet = false;
         /// <summary> Calamity's Cobalt armor set bonus; increases damage and crit chance based on how fast the player is moving. </summary>
         public bool CobaltSet = false;
@@ -1557,8 +1555,6 @@ namespace CalamityMod.CalPlayer
         /// <summary> Pearl of Enthrallment. </summary>
         public bool waterEleBuff = false;
         public bool fClump = false;
-        /// <summary> Demonshade armor's Red Devil. </summary>
-        public bool rDevil = false;
         /// <summary> Aerospec armor's Valkyrie. </summary>
         public bool aValkyrie = false;
         public bool apexShark = false;
@@ -2814,7 +2810,6 @@ namespace CalamityMod.CalPlayer
             brimEleBuff = false;
             waterEleBuff = false;
             fClump = false;
-            rDevil = false;
             aValkyrie = false;
             sCrystal = false;
             sGod = false;
@@ -2841,7 +2836,6 @@ namespace CalamityMod.CalPlayer
             fungalClumpVanity = false;
             howlsHeart = false;
             howlsHeartVanity = false;
-            redDevil = false;
             valkyrie = false;
             slimeGod = false;
             chaosSpirit = false;
