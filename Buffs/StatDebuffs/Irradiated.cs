@@ -34,10 +34,9 @@ namespace CalamityMod.Buffs.StatDebuffs
                     Player player = Main.player[playerIndex];
                     if (player.active)
                     {
-                        float playerRangedDamage = player.GetTotalDamage(DamageClass.Ranged).ApplyTo(baseIrradiatedDoTValue * (1 + player.GetTotalCritChance(DamageClass.Ranged) * 0.01f));
-                        if (playerRangedDamage > baseIrradiatedDoTValue && player.Calamity().scionsCurio)
+                        if (player.Calamity().scionsCurioDebuffDamage > baseIrradiatedDoTValue && player.Calamity().scionsCurio)
                         {
-                            baseIrradiatedDoTValue = (int)playerRangedDamage;
+                            baseIrradiatedDoTValue = (int)player.Calamity().scionsCurioDebuffDamage;
                         }
                     }
                 }

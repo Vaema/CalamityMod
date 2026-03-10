@@ -74,6 +74,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.height = 94;
             Projectile.friendly = true;
             Projectile.DamageType = TrueMeleeNoSpeedDamageClass.Instance;
+            Projectile.ContinuouslyUpdateDamageStats = true;
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.penetrate = -1;
@@ -170,6 +171,9 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
+            var player = Main.player[Projectile.owner];
+            var modPlayer = player.GetModPlayer<LightspeedPlayer>();
+
             Projectile.scale = 0.6f;
 
             if (!Owner.channel && DashState == 0)
@@ -186,7 +190,7 @@ namespace CalamityMod.Projectiles.Melee
                 if (Owner.altFunctionUse == 2 && Owner.Calamity().mouseRight)
                 {
                     // Check if the player has enough EM
-                    if (Owner.Calamity().elementalMastery < 100)
+                    if (modPlayer.elementalMastery < 100)
                     {
                         Projectile.Kill();
                         return;
@@ -195,7 +199,7 @@ namespace CalamityMod.Projectiles.Melee
                     DashState = 1;
                     DashTimer = DashPrepTime;
                     Projectile.localAI[0] = Owner.direction;
-                    Owner.Calamity().elementalMastery = 0; // Reset EM to zero
+                    modPlayer.elementalMastery = 0; // Reset EM to zero
                 }
             }
 

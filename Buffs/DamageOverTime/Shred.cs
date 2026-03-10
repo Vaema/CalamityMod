@@ -1,10 +1,12 @@
 ﻿using System;
+using CalamityMod.DataStructures;
 using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.DamageOverTime
@@ -18,7 +20,10 @@ namespace CalamityMod.Buffs.DamageOverTime
         // This deals 600 DPS per stack, is boosted by ranged stats and can supercrit.
         internal static int BaseDamage = 120;
         internal static int FramesPerDamageTick = 12;
-
+        public static DebuffData debuffData = new DebuffData()
+        {
+            EnemyLostRegen = BaseDamage
+        };
         public override void SetStaticDefaults()
         {
             Main.debuff[Type] = true;
@@ -100,7 +105,7 @@ namespace CalamityMod.Buffs.DamageOverTime
                 int bloodLifetime = Main.rand.Next(22, 36);
                 float bloodScale = Main.rand.NextFloat(0.6f, 0.8f);
                 Color bloodColor = Color.Lerp(Color.Red, Color.DarkRed, Main.rand.NextFloat());
-                bloodColor = Color.Lerp(bloodColor, new Color(51, 22, 94), Main.rand.NextFloat(0.65f));
+                bloodColor = (!ChildSafety.Disabled ? Color.CornflowerBlue : Color.Lerp(bloodColor, new Color(51, 22, 94), Main.rand.NextFloat(0.65f)));
 
                 if (Main.rand.NextBool(20))
                     bloodScale *= 2f;
@@ -114,7 +119,7 @@ namespace CalamityMod.Buffs.DamageOverTime
             for (int i = 0; i < exactBloodCount / 3; ++i)
             {
                 float bloodScale = Main.rand.NextFloat(0.2f, 0.33f);
-                Color bloodColor = Color.Lerp(Color.Red, Color.DarkRed, Main.rand.NextFloat(0.5f, 1f));
+                Color bloodColor = (!ChildSafety.Disabled ? Color.CornflowerBlue : Color.Lerp(Color.Red, Color.DarkRed, Main.rand.NextFloat(0.5f, 1f)));
                 Vector2 bloodVelocity = Main.rand.NextVector2Unit() * velStackMult * Main.rand.NextFloat(1f, 2f);
                 bloodVelocity.Y -= 2.3f;
                 BloodParticle2 blood = new BloodParticle2(npc.Center, bloodVelocity, 20, bloodScale, bloodColor);

@@ -1,4 +1,3 @@
-AbaddonCrit.DisplayName: Brimstone Blast
 AeroExplosive.DisplayName: Aeroboom
 AllianceTriangle.DisplayName: Alliance Triangle
 AmuletEnergy.DisplayName: Sea Spirit
@@ -169,7 +168,7 @@ WulfrumDiggingTurtleProjectile.DisplayName: Digging Turtle
 WulfrumHook.DisplayName: Wulfrum Slingshot
 WulfrumLureSignal.DisplayName: Signal
 YellowLabSeeker.DisplayName: Seeking Mechanism
-VoidofExtinctionCrit.DisplayName: Void of Extinction Crit
 XykDeathAnim.DisplayName: Xyk Death Animation
 XykWings.DisplayName: Xyk Wings
 StratusBlackHole.DisplayName: Stratus Singularity
+DebuffSpreadEffect.DisplayName: Debuff Spread Effect

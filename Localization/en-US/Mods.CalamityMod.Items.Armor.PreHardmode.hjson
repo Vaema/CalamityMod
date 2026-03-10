@@ -91,7 +91,7 @@ DesertProwlerPants: {
 	Tooltip:
 		'''
 		{$Common.RogueCrit}
-		Grants immunity to {$BuffName.WindPushed}
+		Grants immunity to [cbuffplr:WindPushed]
 		'''
 }
 
@@ -123,12 +123,12 @@ SnowRuffianChestplate: {
 
 SnowRuffianGreaves: {
 	DisplayName: Snow Ruffian Greaves
-	Tooltip: "{$CommonItemTooltip.PercentIncreasedRangedCritChance}"
+	Tooltip: "{$CommonItemTooltip.PercentIncreasedRangedDamage}"
 }
 
 SnowRuffianMask: {
 	DisplayName: Snow Ruffian Mask
-	Tooltip: "{$CommonItemTooltip.PercentIncreasedRangedCritChance}"
+	Tooltip: "{$CommonItemTooltip.PercentIncreasedRangedDamage}"
 	SetBonus:
 		'''
 		You can glide to negate fall damage

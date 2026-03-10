@@ -36,6 +36,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
             Projectile.DamageType = TrueMeleeNoSpeedDamageClass.Instance;
+            Projectile.ContinuouslyUpdateDamageStats = true;
             Projectile.usesIDStaticNPCImmunity = true;
             Projectile.idStaticNPCHitCooldown = 6;
             Projectile.frameCounter = 0;

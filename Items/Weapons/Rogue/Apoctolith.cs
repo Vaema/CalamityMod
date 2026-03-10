@@ -18,6 +18,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.width = 66;
             Item.height = 64;
             Item.damage = 185;
+            Item.crit = 20;
             Item.shootSpeed = 18f;
             Item.shoot = ModContent.ProjectileType<ApoctolithProj>();
             Item.useAnimation = Item.useTime = 26;
@@ -31,9 +32,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.DamageType = RogueDamageClass.Instance;
             Item.autoReuse = true;
         }
-
-        // Terraria seems to really dislike high crit values in SetDefaults
-        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 20;
 
         public override void UseStyle(Player player, Rectangle heldItemFrame)
         {

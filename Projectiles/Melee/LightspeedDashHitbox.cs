@@ -18,8 +18,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetDefaults()
         {
-            Projectile.width = 84;
-            Projectile.height = 64;
+            Projectile.width = 150;
+            Projectile.height = 75;
             Projectile.friendly = true;
             Projectile.tileCollide = false;
             Projectile.DamageType = TrueMeleeNoSpeedDamageClass.Instance;
@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Melee
             SoundEngine.PlaySound(CommonCalamitySounds.SwiftSliceSound with { Volume = CommonCalamitySounds.SwiftSliceSound.Volume * 0.33f }, Projectile.Center);
 
             var player = Main.player[Projectile.owner];
-            var modPlayer = player.Calamity();
+            var modPlayer = player.GetModPlayer<LightspeedPlayer>();
 
             // Refund 30 energy if dash hits. Can get energy from multiple enemies.
             modPlayer.elementalMastery += 30;

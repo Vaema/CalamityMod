@@ -485,7 +485,7 @@ namespace CalamityMod.Systems
 
             // Life Crystal
             Recipe.Create(ItemID.LifeCrystal).
-                AddIngredient(ItemID.StoneBlock, 5).
+                AddRecipeGroup("AnyStoneBlock", 5).
                 AddIngredient(ItemID.Ruby, 2).
                 AddIngredient(ItemID.HealingPotion).
                 AddTile(TileID.Anvils).
@@ -1436,7 +1436,7 @@ namespace CalamityMod.Systems
 
             // Encumbering Stone
             r = Recipe.Create(ItemID.EncumberingStone);
-            r.AddIngredient(ItemID.StoneBlock, 100);
+            r.AddRecipeGroup("AnyStoneBlock", 100);
             r.AddTile(TileID.Anvils);
             r.Register();
         }
@@ -1448,13 +1448,13 @@ namespace CalamityMod.Systems
             // Wooden Chest weapons
             // Wooden Boomerang
             Recipe r = Recipe.Create(ItemID.WoodenBoomerang);
-            r.AddIngredient(ItemID.Wood, 7);
+            r.AddRecipeGroup("Wood", 7);
             r.AddTile(TileID.WorkBenches);
             r.Register();
 
             // Wand of Sparking
             r = Recipe.Create(ItemID.WandofSparking);
-            r.AddIngredient(ItemID.Wood, 5);
+            r.AddRecipeGroup("Wood", 5);
             r.AddIngredient(ItemID.Torch, 3);
             r.AddIngredient(ItemID.FallenStar);
             r.AddCondition(Condition.NotRemixWorld);
@@ -1556,7 +1556,7 @@ namespace CalamityMod.Systems
             r = Recipe.Create(ItemID.WaterWalkingBoots);
             r.AddIngredient(ItemID.Leather, 5);
             r.AddIngredient(ItemID.WaterWalkingPotion, 5);
-            r.AddTile(TileID.Anvils);
+            r.AddTile(TileID.Loom);
             r.Register();
 
             // Lava Charm
@@ -1599,7 +1599,7 @@ namespace CalamityMod.Systems
             r = Recipe.Create(ItemID.SandstorminaBottle);
             r.AddIngredient(ItemID.Bottle);
             r.AddIngredient(ItemID.Cloud, 5);
-            r.AddIngredient(ItemID.SandBlock, 5);
+            r.AddRecipeGroup("Sand", 5);
             r.AddIngredient<PearlShard>(3);
             r.AddIngredient(ItemID.Feather, 3);
             r.AddTile(TileID.Anvils);
