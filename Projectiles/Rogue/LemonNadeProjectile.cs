@@ -79,7 +79,6 @@ namespace CalamityMod.Projectiles.Rogue
                 }
                 Projectile.Resize(360, 360);
                 Projectile.ResetLocalNPCHitImmunity();
-                Projectile.damage *= 5;
                 Projectile.Damage();
 
                 for (var i = 0; i < 40; i++)
@@ -124,8 +123,16 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
         {
-            modifiers.SourceDamage *= 0.002f;
+            modifiers.SourceDamage /= Main.masterMode ? 2f : Main.expertMode ? 1.5f : 1;
+            modifiers.SourceDamage *= 0.33f;
         }
+
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            if (Projectile.width < 100)
+                modifiers.SetMaxDamage(1);
+        }
+
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Projectile.velocity.X *= -0.65f;
@@ -133,7 +140,6 @@ namespace CalamityMod.Projectiles.Rogue
             if (ExplodeTimeMax - ExplodeTimer < 30)
                 ExplodeTimer += 15;
         }
-
 
         // Make it bounce on tiles.
         public override bool OnTileCollide(Vector2 oldVelocity)

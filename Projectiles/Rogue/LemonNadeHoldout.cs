@@ -124,7 +124,7 @@ namespace CalamityMod.Projectiles.Rogue
                 {
                     if (Projectile.owner == Main.myPlayer && Projectile.Opacity > 0)
                     {
-                        var p = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, angle * -10, ModContent.ProjectileType<LemonNadeProjectile>(), Projectile.damage, Projectile.knockBack, Projectile.owner, explodeTimer-30, explodeTimeGoal);
+                        var p = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, angle * -10 * cplayer.rogueVelocity, ModContent.ProjectileType<LemonNadeProjectile>(), Projectile.damage, Projectile.knockBack, Projectile.owner, explodeTimer-30, explodeTimeGoal);
                         if (player.Calamity().StealthStrikeAvailable())
                         {
                             p.Calamity().stealthStrike = true;

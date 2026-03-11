@@ -63,7 +63,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 if (Timer % 10 == 0)
                 {
-                    Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Main.rand.NextVector2Circular(5, 5), ModContent.ProjectileType<DuststormCloud>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                    Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Main.rand.NextVector2Circular(5, 5), ModContent.ProjectileType<DuststormCloud>(), (int)(Projectile.damage*0.5f), Projectile.knockBack, Projectile.owner);
                 }
             }
             if (Timer > TimerMax && AIState == 0)
@@ -115,7 +115,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
         {
-            if (AIState != 0 || Projectile.timeLeft < lifetime - 20)
+            if (Projectile.timeLeft < lifetime - 25)
                 fallThrough = false;
             return base.TileCollideStyle(ref width, ref height, ref fallThrough, ref hitboxCenterFrac);
         }
