@@ -44,7 +44,6 @@ namespace CalamityMod.Projectiles.Rogue
         ref float AIState => ref Projectile.ai[2];
 
         int gravTimer = 0;
-
         bool Stealth => Projectile.Calamity().stealthStrike;
 
         public override void AI()
@@ -115,7 +114,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
         {
-            if (Projectile.timeLeft < lifetime - 25)
+            if (gravTimer > 25)
                 fallThrough = false;
             return base.TileCollideStyle(ref width, ref height, ref fallThrough, ref hitboxCenterFrac);
         }
