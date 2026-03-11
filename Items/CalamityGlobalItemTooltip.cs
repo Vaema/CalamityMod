@@ -1122,7 +1122,7 @@ namespace CalamityMod.Items
                 AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
 
             if (item.type == ItemID.AngelWings)
-                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.95f, 0.15f);
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.8f, 0.135f);
 
             if (item.type == ItemID.DemonWings)
                 AddWingStats(item.wingSlot, 1f, 0.2f, 1f, 1.5f, 0.1f, "DemonWings");
@@ -1131,7 +1131,7 @@ namespace CalamityMod.Items
                 AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
 
             if (item.type == ItemID.ButterflyWings)
-                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.35f, 0.5f);
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1f, 0.5f);
 
             if (item.type == ItemID.FairyWings)
                 AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
@@ -1146,13 +1146,13 @@ namespace CalamityMod.Items
                 AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.66f, 0.1f, "BoneWings");
 
             if (item.type == ItemID.FlameWings)
-                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.8f, 0.135f);
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.66f, 0.125f);
 
             if (item.type == ItemID.FrozenWings)
                 AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
 
             if (item.type == ItemID.GhostWings)
-                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.5f);
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1f, 0.5f);
 
             if (item.type == ItemID.BeetleWings)
                 AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.66f, 0.1f);
