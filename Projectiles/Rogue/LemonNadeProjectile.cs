@@ -141,10 +141,9 @@ namespace CalamityMod.Projectiles.Rogue
                 ExplodeTimer += 15;
         }
 
-        // Make it bounce on tiles.
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
-            // Impacts the terrain even though it bounces off.
+            //Only make noises and particles if not an explosion
             if (Projectile.width < 100)
             {
                 SoundEngine.PlaySound(SoundID.Dig, Projectile.Center);

@@ -20,8 +20,6 @@ namespace CalamityMod.Projectiles.Rogue
         public override int StartupTime { get; set; }
         public override int CooldownTime { get; set; }
 
-        bool isChannelable = false;
-
         int explodeTimer = 0;
 
         public override void Defaults()
@@ -55,7 +53,6 @@ namespace CalamityMod.Projectiles.Rogue
                 cplayer.temporaryStealthTimer = 2;
             }
 
-            //MOVE SECONDS TO LemonNade.cs ITEM
             var avgStealth = 0.8f * cplayer.stealthGenMoving + 0.2f * cplayer.stealthGenStandstill;
             var explodeTimeGoal = CalamityUtils.SecondsToFrames(2) / avgStealth + 30;
             var stealthTime = explodeTimeGoal - 30;
@@ -72,7 +69,6 @@ namespace CalamityMod.Projectiles.Rogue
 
             cplayer.rogueStealth = Projectile.Opacity <= 0 ? 0 : Math.Max(cplayer.temporaryStealthMax, cplayer.rogueStealthMax) * MathHelper.Clamp(explodeTimer / stealthTime, 0f, 1f);
 
-            //When channeling, the internal timer will not progress
             if (player.channel && inStartup)
             {
                 if (timer >= StartupTime - 1)

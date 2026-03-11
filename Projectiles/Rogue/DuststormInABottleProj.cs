@@ -1,10 +1,5 @@
-﻿using System;
-using CalamityMod.Dusts;
-using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Particles;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -37,8 +32,6 @@ namespace CalamityMod.Projectiles.Rogue
         }
 
         int targetID = -1;
-
-        NPC target => Main.npc[targetID];
         ref float Timer => ref Projectile.ai[0];
         ref float TimerMax => ref Projectile.ai[1];
         ref float AIState => ref Projectile.ai[2];
@@ -62,7 +55,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 if (Timer % 10 == 0)
                 {
-                    Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Main.rand.NextVector2Circular(5, 5), ModContent.ProjectileType<DuststormCloud>(), (int)(Projectile.damage*0.5f), Projectile.knockBack, Projectile.owner);
+                    Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Main.rand.NextVector2Circular(5, 5), ModContent.ProjectileType<DuststormCloud>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner);
                 }
             }
             if (Timer > TimerMax && AIState == 0)
@@ -101,15 +94,6 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<DuststormCloudExplosion>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
             }
             return;
-        }
-
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
-        }
-
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
-            return base.Colliding(projHitbox, targetHitbox);
         }
 
         public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)

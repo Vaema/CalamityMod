@@ -40,8 +40,6 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override void Spawn()
         {
-            //This sets variables for the spear in general, as well as the secondary attack
-            //The secondary attack is the "default" because it was coded first
             var player = Main.player[Projectile.owner];
             var modplayer = player.GetModPlayer<BaseSwordHoldoutPlayer>();
             StartupTime = 10;
@@ -89,7 +87,6 @@ namespace CalamityMod.Projectiles.Rogue
                 }
             }
 
-            //When channeling, the internal timer will not progress
             if (player.channel && inStartup)
             {
                 if (timer >= StartupTime - 1)

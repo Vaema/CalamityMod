@@ -22,12 +22,23 @@ namespace CalamityMod.Projectiles.Rogue
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/SealedSingularity";
 
         //Trans flag colors with name containing "girlswag" or having a gender change pot in inventory at donor request 
-        public static Color BorderColor => Main.LocalPlayer.name.Contains("girlswag") || Main.LocalPlayer.HasItemInAnyInventory(ItemID.GenderChangePotion) ? Color.Lerp(Color.Pink, Color.LightBlue, (MathF.Sin(Main.GlobalTimeWrappedHourly * 3) + 1) * 0.5f) : new Color(59, 2, 120);
+        public static bool DonorColor => Main.LocalPlayer.name.Contains("girlswag") || Main.LocalPlayer.HasItemInAnyInventory(ItemID.GenderChangePotion);
+        public static Color BorderColor => DonorColor ? Color.Lerp(Color.Pink, Color.LightBlue, (MathF.Sin(Main.GlobalTimeWrappedHourly * 3) + 1) * 0.5f) : new Color(59, 2, 120);
 
         public static Color RandomColor
         {
             get
             {
+                if (DonorColor)
+                {
+                    switch (Main.rand.Next(3))
+                    {
+                        case 0: return Color.Pink;
+                        case 1: return Color.LightBlue;
+                        case 2: return Color.White;
+                    }
+                }
+
                 switch (Main.rand.Next(4))
                 {
                     case 0: return new Color(91, 47, 113);

@@ -71,7 +71,6 @@ namespace CalamityMod.Projectiles.Rogue
 
             cplayer.rogueStealth = Projectile.Opacity <= 0 ? 0 : Math.Max(cplayer.temporaryStealthMax, cplayer.rogueStealthMax) * MathHelper.Clamp(explodeTimer / stealthTime, 0f, 1f);
 
-            //When channeling, the internal timer will not progress
             if (player.channel && inStartup)
             {
                 if (timer >= StartupTime - 1)
