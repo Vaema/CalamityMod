@@ -200,10 +200,10 @@ namespace CalamityMod.Items
 
             // 170 -> 240 flight time
             stats[(int)VanillaWingID.BoneWings].FlyTime = 240;
-            // 160 -> 170 flight time, 7.5 -> 9 horizontal speed, 1 -> 1.5 acceleration multiplier
+            // 160 -> 170 flight time, 7.5 -> 9 horizontal speed, 1 -> 2 acceleration multiplier
             stats[(int)VanillaWingID.LeafWings].FlyTime = 170;
             stats[(int)VanillaWingID.LeafWings].AccRunSpeedOverride = 9f;
-            stats[(int)VanillaWingID.LeafWings].AccRunAccelerationMult = 1.5f;
+            stats[(int)VanillaWingID.LeafWings].AccRunAccelerationMult = 2f;
             // (Spectre Wings) 1 -> 1.5 acceleration multiplier
             stats[(int)VanillaWingID.GhostWings].AccRunAccelerationMult = 1.5f;
 
@@ -1319,8 +1319,6 @@ namespace CalamityMod.Items
                     break;
                 case ItemID.DemonWings:
                     ascentWhenFalling *= 2f;
-                    ascentWhenRising *= 2f;
-                    maxCanAscendMultiplier *= 2f;
                     break;
                 case ItemID.FlameWings:
                     maxAscentMultiplier *= 1.1067f;

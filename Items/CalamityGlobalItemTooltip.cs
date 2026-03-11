@@ -8,6 +8,7 @@ using CalamityMod.CustomRecipes;
 using CalamityMod.DataStructures;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
+using CalamityMod.Items.Accessories.Wings;
 using CalamityMod.Items.Armor.Demonshade;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.VanillaArmorChanges;
@@ -1093,24 +1094,33 @@ namespace CalamityMod.Items
                 float baseJumpSpeed = (CalamityServerConfig.Instance.FasterJumpSpeed ? BalancingConstants.ConfigBoostedBaseJumpSpeed : 5.01f) + 1f;
                 StringBuilder sb = new StringBuilder(512);
                 sb.Append('\n');
-                sb.Append(CalamityUtils.GetText($"Common.WingStats").Format(time.FramesToSeconds(), run.ToMph(), (tMax * baseJumpSpeed).ToMph()));
-                sb.Append('\n');
                 if (Main.keyState.PressingShift())
                 {
-                    sb.Append(CalamityUtils.GetText($"Common.WingStatsAcceleration").Format(rAcc.ToMphps(), asc.ToMphps(), (asc + rise).ToMphps(), (rMax * baseJumpSpeed).ToMph(), (asc + fall).ToMphps()));
+                    sb.Append(GetText($"Common.WingStatsFull").Format(time.FramesToSeconds(),
+                    BaseWings.HorizontalSpeedText(run), run.ToMph(),
+                    BaseWings.VerticalSpeedText(tMax), (tMax * baseJumpSpeed).ToMph(),
+                    BaseWings.HorizontalAccelerationText(stats.AccRunAccelerationMult), rAcc.ToMphps(),
+                    BaseWings.VerticalAccelerationText(asc), asc.ToMphps(),
+                    (asc + rise).ToMphps(), (rMax * baseJumpSpeed).ToMph(),
+                    (asc + fall).ToMphps()));
                     if (hover)
                     {
                         sb.Append('\n');
-                        sb.Append(CalamityUtils.GetText($"Common.WingStatsHover").Format(hSpeed.ToMph(), hAcc.ToMphps()));
+                        sb.Append(GetText($"Common.WingStatsHover").Format(hSpeed.ToMph(), hAcc.ToMphps()));
                     }
                 }
                 else
-                    sb.Append($"[c/B8B8B8:{CalamityUtils.GetTextValue("UI.HoldShiftTooltipExtensionIndicator")}]");
+                {
+                    sb.Append(GetText($"Common.WingStats").Format(time.FramesToSeconds(), BaseWings.HorizontalSpeedText(run), BaseWings.VerticalSpeedText(tMax),
+                    BaseWings.HorizontalAccelerationText(stats.AccRunAccelerationMult), BaseWings.VerticalAccelerationText(asc)));
+                    sb.Append('\n');
+                    sb.Append($"[c/B8B8B8:{GetTextValue("UI.HoldShiftTooltipExtensionIndicator")}]");                
+                }
 
                 if (extraKey != null)
                 {
                     sb.Append('\n');
-                    sb.Append(CalamityUtils.GetTextValue($"Vanilla.Wings.{extraKey}"));
+                    sb.Append(GetTextValue($"Vanilla.Wings.{extraKey}"));
                 }
                 return sb.ToString();
             }
@@ -1125,7 +1135,7 @@ namespace CalamityMod.Items
                 AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.8f, 0.135f);
 
             if (item.type == ItemID.DemonWings)
-                AddWingStats(item.wingSlot, 1f, 0.2f, 1f, 1.5f, 0.1f, "DemonWings");
+                AddWingStats(item.wingSlot, 1f, 0.1f, 0.5f, 1.5f, 0.1f, "DemonWings");
 
             if (item.type == ItemID.Jetpack)
                 AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
