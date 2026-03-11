@@ -562,13 +562,6 @@ namespace CalamityMod.Items
         #region Use Item Changes
         public override void HoldItem(Item item, Player player)
         {
-            // Clear Evil Smasher buffs if not holding Evil Smasher
-            if (player.Calamity().evilSmasherBoost > 0)
-            {
-                if (item.type != ItemType<EvilSmasher>())
-                    player.Calamity().evilSmasherBoost = 0;
-            }
-
             if (player.Calamity().ChaosStone && item.mana == 0 && !player.ItemTimeIsZero)
             {
                 player.manaRegenDelay = player.maxRegenDelay;

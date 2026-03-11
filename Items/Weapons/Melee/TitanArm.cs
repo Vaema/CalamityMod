@@ -13,6 +13,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = 46;
             Item.height = 58;
             Item.damage = 69;
+            Item.crit = 100;
             Item.knockBack = 80f; //This number doesn't mean anything, but it's not 9001f because that caused bugs.
             Item.useAnimation = Item.useTime = 12;
             Item.DamageType = DamageClass.Melee;
@@ -23,9 +24,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.rare = ItemRarityID.Lime;
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
         }
-
-        // Boosting crit in SetDefaults along with knockback seemed to severely inflate the reforging price. Guaranteed crits for more knockback.
-        public override void ModifyWeaponCrit(Player player, ref float crit) => crit = 100;
 
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {

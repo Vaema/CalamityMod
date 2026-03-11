@@ -1231,6 +1231,8 @@ namespace CalamityMod.NPCs
             Condition spelunkerGlowCondition = new(Language.GetText("Conditions.NightDayFullMoon"), () => !Main.dayTime || Main.GetMoonPhase() == MoonPhase.Full); // Identical to the one in NPCShopDatabase
             Condition hasFlareGunUpgrade = new(CalamityUtils.GetText("Condition.HasFlareGun"), () => (Main.LocalPlayer.HasItem(ItemType<FirestormCannon>()) || Main.LocalPlayer.HasItem(ItemType<SpectralstormCannon>())) && !Main.LocalPlayer.HasItem(ItemID.FlareGun));
             Condition bestiaryProgressLacewing = new(CalamityUtils.GetText("Condition.LacewingBestiary"), () => Main.GetBestiaryProgressReport().CompletionPercent >= 0.4f);
+            Condition crescentMoons = new(CalamityUtils.GetText("Condition.CrescentMoons"), () => Main.GetMoonPhase() == MoonPhase.QuarterAtLeft || Main.GetMoonPhase() == MoonPhase.QuarterAtRight); // for Craw Carapace
+            Condition gibbousMoons = new(CalamityUtils.GetText("Condition.GibbousMoons"), () => Main.GetMoonPhase() == MoonPhase.ThreeQuartersAtLeft || Main.GetMoonPhase() == MoonPhase.ThreeQuartersAtRight); // for Giant Shell
 
             if (type == NPCID.Merchant)
             {
@@ -1375,12 +1377,12 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.SkeletonMerchant)
             {
-                shop.InsertAfter(ItemID.HealingPotion, ItemType<CalciumPotion>())
-                .InsertAfter(ItemID.HealingPotion, ItemID.MilkCarton)
+                shop.InsertAfter(ItemID.HealingPotion, ItemType<CalciumPotion>(), Condition.MoonPhasesHalf0)
+                .InsertAfter(ItemID.HealingPotion, ItemID.MilkCarton, Condition.MoonPhasesHalf1)
                 .InsertAfter(ItemID.SpelunkerFlare, ItemID.SpelunkerFlare, spelunkerGlowCondition, hasFlareGunUpgrade)
-                .AddWithCustomValue(ItemID.Marrow, Item.buyPrice(gold: 25), Condition.Hardmode)
-                .AddWithCustomValue<GiantShell>(Item.buyPrice(gold: 15))
-                .AddWithCustomValue<CrawCarapace>(Item.buyPrice(gold: 15));
+                .AddWithCustomValue(ItemID.Marrow, Item.buyPrice(gold: 25), Condition.Hardmode, Condition.MoonPhases26) // 26 = half moons
+                .AddWithCustomValue<GiantShell>(Item.buyPrice(gold: 15), gibbousMoons)
+                .AddWithCustomValue<CrawCarapace>(Item.buyPrice(gold: 15), crescentMoons);
             }
 
             if (type == NPCID.BestiaryGirl)

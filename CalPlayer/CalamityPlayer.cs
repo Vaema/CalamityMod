@@ -326,15 +326,6 @@ namespace CalamityMod.CalPlayer
         public int deadSunCounter = 6;
         public int DragonsBreathAudioCooldown = 0;
         public int DragonsBreathAudioCooldown2 = 0;
-        public int darklightEnergy = 0;
-        public int darklightEnergyTimer = 0;
-        public bool darklightEnergyPaused = false;
-        public bool darklightEnergyMaxFXPlayed = false;
-        private int lucreciaParticleTimer = 0;
-        public int elementalMastery = 0;
-        public int elementalMasteryTimer = 0;
-        public bool elementalMasteryPaused = false;
-        public bool elementalMasterySFXPlayed = false;
         public float unstableCastersGauntletVis = 0;
         public int unstableCastersGauntletVisTimer = 0;
         public int PhotoAudioCooldown = 0;
@@ -343,11 +334,6 @@ namespace CalamityMod.CalPlayer
         public int arpeggioCooldown = 0;
         /// <summary> Cooldown variable which prevents using Burning Sea during its "burn-out" mechanic. </summary>
         public int burningSeaBurnOut = 0;
-        /// <summary>
-        /// How many stacks of Evil Smasher's boost the player has. This increases the weapon's damage, use speed, and knockback.<br/>
-        /// Getting hit decreases this by 1. Switching to a different item resets this to 0.
-        /// </summary>
-        public int evilSmasherBoost = 0;
         /// <summary> Cooldown variable for spawning Plague Tainted SMG's drones from left-click bullets. </summary>
         public int plagueTaintedSMGDroneCooldown = 0;
         /// <summary> Cooldown variable which prevents using Firestorm Cannon or Spectralstorm Cannon during their overheat periods. </summary>
@@ -454,6 +440,9 @@ namespace CalamityMod.CalPlayer
         public int consecutiveCaughtFish = 0;
         public float WeakTimeFreezeUseTimer = 0;
         public bool WeakTimeFreezeInUse = false;
+
+        public int DemonAltarDialogueCounter = 0;
+        public int DemonAltarDialogueCooldown = 0;
         #endregion
 
         #region Sound
@@ -722,8 +711,8 @@ namespace CalamityMod.CalPlayer
         public bool drawnAnyShieldThisFrame = false;
 
         // TODO -- Some way to show the player their total shield points.
-        public int TotalEnergyShielding => RoverDriveShieldDurability + LunicCorpsShieldDurability + pSoulShieldDurability + SpongeShieldDurability;
-        public int TotalMaxShieldDurability => (roverDrive ? RoverDrive.ShieldDurabilityMax : 0) + (lunicCorpsSet ? LunicCorpsHelmet.ShieldDurabilityMax : 0) + (profanedCrystalBuffs ? ProfanedSoulCrystal.ShieldDurabilityMax : ((pSoulArtifact && !profanedCrystal) ? ProfanedSoulArtifact.ShieldDurabilityMax : 0)) + (sponge ? TheSponge.ShieldDurabilityMax : 0);
+        public int TotalEnergyShielding => RoverDriveShieldDurability + LunicCorpsShieldDurability + pSoulShieldDurability + SpongeShieldDurability + (Starshield > 0 ? StratusStarburst : 0);
+        public int TotalMaxShieldDurability => (roverDrive ? RoverDrive.ShieldDurabilityMax : 0) + (lunicCorpsSet ? LunicCorpsHelmet.ShieldDurabilityMax : 0) + (profanedCrystalBuffs ? ProfanedSoulCrystal.ShieldDurabilityMax : ((pSoulArtifact && !profanedCrystal) ? ProfanedSoulArtifact.ShieldDurabilityMax : 0)) + (sponge ? TheSponge.ShieldDurabilityMax : 0) + (Starshield > 0 ? 100 : 0);
 
         public int RoverDriveShieldDurability = 0;
         public int LunicCorpsShieldDurability = 0;
@@ -810,6 +799,7 @@ namespace CalamityMod.CalPlayer
 
         #region Accessory
         public bool shieldOfTheHighRulerDashVelocityBoosted = false;
+        public bool yharimsGift = false;
         public bool luxorsGift = false;
         public bool luxorHit = false;
         public bool luxorsGiftVanity = false;
@@ -960,6 +950,9 @@ namespace CalamityMod.CalPlayer
         public bool toxicHeart = false;
         public bool toxicHeartVisuals = false;
         public bool abaddon = false;
+        public int abaddonCooldown = 0;
+        public bool abaddonEffectVisual = false;
+        public float playerBaneDebuffDamage = 0;
 
         public bool aeroStone = false;
         public bool lifejelly = false;
@@ -1032,7 +1025,7 @@ namespace CalamityMod.CalPlayer
         public bool IsFirstDashFrame = true;
         public int fallingBootVelCheckTimer = 0;
         public bool voidOfCalamity = false;
-        public bool voidOfExtinction = false;
+        public bool apollyon = false;
         public bool eArtifact = false;
         public bool dArtifact = false;
         public bool auricSArtifact = false;
@@ -1269,7 +1262,6 @@ namespace CalamityMod.CalPlayer
         public int tailFrame = 0;
         public bool astralStarRain = false;
         public int astralStarRainCooldown = 0;
-        public int AbaddonCooldown = 0;
         public int VoidCooldown = 0;
         public int ursaSergeantCooldown = 0;
         public int AlchFlaskCooldown = 0;
@@ -1308,8 +1300,6 @@ namespace CalamityMod.CalPlayer
         public bool daedalusCrystal = false;
         /// <summary> Hydrothermic armor's summoner set bonus minion. </summary>
         public bool chaosSpirit = false;
-        /// <summary> Demonshade armor's set bonus minion. </summary>
-        public bool redDevil = false;
         public bool GemTechSet = false;
         /// <summary> Calamity's Cobalt armor set bonus; increases damage and crit chance based on how fast the player is moving. </summary>
         public bool CobaltSet = false;
@@ -1363,6 +1353,7 @@ namespace CalamityMod.CalPlayer
         public bool armorCrunch = false;
         public bool crumble = false;
         public bool irradiated = false;
+        public bool bane = false;
         public bool brimstoneFlames = false;
         public bool weakBrimstoneFlames = false;
         public bool demonicFlames = false;
@@ -1564,8 +1555,6 @@ namespace CalamityMod.CalPlayer
         /// <summary> Pearl of Enthrallment. </summary>
         public bool waterEleBuff = false;
         public bool fClump = false;
-        /// <summary> Demonshade armor's Red Devil. </summary>
-        public bool rDevil = false;
         /// <summary> Aerospec armor's Valkyrie. </summary>
         public bool aValkyrie = false;
         public bool apexShark = false;
@@ -2350,6 +2339,7 @@ namespace CalamityMod.CalPlayer
             blazingCursorDamage = false;
             blazingCursorVisuals = false;
 
+            yharimsGift = false;
             luxorsGift = false;
             luxorsGiftVanity = false;
             fungalSymbiote = false;
@@ -2459,7 +2449,7 @@ namespace CalamityMod.CalPlayer
             crawCarapace = false;
             baroclaw = false;
             voidOfCalamity = false;
-            voidOfExtinction = false;
+            apollyon = false;
             eArtifact = false;
             dArtifact = false;
             auricSArtifact = false;
@@ -2548,6 +2538,8 @@ namespace CalamityMod.CalPlayer
             spiritOrigin = false;
             spiritOriginVanity = false;
             critDamage = 0;
+            if (abaddonCooldown > 0)
+                abaddonCooldown--;
 
 
             astralStarRain = false;
@@ -2640,6 +2632,9 @@ namespace CalamityMod.CalPlayer
             blunderBoosterVisibility = true;
             veneratedLocket = false;
 
+            if (DemonAltarDialogueCooldown > 0)
+                DemonAltarDialogueCooldown--;
+
             alcoholPoisoning = false;
             shadowflame = false;
             daybroken = false;
@@ -2652,6 +2647,7 @@ namespace CalamityMod.CalPlayer
             armorCrunch = false;
             crumble = false;
             irradiated = false;
+            bane = false;
             brimstoneFlames = false;
             witheredDebuff = false;
             absorberAffliction = false;
@@ -2814,7 +2810,6 @@ namespace CalamityMod.CalPlayer
             brimEleBuff = false;
             waterEleBuff = false;
             fClump = false;
-            rDevil = false;
             aValkyrie = false;
             sCrystal = false;
             sGod = false;
@@ -2841,7 +2836,6 @@ namespace CalamityMod.CalPlayer
             fungalClumpVanity = false;
             howlsHeart = false;
             howlsHeartVanity = false;
-            redDevil = false;
             valkyrie = false;
             slimeGod = false;
             chaosSpirit = false;
@@ -3090,7 +3084,6 @@ namespace CalamityMod.CalPlayer
             gSabatonTempJumpSpeed = 0;
             rOfDelivarenceRam = false;
             astralStarRainCooldown = 0;
-            AbaddonCooldown = 0;
             VoidCooldown = 0;
             AlchFlaskCooldown = 0;
             ascendantInsigniaCooldown = 0;
@@ -3139,6 +3132,7 @@ namespace CalamityMod.CalPlayer
             armorCrunch = false;
             crumble = false;
             irradiated = false;
+            bane = false;
             brimstoneFlames = false;
             witheredDebuff = false;
             absorberAffliction = false;
@@ -3435,12 +3429,9 @@ namespace CalamityMod.CalPlayer
             CurrentlyViewedHologramText = string.Empty;
             #endregion
 
-            evilSmasherBoost = 0;
             burningSeaBurnOut = 0;
             flareGunOverheat = 0;
             hellbornShots = 0;
-            darklightEnergy = 0;
-            elementalMastery = 0;
             garandShots = 0;
             persecutedEnchantSummonTimer = 0;
             momentumCapacitorTime = 0;
@@ -4479,6 +4470,10 @@ namespace CalamityMod.CalPlayer
             if (HasCustomDash && UsedDash.IsOmnidirectional)
                 Player.maxFallSpeed = 50f;
 
+            // If the player isn't moving yet is still dashing, disable the dash (prevents weird hook jank)
+            if (Player.velocity == Vector2.Zero && Player.dashDelay == -1)
+                Player.dashDelay = 0;
+
             tailFrameUp++;
             if (tailFrameUp == 8)
             {
@@ -4997,6 +4992,13 @@ namespace CalamityMod.CalPlayer
             }
             else
                 scionsCurioDebuffDamage = 0;
+
+            if (Player.Calamity().abaddon || Player.Calamity().apollyon)
+            {
+                Player.Calamity().playerBaneDebuffDamage = (1 + Player.GetTotalCritChance(Player.GetBestClass()) * 0.01f * (Player.Calamity().apollyon ? Apollyon.critScaling : Abaddon.critScaling));
+            }
+            else
+                Player.Calamity().playerBaneDebuffDamage = 0;
 
             // True melee damage from various vanilla equipment placed here.
 

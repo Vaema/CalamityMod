@@ -278,8 +278,9 @@ namespace CalamityMod.Items
                 tooltips.Insert(++difficultyTooltipIndex, donorLine);
             }
 
-            var buffIdsInTooltip = new HashSet<int>();
-
+            // The int is the buff ID
+            // The byte determines what information to show; 0 = enemy, 1 = player, 2 = both
+            var buffIdsInTooltip = new Dictionary<int, byte>();
             foreach (var tooltip in tooltips)
             {
                 // Parse the tags of each line of text to find our buff tags'
@@ -287,9 +288,18 @@ namespace CalamityMod.Items
                 var snippets = ChatManager.ParseMessage(tooltip.Text, Color.White);
                 foreach (var snippet in snippets)
                 {
-                    if (snippet is CalamityBuffTagHandler.Snippet buffSnippet)
+                    if (snippet is BuffTagEnemyEffectHandler.Snippet enemy)
                     {
-                        buffIdsInTooltip.Add(buffSnippet.BuffId);
+                        if (!buffIdsInTooltip.ContainsKey(enemy.BuffId))
+                            buffIdsInTooltip.Add(enemy.BuffId, 0);
+                    }
+                    else if (snippet is BuffTagPlayerEffectHandler.Snippet player)
+                    {
+                        if (!buffIdsInTooltip.TryAdd(player.BuffId, 1))
+                        {
+                            buffIdsInTooltip.Remove(player.BuffId);
+                            buffIdsInTooltip.Add(player.BuffId, 2);
+                        }
                     }
                 }
             }
@@ -298,26 +308,36 @@ namespace CalamityMod.Items
             {
                 bool showTheTip = false;
                 bool foundDebuff = false;
-                foreach (int buffId in buffIdsInTooltip)
+                foreach (var buffInfo in buffIdsInTooltip)
                 {
                     string tooltipKey = "";
-                    if (buffId < BuffID.Count)
+                    string secondTooltipKey = "";
+                    // Change the localization based on whether it should display player or enemy info, or both
+                    string locKey = buffInfo.Value == 1 ? "ItemTooltipPlayer" : "ItemTooltipEnemy";
+                    string secondLocKey = buffInfo.Value == 2 ? "ItemTooltipPlayer" : "";
+
+                    if (buffInfo.Key < BuffID.Count)
                     {
-                        tooltipKey = $"Mods.Terraria.Buffs.{BuffID.Search.GetName(buffId)}.ItemTooltip";
+                        tooltipKey = $"Mods.Terraria.Buffs.{BuffID.Search.GetName(buffInfo.Key)}.{locKey}";
+                        if (buffInfo.Value == 2)
+                            secondTooltipKey = $"Mods.Terraria.Buffs.{BuffID.Search.GetName(buffInfo.Key)}.{secondLocKey}";
                     }
                     else
                     {
-                        var modBuff = BuffLoader.GetBuff(buffId);
-                        tooltipKey = $"Mods.{modBuff.Mod.Name}.Buffs.{modBuff.Name}.ItemTooltip";
+                        var modBuff = BuffLoader.GetBuff(buffInfo.Key);
+                        tooltipKey = $"Mods.{modBuff.Mod.Name}.Buffs.{modBuff.Name}.{locKey}";
+                        if (buffInfo.Value == 2)
+                            secondTooltipKey = $"Mods.{modBuff.Mod.Name}.Buffs.{modBuff.Name}.{secondLocKey}";
                     }
 
-                    if (!Language.Exists(tooltipKey))
-                    {
-                        continue;
-                    }
+                    var text = "";
+                    var secondText = "";
+                    if (Language.Exists(tooltipKey))
+                        text = Language.GetTextValue(tooltipKey);
+                    if (Language.Exists(secondTooltipKey))
+                        secondText = Language.GetTextValue(secondTooltipKey);
 
-                    var text = Language.GetTextValue(tooltipKey);
-                    if (string.IsNullOrWhiteSpace(text))
+                    if (string.IsNullOrWhiteSpace(text) && string.IsNullOrWhiteSpace(secondText))
                     {
                         continue;
                     }
@@ -329,7 +349,11 @@ namespace CalamityMod.Items
                         break;
                     }
 
-                    tooltips.Insert(++lastTooltipIndex, new TooltipLine(Mod, "CalamityMod:AltExpandTooltip" + buffId, $"[cbuff:{buffId}]\n{text}"));
+                    string extraLoc = GetTextValue(buffInfo.Value == 1 ? "Buffs.OnPlayer" : "Buffs.OnEnemy");
+                    if (!string.IsNullOrWhiteSpace(text))
+                        tooltips.Insert(++lastTooltipIndex, new TooltipLine(Mod, "CalamityMod:AltExpandTooltip" + buffInfo.Key, $"[cbuff:{buffInfo.Key}] {extraLoc}\n{text}"));
+                    if (buffInfo.Value == 2 && !string.IsNullOrWhiteSpace(secondText))
+                        tooltips.Insert(++lastTooltipIndex, new TooltipLine(Mod, "CalamityMod:AltExpandTooltip" + buffInfo.Key, $"[cbuff:{buffInfo.Key}] {GetTextValue("Buffs.OnPlayer")}\n{secondText}"));
                 }
 
                 if (showTheTip)

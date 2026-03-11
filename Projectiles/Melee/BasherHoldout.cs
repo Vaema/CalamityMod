@@ -63,6 +63,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Projectile.knockBack = 0;
                 attackTimer = cooldown;
+                swingCount = 1;
             }
         }
         public void ResetVariables() // After a swing, reset/adjust many stats
@@ -82,7 +83,7 @@ namespace CalamityMod.Projectiles.Melee
 
             float angleVariation = (float)Math.Sin(time * 0.06f / Projectile.MaxUpdates) * 0.1f;
 
-            float outwardDistance = 5 * Projectile.scale;
+            float outwardDistance = 5;
             Owner.ChangeDir(Math.Sign(toMouse.X));
             Owner.SetCompositeArmFront(true, CompositeArmStretchAmount.Full, (toMouse.ToRotation() + (bladeRot + angleVariation) * Owner.direction + MathHelper.PiOver2 * -Owner.direction) + (Owner.direction == -1 ? MathHelper.Pi : 0));
             Vector2 handPos = Owner.GetFrontHandPosition(CompositeArmStretchAmount.None, Owner.compositeFrontArm.rotation) + (Owner.compositeFrontArm.rotation + MathHelper.PiOver2).ToRotationVector2() * outwardDistance;
@@ -267,8 +268,8 @@ namespace CalamityMod.Projectiles.Melee
             float drawRotation = Projectile.rotation + ((Owner.direction == -1) ? MathHelper.Pi - MathHelper.PiOver4 : MathHelper.PiOver4);
             Vector2 rotationPoint = (Owner.direction == -1) ? new Vector2(texture.Width, texture.Height) : new Vector2(0, texture.Height);
             SpriteEffects flipSprite = (Owner.direction == -1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            Vector2 placeAdjust = (drawRotation + MathHelper.PiOver2).ToRotationVector2() * 2.5f + ((swingCount % 2 == 0 ? new Vector2(-6, 0) : new Vector2(-2, 0)).RotatedBy(drawRotation) * Owner.direction);
 
-            Vector2 placeAdjust = (drawRotation + MathHelper.PiOver2).ToRotationVector2() * 2.5f;
             Color clr = Color.Tan;
             int swingCountFlip = (swingCount % 2 == 0 ? 1 : 3) + Owner.direction == 0 ? 2 : 0;
             Vector2 vel2 = Projectile.velocity.RotatedBy(MathHelper.PiOver2);

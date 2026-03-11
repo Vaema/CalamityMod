@@ -1,4 +1,3 @@
-AbaddonCrit.DisplayName: Brimstone Blast
 AeroExplosive.DisplayName: Aeroboom
 AllianceTriangle.DisplayName: Alliance Triangle
 AmuletEnergy.DisplayName: Sea Spirit
@@ -43,7 +42,6 @@ CursorProjSplit.DisplayName: Aestheticus Crystal
 CyanLabSeeker.DisplayName: Seeking Mechanism
 DarkIce.DisplayName: Dark Ice
 DeepseaBlaze.DisplayName: Deepsea Blaze
-DemonshadeRedDevil.DisplayName: Red Devil
 DevourerofCodsBobber.DisplayName: Devourer of Cods Bobber
 DiamondOfTheDeepProjectile.DisplayName: Abyss Spirit
 DirectStrike.DisplayName: Nondescript Damaging Entity
@@ -170,7 +168,7 @@ WulfrumDiggingTurtleProjectile.DisplayName: Digging Turtle
 WulfrumHook.DisplayName: Wulfrum Slingshot
 WulfrumLureSignal.DisplayName: Signal
 YellowLabSeeker.DisplayName: Seeking Mechanism
-VoidofExtinctionCrit.DisplayName: Void of Extinction Crit
 XykDeathAnim.DisplayName: Xyk Death Animation
 XykWings.DisplayName: Xyk Wings
 StratusBlackHole.DisplayName: Stratus Singularity
+DebuffSpreadEffect.DisplayName: Debuff Spread Effect

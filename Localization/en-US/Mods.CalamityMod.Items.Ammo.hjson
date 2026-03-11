@@ -38,7 +38,7 @@ BloodRune: {
 
 BubonicRound: {
 	DisplayName: Bubonic Round
-	Tooltip: Spreads the plague on hit and ignores 10% of enemy defense
+	Tooltip: Spreads the [cbuff:CalamityMod/Plague] on hit and ignores 10% of enemy defense
 }
 
 CinderArrow: {
@@ -96,7 +96,7 @@ HolyFireBullet: {
 	DisplayName: Holy Fire Bullet
 	Tooltip:
 		'''
-		Profaned bullets that deal 1.15x damage and explode on impact
+		Profaned bullets that deal 1.15x damage and explode on impact, inflicting [cbuff:CalamityMod/HolyFlames]
 		The explosion is larger and the bullet deals increased damage if impact occurs immediately after firing
 		The extra damage bonus caps at 1.15x
 		'''
@@ -165,7 +165,7 @@ VanquisherArrow: {
 	DisplayName: Vanquisher Arrow
 	Tooltip:
 		'''
-		Pierces through tiles and homes in on enemies
+		Pierces through tiles and homes in on enemies, inflicting [cbuff:CalamityMod/GodSlayerInferno]
 		Tears a rift in space on enemy hits
 		'''
 }
