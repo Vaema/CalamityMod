@@ -577,6 +577,12 @@ namespace CalamityMod.CalPlayer
             if (silvaSet)
                 Player.lifeRegen += SilvaArmor.SetBonusRegenBoost;
 
+            if (angelicAlliance)
+            {
+                if (Player.wingTime < Player.wingTimeMax)
+                    Player.lifeRegen += AngelicAlliance.RegenBoostDuringFlight;
+            }
+
             if (phantomicHeartRegen > 0 && phantomicHeartRegen < 1000)
             {
                 Player.lifeRegen += PhantomicArtifact.RegenBoost;
