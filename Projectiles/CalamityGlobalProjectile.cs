@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using CalamityMod.Buffs;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
@@ -23,11 +22,6 @@ using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.NPCs;
-using CalamityMod.NPCs.Crabulon;
-using CalamityMod.NPCs.Crags;
-using CalamityMod.NPCs.Deconstructors;
-using CalamityMod.NPCs.DraedonLabThings;
-using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.OldDuke;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
@@ -51,7 +45,6 @@ using CalamityMod.Tiles.AstralSnow;
 using CalamityMod.Tiles.Crags.Tree;
 using CalamityMod.Tiles.FurnitureAuric;
 using CalamityMod.Tiles.Ores;
-using CalamityMod.Walls.DraedonStructures;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -3736,210 +3729,27 @@ namespace CalamityMod.Projectiles
                 return false;
             }
 
-            if (owner.HeldItem.type == ModContent.ItemType<TrustyOldRod>() && reelingIn && projectile.ai[1] != 0 && projectile.localAI[1] != 0)
+            bool pulledNPC = Main.rand.NextBool(TrustyOldRod.enemyChance.Item1, TrustyOldRod.enemyChance.Item2);
+            if (owner.HeldItem.type == ModContent.ItemType<TrustyOldRod>() && reelingIn && projectile.ai[1] != 0 && projectile.localAI[1] != 0 && pulledNPC)
             {
                 // Remove any item you would have fished up
                 projectile.ai[1] = 0;
                 // Get rarity of pull
                 int rarity = 0;
                 int roll = Main.rand.Next(1, 100 + 1);
-                if (roll == 1 || owner.controlDown) rarity = 3; // UltraRare (1/100)
-                else if (roll <= 21 || owner.controlUp) rarity = 2; // Rare (1/5)
-                else rarity = 1; // Common (4/5)
+                if (roll == 1) rarity = 3; // UltraRare (1/100)
+                else if (roll <= 21) rarity = 2; // Rare ~(1/5)
+                else rarity = 1; // Common ~(4/5)
 
-                SpawnTrustyOldRodNPC(owner, projectile.Center, rarity, owner.controlLeft, projectile.lavaWet, projectile.honeyWet);
+                TrustyOldRodEnemySystem.SpawnTrustyOldRodNPC(owner, projectile.whoAmI, rarity, projectile.lavaWet, projectile.honeyWet);
+                projectile.ai[0] = 2; // snap line
                 return false;
             }
 
             return false;
         }
         #endregion
-
-        // Spawning for Trusty Old Rod NPCs, each biome has spawns of different rarity and sometimes style
-        // Spawns change in hardmode
-        public void SpawnTrustyOldRodNPC(Player owner, Vector2 bobberPosition, int rarity = 1, bool hardmode = false, bool Lava = false, bool Honey = false)
-        {
-            bool common = rarity == 1;
-            bool rare = rarity == 2;
-            bool ultraRare = rarity == 3;
-            bool postML = NPC.downedMoonlord;
-            int fallbackNPC = NPCID.Ghost; // If all biome checks fail, spawn a ghost
-
-            // ReduceEnemyDrops is used for some reels that pull crazy numbers of enemies by making 1/3rd of them count as statue spawned enemies
-            List<(int npc, int spawnCount, bool reduceEnemyDrops)> npcIDsCommon = new List<(int npc, int spawnCount, bool reduceEnemyDrops)>();
-            List<(int npc, int spawnCount, bool reduceEnemyDrops)> npcIDsRare = new List<(int npc, int spawnCount, bool reduceEnemyDrops)>();
-            List<(int npc, int spawnCount, bool reduceEnemyDrops)> npcIDsUltraRare = new List<(int npc, int spawnCount, bool reduceEnemyDrops)>();
-
-            Tile backWall = Framing.GetTileSafely((int)(owner.Center.X / 16), (int)(owner.Center.Y / 16));
-            bool gottenNPC = npcIDsCommon.Count != 0 && npcIDsRare.Count != 0 && npcIDsUltraRare.Count != 0;
-
-            // Main Biomes
-
-
-            // Sub Biomes
-            if (owner.ZoneSkyHeight)
-            {
-
-            }
-
-            if (backWall.WallType == WallID.SpiderUnsafe) // Spider caves (priority over caverns and mushroom and granite/marble)
-            {
-                bool stylistCheck = !NPC.savedStylist && !NPC.AnyNPCs(NPCID.WebbedStylist);
-                int pickASpider = hardmode && !Main.rand.NextBool(3) ? NPCID.BlackRecluse : NPCID.WallCreeper;
-                // 2 Wall Creepers/Black Recluses (HM), 1/3 chance to be Wall Creeper in hardmode
-                if (common) { npcIDsCommon.Add((pickASpider, 2, false)); }// Common NPC/s
-                // Stylist if she hasn't been saved, otherwise 10 Wall Creepers/Black Recluses (HM), 1/3 chance to be Wall Creeper in hardmode
-                else if (rare) { npcIDsRare.Add((stylistCheck ? NPCID.WebbedStylist : pickASpider, stylistCheck ? 1 : 10, false)); } // Rare NPC/s
-                // 100 Wall Creepers/Black Recluses (HM), always Black Recluses in hardmode
-                else if (ultraRare) { npcIDsUltraRare.Add((hardmode ? NPCID.BlackRecluse : NPCID.WallCreeper, 100, true)); } // Ultra Rare NPC/s
-            }
-            else if (owner.ZoneGlowshroom) // (priority over caverns and granite/marble)
-            {
-                // 3 Spore Bats
-                if (common) { npcIDsCommon.Add((NPCID.SporeBat, 3, false)); } // Common NPC/s
-                // 1/10 for 2 Truffle Worms, 9/10 for 2 Anomura Fungus
-                else if (rare) { npcIDsRare.Add(Main.rand.NextBool(10) ? (NPCID.TruffleWorm, 2, false) : (NPCID.AnomuraFungus, 2, false)); } // Rare NPC/s
-                // A Crabulon, or 5 of them if in hardmode
-                else if (ultraRare) { npcIDsUltraRare.Add((ModContent.NPCType<Crabulon>(), hardmode ? 5 : 1, false)); } // Ultra Rare NPC/s
-            }
-            else if (owner.ZoneGranite || owner.ZoneMarble)
-            {
-                if (owner.ZoneGranite)
-                {
-                    // 3 Granite Elementals
-                    if (common) { npcIDsCommon.Add((NPCID.GraniteFlyer, 3, false)); } // Common NPC/s
-                    // 4 Granite Golems
-                    else if (rare) { npcIDsRare.Add((NPCID.GraniteGolem, 4, false)); } // Rare NPC/s
-                    // 25 Diamond Crawlers
-                    else if (ultraRare) { npcIDsUltraRare.Add((ModContent.NPCType<CrawlerDiamond>(), 25, true)); } // Ultra Rare NPC/s
-                }
-                if (owner.ZoneMarble)
-                {
-                    // 2 Hoplites
-                    if (common) { npcIDsCommon.Add((NPCID.GreekSkeleton, 2, false)); } // Common NPC/s
-                    // 15 Hoplites, in hardmode 2/3 chance to be 2 Medusas instead
-                    else if (rare) { bool noSwarm = !hardmode ? false : !Main.rand.NextBool(3); npcIDsRare.Add(noSwarm ? (NPCID.Medusa, 2, false) : (NPCID.GreekSkeleton, 15, true)); } // Rare NPC/s
-                    // 25 Diamond Crawlers
-                    else if (ultraRare) { npcIDsUltraRare.Add((ModContent.NPCType<CrawlerDiamond>(), 25, true)); } // Ultra Rare NPC/s
-                }
-            }
-            else if (owner.ZoneNormalCaverns)
-            {
-                bool goblinCheck = NPC.downedGoblins && !NPC.savedGoblin && !NPC.AnyNPCs(NPCID.BoundGoblin);
-                bool wizardCheck = hardmode && !NPC.savedWizard && !NPC.AnyNPCs(NPCID.BoundWizard);
-                int tooManyLizards = Main.rand.Next(9) switch
-                {
-                    0 => NPCID.Salamander,
-                    1 => NPCID.Salamander2,
-                    2 => NPCID.Salamander3,
-                    3 => NPCID.Salamander4,
-                    4 => NPCID.Salamander5,
-                    5 => NPCID.Salamander6,
-                    6 => NPCID.Salamander7,
-                    7 => NPCID.Salamander8,
-                    _ => NPCID.Salamander9
-                };
-                int tooManySkeletons = Main.rand.Next(8) switch
-                {
-                    0 => NPCID.Skeleton,
-                    1 => NPCID.HeadacheSkeleton,
-                    2 => NPCID.MisassembledSkeleton,
-                    3 => NPCID.PantlessSkeleton,
-                    4 => NPCID.BoneThrowingSkeleton,
-                    5 => NPCID.BoneThrowingSkeleton2,
-                    6 => NPCID.BoneThrowingSkeleton3,
-                    _ => NPCID.BoneThrowingSkeleton4
-                };
-                // Large variety of common cavern spawns if bats aren't chosen, only one per reel reguardless of type
-                int pickCommonCaverns = Main.rand.Next(4) switch
-                {
-                    0 => Main.rand.NextBool() ? NPCID.GiantShelly : NPCID.GiantShelly2,
-                    1 => tooManyLizards, // One of the 9 Salamander variants
-                    2 => Main.rand.NextBool() ? NPCID.Crawdad : NPCID.Crawdad2,
-                    _ => tooManySkeletons, // One of the many Skeletons (does not include the small/big variants, but does include bone throwing variants)
-                };
-                // Most often Undead Miner (70%), otherwise can be a Tim or Nymph (15% each)
-                int randNum = Main.rand.Next(1, 100 + 1);
-                int pickRareCaverns = (randNum > 30 ? NPCID.UndeadMiner : randNum <= 15 ? NPCID.Nymph : NPCID.Tim);
-
-                bool bats = !Main.rand.NextBool(3);
-                // 2/3 for 3 Cave Bats (3 Giant Bats in HM), otherwise a singular Shelly, Crawdad, Salamander, or Skeleton
-                if (common) { npcIDsCommon.Add((bats ? (hardmode ? NPCID.GiantBat : NPCID.CaveBat) : pickCommonCaverns, bats ? 3 : 1, false)); } // Common NPC/s
-                // Gobin if he hasn't been saved and the invasion has been cleared or Wizard if hardmode, otherwise an Undead Miner, Tim, or Nymph (Undead Miner being most common)
-                else if (rare) { npcIDsRare.Add((goblinCheck ? NPCID.BoundGoblin : wizardCheck ? NPCID.BoundWizard : pickRareCaverns, 1, false)); } // Rare NPC/s
-                // 35 Mother Slimes, or if harmode either Armored or Archer Skeletons
-                else if (ultraRare) { npcIDsUltraRare.Add((hardmode ? Main.rand.NextBool() ? NPCID.ArmoredSkeleton : NPCID.SkeletonArcher : NPCID.MotherSlime, 35, true)); } // Ultra Rare NPC/s
-
-            }
-            else if (owner.ZoneNormalUnderground)
-            {
-                // Giant Worm or Digger if hardmode
-                if (common) { npcIDsCommon.Add((hardmode ? NPCID.DiggerHead : NPCID.GiantWormHead, 1, true)); } // Common NPC/s
-                // 1/2 for 7 Red Slimes, otherwise 7 Yellow Slimes, 7 Toxic Sludge instead in Hardmode
-                else if (rare) { npcIDsRare.Add((hardmode ? NPCID.ToxicSludge : Main.rand.NextBool() ? NPCID.RedSlime : NPCID.YellowSlime, 7, false)); } // Rare NPC/s
-                // 1/3 for 50 Green Jellyfish, otherwise 50 Blue Jellyfish
-                else if (ultraRare) { npcIDsUltraRare.Add((Main.rand.NextBool(3) ? NPCID.GreenJellyfish : NPCID.BlueJellyfish, 50, false)); } // Ultra Rare NPC/s
-            }
-
-
-            if (owner.ZoneLihzhardTemple)
-            {
-                if (common) { npcIDsCommon.Add((ModContent.NPCType<CalamityEye>(), 3, false)); } // Common NPC/s
-                else if (rare) { npcIDsRare.Add((ModContent.NPCType<CalamityEye>(), 1, false)); } // Rare NPC/s
-                else if (ultraRare) { npcIDsUltraRare.Add((ModContent.NPCType<CalamityEye>(), 1, false)); } // Ultra Rare NPC/s
-            }
-            else if (owner.ZoneJungle)
-            {
-                bool plague = NPC.downedGolemBoss;
-            }
-
-            if (owner.ZoneGraveyard)
-            {
-                // 2 Maggot Zombies
-                if (common) { npcIDsCommon.Add((NPCID.MaggotZombie, 2, false)); } // Common NPC/s
-                // Either 3 Rotdogs or 3 Bucket Zombies
-                else if (rare) { npcIDsRare.Add((Main.rand.NextBool() ? ModContent.NPCType<Rotdog>() : ModContent.NPCType<BucketZombie>(), 3, false)); } // Rare NPC/s
-                // Either 2 Grooms or 2 Brides
-                else if (ultraRare) { npcIDsUltraRare.Add((Main.rand.NextBool() ? NPCID.TheBride : NPCID.TheGroom, 2, false)); } // Ultra Rare NPC/s
-            }
-            // Arsenal Labs
-            if ((backWall.WallType == ModContent.WallType<HazardChevronWall>() ||
-                backWall.WallType == ModContent.WallType<LaboratoryPanelWall>() ||
-                backWall.WallType == ModContent.WallType<LaboratoryPlateBeam>() ||
-                backWall.WallType == ModContent.WallType<LaboratoryPlatePillar>() ||
-                backWall.WallType == ModContent.WallType<LaboratoryPlatingWall>()) && 
-                BiomeTileCounterSystem.ArsenalLabTiles > 150)
-            {
-                if (common) { npcIDsCommon.Add((ModContent.NPCType<NanodroidDysfunctional>(), 5, false)); } // Common NPC/s
-                else if (rare) { npcIDsRare.Add((ModContent.NPCType<Androomba>(), 1, false)); } // Rare NPC/s
-                else if (ultraRare) { npcIDsUltraRare.Add((ModContent.NPCType<Burrower>(), 1, false)); } // Ultra Rare NPC/s
-            }
-
-            // Spawn the npc/s
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-            {
-                if (npcIDsCommon.Count + npcIDsRare.Count + npcIDsUltraRare.Count == 0)
-                {
-                    npcIDsCommon.Add((fallbackNPC, 1, false)); 
-                    common = true;
-                }
-                // Get a random NPC type and count from the list of npcs within the rarity
-                (int, int, bool) finalNPCstats = common ? npcIDsCommon.ElementAt(Main.rand.Next(0, npcIDsCommon.Count)) :
-                    rare ? npcIDsRare.ElementAt(Main.rand.Next(0, npcIDsRare.Count)) :
-                    npcIDsUltraRare.ElementAt(Main.rand.Next(0, npcIDsUltraRare.Count));
-                // Spawn the actual NPC/s
-                for (int i = 0; i < finalNPCstats.Item2; i++)
-                {
-                    float baseSpeed = 2.5f;
-                    NPC catched = Main.npc[(int)NPC.NewNPC(owner.GetSource_FromThis(), (int)bobberPosition.X, (int)bobberPosition.Y, finalNPCstats.Item1)];
-                    // If there's more than one, send in random directions, otherwise pull them upwards
-                    catched.velocity = Vector2.UnitY * -baseSpeed + (finalNPCstats.Item2 == 1 ? Vector2.Zero : -Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(baseSpeed / 2, baseSpeed * 2 * MathF.Pow(finalNPCstats.Item2, 0.5f)));
-                    catched.SpawnedFromStatue = (finalNPCstats.Item3 ? Main.rand.NextBool(3) : false);
-                }
-            }
-                
-        }
-
+        
         #region AI
         public override void AI(Projectile projectile)
         {

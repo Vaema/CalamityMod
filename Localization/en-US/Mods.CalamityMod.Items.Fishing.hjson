@@ -377,10 +377,10 @@ TheDevourerofCods: {
 TrustyOldRod: {
 	DisplayName: Trusty Old Rod
 	Tooltip:
-'''
-This ol' thing has never failed to pull in a big haul
-Who knows what it will reel in next!
-'''
+		'''
+		This ol' thing has never failed to pull in a big haul
+		Who knows what it will reel in next!
+		'''
 }
 
 VerstaltiteFishingRod: {

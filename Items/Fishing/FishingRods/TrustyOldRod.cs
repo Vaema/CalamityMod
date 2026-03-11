@@ -1,5 +1,4 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.Projectiles.Typeless;
+﻿using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -10,7 +9,7 @@ namespace CalamityMod.Items.Fishing.FishingRods
     public class TrustyOldRod : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Fishing";
-        public static int enemyChance = 4; // 1/x chance to turn items into enemies
+        public static (int, int) enemyChance = (1, 3); // x/x Chance to pull up enemies
         public override void SetDefaults()
         {
             Item.width = 24;
