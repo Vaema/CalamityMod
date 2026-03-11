@@ -497,6 +497,7 @@ namespace CalamityMod.NPCs
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<CelestialClaymore>(), 7, 4));
                     npcLoot.Add(ItemID.HallowedKey, 10);
                     break;
+                #endregion
 
                 #region Jungle
                 // Moss Hornet
