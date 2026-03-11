@@ -121,36 +121,34 @@ namespace CalamityMod.Items.Accessories.Wings
         public static string HorizontalSpeedText(float speed)
         {
             string key = "Average";
-            Vector3 hsl = new Vector3(0.334f, 0.35f, 1f);
+            Vector3 hsl = new Vector3(0.167f, 0.65f, 0.61f);
             if (speed > 9f)
             {
                 key = "Excellent";
+                hsl.X = 0.334f;
                 hsl.Y = 1f;
-                hsl.Z = 0.61f;
             }
             else if (speed >= 8f)
             {
                 key = "Great";
-                hsl.Y = 0.65f;
-                hsl.Z = 0.61f;
+                hsl.X = 0.334f;
             }
             else if (speed >= 7f)
             {
                 key = "Good";
-                hsl.Z = 0.61f;
+                hsl.X = 0.334f;
+                hsl.Y = 0.35f;
             }
             else if (speed <= 3f)
             {
                 key = "Awful";
                 hsl.X = 0f;
-                hsl.Y = 0.65f;
-                hsl.Z = 0.61f;
             }
             else if (speed <= 6f)
             {
                 key = "Poor";
                 hsl.X = 0f;
-                hsl.Z = 0.61f;
+                hsl.Y = 0.35f;
             }
             return $"[c/{Main.hslToRgb(hsl).Hex3()}:{GetTextValue($"Common.Stats{key}")}]";
         }
@@ -158,36 +156,34 @@ namespace CalamityMod.Items.Accessories.Wings
         public static string VerticalSpeedText(float speed)
         {
             string key = "Average";
-            Vector3 hsl = new Vector3(0.334f, 0.35f, 1f);
+            Vector3 hsl = new Vector3(0.167f, 0.65f, 0.61f);
             if (speed > 2.5f)
             {
                 key = "Excellent";
+                hsl.X = 0.334f;
                 hsl.Y = 1f;
-                hsl.Z = 0.61f;
             }
             else if (speed >= 2f)
             {
                 key = "Great";
-                hsl.Y = 0.65f;
-                hsl.Z = 0.61f;
+                hsl.X = 0.334f;
             }
             else if (speed >= 1.65f)
             {
                 key = "Good";
-                hsl.Z = 0.61f;
+                hsl.X = 0.334f;
+                hsl.Y = 0.35f;
             }
             else if (speed <= 1f)
             {
                 key = "Awful";
                 hsl.X = 0f;
-                hsl.Y = 0.65f;
-                hsl.Z = 0.61f;
             }
             else if (speed <= 1.35f)
             {
                 key = "Poor";
                 hsl.X = 0f;
-                hsl.Z = 0.61f;
+                hsl.Y = 0.35f;
             }
             return $"[c/{Main.hslToRgb(hsl).Hex3()}:{GetTextValue($"Common.Stats{key}")}]";
         }
@@ -195,36 +191,34 @@ namespace CalamityMod.Items.Accessories.Wings
         public static string HorizontalAccelerationText(float acc)
         {
             string key = "Average";
-            Vector3 hsl = new Vector3(0.334f, 0.35f, 1f);
+            Vector3 hsl = new Vector3(0.167f, 0.65f, 0.61f);
             if (acc > 2.5f)
             {
                 key = "Excellent";
+                hsl.X = 0.334f;
                 hsl.Y = 1f;
-                hsl.Z = 0.61f;
             }
             else if (acc >= 2f)
             {
                 key = "Great";
-                hsl.Y = 0.65f;
-                hsl.Z = 0.61f;
+                hsl.X = 0.334f;
             }
             else if (acc >= 1.25f)
             {
                 key = "Good";
-                hsl.Z = 0.61f;
+                hsl.X = 0.334f;
+                hsl.Y = 0.35f;
             }
             else if (acc <= 0.5f)
             {
                 key = "Awful";
                 hsl.X = 0f;
-                hsl.Y = 0.65f;
-                hsl.Z = 0.61f;
             }
             else if (acc <= 0.75f)
             {
                 key = "Poor";
                 hsl.X = 0f;
-                hsl.Z = 0.61f;
+                hsl.Y = 0.35f;
             }
             return $"[c/{Main.hslToRgb(hsl).Hex3()}:{GetTextValue($"Common.Stats{key}")}]";
         }
@@ -232,36 +226,34 @@ namespace CalamityMod.Items.Accessories.Wings
         public static string VerticalAccelerationText(float acc)
         {
             string key = "Average";
-            Vector3 hsl = new Vector3(0.334f, 0.35f, 1f);
+            Vector3 hsl = new Vector3(0.167f, 0.65f, 0.61f);
             if (acc > 0.2f)
             {
                 key = "Excellent";
+                hsl.X = 0.334f;
                 hsl.Y = 1f;
-                hsl.Z = 0.61f;
             }
             else if (acc >= 0.135f)
             {
                 key = "Great";
-                hsl.Y = 0.65f;
-                hsl.Z = 0.61f;
+                hsl.X = 0.334f;
             }
             else if (acc >= 0.11f)
             {
                 key = "Good";
-                hsl.Z = 0.61f;
+                hsl.X = 0.334f;
+                hsl.Y = 0.35f;
             }
             else if (acc <= 0.05f)
             {
                 key = "Awful";
                 hsl.X = 0f;
-                hsl.Y = 0.65f;
-                hsl.Z = 0.61f;
             }
             else if (acc <= 0.09f)
             {
                 key = "Poor";
                 hsl.X = 0f;
-                hsl.Z = 0.61f;
+                hsl.Y = 0.35f;
             }
             return $"[c/{Main.hslToRgb(hsl).Hex3()}:{GetTextValue($"Common.Stats{key}")}]";
         }
