@@ -43,6 +43,7 @@ using CalamityMod.Items.PermanentBoosters;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Items.Potions.Food;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.Tools.ClimateChange;
 using CalamityMod.Items.TreasureBags.MiscGrabBags;
@@ -374,9 +375,12 @@ namespace CalamityMod.CalPlayer
         public int hideOfDeusMeleeBoostTimer = 0;
         /// <summary>
         /// The player's alcohol level. Increased by 1 for each alcohol the player has drank, 2 for Everclear.<br/>
-        /// If this value is greater than 3, the player is inflicted with Alcohol Poisoning.
+        /// If this value is greater than the max (normally 3), the player is inflicted with Alcohol Poisoning.
         /// </summary>
         public int alcoholPoisonLevel = 0;
+        public static int alcoholPoisonMaxBase = 3;
+        /// <summary> The maximum alcohol level the player can reach before getting Alcohol Poisoning. </summary>
+        public int alcoholPoisonMax = alcoholPoisonMaxBase;
         public int dashTimeMod;
         /// <summary>
         /// Timer variable which tracks how long the player has spent outside of Providence's border radius, in frames.<br/>
@@ -1377,6 +1381,7 @@ namespace CalamityMod.CalPlayer
         public bool riptide = false;
         public bool hadopelagicPressure = false;
         public bool fishAlert = false;
+        public bool malnourished = false;
         public bool clamity = false;
         public bool NOU = false;
         public bool absorberAffliction = false;
@@ -2146,6 +2151,7 @@ namespace CalamityMod.CalPlayer
             externalAuricRejectionImmunity = false;
 
             alcoholPoisonLevel = 0;
+            alcoholPoisonMax = alcoholPoisonMaxBase;
             noLifeRegen = false;
 
             //Stratus Starburst amount management
@@ -2672,6 +2678,7 @@ namespace CalamityMod.CalPlayer
             riptide = false;
             hadopelagicPressure = false;
             fishAlert = false;
+            malnourished = false;
             clamity = false;
             NOU = false;
             enraged = false;
@@ -3157,6 +3164,7 @@ namespace CalamityMod.CalPlayer
             riptide = false;
             hadopelagicPressure = false;
             fishAlert = false;
+            malnourished = false;
             clamity = false;
             NOU = false;
             snowmanNoseless = false;
@@ -4828,6 +4836,32 @@ namespace CalamityMod.CalPlayer
                     }
                 }
             }
+
+            if (malnourished) // Has to be here because alcoholPoisonLevel isn't updated until now
+            {
+                alcoholPoisonMax += TheSandwich.alcoholCapBoost;
+                // Gives inverted buffs from well fed
+                Player.statDefense -= 2;
+                Player.GetCritChance<GenericDamageClass>() -= 2;
+                Player.GetDamage<GenericDamageClass>() -= 0.05f;
+                Player.minionKB -= 0.5f;
+                // Move speed reduction/boost happens in PostUpdate
+                Player.pickSpeed += 0.05f;
+
+
+                for (int l = 0; l < Player.MaxBuffs; ++l)
+                {
+                    int buffID = Player.buffType[l];
+                    if ((BuffDatasets.DebuffDataset[buffID] != null && BuffDatasets.DebuffDataset[buffID].AlcoholLevel > 0) || buffID == BuffID.Tipsy)
+                    {
+                        Player.buffTime[l]++;
+                    }
+                }
+
+                if (Player.wellFed)
+                    Player.ClearBuff(ModContent.BuffType<Malnourished>());
+            }
+
             if (moonshine)
                 Player.statLifeMax2 = (int)(Player.statLifeMax2 * (1 + Moonshine.MaxLifePercentBoost));
             ForceVariousEffects();
@@ -5083,6 +5117,9 @@ namespace CalamityMod.CalPlayer
                     subtitletext.color = Color.Lerp(subtitleColors[1], subtitleColors[0], subtitletext.lifeTime / 120f);
                 }
             }
+
+            if (malnourished) // Has to be here because alcoholPoisonLevel isn't updated until now
+                Player.moveSpeed += -0.05f + TheSandwich.statBoost * alcoholPoisonLevel;
 
             // Relic of Convergence defense cut
             if (Player.ownedProjectileCounts[ModContent.ProjectileType<RelicOfConvergenceCrystal>()] > 0 && Player.HeldItem.type == ModContent.ItemType<RelicOfConvergence>())
@@ -5877,7 +5914,7 @@ namespace CalamityMod.CalPlayer
         public override void PostNurseHeal(NPC nurse, int health, bool removeDebuffs, int price)
         {
             // Remove excess alcohol
-            if (removeDebuffs && alcoholPoisonLevel > 3)
+            if (removeDebuffs && alcoholPoisonLevel > alcoholPoisonMax)
             {
                 List<int[]> Alcohol = new List<int[]>();
                 for (int i = 0; i < Player.MaxBuffs; i++)

@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using CalamityMod.DataStructures;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -6,6 +7,10 @@ namespace CalamityMod.Buffs.Alcohol
 {
     public class RedWineBuff : ModBuff
     {
+        public static DebuffData debuffData = new DebuffData()
+        {
+            AlcoholLevel = 1
+        };
         public override void SetStaticDefaults()
         {
             Main.debuff[Type] = true;
@@ -13,6 +18,7 @@ namespace CalamityMod.Buffs.Alcohol
             Main.buffNoSave[Type] = false;
             Main.persistentBuff[Type] = true;
             BuffID.Sets.NurseCannotRemoveDebuff[Type] = true;
+            BuffDatasets.DebuffDataset[Type] = debuffData;
         }
 
         public override void Update(Player player, ref int buffIndex)

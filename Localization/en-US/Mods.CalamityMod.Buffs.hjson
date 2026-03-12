@@ -1758,6 +1758,15 @@ ForbiddenStealthSummonTagBuff: {
 	Description: If you're seeing this, something went horribly wrong
 }
 
+Malnourished: {
+	DisplayName: Malnourished
+	Description:
+		'''
+		Minor reductions to all stats
+		Your liver feels stronger!
+		'''
+}
+
 SeaKingsAssurance: {
 	DisplayName: Sea King's Assurance
 	Description: If you're seeing this, something assuredly went horribly wrong
