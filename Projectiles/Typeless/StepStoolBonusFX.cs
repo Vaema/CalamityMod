@@ -30,10 +30,14 @@ namespace CalamityMod.Projectiles.Typeless
             // Gravity!
             Projectile.velocity.Y += 0.15f;
 
-            Projectile.rotation += 0.1f;
-            Projectile.scale -= 0.01f;
-            OpacityMultiplier -= 0.02f;
+            Projectile.rotation += 0.12f;
+            Projectile.scale -= 0.0125f;
+            OpacityMultiplier -= 0.025f;
 
+            if (Projectile.timeLeft > 99)
+                Projectile.alpha = 255;
+            else
+                Projectile.alpha = 0;
         }
 
         public override bool? CanDamage() => false;
@@ -43,7 +47,7 @@ namespace CalamityMod.Projectiles.Typeless
             Texture2D texture = TextureAssets.Extra[102].Value;
             Vector2 origin = texture.Size() / 2f;
 
-            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, Color.White * OpacityMultiplier, Projectile.rotation + (Main.player[Projectile.owner].gravDir == -1 ? MathHelper.Pi : 0), origin, Projectile.scale * 1.25f, SpriteEffects.None);
+            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, Color.White * ((1f - (Projectile.alpha / 255f)) * OpacityMultiplier), Projectile.rotation + (Main.player[Projectile.owner].gravDir == -1 ? MathHelper.Pi : 0), origin, Projectile.scale * 1.25f, SpriteEffects.None);
 
             return false;
         }

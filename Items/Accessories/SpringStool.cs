@@ -84,7 +84,7 @@ namespace CalamityMod.Items.Accessories
                 if (IsVanillaStoolEquipped(Player))
                 {
                     // Spawn a step stool copy with a random velocity. Only works if step stool is equipped as well as spring stool.
-                    Projectile.NewProjectile(Player.GetSource_FromThis(), spawnPos, new Vector2(Main.rand.NextBool() ? Main.rand.NextFloat(6f, 7f) : Main.rand.NextFloat(-6f, -7f), Main.rand.NextFloat(-8f, -10f)), ModContent.ProjectileType<StepStoolBonusFX>(), 0, 0f, Player.whoAmI);
+                    Projectile.NewProjectile(Player.GetSource_FromThis(), spawnPos + new Vector2(0f, -4f), new Vector2(Main.rand.NextBool() ? Main.rand.NextFloat(6f, 7f) : Main.rand.NextFloat(-6f, -7f), Main.rand.NextFloat(-8f, -10f)), ModContent.ProjectileType<StepStoolBonusFX>(), 0, 0f, Player.whoAmI);
                 }
             }
 
