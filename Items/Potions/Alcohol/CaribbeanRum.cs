@@ -1,4 +1,6 @@
-﻿using CalamityMod.Buffs.Alcohol;
+﻿using System;
+using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -8,14 +10,21 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
 {
-    public class CaribbeanRum : ModItem, ILocalizedModType
+    public class CaribbeanRum : ModItem, ILocalizedModType, IAlcoholItem
     {
         public new string LocalizationCategory => "Items.Potions";
 
         public static float MoveSpeedBoost = 0.25f;
         public static float GravityMultiplier = 0.5f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MoveSpeedBoost.ToPercent(), (1-GravityMultiplier).ToPercent());
+        public AlcoholType AlcoholVariant => AlcoholType.CaribbeanRum;
 
+        public Action<Player, float> AlcoholEffect => ApplyCaribbeanRumEffect;
+
+        private static void ApplyCaribbeanRumEffect(Player player, float intensity)
+        {
+            // out of order 20 defense
+        }
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;

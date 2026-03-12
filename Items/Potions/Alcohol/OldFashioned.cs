@@ -1,4 +1,6 @@
-﻿using CalamityMod.Buffs.Alcohol;
+﻿using System;
+using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -8,14 +10,21 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
 {
-    public class OldFashioned : ModItem, ILocalizedModType
+    public class OldFashioned : ModItem, ILocalizedModType, IAlcoholItem
     {
         public new string LocalizationCategory => "Items.Potions";
 
         public static readonly float DamageBoostMultiplier = 1.25f;
         public static readonly float DamageReductionMultiplier = 0.75f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs((DamageBoostMultiplier).ToString("N2"), (DamageReductionMultiplier).ToString("N2"));
+        public AlcoholType AlcoholVariant => AlcoholType.OldFashioned;
 
+        public Action<Player, float> AlcoholEffect => ApplyOldFashionedEffect;
+
+        private static void ApplyOldFashionedEffect(Player player, float intensity)
+        {
+            // out of order 20 defense
+        }
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;

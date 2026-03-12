@@ -1,4 +1,6 @@
-﻿using CalamityMod.Buffs.Alcohol;
+﻿using System;
+using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -8,9 +10,18 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
 {
-    public class BloodyMary : ModItem, ILocalizedModType
+    public class BloodyMary : ModItem, ILocalizedModType, IAlcoholItem
     {
         public new string LocalizationCategory => "Items.Potions";
+
+        public AlcoholType AlcoholVariant => AlcoholType.BloodyMary;
+
+        public Action<Player, float> AlcoholEffect => ApplyBloodyMaryEffect;
+
+        private static void ApplyBloodyMaryEffect(Player player, float intensity)
+        {
+            // out of order 20 defense
+        }
 
         public override void SetStaticDefaults()
         {

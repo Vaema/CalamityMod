@@ -1,4 +1,6 @@
-﻿using CalamityMod.Buffs.Alcohol;
+﻿using System;
+using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Ores;
 using Microsoft.Xna.Framework;
@@ -9,14 +11,21 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
 {
-    public class Vodka : ModItem, ILocalizedModType
+    public class Vodka : ModItem, ILocalizedModType, IAlcoholItem
     {
         public new string LocalizationCategory => "Items.Potions";
 
         public static float DebuffBoost = 0.25f;
         public static float DebuffLoss = 0.5f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs((DebuffBoost).ToPercent(), DebuffLoss.ToPercent());
+        public AlcoholType AlcoholVariant => AlcoholType.Vodka;
 
+        public Action<Player, float> AlcoholEffect => ApplyVodkaEffect;
+
+        private static void ApplyVodkaEffect(Player player, float intensity)
+        {
+            // out of order 20 defense
+        }
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;

@@ -1,4 +1,6 @@
-﻿using CalamityMod.Buffs.Alcohol;
+﻿using System;
+using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Ores;
 using Microsoft.Xna.Framework;
@@ -9,13 +11,20 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
 {
-    public class MoscowMule : ModItem, ILocalizedModType
+    public class MoscowMule : ModItem, ILocalizedModType, IAlcoholItem
     {
         public new string LocalizationCategory => "Items.Potions";
 
         public static float KnockbackBoost = 0.5f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(KnockbackBoost.ToPercent());
+        public AlcoholType AlcoholVariant => AlcoholType.MoscowMule;
 
+        public Action<Player, float> AlcoholEffect => ApplyMoscowMuleEffect;
+
+        private static void ApplyMoscowMuleEffect(Player player, float intensity)
+        {
+            // out of order 20 defense
+        }
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;

@@ -1,4 +1,6 @@
-﻿using CalamityMod.Buffs.Alcohol;
+﻿using System;
+using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Ores;
 using Microsoft.Xna.Framework;
@@ -9,10 +11,17 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
 {
-    public class CinnamonRoll : ModItem, ILocalizedModType
+    public class CinnamonRoll : ModItem, ILocalizedModType, IAlcoholItem
     {
         public new string LocalizationCategory => "Items.Potions";
+        public AlcoholType AlcoholVariant => AlcoholType.CinnamonRoll;
 
+        public Action<Player, float> AlcoholEffect => ApplyCinnamonRollEffect;
+
+        private static void ApplyCinnamonRollEffect(Player player, float intensity)
+        {
+            // out of order 20 defense
+        }
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;

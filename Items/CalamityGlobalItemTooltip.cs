@@ -1640,7 +1640,7 @@ namespace CalamityMod.Items
                 return false;
             }
             // IV Drip tooltip FX
-            if (line.Mod == "Terraria" && item.type == ModContent.ItemType<IVDripOnTheRocks>() && line.Name == "Tooltip4")
+            if (line.Mod == "Terraria" && item.type == ModContent.ItemType<IVDripOnTheRocks>() && line.Name == "Tooltip6")
             {
                 Vector2 basePosition = new Vector2(line.X, line.Y);
 

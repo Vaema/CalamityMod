@@ -1,4 +1,6 @@
-﻿using CalamityMod.Buffs.Alcohol;
+﻿using System;
+using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -8,7 +10,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
 {
-    public class Whiskey : ModItem, ILocalizedModType
+    public class Whiskey : ModItem, ILocalizedModType, IAlcoholItem
     {
         public new string LocalizationCategory => "Items.Potions";
 
@@ -17,7 +19,14 @@ namespace CalamityMod.Items.Potions.Alcohol
         public static float TimeToDischarge = 600;
         public static float TimeToRecharge = 300;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MinDamageBoost.ToPercent(), MaxDamageBoost.ToPercent(), (TimeToDischarge/60).ToString("0.##"), (TimeToRecharge/60).ToString("0.##"));
+        public AlcoholType AlcoholVariant => AlcoholType.Whiskey;
 
+        public Action<Player, float> AlcoholEffect => ApplyWhiskeyEffect;
+
+        private static void ApplyWhiskeyEffect(Player player, float intensity)
+        {
+            // out of order 20 defense
+        }
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;

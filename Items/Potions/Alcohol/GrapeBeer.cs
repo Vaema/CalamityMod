@@ -1,4 +1,6 @@
-﻿using CalamityMod.Buffs.Alcohol;
+﻿using System;
+using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -8,13 +10,20 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
 {
-    public class GrapeBeer : ModItem, ILocalizedModType
+    public class GrapeBeer : ModItem, ILocalizedModType, IAlcoholItem
     {
         public new string LocalizationCategory => "Items.Potions";
 
         public static float CritLoss = 50;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(CritLoss);
+        public AlcoholType AlcoholVariant => AlcoholType.GrapeBeer;
 
+        public Action<Player, float> AlcoholEffect => ApplyGrapeBeerEffect;
+
+        private static void ApplyGrapeBeerEffect(Player player, float intensity)
+        {
+            // out of order 20 defense
+        }
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;
