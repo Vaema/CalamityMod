@@ -1,9 +1,8 @@
 ﻿using System;
 using CalamityMod.Dusts;
 using CalamityMod.NPCs.CeaselessVoid;
+using CalamityMod.Particles;
 using CalamityMod.Systems.Graphic.PixelationSystem;
-using CalamityMod.Utilities.Daybreak;
-using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -126,7 +125,7 @@ namespace CalamityMod.Projectiles.Rogue
                 }
                 else
                 {
-                    Projectile.velocity = Projectile.DirectionTo(target.Center) * MathHelper.Clamp(Timer / 4f, 0f, 16f);
+                    Projectile.velocity = Projectile.DirectionTo(target.Center) * MathHelper.Clamp(MathF.Pow((Timer - 30) / 8f, 2), 0f, 32f) * (Timer - 30).DirectionalSign();
                 }
             }
 
@@ -153,6 +152,7 @@ namespace CalamityMod.Projectiles.Rogue
                     float SpeedY = -Projectile.velocity.Y * Main.rand.Next(40, 70) * 0.01f + Main.rand.Next(-20, 21) * 0.4f;
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X + SpeedX, Projectile.Center.Y + SpeedY, SpeedX, SpeedY, ModContent.ProjectileType<SealedSingularityGore>(), 20, 0f, Projectile.owner, index, 0f);
                 }
+                Projectile.velocity = Vector2.Zero;
                 SoundEngine.PlaySound(CeaselessVoid.DeathSound with { pitch = 1f, Volume = Stealth ? 0.5f : 0.2f }, Projectile.Center);
             }
 
@@ -162,10 +162,18 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.ResetLocalNPCHitImmunity();
                 Projectile.Damage();
 
-                for (var i = 0; i < (Stealth? 80 : 40); i++)
+                for (var i = 0; i < (Stealth ? 80 : 40); i++)
                 {
-                    var d = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LemonNadeExplodeDust>(), Main.rand.NextVector2CircularEdge(15, 15) * Main.rand.NextFloat(0.25f, Stealth? 1.5f : 1f), Scale: Main.rand.NextFloat(0.5f, 1.5f), newColor: RandomColor);
+                    var d = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LemonNadeExplodeDust>(), Main.rand.NextVector2CircularEdge(15, 15) * Main.rand.NextFloat(0.25f, Stealth ? 1.5f : 1f), Scale: Main.rand.NextFloat(0.5f, 1.5f), newColor: RandomColor);
                 }
+                var ringTimer = Stealth ? 50 : 35;
+                GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, RandomColor, "CalamityMod/Particles/BloomRing", new Vector2(0.1f, 0.85f), MathHelper.PiOver2, -4f, 4f, ringTimer));
+                if (Stealth)
+                {
+                    GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, RandomColor, "CalamityMod/Particles/BloomRing", new Vector2(0.2f, 0.7f), MathHelper.PiOver4, -4f, 4f, ringTimer - 15));
+                    GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, RandomColor, "CalamityMod/Particles/BloomRing", new Vector2(0.2f, 0.7f), -MathHelper.PiOver4, -4f, 4f, ringTimer - 15));
+                }
+
                 SoundEngine.PlaySound(SoundID.Item62 with { pitch = 1f }, Projectile.Center);
                 SoundEngine.PlaySound(SoundID.Item111 with { pitch = 0.5f }, Projectile.Center);
 
@@ -180,6 +188,29 @@ namespace CalamityMod.Projectiles.Rogue
                 if (field == null)
                 {
                     var texture = TextureAssets.Projectile[ModContent.ProjectileType<SealedSingularityProjectile>()].Value;
+                    field = new Texture2D(Main.graphics.GraphicsDevice, texture.Width, texture.Height);
+
+                    var BaseArray = new Color[field.Width * field.Height];
+                    var ColorArray = new Color[field.Width * field.Height];
+                    texture.GetData(BaseArray);
+                    for (var i = 0; i < BaseArray.Length; i++)
+                    {
+                        ColorArray[i] = new Color(255, 255, 255) * (((float)BaseArray[i].A) / 255f);
+                    }
+                    field.SetData(ColorArray);
+                }
+                return field;
+            }
+            set;
+        }
+
+        private static Texture2D OutlineTexVoid
+        {
+            get
+            {
+                if (field == null)
+                {
+                    var texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/SealedSingularityBlackhole").Value;
                     field = new Texture2D(Main.graphics.GraphicsDevice, texture.Width, texture.Height);
 
                     var BaseArray = new Color[field.Width * field.Height];
@@ -214,6 +245,10 @@ namespace CalamityMod.Projectiles.Rogue
             if (AIState == 2)
             {
                 var frame = VoidTex.Frame(1, 7, 0, (int)(Timer * 0.2f % 7));
+                for (float i = 0; i < MathHelper.TwoPi; i += MathHelper.PiOver2)
+                {
+                    Main.EntitySpriteDraw(OutlineTexVoid, Projectile.Center - Main.screenPosition + new Vector2(2, 0).RotatedBy(i), frame, BorderColor, 0, frame.Size() * 0.5f, Projectile.scale, 0);
+                }
                 Main.EntitySpriteDraw(VoidTex.Value, Projectile.Center - Main.screenPosition, frame, Color.White, 0, frame.Size() * 0.5f, Projectile.scale, 0);
                 return false;
             }

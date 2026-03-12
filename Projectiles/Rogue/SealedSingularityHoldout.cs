@@ -104,7 +104,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             if (inStartup)
             {
-                return swingWidth * -0.5f + (MathF.Sin(Main.GlobalTimeWrappedHourly * 30) * 0.2f);
+                return MathHelper.ToRadians(MathHelper.SmoothStep(swingWidth * -0.2f, swingWidth * -0.5f, StartupCompletion));
             }
             if (inCooldown)
                 return MathHelper.ToRadians(MathHelper.Lerp(swingWidth * 0.2f, swingWidth * 0.33f, 1 - MathF.Pow(1 - CooldownCompletion, 3f)));
