@@ -1,8 +1,10 @@
 ﻿using System;
 using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
@@ -31,7 +33,15 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.ContinuouslyUpdateDamageStats = true;
         }
-        public override void Spawn()
+
+        public Color randomColor => Main.rand.Next(4) switch
+            {
+                0 => Color.Red,
+                1 => Color.MediumTurquoise,
+                2 => Color.Orange,
+                _ => Color.LawnGreen,
+            };
+    public override void Spawn()
         {
             var player = Main.player[Projectile.owner];
             var modplayer = player.GetModPlayer<BaseSwordHoldoutPlayer>();

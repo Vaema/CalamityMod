@@ -1161,6 +1161,8 @@ Supernova: {
 	DisplayName: Supernova
 	Tooltip:
 		'''
+		Disables normal stealth generation
+		Hold <left> to generate stealth, or hold <right> to toss the bomb without generating stealth
 		Tosses a smart bomb that locks onto and tracks targets
 		If no target is found it will return to you
 		Each bomb creates a miniature supernova that drags in weak enemies and chases strong enemies

@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 106;
             Item.height = 112;
-            Item.damage = 5036;
+            Item.damage = 5200;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useAnimation = 70;
@@ -37,9 +37,12 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.DamageType = RogueDamageClass.Instance;
             Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.channel = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
-        public override float StealthDamageMultiplier => 0.7f;
+        public override bool AltFunctionUse(Player player) => true;
+
+        public override float StealthDamageMultiplier => 0.8f;
 
         public override void HoldItem(Player player)
         {
