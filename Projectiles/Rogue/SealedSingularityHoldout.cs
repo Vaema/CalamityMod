@@ -49,7 +49,7 @@ namespace CalamityMod.Projectiles.Rogue
             var cplayer = player.Calamity();
             if (Projectile.Opacity > 0)
             {
-                cplayer.temporaryStealthMax = 0.1f;
+                cplayer.temporaryStealthMax = 1.2f;
                 cplayer.temporaryStealthTimer = 2;
             }
 
