@@ -14,6 +14,7 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class Supernova : RogueWeapon
     {
+        public static float StealthTimeInSeconds => 2f;
         public static readonly SoundStyle ExplosionSound = new("CalamityMod/Sounds/Item/SupernovaBoom") { Volume = 0.9f };
         public static readonly SoundStyle StealthExplosionSound = new("CalamityMod/Sounds/Item/SupernovaStealthExplode") { Volume = 1f };
         public static readonly SoundStyle StealthChargeSound = new("CalamityMod/Sounds/Item/SupernovaStealthCharge") { Volume = 1f };
@@ -31,26 +32,19 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.shoot = ModContent.ProjectileType<SupernovaBomb>();
+            Item.shoot = ModContent.ProjectileType<SupernovaHoldout>();
             Item.shootSpeed = 16f;
             Item.DamageType = RogueDamageClass.Instance;
             Item.rare = ModContent.RarityType<BurnishedAuric>();
+            Item.channel = true;
         }
 
         public override float StealthDamageMultiplier => 0.7f;
 
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        public override void HoldItem(Player player)
         {
-            if (player.Calamity().StealthStrikeAvailable()) //setting the stealth strike
-            {
-                int stealth = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
-                if (stealth.WithinBounds(Main.maxProjectiles))
-                    Main.projectile[stealth].Calamity().stealthStrike = true;
-                return false;
-            }
-            else
-                Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
-            return false;
+            if (player.ownedProjectileCounts[Item.shoot] <= 0)
+                player.Calamity().rogueStealth = 0;
         }
 
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
