@@ -40,8 +40,9 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.Grenade).
                 AddIngredient(ItemID.Lemon).
+                AddIngredient(ItemID.BouncyGrenade,99).
+                AddTile(TileID.TinkerersWorkbench)
                 Register();
         }
     }
