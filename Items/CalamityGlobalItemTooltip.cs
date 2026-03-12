@@ -1126,7 +1126,12 @@ namespace CalamityMod.Items
             }
 
             // This function is shorthand for appending a stat sheet to a pair of wings.
-            void AddWingStats(int slot, float fall, float rise, float rMax, float tMax, float asc, string extraKey = null) => EditTooltipByNum(0, (line) => line.Text += WingStatsTooltip(ArmorIDs.Wing.Sets.Stats[slot], fall, rise, rMax, tMax, asc, extraKey));
+            void AddWingStats(int slot, float fall, float rise, float rMax, float tMax, float asc, string extraKey = null)
+            {
+                TooltipLine commonWingTooltipLine = tooltips.FirstOrDefault(x => x.Text == Language.GetTextValue("CommonItemTooltip.FlightAndSlowfall") && x.Mod == "Terraria");
+                if (commonWingTooltipLine != null)
+                    commonWingTooltipLine.Text += WingStatsTooltip(ArmorIDs.Wing.Sets.Stats[slot], fall, rise, rMax, tMax, asc, extraKey);
+            }
 
             if (item.type == ItemID.CreativeWings)
                 AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
