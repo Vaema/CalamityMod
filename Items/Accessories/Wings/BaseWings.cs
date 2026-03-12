@@ -1,12 +1,12 @@
-﻿using Microsoft.Xna.Framework;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using CalamityMod.Balancing;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using static CalamityMod.CalamityUtils;
 
@@ -113,7 +113,7 @@ namespace CalamityMod.Items.Accessories.Wings
             }
 
             // Add stats below the common "Allows flight" line
-            var wingTooltip = list.FirstOrDefault(x => x.Name == "Tooltip0" && x.Mod == "Terraria");
+            TooltipLine wingTooltip = list.FirstOrDefault(x => x.Text == Language.GetTextValue("CommonItemTooltip.FlightAndSlowfall") && x.Mod == "Terraria");
             if (wingTooltip != null)
                 wingTooltip.Text += sb.ToString();
         }
