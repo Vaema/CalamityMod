@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             CreateRecipe().
                 AddIngredient(ItemID.Lemon).
                 AddIngredient(ItemID.BouncyGrenade,99).
-                AddTile(TileID.TinkerersWorkbench)
+                AddTile(TileID.TinkerersWorkbench).
                 Register();
         }
     }
