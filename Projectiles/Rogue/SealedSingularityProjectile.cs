@@ -274,7 +274,8 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
         {
-            modifiers.SourceDamage *= 0.002f;
+            modifiers.SourceDamage /= Main.masterMode ? 2f : Main.expertMode ? 1.5f : 1;
+            modifiers.SourceDamage *= 0.044f;
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
