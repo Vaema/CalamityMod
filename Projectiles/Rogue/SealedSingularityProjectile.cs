@@ -52,6 +52,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             ProjectileID.Sets.TrailCacheLength[Type] = 3;
             ProjectileID.Sets.TrailingMode[Type] = 0;
+            OutlineTexVoid = null; //this ensures the outline tex is gotten properly
         }
 
         public override void SetDefaults()
