@@ -43,6 +43,11 @@ namespace CalamityMod.Projectiles.Rogue
                 }
         }
 
+        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
+        {
+            modifiers.SourceDamage /= Main.masterMode ? 2f : Main.expertMode ? 1.5f : 1;
+            modifiers.SourceDamage *= 0.1f;
+        }
         public override bool PreDraw(ref Color lightColor)
         {
             Main.EntitySpriteDraw(TextureAssets.Projectile[Type].Value, Projectile.Center - Main.screenPosition, null, color * Projectile.Opacity, Projectile.rotation, TextureAssets.Projectile[Type].Size() * 0.5f, 0.08f * Projectile.scale, 0);
