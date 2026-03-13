@@ -796,7 +796,7 @@ Lightspeed: {
 	Tooltip:
 		'''
 		[c/c7f5ff:Unleash a flurry of stabs which build Elemental Mastery on hit]
-		[c/c2fff2:Elemental Mastery is lost over time if it has not being gained for a few seconds]
+		[c/c2fff2:Elemental Mastery is lost over time if it has not been gained for a few seconds]
 		[c/ffdfba:Press <right> with maximum Elemental Mastery to dash toward your cursor]
 		[c/ffc7c7:Hitting an enemy during the dash refunds some Elemental Mastery]
 		'''
@@ -818,7 +818,7 @@ Lucrecia: {
 		'''
 		[c/9370db:Fires a spiraling darklight shard when swung]
 		[c/837ce4:Hits with the blade itself build Darklight Energy]
-		[c/7489ee:Darklight Energy is lost over time if it has not being gained for a few seconds]
+		[c/7489ee:Darklight Energy is lost over time if it has not been gained for a few seconds]
 		[c/6495f7:Press <right> with maximum energy to fire a double helix comet]
 		'''
 }
