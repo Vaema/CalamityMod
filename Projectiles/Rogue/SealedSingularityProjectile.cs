@@ -80,7 +80,10 @@ namespace CalamityMod.Projectiles.Rogue
         int bounceCooldown = 0;
         public override void AI()
         {
-            Lighting.AddLight(Projectile.Center, new Vector3(1, 1, 1));
+            if (AIState == 1)
+                Lighting.AddLight(Projectile.Center, BorderColor.ToVector3() * (Stealth ? 4 : 2) * Timer / TimerMax);
+            else if (AIState == 2)
+                Lighting.AddLight(Projectile.Center, BorderColor.ToVector3() * (Stealth ? 4 : 2));
             Timer++;
             bounceCooldown--;
 
@@ -211,7 +214,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 if (field == null)
                 {
-                    var texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/SealedSingularityBlackhole").Value;
+                    var texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/SealedSingularityBlackhole",AssetRequestMode.ImmediateLoad).Value;
                     field = new Texture2D(Main.graphics.GraphicsDevice, texture.Width, texture.Height);
 
                     var BaseArray = new Color[field.Width * field.Height];
@@ -253,7 +256,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Main.EntitySpriteDraw(VoidTex.Value, Projectile.Center - Main.screenPosition, frame, Color.White, 0, frame.Size() * 0.5f, Projectile.scale, 0);
                 return false;
             }
-            Main.EntitySpriteDraw(TextureAssets.Projectile[Type].Value, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, TextureAssets.Projectile[Type].Size() * 0.5f, Projectile.scale, 0);
+            Main.EntitySpriteDraw(TextureAssets.Projectile[Type].Value, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, TextureAssets.Projectile[Type].Size() * 0.5f, Projectile.scale, 0);
             return false;
         }
         private static void DrawAuraOutside(SealedSingularityProjectile mproj, Matrix matrix)

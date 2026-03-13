@@ -41,7 +41,6 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void AI()
         {
-            Lighting.AddLight(Projectile.Center, new Vector3(1, 1, 1));
             Timer++;
             gravTimer++;
 
@@ -73,7 +72,7 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Main.EntitySpriteDraw(TextureAssets.Projectile[Type].Value, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, TextureAssets.Projectile[Type].Size() * 0.5f, Projectile.scale, 0);
+            Main.EntitySpriteDraw(TextureAssets.Projectile[Type].Value, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, TextureAssets.Projectile[Type].Size() * 0.5f, Projectile.scale, 0);
             return false;
         }
 

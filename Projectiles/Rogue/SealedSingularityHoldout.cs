@@ -44,7 +44,6 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void AdditionalAI()
         {
-            Lighting.AddLight(Projectile.Center, new Vector3(1, 1, 1));
             var player = Main.player[Projectile.owner];
             var cplayer = player.Calamity();
             if (Projectile.Opacity > 0)
