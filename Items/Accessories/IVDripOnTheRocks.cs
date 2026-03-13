@@ -55,8 +55,6 @@ namespace CalamityMod.Items.Accessories
         public int containedAlcoholID = -1;
         public AlcoholType currentAlcoholType = AlcoholType.None;
         public new string LocalizationCategory => "Items.Accessories";
-        public static readonly float DamageBoostMultiplier = 1.25f; // (only exists right now so that it compiles, leave it be)
-        public static readonly float DamageReductionMultiplier = 0.75f; // (only exists right now so that it compiles, leave it be)
 
         public override void SetStaticDefaults()
         {
@@ -156,8 +154,9 @@ namespace CalamityMod.Items.Accessories
 
             if (containedAlcoholID != -1)
             {
-                Item alcoholItem = new Item(containedAlcoholID);
+                dripPlayer.currentAlcohol = currentAlcoholType;
 
+                Item alcoholItem = new Item(containedAlcoholID);
                 if (alcoholItem.ModItem is IAlcoholItem alcohol)
                     dripPlayer.ApplyAlcoholEffect(alcohol.AlcoholEffect);
             }
@@ -213,11 +212,19 @@ namespace CalamityMod.Items.Accessories
     {
         public Dictionary<Action<Player, float>, float> alcoholEffects = new();
         public bool ivDripEquipped;
+        public AlcoholType currentAlcohol = AlcoholType.None;
+
+        // would otherwise be spamming these checks manually any time another class wants to check for if IV drip has a certain alcohol filled
+        public bool HasAlcohol(AlcoholType type)
+        {
+            return ivDripEquipped && currentAlcohol == type;
+        }
 
         public override void ResetEffects()
         {
             alcoholEffects.Clear();
             ivDripEquipped = false;
+            currentAlcohol = AlcoholType.None;
         }
 
         public void ApplyAlcoholEffect(Action<Player, float> effect)
