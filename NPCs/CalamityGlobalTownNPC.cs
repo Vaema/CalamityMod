@@ -312,6 +312,7 @@ namespace CalamityMod.NPCs
             "Amnesia Wapers", // <@!326821498323075073> (retardedadvicefromaretard)
             "Tequila", // <@!889175547744239677> (thecrispistofnuggets)
             "Bee Movie Script", // <@!407949998173454341> (literally_jesuschrist)
+            "Which Doctor", // <@!746103484017016832> (sepulchre0001)
         ];
         private static readonly string[] WizardNames =
         [
