@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
@@ -22,6 +23,7 @@ using Terraria.GameContent;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static Terraria.NPC.NPCNameFakeLanguageCategoryPassthrough;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
@@ -31,18 +33,17 @@ namespace CalamityMod.Items.Weapons.Summon
         public new string LocalizationCategory => "Items.Weapons.Summon";
         public static SummonTag summonTag = new SummonTag()
         {
-            MultiplicativeTagDamage = 0.05f, //Percentage of damage dealt added by the void. This is doubled by summons.
-            FlatTagDamage = 5, //Minimum damage of each void ball.
+            MultiplicativeTagDamage = 0.3f, //Percentage of damage dealt added by the void. This is doubled by summons. This was tested - 1.5x was too weak to be worth 4 slots.
             AllowsWhipStacking = true,
             TagOnHit = tagOnHit,
             TagModifyHitEffects = SummonTag.BlankTagModifyHit,
             AutoDrawTooltip = false
         };
 
-        public static void tagOnHit(NPC npc, Projectile projectile, NPC.HitInfo hit, int damageDone) => npc.GetGlobalNPC<VoidTagNPC>().StoredDamage += damageDone;
+        public static void tagOnHit(NPC npc, Projectile projectile, NPC.HitInfo hit, int damageDone) => npc.GetGlobalNPC<VoidTagNPC>().StoredDamage += (int)(damageDone);
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.StaffMinionSlotsRequired[Type] = 3f;
+            ItemID.Sets.StaffMinionSlotsRequired[Type] = 4f;
             summonTag.TagItem = Type;
             CalamityBuffSets.SummonTagDebuff.Add(ModContent.BuffType<VoidConcentrationSummonTagBuff>(), summonTag);
         }
@@ -59,15 +60,9 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.damage = 200;
             Item.knockBack = 4f;
             Item.useAnimation = Item.useTime = 24;
-            //Item.buffType = ModContent.BuffType<VoidConcentrationBuff>();
             Item.shoot = ModContent.ProjectileType<VoidConcentrationMinion>();
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
-        }
-
-        public override bool CanUseItem(Player player)
-        {
-            return base.CanUseItem(player);
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -98,9 +93,12 @@ namespace CalamityMod.Items.Weapons.Summon
             }
             return false;
         }
-
-        // TODO -- should be strictly unnecessary as per API design
         public override bool AltFunctionUse(Player player) => true;
+
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            tooltips.Insert(tooltips.FindIndex(0, (x) => x.Name == "Knockback")+1,new(Mod,"Minions",CalamityUtils.GetText("Common.MinionSlotCost").Format(4)));
+        }
     }
 
     #endregion
@@ -121,22 +119,18 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.netImportant = true;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.minionSlots = 3f;
+            Projectile.minionSlots = 4f;
             Projectile.timeLeft = 18000;
             Projectile.penetrate = -1;
-
             Projectile.tileCollide = false;
-            Projectile.timeLeft *= 5;
             Projectile.minion = true;
             Projectile.DamageType = DamageClass.Summon;
             Projectile.usesIDStaticNPCImmunity = true;
             Projectile.idStaticNPCHitCooldown = 10;
-            VoidConcentrationStaff.summonTag.MultiplicativeTagDamage = 0.15f;
         }
         public override bool? CanHitNPC(NPC target) => false;
         public override void AI()
         {
-            Main.projPet[Type] = false;
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
             player.AddBuff(ModContent.BuffType<VoidConcentrationBuff>(), 3600);
@@ -157,7 +151,7 @@ namespace CalamityMod.Projectiles.Summon
             int numRings = 3;
             int spacing = 360 / numPerRing;
             int distance2 = 10;
-            if (player.ownedProjectileCounts[ModContent.ProjectileType<VoidConcentrationMark>()] + player.ownedProjectileCounts[ModContent.ProjectileType<VoidConcentrationDarkEnergy>()] <= 0)
+            if (Main.netMode != NetmodeID.MultiplayerClient && player.ownedProjectileCounts[ModContent.ProjectileType<VoidConcentrationMark>()] + player.ownedProjectileCounts[ModContent.ProjectileType<VoidConcentrationDarkEnergy>()] <= 0)
             {
                 for (int i = 0; i < numPerRing; i++)
                 {
@@ -179,7 +173,6 @@ namespace CalamityMod.Projectiles.Summon
         {
             Main.projFrames[Type] = 8;
             ProjectileID.Sets.MinionShot[Type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -324,12 +317,13 @@ namespace CalamityMod.Projectiles.Summon
                 for (var i = 0; i < 3; i++)
                 {
                     var v = v1.RotatedBy(MathHelper.TwoPi * (i / 3f));
-                    GeneralParticleHandler.SpawnParticle(new CustomSprite(Projectile.Center + 200 * v, Vector2.Zero, 30, TextureAssets.Projectile[ModContent.ProjectileType<VoidVortexProj>()].Value, 1, Color.White, AddativeBlend: false, frameCount: 5));
-                    var p = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center + 200 * v, v.RotatedBy(MathHelper.PiOver2) * 10, ModContent.ProjectileType<VoidConcentrationBeam>(), (int)(Projectile.damage * 0.4f), Projectile.knockBack, Projectile.owner);
-                    p.penetrate = 1;
-                    p = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center + 200 * v, v.RotatedBy(-MathHelper.PiOver2) * 10, ModContent.ProjectileType<VoidConcentrationBeam>(), (int)(Projectile.damage * 0.4f), Projectile.knockBack, Projectile.owner);
-                    p.penetrate = 1;
-
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        var p = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center + 200 * v, v.RotatedBy(MathHelper.PiOver2) * 10, ModContent.ProjectileType<VoidConcentrationBeam>(), (int)(Projectile.damage * 0.4f), Projectile.knockBack, Projectile.owner);
+                        p.penetrate = 1;
+                        p = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center + 200 * v, v.RotatedBy(-MathHelper.PiOver2) * 10, ModContent.ProjectileType<VoidConcentrationBeam>(), (int)(Projectile.damage * 0.4f), Projectile.knockBack, Projectile.owner,1);
+                        p.penetrate = 1;
+                    }
                 }
             }
 
@@ -357,7 +351,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Type] = 14;
+            ProjectileID.Sets.TrailCacheLength[Type] = 8;
             ProjectileID.Sets.TrailingMode[Type] = 2;
             ProjectileID.Sets.MinionShot[Type] = true;
         }
@@ -376,14 +370,13 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.localNPCHitCooldown = 30;
             Projectile.penetrate = 2;
         }
-
-        public override void OnSpawn(IEntitySource source)
-        {
-            ProjectileID.Sets.TrailCacheLength[Type] = 8;
-        }
-
         public override void AI()
         {
+            if (Projectile.timeLeft == 600 && Projectile.ai[0] == 0)
+            {
+                GeneralParticleHandler.SpawnParticle(new CustomSprite(Projectile.Center, Vector2.Zero, 30, TextureAssets.Projectile[ModContent.ProjectileType<VoidVortexProj>()].Value, 1, Color.White, AddativeBlend: false, frameCount: 5));
+
+            }
             NPC target = Projectile.Center.MinionHoming(5000f, Main.player[Projectile.owner]);
             // Move towards the target.
             if (target != null && Projectile.localNPCImmunity[target.whoAmI] <= 0)
@@ -525,8 +518,11 @@ namespace CalamityMod.Projectiles.Summon
                     var dmg = (int)Math.Max(1, (StoredDamage));
                     StoredDamage -= dmg;
                     rot += 0.15f;
-                    Projectile.NewProjectile(npc.GetSource_OnHurt(null), npc.Center, Vector2.UnitX.RotatedBy(rot), ModContent.ProjectileType<VoidConcentrationSummonTagProj>(), (int)Math.Max((dmg * VoidConcentrationStaff.summonTag.MultiplicativeTagDamage), 1), 0, -1, npc.whoAmI);
-                }
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        Projectile.NewProjectile(npc.GetSource_OnHurt(null), npc.Center, Vector2.UnitX.RotatedBy(rot), ModContent.ProjectileType<VoidConcentrationSummonTagProj>(), (int)Math.Max((dmg * VoidConcentrationStaff.summonTag.MultiplicativeTagDamage), 1), 0, -1, npc.whoAmI);
+                    }
+                    }
             }
             base.PostAI(npc);
         }
@@ -542,7 +538,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void ModifyHurt(ref Player.HurtModifiers modifiers)
         {
             if (Player.ownedProjectileCounts[ModContent.ProjectileType<VoidConcentrationDarkEnergy>()] > 0)
-                modifiers.FinalDamage *= 0.85f; //15% less dmg taken, mult
+                modifiers.FinalDamage *= 0.85f; //15% less dmg taken, multipicative. This is not meant to be additive to avoid needing DR scaling.
         }
     }
     public class VoidConcentrationSummonTagProj : ModProjectile, ILocalizedModType
@@ -553,8 +549,6 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 8;
-            ProjectileID.Sets.MinionShot[Type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -598,7 +592,6 @@ namespace CalamityMod.Projectiles.Summon
         }
         public override void AI()
         {
-            ProjectileID.Sets.MinionShot[Type] = false;
             if (target == null || !target.active)
             {
                 Projectile.Kill();
