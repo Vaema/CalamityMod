@@ -164,6 +164,7 @@ namespace CalamityMod.Projectiles.Summon
     }
     public class VoidConcentrationDarkEnergy : ModProjectile, ILocalizedModType
     {
+        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public new string LocalizationCategory => "Projectiles.Summon";
         private double minDistance => 10;
         private double distance { get; set; } = 10;
@@ -543,7 +544,7 @@ namespace CalamityMod.Projectiles.Summon
     }
     public class VoidConcentrationSummonTagProj : ModProjectile, ILocalizedModType
     {
-        public override string Texture => "CalamityMod/Projectiles/Summon/VoidConcentrationDarkEnergy";
+        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public new string LocalizationCategory => "Projectiles.Summon";
 
         public override void SetStaticDefaults()
@@ -620,7 +621,7 @@ namespace CalamityMod.Projectiles.Summon
 
     public class VoidConcentrationSummonTagBuff : ModBuff
     {
-        public override string Texture => "CalamityMod/Buffs/Summon/Whips/SentinalLash";
+        public override string Texture => "CalamityMod/Buffs/Summon/Whips/SentinalLash"; //Shared placeholder by all summon tag buffs. This is never seen in game.
 
         public override void SetStaticDefaults()
         {
