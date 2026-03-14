@@ -887,11 +887,11 @@ VoidConcentrationStaff: {
 	DisplayName: Void Concentration Staff
 	Tooltip:
 		'''
-		Summons a foreboding aura that attacks by firing void orbs
-		Minion damage is increased by 5% while the aura is active
-		Requires three minion slots to use
-		There can only be one aura at a time
-		<right> to launch a black hole that grows in size
+		Surrounds you with dark energy, which causes all attacks deal 15% less damage
+		<right> to condense the energy onto a target, calling lasers and focusing your minions on them
+		When the focused enemy takes damage from any source, they will be struck by extra dark energies
+		This is extra effective if struck by a minion or sentry
+		After 10 seconds, the dark energy will return to orbiting you
 		'''
 }
 

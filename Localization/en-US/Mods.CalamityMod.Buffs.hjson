@@ -1783,3 +1783,8 @@ SmashedEvil: {
 		20% increased movement speed
 		'''
 }
+
+VoidConcentrationSummonTagBuff: {
+	DisplayName: Void Concentration Summon Tag Buff
+	Description: You should never see this.
+}
