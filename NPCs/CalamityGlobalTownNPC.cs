@@ -394,6 +394,7 @@ namespace CalamityMod.NPCs
         [
             "Yoshi", // <@!541127291426832384> (gregthespinarak)
             "Franklin", // <@!338315261352476682> (tyeski)
+            "Rocco", // <@!682411821067796480> (little_one777)
         ];
 
         private const int TownCatSiameseVanillaNames = 12;
