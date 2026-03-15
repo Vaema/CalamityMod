@@ -70,6 +70,11 @@ namespace CalamityMod.NPCs
         public int shopAlertAnimTimer = 0;
         /// <summary> <inheritdoc cref="shopAlertAnimTimer"/> </summary>
         public int shopAlertAnimFrame = 0;
+        /// <summary>
+        /// Controls how this Town NPC is being affected by The Gift.<br/>
+        /// If true, happiness is overriden with an extremely high value. If false, happiness is overriden with an extremely low value. If null, uses vanilla happiness.
+        /// </summary>
+        public bool? TheGiftStatus = null;
 
         public override bool InstancePerEntity => true;
 
@@ -85,6 +90,7 @@ namespace CalamityMod.NPCs
             myClone.setNewName = setNewName;
             myClone.shopAlertAnimTimer = shopAlertAnimTimer;
             myClone.shopAlertAnimFrame = shopAlertAnimFrame;
+            myClone.TheGiftStatus = TheGiftStatus;
 
             return myClone;
         }

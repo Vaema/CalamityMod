@@ -358,6 +358,16 @@ TectonicTruncator: {
 	Tooltip: ""
 }
 
+TheGift: {
+	DisplayName: The Gift
+	Tooltip:
+		'''
+		Drop this fine gift on one of your Town NPCs as a token of appreciation
+		May make them either love you or hate you, you'll never know until they open it!
+		[c/F54278:'There's no return policy, better be responsible']
+		'''
+}
+
 TorrentialTear: {
 	DisplayName: Torrential Tear
 	Tooltip:
