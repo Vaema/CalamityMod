@@ -19,16 +19,16 @@ namespace CalamityMod.Items.Potions.Food
 			Item.ResearchUnlockCount = 5;
 			Main.RegisterItemAnimation(Type, new DrawAnimationVertical(int.MaxValue, 3));
 			ItemID.Sets.FoodParticleColors[Type] = new Color[3] {
-				new Color(179, 170, 39),
-				new Color(81, 124, 139),
-				new Color(139, 102, 81)
+				new Color(132, 171, 87),
+				new Color(174, 91, 107),
+				new Color(218, 176, 133)
 			};
 			ItemID.Sets.IsFood[Type] = true;
         }
 
 		public override void SetDefaults()
 		{
-			Item.DefaultToFood(28, 26, ModContent.BuffType<Malnourished>(), CalamityUtils.MinutesToFrames(10));
+			Item.DefaultToFood(70, 48, ModContent.BuffType<Malnourished>(), CalamityUtils.MinutesToFrames(10));
 			Item.value = Item.sellPrice(silver: 20);
 			Item.rare = ItemRarityID.Blue;
 		}
