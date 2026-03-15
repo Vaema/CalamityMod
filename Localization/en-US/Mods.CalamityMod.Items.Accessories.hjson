@@ -1673,7 +1673,7 @@ SpringStool: {
 		'''
 		Hold Up to reach higher
 		Press [KEY] to jump super high
-		Super jumps can only be performed once every {0} seconds and after touching the ground
+		Super jumps can only be performed once every {0} seconds and after landing
 		+{1}% critical strike chance when striking enemies below you
 		'''
 }
