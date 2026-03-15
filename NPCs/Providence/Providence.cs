@@ -364,6 +364,10 @@ namespace CalamityMod.NPCs.Providence
 
         public override void AI()
         {
+            //ensure projectiles all despawn when she does
+            if (NPC.timeLeft == 1)
+                DespawnSpecificProjectiles(true);
+
             // Set the border drawing to true if it isn't set to true
             // Can happen when another mod sets to false for a difficulty and that difficulty is then toggled off.
             shouldDrawInfernoBorder = true;
