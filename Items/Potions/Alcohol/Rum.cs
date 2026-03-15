@@ -17,6 +17,7 @@ namespace CalamityMod.Items.Potions.Alcohol
         public static float NonMinionBoost = 1.15f;
         public static float MinionBoost = 0.85f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs((NonMinionBoost-1).ToPercent(), (1- MinionBoost).ToPercent());
+        public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.Rum.DripEffect").WithFormatArgs((NonMinionBoost - 1).ToPercent(), (1 - MinionBoost).ToPercent());
         public AlcoholType AlcoholVariant => AlcoholType.Rum;
 
         public Action<Player, float> AlcoholEffect => ApplyRumEffect;

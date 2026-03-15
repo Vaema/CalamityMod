@@ -17,8 +17,9 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public static float DamageBoost = 0.25f;
         public static float StealthDamageLoss = 0.25f;
-
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(),StealthDamageLoss.ToPercent());
+        public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.PurpleHaze.DripEffect").WithFormatArgs(DamageBoost.ToPercent(), StealthDamageLoss.ToPercent());
+
         public AlcoholType AlcoholVariant => AlcoholType.PurpleHaze;
 
         public Action<Player, float> AlcoholEffect => ApplyPurpleHazeEffect;

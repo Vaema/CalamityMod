@@ -17,13 +17,14 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public static float DoTMultiplier = 1.5f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs((DoTMultiplier-1).ToPercent());
+        public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.TequilaSunrise.DripEffect").WithFormatArgs((DoTMultiplier-1).ToPercent());
         public AlcoholType AlcoholVariant => AlcoholType.TequilaSunrise;
 
         public Action<Player, float> AlcoholEffect => ApplyTequilaSunriseEffect;
 
         private static void ApplyTequilaSunriseEffect(Player player, float intensity)
         {
-            // out of order 20 defense
+            // See CalamityPlayerLifeRegen
         }
         public override void SetStaticDefaults()
         {

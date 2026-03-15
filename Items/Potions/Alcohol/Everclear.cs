@@ -18,6 +18,7 @@ namespace CalamityMod.Items.Potions.Alcohol
         public static int RegenLoss = 10;
         public static float DefenseLossPercent = 0.30f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(), RegenLoss.ToRegenPerSecond(), DefenseLossPercent.ToPercent());
+        public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.StarBeamRye.DripEffect").WithFormatArgs(DamageBoost.ToPercent(), RegenLoss.ToRegenPerSecond(), DefenseLossPercent.ToPercent());
         public AlcoholType AlcoholVariant => AlcoholType.Everclear;
 
         public Action<Player, float> AlcoholEffect => ApplyEverclearEffect;

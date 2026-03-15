@@ -16,6 +16,7 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public static float CritLoss = 50;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(CritLoss);
+        public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.GrapeBeer.DripEffect").WithFormatArgs(CritLoss);
         public AlcoholType AlcoholVariant => AlcoholType.GrapeBeer;
 
         public Action<Player, float> AlcoholEffect => ApplyGrapeBeerEffect;

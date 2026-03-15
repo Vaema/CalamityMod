@@ -17,13 +17,14 @@ namespace CalamityMod.Items.Potions.Alcohol
         public static readonly float DamageBoostMultiplier = 1.25f;
         public static readonly float DamageReductionMultiplier = 0.75f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs((DamageBoostMultiplier).ToString("N2"), (DamageReductionMultiplier).ToString("N2"));
+        public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.OldFashioned.DripEffect").WithFormatArgs(DamageBoostMultiplier.ToString("N2"), DamageReductionMultiplier.ToString("N2"));
         public AlcoholType AlcoholVariant => AlcoholType.OldFashioned;
 
         public Action<Player, float> AlcoholEffect => ApplyOldFashionedEffect;
 
         private static void ApplyOldFashionedEffect(Player player, float intensity)
         {
-            // out of order 20 defense
+            // See CalamityGlobalProjectile
         }
         public override void SetStaticDefaults()
         {

@@ -16,6 +16,7 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public static float MaxLifePercentBoost = 0.33f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MaxLifePercentBoost.ToPercent());
+        public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.Moonshine.DripEffect").WithFormatArgs(MaxLifePercentBoost.ToPercent());
         public AlcoholType AlcoholVariant => AlcoholType.Moonshine;
 
         public Action<Player, float> AlcoholEffect => ApplyMoonshineEffect;

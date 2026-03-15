@@ -18,6 +18,8 @@ namespace CalamityMod.Items.Potions.Alcohol
         public static float VerticalSpeedBoost = 0.1f;
         public static float FlightTimeLoss = 0.25f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(VerticalSpeedBoost.ToPercent(), FlightTimeLoss.ToPercent());
+        public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.RedWine.DripEffect").WithFormatArgs(VerticalSpeedBoost.ToPercent(), FlightTimeLoss.ToPercent());
+
         public AlcoholType AlcoholVariant => AlcoholType.RedWine;
 
         public Action<Player, float> AlcoholEffect => ApplyRedWineEffect;

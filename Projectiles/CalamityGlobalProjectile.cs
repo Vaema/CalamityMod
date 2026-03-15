@@ -4620,7 +4620,7 @@ namespace CalamityMod.Projectiles
             {
                 if (projectile.DamageType == DamageClass.Summon || (PierceResistNPC.exemptProjectiles.Contains(projectile.type) || (PierceResistNPC.singleHitboxExemptProjectiles.ContainsKey(projectile.type) && PierceResistNPC.singleHitboxExemptProjectiles[projectile.type])))
                 {
-                    modifiers.SourceDamage *= ((modPlayer.moscowMule ? 0.7f : 1f) * (modPlayer.bloodyMary ? 0.33f : 1f));
+                    modifiers.SourceDamage *= ((modPlayer.moscowMule ? MoscowMule.PierceDamageMultiplier : 1f) * (modPlayer.bloodyMary ? BloodyMary.PierceDamageMultiplier : 1f));
                 }
             }
             if (projectile.type == ProjectileID.JoustingLance || projectile.type == ProjectileID.HallowJoustingLance || projectile.type == ProjectileID.ShadowJoustingLance)

@@ -19,6 +19,7 @@ namespace CalamityMod.Items.Potions.Alcohol
         public static float FlightTimeRecoveryAmount = 0.66f;
         public static float FlightTimeLoss = 0.5f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(FlightTimeLoss.ToPercent());
+        public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.WhiteWine.DripEffect").WithFormatArgs(FlightTimeLoss.ToPercent());
         public AlcoholType AlcoholVariant => AlcoholType.WhiteWine;
 
         public Action<Player, float> AlcoholEffect => ApplyWhiteWineEffect;

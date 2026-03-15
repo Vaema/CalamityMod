@@ -446,6 +446,16 @@ namespace CalamityMod.CalPlayer
                     Player.lifeRegenTime += 1800;
                 }
             }
+
+            var dripPlayer = Player.GetModPlayer<IVDripPlayer>();
+            if (dripPlayer.HasAlcohol(AlcoholType.TequilaSunrise))
+            {
+                if (hadLifeRegenHinderingDebuff && !hasLifeRegenHinderingDebuff)
+                {
+                    Player.lifeRegenTime += 1800;
+                }
+            }
+
             #endregion
 
             // During Silva revive or God Slayer dash, all negative life regen is canceled

@@ -18,6 +18,7 @@ namespace CalamityMod.Items.Potions.Alcohol
         public static float DebuffBoost = 0.5f;
         public static float DebuffLoss = 0.5f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs((DebuffBoost).ToPercent(), DebuffLoss.ToPercent());
+        public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.Tequila.DripEffect").WithFormatArgs((DebuffBoost).ToPercent(), DebuffLoss.ToPercent());
         public AlcoholType AlcoholVariant => AlcoholType.Tequila;
 
         public Action<Player, float> AlcoholEffect => ApplyTequilaEffect;

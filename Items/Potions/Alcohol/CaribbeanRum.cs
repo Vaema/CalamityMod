@@ -17,6 +17,8 @@ namespace CalamityMod.Items.Potions.Alcohol
         public static float MoveSpeedBoost = 0.25f;
         public static float GravityMultiplier = 0.5f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MoveSpeedBoost.ToPercent(), (1-GravityMultiplier).ToPercent());
+        public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.CaribbeanRum.DripEffect").WithFormatArgs(MoveSpeedBoost.ToPercent(), (1 - GravityMultiplier).ToPercent());
+
         public AlcoholType AlcoholVariant => AlcoholType.CaribbeanRum;
 
         public Action<Player, float> AlcoholEffect => ApplyCaribbeanRumEffect;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -48,6 +49,8 @@ namespace CalamityMod.Items.Accessories
     {
         Action<Player, float> AlcoholEffect { get; }
         AlcoholType AlcoholVariant { get; }
+        LocalizedText DripEffectText { get; }
+
     }
 
     public class IVDripOnTheRocks : ModItem, ILocalizedModType
@@ -181,9 +184,12 @@ namespace CalamityMod.Items.Accessories
 
             if (effectLine != null)
             {
-                string effectText = Lang.GetTooltip(containedAlcoholID).ToString();
-                effectLine.Text = effectText;
-                effectLine.OverrideColor = Color.White;
+                Item alcoholItem = new Item(containedAlcoholID);
+
+                if (alcoholItem.ModItem is IAlcoholItem alcohol)
+                {
+                    effectLine.Text = alcohol.DripEffectText.Value;
+                }
             }
 
             if (nameLine != null)

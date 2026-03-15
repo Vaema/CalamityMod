@@ -14,6 +14,9 @@ namespace CalamityMod.Items.Potions.Alcohol
     {
         public new string LocalizationCategory => "Items.Potions";
 
+        public static float PierceDamageMultiplier = 0.66f;
+        public override LocalizedText Tooltip => base.Tooltip;
+        public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.BloodyMary.DripEffect");
         public AlcoholType AlcoholVariant => AlcoholType.BloodyMary;
 
         public Action<Player, float> AlcoholEffect => ApplyBloodyMaryEffect;

@@ -14,9 +14,10 @@ namespace CalamityMod.Items.Potions.Alcohol
     public class MoscowMule : ModItem, ILocalizedModType, IAlcoholItem
     {
         public new string LocalizationCategory => "Items.Potions";
-
         public static float KnockbackBoost = 0.5f;
+        public static float PierceDamageMultiplier = 0.7f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(KnockbackBoost.ToPercent());
+        public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.MoscowMule.DripEffect").WithFormatArgs(KnockbackBoost.ToPercent());
         public AlcoholType AlcoholVariant => AlcoholType.MoscowMule;
 
         public Action<Player, float> AlcoholEffect => ApplyMoscowMuleEffect;

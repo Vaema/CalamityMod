@@ -18,6 +18,7 @@ namespace CalamityMod.Items.Potions.Alcohol
         public static float DebuffLoss = 0.5f;
         public static int MinuteDuration = 3; 
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DebuffLoss.ToPercent());
+        public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.Margarita.DripEffect").WithFormatArgs(DebuffLoss.ToPercent());
         public AlcoholType AlcoholVariant => AlcoholType.Margarita;
 
         public Action<Player, float> AlcoholEffect => ApplyMargaritaEffect;

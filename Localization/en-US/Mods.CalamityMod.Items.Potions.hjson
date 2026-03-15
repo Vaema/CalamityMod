@@ -166,6 +166,8 @@ ZergPotion: {
 	Tooltip: Vastly increases enemy spawn rate
 }
 
+// Alcohols
+
 BloodyMary: {
 	DisplayName: Bloody Mary
 	Tooltip:
@@ -173,6 +175,12 @@ BloodyMary: {
 		Increases enemy spawn rates by 7x
 		Greatly reduces piercing weapon effectiveness
 		{$Common.AlcoholWarning}
+		'''
+	DripEffect:
+		'''
+		Increases enemy spawn rates by 7x
+		Greatly reduces piercing weapon effectiveness
+		When combined with drinking Bloody Mary straight, enemy spawn rates are increased by 14x total
 		'''
 }
 
@@ -184,6 +192,11 @@ CaribbeanRum: {
 		Reduces your gravity by {1}%
 		{$Common.AlcoholWarning}
 		'''
+	DripEffect:
+		'''
+		Increases move speed by {0}%
+		Reduces your gravity by {1}%
+		'''
 }
 
 CinnamonRoll: {
@@ -194,6 +207,11 @@ CinnamonRoll: {
 		Greatly reduces dash distance
 		{$Common.AlcoholWarning}
 		'''
+	DripEffect:
+		'''
+		Greatly increases dash speed
+		Greatly reduces dash distance
+		'''
 }
 
 PurpleHaze: {
@@ -202,6 +220,11 @@ PurpleHaze: {
 		'''
 		For 5 seconds after a stealth strike, all damage increased by {0}%, but stealth strike damage reduced by {1}%
 		{$Common.AlcoholWarning}
+		'''
+	DripEffect:
+		'''
+		For 5 seconds after a stealth strike, all damage increased by {0}%, but stealth strike damage reduced by {1}%
+		Greatly reduces dash distance
 		'''
 }
 
@@ -214,6 +237,12 @@ Everclear: {
 		Counts as 2 alcohols for {$Buffs.AlcoholPoisoning.DisplayName}
 		{$Common.AlcoholWarning}
 		'''
+	DripEffect:
+		'''
+		{0}% increased damage
+		Reduces life regen by {1} HP/s and defense by {2}%
+		      When combined with drinking Everclear straight, reduce count for {$Buffs.AlcoholPoisoning.DisplayName} by 1
+		'''
 }
 
 EvergreenGin: {
@@ -223,6 +252,11 @@ EvergreenGin: {
 		{0}% increased Water and Sickness debuff damage
 		{1}% decreased Electric and Heat debuff damage
 		{$Common.AlcoholWarning}
+		'''
+	DripEffect:
+		'''
+		{0}% increased Water and Sickness debuff damage
+		{1}% decreased Electric and Heat debuff damage
 		'''
 }
 
@@ -234,6 +268,11 @@ Fireball: {
 		{1}% decreased Sickness debuff damage
 		{$Common.AlcoholWarning}
 		'''
+	DripEffect:
+		'''
+		{0}% increased Heat debuff damage
+		{1}% decreased Sickness debuff damage
+		'''
 }
 
 GrapeBeer: {
@@ -243,6 +282,12 @@ GrapeBeer: {
 		Bullets, Arrows, Darts, and Rockets gain homing
 		{0}% reduced critical strike damage
 		{$Common.AlcoholWarning}
+		'''
+	DripEffect:
+		'''
+		Bullets, Arrows, Darts, and Rockets gain homing
+		{0}% reduced critical strike damage
+		When combined with drinking Grape Beer straight, greatly increases homing range and critical strike damage loss
 		'''
 }
 
@@ -254,6 +299,11 @@ Manhattan: {
 		{1}% decreased Water debuff damage
 		{$Common.AlcoholWarning}
 		'''
+	DripEffect:
+		'''
+		{0}% increased Cold debuff damage
+		{1}% decreased Water debuff damage
+		'''
 }
 
 Margarita: {
@@ -263,6 +313,11 @@ Margarita: {
 		Halves duration of harmful debuffs you receive
 		Reduces damage of debuffs you inflict by {0}%
 		{$Common.AlcoholWarning}
+		'''
+	DripEffect:
+		'''
+		Halves duration of harmful debuffs you receive
+		Reduces damage of debuffs you inflict by {0}%
 		'''
 }
 
@@ -275,6 +330,12 @@ Moonshine: {
 		Defense damage takes three times as long to recover
 		{$Common.AlcoholWarning}
 		'''
+	DripEffect:
+		'''
+		Increases maximum health by {0}%
+		Attacks always take at least half your defense worth of defense damage
+		Defense damage takes three times as long to recover
+		'''
 }
 
 MoscowMule: {
@@ -284,6 +345,11 @@ MoscowMule: {
 		{0}% increased knockback, all attacks inflict heavy knockback
 		Reduces the effectiveness of piercing weapons
 		{$Common.AlcoholWarning}
+		'''
+	DripEffect:
+		'''
+		{0}% increased knockback, all attacks inflict heavy knockback
+		Reduces the effectiveness of piercing weapons
 		'''
 }
 
@@ -305,6 +371,11 @@ OldFashioned: {
 		Multiplies all weapon damage by {1}x
 		{$Common.AlcoholWarning}
 		'''
+	DripEffect:
+		'''
+		Multiplies most non-weapon, non-debuff damage by {0}x
+		Multiplies all weapon damage by {1}x
+		'''
 }
 
 RedWine: {
@@ -314,6 +385,11 @@ RedWine: {
 		{0}% increased vertical speed
 		{1}% reduced flight time
 		{$Common.AlcoholWarning}
+		'''
+	DripEffect:
+		'''
+		{0}% increased vertical speed
+		{1}% reduced flight time
 		'''
 }
 
@@ -325,6 +401,11 @@ Rum: {
 		{1}% decreased minion damage
 		{$Common.AlcoholWarning}
 		'''
+	DripEffect:
+		'''
+		{0}% increased non-minion summon damage
+		{1}% decreased minion damage
+		'''
 }
 
 Screwdriver: {
@@ -334,6 +415,11 @@ Screwdriver: {
 		Greatly increases tile and wall placement range and speed
 		Greatly reduces damage dealt
 		{$Common.AlcoholWarning}
+		'''
+	DripEffect:
+		'''
+		Greatly increases tile and wall placement range and speed
+		Greatly reduces damage dealt
 		'''
 }
 
@@ -345,6 +431,7 @@ StarBeamRye: {
 		Magic weapons deal {0}x damage
 		{$Common.AlcoholWarning}
 		'''
+	DripEffect: Strangely, you feel no different...
 }
 
 Tequila: {
@@ -354,6 +441,11 @@ Tequila: {
 		{0}% increased Electric debuff damage
 		{1}% decreased Cold debuff damage
 		{$Common.AlcoholWarning}
+		'''
+	DripEffect:
+		'''
+		{0}% increased Electric debuff damage
+		{1}% decreased Cold debuff damage
 		'''
 }
 
@@ -365,6 +457,11 @@ TequilaSunrise: {
 		{0}% increased damage taken from debuffs
 		{$Common.AlcoholWarning}
 		'''
+	DripEffect:
+		'''
+		Greatly increases natural life regeneration after suffering a damaging debuff
+		{0}% increased damage taken from debuffs
+		'''
 }
 
 Vodka: {
@@ -374,6 +471,11 @@ Vodka: {
 		{0}% increased Typeless debuff damage
 		{1}% decreased elemental debuff damage
 		{$Common.AlcoholWarning}
+		'''
+	DripEffect:
+		'''
+		{0}% increased Typeless debuff damage
+		{1}% decreased elemental debuff damage
 		'''
 }
 
@@ -387,6 +489,14 @@ Whiskey: {
 		This boost recharges when holding weapons of a different class, taking {3} seconds to fully recharge
 		{$Common.AlcoholWarning}
 		'''
+	DripEffect:
+		'''
+		Provides between {0}% and {1}% damage to the held weapon's class
+		Each class tracks this boost individually
+		This boost lowers the longer you hold weapons of the same class, taking {2} seconds to fully decay
+		This boost recharges when holding weapons of a different class, taking {3} seconds to fully recharge
+		When combined with drinking Whiskey straight, the damage variance becomes {4}% and {5}%
+		'''
 }
 
 WhiteWine: {
@@ -396,6 +506,11 @@ WhiteWine: {
 		You regain flight time the closer you are to an enemy
 		{0}% reduced flight time
 		{$Common.AlcoholWarning}
+		'''
+	DripEffect:
+		'''
+		You regain flight time the closer you are to an enemy
+		{0}% reduced flight time
 		'''
 }
 

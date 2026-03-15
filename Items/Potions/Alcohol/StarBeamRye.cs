@@ -18,6 +18,7 @@ namespace CalamityMod.Items.Potions.Alcohol
         public static int ManaRegenBoost = 30;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MagicDmgMult);
         public AlcoholType AlcoholVariant => AlcoholType.StarBeamRye;
+        public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.StarBeamRye.DripEffect");
 
         public Action<Player, float> AlcoholEffect => ApplyStarBeamRyeEffect;
 
