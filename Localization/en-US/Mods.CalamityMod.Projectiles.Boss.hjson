@@ -87,6 +87,7 @@ HellfireExplosion.DisplayName: Brimstone Hellfire Explosion
 HiveBombGoliath.DisplayName: Hive Bomb
 HolyAura.DisplayName: Holy Aura
 HolyBlast.DisplayName: Holy Blast
+HolyBlastFrags.DisplayName: Holy Blast Frag
 HolyBomb.DisplayName: Holy Bomb
 HolyBurnOrb.DisplayName: Holy Orb
 HolyExplosionBoom.DisplayName: Holy Explosion
@@ -107,6 +108,7 @@ Infernado.DisplayName: Infernado
 Infernado2.DisplayName: Infernado
 InfernadoRevenge.DisplayName: Infernado
 JewelProjectile.DisplayName: Ruby Bolt
+LingeringHolyInferno.DisplayName: Lingering Holy Inferno
 LeviathanBomb.DisplayName: Meteor Vomit
 LeviathanSpawner.DisplayName: Spawner
 MajesticSparkle.DisplayName: Majestic Sparkle

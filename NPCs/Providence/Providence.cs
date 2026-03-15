@@ -1418,6 +1418,15 @@ namespace CalamityMod.NPCs.Providence
                             }
                         }
 
+                        float shorterFlameCocoonDistance = 2800f - ((CalamityWorld.death || NPC.localAI[1] == (float)BossMode.Enraged) ? 600f : CalamityWorld.revenge ? 400f : Main.expertMode ? 200f : 0f);
+                        if (attackerAlive || defenderAlive || healerAlive)
+                            shorterFlameCocoonDistance = 2800f;
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                            for (var i = 0; i < 100; i++)
+                            {
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + new Vector2(Main.rand.NextFloat(shorterFlameCocoonDistance, shorterFlameCocoonDistance + (death? 1000 : 500)), 0).RotatedBy(MathHelper.TwoPi * i / 100f + Main.rand.NextFloat(-0.0025f,0.0025f)), Vector2.Zero, ModContent.ProjectileType<LingeringHolyInferno>(), BlobDamage.CalculateProvidenceDamage(), 0f, Main.myPlayer, NPC.Center.X, NPC.Center.Y, shorterFlameCocoonDistance);
+                            }
+
                         text = false;
                         AIState = (int)Phase.PhaseChange;
                         NPC.localAI[2] = attackDelayAfterCocoon;
@@ -1596,6 +1605,16 @@ namespace CalamityMod.NPCs.Providence
                     NPC.ai[3] += 1f;
                     if (NPC.ai[3] >= phaseTime)
                     {
+
+                        float shorterSpearCocoonDistance = 2800f - ((CalamityWorld.death || NPC.localAI[1] == (float)BossMode.Enraged) ? 1000f : CalamityWorld.revenge ? 650f : Main.expertMode ? 300f : 0f);
+                        if (attackerAlive || defenderAlive || healerAlive)
+                            shorterSpearCocoonDistance = 2800f;
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                            for (var i = 0; i < 100; i++)
+                            {
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + new Vector2(Main.rand.NextFloat(shorterSpearCocoonDistance, shorterSpearCocoonDistance + (death ? 1000 : 500)),0).RotatedBy(MathHelper.TwoPi * i/100f + Main.rand.NextFloat(-0.0025f, 0.0025f)), Vector2.Zero, ModContent.ProjectileType<LingeringHolyInferno>(), BlobDamage.CalculateProvidenceDamage(), 0f, Main.myPlayer, NPC.Center.X,NPC.Center.Y, shorterSpearCocoonDistance);
+                            }
+
                         AIState = (int)Phase.PhaseChange;
                         NPC.localAI[2] = attackDelayAfterCocoon;
                         NPC.TargetClosest();
@@ -1930,7 +1949,7 @@ namespace CalamityMod.NPCs.Providence
                 Projectile projectile = Main.projectile[x];
                 if (projectile.active)
                 {
-                    if (projectile.type == ModContent.ProjectileType<HolyFire2>() || projectile.type == ModContent.ProjectileType<HolyFlare>())
+                    if (projectile.type == ModContent.ProjectileType<HolyFire2>() || projectile.type == ModContent.ProjectileType<HolyFlare>() || projectile.type == ModContent.ProjectileType<LingeringHolyInferno>())
                         projectile.Kill();
                     else if (projectile.type == ModContent.ProjectileType<HolyBlast>() || projectile.type == ModContent.ProjectileType<HolyFire>())
                         projectile.active = false;

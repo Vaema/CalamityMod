@@ -16,12 +16,15 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class HolyFire2 : ModProjectile, ILocalizedModType
+    public class HolyBlastFrags : ModProjectile, ILocalizedModType
     {
-        public new string LocalizationCategory => "Projectiles.Boss";
+        public override string Texture => "CalamityMod/Projectiles/Boss/HolyFire2";
 
+        public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetStaticDefaults()
         {
+            ProjectileID.Sets.TrailCacheLength[Type] = 15;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
             Main.projFrames[Type] = 4;
         }
 
@@ -35,16 +38,10 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.tileCollide = false;
             Projectile.timeLeft = 600;
             CooldownSlot = ImmunityCooldownID.Bosses;
-
-            ProjectileID.Sets.TrailCacheLength[Type] = 15;
-            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void AI()
         {
-
-            ProjectileID.Sets.TrailCacheLength[Type] = 15;
-            ProjectileID.Sets.TrailingMode[Type] = 2;
             ProvUtils.ApplyGFBDamage(Projectile, 120, 10);
 
             Lighting.AddLight(Projectile.Center, 0.3f, 0.225f, 0f);
@@ -103,16 +100,16 @@ namespace CalamityMod.Projectiles.Boss
             );
             using (lease.Scope(clearColor: Color.Transparent))
             {
-                var list = Projectile.oldPos.Take(8).ToList();
+                var list = Projectile.oldPos.Take(12).ToList();
 
-                list.Insert(0, Projectile.position + (Projectile.rotation + MathHelper.PiOver2 * Projectile.spriteDirection).ToRotationVector2() * 16f);
+                list.Insert(0, Projectile.position + (Projectile.rotation+MathHelper.PiOver2 * Projectile.spriteDirection).ToRotationVector2() * 16f);
 
                 GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
                 PrimitiveRenderer.RenderTrail(list.ToArray(), new(FireWidthFunction, FireColorFunction, (_, _) => Projectile.Size * 0.5f, smoothen: true, pixelate: false, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"], useUnscaledMatrices: true), Projectile.oldPos.Length + 32);
             }
 
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.Transform);
-            Main.spriteBatch.Draw(lease.Target, Vector2.Zero, null, Color.White * 0.75f, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0f);
+            Main.spriteBatch.Draw(lease.Target, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0f);
             Main.spriteBatch.End();
 
             Main.spriteBatch.Begin(ss);
@@ -126,7 +123,7 @@ namespace CalamityMod.Projectiles.Boss
         public float FireWidthFunction(float completion, Vector2 pos)
         {
             float width;
-            float maxBodyWidth = 16f * Projectile.scale;
+            float maxBodyWidth = 38f * Projectile.scale;
             float curveRatio = 0.2f;
             var positions = Projectile.oldPos.ToList();
             positions.RemoveAll(x => x == Vector2.Zero);
