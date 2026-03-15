@@ -1473,6 +1473,8 @@ namespace CalamityMod.CalPlayer
         public bool whiteWine = false;
         public float whiteWineTimer = 0;
         public bool evergreenGin = false;
+        public bool baconOil = false;
+        public int baconOilSoundCooldown = 0;
         public bool tranquilityCandle = false;
         public bool chaosCandle = false;
         public bool blueCandle = false;
@@ -2766,6 +2768,7 @@ namespace CalamityMod.CalPlayer
             moscowMule = false;
             whiteWine = false;
             evergreenGin = false;
+            baconOil = false;
 
             tranquilityCandle = false;
             chaosCandle = false;
@@ -3280,6 +3283,7 @@ namespace CalamityMod.CalPlayer
             moscowMule = false;
             whiteWine = false;
             evergreenGin = false;
+            baconOil = false;
             tranquilityCandle = false;
             chaosCandle = false;
             blueCandle = false;
@@ -4843,9 +4847,9 @@ namespace CalamityMod.CalPlayer
                 // Gives inverted buffs from well fed
                 Player.statDefense -= 2;
                 Player.GetCritChance<GenericDamageClass>() -= 2;
-                Player.GetDamage<GenericDamageClass>() -= 0.05f;
                 Player.minionKB -= 0.5f;
-                // Move speed reduction/boost happens in PostUpdate
+                Player.moveSpeed -= 0.05f;
+                // damage nerf/boost happens in PostUpdate
                 Player.pickSpeed += 0.05f;
 
 
@@ -5119,7 +5123,7 @@ namespace CalamityMod.CalPlayer
             }
 
             if (malnourished) // Has to be here because alcoholPoisonLevel isn't updated until now
-                Player.moveSpeed += -0.05f + TheSandwich.statBoost * alcoholPoisonLevel;
+                Player.GetDamage<GenericDamageClass>() += -0.05f + TheSandwich.statBoost * alcoholPoisonLevel;
 
             // Relic of Convergence defense cut
             if (Player.ownedProjectileCounts[ModContent.ProjectileType<RelicOfConvergenceCrystal>()] > 0 && Player.HeldItem.type == ModContent.ItemType<RelicOfConvergence>())
@@ -5251,6 +5255,90 @@ namespace CalamityMod.CalPlayer
                     ModDashMovement();
             }
             #endregion
+
+            if (Player.Calamity().baconOil && !Player.mount.Active)
+            {
+                Player.noFallDmg = true;
+                
+                float velX = Math.Abs(Player.velocity.X);
+                float velY = Math.Abs(Player.velocity.Y);
+
+                float speedMult = Player.GetBestClassDamage().ApplyTo(1);
+                float maxMoveSpeed = 10.5f * speedMult;
+                float minMoveSpeed = 3; // Minimum move speed to be at if the player can bounce
+                float hitboxSizeMult = 0.45f;
+
+                bool onPlatform = false;
+                if (Player.velocity.Y > 0 && !Player.controlDown)
+                {
+                    for (int i = 4; i < 8; i++)
+                    {
+                        Point bottom = (Player.Bottom + Vector2.UnitY * i).ToTileCoordinates();
+                        if (TileID.Sets.Platforms[CalamityUtils.ParanoidTileRetrieval(bottom.X, bottom.Y).TileType])
+                        {
+                            onPlatform = true;
+                        }
+                    }
+                }
+
+                bool hitDown =  velY > minMoveSpeed && (Collision.SolidCollision(Player.Bottom + Vector2.UnitY * Player.velocity.Y, (int)(Player.width * hitboxSizeMult), 1) || onPlatform);
+                bool hitUp =  velY > minMoveSpeed && Collision.SolidCollision(Player.Top + Vector2.UnitY * Player.velocity.Y, (int)(Player.width * hitboxSizeMult), 1);
+                bool hitSide = velX > minMoveSpeed && Collision.SolidCollision(Vector2.Lerp(Player.TopLeft, Player.Left, 0.15f) + Vector2.UnitX * Player.velocity.X, 1, (int)(Player.height * hitboxSizeMult)) || Collision.SolidCollision(Vector2.Lerp(Player.TopRight, Player.Right, 0.15f) + Vector2.UnitX * Player.velocity.X, 1, (int)(Player.height * hitboxSizeMult));
+                float acceleration = 0.05f;
+                float decceleration = -0.025f / speedMult;
+                float riseSpeed = 0.8f; // The speed the player rises when in water or rain
+                float slipPower = 0.85f; //How strong the slippery effect is
+
+                float bounceReduction = 0.9f;
+                bool makeSound = false;
+                if (hitSide)
+                {
+                    Player.velocity.X = -Player.velocity.X * bounceReduction;
+                    Player.oldVelocity.X = -Player.oldVelocity.X * bounceReduction;
+                    makeSound = true;
+                }
+                if ((hitDown || hitUp))
+                {
+                    if (Player.controlUp)
+                        bounceReduction = 1.3f;
+                    Player.velocity.Y = -Player.velocity.Y * bounceReduction;
+                    Player.oldVelocity.Y = -Player.oldVelocity.Y * bounceReduction;
+                    if (hitDown)
+                    {
+                        Player.RefreshMovementAbilities(true);
+                    }
+                    makeSound = true;
+                }
+                int soundCDMax = 150;
+                if (makeSound && baconOilSoundCooldown < soundCDMax)
+                {
+                    if (baconOilSoundCooldown < soundCDMax)
+                        baconOilSoundCooldown += 30;
+                    float pitch = 0.55f * Utils.GetLerpValue(0, soundCDMax, baconOilSoundCooldown, true);
+                    SoundStyle boyoyoing = new("CalamityMod/Sounds/Item/BaconOilBounce");
+                    SoundEngine.PlaySound(boyoyoing with { Volume = 0.45f, Pitch = hitSide ? pitch - 0.3f : pitch, MaxInstances = 5 }, Player.Center);
+                }
+
+                bool playerMoving = Player.controlLeft || Player.controlRight;
+                bool playerMovingInDirection = (Player.controlLeft && Player.oldVelocity.X < 0) || (Player.controlRight && Player.oldVelocity.X > 0);
+                if (((Player.oldVelocity.X > 0 && Player.velocity.X > 0) || (Player.oldVelocity.X < 0 && Player.velocity.X < 0)))
+                    Player.velocity.X = MathHelper.Clamp(Player.velocity.X + maxMoveSpeed * MathF.Sign(Player.oldVelocity.X) * 
+                        ((playerMovingInDirection || !playerMoving) ? Player.dashDelay == -1 ? decceleration : // If dashing, deccelerate to prevent infinite dash
+                        // If not moving or holding in move direction, accelerate to max speed, otherwise deccelerate
+                        acceleration : decceleration), -maxMoveSpeed, maxMoveSpeed);
+
+                bool raining = Player.Center.Y < Main.worldSurface * 16.0 && Main.raining;
+                if ((Player.wet || raining) && Player.velocity.Y > -maxMoveSpeed)
+                {
+                    Player.velocity.Y -= riseSpeed; // Cover yourself in oil (go up in liquid)
+                }
+
+
+                Vector2 lerpedVel = Vector2.Lerp(Player.velocity, Player.oldVelocity, slipPower);
+                Player.velocity = new Vector2(lerpedVel.X, Player.velocity.Y);
+            }
+            if (baconOilSoundCooldown > 0)
+                baconOilSoundCooldown = (int)MathHelper.Lerp(baconOilSoundCooldown, 0, 0.027f);
 
             Player.oldVelocity = Player.velocity; // Apparently this value is not updated on its own, so we do it
         }

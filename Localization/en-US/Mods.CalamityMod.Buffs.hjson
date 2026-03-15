@@ -8,6 +8,11 @@ AlcoholPoisoning: {
 	Description: You drank too much and you are now dying
 }
 
+BaconOilBuff: {
+	DisplayName: Bacon Oil
+	Description: Oh gosh you spilled it all over yourself!
+}
+
 BloodyMaryBuff: {
 	DisplayName: Bloody Mary
 	Description: Increased enemy spawn rates, reduced piercing weapon effectiveness
