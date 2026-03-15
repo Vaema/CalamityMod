@@ -342,6 +342,15 @@ namespace CalamityMod.CalPlayer
                 Player.lifeRegen += 6;
             }
 
+            if (grandDadHealTimer == 0 && grandDadHealPool >= 7)
+            {
+                Player.HealPlayer(7, HealTextType.Broadcast);
+                grandDadHealPool -= 7;
+                grandDadHealTimer = (int)(30 * Utils.GetLerpValue(260, 60, grandDadHealPool, true));
+            }
+            else if (grandDadHealTimer > 0)
+                grandDadHealTimer--;
+
             // Grant life regen based on missing health for Radiant Ooze, Ambrosial Ampule, and purity
             if (rOoze || aAmpoule || purity)
             {

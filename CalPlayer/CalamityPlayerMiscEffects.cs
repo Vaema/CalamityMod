@@ -222,6 +222,11 @@ namespace CalamityMod.CalPlayer
                     int damage = (int)Player.GetTotalDamage<TrueMeleeDamageClass>().ApplyTo(Player.HeldItem.damage);
                     Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Player.Center.DirectionTo(Player.Calamity().mouseWorld), ModContent.ProjectileType<BasherHoldout>(), damage, Player.HeldItem.knockBack, Player.whoAmI);
                 }
+                if (Player.HeldItem.type == ModContent.ItemType<GrandDad>() && (Player.ownedProjectileCounts[ModContent.ProjectileType<GrandDadHoldout>()] == 0))
+                {
+                    int damage = (int)Player.GetTotalDamage<TrueMeleeDamageClass>().ApplyTo(Player.HeldItem.damage);
+                    Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Player.Center.DirectionTo(Player.Calamity().mouseWorld), ModContent.ProjectileType<GrandDadHoldout>(), damage, Player.HeldItem.knockBack, Player.whoAmI);
+                }
             }
 
             // De-equipping Gael's Greatsword deletes all rage.
