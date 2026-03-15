@@ -669,18 +669,16 @@ GrandDad: {
 	TooltipNormal:
 		'''
 		An unfathomably heavy blade that rips through enemies using its sheer mass
-		Heals you on hit
-		Striking weaker enemies will launch them with incredible force
-		Launched enemies take immense damage when colliding with walls and floors
-		Holding <right> while swinging will heavily reduce the damage of the blade and increase its launch damage and velocity
+		Provides healing over time to you and all nearby allies on hit
+		Striking low health enemies will launch them with incredible force
+		Launched enemies are killed instantly on impact with walls and floors
 		[c/00B8DF:'How are you swinging something that has half the mass of a star?']
 		'''
 	TooltipGFB:
 		'''
 		A high quality blade that rips through enemies
-		Striking weaker enemies will yeet them with incredible force, often leaving them Stuck Inside tiles
+		Striking low health enemies will yeet them with incredible force, nice >:]
 		Yeeted enemies will turn to JAM when SLAMMED into walls and floors
-		Holding <right> while swinging will heavily reduce the damage of the blade and increase its yeet damage and velocity, nice >:]
 		[c/00B8DF:'Please read the weapon description.']
 		'''
 }
