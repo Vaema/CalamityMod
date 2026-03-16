@@ -1690,8 +1690,8 @@ namespace CalamityMod.CalPlayer
                 int numOfPigs = Player.ownedProjectileCounts[ModContent.ProjectileType<Pigion>()];
                 if (numOfPigs < Player.Calamity().friendlyMinions)
                 {
-                    int pigDamage = 12;
-                    Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, new Vector2(0, 16).RotatedByRandom(MathHelper.TwoPi), ModContent.ProjectileType<Pigion>(), pigDamage, 0f, Player.whoAmI, 0, numOfPigs + 1);
+                    int pigDamage = 7;
+                    Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, new Vector2(0, -16).RotatedByRandom(MathHelper.Pi), ModContent.ProjectileType<Pigion>(), pigDamage, 0f, Player.whoAmI, 0, numOfPigs + 1);
                 }
             }
 

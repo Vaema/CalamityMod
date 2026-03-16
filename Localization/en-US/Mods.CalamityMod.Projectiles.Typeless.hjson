@@ -107,6 +107,7 @@ PauldronDash.DisplayName: Pauldron Dash
 PauldronExplosion.DisplayName: Pauldron Explosion
 PearlAuraShard.DisplayName: Prism Shard
 PlaguePulse.DisplayName: Plague Pulse
+Pigion.DisplayName: Pigion
 PinkPearlFalling.DisplayName: Pink Pearl
 PoisonousSeawater.DisplayName: Seawater
 PolypSandBallFalling.DisplayName: Polyp Sand Ball
@@ -171,4 +172,3 @@ XykDeathAnim.DisplayName: Xyk Death Animation
 XykWings.DisplayName: Xyk Wings
 StratusBlackHole.DisplayName: Stratus Singularity
 DebuffSpreadEffect.DisplayName: Debuff Spread Effect
-Pigion.DisplayName: Pigion

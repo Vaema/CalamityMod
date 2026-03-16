@@ -1,9 +1,6 @@
 ﻿using System;
-using System.IO;
-using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
-using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -19,19 +16,19 @@ namespace CalamityMod.Projectiles.Typeless
         public new string LocalizationCategory => "Projectiles.Typeless";
         public Player Owner => Main.player[Projectile.owner];
         public CalamityPlayer moddedOwner => Owner.Calamity();
-        public bool canDamage = false;
         public Color cl1 = Color.Gold;
         public Color cl2 = Color.Goldenrod;
-        public bool clicked = false;
         public int hopTimer = 0;
-        public int hopMax = 100;
+        public static int hopMax = 100;
         public bool hitGround = false;
         public bool hitWall = false;
         public Vector2 lastUnmodVel;
         public Vector2 mousePos;
-        public int thrownTimer = 0;
-        public int thrownTimerMax = 300;
-        public bool deadPig = false;
+        public int thrownTimer = 0; // Timer set when grabbed, fades out faster at low velocity, allowing gravity to take effect sooner
+        public static int thrownTimerMax = 300;
+        public static int lowestSpeed = 4;
+        public static int highestSpeed = 20;
+        public bool deadPig = false; // if Pigion hit a wall at high enough speed to explode
         public ref float time => ref Projectile.ai[0];
         public ref float minionNumber => ref Projectile.ai[1];
         public bool pigGrabbed => Projectile.ai[2] == 5;
@@ -41,7 +38,7 @@ namespace CalamityMod.Projectiles.Typeless
         }
         public override void SetDefaults()
         {
-            Projectile.width = 21;
+            Projectile.width = 42;
             Projectile.height = 28;
             Projectile.friendly = true;
             Projectile.DamageType = AverageDamageClass.Instance;
@@ -51,8 +48,6 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.timeLeft = 600;
             Projectile.extraUpdates = 1;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 60 * Projectile.MaxUpdates;
-            Projectile.ArmorPenetration = 25;
         }
         public void Frames()
         {
@@ -88,13 +83,22 @@ namespace CalamityMod.Projectiles.Typeless
             // Teleport back to player if too far away
             if (Projectile.Center.Distance(Owner.Center) > 1500)
             {
-                Projectile.velocity = (Vector2.UnitX * 16).RotatedByRandom(MathHelper.TwoPi);
+                Projectile.velocity = new Vector2(0, -16).RotatedByRandom(MathHelper.Pi / 2);
                 Projectile.Center = Owner.Center;
             }
 
             // Check if being clicked and no other Pigions are being clicked
             if (Owner.controlUseItem && Projectile.Center.Distance(mousePos) <= 60 && !pigGrabbed && Projectile.ai[2] == 0)
                 SetGrab(true);
+
+            // Push away enemies it touches based on the Pigions velocity
+            Vector2 toNPC = Vector2.Zero;
+            NPC npc = Projectile.Center.ClosestNPCAt(300, false);
+            if (npc != null && !pigGrabbed && Projectile.Hitbox.Intersects(npc.Hitbox))
+            {
+                toNPC = Projectile.Center.DirectionTo(npc.Center);
+                npc.MoveNPC(Utils.DirectionTo(Projectile.Center, npc.Center), Utils.Remap(Projectile.velocity.Length(), lowestSpeed, highestSpeed * 1.5f, 4, 30), true);
+            }
 
             float hitboxSizeMult = 0.45f;
             bool touchingWall = Collision.SolidCollision(Vector2.Lerp(Projectile.TopLeft, Projectile.Left, 0.15f) + Vector2.UnitX * Projectile.velocity.X, 1, (int)(Projectile.height * hitboxSizeMult)) || Collision.SolidCollision(Vector2.Lerp(Projectile.TopRight, Projectile.Right, 0.15f) + Vector2.UnitX * Projectile.velocity.X, 1, (int)(Projectile.height * hitboxSizeMult));
@@ -103,21 +107,17 @@ namespace CalamityMod.Projectiles.Typeless
                 FlipDirection(-Projectile.spriteDirection);
                 Projectile.velocity.X += Projectile.spriteDirection;
             }
-            if (!pigGrabbed)
-                Slam(touchingWall, hitboxSizeMult);
+            if (!pigGrabbed) // Check if hitting tiles or enemies, and if so rebound the Pigion or kill them
+                Slam(touchingWall, hitboxSizeMult, toNPC);
             else
                 thrownTimer = thrownTimerMax;
             lastUnmodVel = Projectile.velocity;
 
             Movement();
 
-            // Push away enemies it touches
-            NPC npc = Projectile.Center.ClosestNPCAt(40, false);
-            if (npc != null && !pigGrabbed)
-                npc.MoveNPC(Utils.DirectionTo(Projectile.Center, npc.Center), 6, true);
-
-            if (thrownTimer > 0)
-                thrownTimer--;
+            thrownTimer -= 1 + (int)(20 * (Utils.GetLerpValue(highestSpeed, lowestSpeed * 2, Projectile.velocity.Length(), true)));
+            if (thrownTimer < 0)
+                thrownTimer = 0;
             hopTimer--;
             time++;
             Projectile.timeLeft++;
@@ -127,11 +127,11 @@ namespace CalamityMod.Projectiles.Typeless
                 return;
             }
         }
-        public void Slam(bool touchingWall, float hitboxSizeMult)
+        public void Slam(bool touchingWall, float hitboxSizeMult, Vector2 touchNPCVel)
         {
             bool onPlatform = false;
             float thrownMult = Utils.Remap(thrownTimer, 0, thrownTimerMax, 0.6f, 1f);
-            if (Projectile.velocity.Y > 0)
+            if (Projectile.velocity.Y > 0) // If moving down, check for platforms
             {
                 for (int i = 4; i < 8; i++)
                 {
@@ -144,24 +144,28 @@ namespace CalamityMod.Projectiles.Typeless
             }
             float velX = MathF.Abs(lastUnmodVel.X);
             float velY = MathF.Abs(lastUnmodVel.Y);
-            float minMoveSpeed = 5;
-            bool hitDown = velY > minMoveSpeed && (Collision.SolidCollision(Projectile.Bottom + Vector2.UnitY * Projectile.velocity.Y, (int)(Projectile.width * hitboxSizeMult), 1) || onPlatform);
-            bool hitUp = velY > minMoveSpeed && Collision.SolidCollision(Projectile.Top + Vector2.UnitY * Projectile.velocity.Y, (int)(Projectile.width * hitboxSizeMult), 1);
-            bool hitSide = velX > minMoveSpeed && touchingWall;
-            bool hardHit = Projectile.velocity.Length() > 25;
-            float volumeMult = Utils.GetLerpValue(minMoveSpeed - 2, minMoveSpeed * 5, Projectile.velocity.Length(), true);
+            bool hitNPC = touchNPCVel != Vector2.Zero;
+            bool hitDownWall = (Collision.SolidCollision(Projectile.Bottom + Vector2.UnitY * Projectile.velocity.Y, (int)(Projectile.width * hitboxSizeMult), 1) || onPlatform);
+            bool hitUpWall = Collision.SolidCollision(Projectile.Top + Vector2.UnitY * Projectile.velocity.Y, (int)(Projectile.width * hitboxSizeMult), 1);
+            bool hitDown = velY > lowestSpeed && hitDownWall;
+            bool hitUp = velY > lowestSpeed && hitUpWall;
+            bool hitSide = velX > lowestSpeed && touchingWall;
+            bool hardHit = Projectile.velocity.Length() >= highestSpeed * 1.5f; // The velocity a Pigion must be going to explode on impact
+            float volumeMult = Utils.GetLerpValue(lowestSpeed - 2, highestSpeed, Projectile.velocity.Length(), true); // Sounds are quieter at low velocity
 
+            bool hitAnything = false;
             if (hitDown || hitUp)
             {
-                if (!hitGround && MathF.Abs(lastUnmodVel.Y) > 1)
+                if (!hitGround)
                 {
+                    hitAnything = true;
                     if (hardHit)
                     {
                         deadPig = true;
                         return;
                     }
                     Projectile.velocity.Y = -lastUnmodVel.Y * thrownMult;
-                    MakeDustAndSound(false, volumeMult);
+                    MakeDustAndSound(volumeMult);
                     hitGround = true;
                 }
             }
@@ -170,7 +174,8 @@ namespace CalamityMod.Projectiles.Typeless
 
             if (hitSide)
             {
-                if (!hitWall && MathF.Abs(lastUnmodVel.X) > 1)
+                hitAnything = true;
+                if (!hitWall)
                 {
                     if (hardHit)
                     {
@@ -178,14 +183,33 @@ namespace CalamityMod.Projectiles.Typeless
                         return;
                     }
                     Projectile.velocity.X = -lastUnmodVel.X * thrownMult;
-                    MakeDustAndSound(true, volumeMult);
+                    MakeDustAndSound(volumeMult);
                     hitWall = true;
                 }
             }
             else
                 hitWall = false;
+
+            if (hitNPC && Projectile.velocity.Length() >= lowestSpeed)
+            {
+                hitAnything = true;
+                if (hardHit)
+                {
+                    deadPig = true;
+                    return;
+                }
+                Vector2 npcBounceVel = -lastUnmodVel * thrownMult;
+                Projectile.Center += npcBounceVel;
+                Projectile.velocity = npcBounceVel;
+                MakeDustAndSound(volumeMult);
+            }
+
+            if (hitAnything)
+            {
+                FlipDirection(MathF.Sign(Projectile.velocity.X));
+            }
         }
-        public void MakeDustAndSound(bool wall, float volumeMult)
+        public void MakeDustAndSound(float volumeMult)
         {
             SoundStyle splat = new("CalamityMod/Sounds/NPCHit/PerfSmallHit", 3);
             SoundEngine.PlaySound(splat with { Volume = 0.8f * volumeMult, Pitch = Main.rand.NextFloat(0.3f, 0.4f) - volumeMult * 0.3f }, Projectile.Center);
@@ -215,7 +239,11 @@ namespace CalamityMod.Projectiles.Typeless
             if (time % 900 == 0)
                 FlipDirection(-Projectile.spriteDirection);
 
-            Projectile.velocity.X *= 0.97f;
+            // Slowing down over time
+            if (thrownTimer <= thrownTimerMax / 2)
+                Projectile.velocity.X *= 0.97f;
+
+            // Move Pigion to mouse if grabbed, otherwise ungrab them if player isn't holding M1 anymore
             if (pigGrabbed)
             {
                 FlipDirection(MathF.Sign(Projectile.Center.DirectionTo(mousePos).X));
@@ -225,7 +253,8 @@ namespace CalamityMod.Projectiles.Typeless
             if (!Owner.controlUseItem)
                 SetGrab(false);
 
-            if (Projectile.velocity.Y < 14)
+            // Falling
+            if (Projectile.velocity.Y < 14 && thrownTimer <= thrownTimerMax / 2)
                 Projectile.velocity.Y += 0.3f * Utils.GetLerpValue(100, 0, hopTimer, true);
 
             int walkRate = 90; // Walk along slowly
@@ -254,22 +283,24 @@ namespace CalamityMod.Projectiles.Typeless
                 }
             }
 
-            float minSpeed = 4;
-            float maxSpeed = 14;
-            float goalRot = Utils.AngleLerp(0, Projectile.velocity.ToRotation() + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0), Utils.GetLerpValue(minSpeed, maxSpeed, Projectile.velocity.Length(), true));
+            // Rotate based on velocity and direction
+            float goalRot = Utils.AngleLerp(0, Projectile.velocity.ToRotation() + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0), Utils.GetLerpValue(lowestSpeed, highestSpeed, Projectile.velocity.Length(), true));
             Projectile.rotation = goalRot;
-
         }
         public override void OnKill(int timeLeft)
         {
-            int damage = (int)(Projectile.damage * MathF.Pow(Owner.GetBestClassDamage().ApplyTo(1), 0.3f + Owner.ownedProjectileCounts[Projectile.type] * 0.7f)); // Damage scales with number of pigions at 0.7 power
-            float blastSize = 100;
-            float minMultiplier = 0.1f;
-            int hitsToMinMult = 6;
-            Projectile blast = Projectile.NewProjectileDirect(Owner.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(damage), -15, Owner.whoAmI, blastSize, minMultiplier, hitsToMinMult);
-            blast.timeLeft = 5;
-            blast.DamageType = AverageDamageClass.Instance;
-            blast.CritChance = 100;
+            if (deadPig) // Only spawn explosion if death is from collision
+            {
+                int pigNum = Owner.ownedProjectileCounts[Projectile.type];
+                int damage = (int)((pigNum * 2 + Projectile.damage) * MathF.Pow(Owner.GetBestClassDamage().ApplyTo(1), 0.4f + pigNum * 0.6f)); // Damage scales with number of pigions at 0.7 power
+                float blastSize = 100;
+                float minMultiplier = 0.1f;
+                int hitsToMinMult = 4;
+                Projectile blast = Projectile.NewProjectileDirect(Owner.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(damage), -15, Owner.whoAmI, blastSize, minMultiplier, hitsToMinMult);
+                blast.timeLeft = 5;
+                blast.DamageType = AverageDamageClass.Instance;
+                blast.CritChance = 100;
+            }
 
             Owner.SetScreenshake(3);
             SoundStyle die = new("CalamityMod/Sounds/Item/PigionSqueal");
@@ -300,7 +331,7 @@ namespace CalamityMod.Projectiles.Typeless
         }
         public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
         {
-            fallThrough = (pigGrabbed && mousePos.Y > Projectile.Center.Y);
+            fallThrough = pigGrabbed;
             return true;
         }
         public override bool PreDraw(ref Color lightColor)
@@ -308,13 +339,11 @@ namespace CalamityMod.Projectiles.Typeless
             Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Rectangle frame = texture.Frame(1, 2, 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;
-            float minSpeed = 4;
-            float maxSpeed = 20;
-            Vector2 squash = new Vector2(Utils.Remap(Projectile.velocity.Length(), minSpeed, maxSpeed, 1, 2), Utils.Remap(Projectile.velocity.Length(), minSpeed, maxSpeed, 1, 0.5f));
+            Vector2 squash = new Vector2(Utils.Remap(Projectile.velocity.Length(), lowestSpeed, highestSpeed, 1, 2), Utils.Remap(Projectile.velocity.Length(), lowestSpeed, highestSpeed, 1, 0.5f));
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, frame, lightColor, Projectile.rotation, origin, squash * Projectile.scale, Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally :  SpriteEffects.None, 0);
             return false;
         }
-        public override bool? CanDamage() => canDamage ? null : false;
+        public override bool? CanDamage() => false;
         public override bool? CanCutTiles() => false;
     }
 }
