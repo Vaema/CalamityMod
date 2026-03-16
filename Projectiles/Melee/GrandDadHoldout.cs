@@ -1,22 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.ConstrainedExecution;
 using CalamityMod.Dusts;
 using CalamityMod.Enums;
-using CalamityMod.Items.Tools;
-using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.PrimordialWyrm;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Systems.Graphic.PixelationSystem;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
-using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
@@ -264,9 +258,10 @@ namespace CalamityMod.Projectiles.Melee
             bool canBeLaunched = false;
             bool lowEnoughToExecute = target.life <= Projectile.damage * 15;
             bool jared = target.type == ModContent.NPCType<PrimordialWyrmHead>();
-            Vector2 launchVel = Utils.DirectionTo(Owner.Center, (lowEnoughToExecute ? Owner.Calamity().mouseWorld : target.Center));
+            Vector2 toMouse = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
+            Vector2 launchVel = lowEnoughToExecute ? toMouse : Utils.DirectionTo(Owner.Center, target.Center);
 
-            if (lowEnoughToExecute)
+            if (lowEnoughToExecute || jared)
             {
                 distanceToTiles = CalamityUtils.DistanceToTileCollisionHit(target.Center, launchVel, 200) ?? -100;
                 canBeLaunched = jared || ((distanceToTiles == -100 ? false : distanceToTiles < 200 ? true : false) && target.realLife == -1);
@@ -296,6 +291,9 @@ namespace CalamityMod.Projectiles.Melee
                 }
             }
 
+            // Regular knockback
+            float launchPower = 60;
+            target.MoveNPC(toMouse, launchPower * (canBeLaunched ? 0.5f : 0.25f), true);
             if (canBeLaunched) // launches/executes enemies
             {
                 if (jared)
@@ -307,14 +305,10 @@ namespace CalamityMod.Projectiles.Melee
 
                 target.Calamity().pacified = true;
 
-                // Launch the suckers
-                float launchPower = 60;
-                target.MoveNPC(launchVel, launchPower * 0.5f, true);
-                
-                // Apply tile collison damage
+                // Apply tile collison damage and forced velocity to launch the suckers
                 // This always kills (unless it's Jared)
                 int damage = (int)(Projectile.damage);
-                target.GetGlobalNPC<CalamityTileCollisionHarmNPC>().ApplyCollisionDamage(target, Owner, (jared && !lowEnoughToExecute) ? 0 : damage, launchVel * launchPower, 5f, true);
+                target.GetGlobalNPC<CalamityTileCollisionHarmNPC>().ApplyCollisionDamage(target, Owner, (jared && !lowEnoughToExecute) ? 1 : damage, launchVel * launchPower, 5f, true, true);
             }
 
             if (Projectile.numHits < 3)
