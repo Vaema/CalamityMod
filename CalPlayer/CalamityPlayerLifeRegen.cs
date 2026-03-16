@@ -201,7 +201,8 @@ namespace CalamityMod.CalPlayer
                 alcoholPoisonLevel++;
             if (everclear)
                 totalNegativeLifeRegen += Everclear.RegenLoss;
-
+            if (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.Everclear))
+                totalNegativeLifeRegen += Everclear.RegenLoss;
             // Blanket effect for all alcohols
             if (alcoholPoisonLevel > 0)
             {

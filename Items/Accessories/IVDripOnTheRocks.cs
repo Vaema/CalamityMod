@@ -251,5 +251,11 @@ namespace CalamityMod.Items.Accessories
                 effect.Key.Invoke(Player, effect.Value);
             }
         }
+
+        // For specific interactions not handled elsewhere.
+        public override void UpdateEquips()
+        {
+            base.UpdateEquips();
+        }
     }
 }

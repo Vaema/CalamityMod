@@ -15,6 +15,10 @@ namespace CalamityMod.Items.Potions.Alcohol
         public new string LocalizationCategory => "Items.Potions";
 
         public static float PierceDamageMultiplier = 0.66f;
+        public static float SpawnRateGateMultiplier = 0.142f;
+        public static float IVDripAdditionalSpawnRateGateMultiplier = 0.6f;
+        public static float SpawnLimitMultiplier = 5f;
+        public static float IVDripAdditionalSpawnLimitMultiplier = 1.5f;        
         public override LocalizedText Tooltip => base.Tooltip;
         public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.BloodyMary.DripEffect");
         public AlcoholType AlcoholVariant => AlcoholType.BloodyMary;

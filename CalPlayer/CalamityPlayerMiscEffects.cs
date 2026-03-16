@@ -536,6 +536,13 @@ namespace CalamityMod.CalPlayer
                 else if  (Player.dashDelay == -1)
                     Player.velocity.X *= 0.8f;
             }
+            if (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.CinnamonRoll) && !(Main.getGoodWorld && Main.npc.Any(x => x.active && x.type == ModContent.NPCType<DevourerofGodsHead>())))
+            {
+                if (dashStart)
+                    Player.velocity.X *= 3;
+                else if (Player.dashDelay == -1)
+                    Player.velocity.X *= 0.8f;
+            }
 
             if (Player.dashDelay == -1)
                 IsFirstDashFrame = false;
@@ -3279,7 +3286,7 @@ namespace CalamityMod.CalPlayer
         #region Other Buff Effects
         private void OtherBuffEffects()
         {
-
+            var dripPlayer = Player.GetModPlayer<IVDripPlayer>();
             if (gravityNormalizer)
             {
                 Player.buffImmune[BuffID.VortexDebuff] = true;
@@ -3475,9 +3482,15 @@ namespace CalamityMod.CalPlayer
 
             if (everclear)
                 Player.GetDamage<GenericDamageClass>() += Everclear.DamageBoost;
-
+            if (dripPlayer.HasAlcohol(AlcoholType.Everclear))
+                Player.GetDamage<GenericDamageClass>() += Everclear.DamageBoost;
 
             if (caribbeanRum)
+            {
+                Player.gravity *= CaribbeanRum.GravityMultiplier;
+                Player.moveSpeed += CaribbeanRum.MoveSpeedBoost;
+            }
+            if (dripPlayer.HasAlcohol(AlcoholType.CaribbeanRum))
             {
                 Player.gravity *= CaribbeanRum.GravityMultiplier;
                 Player.moveSpeed += CaribbeanRum.MoveSpeedBoost;
@@ -3503,7 +3516,7 @@ namespace CalamityMod.CalPlayer
                 }
                 else
                     bonus = 0;
-                whiteWineTimer += bonus * WhiteWine.FlightTimeRecoveryAmount;
+                whiteWineTimer += bonus * WhiteWine.FlightTimeRecoveryAmount * (dripPlayer.HasAlcohol(AlcoholType.Everclear) ? 2 : 1);
                 while (whiteWineTimer > 1)
                 {
                     if (Player.wingTime < Player.wingTimeMax)
