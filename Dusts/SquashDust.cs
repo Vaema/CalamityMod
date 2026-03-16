@@ -57,7 +57,7 @@ namespace CalamityMod.Dusts
         public override bool PreDraw(Dust dust)
         {
             Vector2 baseSize = Vector2.One;
-            if (dust.customData != null)
+            if (dust.customData != null && dust.customData is Vector2)
                 baseSize = (Vector2)dust.customData;
 
             Vector2 squash = new Vector2(Utils.Remap(dust.velocity.Length(), 2, 7, 1 * baseSize.X, 0.5f * baseSize.X), Utils.Remap(dust.velocity.Length(), 2, 7, 1 * baseSize.Y, 2.5f * baseSize.Y));
@@ -87,7 +87,7 @@ namespace CalamityMod.Dusts
         private static void DrawPixelated(Dust dust)
         {
             Vector2 baseSize = Vector2.One;
-            if (dust.customData != null)
+            if (dust.customData != null && dust.customData is Vector2)
                 baseSize = (Vector2)dust.customData;
 
             Vector2 squash = new Vector2(Utils.Remap(dust.velocity.Length(), 2, 7, 1 * baseSize.X, 0.5f * baseSize.X), Utils.Remap(dust.velocity.Length(), 2, 7, 1 * baseSize.Y, 2.5f * baseSize.Y));

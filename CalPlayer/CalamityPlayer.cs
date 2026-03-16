@@ -361,6 +361,9 @@ namespace CalamityMod.CalPlayer
         public int amputatorBuff = 0;
         /// <summary> Variable used to track the current fuel amount for Pristine Fury's right-click. </summary>
         public int furyFuel = 1800;
+        /// <summary> Variable to track the healing over time gained from Grand Dad. </summary>
+        public int grandDadHealPool = 0;
+        public int grandDadHealTimer = 0;
         public const int FuryFuelMax = 1800;
         public float furyRefuelTimer = 0;
         /// <summary> Variable used to track if Auger can do its big slash attack. </summary>
