@@ -802,6 +802,7 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Accessory
+        public int friendlyMinions = 0;
         public bool shieldOfTheHighRulerDashVelocityBoosted = false;
         public bool yharimsGift = false;
         public bool luxorsGift = false;
@@ -2243,6 +2244,7 @@ namespace CalamityMod.CalPlayer
                 if (!pSoulArtifact)
                     pSoulShieldDurability = 0;
             }
+            friendlyMinions = 0;
             pSoulShieldVisible = false;
             roverDrive = false;
             roverDriveShieldVisible = false;

@@ -66,4 +66,33 @@ namespace CalamityMod.Prefixes
             return 15;
         }
     }
+
+    public class Friendly : ModPrefix, ILocalizedModType
+    {
+        public new string LocalizationCategory => "Prefixes.Accessory";
+        public override PrefixCategory Category => PrefixCategory.Accessory;
+
+        public override void ApplyAccessoryEffects(Player player)
+        {
+            // give Minion
+            player.Calamity().friendlyMinions++;
+        }
+        public override void ModifyValue(ref float valueMult)
+        {
+            valueMult = 2.5f;
+        }
+        public override float RollChance(Item item) => 10; // Is manually applied by an item, can't be rerolled normally
+        public override bool CanRoll(Item item)
+        {
+            return true;
+        }
+        public LocalizedText FriendlyTooltip => CalamityUtils.GetText($"{LocalizationCategory}.FriendlyTooltip");
+        public override IEnumerable<TooltipLine> GetTooltipLines(Item item)
+        {
+            yield return new TooltipLine(Mod, "CalamityMod:PrefixFriendly", FriendlyTooltip.Format(1))
+            {
+                IsModifier = true
+            };
+        }
+    }
 }
