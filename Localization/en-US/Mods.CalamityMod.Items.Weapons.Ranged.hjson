@@ -616,7 +616,6 @@ Infinity: {
 	Tooltip:
 		'''
 		Fires a twin stream of energy bolts that split
-		Press <right> to fire a barrage of normal bullets
 		{$CommonItemTooltip.PercentChanceToSaveAmmo}
 		'They say infinity is neverending, yet you hold it in your hands'
 		'''
@@ -1121,7 +1120,6 @@ Shredder: {
 	Tooltip:
 		'''
 		Fires a barrage of energy bolts that split and bounce
-		Press <right> to fire a barrage of normal bullets instead
 		'The myth, the legend, the weapon that drops more frames than any other'
 		'''
 }
@@ -1305,7 +1303,6 @@ Svantechnical: {
 	Tooltip:
 		'''
 		Fires a trinity of energy bolts that split into beams that track your cursor
-		Press <right> to fire a barrage of normal bullets
 		{$CommonItemTooltip.PercentChanceToSaveAmmo}
 		'The age old balance of trading damage for frames'
 		'''
