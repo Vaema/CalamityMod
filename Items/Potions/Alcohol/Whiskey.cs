@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Potions.Alcohol
         public static float IVDripDamageFloor = -0.3f;
 
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MinDamageFloor.ToPercent(), MaxDamageCeiling.ToPercent(), (TimeToDischarge/60).ToString("0.##"), (TimeToRecharge/60).ToString("0.##"));
-        public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.Whiskey.DripEffect").WithFormatArgs(MinDamageFloor.ToPercent(), MaxDamageCeiling.ToPercent(), (TimeToDischarge / 60).ToString("0.##"), (TimeToRecharge / 60).ToString("0.##"), MaxDamageCeiling.ToPercent(), MinDamageFloor.ToPercent());
+        public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.Whiskey.DripEffect").WithFormatArgs(MinDamageFloor.ToPercent(), MaxDamageCeiling.ToPercent(), (TimeToDischarge / 60).ToString("0.##"), (TimeToRecharge / 60).ToString("0.##"), IVDripDamageFloor.ToPercent(), IVDripDamageCeiling.ToPercent());
         public AlcoholType AlcoholVariant => AlcoholType.Whiskey;
 
         public Action<Player, float> IVDripAlcoholEffect => ApplyWhiskeyEffect;

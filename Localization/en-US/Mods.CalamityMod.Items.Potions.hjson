@@ -495,7 +495,7 @@ Whiskey: {
 		Each class tracks this boost individually
 		This boost lowers the longer you hold weapons of the same class, taking {2} seconds to fully decay
 		This boost recharges when holding weapons of a different class, taking {3} seconds to fully recharge
-		When combined with drinking Whiskey straight, the damage variance becomes {4}% and {5}%
+		When combined with drinking Whiskey straight, damage varies between {4}% and {5}%
 		'''
 }
 
