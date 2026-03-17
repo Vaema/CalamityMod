@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         private static void ApplyWhiteWineEffect(Player player, float intensity)
         {
-            // out of order 20 defense
+            // See CalamityPlayerMiscEffects
         }
         public override void SetStaticDefaults()
         {

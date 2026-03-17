@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         private static void ApplyEverclearEffect(Player player, float intensity)
         {
-            // out of order 20 defense
+            // See CalamityPlayerLifeRegen and CalamityPlayerMiscEffects
         }
         public override void SetStaticDefaults()
         {

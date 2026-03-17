@@ -25,7 +25,14 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         private static void ApplyMargaritaEffect(Player player, float intensity)
         {
-            // out of order 20 defense
+            var cplayer = player.Calamity();
+            cplayer.HeatDebuffMultiplier -= Margarita.DebuffLoss;
+            cplayer.SicknessDebuffMultiplier -= Margarita.DebuffLoss;
+            cplayer.ColdDebuffMultiplier -= Margarita.DebuffLoss;
+            cplayer.WaterDebuffMultiplier -= Margarita.DebuffLoss;
+            cplayer.ElectricDebuffMultiplier -= Margarita.DebuffLoss;
+            cplayer.TypelessDebuffMultiplier -= Margarita.DebuffLoss;
+            // Also see CalamityPlayerMiscEffects
         }
         public override void SetStaticDefaults()
         {

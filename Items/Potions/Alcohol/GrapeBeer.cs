@@ -25,6 +25,7 @@ namespace CalamityMod.Items.Potions.Alcohol
         {
             var cplayer = player.Calamity();
             cplayer.critDamage -= GrapeBeer.CritLoss * 0.01f;
+            // Also see CalamityGlobalProjectile
         }
         public override void SetStaticDefaults()
         {

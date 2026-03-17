@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         private static void ApplyMoonshineEffect(Player player, float intensity)
         {
-            // out of order 20 defense
+            // See CalamityPlayer and CalamityPlayerHitHurt
         }
         public override void SetStaticDefaults()
         {

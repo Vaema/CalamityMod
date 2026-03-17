@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         private static void ApplyWhiskeyEffect(Player player, float intensity)
         {
-            // out of order 20 defense
+            // See CalamityPlayer
         }
         public override void SetStaticDefaults()
         {

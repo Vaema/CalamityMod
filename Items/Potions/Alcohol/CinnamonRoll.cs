@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         private static void ApplyCinnamonRollEffect(Player player, float intensity)
         {
-            // out of order 20 defense
+            // See CalamityPlayerMiscEffects and CalamityPlayerOnHit
         }
         public override void SetStaticDefaults()
         {

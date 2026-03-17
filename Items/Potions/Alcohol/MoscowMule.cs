@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         private static void ApplyMoscowMuleEffect(Player player, float intensity)
         {
-            // out of order 20 defense
+            // See CalamityPlayer and CalamityPlayerOnHit
         }
         public override void SetStaticDefaults()
         {
