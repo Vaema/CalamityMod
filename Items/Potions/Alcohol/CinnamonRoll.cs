@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override LocalizedText Tooltip => base.Tooltip;
         public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.CinnamonRoll.DripEffect");
-        public Action<Player, float> AlcoholEffect => ApplyCinnamonRollEffect;
+        public Action<Player, float> IVDripAlcoholEffect => ApplyCinnamonRollEffect;
 
         private static void ApplyCinnamonRollEffect(Player player, float intensity)
         {

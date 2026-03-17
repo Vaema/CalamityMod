@@ -270,7 +270,10 @@ namespace CalamityMod.CalPlayer
             // At the last second, Reaver defense helm reduces DoT debuffs by 20%
             if (reaverDefense)
                 totalNegativeLifeRegen -= (int)(totalNegativeLifeRegen * ReaverHeadTank.SetBonusDebuffDamageReduction);
+
             if (tequilaSunrise)
+                totalNegativeLifeRegen = (int)(totalNegativeLifeRegen * TequilaSunrise.DoTMultiplier);
+            if (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.TequilaSunrise))
                 totalNegativeLifeRegen = (int)(totalNegativeLifeRegen * TequilaSunrise.DoTMultiplier);
 
             Player.lifeRegen -= (int)totalNegativeLifeRegen;
@@ -447,7 +450,6 @@ namespace CalamityMod.CalPlayer
                     Player.lifeRegenTime += 1800;
                 }
             }
-
             var dripPlayer = Player.GetModPlayer<IVDripPlayer>();
             if (dripPlayer.HasAlcohol(AlcoholType.TequilaSunrise))
             {

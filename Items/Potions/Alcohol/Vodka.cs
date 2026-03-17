@@ -21,11 +21,17 @@ namespace CalamityMod.Items.Potions.Alcohol
         public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.Vodka.DripEffect").WithFormatArgs((DebuffBoost).ToPercent(), DebuffLoss.ToPercent());
         public AlcoholType AlcoholVariant => AlcoholType.Vodka;
 
-        public Action<Player, float> AlcoholEffect => ApplyVodkaEffect;
+        public Action<Player, float> IVDripAlcoholEffect => ApplyVodkaEffect;
 
         private static void ApplyVodkaEffect(Player player, float intensity)
         {
-            // out of order 20 defense
+            var cplayer = player.Calamity();
+            cplayer.TypelessDebuffMultiplier += Vodka.DebuffBoost;
+            cplayer.HeatDebuffMultiplier -= Vodka.DebuffLoss;
+            cplayer.ColdDebuffMultiplier -= Vodka.DebuffLoss;
+            cplayer.SicknessDebuffMultiplier -= Vodka.DebuffLoss;
+            cplayer.WaterDebuffMultiplier -= Vodka.DebuffLoss;
+            cplayer.ElectricDebuffMultiplier -= Vodka.DebuffLoss;
         }
         public override void SetStaticDefaults()
         {

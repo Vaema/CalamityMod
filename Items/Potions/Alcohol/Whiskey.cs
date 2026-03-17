@@ -14,18 +14,18 @@ namespace CalamityMod.Items.Potions.Alcohol
     {
         public new string LocalizationCategory => "Items.Potions";
 
-        public static float MaxDamageBoost = 0.15f;
-        public static float MinDamageBoost = -0.15f;
+        public static float MaxDamageCeiling = 0.15f;
+        public static float MinDamageFloor = -0.15f;
         public static float TimeToDischarge = 600;
         public static float TimeToRecharge = 300;
-        public static float IVDripDamageCeilingGain = 0.3f;
-        public static float IVDripDamageFloorReduction = -0.3f;
+        public static float IVDripDamageCeiling = 0.3f;
+        public static float IVDripDamageFloor = -0.3f;
 
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MinDamageBoost.ToPercent(), MaxDamageBoost.ToPercent(), (TimeToDischarge/60).ToString("0.##"), (TimeToRecharge/60).ToString("0.##"));
-        public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.Whiskey.DripEffect").WithFormatArgs(MinDamageBoost.ToPercent(), MaxDamageBoost.ToPercent(), (TimeToDischarge / 60).ToString("0.##"), (TimeToRecharge / 60).ToString("0.##"), IVDripDamageCeilingGain.ToPercent(), IVDripDamageFloorReduction.ToPercent());
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MinDamageFloor.ToPercent(), MaxDamageCeiling.ToPercent(), (TimeToDischarge/60).ToString("0.##"), (TimeToRecharge/60).ToString("0.##"));
+        public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.Whiskey.DripEffect").WithFormatArgs(MinDamageFloor.ToPercent(), MaxDamageCeiling.ToPercent(), (TimeToDischarge / 60).ToString("0.##"), (TimeToRecharge / 60).ToString("0.##"), MaxDamageCeiling.ToPercent(), MinDamageFloor.ToPercent());
         public AlcoholType AlcoholVariant => AlcoholType.Whiskey;
 
-        public Action<Player, float> AlcoholEffect => ApplyWhiskeyEffect;
+        public Action<Player, float> IVDripAlcoholEffect => ApplyWhiskeyEffect;
 
         private static void ApplyWhiskeyEffect(Player player, float intensity)
         {

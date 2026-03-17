@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Potions.Alcohol
         public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.Margarita.DripEffect").WithFormatArgs(DebuffLoss.ToPercent());
         public AlcoholType AlcoholVariant => AlcoholType.Margarita;
 
-        public Action<Player, float> AlcoholEffect => ApplyMargaritaEffect;
+        public Action<Player, float> IVDripAlcoholEffect => ApplyMargaritaEffect;
 
         private static void ApplyMargaritaEffect(Player player, float intensity)
         {

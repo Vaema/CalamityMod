@@ -1012,11 +1012,16 @@ namespace CalamityMod.CalPlayer
                 // Incinerate the target with either Vulnerability Hex or True Vulnerability Hex, depending on current cursor focus.
                 // This adds 8 to the buff duration, which results in a net increase of 3 frames every time damage is dealt, due to damage occurring every 5 frames.
                 int buffToInflict = target.Calamity().trueVulnerabilityHex ? ModContent.BuffType<TrueVulnerabilityHex>() : ModContent.BuffType<VulnerabilityHex>();
-                if (!target.HasBuff(buffToInflict))
-                    target.AddBuff(buffToInflict, 52);
-                target.buffTime[target.FindBuffIndex(buffToInflict)] += 8;
-                if (target.buffTime[target.FindBuffIndex(buffToInflict)] < VulnerabilityHex.CalamityDuration)
-                    target.buffTime[target.FindBuffIndex(buffToInflict)] = VulnerabilityHex.CalamityDuration;
+                if (!target.buffImmune[buffToInflict])
+                {
+                    if (!target.HasBuff(buffToInflict))
+                        target.AddBuff(buffToInflict, 52);
+
+                    int index = target.FindBuffIndex(buffToInflict);
+
+                    if (index != -1)
+                        target.buffTime[index] = Math.Max(target.buffTime[index] + 8, VulnerabilityHex.CalamityDuration);
+                }
 
                 // Make some fancy dust to indicate damage is being done.
                 for (int j = 0; j < 12; j++)
@@ -1249,6 +1254,18 @@ namespace CalamityMod.CalPlayer
 
             // Margarita halved debuff duration
             if (margarita)
+            {
+                if (Main.myPlayer == Player.whoAmI)
+                {
+                    for (int l = 0; l < Player.MaxBuffs; l++)
+                    {
+                        int buffID = Player.buffType[l];
+                        if (Player.buffTime[l] > 2 && CalamityBuffSets.IsDebuff[buffID])
+                            Player.buffTime[l]--;
+                    }
+                }
+            }
+            if (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.Margarita))
             {
                 if (Main.myPlayer == Player.whoAmI)
                 {
@@ -3475,9 +3492,9 @@ namespace CalamityMod.CalPlayer
             {
                 //this is so janky looking but it's the only way I could get it to work properly
                 if (!(StealthStrikeAvailable() && Player.HeldItem.DamageType == RogueDamageClass.Instance))
-                    Player.GetDamage(DamageClass.Generic) += PurpleHaze.DamageBoost;
+                    Player.GetDamage(DamageClass.Generic) += PurpleHaze.DamageBoost + ((dripPlayer.HasAlcohol(AlcoholType.PurpleHaze) && purpleHaze) ? PurpleHaze.DamageBoost : 0);
                 else 
-                    stealthDamage -= PurpleHaze.StealthDamageLoss;
+                    stealthDamage -= PurpleHaze.StealthDamageLoss + ((dripPlayer.HasAlcohol(AlcoholType.PurpleHaze) && purpleHaze) ? PurpleHaze.StealthDamageLoss : 0);
             }
 
             if (everclear)
@@ -3502,9 +3519,12 @@ namespace CalamityMod.CalPlayer
                 Player.GetDamage<MagicDamageClass>() *= StarBeamRye.MagicDmgMult;
             }
 
-            if (whiteWine)
+            if (whiteWine || dripPlayer.HasAlcohol(AlcoholType.WhiteWine))
             {
-                Player.wingTimeMax = (int)(Player.wingTimeMax * (1f - WhiteWine.FlightTimeLoss));
+                if (whiteWine)
+                    Player.wingTimeMax = (int)(Player.wingTimeMax * (1f - WhiteWine.FlightTimeLoss));
+                if (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.WhiteWine))
+                    Player.wingTimeMax = (int)(Player.wingTimeMax * (1f - WhiteWine.FlightTimeLoss));
 
                 float bonus = 0f;
                 float MaxDistance = 640f;
@@ -3516,7 +3536,12 @@ namespace CalamityMod.CalPlayer
                 }
                 else
                     bonus = 0;
-                whiteWineTimer += bonus * WhiteWine.FlightTimeRecoveryAmount * (dripPlayer.HasAlcohol(AlcoholType.Everclear) ? 2 : 1);
+
+                if (whiteWine)
+                    whiteWineTimer += bonus * WhiteWine.FlightTimeRecoveryAmount;
+                if (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.WhiteWine))
+                    whiteWineTimer += bonus * WhiteWine.FlightTimeRecoveryAmount;
+
                 while (whiteWineTimer > 1)
                 {
                     if (Player.wingTime < Player.wingTimeMax)
@@ -3526,9 +3551,9 @@ namespace CalamityMod.CalPlayer
              }
 
             if (redWine)
-            {
                 Player.wingTimeMax = (int)(Player.wingTimeMax * (1f - RedWine.FlightTimeLoss));
-            }
+            if (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.RedWine))
+                Player.wingTimeMax = (int)(Player.wingTimeMax * (1f - RedWine.FlightTimeLoss));
 
             if (giantPearl)
             {

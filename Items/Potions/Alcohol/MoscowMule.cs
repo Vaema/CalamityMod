@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Potions.Alcohol
         public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.MoscowMule.DripEffect").WithFormatArgs(KnockbackBoost.ToPercent());
         public AlcoholType AlcoholVariant => AlcoholType.MoscowMule;
 
-        public Action<Player, float> AlcoholEffect => ApplyMoscowMuleEffect;
+        public Action<Player, float> IVDripAlcoholEffect => ApplyMoscowMuleEffect;
 
         private static void ApplyMoscowMuleEffect(Player player, float intensity)
         {

@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public AlcoholType AlcoholVariant => AlcoholType.CaribbeanRum;
 
-        public Action<Player, float> AlcoholEffect => ApplyCaribbeanRumEffect;
+        public Action<Player, float> IVDripAlcoholEffect => ApplyCaribbeanRumEffect;
 
         private static void ApplyCaribbeanRumEffect(Player player, float intensity)
         {

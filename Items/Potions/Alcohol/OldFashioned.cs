@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Potions.Alcohol
         public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.OldFashioned.DripEffect").WithFormatArgs(DamageBoostMultiplier.ToString("N2"), DamageReductionMultiplier.ToString("N2"));
         public AlcoholType AlcoholVariant => AlcoholType.OldFashioned;
 
-        public Action<Player, float> AlcoholEffect => ApplyOldFashionedEffect;
+        public Action<Player, float> IVDripAlcoholEffect => ApplyOldFashionedEffect;
 
         private static void ApplyOldFashionedEffect(Player player, float intensity)
         {

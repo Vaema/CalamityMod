@@ -20,12 +20,16 @@ namespace CalamityMod.Items.Potions.Alcohol
         public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.EvergreenGin.DripEffect").WithFormatArgs((DebuffBoost).ToPercent(), DebuffLoss.ToPercent());
         public AlcoholType AlcoholVariant => AlcoholType.EvergreenGin;
 
-        public Action<Player, float> AlcoholEffect => ApplyEvergreenGinEffect;
-
+        public Action<Player, float> IVDripAlcoholEffect => ApplyEvergreenGinEffect;
         private static void ApplyEvergreenGinEffect(Player player, float intensity)
         {
-            // out of order 20 defense
+            var cplayer = player.Calamity();
+            cplayer.SicknessDebuffMultiplier += EvergreenGin.DebuffBoost;
+            cplayer.WaterDebuffMultiplier += EvergreenGin.DebuffBoost;
+            cplayer.ElectricDebuffMultiplier -= EvergreenGin.DebuffLoss;
+            cplayer.HeatDebuffMultiplier -= EvergreenGin.DebuffLoss;
         }
+
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;

@@ -21,11 +21,13 @@ namespace CalamityMod.Items.Potions.Alcohol
         public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.Manhattan.DripEffect").WithFormatArgs((DebuffBoost).ToPercent(), DebuffLoss.ToPercent());
         public AlcoholType AlcoholVariant => AlcoholType.Manhattan;
 
-        public Action<Player, float> AlcoholEffect => ApplyManhattanEffect;
+        public Action<Player, float> IVDripAlcoholEffect => ApplyManhattanEffect;
 
         private static void ApplyManhattanEffect(Player player, float intensity)
         {
-            // out of order 20 defense
+            var cplayer = player.Calamity();
+            cplayer.ColdDebuffMultiplier += Manhattan.DebuffBoost;
+            cplayer.WaterDebuffMultiplier -= Manhattan.DebuffLoss;
         }
         public override void SetStaticDefaults()
         {

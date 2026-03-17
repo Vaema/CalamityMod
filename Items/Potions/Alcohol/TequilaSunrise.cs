@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Potions.Alcohol
         public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.TequilaSunrise.DripEffect").WithFormatArgs((DoTMultiplier-1).ToPercent());
         public AlcoholType AlcoholVariant => AlcoholType.TequilaSunrise;
 
-        public Action<Player, float> AlcoholEffect => ApplyTequilaSunriseEffect;
+        public Action<Player, float> IVDripAlcoholEffect => ApplyTequilaSunriseEffect;
 
         private static void ApplyTequilaSunriseEffect(Player player, float intensity)
         {

@@ -47,7 +47,7 @@ namespace CalamityMod.Items.Accessories
 
     public interface IAlcoholItem
     {
-        Action<Player, float> AlcoholEffect { get; }
+        Action<Player, float> IVDripAlcoholEffect { get; }
         AlcoholType AlcoholVariant { get; }
         LocalizedText DripEffectText { get; }
 
@@ -161,7 +161,7 @@ namespace CalamityMod.Items.Accessories
 
                 Item alcoholItem = new Item(containedAlcoholID);
                 if (alcoholItem.ModItem is IAlcoholItem alcohol)
-                    dripPlayer.ApplyAlcoholEffect(alcohol.AlcoholEffect);
+                    dripPlayer.ApplyIVDripAlcoholEffect(alcohol.IVDripAlcoholEffect);
             }
         }
         public override void ModifyTooltips(List<TooltipLine> tooltips)
@@ -216,7 +216,7 @@ namespace CalamityMod.Items.Accessories
 
     public class IVDripPlayer : ModPlayer
     {
-        public Dictionary<Action<Player, float>, float> alcoholEffects = new();
+        public Dictionary<Action<Player, float>, float> IVDripAlcoholEffects = new();
         public bool ivDripEquipped;
         public AlcoholType currentAlcohol = AlcoholType.None;
 
@@ -228,25 +228,25 @@ namespace CalamityMod.Items.Accessories
 
         public override void ResetEffects()
         {
-            alcoholEffects.Clear();
+            IVDripAlcoholEffects.Clear();
             ivDripEquipped = false;
             currentAlcohol = AlcoholType.None;
         }
 
-        public void ApplyAlcoholEffect(Action<Player, float> effect)
+        public void ApplyIVDripAlcoholEffect(Action<Player, float> effect)
         {
             if (effect == null)
                 return;
 
-            if (alcoholEffects.ContainsKey(effect))
-                alcoholEffects[effect] += 1f;
+            if (IVDripAlcoholEffects.ContainsKey(effect))
+                IVDripAlcoholEffects[effect] += 1f;
             else
-                alcoholEffects[effect] = 1f;
+                IVDripAlcoholEffects[effect] = 1f;
         }
 
         public override void PostUpdateEquips()
         {
-            foreach (var effect in alcoholEffects)
+            foreach (var effect in IVDripAlcoholEffects)
             {
                 effect.Key.Invoke(Player, effect.Value);
             }

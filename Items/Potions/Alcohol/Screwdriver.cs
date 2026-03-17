@@ -21,11 +21,14 @@ namespace CalamityMod.Items.Potions.Alcohol
         public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.Screwdriver.DripEffect").WithFormatArgs(DebuffBoost.ToString("N2"), DebuffLoss.ToString("N2"));
         public AlcoholType AlcoholVariant => AlcoholType.Screwdriver;
 
-        public Action<Player, float> AlcoholEffect => ApplyScrewdriverEffect;
+        public Action<Player, float> IVDripAlcoholEffect => ApplyScrewdriverEffect;
 
         private static void ApplyScrewdriverEffect(Player player, float intensity)
         {
-            // out of order 20 defense
+            player.blockRange += 5;
+            player.tileSpeed += 1;
+            player.wallSpeed += 1;
+            player.GetDamage(DamageClass.Generic) *= 0.75f;
         }
         public override void SetStaticDefaults()
         {

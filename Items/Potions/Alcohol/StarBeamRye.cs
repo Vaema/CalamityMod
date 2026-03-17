@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Potions.Alcohol
         public AlcoholType AlcoholVariant => AlcoholType.StarBeamRye;
         public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.StarBeamRye.DripEffect");
 
-        public Action<Player, float> AlcoholEffect => ApplyStarBeamRyeEffect;
+        public Action<Player, float> IVDripAlcoholEffect => ApplyStarBeamRyeEffect;
 
         private static void ApplyStarBeamRyeEffect(Player player, float intensity)
         {

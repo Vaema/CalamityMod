@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public AlcoholType AlcoholVariant => AlcoholType.RedWine;
 
-        public Action<Player, float> AlcoholEffect => ApplyRedWineEffect;
+        public Action<Player, float> IVDripAlcoholEffect => ApplyRedWineEffect;
 
         private static void ApplyRedWineEffect(Player player, float intensity)
         {

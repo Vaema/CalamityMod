@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Potions.Alcohol
         public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.BloodyMary.DripEffect");
         public AlcoholType AlcoholVariant => AlcoholType.BloodyMary;
 
-        public Action<Player, float> AlcoholEffect => ApplyBloodyMaryEffect;
+        public Action<Player, float> IVDripAlcoholEffect => ApplyBloodyMaryEffect;
 
         private static void ApplyBloodyMaryEffect(Player player, float intensity)
         {

@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Potions.Alcohol
         public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.Rum.DripEffect").WithFormatArgs((NonMinionBoost - 1).ToPercent(), (1 - MinionBoost).ToPercent());
         public AlcoholType AlcoholVariant => AlcoholType.Rum;
 
-        public Action<Player, float> AlcoholEffect => ApplyRumEffect;
+        public Action<Player, float> IVDripAlcoholEffect => ApplyRumEffect;
 
         private static void ApplyRumEffect(Player player, float intensity)
         {

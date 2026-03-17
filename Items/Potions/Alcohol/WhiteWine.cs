@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Potions.Alcohol
         public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.WhiteWine.DripEffect").WithFormatArgs(FlightTimeLoss.ToPercent());
         public AlcoholType AlcoholVariant => AlcoholType.WhiteWine;
 
-        public Action<Player, float> AlcoholEffect => ApplyWhiteWineEffect;
+        public Action<Player, float> IVDripAlcoholEffect => ApplyWhiteWineEffect;
 
         private static void ApplyWhiteWineEffect(Player player, float intensity)
         {

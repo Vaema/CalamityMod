@@ -21,11 +21,13 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public AlcoholType AlcoholVariant => AlcoholType.Fireball;
 
-        public Action<Player, float> AlcoholEffect => ApplyFireballEffect;
+        public Action<Player, float> IVDripAlcoholEffect => ApplyFireballEffect;
 
         private static void ApplyFireballEffect(Player player, float intensity)
         {
-            // out of order 20 defense
+            var cplayer = player.Calamity();
+            cplayer.HeatDebuffMultiplier += Fireball.DebuffBoost;
+            cplayer.SicknessDebuffMultiplier -= Fireball.DebuffLoss;
         }
         public override void SetStaticDefaults()
         {

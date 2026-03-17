@@ -214,20 +214,6 @@ CinnamonRoll: {
 		'''
 }
 
-PurpleHaze: {
-	DisplayName: Purple Haze
-	Tooltip:
-		'''
-		For 5 seconds after a stealth strike, all damage increased by {0}%, but stealth strike damage reduced by {1}%
-		{$Common.AlcoholWarning}
-		'''
-	DripEffect:
-		'''
-		For 5 seconds after a stealth strike, all damage increased by {0}%, but stealth strike damage reduced by {1}%
-		Greatly reduces dash distance
-		'''
-}
-
 Everclear: {
 	DisplayName: Everclear
 	Tooltip:
@@ -241,7 +227,7 @@ Everclear: {
 		'''
 		{0}% increased damage
 		Reduces life regen by {1} HP/s and defense by {2}%
-		      When combined with drinking Everclear straight, reduce count for {$Buffs.AlcoholPoisoning.DisplayName} by 1
+		When combined with drinking Everclear straight, additionally reduce count for {$Buffs.AlcoholPoisoning.DisplayName} by 1
 		'''
 }
 
@@ -375,6 +361,20 @@ OldFashioned: {
 		'''
 		Multiplies most non-weapon, non-debuff damage by {0}x
 		Multiplies all weapon damage by {1}x
+		'''
+}
+
+PurpleHaze: {
+	DisplayName: Purple Haze
+	Tooltip:
+		'''
+		For 5 seconds after a stealth strike, all damage increased by {0}%, but stealth strike damage reduced by {1}%
+		{$Common.AlcoholWarning}
+		'''
+	DripEffect:
+		'''
+		For 5 seconds after a stealth strike, all damage increased by {0}%, but stealth strike damage reduced by {1}%
+		Greatly reduces dash distance
 		'''
 }
 

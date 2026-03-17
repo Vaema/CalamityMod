@@ -19,11 +19,12 @@ namespace CalamityMod.Items.Potions.Alcohol
         public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.GrapeBeer.DripEffect").WithFormatArgs(CritLoss);
         public AlcoholType AlcoholVariant => AlcoholType.GrapeBeer;
 
-        public Action<Player, float> AlcoholEffect => ApplyGrapeBeerEffect;
+        public Action<Player, float> IVDripAlcoholEffect => ApplyGrapeBeerEffect;
 
         private static void ApplyGrapeBeerEffect(Player player, float intensity)
         {
-            // out of order 20 defense
+            var cplayer = player.Calamity();
+            cplayer.critDamage -= GrapeBeer.CritLoss * 0.01f;
         }
         public override void SetStaticDefaults()
         {

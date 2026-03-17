@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Potions.Alcohol
         public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.Moonshine.DripEffect").WithFormatArgs(MaxLifePercentBoost.ToPercent());
         public AlcoholType AlcoholVariant => AlcoholType.Moonshine;
 
-        public Action<Player, float> AlcoholEffect => ApplyMoonshineEffect;
+        public Action<Player, float> IVDripAlcoholEffect => ApplyMoonshineEffect;
 
         private static void ApplyMoonshineEffect(Player player, float intensity)
         {

@@ -327,7 +327,8 @@ namespace CalamityMod.Projectiles
             void ApplyGrapeBeer()
             {
                 grapeBeer = true;
-                conditionalHomingRange = 600;
+                var ivDripPlayer = Main.player[projectile.owner].GetModPlayer<IVDripPlayer>();
+                conditionalHomingRange = ivDripPlayer.HasAlcohol(AlcoholType.GrapeBeer) ? 1800 : 600;
                 if (projectile.timeLeft > 300 * projectile.MaxUpdates)
                     projectile.timeLeft = 300 * projectile.MaxUpdates;
                 //Calamity adds a hybrid iframe system when both local and static are set to true, so this works fine for both global and static projectiles.
@@ -4599,7 +4600,6 @@ namespace CalamityMod.Projectiles
             CalamityPlayer modPlayer = player.Calamity();
 
             // Old Fashioned buffs (or debuffs) apply if the player has Old Fashioned
-            // IV Drip on the Rocks inherits the same logic as Old Fashioned
             if (modPlayer.oldFashioned && buffedByOldFashioned.HasValue)
                 modifiers.SourceDamage *= buffedByOldFashioned.Value ? OldFashioned.DamageBoostMultiplier : OldFashioned.DamageReductionMultiplier;
 
@@ -4607,22 +4607,22 @@ namespace CalamityMod.Projectiles
             if (dripPlayer.HasAlcohol(AlcoholType.OldFashioned) && buffedByOldFashioned.HasValue) 
                 modifiers.SourceDamage *= buffedByOldFashioned.Value ? OldFashioned.DamageBoostMultiplier : OldFashioned.DamageReductionMultiplier;
 
-            if (modPlayer.rum && projectile.DamageType.CountsAsClass(DamageClass.Summon))
+            if ((modPlayer.rum || dripPlayer.HasAlcohol(AlcoholType.Rum)) && projectile.DamageType.CountsAsClass(DamageClass.Summon))
             {
                 if (projectile.minion || ProjectileID.Sets.MinionShot[projectile.type])
-                {
-                    modifiers.SourceDamage *= Rum.MinionBoost;
-                }
+                    modifiers.SourceDamage *= (modPlayer.rum ? Rum.MinionBoost : 1f) * (dripPlayer.HasAlcohol(AlcoholType.Rum) ? Rum.MinionBoost : 1f);
                 else
-                    modifiers.SourceDamage *= Rum.NonMinionBoost;
+                    modifiers.SourceDamage *= (modPlayer.rum ? Rum.NonMinionBoost : 1f) * (dripPlayer.HasAlcohol(AlcoholType.Rum) ? Rum.NonMinionBoost : 1f);
             }
-            if (modPlayer.moscowMule || modPlayer.bloodyMary)
+
+            if (modPlayer.moscowMule || modPlayer.bloodyMary || dripPlayer.HasAlcohol(AlcoholType.MoscowMule) || dripPlayer.HasAlcohol(AlcoholType.BloodyMary))
             {
                 if (projectile.DamageType == DamageClass.Summon || (PierceResistNPC.exemptProjectiles.Contains(projectile.type) || (PierceResistNPC.singleHitboxExemptProjectiles.ContainsKey(projectile.type) && PierceResistNPC.singleHitboxExemptProjectiles[projectile.type])))
                 {
-                    modifiers.SourceDamage *= ((modPlayer.moscowMule ? MoscowMule.PierceDamageMultiplier : 1f) * (modPlayer.bloodyMary ? BloodyMary.PierceDamageMultiplier : 1f));
+                    modifiers.SourceDamage *= ((modPlayer.moscowMule ? MoscowMule.PierceDamageMultiplier : 1f) * (modPlayer.bloodyMary ? BloodyMary.PierceDamageMultiplier : 1f) * (dripPlayer.HasAlcohol(AlcoholType.MoscowMule) ? MoscowMule.PierceDamageMultiplier : 1f) * (dripPlayer.HasAlcohol(AlcoholType.BloodyMary) ? BloodyMary.PierceDamageMultiplier : 1f));
                 }
             }
+
             if (projectile.type == ProjectileID.JoustingLance || projectile.type == ProjectileID.HallowJoustingLance || projectile.type == ProjectileID.ShadowJoustingLance)
             {
                 // The vanilla damage Jousting Lance multiplier is as follows. Calamity overrides this with a new formula
