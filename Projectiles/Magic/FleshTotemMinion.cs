@@ -112,7 +112,7 @@ namespace CalamityMod.Projectiles.Magic
                         }
                     }
                 }
-                int manaGained = 30;
+                int manaGained = 20;
                 player.statMana += manaGained;
                 if (Main.myPlayer == player.whoAmI)
                     player.ManaEffect(manaGained);
