@@ -1358,11 +1358,6 @@ DazzlingStabberBuff: {
 	Description: En garde!
 }
 
-DemonshadeSetDevilBuff: {
-	DisplayName: Red Devil
-	Description: The red devil will protect you
-}
-
 EnchantedKnifeStaffBuff: {
 	DisplayName: Enchanted Knife
 	Description: Junk knives not included

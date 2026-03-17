@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Accessories
         public new string LocalizationCategory => "Items.Accessories";
 
         public static float BrimstoneFlamesReduction = 0.5f;
-        public static float critScaling = 3.5f; // How effective crit chance is at increasing debuff damage
+        public static float critScaling = 3f; // How effective crit chance is at increasing debuff damage
         public override void SetDefaults()
         {
             Item.width = 26;
@@ -30,9 +30,9 @@ namespace CalamityMod.Items.Accessories
         }
         public override void ModifyTooltips(List<TooltipLine> list)
         {
-            Player player = Main.LocalPlayer;
             if (Main.LocalPlayer != null)
-                list.FindAndReplace("[DAMAGE]", ((int)(Bane.debuffData.EnemyLostRegen / 2 * player.Calamity().playerBaneDebuffDamage)).ToString());
+                list.FindAndReplace("[DAMAGELINE]", Main.LocalPlayer.Calamity().abaddon ? this.GetLocalization("Equipped").Format(((int)(Bane.debuffData.EnemyLostRegen / 2 * Main.LocalPlayer.Calamity().playerBaneDebuffDamage)).ToString())
+                : this.GetLocalizedValue("Unequipped"));
         }
     }
 }

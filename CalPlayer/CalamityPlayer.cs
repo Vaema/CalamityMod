@@ -334,11 +334,6 @@ namespace CalamityMod.CalPlayer
         public int arpeggioCooldown = 0;
         /// <summary> Cooldown variable which prevents using Burning Sea during its "burn-out" mechanic. </summary>
         public int burningSeaBurnOut = 0;
-        /// <summary>
-        /// How many stacks of Evil Smasher's boost the player has. This increases the weapon's damage, use speed, and knockback.<br/>
-        /// Getting hit decreases this by 1. Switching to a different item resets this to 0.
-        /// </summary>
-        public int evilSmasherBoost = 0;
         /// <summary> Cooldown variable for spawning Plague Tainted SMG's drones from left-click bullets. </summary>
         public int plagueTaintedSMGDroneCooldown = 0;
         /// <summary> Cooldown variable which prevents using Firestorm Cannon or Spectralstorm Cannon during their overheat periods. </summary>
@@ -366,6 +361,9 @@ namespace CalamityMod.CalPlayer
         public int amputatorBuff = 0;
         /// <summary> Variable used to track the current fuel amount for Pristine Fury's right-click. </summary>
         public int furyFuel = 1800;
+        /// <summary> Variable to track the healing over time gained from Grand Dad. </summary>
+        public int grandDadHealPool = 0;
+        public int grandDadHealTimer = 0;
         public const int FuryFuelMax = 1800;
         public float furyRefuelTimer = 0;
         /// <summary> Variable used to track if Auger can do its big slash attack. </summary>
@@ -1311,8 +1309,6 @@ namespace CalamityMod.CalPlayer
         public bool daedalusCrystal = false;
         /// <summary> Hydrothermic armor's summoner set bonus minion. </summary>
         public bool chaosSpirit = false;
-        /// <summary> Demonshade armor's set bonus minion. </summary>
-        public bool redDevil = false;
         public bool GemTechSet = false;
         /// <summary> Calamity's Cobalt armor set bonus; increases damage and crit chance based on how fast the player is moving. </summary>
         public bool CobaltSet = false;
@@ -1568,8 +1564,6 @@ namespace CalamityMod.CalPlayer
         /// <summary> Pearl of Enthrallment. </summary>
         public bool waterEleBuff = false;
         public bool fClump = false;
-        /// <summary> Demonshade armor's Red Devil. </summary>
-        public bool rDevil = false;
         /// <summary> Aerospec armor's Valkyrie. </summary>
         public bool aValkyrie = false;
         public bool apexShark = false;
@@ -2829,7 +2823,6 @@ namespace CalamityMod.CalPlayer
             brimEleBuff = false;
             waterEleBuff = false;
             fClump = false;
-            rDevil = false;
             aValkyrie = false;
             sCrystal = false;
             sGod = false;
@@ -2856,7 +2849,6 @@ namespace CalamityMod.CalPlayer
             fungalClumpVanity = false;
             howlsHeart = false;
             howlsHeartVanity = false;
-            redDevil = false;
             valkyrie = false;
             slimeGod = false;
             chaosSpirit = false;
@@ -3450,7 +3442,6 @@ namespace CalamityMod.CalPlayer
             CurrentlyViewedHologramText = string.Empty;
             #endregion
 
-            evilSmasherBoost = 0;
             burningSeaBurnOut = 0;
             flareGunOverheat = 0;
             hellbornShots = 0;

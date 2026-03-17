@@ -307,7 +307,6 @@ DemonshadeHelm: {
 		{$CommonItemTooltip.IncreasesMaxMinionsBy}
 		{$CommonItemTooltip.PercentIncreasedSummonDamage@1}
 		Shadowbeams and demon scythes will fire down when you are hit
-		A friendly red devil follows you around
 		{2} to enrage nearby enemies with a dark magic spell for {3} seconds
 		This makes them take {4}x total damage, but they will deal {5}x damage to you
 		'''

@@ -56,6 +56,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
+            Projectile.noEnchantmentVisuals = true;
+            Projectile.scale = 0;
         }
         public void OnSpawn()
         {
@@ -99,7 +101,7 @@ namespace CalamityMod.Projectiles.Melee
             if (!Owner.CantUseHoldout(false))
                 Projectile.timeLeft = 5;
 
-            Projectile.scale = Owner.GetMeleeScale() + 0.1f;
+            Projectile.scale = MathHelper.Lerp(Projectile.scale, Owner.GetMeleeScale() + 0.1f, 0.3f / Projectile.MaxUpdates);
             toMouse = Utils.DirectionTo(Owner.Center, Owner.ClampedMouseWorld());
 
             Positioning(toMouse);
@@ -125,6 +127,7 @@ namespace CalamityMod.Projectiles.Melee
             }
             else
                 Owner.itemTime = Owner.itemAnimation = 5;
+
             #region Not Swinging
             if (attackTimer < 0) // When the sword isn't swinging
             {
