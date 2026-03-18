@@ -252,11 +252,6 @@ namespace CalamityMod.NPCs
         /// <summary> If set to true, allows for manually disabling this NPC's Boss Health Bar, even if they are still active. </summary>
         public bool ShouldCloseHPBar = false;
 
-        /// <summary> Constant representing the cooldown, in frames, before a boss can be affected by a slowing debuff. </summary>
-        public const int slowingDebuffResistanceMin = 1800;
-        /// <summary> Tracks the current slowing debuff cooldown for this NPC. </summary>
-        public int debuffResistanceTimer = 0;
-
         #region Debuffs
         public bool vaporfied = false;
         public bool timeDistortion = false;
@@ -550,8 +545,6 @@ namespace CalamityMod.NPCs
             myClone.CanHaveBossHealthBar = CanHaveBossHealthBar;
             myClone.ShouldCloseHPBar = ShouldCloseHPBar;
 
-            myClone.debuffResistanceTimer = debuffResistanceTimer;
-
             myClone.vaporfied = vaporfied;
             myClone.timeDistortion = timeDistortion;
             myClone.glacialState = glacialState;
@@ -751,9 +744,6 @@ namespace CalamityMod.NPCs
 
             //Debuff Bool clearing.
             // Doze 2jun2025 - Moved here from PostAI so drawing can read the bools.
-            if (debuffResistanceTimer > 0)
-                debuffResistanceTimer--;
-
             timeDistortion = false;
             galvanicCorrosion = false;
             glacialState = false;
@@ -3324,10 +3314,6 @@ namespace CalamityMod.NPCs
                 laserBurnDamage = 0;
             }
 
-            // Queen Bee is completely immune to having her movement impaired if not in a high difficulty mode.
-            if (npc.type == NPCID.QueenBee && !CalamityWorld.revenge && !BossRushEvent.BossRushActive)
-                return;
-
             // Pearl Aura shard spawning
             // Slowing is handled in the general slowing code below
             if (pearlAura)
@@ -3369,8 +3355,8 @@ namespace CalamityMod.NPCs
             }
             impalePacketTimer++;
 
-            // Apply slowing debuff effects
-            if (debuffResistanceTimer <= 0 || (debuffResistanceTimer > slowingDebuffResistanceMin))
+            // Apply slowing debuff effects, will not apply to bosses
+            if (!(CalamityNPCSets.ImmuneToSlowsAndOtherSpecialEffects[npc.type] || npc.boss))
             {
                 // Slowing debuffs which set a velocity hard cap take priority first.
                 if (vulnerabilityHex)
@@ -5487,7 +5473,7 @@ namespace CalamityMod.NPCs
             if (target.damage > 0 && !target.boss && !target.friendly && !target.dontTakeDamage && target.type != NPCID.Creeper && target.type != NPCType<RavagerClawLeft>() &&
                 target.type != NPCID.MourningWood && target.type != NPCID.Everscream && target.type != NPCID.SantaNK1 && target.type != NPCType<RavagerClawRight>() &&
                 target.type != NPCType<ReaperShark>() && target.type != NPCType<Mauler>() && target.type != NPCType<EidolonWyrmHead>() && target.type != NPCID.GolemFistLeft && target.type != NPCID.GolemFistRight &&
-                target.type != NPCType<PrimordialWyrmHead>() && target.type != NPCType<ColossalSquid>() && target.type != NPCID.DD2Betsy && !CalamityNPCSets.ResistSlowingDebuffsAndOtherSpecialEffects[target.type] && !AcidRainEvent.AllMinibosses.Contains(target.type))
+                target.type != NPCType<PrimordialWyrmHead>() && target.type != NPCType<ColossalSquid>() && target.type != NPCID.DD2Betsy && !CalamityNPCSets.ImmuneToSlowsAndOtherSpecialEffects[target.type] && !AcidRainEvent.AllMinibosses.Contains(target.type))
             {
                 return true;
             }
