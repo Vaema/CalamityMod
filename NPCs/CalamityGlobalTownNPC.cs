@@ -75,6 +75,11 @@ namespace CalamityMod.NPCs
         /// If true, happiness is overriden with an extremely high value. If false, happiness is overriden with an extremely low value. If null, uses vanilla happiness.
         /// </summary>
         public bool? TheGiftStatus = null;
+        /// <summary>
+        /// Timer to track when to reset the effects of The Gift, which occurs after 24 hours.<br/>
+        /// When The Gift is applied, this is set to 0 then starts counting up.
+        /// </summary>
+        public double TheGiftReset = -1.0;
 
         public override bool InstancePerEntity => true;
 
@@ -811,6 +816,18 @@ namespace CalamityMod.NPCs
         public override bool PreAI(NPC npc)
         {
             SetPatreonTownNPCName(npc, Mod);
+
+            // Reset The Gift after 24 hours
+            if (TheGiftReset >= 0.0)
+            {
+                TheGiftReset += Main.dayRate;
+                if (TheGiftReset >= Main.dayLength + Main.nightLength)
+                {
+                    TheGiftReset = -1.0;
+                    TheGiftStatus = null;
+                }
+            }
+
             return true;
         }
         #endregion

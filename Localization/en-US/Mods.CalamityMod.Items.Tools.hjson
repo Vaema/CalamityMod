@@ -364,6 +364,7 @@ TheGift: {
 		'''
 		Drop this fine gift on one of your Town NPCs as a token of appreciation
 		May make them either love you or hate you, you'll never know until they open it!
+		Effect will last for 24 hours
 		[c/F54278:'There's no return policy, better be responsible']
 		'''
 }

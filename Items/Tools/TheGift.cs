@@ -57,6 +57,7 @@ namespace CalamityMod.Items.Tools
                         bool positive = Main.rand.NextBool();
                         Color c = positive ? Color.Green : Color.Red;
                         n.GetGlobalNPC<CalamityGlobalTownNPC>().TheGiftStatus = positive;
+                        n.GetGlobalNPC<CalamityGlobalTownNPC>().TheGiftReset = 0.0;
 
                         // Placeholder visual effect
                         HealingPlus s = new(n.Center, 2f, Vector2.Zero, c, c, 40);
