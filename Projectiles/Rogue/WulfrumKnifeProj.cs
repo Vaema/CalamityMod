@@ -214,14 +214,14 @@ namespace CalamityMod.Projectiles.Rogue
                 if (progress < 0.5f) // Stretch phase
                 {
                     float completion = progress / 0.5f;
-                    stretchFactorX = MathHelper.Lerp(1.8f, 0.7f, completion);
-                    stretchFactorY = MathHelper.Lerp(0.7f, 1.8f, completion);
+                    stretchFactorX = MathHelper.Lerp(1.6f, 0.7f, completion);
+                    stretchFactorY = MathHelper.Lerp(0.7f, 1.6f, completion);
                 }
                 else // Squash phase
                 {
                     float completion = (progress - 0.5f) / 0.5f;
                     stretchFactorX = MathHelper.Lerp(0.7f, 1f, completion);
-                    stretchFactorY = MathHelper.Lerp(1.8f, 1f, completion);
+                    stretchFactorY = MathHelper.Lerp(1.6f, 1f, completion);
                 }
 
                 if (progress >= 1f)
