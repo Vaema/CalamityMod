@@ -192,7 +192,7 @@ AquaticHeart: {
 		Wow, you can swim now!
 		Being underwater increases max speed and acceleration by {0}%
 		Greatly reduces breath loss and reduces the darkness intensity in the abyss
-		Attackers are inflicted with [cbuff:CalamityMod/GlacialState]
+		Attackers are inflicted with [cbuff:Frozen]
 		Gain a fragile ice barrier that grants {1}% damage reduction for one hit
 		The ice shield regenerates after {2} seconds
 		'''

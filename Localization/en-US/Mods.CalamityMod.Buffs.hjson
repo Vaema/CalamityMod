@@ -1126,12 +1126,6 @@ GalvanicCorrosion: {
 	ItemTooltipEnemy: Slows enemies
 }
 
-GlacialState: {
-	DisplayName: Glacial State
-	Description: Cannot move
-	ItemTooltipEnemy: Freezes enemies
-}
-
 IcarusFolly: {
 	DisplayName: Icarus' Folly
 	Description:

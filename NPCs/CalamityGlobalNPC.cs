@@ -255,7 +255,7 @@ namespace CalamityMod.NPCs
         #region Debuffs
         public bool vaporfied = false;
         public bool timeDistortion = false;
-        public bool glacialState = false;
+        public bool frozen = false;
         public bool galvanicCorrosion = false;
         public bool temporalSadness = false;
         public bool eutrophication = false;
@@ -547,7 +547,7 @@ namespace CalamityMod.NPCs
 
             myClone.vaporfied = vaporfied;
             myClone.timeDistortion = timeDistortion;
-            myClone.glacialState = glacialState;
+            myClone.frozen = frozen;
             myClone.galvanicCorrosion = galvanicCorrosion;
             myClone.temporalSadness = temporalSadness;
             myClone.eutrophication = eutrophication;
@@ -746,7 +746,7 @@ namespace CalamityMod.NPCs
             // Doze 2jun2025 - Moved here from PostAI so drawing can read the bools.
             timeDistortion = false;
             galvanicCorrosion = false;
-            glacialState = false;
+            frozen = false;
             temporalSadness = false;
             eutrophication = false;
             webbed = false;
@@ -3375,7 +3375,7 @@ namespace CalamityMod.NPCs
                 if (webbed)
                     velocitySlownessFactor += 0.15f;
 
-                if (glacialState)
+                if (frozen)
                 {
                     float baseSlownessFactor = 0.1f;
                     if (VulnerableToCold.HasValue)
@@ -4867,7 +4867,7 @@ namespace CalamityMod.NPCs
 
             // Calamity debuff coloring effects
             // These are in order of precedence because they override each other.
-            if (glacialState)
+            if (frozen)
                 drawColor = Color.Cyan;
 
             else if (auricRebuke)
@@ -4972,7 +4972,6 @@ namespace CalamityMod.NPCs
             ("CalamityMod/Buffs/StatDebuffs/Crumbling", NPC => NPC.Calamity().crumble),
             ("CalamityMod/Buffs/StatDebuffs/Eutrophication", NPC => NPC.Calamity().eutrophication),
             ("CalamityMod/Buffs/StatDebuffs/GalvanicCorrosion", NPC => NPC.Calamity().galvanicCorrosion),
-            ("CalamityMod/Buffs/StatDebuffs/GlacialState", NPC => NPC.Calamity().glacialState),
             ("CalamityMod/Buffs/StatDebuffs/Irradiated", NPC => NPC.Calamity().irradiated),
             ("CalamityMod/Buffs/StatDebuffs/MarkedforDeath", NPC => NPC.Calamity().markedForDeath),
             ("CalamityMod/Buffs/StatDebuffs/PearlAura", NPC => NPC.Calamity().pearlAura),
@@ -5063,6 +5062,8 @@ namespace CalamityMod.NPCs
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.Confused].Value);
                     if (npc.ichor)
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.Ichor].Value);
+                    if (frozen)
+                        currentDebuffs.Add(TextureAssets.Buff[BuffID.Frozen].Value);
                     if (webbed)
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.Webbed].Value);
                     if (npc.midas)

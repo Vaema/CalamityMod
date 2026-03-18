@@ -285,7 +285,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<GlacialState>(), Terratomere.TrueMeleeGlacialStateTime);
+            target.AddBuff(BuffID.Frozen, Terratomere.TrueMeleeFrozenTime);
             Owner.DoLifestealDirect(target, (int)Math.Round(hit.Damage * 0.025), 0.75f);
 
             // Create a slash creator on top of the hit target.

@@ -156,6 +156,10 @@ namespace CalamityMod.Buffs
                 }
             }
 
+            if (type == BuffID.Frozen)
+            {
+                npc.Calamity().frozen = true;
+            }
             if (type == BuffID.Webbed)
             {
                 npc.Calamity().webbed = true;
