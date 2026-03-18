@@ -387,7 +387,6 @@ namespace CalamityMod.NPCs
         public int ladHearts = 0;
         public bool relicOfResilienceWeakness = false;
         public bool sagePoison = false;
-        public int sagePoisonDamage = 0;
         public bool vulnerabilityHex = false;
         public bool trueVulnerabilityHex = false;
         public bool banishingFire = false;
@@ -636,7 +635,6 @@ namespace CalamityMod.NPCs
             myClone.ladHearts = ladHearts;
             myClone.relicOfResilienceWeakness = relicOfResilienceWeakness;
             myClone.sagePoison = sagePoison;
-            myClone.sagePoisonDamage = sagePoisonDamage;
             myClone.vulnerabilityHex = vulnerabilityHex;
             myClone.trueVulnerabilityHex = trueVulnerabilityHex;
             myClone.banishingFire = banishingFire;
@@ -1217,7 +1215,6 @@ namespace CalamityMod.NPCs
             if (npc.type == NPCID.WallofFleshEye)
                 npc.netAlways = true;
 
-            sagePoisonDamage = 0;
             if (npc.type == NPCID.Golem && (CalamityWorld.revenge || BossRushEvent.BossRushActive))
                 npc.noGravity = true;
 
