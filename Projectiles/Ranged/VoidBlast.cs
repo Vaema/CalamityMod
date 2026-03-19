@@ -86,9 +86,17 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Main.rand.NextVector2Circular(6f, 6f), ModContent.ProjectileType<RancorFog>(), 0, 0f, Projectile.owner, 0f, 2f);
             }
+
             #region Visuals and Sounds
             SoundStyle fire = new("CalamityMod/Sounds/Item/OmicronBeam");
             SoundEngine.PlaySound(fire with { Volume = 0.9f }, Projectile.Center);
+
+            for (int i = 0; i < 3; i++)
+            {
+                Particle blastRing = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Black, "CalamityMod/Particles/SmallBloom", Vector2.One, Main.rand.NextFloat(-10, 10), 1f, 1.2f, 15, false);
+                GeneralParticleHandler.SpawnParticle(blastRing);
+                blastRing.DrawLayer = Enums.GeneralDrawLayer.BeforeProjectiles;
+            }
 
             for (float k = 0; k < 3; k++)
             {
@@ -99,19 +107,18 @@ namespace CalamityMod.Projectiles.Ranged
                 Particle blastRing = new CustomPulse(spawnPos, Vector2.Zero, Color.Lerp(Color.DarkOrchid, Color.Indigo, colorRando) * 0.6f, "CalamityMod/Particles/FlameExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0.07f, scale, partLifetime);
                 GeneralParticleHandler.SpawnParticle(blastRing);
             }
-            for (int i = 0; i < 3; i++)
-            {
-                Particle blastRing = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Black, "CalamityMod/Particles/SmallBloom", Vector2.One, Main.rand.NextFloat(-10, 10), 1f, 1.2f, 15, false);
-                GeneralParticleHandler.SpawnParticle(blastRing);
-            }
+
             Particle innerGlow = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Indigo, "CalamityMod/Particles/BloomCircle", Vector2.One, 0f, 0.03f, 1f, 24, true);
             GeneralParticleHandler.SpawnParticle(innerGlow);
+            innerGlow.DrawLayer = Enums.GeneralDrawLayer.AfterEverything;
+
             float offset = Main.rand.NextFloat(MathHelper.TwoPi);
             for (int i = 0; i < 4; i++)
             {
                 Vector2 velocity = (MathHelper.TwoPi * i / 4f + offset).ToRotationVector2();
                 Particle cross = new GlowSparkParticle(Projectile.Center, velocity, false, 12, 0.4f, Color.BlueViolet * 0.7f, new Vector2(0.07f, 0.08f), true, false);
                 GeneralParticleHandler.SpawnParticle(cross);
+                cross.DrawLayer = Enums.GeneralDrawLayer.AfterEverything;
             }
             for (float k = 0; k < 10; k++)
             {
@@ -126,6 +133,7 @@ namespace CalamityMod.Projectiles.Ranged
                 dust.alpha = Main.rand.Next(120, 180 + 1);
                 dust.color = Main.rand.NextBool() ? Color.Indigo : Color.DarkBlue;
             }
+
             #endregion
         }
         public override bool PreDraw(ref Color lightColor)
