@@ -901,7 +901,7 @@ namespace CalamityMod.Items
             if (target.Calamity().hyperiusMarked)
             {
                 int damageDealt = (int)(damageDone * HyperiusBullet.overflowAppliedMult);
-                int damage = (int)Math.Min(target.Calamity().hyperiusDamage, damageDealt);
+                int damage = (int)Math.Min(target.Calamity().hyperiusDamage / HyperiusBullet.overflowEfficency, damageDealt);
 
                 target.Calamity().hyperiusDamage -= (int)(damage * HyperiusBullet.overflowEfficency);
 
