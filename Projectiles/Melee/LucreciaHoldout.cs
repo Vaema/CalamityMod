@@ -56,8 +56,7 @@ namespace CalamityMod.Projectiles.Melee
         public override void Spawn()
         {
             var player = Main.player[Projectile.owner];
-            var modplayer = player.GetModPlayer<BaseSwordHoldoutPlayer>();
-            var calamityPlayer = player.Calamity();
+            var lucreciaPlayer = player.GetModPlayer<LucreciaPlayer>();
 
             // Store the base use time from the item
             int baseUseTime = BaseItem.useTime;
@@ -65,7 +64,7 @@ namespace CalamityMod.Projectiles.Melee
             if (player.altFunctionUse == 2)
             {
                 // Check for energy before the projectile exists
-                if (calamityPlayer.darklightEnergy < 100)
+                if (lucreciaPlayer.darklightEnergy < 100)
                 {
                     Projectile.Kill();
                     return;
@@ -87,7 +86,7 @@ namespace CalamityMod.Projectiles.Melee
                 RotateInCooldown = 1f;
                 Projectile.knockBack = 15f;
 
-                calamityPlayer.darklightEnergy = 0; // Remove energy for startup
+                lucreciaPlayer.darklightEnergy = 0; // Remove energy for startup
             }
             else
             {
@@ -323,10 +322,10 @@ namespace CalamityMod.Projectiles.Melee
 
                 gotEnergyThisSwing = true;
                 var player = Main.player[Projectile.owner];
-                var modPlayer = player.Calamity();
+                var modPlayer = player.GetModPlayer<LucreciaPlayer>();
 
-                // +25 energy on hit
-                modPlayer.darklightEnergy += 25;
+                // +20 energy on hit
+                modPlayer.darklightEnergy += 20;
                 modPlayer.darklightEnergy = Math.Min(modPlayer.darklightEnergy, Lucrecia.MaxEnergy);
 
                 // On-hit cut FX

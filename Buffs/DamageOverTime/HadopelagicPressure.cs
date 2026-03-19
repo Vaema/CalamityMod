@@ -12,7 +12,7 @@ namespace CalamityMod.Buffs.DamageOverTime
     {
         public static DebuffData debuffData = new DebuffData()
         {
-            EnemyLostRegen = 400,
+            EnemyLostRegen = 350, //175 dps
             WaterDebuffScaling = 1
         };
         public override void SetStaticDefaults()

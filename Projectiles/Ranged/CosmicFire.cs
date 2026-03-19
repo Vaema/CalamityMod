@@ -108,10 +108,11 @@ namespace CalamityMod.Projectiles.Ranged
                 Particle blastRing = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Black, "CalamityMod/Particles/LargeBloom", Vector2.One, Main.rand.NextFloat(-10, 10), 0.35f, 0.4f, 38, false);
                 GeneralParticleHandler.SpawnParticle(blastRing);
             }
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 3; i++)
             {
                 Particle blastRing = new CustomPulse(Projectile.Center, Vector2.Zero, InnerColor, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 0.48f, 0.52f, 38);
                 GeneralParticleHandler.SpawnParticle(blastRing);
+                blastRing.DrawLayer = GeneralDrawLayer.AfterEverything;
             }
 
             float numberOfDusts = 10;

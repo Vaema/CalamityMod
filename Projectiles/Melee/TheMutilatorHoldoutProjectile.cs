@@ -1,15 +1,16 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Melee;
-using Microsoft.Xna.Framework;
-using Terraria.DataStructures;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Terraria;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Projectiles.Healing;
+using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.Audio;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Particles;
+using Terraria.DataStructures;
+using Terraria.GameContent;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -99,7 +100,7 @@ namespace CalamityMod.Projectiles.Melee
                             Projectile.NewProjectile(Projectile.GetSource_OnHit(target), target.Center, -angle.RotatedByRandom(spreadAmount) * 3.5f * Main.rand.NextFloat(0.75f, 1.25f), ModContent.ProjectileType<BloodstoneHealOrb>(), 20, 0f, player.whoAmI);
 
                         }
-                        Particle bloodsplosion2 = new CustomPulse(target.Center, Vector2.Zero, new Color(255, 32, 32) * 0.75f, "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, Main.rand.NextFloat(-15f, 15f), 0.03f, 0.155f, 40);
+                        Particle bloodsplosion2 = new CustomPulse(target.Center, Vector2.Zero, (!ChildSafety.Disabled ? Color.CornflowerBlue : new Color(255, 32, 32)) * 0.75f, "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, Main.rand.NextFloat(-15f, 15f), 0.03f, 0.155f, 40);
                         GeneralParticleHandler.SpawnParticle(bloodsplosion2);
                         SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/BloodPactCrit") { Volume = 0.5f }, player.Center);
                     }

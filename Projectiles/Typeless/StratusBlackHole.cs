@@ -34,6 +34,7 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.Opacity = 0;
+            Projectile.ContinuouslyUpdateDamageStats = true;
         }
 
         public override void AI()
@@ -59,7 +60,7 @@ namespace CalamityMod.Projectiles.Typeless
             }
             foreach (var player in Main.ActivePlayers)
             {
-                if (player.Distance(Projectile.Center) <= 600)
+                if (player.Distance(Projectile.Center) <= 600 && !player.dead)
                 {
                     if (player.miscCounter % 30 == 15)
                     {
@@ -68,7 +69,7 @@ namespace CalamityMod.Projectiles.Typeless
                             player.Calamity().StarburstEntities.Add(new StarburstEntity(Projectile.Center));
                         player.Calamity().StratusStarburstResetTimer = (int)MathHelper.Max(player.Calamity().StratusStarburstResetTimer, 180);
                     }
-                    if (player.wingsLogic > 0)
+                    if (player.wingsLogic > 0 && player.wingTimeMax > 0)
                     {
                         if (player.wingTime <= 0 && player.Calamity().AvaliableStarburst > 0)
                         {

@@ -39,7 +39,7 @@ namespace CalamityMod.Items.Armor.SnowRuffian
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
-            Item.defense = 5; //12
+            Item.defense = 4; //9
         }
 
         public override void UpdateEquip(Player player) => player.GetCritChance<RangedDamageClass>() += RangedCritBoost;

@@ -168,7 +168,7 @@ BloodflareBodyArmor: {
 	Tooltip: "{$CommonItemTooltip.PercentIncreasedDamage} and {$CommonItemTooltip.PercentIncreasedCritChance@1}"
 	CommonSetBonus:
 		'''
-		Greatly increased life regen, equivalent to Crimson armor
+		{$Mods.CalamityMod.Vanilla.Armor.SetBonus.Crimson}
 		Enemies below 50% life drop a heart when struck
 		This effect has a 5 second cooldown
 		'''
@@ -307,7 +307,6 @@ DemonshadeHelm: {
 		{$CommonItemTooltip.IncreasesMaxMinionsBy}
 		{$CommonItemTooltip.PercentIncreasedSummonDamage@1}
 		Shadowbeams and demon scythes will fire down when you are hit
-		A friendly red devil follows you around
 		{2} to enrage nearby enemies with a dark magic spell for {3} seconds
 		This makes them take {4}x total damage, but they will deal {5}x damage to you
 		'''
@@ -338,7 +337,7 @@ EmpyreanMask: {
 		'''
 		{$Common.RogueStealth}
 		Rogue projectiles have special effects on enemy hits
-		Imbued with cosmic wrath when you are damaged
+		Imbued with [cbuffplr:CalamityMod/EmpyreanWrath] when you are damaged or while below {1}% life
 		'''
 }
 
@@ -500,7 +499,7 @@ OmegaBlueChestplate: {
 		'''
 		{$CommonItemTooltip.PercentIncreasedDamage} and {$CommonItemTooltip.PercentIncreasedCritChance@1}
 		{$CommonItemTooltip.PercentChanceToSaveAmmo@2}
-		Your attacks inflict Hadopelagic Pressure
+		Your attacks inflict [cbuff:CalamityMod/HadopelagicPressure]
 		No positive life regen
 		'''
 }
@@ -669,7 +668,7 @@ TarragonHeadMelee: {
 		'''
 	SetBonusEffect:
 		'''
-		Taking damage gives [cbuff:CalamityMod/TarraLifeRegen], which grants +{0} HP/s life regen
+		Taking damage gives [cbuffplr:CalamityMod/TarraLifeRegen], which grants +{0} HP/s life regen
 		{1} to cloak yourself in life energy that heavily reduces enemy contact damage for {2} seconds
 		This has a {3} second cooldown
 		{$TarragonBreastplate.CommonSetBonus}

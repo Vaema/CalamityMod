@@ -3,6 +3,7 @@ using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ModLoader;
 using static CalamityMod.CalamityUtils;
 
@@ -38,12 +39,12 @@ namespace CalamityMod.Projectiles.Melee
 
                 for (int i = 0; i < 5; i++)
                 {
-                    Particle explosion = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Lerp(Color.DarkRed, Color.Red, Utils.GetLerpValue(0, 5, i, true)), "CalamityMod/Particles/DetailedExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0f, 0.5f + 0.03f * i, (int)(20 - i * 1.5f));
+                    Particle explosion = new CustomPulse(Projectile.Center, Vector2.Zero, (!ChildSafety.Disabled ? Color.CornflowerBlue : (Color.Lerp(Color.DarkRed, Color.Red, Utils.GetLerpValue(0, 5, i, true)))), "CalamityMod/Particles/DetailedExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0f, 0.5f + 0.03f * i, (int)(20 - i * 1.5f));
                     GeneralParticleHandler.SpawnParticle(explosion);
                 }
                 for (int i = 0; i < 3; i++)
                 {
-                    Particle explosion = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Lerp(Color.DarkRed, Color.Red, Utils.GetLerpValue(0, 3, i, true)), "CalamityMod/Projectiles/FireProj", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0f, 2f + 0.22f * i, (int)(20 - i * 2f));
+                    Particle explosion = new CustomPulse(Projectile.Center, Vector2.Zero, (!ChildSafety.Disabled ? Color.CornflowerBlue : (Color.Lerp(Color.DarkRed, Color.Red, Utils.GetLerpValue(0, 3, i, true)))), "CalamityMod/Projectiles/FireProj", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0f, 2f + 0.22f * i, (int)(20 - i * 2f));
                     GeneralParticleHandler.SpawnParticle(explosion);
                 }
 
@@ -54,7 +55,7 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     Vector2 velocity = Vector2.UnitX.RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(8f, 12f);
                     float scale = Main.rand.NextFloat(0.6f, 2f);
-                    Particle blood = new BloodParticle(Projectile.Center, velocity, 30, scale, Color.DarkRed);
+                    Particle blood = new BloodParticle(Projectile.Center, velocity, 30, scale, !ChildSafety.Disabled ? Color.CornflowerBlue : Color.DarkRed);
                     GeneralParticleHandler.SpawnParticle(blood);
                 }
             }

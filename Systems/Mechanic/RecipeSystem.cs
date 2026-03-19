@@ -485,7 +485,7 @@ namespace CalamityMod.Systems
 
             // Life Crystal
             Recipe.Create(ItemID.LifeCrystal).
-                AddIngredient(ItemID.StoneBlock, 5).
+                AddRecipeGroup("AnyStoneBlock", 5).
                 AddIngredient(ItemID.Ruby, 2).
                 AddIngredient(ItemID.HealingPotion).
                 AddTile(TileID.Anvils).
@@ -756,8 +756,6 @@ namespace CalamityMod.Systems
 
                 // Tier lock various items to a higher tier (sorted by progression)
                 { Vanilla(ItemID.Trimarang), AddIngredient(ItemType<PearlShard>(), 5) },
-                { Vanilla(ItemID.BundleofBalloons), AddIngredient(ItemType<AerialiteBar>(), 3) },
-                { r => r.HasResult(ItemID.HorseshoeBundle) && !r.HasIngredient(ItemID.BundleofBalloons), AddIngredient(ItemType<AerialiteBar>(), 3) },
                 { Vanilla(ItemID.NightsEdge), AddIngredient(ItemType<PurifiedGel>(), 5) },
                 { Vanilla(ItemID.FairyBoots), AddIngredient(ItemID.SoulofLight, 5) },
                 { Vanilla(ItemID.FairyBell), RemoveIngredient(ItemID.SoulofSight) },
@@ -1391,7 +1389,7 @@ namespace CalamityMod.Systems
 
             r = Recipe.Create(ItemID.Bacon);
             r.AddIngredient<PiggyItem>();
-            r.AddTile(TileID.Hellforge);
+            r.AddTile(TileID.CookingPots);
             r.Register();
             r.DisableDecraft();
         }
@@ -1436,7 +1434,7 @@ namespace CalamityMod.Systems
 
             // Encumbering Stone
             r = Recipe.Create(ItemID.EncumberingStone);
-            r.AddIngredient(ItemID.StoneBlock, 100);
+            r.AddRecipeGroup("AnyStoneBlock", 100);
             r.AddTile(TileID.Anvils);
             r.Register();
         }
@@ -1448,13 +1446,13 @@ namespace CalamityMod.Systems
             // Wooden Chest weapons
             // Wooden Boomerang
             Recipe r = Recipe.Create(ItemID.WoodenBoomerang);
-            r.AddIngredient(ItemID.Wood, 7);
+            r.AddRecipeGroup("Wood", 7);
             r.AddTile(TileID.WorkBenches);
             r.Register();
 
             // Wand of Sparking
             r = Recipe.Create(ItemID.WandofSparking);
-            r.AddIngredient(ItemID.Wood, 5);
+            r.AddRecipeGroup("Wood", 5);
             r.AddIngredient(ItemID.Torch, 3);
             r.AddIngredient(ItemID.FallenStar);
             r.AddCondition(Condition.NotRemixWorld);
@@ -1556,7 +1554,7 @@ namespace CalamityMod.Systems
             r = Recipe.Create(ItemID.WaterWalkingBoots);
             r.AddIngredient(ItemID.Leather, 5);
             r.AddIngredient(ItemID.WaterWalkingPotion, 5);
-            r.AddTile(TileID.Anvils);
+            r.AddTile(TileID.Loom);
             r.Register();
 
             // Lava Charm
@@ -1581,8 +1579,8 @@ namespace CalamityMod.Systems
             // Blizzard in a Bottle
             r = Recipe.Create(ItemID.BlizzardinaBottle);
             r.AddIngredient(ItemID.Bottle);
-            r.AddIngredient(ItemID.Cloud, 5);
-            r.AddRecipeGroup(AnySnowBlock, 5);
+            r.AddIngredient(ItemID.Cloud, 15);
+            r.AddRecipeGroup(AnySnowBlock, 30);
             r.AddIngredient(ItemID.Feather, 3);
             r.AddTile(TileID.Anvils);
             r.Register();
@@ -1590,7 +1588,7 @@ namespace CalamityMod.Systems
             // Cloud in a Bottle
             r = Recipe.Create(ItemID.CloudinaBottle);
             r.AddIngredient(ItemID.Bottle);
-            r.AddIngredient(ItemID.Cloud, 5);
+            r.AddIngredient(ItemID.Cloud, 30);
             r.AddIngredient(ItemID.Feather, 2);
             r.AddTile(TileID.Anvils);
             r.Register();
@@ -1598,9 +1596,8 @@ namespace CalamityMod.Systems
             // Sandstorm in a Bottle
             r = Recipe.Create(ItemID.SandstorminaBottle);
             r.AddIngredient(ItemID.Bottle);
-            r.AddIngredient(ItemID.Cloud, 5);
-            r.AddIngredient(ItemID.SandBlock, 5);
-            r.AddIngredient<PearlShard>(3);
+            r.AddIngredient(ItemID.Cloud, 15);
+            r.AddRecipeGroup("Sand", 40);
             r.AddIngredient(ItemID.Feather, 3);
             r.AddTile(TileID.Anvils);
             r.Register();
@@ -1608,7 +1605,7 @@ namespace CalamityMod.Systems
 
             // Fledgling Wings
             r = Recipe.Create(ItemID.CreativeWings);
-            r.AddIngredient(ModContent.ItemType<AncientBoneDust>(), 2);
+            r.AddIngredient<AncientBoneDust>(2);
             r.AddIngredient(ItemID.Cloud, 5);
             r.AddIngredient(ItemID.Feather, 10);
             r.AddTile(TileID.Anvils);

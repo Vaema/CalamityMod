@@ -297,6 +297,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             Projectile.extraUpdates = 0;
             Projectile.aiStyle = -2;
             Projectile.DamageType = ModLoader.GetMod("CalamityMod").Find<DamageClass>("TrueMeleeDamageClass");
+            Projectile.ContinuouslyUpdateDamageStats = true;
             Projectile.tileCollide = false;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 100;

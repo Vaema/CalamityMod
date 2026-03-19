@@ -8,6 +8,8 @@ using Terraria.ModLoader;
 namespace CalamityMod.Effects
 {
     // TODO -- This can be made into a ModSystem with simple OnModLoad and Unload hooks.
+    // TODO: SOURCEGEN: Get rid of this loader and replace references with sourcegenned references
+    
     [Autoload(Side = ModSide.Client)]
     public sealed class CalamityShaders : ModSystem
     {
@@ -265,6 +267,14 @@ namespace CalamityMod.Effects
 
         internal static Asset<Effect> BrainOfCthulhuForcefield;
         #endregion
+        
+        #region jasper's shaders
+        internal static Asset<Effect> NanoblackSlashShader;
+
+        // static gaussian bloom, cannot change parameters. do not reuse this if that binds you.
+        internal static Asset<Effect> GaussianBloomShader;
+        #endregion
+
 
         internal static Asset<Effect> SunkenSeaMenuLogoWater;
 
@@ -524,6 +534,12 @@ namespace CalamityMod.Effects
             BrainOfCthulhuForcefield = LoadShader("ScreenShaders/BrainOfCthulhuForcefield");
             RegisterScreenShader(BrainOfCthulhuForcefield, "BoCShieldPass", "BrainOfCthulhuForcefield");
             #endregion
+
+            NanoblackSlashShader = LoadShader("SlashEffects/NanoblackSlash");
+            RegisterMiscShader(NanoblackSlashShader, "SlashPass", "NanoblackSlash");
+
+            GaussianBloomShader = LoadShader("SlashEffects/GaussianBloom");
+            RegisterMiscShader(GaussianBloomShader, "BloomShader", "GaussianBloom");
 
             SunkenSeaMenuLogoWater = LoadShader("UI/SunkenSeaMenuLogoWater");
         }

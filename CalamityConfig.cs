@@ -300,12 +300,8 @@ namespace CalamityMod
             BossHealthBoost = Utils.Clamp(BossHealthBoost, MinBossHealthBoost, MaxBossHealthBoost);
         }
 
-        [Header("Gameplay")]
         #region General Gameplay Changes
-
-        [BackgroundColor(192, 54, 64, 192)]
-        [DefaultValue(true)]
-        public bool SimplifyAccessoryReforge { get; set; }
+        [Header("Gameplay")]
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]

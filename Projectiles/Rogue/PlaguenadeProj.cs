@@ -73,6 +73,8 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 Player player = Main.player[Projectile.owner];
                 int projAmt = Projectile.Calamity().stealthStrike ? 28 : 20;
+                if (player.strongBees)
+                    projAmt = (int)(projAmt * 1.5f);
                 for (int projIndex = 0; projIndex < projAmt; projIndex++)
                 {
                     float speedX = (float)Main.rand.Next(-35, 36) * 0.02f;

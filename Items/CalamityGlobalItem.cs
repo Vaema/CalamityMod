@@ -192,25 +192,25 @@ namespace CalamityMod.Items
             stats[(int)VanillaWingID.FrozenWings].AccRunAccelerationMult = 1.5f;
             // 160 -> 130 flight time
             stats[(int)VanillaWingID.FlameWings].FlyTime = 130;
-            // 160 -> 180 flight time, 7.5 -> 6.25 horizontal speed
+            // 160 -> 180 flight time, 7.5 -> 6.75 horizontal speed
             stats[(int)VanillaWingID.BatWings].FlyTime = 180;
-            stats[(int)VanillaWingID.BatWings].AccRunSpeedOverride = 6.25f;
+            stats[(int)VanillaWingID.BatWings].AccRunSpeedOverride = 6.75f;
             // 1 -> 1.5 acceleration multiplier
             stats[(int)VanillaWingID.ButterflyWings].AccRunAccelerationMult = 1.5f;
 
             // 170 -> 240 flight time
             stats[(int)VanillaWingID.BoneWings].FlyTime = 240;
-            // 160 -> 170 flight time, 7.5 -> 9 horizontal speed, 1 -> 1.5 acceleration multiplier
+            // 160 -> 170 flight time, 7.5 -> 9 horizontal speed, 1 -> 2 acceleration multiplier
             stats[(int)VanillaWingID.LeafWings].FlyTime = 170;
             stats[(int)VanillaWingID.LeafWings].AccRunSpeedOverride = 9f;
-            stats[(int)VanillaWingID.LeafWings].AccRunAccelerationMult = 1.5f;
-            // (Spectre Wings) 1 -> 2 acceleration multiplier
-            stats[(int)VanillaWingID.GhostWings].AccRunAccelerationMult = 2f;
+            stats[(int)VanillaWingID.LeafWings].AccRunAccelerationMult = 2f;
+            // (Spectre Wings) 1 -> 1.5 acceleration multiplier
+            stats[(int)VanillaWingID.GhostWings].AccRunAccelerationMult = 1.5f;
 
             // 170 -> 210 flight time
             stats[(int)VanillaWingID.BeetleWings].FlyTime = 210;
-            // 180 -> 210 flight time
-            stats[(int)VanillaWingID.TatteredFairyWings].FlyTime = 210;
+            // 180 -> 300 flight time
+            stats[(int)VanillaWingID.TatteredFairyWings].FlyTime = 300;
             // (Empress Wings) 150 -> 120 flight time
             stats[(int)VanillaWingID.RainbowWings].FlyTime = 120;
 
@@ -562,13 +562,6 @@ namespace CalamityMod.Items
         #region Use Item Changes
         public override void HoldItem(Item item, Player player)
         {
-            // Clear Evil Smasher buffs if not holding Evil Smasher
-            if (player.Calamity().evilSmasherBoost > 0)
-            {
-                if (item.type != ItemType<EvilSmasher>())
-                    player.Calamity().evilSmasherBoost = 0;
-            }
-
             if (player.Calamity().ChaosStone && item.mana == 0 && !player.ItemTimeIsZero)
             {
                 player.manaRegenDelay = player.maxRegenDelay;
@@ -950,6 +943,7 @@ namespace CalamityMod.Items
 
         public override void ModifyItemScale(Item item, Player player, ref float scale)
         {
+            // Xyk 3MARCH2026: Doesn't work on any non use style 1 items currently, Doze will fix it
             if (item.CountsAsClass<MeleeDamageClass>() && player.HasBuff(BuffID.Tipsy))
                 scale += 0.15f;
         }
@@ -1038,31 +1032,9 @@ namespace CalamityMod.Items
                     player.GetAttackSpeed<MeleeDamageClass>() += 0.05f;
                     break;
 
-                case ItemID.SquireGreaves:
-                    player.GetDamage<SummonDamageClass>() -= 0.05f;
-                    break;
 
-                case ItemID.HuntressWig:
-                    player.GetCritChance<RangedDamageClass>() += 5;
-                    break;
 
-                case ItemID.HuntressJerkin:
-                    player.GetDamage<RangedDamageClass>() -= 0.05f;
-                    player.GetDamage<SummonDamageClass>() -= 0.05f;
-                    break;
 
-                case ItemID.ApprenticeHat:
-                    player.GetDamage<MagicDamageClass>() -= 0.1f;
-                    break;
-
-                case ItemID.ApprenticeRobe:
-                    player.GetDamage<SummonDamageClass>() -= 0.05f;
-                    player.GetDamage<MagicDamageClass>() += 0.05f;
-                    break;
-
-                case ItemID.ApprenticeTrousers:
-                    player.GetCritChance<MagicDamageClass>() -= 5;
-                    break;
 
                 case ItemID.ShroomiteBreastplate:
                     player.GetDamage<RangedDamageClass>() -= 0.05f;
@@ -1081,28 +1053,6 @@ namespace CalamityMod.Items
                 case ItemID.SquireAltPants:
                     player.GetCritChance<MeleeDamageClass>() -= 5;
                     player.GetDamage<SummonDamageClass>() -= 0.05f;
-                    break;
-
-                case ItemID.HuntressAltShirt:
-                    player.GetDamage<RangedDamageClass>() -= 0.05f;
-                    player.GetDamage<SummonDamageClass>() -= 0.05f;
-                    break;
-
-                case ItemID.HuntressAltPants:
-                    player.GetDamage<SummonDamageClass>() -= 0.05f;
-                    break;
-
-                case ItemID.ApprenticeAltHead:
-                    player.GetDamage<MagicDamageClass>() -= 0.05f;
-                    player.GetDamage<SummonDamageClass>() -= 0.05f;
-                    break;
-
-                case ItemID.ApprenticeAltShirt:
-                    player.GetDamage<SummonDamageClass>() -= 0.05f;
-                    break;
-
-                case ItemID.ApprenticeAltPants:
-                    player.GetCritChance<MagicDamageClass>() -= 10;
                     break;
 
                 case ItemID.SolarFlareHelmet:
@@ -1272,12 +1222,12 @@ namespace CalamityMod.Items
             }
 
             if (item.type == ItemID.DemonWings && !player.mount.Active)
-                player.maxFallSpeed *= 1.3f;
+                player.maxFallSpeed *= 1.2f;
 
             if (item.type == ItemID.BeeWings && !player.mount.Active && !player.controlDown)
             {
-                player.gravity *= 0.6f;
-                player.maxFallSpeed *= 0.6f;
+                player.gravity *= 0.75f;
+                player.maxFallSpeed *= 0.75f;
             }
 
             if (item.type == ItemID.FinWings)
@@ -1358,24 +1308,22 @@ namespace CalamityMod.Items
             switch (item.type)
             {
                 case ItemID.AngelWings:
-                    maxAscentMultiplier *= 1.3f;
-                    constantAscend *= 1.5f;
-                    break;
-                case ItemID.DemonWings:
-                    ascentWhenFalling *= 2f;
-                    ascentWhenRising *= 2f;
-                    maxCanAscendMultiplier *= 2f;
-                    break;
-                case ItemID.FlameWings:
                     maxAscentMultiplier *= 1.2f;
                     constantAscend *= 1.35f;
                     break;
+                case ItemID.DemonWings:
+                    ascentWhenFalling *= 2f;
+                    break;
+                case ItemID.FlameWings:
+                    maxAscentMultiplier *= 1.1067f;
+                    constantAscend *= 1.25f;
+                    break;
                 case ItemID.ButterflyWings:
-                    maxAscentMultiplier *= 0.9f;
+                    maxAscentMultiplier *= 0.6667f;
                     constantAscend *= 5f;
                     break;
                 case ItemID.GhostWings:
-                    maxAscentMultiplier *= 0.904f;
+                    maxAscentMultiplier *= 0.6025f;
                     constantAscend *= 5f;
                     break;
                 default:

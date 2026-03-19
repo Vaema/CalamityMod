@@ -50,7 +50,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 gotEnergyThisSwing = true;
                 var player = Main.player[Projectile.owner];
-                var modPlayer = player.Calamity();
+                var modPlayer = player.GetModPlayer<LightspeedPlayer>();
 
                 // +4 energy on hit
                 modPlayer.elementalMastery += 4;

@@ -69,6 +69,8 @@ using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using CalamityMod.Tiles.FurnitureAuric;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.UI;
+using CalamityMod.UI.DialogueDisplay;
+using CalamityMod.UI.DialogueDisplay.DisplayEffects;
 using CalamityMod.Utilities;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -152,9 +154,6 @@ namespace CalamityMod.CalPlayer
             // Drawing parameters
             UpdateDrawingParameters();
 
-            // Handle Lucrecia's passive energy effects
-            HandleLucreciaLineEffects();
-
             // Update all particle sets for items.
             // This must be done here instead of in the item logic because these sets are not properly instanced
             // in the global classes. Attempting to update them there will cause multiple updates to one set for multiple items.
@@ -205,15 +204,29 @@ namespace CalamityMod.CalPlayer
             if (Player.HeldItem.type != ModContent.ItemType<SaharaSlicers>())
                 saharaSlicersBolts = 0;
 
-            if (Player.whoAmI == Main.myPlayer && Player.HeldItem.type == ModContent.ItemType<Starfleet>() && (Player.ownedProjectileCounts[ModContent.ProjectileType<StarfleetHoldout>()] == 0) && !Player.dead && !Main.mapFullscreen && !Player.mouseInterface)
+            // Spawning for items that have holdouts active when held
+            if (Player.whoAmI == Main.myPlayer && !Player.dead && !Main.mapFullscreen && !Player.mouseInterface)
             {
-                int damage = (int)Player.GetTotalDamage<RangedDamageClass>().ApplyTo(Player.HeldItem.damage);
-                Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Player.Center.DirectionTo(Player.Calamity().mouseWorld), ModContent.ProjectileType<StarfleetHoldout>(), damage, Player.HeldItem.knockBack, Player.whoAmI);
-            }
-            if (Player.whoAmI == Main.myPlayer && Player.HeldItem.type == ModContent.ItemType<Starmada>() && (Player.ownedProjectileCounts[ModContent.ProjectileType<StarmadaHoldout>()] == 0) && !Player.dead && !Main.mapFullscreen && !Player.mouseInterface)
-            {
-                int damage = (int)Player.GetTotalDamage<RangedDamageClass>().ApplyTo(Player.HeldItem.damage);
-                Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Player.Center.DirectionTo(Player.Calamity().mouseWorld), ModContent.ProjectileType<StarmadaHoldout>(), damage, Player.HeldItem.knockBack, Player.whoAmI);
+                if (Player.HeldItem.type == ModContent.ItemType<Starfleet>() && (Player.ownedProjectileCounts[ModContent.ProjectileType<StarfleetHoldout>()] == 0))
+                {
+                    int damage = (int)Player.GetTotalDamage<RangedDamageClass>().ApplyTo(Player.HeldItem.damage);
+                    Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Player.Center.DirectionTo(Player.Calamity().mouseWorld), ModContent.ProjectileType<StarfleetHoldout>(), damage, Player.HeldItem.knockBack, Player.whoAmI);
+                }
+                if (Player.HeldItem.type == ModContent.ItemType<Starmada>() && (Player.ownedProjectileCounts[ModContent.ProjectileType<StarmadaHoldout>()] == 0))
+                {
+                    int damage = (int)Player.GetTotalDamage<RangedDamageClass>().ApplyTo(Player.HeldItem.damage);
+                    Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Player.Center.DirectionTo(Player.Calamity().mouseWorld), ModContent.ProjectileType<StarmadaHoldout>(), damage, Player.HeldItem.knockBack, Player.whoAmI);
+                }
+                if (Player.HeldItem.type == ModContent.ItemType<Basher>() && (Player.ownedProjectileCounts[ModContent.ProjectileType<BasherHoldout>()] == 0))
+                {
+                    int damage = (int)Player.GetTotalDamage<TrueMeleeDamageClass>().ApplyTo(Player.HeldItem.damage);
+                    Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Player.Center.DirectionTo(Player.Calamity().mouseWorld), ModContent.ProjectileType<BasherHoldout>(), damage, Player.HeldItem.knockBack, Player.whoAmI);
+                }
+                if (Player.HeldItem.type == ModContent.ItemType<GrandDad>() && (Player.ownedProjectileCounts[ModContent.ProjectileType<GrandDadHoldout>()] == 0))
+                {
+                    int damage = (int)Player.GetTotalDamage<TrueMeleeDamageClass>().ApplyTo(Player.HeldItem.damage);
+                    Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Player.Center.DirectionTo(Player.Calamity().mouseWorld), ModContent.ProjectileType<GrandDadHoldout>(), damage, Player.HeldItem.knockBack, Player.whoAmI);
+                }
             }
 
             // De-equipping Gael's Greatsword deletes all rage.
@@ -396,120 +409,6 @@ namespace CalamityMod.CalPlayer
                 if (Player.wingTime > 0 && Player.miscCounter % 3 == 0)
                     Player.wingTime++;
             }
-
-            if (Player.HeldItem.type == ModContent.ItemType<Lucrecia>() && darklightEnergy > 0)
-            {
-                if (darklightEnergy == Lucrecia.MaxEnergy && !darklightEnergyPaused)
-                {
-                    darklightEnergyPaused = true;
-                    darklightEnergyTimer = 0;
-                }
-
-                darklightEnergyTimer++;
-
-                // If the energy is at max, pause for 180 ticks
-                if (darklightEnergyPaused)
-                {
-                    if (darklightEnergyTimer >= 1 && !darklightEnergyMaxFXPlayed)
-                    {
-                        SoundStyle maxEnergyReached = new("CalamityMod/Sounds/Custom/AbilitySounds/DarklightEnergyCharged");
-                        SoundEngine.PlaySound(maxEnergyReached with { Volume = 0.9f }, Player.Center);
-
-                        for (int i = 0; i < 10; i++) // Circular ring of particles burst from player
-                        {
-                            float angle = MathHelper.TwoPi * (i / 10f);
-                            Vector2 spawnDirection = angle.ToRotationVector2();
-                            Vector2 velocity = spawnDirection * 14f;
-
-                            CritSpark spark = new CritSpark(Player.Center + spawnDirection * 3f, velocity, Color.Lerp(Color.CornflowerBlue, Color.MediumPurple, Main.rand.NextFloat(1f)), Color.White * 0.33f, 1.2f, 12, 0.3f, 1.2f);
-                            GeneralParticleHandler.SpawnParticle(spark);
-                        }
-                        darklightEnergyMaxFXPlayed = true;
-                    }
-
-                    // If the pause is Done, resume decrementing.
-                    if (darklightEnergyTimer >= 180)
-                    {
-                        darklightEnergyPaused = false;
-                        darklightEnergyTimer = 0;
-                        darklightEnergy--;
-                    }
-                }
-                else // Decrementing
-                {
-                    darklightEnergyMaxFXPlayed = false;
-                    // Once every 20 ticks
-                    if (darklightEnergyTimer >= 20)
-                    {
-                        darklightEnergy--;
-                        darklightEnergyTimer = 0;
-                    }
-                }
-            }
-            else
-            {
-                // Reset all energy variables when not holding the weapon
-                darklightEnergyTimer = 0;
-                darklightEnergyPaused = false;
-                darklightEnergy = 0;
-            }
-
-            if (Player.HeldItem.type == ModContent.ItemType<Lightspeed>() && elementalMastery > 0)
-            {
-                if (elementalMastery == Lightspeed.MaxEnergy && !elementalMasteryPaused)
-                {
-                    elementalMasteryPaused = true;
-                    elementalMasteryTimer = 0;
-                }
-
-                elementalMasteryTimer++;
-
-                // If the mastery is at max, pause for 180 ticks
-                if (elementalMasteryPaused)
-                {
-                    if (elementalMasteryTimer >= 1 && !elementalMasterySFXPlayed)
-                    {
-                        SoundStyle maxEnergyReached = new("CalamityMod/Sounds/Custom/AbilitySounds/DarklightEnergyCharged");
-                        SoundEngine.PlaySound(maxEnergyReached with { Volume = 0.9f }, Player.Center);
-
-                        for (int i = 0; i < 10; i++) // Circular ring of particles burst from player
-                        {
-                            float angle = MathHelper.TwoPi * (i / 10f);
-                            Vector2 spawnDirection = angle.ToRotationVector2();
-                            Vector2 velocity = spawnDirection * 14f;
-
-                            CritSpark spark = new CritSpark(Player.Center + spawnDirection * 3f, velocity, Color.Lerp(Color.CornflowerBlue, Color.MediumPurple, Main.rand.NextFloat(1f)), Color.White * 0.33f, 1.2f, 12, 0.3f, 1.2f);
-                            GeneralParticleHandler.SpawnParticle(spark);
-                        }
-                        elementalMasterySFXPlayed = true;
-                    }
-                    // If the pause is Done, resume decrementing.
-                    if (elementalMasteryTimer >= 180)
-                    {
-                        elementalMasteryPaused = false;
-                        elementalMasteryTimer = 0;
-                        elementalMastery--;
-                    }
-                }
-                else // Decrementing
-                {
-                    elementalMasterySFXPlayed = false;
-                    // Once every 30 ticks
-                    if (elementalMasteryTimer >= 30)
-                    {
-                        elementalMastery--;
-                        elementalMasteryTimer = 0;
-                    }
-                }
-            }
-            else
-            {
-                // Reset all EM variables when not holding the weapon
-                elementalMasteryTimer = 0;
-                elementalMasteryPaused = false;
-                elementalMastery = 0;
-            }
-
 
             if (Player.HeldItem.type == ModContent.ItemType<UnstableCastersGauntlet>() && unstableCastersGauntletVis < 100)
             {
@@ -1110,12 +1009,17 @@ namespace CalamityMod.CalPlayer
 
                 // Incinerate the target with either Vulnerability Hex or True Vulnerability Hex, depending on current cursor focus.
                 // This adds 8 to the buff duration, which results in a net increase of 3 frames every time damage is dealt, due to damage occurring every 5 frames.
-                int buffToInflict = target.Calamity().trueVulnerabilityHex ? ModContent.BuffType<TrueVulnerabilityHex>() : ModContent.BuffType<VulnerabilityHex>();
-                if (!target.HasBuff(buffToInflict))
-                    target.AddBuff(buffToInflict, 52);
-                target.buffTime[target.FindBuffIndex(buffToInflict)] += 8;
-                if (target.buffTime[target.FindBuffIndex(buffToInflict)] < VulnerabilityHex.CalamityDuration)
-                    target.buffTime[target.FindBuffIndex(buffToInflict)] = VulnerabilityHex.CalamityDuration;
+                int buffToInflict = target.Calamity().trueVulnerabilityHex ? ModContent.BuffType<TrueVulnerabilityHex>() : ModContent.BuffType<VulnerabilityHex>(); 
+                if (!target.buffImmune[buffToInflict]) 
+                { 
+                    if (!target.HasBuff(buffToInflict)) 
+                        target.AddBuff(buffToInflict, 52); 
+
+                    int index = target.FindBuffIndex(buffToInflict); 
+
+                    if (index != -1) 
+                        target.buffTime[index] = Math.Max(target.buffTime[index] + 8, VulnerabilityHex.CalamityDuration); 
+                }
 
                 // Make some fancy dust to indicate damage is being done.
                 for (int j = 0; j < 12; j++)
@@ -1130,8 +1034,39 @@ namespace CalamityMod.CalPlayer
             }
         }
 
+        private void DemonAltarTalking()
+        {
+
+            for (var h = -15; h < 15; h++)
+            {
+                for (var j = -15; j < 15; j++)
+                {
+                    var tilePos = Player.Center.ToTileCoordinates() + new Point(h, j);
+                    if (Main.tile[tilePos.X, tilePos.Y].TileType == TileID.DemonAltar)
+                    {
+                        string type = WorldGen.crimson ? "Mods.CalamityMod.EvilSmasher.CrimsonAltar" : "Mods.CalamityMod.EvilSmasher.DemonAltar";
+                        if (DialogueDisplaySystem.ContainsDialogueKey(type))
+                            DialogueDisplaySystem.RemoveDialogue(DialogueDisplaySystem.GetSlot(type));
+                        DialogueDisplaySystem.StartDialogueOnClient(type, new Vector2(tilePos.X * 16 + 16, tilePos.Y * 16), DemonAltarDialogueCounter, 180, false, new AltarText());
+                        DemonAltarDialogueCounter++;
+                        DemonAltarDialogueCooldown = 300;
+                        if (DemonAltarDialogueCounter >= 4)
+                        {
+                            DemonAltarDialogueCooldown = 3600;
+                            DemonAltarDialogueCounter = 0;
+                        }
+                        return;
+                    }
+                }
+            }
+        }
         private void MiscEffects()
         {
+            if (Player.inventory.Any(x => x.type == ItemID.Pwnhammer) && !Player.inventory.Any(x => x.type == ModContent.ItemType<EvilSmasher>()) && Player.adjTile[TileID.DemonAltar] && DemonAltarDialogueCooldown <= 0 && Player.miscCounter % 30 == 0)
+            {
+                DemonAltarTalking();
+            }
+
             //Mana Burn update
             if (ManaBurnFireDrawer != null)
             {
@@ -1399,6 +1334,9 @@ namespace CalamityMod.CalPlayer
                         Player.lavaTime++;
                 }
             }
+            // Extra DoT in the lava of the crags. Negated by Flame-licked Shell.
+            else if (ZoneCalamity && !flameLickedShell)
+                    Player.AddBuff(ModContent.BuffType<SearingLava>(), 2, false);
 
             // Release irradiated slimes from the sky during the Acid Rain event.
             if (Player.whoAmI == Main.myPlayer)
@@ -1689,10 +1627,9 @@ namespace CalamityMod.CalPlayer
             }
 
             // The fire boots debuff boosts
-            if (hellfireTreads)
-                HeatDebuffMultiplier += 0.5f;
-            else if (flameWakerBoots)
-                HeatDebuffMultiplier += 0.25f;
+            // bootLevel exists SO THAT THEY DO NOT STACK. Please help me maintain my sanity so we're not "fixing" this issue seventy times
+            if (bootLevel > 0)
+                HeatDebuffMultiplier += 0.25f * bootLevel;
 
             if (rOfResilienceEffect > 0)
                 rOfResilienceEffect--;
@@ -1890,7 +1827,7 @@ namespace CalamityMod.CalPlayer
                 {
                     if (numOfEnergy < energyCap)
                     {
-                        int energyDamage = (int)Player.GetBestClassDamage().ApplyTo(22);
+                        int energyDamage = (int)Player.GetBestClassDamage().ApplyTo(8);
                         Projectile energy = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, (Vector2.One * 4).RotatedByRandom(MathHelper.TwoPi), ModContent.ProjectileType<AmuletEnergy>(), energyDamage, 0f, Player.whoAmI, 0, numOfEnergy);
                         if (numOfEnergy + 1 == energyCap && Player.Calamity().sSpiritAmuletVisual)
                         {
@@ -2239,8 +2176,6 @@ namespace CalamityMod.CalPlayer
                 raiderSoundCooldown--;
             if (astralStarRainCooldown > 0)
                 astralStarRainCooldown--;
-            if (AbaddonCooldown > 0)
-                AbaddonCooldown--;
             if (VoidCooldown > 0)
                 VoidCooldown--;
             if (ursaSergeantCooldown > 0)
@@ -3618,11 +3553,6 @@ namespace CalamityMod.CalPlayer
                 if (Player.HeldItem.type != ModContent.ItemType<PridefulHuntersPlanarRipper>())
                     planarSpeedBoost = 0;
             }
-            if (evilSmasherBoost > 0)
-            {
-                if (Player.HeldItem.type != ModContent.ItemType<EvilSmasher>())
-                    evilSmasherBoost = 0;
-            }
 
             // Flight time boosts
             double flightTimeMult = 1D +
@@ -4424,82 +4354,6 @@ namespace CalamityMod.CalPlayer
         }
         #endregion
 
-        #region Lucrecia Line Effects
-
-        public void HandleLucreciaLineEffects()
-        {
-            int lucreciaItemID = ModContent.ItemType<Lucrecia>();
-            int lightspeedItemID = ModContent.ItemType<Lightspeed>();
-
-            if (Player.HeldItem.type == lucreciaItemID && darklightEnergy > 0)
-            {
-                lucreciaParticleTimer--;
-
-                // If the timer is at or below zero, spawn a particle.
-                if (lucreciaParticleTimer <= 0)
-                {
-                    // Reset the timer (spawn rate depends on energy)
-                    lucreciaParticleTimer = (int)(20 - 15 * (darklightEnergy / 60));
-
-                    float radius = Main.rand.NextFloat(160f, 190f); // Distance from center
-                    float spawnAngle = Main.rand.NextFloat(MathHelper.TwoPi); // Random angle along the whole radius
-
-                    Vector2 spawnPosition = Player.Center + spawnAngle.ToRotationVector2() * radius;
-
-                    // Scale opacity with energy
-                    float opacity = darklightEnergy / (float)Lucrecia.MaxEnergy;
-                    Color color = Main.rand.NextBool() ? Color.MediumPurple : Color.CornflowerBlue;
-                    color *= opacity * 0.5f;
-
-                    if (darklightEnergy >= 100)
-                    {
-                        color *= 2.4f; // Way brighter
-                    }
-
-                    Vector2 dummyVelocity = Vector2.Zero; // We dont want the argument where this is used to have influence on the actual path
-                    float rotationSpeed = 0.04f;
-
-                    var particle = new RoundedStarParticle(spawnPosition, dummyVelocity, color with { A = 0 }, Main.rand.NextFloat(0.05f, 0.065f), Main.rand.Next(30, 60), rotationSpeed, 1f, true, Player.Center, Player.whoAmI);
-                    GeneralParticleHandler.SpawnParticle(particle);
-                }
-            }
-
-            if (Player.HeldItem.type == lightspeedItemID && elementalMastery > 0)
-            {
-                lucreciaParticleTimer--;
-
-                // If the timer is at or below zero, spawn a particle.
-                if (lucreciaParticleTimer <= 0)
-                {
-                    // Reset the timer (spawn rate depends on energy)
-                    lucreciaParticleTimer = (int)(20 - 15 * (elementalMastery / 60));
-
-                    float radius = Main.rand.NextFloat(160f, 190f); // Distance from center
-                    float spawnAngle = Main.rand.NextFloat(MathHelper.TwoPi); // Random angle along the whole radius
-
-                    Vector2 spawnPosition = Player.Center + spawnAngle.ToRotationVector2() * radius;
-
-                    // Scale opacity with energy
-                    float opacity = elementalMastery / (float)Lightspeed.MaxEnergy;
-                    Color color = Main.rand.NextBool() ? Color.Aqua : Color.OrangeRed;
-                    color *= opacity * 0.5f;
-
-                    if (elementalMastery >= 100)
-                    {
-                        color *= 2.4f; // Way brighter
-                    }
-
-                    Vector2 dummyVelocity = Vector2.Zero; // We dont want the argument where this is used to have influence on the actual path
-                    float rotationSpeed = 0.04f;
-
-                    var particle = new RoundedStarParticle(spawnPosition, dummyVelocity, color with { A = 0 }, Main.rand.NextFloat(0.05f, 0.065f), Main.rand.Next(30, 60), rotationSpeed, 1f, true, Player.Center, Player.whoAmI);
-                    GeneralParticleHandler.SpawnParticle(particle);
-                }
-            }
-        }
-        #endregion
-
-
         #region Energy Shields
         private void EnergyShields()
         {
@@ -4786,7 +4640,7 @@ namespace CalamityMod.CalPlayer
                         {
                             totalDefenseDamage = 0;
                             defenseDamageRecoveryFrames = 0;
-                            totalDefenseDamageRecoveryFrames = DefenseDamageBaseRecoveryTime * (moonshine ? 2 : 1);
+                            totalDefenseDamageRecoveryFrames = DefenseDamageBaseRecoveryTime;
                             defenseDamageDelayFrames = 0;
                         }
                     }

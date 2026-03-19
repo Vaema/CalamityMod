@@ -22,6 +22,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.width = 76;
             Item.height = 42;
             Item.damage = 56;
+            Item.crit = 21;
             Item.useTime = 30;
             Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -36,9 +37,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ModContent.ProjectileType<BuzzkillHoldout>();
             Item.shootSpeed = 20f;
         }
-
-        // Terraria seems to really dislike high crit values in SetDefaults
-        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 21;
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
 

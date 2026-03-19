@@ -290,9 +290,12 @@ namespace CalamityMod.NPCs
         public bool absorberAffliction = false;
         public bool irradiated = false;
         public double irradiatedContactBoost = 1.5;
+        public bool bane = false;
+        public float baneVisual = 0;
         public bool brimstoneFlames = false;
         public bool demonicFlames = false;
         public int demonicFlamesBonusDamage = 0;
+        public int demonicFlamesClearTimer = 0;
         public bool holyFlames = false;
         public bool plague = false;
         public bool armorCrunch = false;
@@ -300,6 +303,8 @@ namespace CalamityMod.NPCs
 
         public int antlionCloudDebuffTimer = 0;
         public bool scionsCurioEffected = false;
+        public bool abaddonEffected = false;
+        public bool apollyonEffected = false;
         public int warbannerBurnTime = 0; // Determines the rate that the enemy is damaged
         public int warbannerBurnTimer = 0; // The duration of the debuff
         public int warbannerBurnStacks = 0; // The stacks increase how fast the debuff hits
@@ -566,9 +571,12 @@ namespace CalamityMod.NPCs
             myClone.absorberAffliction = absorberAffliction;
             myClone.irradiated = irradiated;
             myClone.irradiatedContactBoost = irradiatedContactBoost;
+            myClone.bane = bane;
+            myClone.baneVisual = baneVisual;
             myClone.brimstoneFlames = brimstoneFlames;
             myClone.demonicFlames = demonicFlames;
             myClone.demonicFlamesBonusDamage = demonicFlamesBonusDamage;
+            myClone.demonicFlamesClearTimer = demonicFlamesClearTimer;
             myClone.holyFlames = holyFlames;
             myClone.plague = plague;
             myClone.armorCrunch = armorCrunch;
@@ -576,6 +584,8 @@ namespace CalamityMod.NPCs
 
             myClone.antlionCloudDebuffTimer = antlionCloudDebuffTimer;
             myClone.scionsCurioEffected = scionsCurioEffected;
+            myClone.abaddonEffected = abaddonEffected;
+            myClone.apollyonEffected = apollyonEffected;
             myClone.warbannerBurnTime = warbannerBurnTime;
             myClone.warbannerBurnTimer = warbannerBurnTimer;
             myClone.warbannerBurnStacks = warbannerBurnStacks;
@@ -769,9 +779,8 @@ namespace CalamityMod.NPCs
             irradiated = false;
             if (scionsCurioEffected)
                 irradiatedContactBoost = 2f;
+            bane = false;
             brimstoneFlames = false;
-            if (!demonicFlames)
-                demonicFlamesBonusDamage = 0;
             demonicFlames = false;
             holyFlames = false;
             plague = false;
@@ -891,11 +900,6 @@ namespace CalamityMod.NPCs
             {
                 ActiveWaterDebuffMultiplier += 1;
             }
-
-            if (npc.HasBuff<SearingLava>()) //Searing Lava is so hot it makes cold less strong
-            {
-                ActiveColdDebuffMultiplier -= 0.5f;
-            }
             if (VulnerableToHeat.HasValue)
             {
                 if (VulnerableToHeat.Value)
@@ -1013,6 +1017,7 @@ namespace CalamityMod.NPCs
                     dmg += 480; // 240 DPS
                     blazingStarShredTimer--;
                 }
+                dmg = (int)ActiveTypelessDebuffMultiplier.ApplyTo(dmg);
                 npc.lifeRegenCount -= dmg;
                 if (damage < dmg / 12) // 1/6th of the DPS dealt by Glaive Shred shows up as the indicator, unless another debuff does more per tick
                     damage = dmg / 12;
@@ -3132,6 +3137,12 @@ namespace CalamityMod.NPCs
                 if (!Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].head))
                     npc.ai[3] = 0f;
             }
+            if (demonicFlames)
+                demonicFlamesClearTimer = 0;
+            else
+                demonicFlamesClearTimer++;
+            if (demonicFlamesClearTimer >= 2)
+                demonicFlamesBonusDamage = 0;
 
             if (warbannerBurnTimer > 0)
                 warbannerBurnTimer--;
@@ -3207,6 +3218,11 @@ namespace CalamityMod.NPCs
                 }
                 warbannerBurnTime--;
             }
+            float fadeSpeed = 0.15f;
+            if (bane)
+                baneVisual = MathHelper.Lerp(baneVisual, 1, fadeSpeed);
+            else if (baneVisual > 0)
+                baneVisual = MathHelper.Lerp(baneVisual, 0, fadeSpeed);
 
             if (veriumDoomTimer > 0)
                 veriumDoomTimer--;
@@ -4662,6 +4678,9 @@ namespace CalamityMod.NPCs
             if (astralInfection)
                 AstralInfectionDebuff.DrawEffects(npc, ref drawColor);
 
+            if (bane || baneVisual > 0.05f)
+                Bane.DrawEffects(npc, ref drawColor);
+
             // Brimstone Flames and Demonshade Enrage set bonus share the same visual effects
             // TODO -- change this when Demonshade is reworked
             if (brimstoneFlames || npc.HasBuff<Enraged>())
@@ -4929,6 +4948,7 @@ namespace CalamityMod.NPCs
             // All Calamity DoTs in alphabetical order
             ("CalamityMod/Buffs/DamageOverTime/AstralInfectionDebuff", NPC => NPC.Calamity().astralInfection),
             ("CalamityMod/Buffs/DamageOverTime/AuricRebuke", NPC => NPC.Calamity().auricRebuke),
+            ("CalamityMod/Buffs/DamageOverTime/Bane", NPC => NPC.Calamity().bane),
             ("CalamityMod/Buffs/DamageOverTime/BanishingFire", NPC => NPC.Calamity().banishingFire),
             ("CalamityMod/Buffs/DamageOverTime/BrainRot", NPC => NPC.Calamity().brainRot),
             ("CalamityMod/Buffs/DamageOverTime/BrimstoneFlames", NPC => NPC.Calamity().brimstoneFlames),
@@ -4971,6 +4991,7 @@ namespace CalamityMod.NPCs
             ("CalamityMod/Buffs/StatDebuffs/MarkedforDeath", NPC => NPC.Calamity().markedForDeath),
             ("CalamityMod/Buffs/StatDebuffs/PearlAura", NPC => NPC.Calamity().pearlAura),
             ("CalamityMod/Buffs/StatDebuffs/ProfanedWeakness", NPC => NPC.Calamity().relicOfResilienceWeakness),
+            ("CalamityMod/Buffs/StatBuffs/SmashedEvil", NPC => NPC.HasBuff<SmashedEvil>()),
             ("CalamityMod/Buffs/StatDebuffs/TemporalSadness", NPC => NPC.Calamity().temporalSadness),
             ("CalamityMod/Buffs/StatDebuffs/TimeDistortion", NPC => NPC.Calamity().timeDistortion),
             ("CalamityMod/Buffs/StatDebuffs/WhisperingDeath", NPC => NPC.Calamity().whisperingDeath),

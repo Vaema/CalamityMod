@@ -514,7 +514,7 @@ SeaKing: {
 		DoGDefeated3: The Devourer of Gods is truly an enigma. Some say it's not even from this world at all. What is known is that he is a being that can devour the essence of gods entirely, leaving absolutely nothing left. It's no wonder Yharim recruited that monster.
 		PolterghastDefeated1: The Abyss holds many secrets revealed with time. Checking it out again may not be a bad idea.
 		PolterghastDefeated2: Ah... I can sense a powerful change in the weather. You may want to venture to the Sulphurous Seas once more during the rain to experience it.
-		ProvidenceDefeated1: The Rune of Kos holds a significant portion of Providence's brand of magic, easily distinguishable from all others. Activating it in certain places would have some... risky consequences.
+		ProvidenceDefeated1: The Mark of Providence holds a significant portion of her brand of magic, easily distinguishable from all others. Activating it in certain places would have some... risky consequences.
 		ProvidenceDefeated2: I do wonder what has happened to Braelor and Statis. I have heard or seen very little of either. In my days, both were great heroes to those who worshiped the gods. Have they been killed, captured, or are they simply in hiding?
 		MoonLordDefeated1: Your adventure focuses to the jungle it seems. The Dragonfolly and its swarming offspring should be eliminated before their numbers spiral out of control.
 		MoonLordDefeated2: Profaned creatures now lurk in the Hallow and in Hell. If you destroy enough and gather their essence together you shall be able to capture the attention of the Profaned Guardians.
@@ -567,3 +567,4 @@ Dragonfolly.DisplayName: Dragonfolly
 Shoreskipper.DisplayName: Shoreskipper
 BrainIllusion.DisplayName: Brain Illusion
 FalseBrain.DisplayName: False Brain
+BloodBomb.DisplayName: Blood Bomb

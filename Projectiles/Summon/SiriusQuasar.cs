@@ -14,6 +14,7 @@ namespace CalamityMod.Projectiles.Summon
         public new string LocalizationCategory => "Projectiles.Summon";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
+        bool hasExploded = false;
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.MinionShot[Type] = true;
@@ -75,8 +76,9 @@ namespace CalamityMod.Projectiles.Summon
             //Due to Sirius's high Starburst consumption, it inflicts long amounts of Voidfrost on hit
             target.AddBuff(ModContent.BuffType<Voidfrost>(), 600);
             float x4 = Main.rgbToHsl(new Color(103, 203, Main.DiscoB)).X;
-            if (Projectile.numHits == 0)
+            if (!hasExploded && !target.Calamity().IsArmored())
             {
+                hasExploded = true;
                 SoundStyle fire = new("CalamityMod/Sounds/Item/ScorpioNukeHit");
                 SoundEngine.PlaySound(fire with { Volume = 0.75f, Pitch = 0.6f, PitchVariance = 0.2f }, Projectile.Center);
                 float numberOfDusts = 156f;

@@ -118,11 +118,12 @@ namespace CalamityMod.Projectiles.Summon
                     CircleOwner();
                     break;
                 case AIState.TransitionToLaunch:
-                    ChargeTargetPos = Owner.Calamity().mouseWorld;
+                    Owner.Calamity().mouseWorldListener = true;
+                    ChargeTargetPos = Owner.Calamity().mouseWorldDeltaFromPlayer;
                     ChargeStartPos = Owner.Center;
                     CurrentState = AIState.LaunchAtPos;
                     AITimer = 0;
-                    Projectile.penetrate = 50;
+                    Projectile.penetrate = 15;
                     LaunchAtTargetPos();
                     break;
                 case AIState.LaunchAtPos:
@@ -161,13 +162,11 @@ namespace CalamityMod.Projectiles.Summon
 
         public void LaunchAtTargetPos()
         {
-            Projectile.damage = Projectile.originalDamage;
-            if (Projectile.penetrate > 40) //First 10 hits do 2x damage
-                Projectile.damage *= 2;
             int chargeTime = IgneousExaltation.ChargeDuration * 2;
             int chargeLength = 2000;
             float circleWidth = Math.Min(75, Owner.ownedProjectileCounts[Type] * 4);
-            var CurrentPlace = Vector2.Lerp(ChargeStartPos, ChargeStartPos + ChargeStartPos.DirectionTo(ChargeTargetPos) * chargeLength, MathF.Pow(AITimer / chargeTime, 3));
+            var CurrentPlace = Vector2.Lerp(ChargeStartPos, ChargeStartPos + ChargeTargetPos.SafeNormalize(Vector2.UnitX) * chargeLength, MathF.Pow(AITimer / chargeTime, 3));
+
             Projectile.Center = CurrentPlace + BladeHoverOffsetAngle.ToRotationVector2() * Math.Max(MathHelper.Lerp(100f, 25f, AITimer / 10f), circleWidth);
             Projectile.rotation = Projectile.AngleFrom(CurrentPlace) + MathHelper.PiOver2;
             if (AITimer >= chargeTime)
@@ -193,9 +192,14 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            if (Projectile.penetrate >= 10) // First 5 hits deal 2x dmg
+                modifiers.SourceDamage *= 2;
+        }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (Projectile.penetrate >= 40 && CurrentState != AIState.CircleOwner) //The first 10 hits per launch can spawn blades
+            if (Projectile.penetrate >= 10 && CurrentState != AIState.CircleOwner) //The first 5 hits per launch can spawn blades
                 if (Main.myPlayer == Projectile.owner)
                 {
                     for (int i = 0; i < 1; i++)

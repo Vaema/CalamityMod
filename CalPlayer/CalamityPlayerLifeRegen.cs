@@ -115,13 +115,14 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(crushDepth, 18, purity);
             ApplyDoTDebuff(astralInfection, 24, infectedJewel || hideOfDeus || purity);
             ApplyDoTDebuff(shadowflame, 30, purity);
-            ApplyDoTDebuff(brimstoneFlames, (int)MathF.Round(30 * (abaddon ? (1f - Abaddon.BrimstoneFlamesReduction) : 1f)), purity);
-            ApplyDoTDebuff(plague, (int)MathF.Round(30 * (abaddon ? (1f - AlchemicalDecanter.PlagueReduction) : 1f)), purity);
+            ApplyDoTDebuff(brimstoneFlames, 30, purity);
+            ApplyDoTDebuff(plague, (int)MathF.Round(30 * (alchFlask ? (1f - AlchemicalDecanter.PlagueReduction) : 1f)), purity);
             ApplyDoTDebuff(vHex, 30); // Has other effects
             ApplyDoTDebuff(searingLava, 30);
             ApplyDoTDebuff(demonicFlames, 33, purity); // Never inflicted on the player
             ApplyDoTDebuff(laceration, 36, purity);
             ApplyDoTDebuff(daybroken, 40, purity);
+            ApplyDoTDebuff(bane, 40, purity);
             ApplyDoTDebuff(nightwither, 40, purity);
             ApplyDoTDebuff(holyFlames, 40, purity);
             ApplyDoTDebuff(voidfrost, 40, purity);
@@ -340,6 +341,15 @@ namespace CalamityMod.CalPlayer
 
                 Player.lifeRegen += 6;
             }
+
+            if (grandDadHealTimer == 0 && grandDadHealPool >= 7)
+            {
+                Player.HealPlayer(7, HealTextType.Broadcast);
+                grandDadHealPool -= 7;
+                grandDadHealTimer = (int)(30 * Utils.GetLerpValue(260, 60, grandDadHealPool, true));
+            }
+            else if (grandDadHealTimer > 0)
+                grandDadHealTimer--;
 
             // Grant life regen based on missing health for Radiant Ooze, Ambrosial Ampule, and purity
             if (rOoze || aAmpoule || purity)
@@ -575,6 +585,12 @@ namespace CalamityMod.CalPlayer
 
             if (silvaSet)
                 Player.lifeRegen += SilvaArmor.SetBonusRegenBoost;
+
+            if (angelicAlliance)
+            {
+                if (Player.wingTime < Player.wingTimeMax)
+                    Player.lifeRegen += AngelicAlliance.RegenBoostDuringFlight;
+            }
 
             if (phantomicHeartRegen > 0 && phantomicHeartRegen < 1000)
             {
