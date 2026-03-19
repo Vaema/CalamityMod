@@ -571,17 +571,6 @@ namespace CalamityMod.CalPlayer
             {
                 if (Player.whoAmI == Main.myPlayer)
                 {
-                    // Hallowed Armor nerf
-                    if (Player.onHitDodge)
-                    {
-                        for (int l = 0; l < Player.MaxBuffs; l++)
-                        {
-                            int hasBuff = Player.buffType[l];
-                            if (Player.buffTime[l] > 600 && hasBuff == BuffID.ShadowDodge)
-                                Player.buffTime[l] = 600;
-                        }
-                    }
-
                     // Immunity Frames nerf
                     int immuneTimeLimit = 150;
                     if (Player.immuneTime > immuneTimeLimit)

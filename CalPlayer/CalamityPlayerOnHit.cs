@@ -54,7 +54,7 @@ namespace CalamityMod.CalPlayer
 
             if (AdamantiteSet)
             {
-                adamantiteSetDefenseBoostInterpolant += 1.75f / AdamantiteArmorSetChange.TimeUntilBoostCompletelyDecays;
+                adamantiteSetDefenseBoostInterpolant += 1f / AdamantiteArmorSetChange.TimeUntilBoostCompletelyDecays;
                 adamantiteSetDefenseBoostInterpolant = MathHelper.Clamp(adamantiteSetDefenseBoostInterpolant, 0f, 1f);
                 AdamantiteSetDecayDelay = AdamantiteArmorSetChange.TimeUntilDecayBeginsAfterAttacking;
             }
