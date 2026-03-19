@@ -53,7 +53,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Dust dust = Dust.NewDustPerfect(GunTipPosition + (-Projectile.velocity.RotatedBy(0.15 * Projectile.direction) * 50), dustType);
                 dust.scale = Main.rand.NextFloat(1.2f, 1.8f) * (Owner.Calamity().sharkGunDamageScaling * 0.02f) - rotMulti * 0.1f;
                 dust.noGravity = true;
-                dust.velocity = new Vector2(-1.2f, -2).RotatedBy(Projectile.rotation).RotatedByRandom(rotMulti * 0.8f) * (Main.rand.NextFloat(1f, 3.2f) - rotMulti) * (Owner.Calamity().sharkGunDamageScaling * 0.015f);
+                dust.velocity = new Vector2(-1.2f, -2).RotatedBy(Projectile.rotation + (Projectile.direction == -1 ? MathHelper.TwoPi * 0.75f : 0)).RotatedByRandom(rotMulti * 0.8f) * (Main.rand.NextFloat(1f, 3.2f) - rotMulti) * (Owner.Calamity().sharkGunDamageScaling * 0.015f);
                 dust.alpha = Main.rand.Next(90, 150);
                 dust.color = Main.rand.NextBool() ? Color.Indigo : Color.DarkBlue;
             }
