@@ -4764,7 +4764,7 @@ namespace CalamityMod.Projectiles
             if (projectile.type != ProjectileType<HyperiusBulletProj>() && projectile.type != ProjectileType<HyperiusSplit>() && projectile.type != ProjectileType<HyperiusDamage>() && projectile.type != ProjectileType<HyperiusBleed>() && target.Calamity().hyperiusMarked)
             {
                 int damageDealt = (int)(damageDone * HyperiusBullet.overflowAppliedMult);
-                int damage = (int)Math.Min(target.Calamity().hyperiusDamage, damageDealt);
+                int damage = (int)MathF.Min(target.Calamity().hyperiusDamage / HyperiusBullet.overflowEfficency, damageDealt);
 
                 target.Calamity().hyperiusDamage -= (int)(damage * HyperiusBullet.overflowEfficency);
 
