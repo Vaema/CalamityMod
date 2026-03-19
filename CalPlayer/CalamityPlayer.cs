@@ -61,7 +61,6 @@ using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Melee;
-using CalamityMod.Projectiles.Melee.Shortswords;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
@@ -86,7 +85,6 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using Terraria.Net;
-using Terraria.WorldBuilding;
 using static Terraria.Main;
 using static Terraria.ModLoader.ModContent;
 
@@ -380,6 +378,8 @@ namespace CalamityMod.CalPlayer
         /// <summary> Variable used to track if Auger can do its big slash attack. </summary>
         public bool buffedAuger = false;
 
+        public int rOfResilienceBaseTimeMax = 300;
+        public int rOfResilienceMaxPowerTime = 1800;
         public int rOfResilienceCooldown = 0;
         public int rOfResilienceEffect = 0;
         public int rOfResilienceOrbitOffset = 0;

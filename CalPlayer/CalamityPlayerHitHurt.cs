@@ -1358,7 +1358,7 @@ namespace CalamityMod.CalPlayer
                 rOfResilienceCooldown = cooldownTime;
                 Player.AddCooldown(Cooldowns.RelicOfResilienceCooldown.ID, cooldownTime);
                 SoundStyle youGotHit = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianRockShieldActivate");
-                SoundEngine.PlaySound(youGotHit with { Volume = 0.7f, Pitch = -0.1f }, Player.Center);
+                SoundEngine.PlaySound(youGotHit with { Volume = 0.7f, Pitch = -0.5f }, Player.Center);
             }
 
             if (alchFlask)
