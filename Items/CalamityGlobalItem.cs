@@ -192,25 +192,25 @@ namespace CalamityMod.Items
             stats[(int)VanillaWingID.FrozenWings].AccRunAccelerationMult = 1.5f;
             // 160 -> 130 flight time
             stats[(int)VanillaWingID.FlameWings].FlyTime = 130;
-            // 160 -> 180 flight time, 7.5 -> 6.25 horizontal speed
+            // 160 -> 180 flight time, 7.5 -> 6.75 horizontal speed
             stats[(int)VanillaWingID.BatWings].FlyTime = 180;
-            stats[(int)VanillaWingID.BatWings].AccRunSpeedOverride = 6.25f;
+            stats[(int)VanillaWingID.BatWings].AccRunSpeedOverride = 6.75f;
             // 1 -> 1.5 acceleration multiplier
             stats[(int)VanillaWingID.ButterflyWings].AccRunAccelerationMult = 1.5f;
 
             // 170 -> 240 flight time
             stats[(int)VanillaWingID.BoneWings].FlyTime = 240;
-            // 160 -> 170 flight time, 7.5 -> 9 horizontal speed, 1 -> 1.5 acceleration multiplier
+            // 160 -> 170 flight time, 7.5 -> 9 horizontal speed, 1 -> 2 acceleration multiplier
             stats[(int)VanillaWingID.LeafWings].FlyTime = 170;
             stats[(int)VanillaWingID.LeafWings].AccRunSpeedOverride = 9f;
-            stats[(int)VanillaWingID.LeafWings].AccRunAccelerationMult = 1.5f;
-            // (Spectre Wings) 1 -> 2 acceleration multiplier
-            stats[(int)VanillaWingID.GhostWings].AccRunAccelerationMult = 2f;
+            stats[(int)VanillaWingID.LeafWings].AccRunAccelerationMult = 2f;
+            // (Spectre Wings) 1 -> 1.5 acceleration multiplier
+            stats[(int)VanillaWingID.GhostWings].AccRunAccelerationMult = 1.5f;
 
             // 170 -> 210 flight time
             stats[(int)VanillaWingID.BeetleWings].FlyTime = 210;
-            // 180 -> 210 flight time
-            stats[(int)VanillaWingID.TatteredFairyWings].FlyTime = 210;
+            // 180 -> 300 flight time
+            stats[(int)VanillaWingID.TatteredFairyWings].FlyTime = 300;
             // (Empress Wings) 150 -> 120 flight time
             stats[(int)VanillaWingID.RainbowWings].FlyTime = 120;
 
@@ -1222,12 +1222,12 @@ namespace CalamityMod.Items
             }
 
             if (item.type == ItemID.DemonWings && !player.mount.Active)
-                player.maxFallSpeed *= 1.3f;
+                player.maxFallSpeed *= 1.2f;
 
             if (item.type == ItemID.BeeWings && !player.mount.Active && !player.controlDown)
             {
-                player.gravity *= 0.6f;
-                player.maxFallSpeed *= 0.6f;
+                player.gravity *= 0.75f;
+                player.maxFallSpeed *= 0.75f;
             }
 
             if (item.type == ItemID.FinWings)
@@ -1308,24 +1308,22 @@ namespace CalamityMod.Items
             switch (item.type)
             {
                 case ItemID.AngelWings:
-                    maxAscentMultiplier *= 1.3f;
-                    constantAscend *= 1.5f;
-                    break;
-                case ItemID.DemonWings:
-                    ascentWhenFalling *= 2f;
-                    ascentWhenRising *= 2f;
-                    maxCanAscendMultiplier *= 2f;
-                    break;
-                case ItemID.FlameWings:
                     maxAscentMultiplier *= 1.2f;
                     constantAscend *= 1.35f;
                     break;
+                case ItemID.DemonWings:
+                    ascentWhenFalling *= 2f;
+                    break;
+                case ItemID.FlameWings:
+                    maxAscentMultiplier *= 1.1067f;
+                    constantAscend *= 1.25f;
+                    break;
                 case ItemID.ButterflyWings:
-                    maxAscentMultiplier *= 0.9f;
+                    maxAscentMultiplier *= 0.6667f;
                     constantAscend *= 5f;
                     break;
                 case ItemID.GhostWings:
-                    maxAscentMultiplier *= 0.904f;
+                    maxAscentMultiplier *= 0.6025f;
                     constantAscend *= 5f;
                     break;
                 default:
