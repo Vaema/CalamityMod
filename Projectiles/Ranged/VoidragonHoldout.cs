@@ -1,22 +1,14 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Weapons.Ranged;
+﻿using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ModLoader;
 using Terraria.ID;
-using Steamworks;
-using Mono.Cecil;
-using Newtonsoft.Json.Serialization;
 using CalamityMod.Dusts;
-using static System.Net.Mime.MediaTypeNames;
-using System;
-using System.Runtime.CompilerServices;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -28,6 +20,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override float BaseOffsetY => -1f;
         public override float OffsetYDownwards => 5f;
         public override Vector2 GunTipPosition => Projectile.Center + (Projectile.velocity * 55).RotatedBy(-0.09f * Projectile.direction);
+        public const float LaserAimLag = 0.92f; // Last Prism-esque aim lag. Higher = Slower. Last Prism is 0.92f.
 
         public int Time = 0;
         public int beamTimer = 500;
@@ -89,19 +82,6 @@ namespace CalamityMod.Projectiles.Ranged
                     #region Visuals and Sounds
                     SoundStyle fire = new("CalamityMod/Sounds/Item/GunShotTiny");
                     SoundEngine.PlaySound(fire with { Volume = 0.4f, Pitch = 0.1f, PitchVariance = 0.1f, MaxInstances = -1 }, Projectile.Center);
-                    Particle sparker = new CustomPulse(GunTipPosition, Vector2.Zero, Color.Purple, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 0.02f, 0.5f, 6, true, 0.8f);
-                    GeneralParticleHandler.SpawnParticle(sparker);
-                    Particle center = new SnowflakeSparkle(GunTipPosition, Vector2.Zero, Color.White, Color.Indigo, 0.8f, 2, Main.rand.NextFloat(-10, 10), 0.5f, 7);
-                    GeneralParticleHandler.SpawnParticle(center);
-                    GenericSparkle sparker2 = new GenericSparkle(GunTipPosition, Vector2.Zero, Main.rand.NextBool() ? Color.Indigo : Color.BlueViolet * 0.9f, Color.Indigo, Main.rand.NextFloat(1.4f, 1.6f), 2, 0, 2.22f);
-                    GeneralParticleHandler.SpawnParticle(sparker2);
-                    GenericSparkle sparker3 = new GenericSparkle(GunTipPosition, Vector2.Zero, Main.rand.NextBool() ? Color.Indigo : Color.BlueViolet * 0.9f, Color.Indigo, Main.rand.NextFloat(2.5f, 2.6f), 2, 0, 2.68f);
-                    GeneralParticleHandler.SpawnParticle(sparker3);
-                    for (int i = 0; i <= 2; i++)
-                    {
-                        Particle spark = new VoidSparkParticle(GunTipPosition, shootVelocity.RotatedByRandom(0.8f) * Main.rand.NextFloat(1.2f, 1.5f), false, 25, 0.1f, Main.rand.NextBool() ? Color.Indigo : Color.BlueViolet);
-                        GeneralParticleHandler.SpawnParticle(spark);
-                    }
                     for (int i = 0; i <= 4; i++)
                     {
                         Dust dust = Dust.NewDustPerfect(GunTipPosition, Main.rand.NextBool(3) ? 303 : 244, (shootVelocity * Main.rand.NextFloat(0.2f, 1.1f)).RotatedByRandom(0.4f));
@@ -110,6 +90,23 @@ namespace CalamityMod.Projectiles.Ranged
                         Particle smoke = new HeavySmokeParticle(GunTipPosition, Vector2.Zero, Main.rand.NextBool() ? Color.Black : Color.Indigo * 0.6f, 10, 0.85f, 1.1f, 5f, false, 0, true);
                         GeneralParticleHandler.SpawnParticle(smoke);
                     }
+                    for (int i = 0; i <= 2; i++)
+                    {
+                        Particle spark = new VoidSparkParticle(GunTipPosition, shootVelocity.RotatedByRandom(0.8f) * Main.rand.NextFloat(1.2f, 1.5f), false, 25, 0.1f, Main.rand.NextBool() ? Color.Indigo : Color.BlueViolet);
+                        GeneralParticleHandler.SpawnParticle(spark);
+                    }
+                    Particle sparker = new CustomPulse(GunTipPosition, Vector2.Zero, Color.Purple, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 0.02f, 0.5f, 2, true, 0.8f);
+                    GeneralParticleHandler.SpawnParticle(sparker);
+                    sparker.DrawLayer = Enums.GeneralDrawLayer.AfterEverything;
+                    GenericSparkle sparker2 = new GenericSparkle(GunTipPosition, Vector2.Zero, Main.rand.NextBool() ? Color.Indigo : Color.BlueViolet * 0.9f, Color.Indigo, Main.rand.NextFloat(1.4f, 1.6f), 2, 0, 2.22f);
+                    GeneralParticleHandler.SpawnParticle(sparker2);
+                    sparker2.DrawLayer = Enums.GeneralDrawLayer.AfterEverything;
+                    GenericSparkle sparker3 = new GenericSparkle(GunTipPosition, Vector2.Zero, Main.rand.NextBool() ? Color.Indigo : Color.BlueViolet * 0.9f, Color.Indigo, Main.rand.NextFloat(2.5f, 2.6f), 2, 0, 2.68f);
+                    GeneralParticleHandler.SpawnParticle(sparker3);
+                    Particle center = new SnowflakeSparkle(GunTipPosition, Vector2.Zero, Color.GhostWhite, Color.Indigo, 0.8f, 2, Main.rand.NextFloat(-10, 10), 0.5f, 7);
+                    GeneralParticleHandler.SpawnParticle(center);
+                    center.DrawLayer = Enums.GeneralDrawLayer.AfterEverything;
+                    sparker3.DrawLayer = Enums.GeneralDrawLayer.AfterEverything;
                     if (swapType)
                     {
                         float rotation = Projectile.velocity.ToRotation();
@@ -187,6 +184,23 @@ namespace CalamityMod.Projectiles.Ranged
                 }
             }
             Time++;
+        }
+        public override void ManageHoldout()
+        {
+            Vector2 storedVelocity = Projectile.velocity;
+            base.ManageHoldout();
+
+            if (firingBeam)
+            {
+                Vector2 aimVector = (Main.MouseWorld - Owner.RotatedRelativePoint(Owner.MountedCenter, true)).SafeNormalize(Vector2.UnitY);
+                aimVector = Vector2.Normalize(Vector2.Lerp(aimVector, Vector2.Normalize(storedVelocity), LaserAimLag));
+
+                if (aimVector != storedVelocity)
+                    Projectile.netUpdate = true;
+                Projectile.velocity = aimVector;
+
+                Projectile.rotation = Projectile.velocity.ToRotation();
+            }
         }
         public override bool PreDraw(ref Color lightColor)
         {

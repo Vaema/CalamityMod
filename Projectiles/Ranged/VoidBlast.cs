@@ -1,18 +1,11 @@
 ﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Dusts;
-using CalamityMod.Packets.Entities;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Typeless;
-using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
@@ -82,11 +75,6 @@ namespace CalamityMod.Projectiles.Ranged
             blast.localAI[1] = debuffTime;
             blast.timeLeft = 2;
             blast.DamageType = Projectile.DamageType;
-            for (int i = 0; i < 2; i++)
-            {
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Main.rand.NextVector2Circular(6f, 6f), ModContent.ProjectileType<RancorFog>(), 0, 0f, Projectile.owner, 0f, 2f);
-            }
-
             #region Visuals and Sounds
             SoundStyle fire = new("CalamityMod/Sounds/Item/OmicronBeam");
             SoundEngine.PlaySound(fire with { Volume = 0.9f }, Projectile.Center);
@@ -95,7 +83,6 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Particle blastRing = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Black, "CalamityMod/Particles/SmallBloom", Vector2.One, Main.rand.NextFloat(-10, 10), 1f, 1.2f, 15, false);
                 GeneralParticleHandler.SpawnParticle(blastRing);
-                blastRing.DrawLayer = Enums.GeneralDrawLayer.BeforeProjectiles;
             }
 
             for (float k = 0; k < 3; k++)
@@ -106,6 +93,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Vector2 spawnPos = Projectile.Center + (Main.rand.NextVector2Circular(20, 20) * (k + 1));
                 Particle blastRing = new CustomPulse(spawnPos, Vector2.Zero, Color.Lerp(Color.DarkOrchid, Color.Indigo, colorRando) * 0.6f, "CalamityMod/Particles/FlameExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0.07f, scale, partLifetime);
                 GeneralParticleHandler.SpawnParticle(blastRing);
+                blastRing.DrawLayer = Enums.GeneralDrawLayer.AfterEverything;
             }
 
             Particle innerGlow = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Indigo, "CalamityMod/Particles/BloomCircle", Vector2.One, 0f, 0.03f, 1f, 24, true);
@@ -124,14 +112,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Particle spark = new CustomSpark(Projectile.Center, new Vector2(3, 3).RotatedByRandom(100) * Main.rand.NextFloat(2f, 4f), "CalamityMod/Particles/ProvidenceMarkParticle", false, 27, Main.rand.NextFloat(1.1f, 1.3f), Color.Lerp(Color.MediumPurple, Color.Indigo, Main.rand.NextFloat(0.5f, 0.7f)), new Vector2(0.6f, 0.5f), true, false, 0, false, false, Main.rand.NextFloat(0.35f, 0.4f));
                 GeneralParticleHandler.SpawnParticle(spark);
-            }
-            for (int i = 0; i < 30; i++)
-            {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<VoidDustInverted>(), Main.rand.NextVector2CircularEdge(8f, 8f) * (Main.rand.NextFloat(1f, 1.2f) + Projectile.scale));
-                dust.noGravity = true;
-                dust.scale = Main.rand.NextFloat(0.8f, 1.2f) + Projectile.scale;
-                dust.alpha = Main.rand.Next(120, 180 + 1);
-                dust.color = Main.rand.NextBool() ? Color.Indigo : Color.DarkBlue;
+                spark.DrawLayer = Enums.GeneralDrawLayer.AfterEverything;
             }
 
             #endregion

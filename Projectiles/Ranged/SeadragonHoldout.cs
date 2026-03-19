@@ -111,8 +111,9 @@ namespace CalamityMod.Projectiles.Ranged
             }
             if (shotCounter == 50 && framesBetweenShots == 0)
             {
-                //Kill the holdout to allow left click to be held down.
-                Projectile.Kill();
+                //Reset all variables to allow left click to be held down
+                Time = 2;
+                shotCounter = 0;
                 for (int x = 0; x < Main.maxProjectiles; x++)
                 {
                     //Activate all fish to rush at the cursor and home in on the nearest enemy

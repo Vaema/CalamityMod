@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Magic
             Vector2 origin = texture.Size() * 0.5f;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             float opacity = Utils.GetLerpValue(0f, 0.08f, LightPower, true) * Projectile.Opacity * 0.5f;
-            Color drawColor = Projectile.localAI[0] == 2f ? new Color(236, 0, 68) : Color.Indigo * opacity;
+            Color drawColor = new Color(236, 0, 68) * opacity;
             Vector2 scale = Projectile.Size / texture.Size() * Projectile.scale;
             Main.EntitySpriteDraw(texture, drawPosition, null, drawColor, Projectile.rotation, origin, scale, SpriteEffects.None, 0);
 

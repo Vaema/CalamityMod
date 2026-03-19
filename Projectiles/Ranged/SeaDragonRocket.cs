@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (attacking) // Fly at the enemy
             {
                 NPC chosenTarget = Projectile.Center.ClosestNPCAt(600);
-                CalamityUtils.HomeInOnSelectedNPC(Projectile, chosenTarget, true, 1.25f + moveSpeed, 25, 0.985f);
+                CalamityUtils.HomeInOnSelectedNPC(Projectile, chosenTarget, true, 1.4f + moveSpeed, 25, 0.985f);
                 if (chosenTarget != null)
                     Projectile.timeLeft++; // Don't die if you have a target to home in on
             }

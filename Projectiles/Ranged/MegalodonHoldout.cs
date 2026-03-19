@@ -1,18 +1,13 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Weapons.Ranged;
+﻿using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ModLoader;
 using Terraria.ID;
-using Steamworks;
-using CalamityMod.Projectiles.Turret;
-using Mono.Cecil;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -150,8 +145,9 @@ namespace CalamityMod.Projectiles.Ranged
                 //Fire the rocket. Damage is 50% of base, multiplied by how many shots the player hits
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<MegalodonRocket>(), (int)(Projectile.damage * 0.5f) * Owner.Calamity().sharkGunDamageScaling, Projectile.knockBack, Projectile.owner);
 
-                //After firing the rocket, kill the projectile to allow left click to be held down
-                Projectile.Kill();
+                //After firing the rocket, reset all variables to allow left click to be held down
+                Time = 2;
+                shotCounter = 0;
             }
             Time++;
         }
