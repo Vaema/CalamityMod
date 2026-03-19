@@ -97,7 +97,7 @@ namespace CalamityMod.Projectiles.Typeless
                 for (int x = 0; x < Main.maxProjectiles; x++)
                 {
                     Projectile projectile = Main.projectile[x];
-                    if (projectile.active && projectile.type == Projectile.type && projectile.ai[1] == 0 && projectile.owner == Owner.whoAmI)
+                    if (projectile.active && projectile.type == Projectile.type && projectile.owner == Owner.whoAmI && projectile.localAI[0] == 0)
                     {
                         projectile.localAI[0] = Utils.Remap(Owner.Calamity().rOfResilienceEffect, 0, Owner.Calamity().rOfResilienceMaxPowerTime, 1, 8, true);
                     }
