@@ -1702,7 +1702,7 @@ namespace CalamityMod.CalPlayer
                 { rOfResilienceEffect -= (chargedButNotHolding ? 4 : 1); if (shieldIsSetup && rOfResilienceEffect < rOfResilienceBaseTimeMax) rOfResilienceEffect = rOfResilienceBaseTimeMax; if (rOfResilienceEffect < 0) rOfResilienceEffect = 0; }
             if (holdingRoR) // All players close to a player holding RoR get the benefits
             {
-                if (Player.ownedProjectileCounts[ModContent.ProjectileType<RelicGuard>()] < 1 && !Player.dead)
+                if (Player.ownedProjectileCounts[ModContent.ProjectileType<RelicGuard>()] < 1 && !Player.dead && Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     Projectile relic = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ModContent.ProjectileType<RelicGuard>(), 0, 0f, Player.whoAmI);
                 }
@@ -1783,7 +1783,8 @@ namespace CalamityMod.CalPlayer
                         SoundEngine.PlaySound(sound with { Volume = 0.5f, Pitch = -0.3f }, Player.Center);
                     }
                     int shardDamage = (int)Player.GetBestClassDamage().ApplyTo(Player.Calamity().profanedSoulRelicBuff ? 950 : 250);
-                    Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, new Vector2(1, 0), ModContent.ProjectileType<ArtifactOfResilienceShards>(), shardDamage, 0f, Player.whoAmI, 0, 0, numOfShards + 1);
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                        Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, new Vector2(1, 0), ModContent.ProjectileType<ArtifactOfResilienceShards>(), shardDamage, 0f, Player.whoAmI, 0, 0, numOfShards + 1);
                 }
             }
             if (rOfResilienceCooldown > 0)
