@@ -24,6 +24,9 @@ namespace CalamityMod.Projectiles.Ranged
         public int framesBetweenShots = 0;
         public bool swapType = false;
 
+        public override Vector2 GunTipPosition => Projectile.Center - Vector2.UnitY + Vector2.UnitX.RotatedBy(Projectile.rotation) * Projectile.width * 0.5f;
+
+
         public override void KillHoldoutLogic()
         {
             //If the player is dead, kill the holdout.
