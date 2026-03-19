@@ -900,15 +900,13 @@ namespace CalamityMod.Items
             // Hyperius Overflow
             if (target.Calamity().hyperiusMarked)
             {
-                int damage = 0;
-                if (target.Calamity().hyperiusDamage < damageDone)
-                    damage = damageDone - target.Calamity().hyperiusDamage;
-                else
-                    damage = damageDone;
-                target.Calamity().hyperiusDamage -= damage;
+                int damageDealt = (int)(damageDone * HyperiusBullet.overflowAppliedMult);
+                int damage = (int)Math.Min(target.Calamity().hyperiusDamage, damageDealt);
+
+                target.Calamity().hyperiusDamage -= (int)(damage * HyperiusBullet.overflowEfficency);
 
                 // Spawn overflow hit
-                Projectile overflow = Projectile.NewProjectileDirect(target.GetSource_FromThis(), target.Center, Vector2.Zero, ProjectileType<HyperiusDamage>(), (int)(damage * HyperiusBullet.overflowEfficency), 0, player.whoAmI, target.whoAmI);
+                Projectile overflow = Projectile.NewProjectileDirect(target.GetSource_FromThis(), target.Center, Vector2.Zero, ProjectileType<HyperiusDamage>(), damage, 0, player.whoAmI, target.whoAmI);
                 overflow.DamageType = item.DamageType;
                 overflow.ArmorPenetration = item.ArmorPenetration; // Takes the armor pen from what did the hit
 
