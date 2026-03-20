@@ -22,6 +22,7 @@ using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Systems.Collections;
+using CalamityMod.Tiles.Furniture;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -31,6 +32,7 @@ using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.WorldBuilding;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.NPCs
@@ -81,6 +83,8 @@ namespace CalamityMod.NPCs
         /// </summary>
         public double TheGiftReset = -1.0;
 
+        public bool AffectedByTheMonument = false;
+
         public override bool InstancePerEntity => true;
 
         public override bool AppliesToEntity(NPC entity, bool lateInstantiation)
@@ -96,6 +100,8 @@ namespace CalamityMod.NPCs
             myClone.shopAlertAnimTimer = shopAlertAnimTimer;
             myClone.shopAlertAnimFrame = shopAlertAnimFrame;
             myClone.TheGiftStatus = TheGiftStatus;
+            myClone.TheGiftReset = TheGiftReset;
+            myClone.AffectedByTheMonument = AffectedByTheMonument;
 
             return myClone;
         }
@@ -828,7 +834,39 @@ namespace CalamityMod.NPCs
                 }
             }
 
+            // Search for The Monument, for the purposes of assigning higher taxes
+            AffectedByTheMonument = false;
+            SearchForTheMonument(npc);
+
             return true;
+        }
+
+        public bool SearchForTheMonument(NPC npc)
+        {
+            Point tileCenter = npc.Center.ToTileCoordinates();
+            Rectangle searchArea = new((int)(tileCenter.X - Main.buffScanAreaWidth / 2), (int)(tileCenter.Y - Main.buffScanAreaHeight / 2), Main.buffScanAreaWidth, Main.buffScanAreaHeight);
+            searchArea = WorldUtils.ClampToWorld(searchArea);
+            for (int i = searchArea.Left; i < searchArea.Right; i++)
+            {
+                for (int j = searchArea.Top; j < searchArea.Bottom; j++)
+                {
+                    if (!searchArea.Contains(i, j))
+                        continue;
+
+                    Tile tile = Main.tile[i, j];
+                    if (tile == null)
+                        continue;
+                    if (!tile.HasTile)
+                        continue;
+
+                    if (tile.TileType == TileType<TheMonumentTile>())
+                    {
+                        AffectedByTheMonument = true;
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
         #endregion
 

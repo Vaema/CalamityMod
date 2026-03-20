@@ -1,4 +1,5 @@
-﻿using CalamityMod.NPCs;
+﻿using CalamityMod.Items.Placeables.Furniture;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -67,11 +68,21 @@ namespace CalamityMod.Items.Tools
             }
         }
 
+        // Also contains logic for The Monument, so I can make sure these apply in the correct order
         private static void TheGiftHappiness(On_ShopHelper.orig_ProcessMood orig, ShopHelper self, Player player, NPC npc)
         {
             orig(self, player, npc);
 
-            bool? gift = npc.GetGlobalNPC<CalamityGlobalTownNPC>().TheGiftStatus;
+            var gtnpc = npc.GetGlobalNPC<CalamityGlobalTownNPC>();
+            // The Monument lowers happiness by a fixed amount. This is not applied to the Tax Collector.
+            if (npc.type != NPCID.TaxCollector && gtnpc.SearchForTheMonument(npc))
+            {
+                self._currentPriceAdjustment += TheMonument.MonumentHappinessReduction;
+                self.LimitAndRoundMultiplier(self._currentPriceAdjustment);
+            }
+
+            // The Gift sets happiness to a fixed either extremely high or extremely low value, depending on its random state.
+            bool? gift = gtnpc.TheGiftStatus;
             if (gift.HasValue)
             {
                 if (gift.Value)
