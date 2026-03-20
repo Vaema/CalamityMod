@@ -877,9 +877,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, rainbowStreakVelocity, projectileType, projectileDamage, 0f, Main.myPlayer, NPC.target, ai3);
-                                if (Main.getGoodWorld)
-                                    Main.projectile[proj].extraUpdates += 1;
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, rainbowStreakVelocity, projectileType, projectileDamage, 0f, Main.myPlayer, NPC.target, ai3);
                             }
 
                             // Spawn extra homing Rainbow Streaks per player.
@@ -1113,12 +1111,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + projRandomOffset, vector, projectileType, projectileDamage, 0f, Main.myPlayer, NPC.target, streakHomeTime);
                             if (phase3)
                             {
-                                int proj2 = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + projRandomOffset, -vector, projectileType, projectileDamage, 0f, Main.myPlayer, NPC.target, 1f - streakHomeTime);
-                                if (Main.getGoodWorld)
-                                {
-                                    Main.projectile[proj2].extraUpdates += 1;
-                                    Main.projectile[proj2].netUpdate = true;
-                                }
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + projRandomOffset, -vector, projectileType, projectileDamage, 0f, Main.myPlayer, NPC.target, 1f - streakHomeTime);
                             }
                         }
 
