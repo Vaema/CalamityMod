@@ -887,11 +887,11 @@ VoidConcentrationStaff: {
 	DisplayName: Void Concentration Staff
 	Tooltip:
 		'''
-		Surrounds you with dark energy, which causes all attacks deal 15% less damage
-		<right> to condense the energy onto a target, calling lasers and focusing your minions on them
-		When the focused enemy takes damage from any source, they will be struck by extra dark energies
-		This is extra effective if struck by a minion or sentry
-		After 10 seconds, the dark energy will return to orbiting you
+		Surrounds you with dark energy, which makes all attacks deal 15% less damage
+		<right> to condense the energy onto a target, chanelling lasers and focusing your minions on them
+		When the focused enemy takes damage from any source, they will be struck by additional dark energies
+		This is extremely effective if struck by a minion or sentry
+		After 10 seconds, the dark energy will resume orbiting you
 		'''
 }
 
