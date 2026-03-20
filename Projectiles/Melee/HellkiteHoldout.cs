@@ -390,7 +390,7 @@ namespace CalamityMod.Projectiles.Melee
             }
 
             Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
-            target.MoveNPC(launchVel, (chargedSwing ? 24 : 19), true);
+            target.MoveNPC(launchVel, (chargedSwing ? 24 : 19), true, Owner);
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {

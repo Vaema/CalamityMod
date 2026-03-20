@@ -134,7 +134,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             Vector2 launchVel = Projectile.velocity;
             float launchPower = 60;
-            target.MoveNPC(launchVel, launchPower, true);
+            target.MoveNPC(launchVel, launchPower, true, Owner);
         }
         public override bool? CanDamage() => Projectile.numHits < 1 ? null : false;
         public override bool PreDraw(ref Color lightColor)

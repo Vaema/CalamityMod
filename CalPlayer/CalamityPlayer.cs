@@ -5267,6 +5267,9 @@ namespace CalamityMod.CalPlayer
 
             if (titanHeartSet && StealthStrikeAvailable() && rogue)
                 knockback *= TitanHeartMask.StealthStrikeKnockbackMult;
+
+            Player.GetKnockback<GenericDamageClass>() += 0.2f;
+            //Player.GetKnockback<AverageDamageClass>().ApplyTo(1);
         }
         #endregion
 

@@ -190,7 +190,7 @@ namespace CalamityMod.Projectiles.Melee
             target.AddBuff(BuffID.OnFire3, 180);
 
             Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
-            CalamityUtils.MoveNPC(target, launchVel, 12, true);
+            CalamityUtils.MoveNPC(target, launchVel, 12, true, Owner);
 
             int dustNum = (int)MathHelper.Clamp(12 - Projectile.numHits * 3, 3, 12);
             for (int i = 0; i < dustNum; i++)

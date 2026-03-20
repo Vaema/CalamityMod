@@ -14,6 +14,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.PlaguebringerGoliath
 {
+    [HeavyKnockbackWhitelisted]
     public class PlagueHomingMissile : ModNPC
     {
         public static Asset<Texture2D> GlowTexture;

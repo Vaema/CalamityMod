@@ -3182,7 +3182,7 @@ namespace CalamityMod.NPCs
                     SoundEngine.PlaySound(fullPower with { Volume = 0.7f, Pitch = 0.7f }, npc.Center);
                     warbannerBurnStacks++;
                 }
-                if (warbannerBurnIntensity > 2.5f && npc.CanBeMoved(true))
+                if (warbannerBurnIntensity > 2.5f && npc.CanBeMoved())
                 {
                     npc.velocity *= 1f - 0.25f * Utils.GetLerpValue(2.5f, 3, warbannerBurnIntensity);
                     if (npc.velocity.Length() > 5 && warbannerBurnIntensity > 2.85f) // Repel leaping enemies
@@ -3358,7 +3358,7 @@ namespace CalamityMod.NPCs
                 pearlAuraOwner = -1;
             }
 
-            if (demonSwordImpales > 0 && npc.CanBeMoved(true))
+            if (demonSwordImpales > 0 && npc.CanBeMoved())
             {
                 npc.velocity *= Utils.Remap(demonSwordImpales, 1, 5, 0.95f, 0.3f, true);
                 if (impalePacketTimer > 30) // There's probably a better solution, but this is the best for now

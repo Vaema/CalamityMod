@@ -293,7 +293,7 @@ namespace CalamityMod.Projectiles.Melee
 
             // Regular knockback
             float launchPower = 60;
-            target.MoveNPC(toMouse, launchPower * (canBeLaunched ? 0.5f : 0.25f), true);
+            target.MoveNPC(toMouse, launchPower * (canBeLaunched ? 0.5f : 0.25f), true, Owner);
             if (canBeLaunched) // launches/executes enemies
             {
                 if (jared)
