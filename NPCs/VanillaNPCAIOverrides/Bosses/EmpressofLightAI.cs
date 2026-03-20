@@ -744,8 +744,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     // Expert attack or not.
                     bool expertAttack = calamityGlobalNPC.newAI[2] == 0f;
 
-                    int numLanceWalls = expertAttack ? 6 : 4;
-                    float lanceWallSpawnGateValue = expertAttack ? (death ? 42f : 36f) : 54f;
+                    int numLanceWalls = (death && !expertAttack) ? 8 : 6;
+                    float lanceWallSpawnGateValue = expertAttack ? 50f : (death ? 34f : 45f);
                     if (dayTimeEnrage)
                         lanceWallSpawnGateValue -= expertAttack ? 4f : 6f;
 
@@ -760,8 +760,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     {
                         SoundEngine.PlaySound(SoundID.Item162, NPC.Center);
 
-                        float totalProjectiles = death ? 18f : 15f;
-                        float lanceSpacing = death ? 150f : 175f;
+                        float totalProjectiles = death ? 19f : 15f;
+                        float lanceSpacing = death ? (expertAttack ? 150f : 200f) : 175f;
                         float lanceWallSize = totalProjectiles * lanceSpacing;
 
                         Vector2 lanceSpawnOffset = targetData9.Center;
@@ -769,64 +769,21 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         {
                             Vector2 lanceWallStartingPosition = Vector2.Zero;
                             Vector2 lanceWallDirection = Vector2.UnitY;
-                            float lanceWallConvergence = 0.4f;
-                            float lanceWallSizeMult = 1.4f;
                             totalProjectiles += 5f;
                             lanceSpacing += 50f;
-                            lanceWallSize *= (death ? 0.7f : 0.5f);
-                            float direction = 1f;
+                            lanceWallSize *= (death && expertAttack) ? 0.7f : 0.5f;
 
-                            int randomLanceWallType;
-                            do randomLanceWallType = Main.rand.Next(numLanceWalls);
-                            while (randomLanceWallType == calamityGlobalNPC.newAI[3]);
-
-                            // This is set so that Empress doesn't use the same wall type twice in a row.
-                            calamityGlobalNPC.newAI[3] = randomLanceWallType;
-
+                            // Used to give the lance walls a random rotation.
+                            calamityGlobalNPC.newAI[3] = Main.rand.NextFloat(MathHelper.TwoPi);
                             // Keeps track of the total number of lance walls used.
                             calamityGlobalNPC.newAI[1] += 1f;
 
                             // Sync the Calamity AI variables.
                             NPC.SyncExtraAI();
 
-                            switch (randomLanceWallType)
-                            {
-                                case 0:
-                                    lanceSpawnOffset += new Vector2((0f - lanceWallSize) / 2f, 0f) * direction;
-                                    lanceWallStartingPosition = new Vector2(0f, lanceWallSize);
-                                    lanceWallDirection = Vector2.UnitX;
-                                    break;
-
-                                case 1:
-                                    lanceSpawnOffset += new Vector2(lanceWallSize / 2f, lanceSpacing / 2f) * direction;
-                                    lanceWallStartingPosition = new Vector2(0f, lanceWallSize);
-                                    lanceWallDirection = -Vector2.UnitX;
-                                    break;
-
-                                case 2:
-                                    lanceSpawnOffset += new Vector2(0f - lanceWallSize, 0f - lanceWallSize) * lanceWallConvergence * direction;
-                                    lanceWallStartingPosition = new Vector2(lanceWallSize * lanceWallSizeMult, 0f);
-                                    lanceWallDirection = new Vector2(1f, 1f);
-                                    break;
-
-                                case 3:
-                                    lanceSpawnOffset += new Vector2(lanceWallSize * lanceWallConvergence + lanceSpacing / 2f, (0f - lanceWallSize) * lanceWallConvergence) * direction;
-                                    lanceWallStartingPosition = new Vector2((0f - lanceWallSize) * lanceWallSizeMult, 0f);
-                                    lanceWallDirection = new Vector2(-1f, 1f);
-                                    break;
-
-                                case 4:
-                                    lanceSpawnOffset += new Vector2(0f - lanceWallSize, lanceWallSize) * lanceWallConvergence * direction;
-                                    lanceWallStartingPosition = new Vector2(lanceWallSize * lanceWallSizeMult, 0f);
-                                    lanceWallDirection = lanceSpawnOffset.DirectionTo(targetData9.Center);
-                                    break;
-
-                                case 5:
-                                    lanceSpawnOffset += new Vector2(lanceWallSize * lanceWallConvergence + lanceSpacing / 2f, lanceWallSize * lanceWallConvergence) * direction;
-                                    lanceWallStartingPosition = new Vector2((0f - lanceWallSize) * lanceWallSizeMult, 0f);
-                                    lanceWallDirection = lanceSpawnOffset.DirectionTo(targetData9.Center);
-                                    break;
-                            }
+                            lanceSpawnOffset += -Vector2.UnitX.RotatedBy(calamityGlobalNPC.newAI[3]) * (lanceWallSize / 2f);
+                            lanceWallStartingPosition = Vector2.UnitY.RotatedBy(calamityGlobalNPC.newAI[3]) * lanceWallSize;
+                            lanceWallDirection = calamityGlobalNPC.newAI[3].ToRotationVector2();
 
                             int projectileType = ProjectileID.FairyQueenLance;
                             int projectileDamage = lanceDamage;
@@ -844,16 +801,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                     Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnLocation, Vector2.Zero, projectileType, projectileDamage, 0f, Main.myPlayer, v2.ToRotation(), i);
-                            }
-                        }
-
-                        // Chance to stop using the lance walls and switch to a different attack after 3 lance walls are used.
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                        {
-                            if (Main.rand.NextBool(5 - ((int)calamityGlobalNPC.newAI[1] - 2)) && calamityGlobalNPC.newAI[1] >= 2f)
-                            {
-                                NPC.ai[1] = lanceWallPhaseTime;
-                                NPC.netUpdate = true;
                             }
                         }
                     }
