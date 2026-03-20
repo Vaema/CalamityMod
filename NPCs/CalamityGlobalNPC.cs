@@ -334,8 +334,8 @@ namespace CalamityMod.NPCs
         public int hyperiusDamage = 0;
         public static int hyperiusOverflowTime = 100;
         public int hyperiusOverflowTimer = hyperiusOverflowTime;
-        /// <summary> Constant variable representing the % of max health Hyperius Bullet's damage stacks must reach before they start to overflow. </summary>
-        public const float HyperiusLifePercentThreshold = 0.07f;
+        /// <summary> Constant variable representing the % of max health Hyperius Bullet's damage stacks must reach before they start to bleed. </summary>
+        public const float HyperiusLifePercentThreshold = 0.10f;
         public int hyperiusFxTimer = 0;
 
         public int glaiveShredTimer = 0;
