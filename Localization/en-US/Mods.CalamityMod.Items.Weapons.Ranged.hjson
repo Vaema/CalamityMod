@@ -80,7 +80,7 @@ Archerfish: {
 	Tooltip:
 		'''
 		Converts musket balls into streams of water
-Water jets inflict [cbuff:CalamityMod/RiptideDebuff] and [cbuff:Wet]
+		Water jets inflict [cbuff:CalamityMod/RiptideDebuff] and [cbuff:Wet]
 		{$CommonItemTooltip.PercentChanceToSaveAmmo}
 		'''
 }
@@ -121,11 +121,11 @@ AstralBlaster: {
 
 AstrealDefeat: {
 	DisplayName: Astreal Defeat
-	Tooltip: 
-        '''
-        All arrows are converted to Astreal Arrows that emit flames as they travel
-        Astreal Arrows inflict [cbuff:CalamityMod/Shadowflame] on hit
-        '''
+	Tooltip:
+		'''
+		All arrows are converted to Astreal Arrows that emit flames as they travel
+		Astreal Arrows inflict [cbuff:CalamityMod/Shadowflame] on hit
+		'''
 }
 
 Auralis: {
@@ -188,7 +188,7 @@ BlissfulBombardier: {
 		'''
 		Launches a crystalline missile high into the sky, raining holy fire on the cursor
 		The missile relentlessly seeks out a target before bursting into a massive explosion
-All rockets inflict [cbuff:CalamityMod/HolyFlames]
+		All rockets inflict [cbuff:CalamityMod/HolyFlames]
 		'''
 }
 
@@ -198,7 +198,7 @@ BloodBoiler: {
 		'''
 		Fires twin streams of bloodfire that returns to you
 		Returning bloodfire reduces [cbuffplr:PotionSickness] if it struck an enemy
-Bloodfire streams inflict [cbuff:CalamityMod/Laceration] and [cbuff:CalamityMod/BurningBlood] onto enemies
+		Bloodfire streams inflict [cbuff:CalamityMod/Laceration] and [cbuff:CalamityMod/BurningBlood] onto enemies
 		Uses your health as ammo
 		20% chance to save health
 		'''
@@ -225,10 +225,10 @@ BlossomFlux: {
 BrimstoneFury: {
 	DisplayName: Brimstone Fury
 	Tooltip:
-        '''
-        Converts wooden arrows into a spread of 3 brimstone bolts
-        Bolts inflict [cbuff:CalamityMod/BrimstoneFlames]
-        '''
+		'''
+		Converts wooden arrows into a spread of 3 brimstone bolts
+		Bolts inflict [cbuff:CalamityMod/BrimstoneFlames]
+		'''
 }
 
 BulletFilledShotgun: {
@@ -263,7 +263,7 @@ ChromaticEruption: {
 	Tooltip:
 		'''
 		Charges up to spew rainbow flames and pairs of homing chromatic flares
-Flames and flares inflict enemies with [cbuff:CalamityMod/ElementalMix]
+		Flames and flares inflict enemies with [cbuff:CalamityMod/ElementalMix]
 		Uses gel for ammo
 		{$CommonItemTooltip.PercentChanceToSaveAmmo}
 		'''
@@ -271,11 +271,11 @@ Flames and flares inflict enemies with [cbuff:CalamityMod/ElementalMix]
 
 ClamorRifle: {
 	DisplayName: Clamor Rifle
-	Tooltip: 
-        '''
-        Converts musket balls into homing energy bolts
-        Energy bolts briefly stun enemies, inflicting [cbuff:CalamityMod/Eutrophication]
-        '''
+	Tooltip:
+		'''
+		Converts musket balls into homing energy bolts
+		Energy bolts briefly stun enemies, inflicting [cbuff:CalamityMod/Eutrophication]
+		'''
 }
 
 CleansingBlaze: {
@@ -416,7 +416,7 @@ Drataliornus: {
 		Fireballs rain meteors, leave dragon dust trails, and launch additional bolts at max speed
 		Taking damage while firing the stream will interrupt it and reduce your wing flight time
 		Press <right> to fire two devastating barrages of five empowered fireballs
-All attacks from the bow inflict an inferno of [cbuff:CalamityMod/Dragonfire]
+		All attacks from the bow inflict an inferno of [cbuff:CalamityMod/Dragonfire]
 		'Just don't get hit'
 		'''
 }
@@ -444,7 +444,7 @@ FetidEmesis: {
 		When the barrel overheats, a spread of fetid chunks is vomited out
 		After firing, the gun must cool back down before it can be used again
 		Pressing <right> while firing will instantly launch the chunks
-Fetid chunks inflict [cbuff:CalamityMod/SulphuricPoisoning]
+		Fetid chunks inflict [cbuff:CalamityMod/SulphuricPoisoning]
 		{$CommonItemTooltip.PercentChanceToSaveAmmo}
 		'''
 }
@@ -468,7 +468,7 @@ FlakKraken: {
 		Fires pairs of abyssal flak shells that explode into wide cones of ink shrapnel
 		Abyssal flak shells burst when they reach the cursor's position
 		Direct hits with the flak shell will deal reduced shrapnel damage
-All shells inflict [cbuff:CalamityMod/CrushDepth] on hit
+		All shells inflict [cbuff:CalamityMod/CrushDepth] on hit
 		'''
 }
 
@@ -489,7 +489,7 @@ FlarewingBow: {
 		'''
 		Shoots a spread of 3 arrows
 		Wooden arrows are converted into obsidian bats
-Obsidian Bats home onto enemies after piercing once and inflict [cbuff:OnFire3]
+		Obsidian Bats home onto enemies after piercing once and inflict [cbuff:OnFire3]
 		'''
 }
 
@@ -586,7 +586,7 @@ HeavenlyGale: {
 		Fires a rapid stream of supercharged exo-crystals
 		Holding the bow and waiting for some time before firing causes the crystals to become more powerful
 		If the crystals are sufficiently powerful enough they will summon torrents of exo-lightning above whatever target they hit
-Exo-lightning disintegrates hit enemies with [cbuff:CalamityMod/MiracleBlight]
+		Exo-lightning disintegrates hit enemies with [cbuff:CalamityMod/MiracleBlight]
 		'''
 }
 
@@ -1433,7 +1433,7 @@ ThreadOfEradication: {
 		Charges up [c/ff00ff:God's Bane Doombeam]
 		Channelling the weapon causes it to charge up [c/ff00ff:Hyperdeath Rift] instead
 		While charging [c/ff00ff:Hyperdeath Rift], the bow's turning speed is slowed down
-Eradicates enemies with [cbuff:CalamityMod/GodSlayerInferno]
+		Eradicates enemies with [cbuff:CalamityMod/GodSlayerInferno]
 		'''
 }
 

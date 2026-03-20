@@ -1005,7 +1005,7 @@ SandsWindBuff: {
 		You are strengthened by the powers of sand
 		Defense increased by {0}, damage increased by {1}%, and greatly buffed mana regen 
 		'''
-	ItemTooltipPlayer: Increases damage, defense, and mana regeneration
+	ItemTooltipPlayer: Increases your defense by 12, damage by 12%, and greatly buffs mana regen
 }
 
 SilvaRevival: {

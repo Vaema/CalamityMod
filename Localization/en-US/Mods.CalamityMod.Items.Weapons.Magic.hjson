@@ -5,12 +5,16 @@ AbyssalTome: {
 
 AbyssShocker: {
 	DisplayName: Abyss Shocker
-	Tooltip: Fires an erratic lightning bolt that arcs and bounces between enemies
+	Tooltip:
+		'''
+		Fires an erratic lightning bolt that arcs and bounces between enemies
+		Inflicts [cbuff:CalamityMod/StaticDischarge]
+		'''
 }
 
 AcidGun: {
 	DisplayName: Acid Gun
-	Tooltip: Releases three streams of acid
+	Tooltip: Releases three streams of [cbuff:CalamityMod/Irradiated] acid
 }
 
 AetherfluxCannon: {
@@ -22,14 +26,14 @@ AethersWhisper: {
 	DisplayName: Aether's Whisper
 	Tooltip:
 		'''
-		Inflicts long-lasting [cbuff:CalamityMod/Shadowflame] and splits on tile hits
+		Fires void beams that inflict long-lasting [cbuff:CalamityMod/Shadowflame] and split on tile hits
 		Projectiles gain damage as they travel
 		'''
 }
 
 AlulaAustralis: {
 	DisplayName: Alula Australis
-	Tooltip: Fires a beautiful aurora that inflicts [cbuff:CalamityMod/AstralInfectionDebuff] trailed by a star shower
+	Tooltip: Fires a beautiful aurora that spreads the [cbuff:CalamityMod/AstralInfectionDebuff] trailed by a star shower
 }
 
 AlphaDraconis: {
@@ -53,6 +57,7 @@ AnahitasArpeggio: {
 		Holding <left> casts up to 6 treble clefs that orbit the player
 		Releasing <left> causes the treble clefs to converge at the cursor
 		After converging, treble clefs seek your cursor
+		Treble clefs inflict [cbuff:Confused] on impact and apply [cbuff:Wet]
 		'''
 	TooltipGFB:
 		'''
@@ -87,13 +92,14 @@ Apotheosis: {
 	Tooltip:
 		'''
 		Unleashes interdimensional projection magic
+		Inflicts [cbuff:CalamityMod/WhisperingDeath] and [cbuff:CalamityMod/GodSlayerInferno]
 		Eat worms
 		'''
 }
 
 AquamarineStaff: {
 	DisplayName: Aquamarine Staff
-	Tooltip: Shoots two blue bolts
+	Tooltip: Shoots two blue bolts that [cbuff:CalamityMod/RiptideDebuff] enemies
 }
 
 ArchAmaryllis: {
@@ -105,7 +111,7 @@ ArcticBearPaw: {
 	DisplayName: Arctic Bear Paw
 	Tooltip:
 		'''
-		Fires spiritual claws that ignore walls
+		Fires spiritual claws that ignore walls and inflict [cbuff:Frostburn2]
 		'The savage mauling that fits in your pocket'
 		'''
 }
@@ -122,12 +128,12 @@ ArtAttack: {
 
 AstralachneaStaff: {
 	DisplayName: Astralachnea Staff
-	Tooltip: Fires a spread of homing astral spider fangs that inflict [cbuff:CalamityMod/AstralInfectionDebuff]
+	Tooltip: Fires a spread of homing astral spider fangs that spread the [cbuff:CalamityMod/AstralInfectionDebuff]
 }
 
 AstralStaff: {
 	DisplayName: Astral Staff
-	Tooltip: Summons a large crystal from the sky that has a large area of effect on impact and inflicts [cbuff:CalamityMod/AstralInfectionDebuff]
+	Tooltip: Summons a large crystal from the sky that has a large area of effect on impact and soread the [cbuff:CalamityMod/AstralInfectionDebuff]
 }
 
 Atlantis: {
@@ -137,7 +143,11 @@ Atlantis: {
 
 AuguroftheVoid: {
 	DisplayName: Augur of the Void
-	Tooltip: Casts a burst of elemental tentacles to spear your enemies
+	Tooltip:
+		'''
+		Casts a burst of elemental tentacles to spear your enemies
+		Tentacles inflict enemies with [cbuff:CalamityMod/ElementalMix]
+		'''
 }
 
 BelchingSaxophone: {
@@ -145,6 +155,7 @@ BelchingSaxophone: {
 	Tooltip:
 		'''
 		Fires an array of dirty reeds, music notes, and sulphuric bubbles
+Inflicts [cbuff:CalamityMod/Irradiated] onto enemies
 		Doot
 		'''
 }
@@ -166,7 +177,11 @@ BloodBath: {
 
 BrimroseStaff: {
 	DisplayName: Brimrose Staff
-	Tooltip: Fires a spread of splitting beams of [cbuff:CalamityMod/BrimstoneFlames]
+	Tooltip: 
+        '''
+        Fires a spread of splitting brimstone beams
+        Inflicts [cbuff:CalamityMod/BrimstoneFlames]
+        '''
 }
 
 BurningSea: {
@@ -183,7 +198,7 @@ ChronomancersScythe: {
 	DisplayName: Chronomancer's Scythe
 	Tooltip:
 		'''
-		Rapidly fires icicles
+		Rapidly fires icicles that cause [cbuff:CalamityMod/TimeDistortion] on enemies
 		Press <right> to swing the scythe around you, creating a clock pattern of homing icicles
 		Direct hits with the scythe have a chance to spawn clocks
 		Collecting the clocks increases movement speed and acceleration by 5% for each clock collected
@@ -193,7 +208,7 @@ ChronomancersScythe: {
 
 ClothiersWrath: {
 	DisplayName: Clothier's Wrath
-	Tooltip: Shoots 3 shadowflame skulls
+	Tooltip: Shoots 3 [cbuff:CalamityMod/Shadowflame] skulls
 }
 
 CoralSpout: {
@@ -220,6 +235,7 @@ Cryophobia: {
 	Tooltip:
 		'''
 		Fires an icy wave that splits multiple times and explodes into shards
+Inflicts [cbuff:Frostburn2]
 		'Chill'
 		'''
 }
@@ -239,7 +255,6 @@ DeathValleyDuster: {
 		'''
 		Casts an enchanted blast of sand that passes through enemies and tiles
 		Casting this spell at max mana while without mana sickness will cause it to give you and any player it hits the [cbuffplr:CalamityMod/SandsWindBuff] buff
-		[cbuffplr:CalamityMod/SandsWindBuff] increases your defense by {0}, damage by {1}%, and greatly buffs mana regen
 		'''
 }
 
@@ -262,6 +277,7 @@ EidolicWail: {
 	Tooltip:
 		'''
 		Fires a string of bouncing sound waves that slow down on enemy hits
+Sound waves crush enemies with [cbuff:CalamityMod/HadopelagicPressure]
 		RIP headphone users
 		'''
 }
@@ -320,14 +336,14 @@ FlareBolt: {
 	DisplayName: Flare Bolt
 	Tooltip:
 		'''
-		Casts a ball of flame
+		Casts a ball of flame that inflicts with [cbuff:OnFire]
 		Balls of flame collapse into a swirling backdraft which pulls in enemies
 		'''
 }
 
 ForbiddenSun: {
 	DisplayName: Forbidden Sun
-	Tooltip: Casts a fire orb that emits a gigantic explosion on hit
+	Tooltip: Casts a with [cbuff:OnFire3] orb that emits a gigantic explosion on hit
 }
 
 FrigidflashBolt: {
@@ -337,6 +353,7 @@ FrigidflashBolt: {
 		Casts a fast ball of flash-freezing magma that bounces off tiles
 		When hitting a tile, a flarefrost burst is produced
 		Press <right> to cast an empowered ball that creates a collapsing flarefrost vortex which explodes
+Inflicts both [cbuff:OnFire3] and [cbuff:Frostburn2]
 		'''
 }
 
@@ -344,7 +361,7 @@ FrostBolt: {
 	DisplayName: Frost Bolt
 	Tooltip:
 		'''
-		Casts a ball of frost that bounces off tiles
+		Casts a ball of frost that bounces off tiles and inflicts with [cbuff:Frostburn]
 		When hitting a tile, a small frost burst is produced
 		Frost projectiles will fall to the ground after enough time has passed
 		'''
@@ -402,6 +419,7 @@ HadalUrn: {
 	Tooltip:
 		'''
 		Fires a random assortment of ocean creatures
+Inflicts [cbuff:CalamityMod/CrushDepth] and [cbuff:Venom] onto enemies
 		'There's no telling how long it was down there... or what lurks inside'
 		'''
 }
@@ -410,14 +428,14 @@ HeliumFlash: {
 	DisplayName: Helium Flash
 	Tooltip:
 		'''
-		Launches volatile star cores which erupt into colossal fusion blasts
+		Launches volatile star cores which erupt into colossal fusion blasts and inflicts [cbuff:CalamityMod/Daybroken]
 		'The power of a galaxy, if only for mere moments'
 		'''
 }
 
 HellwingStaff: {
 	DisplayName: Hellwing Staff
-	Tooltip: Casts flaming bats
+	Tooltip: Casts flaming bats that light enemies [cbuff:OnFire]
 }
 
 Hematemesis: {
