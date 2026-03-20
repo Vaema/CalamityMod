@@ -343,7 +343,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Vector2 launchDir = Utils.DirectionTo(Projectile.Center, target.Center);
                 float launchPower = ((hasReachedFullCharge ? 9 : 0) + charge * 1.5f) * finalHitMult;
 
-                target.MoveNPC(launchDir, launchPower, true);
+                target.MoveNPC(launchDir, launchPower, true, Owner);
 
                 float extraPitch = (Owner.Calamity().rogueStealthMax > 0 ? (0.25f * (Owner.Calamity().rogueStealth / Owner.Calamity().rogueStealthMax)) : 0);
                 

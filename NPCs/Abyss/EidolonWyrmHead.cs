@@ -26,6 +26,7 @@ using Terraria.ModLoader.Utilities;
 namespace CalamityMod.NPCs.Abyss
 {
     [LongDistanceNetSync]
+    [HeavyKnockbackWhitelisted]
     public class EidolonWyrmHead : ModNPC
     {
         private Vector2 patrolSpot = Vector2.Zero;

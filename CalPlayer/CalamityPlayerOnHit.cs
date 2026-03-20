@@ -249,7 +249,7 @@ namespace CalamityMod.CalPlayer
                 if (proj.IsMinionOrSentryRelated)
                     center = proj.Center;
                 Vector2 launchVel = Utils.DirectionTo(center, target.Center);
-                target.MoveNPC(launchVel, proj.knockBack, true);
+                target.MoveNPC(launchVel, proj.knockBack, true, Player);
             }
 
             if (moscowMule || bloodyMary)

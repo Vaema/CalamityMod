@@ -45,7 +45,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             {
                 Vector2 launchVel = Projectile.velocity.SafeNormalize(Vector2.UnitX);
                 float launchPower = 25;
-                targeted.MoveNPC(launchVel, launchPower, true);
+                targeted.MoveNPC(launchVel, launchPower, true, Owner);
             }
             time++;
         }
@@ -64,7 +64,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
             Vector2 launchVel = Projectile.velocity.SafeNormalize(Vector2.UnitX);
             float launchPower = 40;
-            target.MoveNPC(launchVel, launchPower, true);
+            target.MoveNPC(launchVel, launchPower, true, Owner);
         }
         public override bool PreDraw(ref Color lightColor)
         {
