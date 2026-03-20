@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Accessories;
+﻿using System.Collections.Generic;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.LoreItems;
@@ -135,5 +136,15 @@ namespace CalamityMod.Systems.Collections
         /// </summary>
         public static bool[] RogueSpikyBall = Factory.CreateBoolSet(ItemType<BurningStrife>(), ItemType<GodsParanoia>(), ItemType<MetalMonstrosity>(), ItemType<NastyCholla>(), ItemType<SystemBane>(),
                 ItemType<WebBall>());
+
+        /// <summary>
+        /// Force display expandable tooltip debuff info for infliction on an enemy
+        /// </summary>
+        public static List<int>[] ExtraDebuffTooltip_Enemy = Factory.CreateCustomSet<List<int>>(new());
+
+        /// <summary>
+        /// Force display expandable tooltip debuff info for infliction on a player
+        /// </summary>
+        public static List<int>[] ExtraDebuffTooltip_Player = Factory.CreateCustomSet<List<int>>(new());
     }
 }
