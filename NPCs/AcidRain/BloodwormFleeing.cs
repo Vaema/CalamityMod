@@ -6,7 +6,6 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 namespace CalamityMod.NPCs.AcidRain
 {
-    [HeavyKnockbackWhitelisted]
     public class BloodwormFleeing : ModNPC
     {
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.BloodwormNormal.DisplayName");

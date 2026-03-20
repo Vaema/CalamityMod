@@ -10,7 +10,6 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.AcidRain
 {
-    [HeavyKnockbackWhitelisted]
     public class BloodwormNormal : ModNPC
     {
         public override void SetStaticDefaults()

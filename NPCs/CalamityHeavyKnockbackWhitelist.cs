@@ -32,7 +32,6 @@ namespace CalamityMod.NPCs
             whitelistNPC.Add(NPCID.DesertDjinn);
             whitelistNPC.Add(NPCID.DD2DrakinT2);
             whitelistNPC.Add(NPCID.DD2DrakinT3);
-            whitelistNPC.Add(NPCID.DungeonGuardian);
             whitelistNPC.Add(NPCID.GrayGrunt);
             whitelistNPC.Add(NPCID.HeadlessHorseman);
             whitelistNPC.Add(NPCID.LihzahrdCrawler);
@@ -58,9 +57,7 @@ namespace CalamityMod.NPCs
             whitelistNPC.Add(NPCID.LeechHead);
             whitelistNPC.Add(NPCID.StardustWormHead);
             whitelistNPC.Add(NPCID.CultistDragonHead);
-            whitelistNPC.Add(NPCID.AncientCultistSquidhead);
             whitelistNPC.Add(NPCID.TombCrawlerHead);
-            whitelistNPC.Add(NPCID.TruffleWormDigger);
             whitelistNPC.Add(NPCID.SeekerHead);
             whitelistNPC.Add(NPCID.WyvernHead);
             whitelistNPC.Add(NPCID.Creeper); // Here because they gain KB immunity in multiplayer
