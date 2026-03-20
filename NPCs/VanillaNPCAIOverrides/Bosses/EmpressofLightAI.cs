@@ -744,8 +744,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     // Expert attack or not.
                     bool expertAttack = calamityGlobalNPC.newAI[2] == 0f;
 
-                    int numLanceWalls = (death && !expertAttack) ? 8 : 6;
-                    float lanceWallSpawnGateValue = expertAttack ? 50f : (death ? 34f : 45f);
+                    int numLanceWalls = (death && !expertAttack) ? 9 : 6;
+                    float lanceWallSpawnGateValue = expertAttack ? 50f : (death ? 32f : 45f);
                     if (dayTimeEnrage)
                         lanceWallSpawnGateValue -= expertAttack ? 4f : 6f;
 
@@ -767,23 +767,19 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         Vector2 lanceSpawnOffset = targetData9.Center;
                         if (NPC.Distance(lanceSpawnOffset) <= 3200f)
                         {
-                            Vector2 lanceWallStartingPosition = Vector2.Zero;
-                            Vector2 lanceWallDirection = Vector2.UnitY;
                             totalProjectiles += 5f;
-                            lanceSpacing += 50f;
                             lanceWallSize *= (death && expertAttack) ? 0.7f : 0.5f;
 
                             // Used to give the lance walls a random rotation.
                             calamityGlobalNPC.newAI[3] = Main.rand.NextFloat(MathHelper.TwoPi);
                             // Keeps track of the total number of lance walls used.
                             calamityGlobalNPC.newAI[1] += 1f;
-
                             // Sync the Calamity AI variables.
                             NPC.SyncExtraAI();
 
                             lanceSpawnOffset += -Vector2.UnitX.RotatedBy(calamityGlobalNPC.newAI[3]) * (lanceWallSize / 2f);
-                            lanceWallStartingPosition = Vector2.UnitY.RotatedBy(calamityGlobalNPC.newAI[3]) * lanceWallSize;
-                            lanceWallDirection = calamityGlobalNPC.newAI[3].ToRotationVector2();
+                            Vector2 lanceWallStartingPosition = Vector2.UnitY.RotatedBy(calamityGlobalNPC.newAI[3]) * lanceWallSize;
+                            Vector2 lanceWallDirection = calamityGlobalNPC.newAI[3].ToRotationVector2();
 
                             int projectileType = ProjectileID.FairyQueenLance;
                             int projectileDamage = lanceDamage;
