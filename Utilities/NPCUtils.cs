@@ -756,13 +756,12 @@ namespace CalamityMod
         /// </summary>
         /// <param name="target">The NPC being moved.</param>
         /// <param name="ignoreKBImmune">Whether or not NPC's that normally have knockback immunity can be moved around.</param>
-        public static void MoveNPC(this NPC target, Vector2 direction, float strength, bool heavyKnockback = false, Player attacker = null)
+        public static void MoveNPC(this NPC target, Vector2 direction, float strength, bool heavyKnockback = false, Player attacker = null, DamageClass damageClass = null)
         {
             if (target.CanBeMoved())
             {
                 Vector2 launchVel = direction.SafeNormalize(Vector2.UnitX) * strength;
-                float playerKnockbackMult = attacker != null ? (attacker.GetTotalKnockback<GenericDamageClass>().ApplyTo(1)) : 1;
-                Main.NewText(attacker.GetKnockback<GenericDamageClass>().ApplyTo(1));
+                float playerKnockbackMult = 1; // Xyk 19MARCH2026: If we ever make knockback a real stat, it can go here. It's much too messy right now to work with, but at least the player is already supported.
                 float knockbackMult = playerKnockbackMult * (heavyKnockback ? Math.Max(target.knockBackResist, 1) : target.knockBackResist); // Heavy knockback ignores knockback resist (but not knockback weakness)
                 target.velocity = launchVel * knockbackMult;
                 target.SyncMotionToServer();
