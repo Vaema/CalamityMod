@@ -23,7 +23,6 @@ using Terraria.GameContent;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.NPC.NPCNameFakeLanguageCategoryPassthrough;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
@@ -320,10 +319,8 @@ namespace CalamityMod.Projectiles.Summon
                     var v = v1.RotatedBy(MathHelper.TwoPi * (i / 3f));
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        var p = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center + 200 * v, v.RotatedBy(MathHelper.PiOver2) * 10, ModContent.ProjectileType<VoidConcentrationBeam>(), (int)(Projectile.damage * 0.4f), Projectile.knockBack, Projectile.owner);
-                        p.penetrate = 1;
-                        p = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center + 200 * v, v.RotatedBy(-MathHelper.PiOver2) * 10, ModContent.ProjectileType<VoidConcentrationBeam>(), (int)(Projectile.damage * 0.4f), Projectile.knockBack, Projectile.owner,1);
-                        p.penetrate = 1;
+                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center + 200 * v, v.RotatedBy(MathHelper.PiOver2) * 10, ModContent.ProjectileType<VoidConcentrationBeam>(), (int)(Projectile.damage * 0.4f), Projectile.knockBack, Projectile.owner);
+                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center + 200 * v, v.RotatedBy(-MathHelper.PiOver2) * 10, ModContent.ProjectileType<VoidConcentrationBeam>(), (int)(Projectile.damage * 0.4f), Projectile.knockBack, Projectile.owner,1);
                     }
                 }
             }
@@ -355,6 +352,7 @@ namespace CalamityMod.Projectiles.Summon
             ProjectileID.Sets.TrailCacheLength[Type] = 8;
             ProjectileID.Sets.TrailingMode[Type] = 2;
             ProjectileID.Sets.MinionShot[Type] = true;
+            ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         }
 
         public override void SetDefaults()
@@ -369,7 +367,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.tileCollide = false;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 30;
-            Projectile.penetrate = 2;
+            Projectile.penetrate = 1;
         }
         public override void AI()
         {
