@@ -11,8 +11,8 @@ namespace CalamityMod.Items.Placeables.Furniture
         public new string LocalizationCategory => "Items.Placeables";
         public override string Texture => "Terraria/Images/Item_1177"; //Placeholder
 
-        public const float MonumentTaxIncrease = 0.25f;
-        public const float MonumentHappinessReduction = 0.2f;
+        public const float MonumentTaxIncrease = 0.5f;
+        public const float MonumentHappinessReduction = 0.15f;
 
         public override void SetDefaults()
         {
