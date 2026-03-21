@@ -78,6 +78,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             if (!Owner.CantUseHoldout(false))
                 Projectile.timeLeft = 5;
 
+            Projectile.scale = MathHelper.Lerp(Projectile.scale, Owner.GetMeleeScale(), 0.3f / Projectile.MaxUpdates);
+
             Vector2 toMouse = Utils.DirectionTo(Owner.Center, Owner.ClampedMouseWorld());
 
             Positioning(toMouse);
@@ -104,7 +106,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
                 if (attackTimer > fireRate && makeHitbox)
                 {
-                    Projectile magnetZone = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.ClampedMouseWorld(), Vector2.Zero, ModContent.ProjectileType<AugerPull>(), 0, 0, Projectile.owner, 0, 0, 0);
+                    Projectile magnetZone = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.ClampedMouseWorld(), Vector2.Zero, ModContent.ProjectileType<AugerPull>(), 0, 0, Projectile.owner, Projectile.scale, 0, 0);
 
                     SoundStyle pull = new("CalamityMod/Sounds/Item/AugerPull");
                     SoundEngine.PlaySound(pull with { Volume = 0.9f, Pitch = 0 }, Owner.ClampedMouseWorld());
@@ -213,7 +215,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                             Owner.SetScreenshake(5f);
                             damage = (int)(damage * 2.5f);
                         }
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center + toMouse * 20 * (float)Math.Pow(scaleFx, 4), toMouse * 25, ModContent.ProjectileType<AugerSlash>(), damage, 0, Projectile.owner, 0, swingCount, Owner.Calamity().buffedAuger ? 5 : 0);
+                        Projectile slash = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center + toMouse * 20 * (float)Math.Pow(scaleFx, 4), toMouse * 25, ModContent.ProjectileType<AugerSlash>(), damage, 0, Projectile.owner, 0, swingCount, Owner.Calamity().buffedAuger ? 5 : 0);
+                        slash.localAI[0] = Projectile.scale;
                         makeHitbox = false;
                     }
                 }
@@ -261,9 +264,10 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 }
             }
             Vector2 placeAdjust = (drawRotation + MathHelper.PiOver2).ToRotationVector2() * 2.5f;
-            Main.EntitySpriteDraw(texture, drawPosition + placeAdjust, null, drawColor, drawRotation, rotationPoint, Projectile.scale, flipSprite); // The holdout
+            // Spesifically doesn't scale with melee size, but the actual energy blade does
+            Main.EntitySpriteDraw(texture, drawPosition + placeAdjust, null, drawColor, drawRotation, rotationPoint, 1, flipSprite); // The holdout
 
-            Main.EntitySpriteDraw(glow, drawPosition + placeAdjust, null, Color.White, drawRotation, rotationPoint, Projectile.scale, flipSprite); // The glow
+            Main.EntitySpriteDraw(glow, drawPosition + placeAdjust, null, Color.White, drawRotation, rotationPoint, 1, flipSprite); // The glow
 
             return false;
         }
