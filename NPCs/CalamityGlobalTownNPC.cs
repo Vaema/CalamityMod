@@ -342,6 +342,7 @@ namespace CalamityMod.NPCs
             "Daxie", // <@!465438861103988737> (daxie626)
             "Zora", // <@!752687500656640030> (oxytoxy365)
             "Summer", // <@!608455754093035521> (haefer)
+            "Foxy", // <@!602954046332207164> (squid_san)
         ];
         // Town Slimes
         private static readonly string[] ClumsySlimeNames = null;
