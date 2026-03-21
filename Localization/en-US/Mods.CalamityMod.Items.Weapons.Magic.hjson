@@ -155,7 +155,7 @@ BelchingSaxophone: {
 	Tooltip:
 		'''
 		Fires an array of dirty reeds, music notes, and sulphuric bubbles
-Inflicts [cbuff:CalamityMod/Irradiated] onto enemies
+		Inflicts [cbuff:CalamityMod/Irradiated] onto enemies
 		Doot
 		'''
 }
@@ -177,11 +177,11 @@ BloodBath: {
 
 BrimroseStaff: {
 	DisplayName: Brimrose Staff
-	Tooltip: 
-        '''
-        Fires a spread of splitting brimstone beams
-        Inflicts [cbuff:CalamityMod/BrimstoneFlames]
-        '''
+	Tooltip:
+		'''
+		Fires a spread of splitting brimstone beams
+		Inflicts [cbuff:CalamityMod/BrimstoneFlames]
+		'''
 }
 
 BurningSea: {
@@ -235,7 +235,7 @@ Cryophobia: {
 	Tooltip:
 		'''
 		Fires an icy wave that splits multiple times and explodes into shards
-Inflicts [cbuff:Frostburn2]
+		Inflicts [cbuff:Frostburn2]
 		'Chill'
 		'''
 }
@@ -277,7 +277,7 @@ EidolicWail: {
 	Tooltip:
 		'''
 		Fires a string of bouncing sound waves that slow down on enemy hits
-Sound waves crush enemies with [cbuff:CalamityMod/HadopelagicPressure]
+		Sound waves crush enemies with [cbuff:CalamityMod/HadopelagicPressure]
 		RIP headphone users
 		'''
 }
@@ -353,7 +353,7 @@ FrigidflashBolt: {
 		Casts a fast ball of flash-freezing magma that bounces off tiles
 		When hitting a tile, a flarefrost burst is produced
 		Press <right> to cast an empowered ball that creates a collapsing flarefrost vortex which explodes
-Inflicts both [cbuff:OnFire3] and [cbuff:Frostburn2]
+		Inflicts both [cbuff:OnFire3] and [cbuff:Frostburn2]
 		'''
 }
 
@@ -419,7 +419,7 @@ HadalUrn: {
 	Tooltip:
 		'''
 		Fires a random assortment of ocean creatures
-Inflicts [cbuff:CalamityMod/CrushDepth] and [cbuff:Venom] onto enemies
+		Inflicts [cbuff:CalamityMod/CrushDepth] and [cbuff:Venom] onto enemies
 		'There's no telling how long it was down there... or what lurks inside'
 		'''
 }

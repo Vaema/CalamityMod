@@ -2,8 +2,8 @@ AbsoluteZero: {
 	DisplayName: Absolute Zero
 	Tooltip:
 		'''
-		Shoots dark ice crystals that [cbuff:Frostburn2] enemies
-		The blade creates [cbuff:Frostburn2] explosions on direct hits
+		Shoots dark ice crystals 
+		The blade creates frost explosions on direct hits
 		Ancient blade imbued with the Archmage of Ice's magic
 		'''
 }
@@ -14,7 +14,6 @@ AbyssBlade: {
 		'''
 		Tosses a spinning abyssal sword that slices through enemies and releases water energy upon hitting a tile
 		The sword will fly towards enemies after a ricochet, dealing 2x damage
-		Both the blade and the energy inflict [cbuff:CalamityMod/CrushDepth]
 		'''
 }
 
@@ -155,7 +154,7 @@ BallOFugu: {
 	Tooltip:
 		'''
 		Throws a flailing abyssal pufferfish
-		Builds up [cbuff:Poisoned] spikes as it spins
+		Builds up poisonous spikes as it spins
 		Spikes blow out of the fish as it retracts
 		'''
 }
@@ -167,7 +166,7 @@ BansheeHook: {
 
 Basher: {
 	DisplayName: Basher
-	Tooltip: Swings a rotten club that inflicts [cbuff:CalamityMod/Irradiated] while knocking you back in the process
+	Tooltip: Swings a rotten club while knocking you back in the process
 }
 
 BladecrestOathsword: {
@@ -187,11 +186,7 @@ BladecrestOathsword: {
 
 BlightedCleaver: {
 	DisplayName: Blighted Cleaver
-	Tooltip:
-		'''
-		Fires homing, blazing blades
-		Blazing blades inflict [cbuff:OnFire3] and [cbuff:Venom]
-		'''
+	Tooltip: Fires homing, blazing blades
 }
 
 Bonebreaker: {
@@ -199,7 +194,7 @@ Bonebreaker: {
 	Tooltip:
 		'''
 		Fires javelins that stick to enemies before bursting into shrapnel
-		Javelins cause [cbuff:CalamityMod/HeavyBleeding], [cbuff:Venom], and [cbuff:CalamityMod/ArmorCrunch]
+		Stuck javelins cause [cbuff:CalamityMod/HeavyBleeding], [cbuff:Venom], and [cbuff:CalamityMod/ArmorCrunch]
 		'''
 }
 
@@ -255,7 +250,7 @@ BurningRevelation: {
 	Tooltip:
 		'''
 		{$Common.YoyoStatsInfinite}
-		An ever burning yoyo that constantly charges power and inflicts [cbuff:CalamityMod/HolyFlames]
+		An ever burning yoyo that constantly charges power
 		Direct hits greatly increase the charge and release profaned energy that scales with charge level
 		At maximum charge, the yoyo unleashes a volley of homing stars that gain damage the farther they travel
 		Stars with maximum damage let off an additional explosion on hit
@@ -296,7 +291,7 @@ CosmicDischarge: {
 	DisplayName: Cosmic Discharge
 	Tooltip:
 		'''
-		Striking an enemy with the whip causes glacial explosions that inflict [cbuff:CalamityMod/Nightwither] and grant the player the [cbuffplr:CalamityMod/CosmicFreeze] buff
+		Striking an enemy with the whip causes glacial explosions that grant the player the [cbuffplr:CalamityMod/CosmicFreeze] buff
 		[cbuffplr:CalamityMod/CosmicFreeze] gives the player +2 HP/s life regen while standing still and freezes enemies near the player
 		'''
 }
@@ -308,7 +303,6 @@ CosmicShiv: {
 		Fires a cosmic star that homes in on enemies
 		Upon hitting an enemy, a barrage of blades will persistently strike
 		Landing more stars causes more blades to strike
-		Cosmic stars and blades inflict [cbuff:CalamityMod/GodSlayerInferno]
 		'''
 }
 
@@ -326,11 +320,7 @@ CrescentMoon: {
 
 DarklightGreatsword: {
 	DisplayName: Darklight Greatsword
-	Tooltip:
-		'''
-		Fires darklight blades that slice through enemies, creating additional slashes
-		Violet blades inflict [cbuff:CalamityMod/Shadowflame], Cyan blades inflict [cbuff:Frostburn2]
-		'''
+	Tooltip: Fires darklight blades that slice through enemies, creating additional slashes
 }
 
 DeathsAscension: {
@@ -347,11 +337,7 @@ DeathsAscension: {
 
 DefiledGreatsword: {
 	DisplayName: Defiled Greatsword
-	Tooltip:
-		'''
-		Fires blazing, hyper, and sunlight blades
-		All blades inflict [cbuff:OnFire3] and [cbuff:Venom]
-		'''
+	Tooltip: Fires blazing, hyper, and sunlight blades
 }
 
 DepthCrusher: {
@@ -360,7 +346,6 @@ DepthCrusher: {
 		'''
 		Tosses a heavy abyssal crusher that releases water energy upon hitting a tile
 		The crusher will ricochet off of tiles and enemies
-		Water energy will home onto enemies and inflict [cbuff:CalamityMod/RiptideDebuff]
 		'''
 }
 
@@ -389,7 +374,7 @@ DevilsSunrise: {
 	DisplayName: Devil's Sunrise
 	Tooltip:
 		'''
-		Unleashes a devilish flurry of swipes that inflict [cbuff:CalamityMod/BrimstoneFlames]
+		Unleashes a devilish flurry of swipes
 		Hellish energy charges in the blades over time, which is accelerated by striking foes
 		Press <right> while swinging the blades with full energy to throw the spinning blades to your cursor
 		The spinning blades lodge into and repeatedly slice the first foe they meet, stealing their life
@@ -403,7 +388,6 @@ DraconicDestruction: {
 		'''
 		Fires a draconic sword beam that explodes into additional beams
 		Additional beams fly up and down to shred enemies
-		Draconic beams inflict [cbuff:CalamityMod/Dragonfire], [cbuff:CalamityMod/Daybroken], [cbuff:Slimed] and [cbuff:Oiled]
 		'''
 }
 
@@ -436,7 +420,7 @@ Earth: {
 		'''
 		A beautiful prismatic blade with unrivaled close combat proficiency
 		Heals you greatly on hit
-		Every other swing will summon three Gaia meteors to annihilate nearby enemies with [cbuff:CalamityMod/MiracleBlight]
+		Every other swing will summon three Gaia meteors to annihilate nearby enemies
 		'All Its spawn shall know the beauty and wrath of their creator'
 		'''
 }
@@ -446,7 +430,7 @@ EarthenPike: {
 	Tooltip:
 		'''
 		Sprays fossil shards on swing
-		Inflicts [cbuff:CalamityMod/ArmorCrunch]
+		Inflicts [cbuff:CalamityMod/ArmorCrunch] on enemies
 		'''
 }
 
@@ -467,7 +451,7 @@ EntropicClaymore: {
 
 EssenceFlayer: {
 	DisplayName: Essence Flayer
-	Tooltip: Shoots an essence scythe that inflicts [cbuff:CalamityMod/GodSlayerInferno] and generates healing spirits on enemy kills
+	Tooltip: Shoots an essence scythe that generates healing spirits on enemy kills
 }
 
 EvilSmasher: {
@@ -518,7 +502,6 @@ Exoblade: {
 		Enemy hits from the blade during the dash result in massive damage and a rebound
 		Press <left> immediately after a rebound to perform a powerful slash
 		Powerful slashes are larger, heal you, and create a large explosion
-		Inflicts [cbuff:CalamityMod/MiracleBlight]
 		'''
 }
 
@@ -528,7 +511,6 @@ FallenPaladinsHammer: {
 		'''
 		Throws a heavy, gravity-affected hammer that will explode and return to you after striking an enemy
 		After returning three times, a homing spectral hammer is summoned with devastating impact
-		      Inflicts [cbuff:CalamityMod/BrimstoneFlames]
 		'''
 }
 
@@ -537,18 +519,22 @@ FaultLine: {
 	Tooltip:
 		'''
 		{$Common.YoyoStatsInfinite}
-		Explodes into [cbuff:OnFire3] on enemy hits
+		Explodes on enemy hits
 		'''
 }
 
 FeralthornClaymore: {
 	DisplayName: Feralthorn Claymore
-	Tooltip: Inflicts [cbuff:Venom] and sprouts thorns from enemies on hit
+	Tooltip: Sprouts thorns from enemies on hit
 }
 
 FlarefrostBlade: {
 	DisplayName: Flarefrost Blade
-	Tooltip: Fires a homing flarefrost orb that inflicts [cbuff:OnFire3] and [cbuff:Frostburn2]
+	Tooltip:
+		'''
+		Fires a homing flarefrost orb
+		Inflicts [cbuff:OnFire3] and [cbuff:Frostburn2]
+		'''
 }
 
 Floodtide: {
@@ -636,7 +622,7 @@ GalaxySmasher: {
 	DisplayName: Galaxy Smasher
 	Tooltip:
 		'''
-		Throws a heavy, gravity-affected hammer that inflicts [cbuff:CalamityMod/GodSlayerInferno] and will return to you after striking an enemy
+		Throws a heavy, gravity-affected hammer that will return to you after striking an enemy
 		Consecutive hits summon more and more cosmic shards
 		After hitting eight times, the hammer supercharges itself with galactic energies,
 		delivering an apocalyptic strike that reverberates through space and time
@@ -666,7 +652,7 @@ GildedProboscis: {
 	DisplayName: Gilded Proboscis
 	Tooltip:
 		'''
-		Steals life proportional to the damage dealt to foes and inflicts [cbuff:CalamityMod/VermillionFlux]
+		Steals life proportional to the damage dealt to foes
 		<left> to charge up a precise thrust
 		The thrust begins weak, but becomes more powerful the longer it's held
 		<right> to dash forward with a mighty upstrike
@@ -724,21 +710,21 @@ Greentide: {
 	DisplayName: Greentide
 	Tooltip:
 		'''
-		Launches a spread of four teeth with one stronger piercing tooth in the center that inflicts [cbuff:CalamityMod/RiptideDebuff] and [cbuff:Wet]
+		Launches a spread of four teeth with one stronger piercing tooth in the center
 		Hitting with the blade creates two jaws of teeth to chomp on the enemy closest to your cursor, causing [cbuff:CalamityMod/HeavyBleeding]
 		'''
 }
 
 HellfireFlamberge: {
 	DisplayName: Hellfire Flamberge
-	Tooltip: Fires a spread of volcanic fireballs that sear enemies with [cbuff:OnFire3]
+	Tooltip: Fires a spread of volcanic fireballs
 }
 
 HellionFlowerSpear: {
 	DisplayName: Hellion Flower Spear
 	Tooltip:
 		'''
-		Shoots a flower spear tip that inflicts [cbuff:Venom]
+		Shoots a flower spear tip
 		Summons petals from the sky on critical hits
 		'''
 }
@@ -768,7 +754,7 @@ HolyCollider: {
 	DisplayName: Holy Collider
 	Tooltip:
 		'''
-		Swings a holy greatsword that can be charged for higher damage and purifies all with [cbuff:CalamityMod/HolyFlames]
+		Swings a holy greatsword that can be charged for higher damage
 		Charged swings create four lingering flares that float around the point of impact
 		Striking a flare with an uncharged strike will push it around and extend its lifetime
 		Charged swings can empower flares, turning them into massive fireballs on hit and launching them to your cursor
@@ -784,7 +770,7 @@ InsidiousImpaler: {
 	DisplayName: Insidious Impaler
 	Tooltip:
 		'''
-		Throws self-propelling radioactive harpoons which chase foes and cause [cbuff:CalamityMod/SulphuricPoisoning]
+		Throws self-propelling radioactive harpoons which chase foes
 		Harpoons ricochet at close range for additional hits
 		'''
 }
@@ -825,7 +811,7 @@ LionHeart: {
 	DisplayName: Lion Heart
 	Tooltip:
 		'''
-		Summons an energy explosion on hit that leaves enemies [cbuff:Electrified]
+		Summons an energy explosion on hit
 		Press <right> to summon an energy shell for a few seconds that halves all damage sources
 		This has a 45 second cooldown
 		'''
@@ -855,7 +841,7 @@ MantisClaws: {
 	DisplayName: Mantis Claws
 	Tooltip:
 		'''
-		Rapidly swing a mantis claw which slashes foes in short range, causing [cbuff:CalamityMod/HeavyBleeding]
+		Rapidly swing a mantis claw which slashes foes in short range
 		Press <right> to form a pressurized bubble in front of you
 		Once fully formed, the bubble is instantly snapped down on, blasting foes with a water jet
 		'It's just that shrimple'
@@ -878,7 +864,6 @@ MirrorBlade: {
 	DisplayName: Mirror Blade
 	Tooltip:
 		'''
-		Inflicts [cbuff:CalamityMod/Nightwither] on hit
 		Striking an enemy or a hostile projectile summons up to 10 orbiting mirror shards
 		Any shards above 10 instead seek out enemies 
 		Holding <right> coalesces the orbiting mirror shards into a shield
@@ -904,7 +889,7 @@ MonstrousKnives: {
 
 Mourningstar: {
 	DisplayName: Mourningstar
-	Tooltip: Launches two solar whip swords that explode on hit and inflict [cbuff:CalamityMod/Daybroken]
+	Tooltip: Launches two solar whip swords that explode on hit
 }
 
 Murasama: {
@@ -927,7 +912,7 @@ Nadir: {
 	DisplayName: Nadir
 	Tooltip:
 		'''
-		Fires void essences which flay nearby enemies with [cbuff:CalamityMod/Nightwither] tentacles
+		Fires void essences which flay nearby enemies with tentacles
 		'The abyss has stared back at you long enough. It now speaks, and it does not speak softly'
 		'''
 }
@@ -943,7 +928,6 @@ NeptunesBounty: {
 		'''
 		Tosses a spinning abyssal sword which constantly sprays water energy
 		Once the blade begins falling, it will redirect itself towards enemies with increased velocity and 2x damage
-		The abyssal sword and water energy crushes your foes with [cbuff:CalamityMod/HadopelagicPressure]
 		'''
 }
 
@@ -952,13 +936,13 @@ Oblivion: {
 	Tooltip:
 		'''
 		{$Common.YoyoStatsInfinite}
-		Fires darts infused with [cbuff:CalamityMod/BrimstoneFlames] when enemies are near
+		Fires brimstone darts when enemies are near
 		'''
 }
 
 OldLordClaymore: {
 	DisplayName: Old Lord Claymore
-	Tooltip: A slow but powerful blade that lights enemies with [cbuff:OnFire3] and has substantial knockback
+	Tooltip: A slow but powerful blade that sets enemies ablaze and has substantial knockback
 	HoldShiftTooltip:
 		'''
 		[c/df4420:A gift to outstanding Demons, a replica of the sword used by the greatest of all Demon Lords.]
@@ -988,11 +972,7 @@ OmegaBiomeBlade: {
 
 Omniblade: {
 	DisplayName: Omniblade
-	Tooltip:
-		'''
-		An ancient blade forged by the legendary Omnir
-		Inflicts [cbuff:CalamityMod/WhisperingDeath]
-		'''
+	Tooltip: An ancient blade forged by the legendary Omnir
 }
 
 Orderbringer: {
@@ -1001,7 +981,6 @@ Orderbringer: {
 		'''
 		Fires piercing energy waves and summons four homing stars near your cursor
 		Hits with the blade summon two beams from the sky
-		Struck enemies are left with a lethal rainbow of [cbuff:CalamityMod/ElementalMix]
 		'No matter where you may be you are never alone'
 		'''
 }
@@ -1027,11 +1006,7 @@ Pandemic: {
 
 PerfectDark: {
 	DisplayName: Perfect Dark
-	Tooltip:
-		'''
-		Fires a vile ball that sticks to tiles and explodes
-		Inflicts [cbuff:CalamityMod/BrainRot]
-		'''
+	Tooltip: Fires a vile ball that sticks to tiles and explodes
 }
 
 PhosphorescentGauntlet: {
@@ -1048,7 +1023,7 @@ PhotonRipper: {
 	DisplayName: Photon Ripper
 	Tooltip:
 		'''
-		Projects a directed stream of hardlight teeth at ultra high velocity which cause [cbuff:CalamityMod/MiracleBlight]
+		Projects a directed stream of hardlight teeth at ultra high velocity
 		This weapon and its projectiles function as a chainsaw
 		Press <right> to use without chopping down trees
 		'''
@@ -1062,7 +1037,6 @@ PrismaticBreaker: {
 		After charging up, a massive rainbow laser is unleashed to devastate your foes
 		This weapon is boosted by both melee and ranged damage
 		Seems to belong to a certain magical girl. Radiates with intense cosmic energy
-		      COME BACK FOR ELE MIX INFILCTION TEXT
 		'''
 }
 
@@ -1080,7 +1054,7 @@ Quagmire: {
 	Tooltip:
 		'''
 		{$Common.YoyoStatsInfinite}
-		Fires spore clouds that inflict [cbuff:Venom]
+		Fires spore clouds
 		'''
 }
 
@@ -1088,7 +1062,7 @@ RedSun: {
 	DisplayName: Red Sun
 	Tooltip:
 		'''
-		Drops a barrage of solar flares from the sky that explode into homing bolts and inflict [cbuff:CalamityMod/Daybroken]
+		Drops a barrage of solar flares from the sky
 		'Over paradise'
 		'''
 }
@@ -1097,8 +1071,7 @@ RemsRevenge: {
 	DisplayName: Rem's Revenge
 	Tooltip:
 		'''
-		Summons blood explosions and inflicts [cbuff:CalamityMod/WitherDebuff] and [cbuff:CalamityMod/Laceration] on hit
-		[cbuff:CalamityMod/WitherDebuff] lowers enemy defense by {0}
+		Summons blood explosions and inflicts [cbuff:CalamityMod/WitherDebuff] on hit
 		'A deadly morning star befitting its demonic owner'
 		'''
 }
@@ -1109,7 +1082,6 @@ Respiteblock: {
 		'''
 		A glistening white chainsaw that spews green and purple blood all over
 		Hitting enemies with the blade will heal you and deal immense damage
-		The blade and spewed blood inflict [cbuff:CalamityMod/HeavyBleeding] onto enemies
 		[c/0e8401:'It's Ok To Be Dangerous']
 		'''
 }
@@ -1149,7 +1121,7 @@ SaharaSlicers: {
 
 SausageMaker: {
 	DisplayName: Sausage Maker
-	Tooltip: Sprays homing blood and causes [cbuff:CalamityMod/BurningBlood] on hit
+	Tooltip: Sprays homing blood on hit
 }
 
 ScourgeoftheCosmos: {
@@ -1165,7 +1137,6 @@ SeekingScorcher: {
 		Crystallizes in place if all bounces have not been exhausted
 		Crystallized hatchets can be shattered by another axe
 		Doing so empowers the hatchet based on the amount shattered but prevents it from crystallizing
-		      Hatchets inflict [cbuff:CalamityMod/HolyFlames] on hit
 		'May your enemies burn in hell for the sins they have committed'
 		'''
 }
@@ -1175,7 +1146,7 @@ Shimmerspark: {
 	Tooltip:
 		'''
 		{$Common.YoyoStatsInfinite}
-		Inflicts [cbuff:Frostburn2] and fires stars when enemies are near
+		Fires stars when enemies are near
 		'''
 }
 
@@ -1186,7 +1157,6 @@ SkytideDragoon: {
 		Calls down a thunderbolt to strike and charge the tip of the spear
 		Press <left> to discharge the electricity as a spread of bolts that narrows as you spend the energy
 		Hold <right> when the spear catches the thunderbolt to redirect it to the cursor
-		Both attack modes inflict [cbuff:Electrified]
 		'''
 }
 
@@ -1213,7 +1183,7 @@ SoulHarvester: {
 	Tooltip:
 		'''
 		Shoots a soul scythe
-		Enemies explode when on low health, spreading the [cbuff:CalamityMod/Plague]
+		Enemies explode when on low health, spreading the plague
 		'''
 }
 
@@ -1230,14 +1200,14 @@ SpineOfThanatos: {
 
 StarnightLance: {
 	DisplayName: Starnight Lance
-	Tooltip: Shoots a frigid starnight beam that inflicts [cbuff:Frostburn2]
+	Tooltip: Shoots a frigid starnight beam
 }
 
 StellarContempt: {
 	DisplayName: Stellar Contempt
 	Tooltip:
 		'''
-		Throws a heavy, gravity-affected hammer that inflicts [cbuff:CalamityMod/Nightwither] and will return to you after striking an enemy
+		Throws a heavy, gravity-affected hammer that will return to you after striking an enemy
 		Consecutive hits call down more and more lunar flares from the sky
 		After hitting five times, the hammer supercharges with lunar energy to pulverize your target
 		'''
@@ -1245,7 +1215,7 @@ StellarContempt: {
 
 StellarStriker: {
 	DisplayName: Stellar Striker
-	Tooltip: Summons a swarm of lunar flares from the sky on enemy hits which [cbuff:CalamityMod/Nightwither] enemies
+	Tooltip: Summons a swarm of lunar flares from the sky on enemy hits
 }
 
 StormRuler: {
@@ -1274,7 +1244,6 @@ StreamGouge: {
 		Summons a portal that the spear crosses through
 		Shortly after going through the portal, portals appear near the mouse that release copies of the spear's cutting edge
 		Enemies hit by the copies create lacerations in space, revealing a cosmic background
-		Struck foes are purged by [cbuff:CalamityMod/GodSlayerInferno]
 		'''
 }
 
@@ -1291,7 +1260,7 @@ StygianShield: {
 
 SubmarineShocker: {
 	DisplayName: Submarine Shocker
-	Tooltip: Enemies release electric sparks on hit, inflicting [cbuff:CalamityMod/StaticDischarge]
+	Tooltip: Enemies release electric sparks on hit
 }
 
 SulphurousGrabber: {
@@ -1299,7 +1268,7 @@ SulphurousGrabber: {
 	Tooltip:
 		'''
 		{$Common.YoyoStatsInfinite}
-		Inflicts [cbuff:CalamityMod/Irradiated] on foes and occasionally releases a ring of colored bubbles
+		Occasionally releases a ring of colored bubbles
 		The yoyo powers up after touching a green bubble
 		'''
 }
@@ -1320,7 +1289,7 @@ TaintedBlade: {
 
 TeardropCleaver: {
 	DisplayName: Teardrop Cleaver
-	Tooltip: Gives your enemies [cbuff:CalamityMod/TemporalSadness]
+	Tooltip: Makes your enemies cry
 }
 
 TenebreusTides: {
@@ -1328,7 +1297,7 @@ TenebreusTides: {
 	Tooltip:
 		'''
 		Shoots a water spear that pierces enemies and terrain
-		Striking enemies inflicts [cbuff:CalamityMod/CrushDepth] and summons liquid blades and spears to assault the struck foe
+		Striking enemies summons liquid blades and spears to assault the struck foe
 		'Inundatio ex Laminis'
 		'''
 }
@@ -1381,7 +1350,7 @@ TheGodsGambit: {
 	Tooltip:
 		'''
 		{$Common.YoyoStatsInfinite}
-		Fires a stream of [cbuff:Slimed] when enemies are near
+		Fires a stream of damaging slime when enemies are near
 		'''
 }
 
@@ -1389,8 +1358,8 @@ TheLastMourning: {
 	DisplayName: The Last Mourning
 	Tooltip:
 		'''
-		Summons flaming pumpkins and mourning skulls that inflict [cbuff:CalamityMod/Daybroken]
-		Pumpkins and skulls split into homing [cbuff:OnFire3] orbs on enemy hits
+		Summons flaming pumpkins and mourning skulls
+		Pumpkins and skulls split into homing fire orbs on enemy hits
 		'''
 }
 
@@ -1408,7 +1377,7 @@ TheMutilator: {
 	DisplayName: The Mutilator
 	Tooltip:
 		'''
-		Striking enemies inflicts [cbuff:CalamityMod/Laceration] and empowers The Mutilator, increasing its damage
+		Striking enemies empowers The Mutilator, increasing its damage
 		At full charge, striking enemies causes a blood orb explosion
 		Picking up these blood orbs reduces the duration of [cbuffplr:PotionSickness]
 		'''
@@ -1424,8 +1393,6 @@ TheObliterator: {
 	TooltipNormal:
 		'''
 		Occasionally performs a miniature [c/ff00ff:Dimensional Drive] at nearby foes
-		[c/ff00ff:Dimensional Drive] obliterates targets with [cbuff:CalamityMod/GodSlayerInferno]
-		The yoyo inflicts [cbuff:CalamityMod/WhisperingDeath] on hit
 		'''
 	TooltipGFB: just a slight bit of dust spam on this weapon im afraid
 }
@@ -1435,7 +1402,7 @@ TheOracle: {
 	Tooltip:
 		'''
 		{$Common.YoyoStatsInfinite}
-		Emits an aura of [cbuff:CalamityMod/AuricRebuke] lightning which charges up when hitting enemies
+		Emits an aura of auric lightning which charges up when hitting enemies
 		Fires auric orbs when supercharged
 		'Gaze into the past, the present, the future... and the circumstances of your inevitable demise'
 		'''
@@ -1518,14 +1485,14 @@ TyphonsGreed: {
 	DisplayName: Typhon's Greed
 	Tooltip:
 		'''
-		Summons water spirits that inflict [cbuff:CalamityMod/CrushDepth] while in use
+		Summons water spirits while in use
 		These water spirits will home in on enemies after traveling towards the player
 		'''
 }
 
 UltimusCleaver: {
 	DisplayName: Ultimus Cleaver
-	Tooltip: Launches damaging homing sparks and explodes into [cbuff:OnFire3] on enemy hits
+	Tooltip: Launches damaging homing sparks and explodes on enemy hits
 }
 
 UrchinMace: {
@@ -1533,7 +1500,6 @@ UrchinMace: {
 	Tooltip:
 		'''
 		Throws out a whirlpool when released
-		Struck enemies are lashed by [cbuff:CalamityMod/RiptideDebuff]
 		[c/5C95A1:'The people of the sea were adept hunters, but they abhorred unnecessary violence.]
 		[c/5C95A1:Unfortunately, neighboring nations were brutish, so they fashioned their tools for war.']
 		'''
@@ -1545,7 +1511,6 @@ VanishingPoint: {
 	TooltipNormal:
 		'''
 		Fires a lance beam that splits multiple times as it travels
-		Inflicts [cbuff:CalamityMod/ElementalMix]
 		'Rend the cosmos asunder!'
 		'''
 	TooltipGFB:
@@ -1557,11 +1522,7 @@ VanishingPoint: {
 
 VeinBurster: {
 	DisplayName: Vein Burster
-	Tooltip:
-		'''
-		Fires a blood ball that sticks to tiles and explodes
-		Inflicts [cbuff:CalamityMod/BurningBlood]
-		'''
+	Tooltip: Fires a blood ball that sticks to tiles and explodes
 }
 
 Violence: {
@@ -1590,7 +1551,7 @@ VoidEdge: {
 
 VulcaniteLance: {
 	DisplayName: Vulcanite Lance
-	Tooltip: Explodes into [cbuff:OnFire3] on enemy hits and summons homing flares on critical hits
+	Tooltip: Explodes on enemy hits and summons homing flares on critical hits
 }
 
 WindBlade: {
@@ -1618,7 +1579,6 @@ YateveoBloom: {
 		A synthesis of jungle flora
 		Throws a powerful rose flail
 		Press <right> to stab with a flower spear
-		Inflicts [cbuff:Poisoned] onto enemies
 		'''
 }
 

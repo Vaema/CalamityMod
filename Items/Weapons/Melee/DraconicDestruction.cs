@@ -1,6 +1,8 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
+using CalamityMod.Systems.Collections;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -12,6 +14,13 @@ namespace CalamityMod.Items.Weapons.Melee
     public class DraconicDestruction : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<Daybroken>()];
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<Dragonfire>()];
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.Oiled];
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.Slimed];
+        }
         public override void SetDefaults()
         {
             Item.width = 90;

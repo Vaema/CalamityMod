@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Projectiles.Melee;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -11,6 +12,11 @@ namespace CalamityMod.Items.Weapons.Melee
     public class BlightedCleaver : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.OnFire3];
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.Venom];
+        }
 
         public override void SetDefaults()
         {

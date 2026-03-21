@@ -1209,7 +1209,7 @@ WitherDebuff: {
 		Withered...
 		Defense decreased by {0}
 		'''
-	ItemTooltipPlayer: Decreases defense
+	ItemTooltipEnemy: Decreases defense by 20
 }
 
 // Summons

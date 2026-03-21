@@ -1,11 +1,13 @@
-﻿using CalamityMod.Projectiles.BaseProjectiles;
+﻿using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Projectiles.Melee.Spears;
+using CalamityMod.Systems.Collections;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
@@ -17,6 +19,7 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override void SetStaticDefaults()
         {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<VermillionFlux>()];
             base.SetStaticDefaults();
         }
         public override bool SizeModifiers => false;
