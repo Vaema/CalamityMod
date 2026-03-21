@@ -842,6 +842,20 @@ Onyxia: {
 		'''
 }
 
+OmniGun: {
+	DisplayName: The Omnigun
+	Tooltip:
+		'''
+		A flexible weapon, for any occasion
+		The first bullet is a sniper shot that gains damage as it travels and always critically strikes
+		Then, unleashes a volley of 10 rapid rifle shots
+		After which it fires a point blank shotgun spread of bullets with extreme damage
+		Before reloading, the gun fires a powerful grenade that blows up everything, including you
+		'What kind of gun is it?'
+		'Yes'
+		'''
+}
+
 OpalStriker: {
 	DisplayName: Opal Striker
 	Tooltip:
