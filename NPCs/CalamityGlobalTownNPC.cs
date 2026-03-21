@@ -413,6 +413,7 @@ namespace CalamityMod.NPCs
             "Lucerne", // <@!271954788676141066> (lord_lucerne)
             "Milo", // <@!401849201597874179> (maskedmilo)
             "Octo", // <@!796112889353994281> (octolinggrimm)
+            "Kreska", // <@!130037366852157440> (nuclearnecro)
         ];
         private static readonly string[] TownCatSiameseNames =
         [
