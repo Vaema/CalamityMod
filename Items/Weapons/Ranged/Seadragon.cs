@@ -1,8 +1,10 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -19,6 +21,11 @@ namespace CalamityMod.Items.Weapons.Ranged
         // The 9th shot adds a rocket. The 17th shot adds an ultra powerful muzzle blast, then resets the counter to 2.
         // This is intentional so you don't get the muzzle blast instantly when you start firing and have to play around it.
         private int shotCounter = 1;
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<CrushDepth>()];
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.OnFire3];
+        }
 
         public override void SetDefaults()
         {

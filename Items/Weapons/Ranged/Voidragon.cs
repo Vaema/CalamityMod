@@ -1,6 +1,8 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
+using CalamityMod.Systems.Collections;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -19,6 +21,10 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public static int AmmoSavedPercent = 50;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<Voidfrost>()];
+        }
 
         public override void SetDefaults()
         {

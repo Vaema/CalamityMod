@@ -1,6 +1,9 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Projectiles.Ranged;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -19,6 +22,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void SetStaticDefaults()
         {
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<RiptideDebuff>()];
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<ArmorCrunch>()];
         }
 
         public override void SetDefaults()

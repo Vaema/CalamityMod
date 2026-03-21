@@ -1390,10 +1390,7 @@ TheObliterator: {
 		{$Common.YoyoStatsInfinite}
 		[GFB]
 		'''
-	TooltipNormal:
-		'''
-		Occasionally performs a miniature [c/ff00ff:Dimensional Drive] at nearby foes
-		'''
+	TooltipNormal: Occasionally performs a miniature [c/ff00ff:Dimensional Drive] at nearby foes
 	TooltipGFB: just a slight bit of dust spam on this weapon im afraid
 }
 
