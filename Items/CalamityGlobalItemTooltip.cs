@@ -163,6 +163,20 @@ namespace CalamityMod.Items
                 }
             }
 
+            //Replace Crit Chance with Crit Damage on applicable tooltips
+            if (CalamityItemSets.ShowScalingCritDamageTooltip[item.type])
+            {
+                float cdmg = 2f + Main.LocalPlayer.Calamity().critDamage + Main.LocalPlayer.GetTotalCritChance(TrueMeleeNoSpeedDamageClass.Instance) * 0.02f;
+                tooltips.FirstOrDefault(x => x.Name == "CritChance")!.Text = CalamityUtils.GetText("Common.CritDamageTootip").Format(cdmg.ToPercent());
+            }
+            
+            //Add "Uses X Minion Slots right above "Uses X Mana"
+            if (ItemID.Sets.StaffMinionSlotsRequired[item.type] > 0)
+            {
+                tooltips.Insert(tooltips.FindIndex(0, (x) => x.Name == "Knockback") + 1, new(Mod, "Minions", CalamityUtils.GetText("Common.MinionSlotCost").Format(ItemID.Sets.StaffMinionSlotsRequired[item.type])));
+            }
+
+
             // Everything below this line can only apply to modded items. If the item is vanilla, stop here for efficiency.
             if (item.type < ItemID.Count)
                 return;

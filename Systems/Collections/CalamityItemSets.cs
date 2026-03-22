@@ -135,5 +135,10 @@ namespace CalamityMod.Systems.Collections
         /// </summary>
         public static bool[] RogueSpikyBall = Factory.CreateBoolSet(ItemType<BurningStrife>(), ItemType<GodsParanoia>(), ItemType<MetalMonstrosity>(), ItemType<NastyCholla>(), ItemType<SystemBane>(),
                 ItemType<WebBall>());
+
+        public static bool[] ShowScalingCritDamageTooltip = Factory
+            .CreateNamedSet("ShowScalingCritDamageTooltip")
+            .Description("Replaces Crit Chance tooltip line with Crit Damage, getting 2% crit dmg per 1% crit chance")
+            .RegisterBoolSet();
     }
 }
