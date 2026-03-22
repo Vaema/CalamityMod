@@ -13,6 +13,17 @@ AerialHamaxe: {
 	Tooltip: ""
 }
 
+AggressiveVoucher: {
+	DisplayName: Aggressive Voucher
+	Tooltip:
+		'''
+		Favorite this item in your inventory to increase the likelihood of obtaining a desirable reforge
+		Targeted Reforge: {0}
+		Selectable Reforges: {1}
+		[c/aaaaaa:Shift-<right> in your inventory to cycle between targeted reforges]
+		'''
+}
+
 AntiCystOintment: {
 	DisplayName: Anti-Cyst Ointment
 	Tooltip:
@@ -141,6 +152,15 @@ BrokenWaterFilter: {
 		'''
 }
 
+CombatVoucher: {
+	DisplayName: Combat Voucher
+	Tooltip:
+		'''
+		Favorite this item in your inventory to increase the likelihood of obtaining a desirable reforge
+		This effect only applies to reforging weapons
+		'''
+}
+
 Cosmolight: {
 	DisplayName: Cosmolight
 	Tooltip:
@@ -205,6 +225,17 @@ GreatbayPickaxe: {
 	Tooltip: Can mine Demonite, Crimtane, Meteorite, Sea Prisms and Sea Prism Crystals
 }
 
+HurriedVoucher: {
+	DisplayName: Hurried Voucher
+	Tooltip:
+		'''
+		Favorite this item in your inventory to increase the likelihood of obtaining a desirable reforge
+		Targeted Reforge: {0}
+		Selectable Reforges: {1}
+		[c/aaaaaa:Shift-<right> in your inventory to cycle between targeted reforges]
+		'''
+}
+
 InfernaCutter: {
 	DisplayName: Inferna Cutter
 	Tooltip:
@@ -265,6 +296,17 @@ NormalityRelocator: {
 		Teleportation is disabled while Chaos State is active
 		Works while in the inventory
 		'I'll be there in the blink of an eye'
+		'''
+}
+
+OddVoucher: {
+	DisplayName: Odd Voucher
+	Tooltip:
+		'''
+		Favorite this item in your inventory to increase the likelihood of obtaining a desirable reforge
+		Targeted Reforge: {0}
+		Selectable Reforges: {1}
+		[c/aaaaaa:Shift-<right> in your inventory to cycle between targeted reforges]
 		'''
 }
 
@@ -376,6 +418,17 @@ TorrentialTear: {
 		Summons the rain
 		Rain will start some time after this item is used
 		If used while it's raining, the rain will stop some time afterward
+		'''
+}
+
+UnbreakableVoucher: {
+	DisplayName: Unbreakable Voucher
+	Tooltip:
+		'''
+		Favorite this item in your inventory to increase the likelihood of obtaining a desirable reforge
+		Targeted Reforge: {0}
+		Selectable Reforges: {1}
+		[c/aaaaaa:Shift-<right> in your inventory to cycle between targeted reforges]
 		'''
 }
 
