@@ -8,9 +8,11 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.UI;
 
 
 namespace CalamityMod.Projectiles.Ranged
@@ -25,7 +27,9 @@ namespace CalamityMod.Projectiles.Ranged
         public override float BaseOffsetY => -1f;
         public override float OffsetYDownwards => 5f;
         public override Vector2 GunTipPosition => Projectile.Center + (Projectile.velocity * 51);
+        public override float RecoilResolveSpeed => CurrentRecoilResolveSpeed;
 
+        public float CurrentRecoilResolveSpeed = 0;
         public int Time = 0;
         public int shotCounter = 0;
         public int framesBetweenShots = 0;
@@ -61,7 +65,9 @@ namespace CalamityMod.Projectiles.Ranged
                     {
                         Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 19;
                         #region Visuals and Sounds
-                        SoundEngine.PlaySound(CommonCalamitySounds.LargeWeaponFireSound with { Volume = 0.45f }, Projectile.Center);
+                        SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/GunShotBig") with { Volume = 1f, Pitch = -0.1f }, Projectile.Center);
+                        SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/GunShotHeavy") with { Volume = 0.35f, Pitch = -0.15f }, Projectile.Center);
+
                         if (Main.netMode != NetmodeID.Server)
                         {
                             string goreType = "OmniSniperCasing";
@@ -78,7 +84,9 @@ namespace CalamityMod.Projectiles.Ranged
                         GeneralParticleHandler.SpawnParticle(shootPulse);
                         #endregion
                         OffsetLengthFromArm -= 20f;
-                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(1.5f)), ModContent.ProjectileType<OmniSniperShot>(), (int)(Projectile.damage * 10f), Projectile.knockBack, Projectile.owner);
+                        CurrentRecoilResolveSpeed = 0.14f;
+
+                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(1.5f)), ModContent.ProjectileType<OmniSniperShot>(), (int)(Projectile.damage * 6f), Projectile.knockBack, Projectile.owner);
                         shotCounter++;
                         framesBetweenShots = 40;
                     }
@@ -110,6 +118,7 @@ namespace CalamityMod.Projectiles.Ranged
                         #endregion
                         framesBetweenShots = 8;
                         OffsetLengthFromArm -= 3f;
+                        CurrentRecoilResolveSpeed = 0.3f;
                         Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(4f)), bulletAMMO, Projectile.damage, Projectile.knockBack, Projectile.owner);
                         shotCounter++;
                         if (shotCounter > 10)
@@ -146,9 +155,13 @@ namespace CalamityMod.Projectiles.Ranged
                         #endregion
                         framesBetweenShots = 8;
                         OffsetLengthFromArm -= 20f;
+                        CurrentRecoilResolveSpeed = 0.12f;
+
+                        // Propel the owner backward
                         Owner.velocity += -Projectile.velocity * 7f;
+
                         for (int i = 0; i < 8; i++)
-                            Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.5f, 1.5f), ModContent.ProjectileType<OmniShotgunShot>(), (int)(Projectile.damage * 3f), Projectile.knockBack, Projectile.owner);
+                            Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.5f, 1.5f), ModContent.ProjectileType<OmniShotgunShot>(), (int)(Projectile.damage * 2.6f), Projectile.knockBack, Projectile.owner);
                         shotCounter++;
                         if (shotCounter > 11)
                             framesBetweenShots = 30;
@@ -159,7 +172,7 @@ namespace CalamityMod.Projectiles.Ranged
                     {
                         Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 30;
                         #region Visuals and Sounds
-                        SoundStyle fire = new("CalamityMod/Sounds/Item/LauncherHeavyShot");
+                        SoundStyle fire = new SoundStyle("CalamityMod/Sounds/Item/GunShotHeavy");
                         SoundEngine.PlaySound(fire with { Volume = 0.7f, PitchVariance = 0.1f }, Projectile.Center);
                         if (Main.netMode != NetmodeID.Server)
                         {
@@ -180,8 +193,9 @@ namespace CalamityMod.Projectiles.Ranged
                         ;
                         #endregion
                         OffsetLengthFromArm -= 24f;
-                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<OmniGrenade>(), (int)(Projectile.damage * 10f), Projectile.knockBack, Projectile.owner);
+                        CurrentRecoilResolveSpeed = 0.15f;
 
+                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<OmniGrenade>(), (int)(Projectile.damage * 9f), Projectile.knockBack, Projectile.owner);
                         Time = 0;
                         shotCounter = 0;
                     }
