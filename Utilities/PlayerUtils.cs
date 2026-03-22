@@ -147,8 +147,6 @@ namespace CalamityMod
             // Xyk 3MARCH2026: Will be implemented better by Doze eventually
             if (addHeldItemScale)
                 baseScale += (player.HeldItem.scale - 1);
-            if (player.kbGlove)
-                baseScale += 1;//REMOVE after testing is complete
             if (player.HasBuff(BuffID.Tipsy))
                 baseScale += 0.15f;
 
