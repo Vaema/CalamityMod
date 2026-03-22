@@ -54,7 +54,6 @@ namespace CalamityMod.Projectiles.Melee
         public override void WhenSpawned()
         {
             Projectile.knockBack = 0;
-            Projectile.scale = 1;
             Projectile.ai[1] = 1;
 
             // 14NOV2024: Ozzatron: clamped mouse position unnecessary, it does not influence Earth's projectile spawning
