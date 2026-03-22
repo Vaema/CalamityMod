@@ -63,6 +63,7 @@ namespace CalamityMod.Projectiles.Melee
             // Recalculate damage every frame for balance reasons, as this is a long-lasting holdout.
             // This is important because you could start using it while benefitting from Auric Tesla standstill bonus, for example.
             Projectile.damage = Owner.HeldItem is null ? 0 : Owner.GetWeaponDamage(Owner.HeldItem);
+            Projectile.scale = Owner.GetMeleeScale();
             DetermineDamage();
 
             PlayChainsawSounds();
@@ -139,7 +140,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.rotation -= MathHelper.Pi;
 
             // Positioning close to the player's arm.
-            Projectile.position = playerRotatedPosition - Projectile.Size * 0.5f + directionAngle.ToRotationVector2() * 30f;
+            Projectile.position = playerRotatedPosition - Projectile.Size * 0.5f + directionAngle.ToRotationVector2() * 30f * Projectile.scale;
 
             // Update the position a tiny bit every frame at random to make it look like the saw is vibrating.
             // It is reset on the next frame.
@@ -191,7 +192,7 @@ namespace CalamityMod.Projectiles.Melee
 
             for (int i = 0; i < 2; i++)
             {
-                Vector2 spawnPosition = Projectile.Center + Projectile.velocity * 35f;
+                Vector2 spawnPosition = Projectile.Center + Projectile.velocity * 35f * Projectile.scale;
 
                 // Spawn the dust a little bit on the chainsaw. X variance is less than Y variance to ensure that dust does not
                 // spawn too far from the blade.
@@ -235,7 +236,8 @@ namespace CalamityMod.Projectiles.Melee
                     shootReach = 72f;
             }
 
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, Projectile.velocity, ModContent.ProjectileType<PrismTooth>(), (int)ToothDamage, 0f, Projectile.owner, shootReach, Projectile.whoAmI, Projectile.ai[2]);
+            Projectile prismTooth = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center, Projectile.velocity, ModContent.ProjectileType<PrismTooth>(), (int)ToothDamage, 0f, Projectile.owner, shootReach, Projectile.whoAmI, Projectile.ai[2]);
+            prismTooth.scale = Projectile.scale;
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
@@ -243,9 +245,9 @@ namespace CalamityMod.Projectiles.Melee
             // Collision is done as a line to bypass the fact that hitboxes cannot rotate and that
             // this projectile is notably flat in terms of sprite shape.
             float _ = 0f;
-            float width = Projectile.scale * 36f;
+            float width = Projectile.scale * 36f * Projectile.scale;
             Vector2 start = Projectile.Center;
-            Vector2 end = Projectile.Center + Projectile.velocity * 70f;
+            Vector2 end = Projectile.Center + Projectile.velocity * 70f * Projectile.scale;
             return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), start, end, width, ref _);
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)

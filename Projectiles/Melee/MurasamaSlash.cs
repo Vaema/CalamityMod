@@ -60,9 +60,10 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (time == 0)
             {
+                Projectile.scale = Owner.GetMeleeScale();
                 if (Main.zenithWorld)
                 {
-                    Projectile.scale = 2;
+                    Projectile.scale *= 2;
                     Projectile.damage = (int)(Projectile.damage * 2);
                 }
                 Projectile.frame = Main.zenithWorld ? 6 : 10;

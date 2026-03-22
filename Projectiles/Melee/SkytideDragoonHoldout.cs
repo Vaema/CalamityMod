@@ -293,7 +293,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             // Perform an AABB line collision check to check the whole spear.
             float _ = float.NaN;
-            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Owner.Center, Owner.Center + (Projectile.rotation - MathHelper.ToRadians(45)).ToRotationVector2() * HitboxOutset + tipOutset, HitboxSize.X * Projectile.scale, ref _);
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Owner.Center, Owner.Center + ((Projectile.rotation - MathHelper.ToRadians(45)).ToRotationVector2() * HitboxOutset + tipOutset) * Projectile.scale, HitboxSize.X * Projectile.scale, ref _);
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
