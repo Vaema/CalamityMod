@@ -41,7 +41,7 @@ namespace CalamityMod
             NormalityRelocatorHotKey = KeybindLoader.RegisterKeybind(Mod, "NormalityRelocator", "Z");
             RageHotKey = KeybindLoader.RegisterKeybind(Mod, "RageMode", "V");
             SpectralVeilHotKey = KeybindLoader.RegisterKeybind(Mod, "SpectralVeilTeleport", "Z");
-            SpringStoolJumpHotKey = KeybindLoader.RegisterKeybind(Mod, "SpringStoolJumpHotKey", "Q");
+            SpringStoolJumpHotKey = KeybindLoader.RegisterKeybind(Mod, "SpringStoolJumpHotKey", "U");
             TransformerHotKey = KeybindLoader.RegisterKeybind(Mod, "TransformerHotKey", "K");
             SwitchGravityHotkey = KeybindLoader.RegisterKeybind(Mod, "GravitySwapOverride", "T");
             ExpandDebuffInfo = KeybindLoader.RegisterKeybind(Mod, "ExpandDebuffInfo", "LeftControl");
