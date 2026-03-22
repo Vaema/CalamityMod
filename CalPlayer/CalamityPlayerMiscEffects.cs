@@ -1345,19 +1345,31 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            // Hydrothermal blue smoke effects but it doesn't work epicccccc
             if (Player.whoAmI == Main.myPlayer)
             {
-                if (hydrothermalSmoke)
+                if (hydrothermalSmoke && !Main.dedServ)
                 {
+                    // Release effects when the player moves.
                     if (Math.Abs(Player.velocity.X) > 0.1f || Math.Abs(Player.velocity.Y) > 0.1f)
                     {
-                        // https://github.com/tModLoader/tModLoader/wiki/IEntitySource#detailed-list
-                        var source = Player.GetSource_FromThis(HydrothermicArmor.VanitySmokeEntitySourceContext);
-                        Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ModContent.ProjectileType<HydrothermalSmoke>(), 0, 0f, Player.whoAmI);
+                        if (Main.rand.NextBool(6))
+                        {
+                            int fieryDust = Dust.NewDust(Player.Top + Vector2.UnitY, 20, 42, DustID.Flare, 0f, 0f, 100, default, 0.7f);
+                            if (Main.rand.NextBool(4))
+                            {
+                                Main.dust[fieryDust].scale *= 0.35f;
+                            }
+                            Main.dust[fieryDust].velocity *= 0f;
+                        }
+
+                        if (Main.rand.NextBool(2))
+                        {
+                            float upwardVariation = Main.rand.NextFloat(-4.5f, -8f);
+                            MediumMistParticle mist = new MediumMistParticle(Player.Top + Vector2.UnitY, -Player.velocity + new Vector2(0.5f, upwardVariation), Main.rand.NextBool(3) ? Color.LightSteelBlue : Color.Black, Color.Black, Main.rand.NextFloat(0.4f, 0.65f), 130);
+                            GeneralParticleHandler.SpawnParticle(mist);
+                        }
                     }
                 }
-                // Trying to find a workaround because apparently putting the bool in ResetEffects prevents it from working
                 if (!Player.armorEffectDrawOutlines)
                 {
                     hydrothermalSmoke = false;
