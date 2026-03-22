@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Accessories
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs((JumpCooldown).FramesToSeconds(), (CritRateBoostAboveTargets));
 
         public static int JumpCooldown = CalamityUtils.SecondsToFrames(20);
-        public static float CritRateBoostAboveTargets = 5f;
+        public static int CritRateBoostAboveTargets = 5;
 
         public override void SetDefaults()
         {
@@ -56,6 +56,10 @@ namespace CalamityMod.Items.Accessories
         {
             // Hook directly into vanilla's stool drawing
             On_PlayerDrawLayers.DrawPlayer_03_PortableStool += HandleStoolStacking;
+
+            // Used to apply the conditional crit chance boost
+            // Projectiles uses standard tML hooks
+            On_Player.ProcessHitAgainstNPC += HandleExtraMeleeHitboxCrit;
         }
 
         public override void PostUpdate()
@@ -173,22 +177,36 @@ namespace CalamityMod.Items.Accessories
             }
         }
 
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        // Adds crit to melee hitboxes
+        private static void HandleExtraMeleeHitboxCrit(On_Player.orig_ProcessHitAgainstNPC orig, Player self, Item sItem, Rectangle itemRectangle, int originalDamage, float knockback, int npcIndex)
         {
-            if (springStool)
+            bool getBoost = self.GetModPlayer<SpringStoolPlayer>().springStool && self.Top.Y < Main.npc[npcIndex].Top.Y;
+            if (getBoost)
+                sItem.crit += SpringStool.CritRateBoostAboveTargets;
+
+            orig(self, sItem, itemRectangle, originalDamage, knockback, npcIndex);
+
+            if (getBoost)
+                sItem.crit -= SpringStool.CritRateBoostAboveTargets;
+        }
+        // Scuffed implementation to add crit to projectiles, using one hook to add it and then a later hook to remove it
+        // There are two return statements in between these hooks that I would normally be nervous of, however neither actually affect this at all:
+        // * The first is Electrosphere Launcher's rockets dying on hit, which kills the projectile anyways and can just have a manual check against
+        // * The second is Abigail's Flower hit cooldown logic, which does nothing since it's a minion that doesn't crit
+        public override void ModifyHitNPCWithProj(Projectile proj, NPC target, ref NPC.HitModifiers modifiers)
+        {
+            if (springStool && proj.type != ProjectileID.ElectrosphereMissile)
             {
-                // When hitting a target below you
-                if (Main.LocalPlayer.Top.Y < target.Top.Y)
-                {
-                    // Effective +5% crit chance. Increasing crit chance additively through manual rolling is scuffed for crossmod compatability, feel free to improve it if you know a cleaner way
-                    float finalCritChance = Player.GetTotalCritChance(modifiers.DamageType) + SpringStool.CritRateBoostAboveTargets;
-
-                    if (Main.rand.NextFloat(1f, 101f) <= finalCritChance)
-                        modifiers.SetCrit();
-
-                    else
-                        modifiers.DisableCrit();
-                }
+                if (Player.Top.Y < target.Top.Y)
+                    proj.CritChance += SpringStool.CritRateBoostAboveTargets;
+            }
+        }
+        public override void OnHitNPCWithProj(Projectile proj, NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            if (springStool && proj.type != ProjectileID.ElectrosphereMissile)
+            {
+                if (Player.Top.Y < target.Top.Y)
+                    proj.CritChance -= SpringStool.CritRateBoostAboveTargets;
             }
         }
 
