@@ -32,7 +32,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.ContinuouslyUpdateDamageStats = true;
             Projectile.ownerHitCheck = true;
             Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 3;
+            Projectile.idStaticNPCHitCooldown = 5;
         }
         public override void ModifyDamageHitbox(ref Rectangle hitbox)
         {
