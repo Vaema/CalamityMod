@@ -7,8 +7,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class StepStoolBonusFX : ModProjectile
+    public class StepStoolBonusFX : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "Calamitymod/Projectiles/InvisibleProj";
         public float OpacityMultiplier = 1f;
         public override void SetDefaults()

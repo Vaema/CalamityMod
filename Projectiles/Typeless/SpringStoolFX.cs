@@ -11,6 +11,8 @@ namespace CalamityMod.Projectiles.Typeless
 {
     public class SpringStoolFX : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Typeless";
+
         float rotationFactor = 0.015f;
         public static float EaseOutElastic(float x, float amplitude = 1f, float period = 0.3f)
         {
