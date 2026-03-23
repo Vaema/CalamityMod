@@ -1301,10 +1301,10 @@ namespace CalamityMod.NPCs
                         npc.lifeMax *= 4;
                         break;
                     case NPCID.BrainofCthulhu:
-                        npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.75);
+                        npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.95);
                         break;
                     case NPCID.Creeper:
-                        npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.175);
+                        npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.1);
                         break;
                     case NPCID.QueenBee:
                         npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.8);
