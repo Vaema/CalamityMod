@@ -46,7 +46,7 @@ Animosity: {
 	TooltipNormal:
 		'''
 		Fires a shotgun blast with a tight spread which is imbued with [cbuff:CalamityMod/BrimstoneFlames]
-		Press <right> to fire a powerful brimstone round that inflicts [cbuff:CalamityMod/WhisperingDeath]
+		Press <right> to fire a powerful brimstone round that causes enemies to become [cbuff:CalamityMod/MarkedforDeath]
 		'''
 	TooltipGFB:
 		'''
