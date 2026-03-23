@@ -13,8 +13,8 @@ namespace CalamityMod.Items.Accessories
     {
         public new string LocalizationCategory => "Items.Accessories";
 
-        public static int MinRegenBoost = 4;
-        public static int MaxRegenBoost = 10;
+        public static int MinRegenBoost = 1;
+        public static int MaxRegenBoost = 4;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MinRegenBoost.ToRegenPerSecond(), MaxRegenBoost.ToRegenPerSecond());
 
         public override void SetDefaults()

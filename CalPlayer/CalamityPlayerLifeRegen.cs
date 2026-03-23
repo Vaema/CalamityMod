@@ -308,19 +308,6 @@ namespace CalamityMod.CalPlayer
 
             if (bloodfinBoost)
             {
-                if (Player.lifeRegen < 0)
-                {
-                    if (Player.lifeRegenTime < Bloodfin.DebuffedRegenTimeFloor)
-                        Player.lifeRegenTime = Bloodfin.DebuffedRegenTimeFloor;
-
-                    Player.lifeRegen += Bloodfin.DebuffedRegenBoost;
-                }
-                else
-                {
-                    Player.lifeRegen += Bloodfin.RegenBoost;
-                    Player.lifeRegenTime += Bloodfin.RegenTimeBoost;
-                }
-
                 if (bloodfinTimer > 0)
                     bloodfinTimer--;
 
@@ -328,7 +315,7 @@ namespace CalamityMod.CalPlayer
                 {
                     bloodfinTimer = Bloodfin.FramesForExtraRegen;
 
-                    if (Player.statLife < (int)(Player.statLifeMax2 * Bloodfin.ExtraRegenHealthThreshold) && !noLifeRegen)
+                    if (!noLifeRegen)
                         Player.HealPlayer(1, HealTextType.None);
                 }
             }
@@ -412,7 +399,7 @@ namespace CalamityMod.CalPlayer
             // Infected Jewel does not stack with Purity
             else if (infectedJewel)
             {
-                Player.lifeRegen += 2;
+                Player.lifeRegen += InfectedJewel.RegenBoost;
 
                 // If the player has any debuffs, give the extra life regen and defense
                 // More defense is given for each additional debuff
@@ -420,9 +407,9 @@ namespace CalamityMod.CalPlayer
                 int currentDebuffs = Player.buffType.Count(i => CalamityBuffSets.IsDebuff[i]);
                 if (currentDebuffs > 0)
                 {
-                    Player.lifeRegen += 4;
+                    Player.lifeRegen += InfectedJewel.DebuffedRegenBoost;
 
-                    intendedJewelDefense = 12 + (currentDebuffs - 1) * 4;
+                    intendedJewelDefense = InfectedJewel.DebuffedDefenseBoost + (currentDebuffs - 1) * InfectedJewel.ExtraDebuffDefenseBoost;
                     if (jewelBonusDefense < intendedJewelDefense)
                         jewelBonusDefense = intendedJewelDefense;
                 }
@@ -439,11 +426,11 @@ namespace CalamityMod.CalPlayer
             // Crown Jewel does not stack with Purity or Infected Jewel
             else if (crownJewel)
             {
-                Player.lifeRegen += 2;
+                Player.lifeRegen += CrownJewel.RegenBoost;
 
                 // If any debuff is detected, provide even more life regen
                 if (Player.buffType.Any(i => CalamityBuffSets.IsDebuff[i]))
-                    Player.lifeRegen += 3;
+                    Player.lifeRegen += CrownJewel.DebuffedRegenBoost;
             }
 
             //If a player had a life regen hindering debuff, add 30 seconds to their regen time when under Tequila Sunrise

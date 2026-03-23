@@ -467,8 +467,8 @@ CrownJewel: {
 	DisplayName: Crown Jewel
 	Tooltip:
 		'''
-		+1 HP/s life regen
-		You gain an additional +1.5 HP/s life regen while afflicted with any debuff
+		+{0} HP/s life regen
+		You gain an additional +{1} HP/s life regen while afflicted with any debuff
 		'''
 }
 
@@ -977,10 +977,10 @@ InfectedJewel: {
 	DisplayName: Infected Jewel
 	Tooltip:
 		'''
-		Passively grants +1 HP/s life regen
-		Grants 12 defense and +2 HP/s life regen while afflicted with any debuff
+		Passively grants +{0} HP/s life regen
+		Grants {1} defense and +{2} HP/s life regen while afflicted with any debuff
 		Granted defense fades away quickly when not afflicted with any debuffs
-		Each debuff beyond the first grants 4 additional defense
+		Each debuff beyond the first grants {3} additional defense
 		Nullifies the [cbuffplr:CalamityMod/AstralInfectionDebuff]
 		'A beautiful gemstone tarnished by spaceborne rot'
 		'''
@@ -1401,7 +1401,7 @@ Radiance: {
 		'''
 	HoldShiftTooltip:
 		'''
-		[c/CDF69C:Grants +2 to +5 HP/s life regen based on missing health]
+		[c/CDF69C:Grants +0.5 to +2 HP/s life regen based on missing health]
 		[c/CDF69C:Recover an additional 6 HP/s while inflicted with a debuff]
 		[c/CDF69C:This eventually slows to 1.33 HP/s when debuffed for an extended time period]
 		[c/CDF69C:Grants the Honey buff]
