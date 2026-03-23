@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Accessories
         public new string LocalizationCategory => "Items.Accessories";
 
         public static int MaxLifeBoost = 50;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MaxLifeBoost, RadiantOoze.MinRegenBoost.ToRegenPerSecond(), RadiantOoze.MaxRegenBoost.ToRegenPerSecond());
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MaxLifeBoost, LivingDew.RegenTimeBoost.ToPercent(), (HoneyDew.NaturalRegenPower - 1f).ToPercent(), RadiantOoze.MinRegenBoost.ToRegenPerSecond(), RadiantOoze.MaxRegenBoost.ToRegenPerSecond());
 
         public override void SetDefaults()
         {
@@ -36,8 +36,8 @@ namespace CalamityMod.Items.Accessories
             modPlayer.aAmpoule = true;
 
             // Inherits all effects of Honey Dew and Living Dew
-            modPlayer.honeyDewHalveDebuffs = true;
-            modPlayer.livingDewHalveDebuffs = true;
+            modPlayer.honeyDew = true;
+            modPlayer.livingDew = true;
 
             // Add light if the other accessories aren't equipped and visibility is turned on
             if (!(modPlayer.rOoze || modPlayer.purity) && !hideVisual)

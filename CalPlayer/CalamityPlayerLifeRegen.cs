@@ -277,26 +277,6 @@ namespace CalamityMod.CalPlayer
             bool hasLifeRegenHinderingDebuff = Player.lifeRegenTime == 0;
 
             #region Life Regen That Works Even During DoT Debuffs
-            if (honeyDewHalveDebuffs)
-            {
-                // Tick down all sickness debuffs; this makes them expire 2x faster
-                // Upgrades increase the sets of debuffs which expire faster
-                for (int l = 0; l < Player.MaxBuffs; ++l)
-                {
-                    int buffID = Player.buffType[l];
-                    if (Player.buffTime[l] <= 2 || BuffDatasets.DebuffDataset[buffID] is null)
-                        continue;
-                    bool shouldHalveDuration = BuffDatasets.DebuffDataset[buffID].SicknessDebuffScaling > 0;
-                    if (livingDewHalveDebuffs)
-                        shouldHalveDuration |= BuffDatasets.DebuffDataset[buffID].HeatDebuffScaling > 0;
-                    if (purity)
-                        shouldHalveDuration |= CalamityBuffSets.IsDebuff[buffID];
-
-                    if (shouldHalveDuration)
-                        --Player.buffTime[l];
-                }
-            }
-
             if (divineBless)
             {
                 if (Player.whoAmI == Main.myPlayer && Player.miscCounter % AngelicAlliance.DivineBlessFramesPerHeal == 0) // Flat 4 health per second
@@ -338,59 +318,25 @@ namespace CalamityMod.CalPlayer
             else if (grandDadHealTimer > 0)
                 grandDadHealTimer--;
 
-            // Grant life regen based on missing health for Radiant Ooze, Ambrosial Ampule, and purity
-            if (rOoze || aAmpoule || purity)
-            {
-                float missingLifeRatio = (Player.statLifeMax2 - Player.statLife) / (float)Player.statLifeMax2;
-                //Ambrosial Ampule and ooze give between 2 and 5 hp/s
-                int lifeRegenToGive = (int)Math.Round(MathHelper.Lerp(RadiantOoze.MinRegenBoost, RadiantOoze.MaxRegenBoost, missingLifeRatio));//Rounding is needed for it to ever actually give +5 hp/s, as the integer conversion would otherwise floor it.
-                Player.lifeRegen += lifeRegenToGive; 
-                radiantOozeRegen += lifeRegenToGive / 2f;
-                purityRegen += lifeRegenToGive / 2f;
-            }
-
             if (purity)
             {
                 int intendedPurityDefense = 0;
                 int currentDebuffs = Player.buffType.Count(i => CalamityBuffSets.IsDebuff[i]);
                 if (currentDebuffs > 0)
                 {
-                    // Healing rate is normally 5 HP/s (+1 every 12 frames)
-                    // However, that 12 frames can and will slowly increase if you try to abuse this accessory
-                    int healFrameCadence = 12;
+                    Player.lifeRegen += Radiance.DebuffedRegenBoost;
 
-                    // Healing slows down after 5 seconds (300 frames) debuffed. For every 15 frames thereafter the cadence slows
-                    // The upper limit to how slow it can get is after 15 seconds (900 frames)
-                    int punishmentFrames = PurityHealSlowdownFrames - 300;
-                    //lowest punishment is a little under a second between the one health heal
-                    if (healFrameCadence < 52)
-                        healFrameCadence += (punishmentFrames < 0) ? 0 : punishmentFrames / 15;
-
-                    if (Player.miscCounter % healFrameCadence == healFrameCadence - 1)
-                        Player.Heal(1);
-
-                    intendedPurityDefense = 15 + (currentDebuffs - 1) * 5;
+                    intendedPurityDefense = Radiance.DebuffedDefenseBoost + (currentDebuffs - 1) * Radiance.ExtraDebuffDefenseBoost;
                     if (jewelBonusDefense < intendedPurityDefense)
                         jewelBonusDefense = intendedPurityDefense;
 
-                    // Count up total frames spent healing for slowdown.
-                    if (PurityHealSlowdownFrames < 900)
-                        ++PurityHealSlowdownFrames;
-                    purityRegen += (60 / (float)healFrameCadence);
+                    // Update tooltip
+                    purityRegen += Radiance.DebuffedRegenBoost / 2f;
                 }
 
                 // If the defense should be ticking down to some lower value, do that.
-                // Purity loses 1 point of defense every second.
-                if (Player.miscCounter % 60 == 0 && jewelBonusDefense > intendedPurityDefense)
+                if (Player.miscCounter % Radiance.FramesToDecayDefense == 0 && jewelBonusDefense > intendedPurityDefense)
                     --jewelBonusDefense;
-
-                // If the player is clear of all debuffs then gradually reduce the slowdown frames
-                if (currentDebuffs <= 0)
-                {
-                    --PurityHealSlowdownFrames;
-                    if (PurityHealSlowdownFrames < 0)
-                        PurityHealSlowdownFrames = 0;
-                }
 
                 // Actually apply defense bonus
                 Player.statDefense += jewelBonusDefense;
@@ -415,8 +361,7 @@ namespace CalamityMod.CalPlayer
                 }
 
                 // If the defense should be ticking down to some lower value, do that.
-                // Infected Jewel loses 1 point of defense every 20 frames.
-                if (Player.miscCounter % 60 == 0 && jewelBonusDefense > intendedJewelDefense)
+                if (Player.miscCounter % InfectedJewel.FramesToDecayDefense == 0 && jewelBonusDefense > intendedJewelDefense)
                     --jewelBonusDefense;
 
                 // Actually apply defense bonus
@@ -548,6 +493,21 @@ namespace CalamityMod.CalPlayer
 
             if (PinkJellyRegen)
                 Player.lifeRegen += LifeJelly.AuraRegenBoost;
+
+            // Grant life regen based on missing health for Radiant Ooze, Ambrosial Ampule, and Radiance
+            if (rOoze || aAmpoule || purity)
+            {
+                float missingLifeRatio = (Player.statLifeMax2 - Player.statLife) / (float)Player.statLifeMax2;
+                // Rounding is needed to prevent flooring and making the max unreachable
+                int lifeRegenToGive = (int)Math.Round(MathHelper.Lerp(RadiantOoze.MinRegenBoost, RadiantOoze.MaxRegenBoost, missingLifeRatio));
+                Player.lifeRegen += lifeRegenToGive;
+                // Update tooltips
+                radiantOozeRegen += lifeRegenToGive / 2f;
+                purityRegen += lifeRegenToGive / 2f;
+            }
+
+            if (livingDew)
+                Player.lifeRegenTime += LivingDew.RegenTimeBoost;
 
             if (GreenJellyRegen)
                 Player.lifeRegen += Items.Accessories.GrandGelatin.AuraRegenBoost;
@@ -731,6 +691,10 @@ namespace CalamityMod.CalPlayer
 
         public override void NaturalLifeRegen(ref float regen)
         {
+            // Honey Dew and its upgrades make natural regen more powerful
+            if (honeyDew)
+                regen *= HoneyDew.NaturalRegenPower;
+
             // The Camper counteracts the regen loss while moving horizontally
             if (camper && (Player.velocity.X != 0 && Player.grappling[0] <= 0))
             {

@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -15,6 +16,15 @@ namespace CalamityMod.Items.Accessories
     public class Radiance : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static int MaxLifeBoost = 70;
+        public static int DebuffedRegenBoost = 4; // Added on top of the baseline regen boost
+        public static int DebuffedDefenseBoost = 9;
+        public static int ExtraDebuffDefenseBoost = 4; // Per additional debuff
+        public static int FramesToDecayDefense = 15;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MaxLifeBoost);
+        public LocalizedText TooltipExtensionText => this.GetLocalization("HoldShiftTooltip").WithFormatArgs(LivingDew.RegenTimeBoost.ToPercent(), (HoneyDew.NaturalRegenPower - 1f).ToPercent(),
+        RadiantOoze.MinRegenBoost.ToRegenPerSecond(), RadiantOoze.MaxRegenBoost.ToRegenPerSecond(), DebuffedDefenseBoost, DebuffedRegenBoost.ToRegenPerSecond(), ExtraDebuffDefenseBoost);
         public override void SetStaticDefaults()
         {
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(5, 7));
@@ -25,7 +35,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 18;
             Item.height = 44;
-            Item.defense = 5;
+            Item.defense = 3;
             Item.accessory = true;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<BurnishedAuric>();
@@ -34,16 +44,14 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            player.statLifeMax2 += 70;
-            if (!player.HasBuff(BuffID.Honey))
-                player.AddBuff(BuffID.Honey, 2);
+            player.statLifeMax2 += MaxLifeBoost;
 
-            // Abyss light, debuff near-immunity, life regen effects, and massively enhances debuff halving
+            // Abyss light, debuff near-immunity, and life regen effects
             modPlayer.purity = true;
 
             // Inherits effects from Honey Dew and Living Dew
-            modPlayer.honeyDewHalveDebuffs = true;
-            modPlayer.livingDewHalveDebuffs = true;
+            modPlayer.honeyDew = true;
+            modPlayer.livingDew = true;
 
             // Add light if the other accessories aren't equipped and visibility is turned on
             if (!(modPlayer.rOoze || modPlayer.aAmpoule) && !hideVisual)

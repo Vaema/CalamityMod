@@ -188,7 +188,7 @@ namespace CalamityMod.Items
                 // If holding SHIFT, actually display the extended tooltip.
                 if (holdingShift && firstTooltipIndex != -1)
                 {
-                    string holdShiftText = item.ModItem.GetLocalizedValue(holdShiftItem.TooltipExtensionKey);
+                    string holdShiftText = (holdShiftItem.TooltipExtensionText == LocalizedText.Empty ? item.ModItem.GetLocalizedValue(holdShiftItem.TooltipExtensionKey) : holdShiftItem.TooltipExtensionText.ToString());
                     TooltipLine holdShiftLine = new TooltipLine(Mod, IHoldShiftTooltipItem.ExtensionTooltipID, holdShiftText);
                     if (holdShiftItem.TooltipExtensionColor is not null)
                         holdShiftLine.OverrideColor = holdShiftItem.TooltipExtensionColor;

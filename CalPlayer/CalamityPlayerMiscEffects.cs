@@ -1580,7 +1580,7 @@ namespace CalamityMod.CalPlayer
 
                     if (Player.whoAmI == Main.myPlayer)
                     {
-                        Player.HealPlayer(15);
+                        Player.HealPlayer(10);
 
                         if (profanedCrystal)
                         {

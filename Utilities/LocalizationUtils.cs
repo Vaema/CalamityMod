@@ -97,6 +97,7 @@ namespace CalamityMod
 
         public static string GetChanceFromDenominator(this int denominator) => ToPercent(1 / (float)denominator);
 
+        public static string ToPercent(this int percent) => (percent * 100).ToString();
         public static string ToPercent(this float percent, string precision = "N1") => Round(percent * 100f, precision);
         public static string ToPercent(this double percent, string precision = "N1") => Round(percent * 100D, precision);
         // Double-rounded for proper digit cutoffs

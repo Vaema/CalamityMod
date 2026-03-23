@@ -99,8 +99,8 @@ AmbrosialAmpoule: {
 	Tooltip:
 		'''
 		+{0} max life
-		Grants +{1} to +{2} HP/s life regen based on missing health
-		Grants the [cbuffplr:Honey] buff
+		Natural life regen is {1}% faster and {2}% more potent
+		Grants +{2} to +{3} HP/s life regen based on missing health
 		Current boost: +[REGEN] HP/s
 		Fire and sickness debuff durations are halved
 		You emit yellow light if visibility is enabled
@@ -948,9 +948,8 @@ HoneyDew: {
 	DisplayName: Honey Dew
 	Tooltip:
 		'''
-		+10 max life
-		Grants the [cbuffplr:Honey] buff
-		Sickness debuff durations are halved
+		+{0} max life
+		Natural life regen is {1}% more potent
 		'''
 }
 
@@ -979,7 +978,7 @@ InfectedJewel: {
 		'''
 		Passively grants +{0} HP/s life regen
 		Grants {1} defense and +{2} HP/s life regen while afflicted with any debuff
-		Granted defense fades away quickly when not afflicted with any debuffs
+		Granted defense fades away when not afflicted with any debuffs
 		Each debuff beyond the first grants {3} additional defense
 		Nullifies the [cbuffplr:CalamityMod/AstralInfectionDebuff]
 		'A beautiful gemstone tarnished by spaceborne rot'
@@ -1080,9 +1079,8 @@ LivingDew: {
 	DisplayName: Living Dew
 	Tooltip:
 		'''
-		+25 max life
-		Grants the [cbuffplr:Honey] buff
-		Fire and sickness debuff durations are halved
+		+{0} max life
+		Natural life regen is {1}% faster and {2}% more potent
 		'''
 }
 
@@ -1392,7 +1390,7 @@ Radiance: {
 	DisplayName: Radiance
 	Tooltip:
 		'''
-		+70 max life
+		+{0} max life
 		Provides greatly improved life regen, increasing with lost health
 		Gain increased defense from debuffs inflicted on you, and greatly reduces their effectiveness
 		Current boosts: +[REGEN] HP/s and [DEFENSE] defense.
@@ -1401,13 +1399,11 @@ Radiance: {
 		'''
 	HoldShiftTooltip:
 		'''
-		[c/CDF69C:Grants +0.5 to +2 HP/s life regen based on missing health]
-		[c/CDF69C:Recover an additional 6 HP/s while inflicted with a debuff]
-		[c/CDF69C:This eventually slows to 1.33 HP/s when debuffed for an extended time period]
-		[c/CDF69C:Grants the Honey buff]
-		[c/CDF69C:Grants 15 defense while afflicted with any debuff]
-		[c/CDF69C:Each additional debuff grants 5 defense, which slowly decays while not debuffed]
-		[c/CDF69C:Weak damaging debuffs are harmless and halves the duration of most other debuffs]
+		[c/CDF69C:Natural life regen is {0}% faster and {1}% more potent]
+		[c/CDF69C:Grants +{2} to +{3} HP/s life regen based on missing health]
+		[c/CDF69C:Grants {4} defense and +{5} HP/s life regen while afflicted with any debuff]
+		[c/CDF69C:Each additional debuff grants {6} defense, which decays while not debuffed]
+		[c/CDF69C:Causes weak damaging debuffs to be harmless]
 		'''
 }
 

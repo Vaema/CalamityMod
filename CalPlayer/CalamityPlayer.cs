@@ -907,8 +907,8 @@ namespace CalamityMod.CalPlayer
         public bool alwaysHoneyRegen = false;
         public float alwaysHoneyRegenAmount = 0;
         public bool honeyTurboRegen = false;
-        public bool honeyDewHalveDebuffs = false;
-        public bool livingDewHalveDebuffs = false;
+        public bool honeyDew = false;
+        public bool livingDew = false;
         public int jewelBonusDefense = 0;
         /// <summary>
         /// Counter variable for spawning Toxic Heart's pulses.<br/>
@@ -983,7 +983,6 @@ namespace CalamityMod.CalPlayer
         public bool purity = false;
         /// <summary> If true, reduces the damage of electricity debuffs by 50%. </summary>
         public bool eleResist = false;
-        public int PurityHealSlowdownFrames = 0;
         public bool harpyRing = false;
         public bool angelTreads = false;
         /// <summary> Makes Flesh Knuckles and its upgrades increase the player's max health. </summary>
@@ -2387,8 +2386,8 @@ namespace CalamityMod.CalPlayer
             lAmbergris = false;
             tortShell = false;
             absorber = false;
-            honeyDewHalveDebuffs = false;
-            livingDewHalveDebuffs = false;
+            honeyDew = false;
+            livingDew = false;
             aAmpoule = false;
             rOoze = false;
             radiantOozeRegen = 0;
@@ -3168,7 +3167,6 @@ namespace CalamityMod.CalPlayer
             vaporfied = false;
             banishingFire = false;
             wither = false;
-            PurityHealSlowdownFrames = 0;
             ImmobilityDebuffImmunityTimer = 0;
             TypelessDebuffMultiplier = new();
             HeatDebuffMultiplier = new();

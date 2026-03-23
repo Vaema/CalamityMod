@@ -2,6 +2,7 @@
 using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -9,6 +10,10 @@ namespace CalamityMod.Items.Accessories
     public class LivingDew : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static int MaxLifeBoost = 25;
+        public static int RegenTimeBoost = 1;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MaxLifeBoost, RegenTimeBoost.ToPercent(), (HoneyDew.NaturalRegenPower - 1f).ToPercent());
         public override void SetDefaults()
         {
             Item.width = 34;
@@ -20,14 +25,12 @@ namespace CalamityMod.Items.Accessories
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.statLifeMax2 += 25;
-            if (!player.HasBuff(BuffID.Honey))
-                player.AddBuff(BuffID.Honey, 2);
+            player.statLifeMax2 += MaxLifeBoost;
 
             // Inherits all effects of Honey Dew
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.honeyDewHalveDebuffs = true;
-            modPlayer.livingDewHalveDebuffs = true;
+            modPlayer.honeyDew = true;
+            modPlayer.livingDew = true;
         }
 
         public override void AddRecipes()
