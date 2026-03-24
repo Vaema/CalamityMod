@@ -98,11 +98,8 @@ AmbrosialAmpoule: {
 	DisplayName: Ambrosial Ampoule
 	Tooltip:
 		'''
-		+{0} max life
-		Natural life regen is {1}% faster and {2}% more potent
-		Grants +{2} to +{3} HP/s life regen based on missing health
-		Current boost: +[REGEN] HP/s
-		Fire and sickness debuff durations are halved
+		+{0} to +{1} HP/s life regen based on missing health [c/999999:(Current: +[REGEN] HP/s)]
+		Natural life regen is {2}% more potent and returns {3}% faster
 		You emit yellow light if visibility is enabled
 		'''
 }
@@ -468,7 +465,7 @@ CrownJewel: {
 	Tooltip:
 		'''
 		+{0} HP/s life regen
-		You gain an additional +{1} HP/s life regen while afflicted with any debuff
+		Reduces damage over time taken by {1} HP/s
 		'''
 }
 
@@ -946,11 +943,7 @@ HideofAstrumDeus: {
 
 HoneyDew: {
 	DisplayName: Honey Dew
-	Tooltip:
-		'''
-		+{0} max life
-		Natural life regen is {1}% more potent
-		'''
+	Tooltip: Natural life regen is {0}% more potent
 }
 
 HowlsHeart: {
@@ -976,11 +969,9 @@ InfectedJewel: {
 	DisplayName: Infected Jewel
 	Tooltip:
 		'''
-		Passively grants +{0} HP/s life regen
-		Grants {1} defense and +{2} HP/s life regen while afflicted with any debuff
-		Granted defense fades away when not afflicted with any debuffs
-		Each debuff beyond the first grants {3} additional defense
-		Nullifies the [cbuffplr:CalamityMod/AstralInfectionDebuff]
+		+{0} HP/s life regen
+		Reduces damage over time taken by {1} HP/s
+		Jump-starts regeneration after a damaging debuff ends
 		'A beautiful gemstone tarnished by spaceborne rot'
 		'''
 }
@@ -1077,11 +1068,7 @@ LifeJelly: {
 
 LivingDew: {
 	DisplayName: Living Dew
-	Tooltip:
-		'''
-		+{0} max life
-		Natural life regen is {1}% faster and {2}% more potent
-		'''
+	Tooltip: Natural life regen is {0}% more potent and returns {1}% faster
 }
 
 LuxorsGift: {
@@ -1390,20 +1377,11 @@ Radiance: {
 	DisplayName: Radiance
 	Tooltip:
 		'''
-		+{0} max life
-		Provides greatly improved life regen, increasing with lost health
-		Gain increased defense from debuffs inflicted on you, and greatly reduces their effectiveness
-		Current boosts: +[REGEN] HP/s and [DEFENSE] defense.
+		+{0} to +{1} HP/s life regen based on missing health [c/999999:(Current: +[REGEN] HP/s)]
+		Reduces damage over time taken by {2} HP/s and jump-starts regeneration after a damaging debuff ends
+		Natural life regen is {3}% more potent and returns {4}% faster
 		You emit shining blue light if visibility is enabled
 		'A once putrid crystal, now glimmering with immaculate purity'
-		'''
-	HoldShiftTooltip:
-		'''
-		[c/CDF69C:Natural life regen is {0}% faster and {1}% more potent]
-		[c/CDF69C:Grants +{2} to +{3} HP/s life regen based on missing health]
-		[c/CDF69C:Grants {4} defense and +{5} HP/s life regen while afflicted with any debuff]
-		[c/CDF69C:Each additional debuff grants {6} defense, which decays while not debuffed]
-		[c/CDF69C:Causes weak damaging debuffs to be harmless]
 		'''
 }
 
@@ -1411,9 +1389,9 @@ RadiantOoze: {
 	DisplayName: Radiant Ooze
 	Tooltip:
 		'''
-		Grants +{0} to +{1} HP/s life regen based on missing health
-		Current boost: +[REGEN] HP/s
+		+{0} to +{1} HP/s life regen based on missing health 
 		You emit yellow light if visibility is enabled
+		[c/999999:(Current regen: +[REGEN] HP/s)]
 		'''
 }
 

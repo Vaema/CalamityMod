@@ -903,6 +903,10 @@ namespace CalamityMod.CalPlayer
         public bool lAmbergrisVisual = false;
         public bool tortShell = false;
         public bool absorber = false;
+        /// <summary>
+        /// Used for detetcing life regen hindering debuffs
+        /// </summary>
+        bool _hasNoNaturalRegen = false;
         public bool hadLifeRegenHinderingDebuff = false;
         public bool alwaysHoneyRegen = false;
         public float alwaysHoneyRegenAmount = 0;
@@ -922,8 +926,6 @@ namespace CalamityMod.CalPlayer
         public float pulseRate = 1;
         public bool aAmpoule = false;
         public bool rOoze = false;
-        public float radiantOozeRegen = 0;
-        public float purityRegen = 0;
         public bool fBarrier = false;
         public bool aBrain = false;
         public bool amalgam = false;
@@ -2390,8 +2392,6 @@ namespace CalamityMod.CalPlayer
             livingDew = false;
             aAmpoule = false;
             rOoze = false;
-            radiantOozeRegen = 0;
-            purityRegen = 0;
             fBarrier = false;
             aBrain = false;
             amalgam = false;
@@ -5013,6 +5013,9 @@ namespace CalamityMod.CalPlayer
                 if (gSabaton && Player.whoAmI == Main.myPlayer)
                     Player.jumpSpeedBoost += 2f;
             }
+
+            //Update life regen that needs to happen before calculating debuffs
+            GeneralLifeRegen();
         }
         #endregion
 

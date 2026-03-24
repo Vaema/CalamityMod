@@ -14,16 +14,13 @@ namespace CalamityMod.Items.Accessories
         public new string LocalizationCategory => "Items.Accessories";
 
         public static int RegenBoost = 2;
-        public static int DebuffedRegenBoost = 3; // Added on top of the baseline regen boost
-        public static int DebuffedDefenseBoost = 8;
-        public static int ExtraDebuffDefenseBoost = 3; // Per additional debuff
-        public static int FramesToDecayDefense = 15;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RegenBoost.ToRegenPerSecond(), DebuffedDefenseBoost, DebuffedRegenBoost.ToRegenPerSecond(), ExtraDebuffDefenseBoost);
+        public static int ReducedDoTAmount = 8;
+        public static int PostDebuffRegenTimeBoost = CalamityUtils.SecondsToFrames(10);
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RegenBoost.ToRegenPerSecond(), ReducedDoTAmount.ToRegenPerSecond(), PostDebuffRegenTimeBoost.FramesToSeconds());
         public override void SetDefaults()
         {
             Item.width = 26;
             Item.height = 26;
-            Item.defense = 2;
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
             Item.accessory = true;
@@ -33,6 +30,7 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.infectedJewel = true;
+            player.lifeRegen += RegenBoost;
         }
 
         public override void AddRecipes()

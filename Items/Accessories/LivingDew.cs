@@ -11,9 +11,9 @@ namespace CalamityMod.Items.Accessories
     {
         public new string LocalizationCategory => "Items.Accessories";
 
-        public static int MaxLifeBoost = 25;
-        public static int RegenTimeBoost = 1;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MaxLifeBoost, RegenTimeBoost.ToPercent(), (HoneyDew.NaturalRegenPower - 1f).ToPercent());
+        public static int RegenTimeBoost => 1;
+        public static float NaturalRegenPower => 1.5f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs((NaturalRegenPower - 1f).ToPercent(), RegenTimeBoost.ToPercent());
         public override void SetDefaults()
         {
             Item.width = 34;
@@ -25,11 +25,7 @@ namespace CalamityMod.Items.Accessories
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.statLifeMax2 += MaxLifeBoost;
-
-            // Inherits all effects of Honey Dew
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.honeyDew = true;
             modPlayer.livingDew = true;
         }
 

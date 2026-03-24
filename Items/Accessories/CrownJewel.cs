@@ -11,13 +11,12 @@ namespace CalamityMod.Items.Accessories
         public new string LocalizationCategory => "Items.Accessories";
 
         public static int RegenBoost = 1;
-        public static int DebuffedRegenBoost = 3; // Added on top of the baseline regen boost
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RegenBoost.ToRegenPerSecond(), DebuffedRegenBoost.ToRegenPerSecond());
+        public static int ReducedDoTAmount = 4;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RegenBoost.ToRegenPerSecond(), ReducedDoTAmount.ToRegenPerSecond());
         public override void SetDefaults()
         {
             Item.width = 26;
             Item.height = 26;
-            Item.defense = 1;
             Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.accessory = true;
@@ -27,6 +26,7 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.crownJewel = true;
+            player.lifeRegen += RegenBoost;
         }
     }
 }
