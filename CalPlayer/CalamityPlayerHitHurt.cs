@@ -2860,6 +2860,8 @@ namespace CalamityMod.CalPlayer
 
             // Directly add the base defense damage recovery time to whatever recovery time the player already has.
             int baseTime = DefenseDamageBaseRecoveryTime * (moonshine ? 3 : 1) * (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.Moonshine) ? 3 : 1);
+            totalDefenseDamageRecoveryFrames = defenseDamageRecoveryFrames + baseTime;
+
             if (totalDefenseDamageRecoveryFrames > DefenseDamageMaxRecoveryTime)
                 totalDefenseDamageRecoveryFrames = DefenseDamageMaxRecoveryTime;
 
