@@ -428,6 +428,20 @@ namespace CalamityMod.CalPlayer
         //This method runs BEFORE UpdateBadLifeRegen. Put most effects here. Ran at the end of PostUpdateEquips
         public void GeneralLifeRegen()
         {
+            // Apply partial life regeneration
+            // Regenerator applies partial life regen as a part of its damage conversion straight up, so it will avoid this function
+            if (regenerator)
+                partialLifeRegenCounter = 0f;
+            else
+            {
+                partialLifeRegenCounter += partialLifeRegen;
+                if (partialLifeRegenCounter >= 1f || partialLifeRegenCounter <= -1f)
+                {
+                    int flooredRegenAdded = (int)MathF.Floor(partialLifeRegenCounter);
+                    Player.lifeRegen += flooredRegenAdded;
+                    partialLifeRegenCounter -= flooredRegenAdded;
+                }
+            }
 
             float lifeRatio = (Player.statLife) / (float)Player.statLifeMax2;
 
@@ -692,13 +706,13 @@ namespace CalamityMod.CalPlayer
             // Regenerator trades all positive regen for damage, and caps your health gain at 50%
             if (regenerator)
             {
-                int finalRegen = Player.lifeRegen + (int)Math.Round(regen * (Player.statLifeMax2 / 400f * 0.85f + 0.15f));
-                finalRegen = (int)Math.Max(finalRegen, 0);
+                float finalRegen = Player.lifeRegen + partialLifeRegen + MathF.Round(regen * (Player.statLifeMax2 / 400f * 0.85f + 0.15f));
+                finalRegen = MathF.Max(finalRegen, 0f);
 
                 // Rapid Healing increments RegenCount directly so it needs to be manually added
                 // It also works while debuffs are active so the same logic applies here
                 if (Player.palladiumRegen)
-                    finalRegen += 4;
+                    finalRegen += 4f;
 
                 regeneratorDamage = finalRegen * Regenerator.RegenToDamageRatio;
                 Player.GetDamage<GenericDamageClass>() += regeneratorDamage;

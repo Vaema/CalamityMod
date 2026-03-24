@@ -91,7 +91,8 @@ namespace CalamityMod
         public static string ToMphps(this float velocity) => Round(velocity * 60f * 216000f / 42240f, "N2");
         public static string ToTiles(this float pixel) => Round(pixel / 16f);
 
-        public static string ToRegenPerSecond(this int regen) => Round(regen * 0.5f, "N2");
+        public static string ToRegenPerSecond(this float partialRegen) => Round(partialRegen * 0.5f, "N2");
+        public static string ToRegenPerSecond(this int regen, float partialRegen = 0f) => Round((regen + partialRegen) * 0.5f, "N2");
         public static string ToJumpSpeedPercent(this float boost) => Round(boost * 20f, "N2");
         public static string ToStealth(this float stealth) => Round(stealth * 100f, "N0");
 

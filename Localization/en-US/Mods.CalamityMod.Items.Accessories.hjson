@@ -1316,7 +1316,7 @@ ProfanedSoulArtifact: {
 		[ADREN]
 		Once depleted, the rocks are flung outward and will regenerate 5 seconds after being hit
 		Taking damage resets the timer
-		The healer guardian restores 15 health every few seconds
+		The healer guardian restores 10 health every few seconds
 		Purity
 		'''
 	ShieldAdren: Halved Adrenaline loss if all damage is absorbed
