@@ -3362,7 +3362,7 @@ namespace CalamityMod.CalPlayer
             // Trinket of Chi bonus
             if (trinketOfChi)
             {
-                if (chiBuffTimer < TrinketofChi.ChiBuffTimerMax)
+                if (chiBuffTimer < TrinketofChi.ChiBuffHitlessTime)
                     chiBuffTimer++;
                 else
                     Player.AddBuff(ModContent.BuffType<ChiBuff>(), 6);
