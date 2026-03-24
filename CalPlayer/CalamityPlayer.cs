@@ -4840,8 +4840,14 @@ namespace CalamityMod.CalPlayer
                     }
                 }
             }
-            if (moonshine || Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.Moonshine))
-                Player.statLifeMax2 = (int)(Player.statLifeMax2 * (1 + ((moonshine ? Moonshine.MaxLifePercentBoost : 1) * (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.Moonshine) ? Moonshine.MaxLifePercentBoost : 1))));
+            if (Player.whoAmI == Main.myPlayer)
+            {
+                if (moonshine)
+                {
+                    Player.statLifeMax2 = (int)(Player.statLifeMax2 * (1 + Moonshine.MaxLifePercentBoost));
+                }
+            }
+                
             ForceVariousEffects();
         }
         #endregion
@@ -4965,6 +4971,10 @@ namespace CalamityMod.CalPlayer
                     TimeHoldingSummon = 0;
                 if (TimeHoldingRogue-- < 0)
                     TimeHoldingRogue = 0;
+            }
+            if (dripPlayer.HasAlcohol(AlcoholType.Moonshine))
+            {
+                Player.statLifeMax2 = (int)(Player.statLifeMax2 * (1 + Moonshine.MaxLifePercentBoost));
             }
 
 
