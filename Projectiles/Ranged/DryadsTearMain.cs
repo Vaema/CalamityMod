@@ -13,6 +13,7 @@ using Microsoft.Build.Construction;
 using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Graphics.Shaders;
@@ -49,6 +50,19 @@ namespace CalamityMod.Projectiles.Ranged
         public int fadeLifetime => (int)(35 + effectSpeedMod * Math.Max(1 - damageMult, 0)); // The time in which the projectile fades out and can no longer hit anything
         public int extendedLifetime => (int)(85 + effectSpeedMod * Math.Max(1 - damageMult, 0)); // The time after lifetime reaches zero where the droplet does its attack
         public bool fading => trueLifetime <= fadeLifetime; // If the projectile is fading away
+
+        public float explosionDamageMult = 1.4f;
+        public float maxDamageMult = 1.65f;
+        public static Asset<Texture2D> ShineTexture { get; private set; }
+        public static Asset<Texture2D> BloomTexture { get; private set; }
+        public override void Load()
+        {
+            if (Main.dedServ)
+                return;
+
+            ShineTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/BasicCircle");
+            BloomTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
+        }
         public Player Owner => Main.player[Projectile.owner];
         public override void SetStaticDefaults()
         {
@@ -123,15 +137,14 @@ namespace CalamityMod.Projectiles.Ranged
             }
 
             if (isMaxPower)
-                damageMult = 1.5f;
+                damageMult = maxDamageMult;
 
-            if (true) // Adjust velocity to make innacurate if multiple bullets exist 
-            {
-                float movement = Main.rand.NextFloat(0.009f, 0.0115f) * speed;
-                if (damageMult < 1)
-                    Projectile.velocity += Vector2.Lerp(Projectile.velocity.RotatedBy(MathHelper.PiOver2 * turnDirection).SafeNormalize(Vector2.UnitX) * movement * turnIntensity, Projectile.velocity, MathF.Pow(Math.Min(damageMult + 0.15f, 1), 3.3f));
-                Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * speed;
-            }
+            
+            float movement = Main.rand.NextFloat(0.009f, 0.0115f) * speed;
+            if (damageMult < 1)
+                Projectile.velocity += Vector2.Lerp(Projectile.velocity.RotatedBy(MathHelper.PiOver2 * turnDirection).SafeNormalize(Vector2.UnitX) * movement * turnIntensity, Projectile.velocity, MathF.Pow(Math.Min(damageMult + 0.15f, 1), 3.3f));
+            Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * speed;
+            
             float startDropAttackTime = 0;
             if (dropletAttack && trueLifetime <= startDropAttackTime)
             {
@@ -315,7 +328,7 @@ namespace CalamityMod.Projectiles.Ranged
                     float minMultiplier = 0.15f;
                     int hitsToMinMult = (int)(3 + 5 * damageMult);
                     int knockback = (int)(7 * damageMult * (isMaxPower ? -1 : 1)); // Give heavy knockback at full power
-                    int damage = (int)(Projectile.damage * 1.5f * damageMult);
+                    int damage = (int)(Projectile.damage * explosionDamageMult * damageMult);
                     Projectile blast = Projectile.NewProjectileDirect(Owner.GetSource_FromThis(), targeted.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), damage, knockback, Owner.whoAmI, blastSize, minMultiplier, hitsToMinMult);
                     blast.timeLeft = 8;
                     blast.DamageType = DamageClass.Ranged;
@@ -374,8 +387,6 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
-            Texture2D shine = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowSpark").Value;
             Vector2 drawPosition = dropletPosition - Main.screenPosition;
 
             float dropletScaling = (dropletAttack ? (1 + (1 - dropletAttackLerp) * 0.7f) * damageMult : finalEffectMult);
@@ -386,7 +397,7 @@ namespace CalamityMod.Projectiles.Ranged
                 for (int i = 0; i < draws; i++)
                 {
                     float circlingScale = ((i == 0 ? 0.15f : 0.3f) - orbitSine * 0.1f);
-                    Main.EntitySpriteDraw(tex, drawPosition, null, i == 0 ? Color.White * 0.8f : Color.Turquoise, 0, tex.Size() * 0.5f, dropletScaling * (circlingScale) * (0.8f + dropLerp * 0.2f), SpriteEffects.None);
+                    Main.EntitySpriteDraw(BloomTexture.Value, drawPosition, null, i == 0 ? Color.White * 0.8f : Color.Turquoise, 0, BloomTexture.Value.Size() * 0.5f, dropletScaling * (circlingScale) * (0.8f + dropLerp * 0.2f), SpriteEffects.None);
                 }
 
                 float fallTime = -extendedLifetime * 0.65f;
@@ -396,7 +407,7 @@ namespace CalamityMod.Projectiles.Ranged
                     if (i == 0) i++;
                     float rot = MathHelper.PiOver2 * (i > 0 ? -1 : 1);
                     for (int t = 0; t < 2; t++)
-                        Main.EntitySpriteDraw(shine, drawPosition, null, t == 0 ? Color.Teal : Color.White * 0.65f, rot, shine.Size() * 0.5f, new Vector2((t == 0 ? 3 : 1) * 0.02f, (t == 0 ? 0.6f : 1) * (0.2f + shineMult * 0.4f)) * shineMult * 0.2f, SpriteEffects.None);
+                        Main.EntitySpriteDraw(ShineTexture.Value, drawPosition, null, t == 0 ? Color.Teal : Color.White * 0.65f, rot, ShineTexture.Value.Size() * 0.5f, new Vector2((t == 0 ? 3 : 1) * 0.02f, (t == 0 ? 0.6f : 1) * (0.2f + shineMult * 0.4f)) * shineMult * 0.2f, SpriteEffects.None);
                 }
                 
             }, ((orbitSine > 0.5f || trueLifetime <= 0) ? Enums.GeneralDrawLayer.AfterProjectiles : Enums.GeneralDrawLayer.BeforeProjectiles), BlendState.Additive);
