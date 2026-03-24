@@ -76,7 +76,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override void AI()
         {
             if (dropletAttack && targeted != null && (targeted.life <= 0 || !targeted.active || !targeted.CanBeChasedBy(Projectile))) // If the chosen target becomes invalid, target a near enemy instead
-                targeted = Projectile.Center.ClosestNPCAt(1000); if (targeted == null) dropletAttack = false; // If that fails, cancel the teardrop effect
+                targeted = dropletPosition.ClosestNPCAt(1200); if (targeted == null) dropletAttack = false; // If that fails, cancel the teardrop effect
             Projectile.timeLeft++; // Keep regular lifetime from going down, since it uses it's own lifetime timer
             Projectile.scale = 1 - MathF.Pow(Utils.GetLerpValue(fadeLifetime, 0, trueLifetime, true), 3); // fade out the bullet scale when lifetime is at its end
             
