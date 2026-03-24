@@ -121,6 +121,7 @@ namespace CalamityMod.NPCs.TownNPCs
             "Ariallis", // <@!518231218806980609> (ariallis)
             "Shade", // <@!613133259563466755> (shade__storm)
             "Orion", // <@!119164557657636865> (canacx)
+            "Yuhru", // <@!194276252452913154> (yuhru_)
 
             // Original names
             this.GetLocalizedValue("Name.Laura"),
