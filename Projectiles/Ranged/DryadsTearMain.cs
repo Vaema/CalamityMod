@@ -40,6 +40,7 @@ namespace CalamityMod.Projectiles.Ranged
         public float dropletAttackLerp = 1; // A lerp variable used for timing the droplet's attack
         public int frameDelay = 0; // A few frames of delay after landing on the enemy before explosing, which improves the visuals
         public bool detachEffects = true; // Used for the moment when the droplet detatched from the main bullet
+        public bool isMaxPower => damageMult >= 1; // If the bullet is at maximum power
         public float finalEffectMult => Projectile.scale * visualMult; // Used for many but not all visual scaling effects
         public NPC targeted; // The target being attacked by the droplet
         public ref float trueLifetime => ref Projectile.ai[2]; // The lifetime of the projectile, used over vanilla lifetime because it can increment by decimals
@@ -74,7 +75,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
-            if (dropletAttack && targeted != null && (targeted.life <= 0 || !targeted.active)) // If the chosen target becomes invalid, target a near enemy instead
+            if (dropletAttack && targeted != null && (targeted.life <= 0 || !targeted.active || !targeted.CanBeChasedBy(Projectile))) // If the chosen target becomes invalid, target a near enemy instead
                 targeted = Projectile.Center.ClosestNPCAt(1000); if (targeted == null) dropletAttack = false; // If that fails, cancel the teardrop effect
             Projectile.timeLeft++; // Keep regular lifetime from going down, since it uses it's own lifetime timer
             Projectile.scale = 1 - MathF.Pow(Utils.GetLerpValue(fadeLifetime, 0, trueLifetime, true), 3); // fade out the bullet scale when lifetime is at its end
@@ -102,10 +103,10 @@ namespace CalamityMod.Projectiles.Ranged
                 dust.scale = Main.rand.NextFloat(0.85f, 1.0f) * finalEffectMult;
                 dust.color = Color.Aquamarine;
                 dust.noLight = true;
+                dust.noLightEmittence = true;
                 dust.fadeIn = 1;
             }
-            Lighting.AddLight(Projectile.Center, Color.LimeGreen.ToVector3() * 0.4f * finalEffectMult);
-
+            
             if (time > 0) // Reduce damage and visual intensity for every projectile of this type from the same player that are relativley close to each other
             {
                 float damageReduction = 1;
@@ -121,7 +122,7 @@ namespace CalamityMod.Projectiles.Ranged
                     damageMult = newDamageMult;
             }
 
-            if (damageMult >= 1)
+            if (isMaxPower)
                 damageMult = 1.5f;
 
             if (true) // Adjust velocity to make innacurate if multiple bullets exist 
@@ -160,6 +161,7 @@ namespace CalamityMod.Projectiles.Ranged
                             dust.scale = Main.rand.NextFloat(1.45f, 1.55f) * scale;
                             dust.color = t == 0 ? Color.Aquamarine : Color.Lime;
                             dust.noLight = true;
+                            dust.noLightEmittence = true;
                             dust.fadeIn = 1 * scale;
                             dust.customData = new Vector2(0.6f, 3.5f);
                         }
@@ -169,8 +171,9 @@ namespace CalamityMod.Projectiles.Ranged
                     detachEffects = false;
                 }
                 dropletAttackLerp = (1 - MathF.Pow(Utils.GetLerpValue(startDropAttackTime, -extendedLifetime, trueLifetime, true), 4)) * damageMult;
-                Vector2 Xoffset = Vector2.UnitX * (targeted.width * 0.5f * turnIntensity) * (1 - damageMult) * turnDirection;
-                Vector2 goalPosition = targeted.Center + Xoffset - (Vector2.UnitY * (targeted.height / 2 + (220 + turnChange))) * dropletAttackLerp;
+                float cappedReverseDamageMult = Math.Max(1 - damageMult, 0);
+                Vector2 Xoffset = Vector2.UnitX * (targeted.width * 0.5f * turnIntensity) * cappedReverseDamageMult * turnDirection;
+                Vector2 goalPosition = targeted.Center + Xoffset - (Vector2.UnitY * (targeted.height / 2 + (220 + turnChange * (0.25f + cappedReverseDamageMult)))) * dropletAttackLerp;
                 Vector2 goalVel = (goalPosition - dropletPosition) / ((1 + 6 * dropletAttackLerp) * Projectile.MaxUpdates);
                 dropletVel = goalVel;
                 lastDropletPosition = dropletPosition;
@@ -193,6 +196,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             if (lastDropletPosition == Vector2.Zero) lastDropletPosition = dropletPosition;
             bool lowLifetime = trueLifetime <= fadeLifetime / 5;
+            float dropletScaling = (dropletAttack ? (1 + (1 - dropletAttackLerp)) * damageMult : finalEffectMult);
             if (time > 1 * Projectile.MaxUpdates && (!lowLifetime || dropletAttack))
             {
                 if (!lowLifetime)
@@ -203,8 +207,7 @@ namespace CalamityMod.Projectiles.Ranged
                 }
 
                 bool falling = trueLifetime < -extendedLifetime * 0.65f;
-                float dropletScaling = (dropletAttack ? (1 + (1 - dropletAttackLerp)) * damageMult : finalEffectMult);
-                if (dropletScaling > 0.35f && frameDelay < 2 && (trueLifetime > -extendedLifetime * 0.4f || falling))
+                if (frameDelay < 2)
                 {
                     float dropLerp = MathF.Pow(Utils.GetLerpValue(startDropAttackTime, -extendedLifetime, trueLifetime, true), 2.5f);
                     if (lastDropletPosition != dropletPosition)
@@ -212,7 +215,7 @@ namespace CalamityMod.Projectiles.Ranged
                     float speedMult = falling ? dropLerp * 0.5f : Utils.Remap(speed, 7, 0.5f, 1, 0.1f);
                     float colorMult = falling ? 1 - dropLerp * 0.35f : 1;
                     CustomColorChangeSpark dropTrail = new CustomColorChangeSpark(dropletPosition - dropletVel * 16.5f * speedMult * dropletScaling, falling ? dropletVel * 3 : dropletVel * 0.1f, "CalamityMod/Particles/BloomCircle", false, 
-                        falling ? (int)(10 * (1 - dropLerp * 0.6f)) : (int)(7 * dropletScaling), 0.135f * dropletScaling * (1 + dropLerp * 0.3f), Color.Turquoise * colorMult, falling ? Color.Lime * colorMult : Color.Teal * colorMult, new Vector2(0.25f * (falling ? 0.5f + dropLerp * 3 : 1), (Math.Max(0.15f * lastDropletPosition.Distance(dropletPosition), 0.25f) * (1 - dropLerp * 0.2f))), noShrink: true, colorFadeSpeed: 5, glowOpacity: colorMult, shrinkSpeed: falling ? 1.5f - dropLerp : 0);
+                        falling ? (int)(10 * (1 - dropLerp * 0.6f)) : (int)(6 + 2 * dropletScaling), 0.135f * dropletScaling * (1 + dropLerp * 0.3f), Color.Turquoise * colorMult, falling ? Color.Lime * colorMult : Color.Teal * colorMult, new Vector2(0.15f * (falling ? 0.5f + dropLerp * 3 : 1) * damageMult, (Math.Max(0.15f * lastDropletPosition.Distance(dropletPosition), 0.25f) * (1 - dropLerp * 0.2f))), noShrink: true, colorFadeSpeed: 5, glowOpacity: colorMult, shrinkSpeed: falling ? 1.5f - dropLerp : 0);
                     GeneralParticleHandler.SpawnParticle(dropTrail, true);
 
                     if (Main.rand.NextBool(3))
@@ -223,11 +226,15 @@ namespace CalamityMod.Projectiles.Ranged
                         dust.velocity = dropletVel.RotatedByRandom(0.2f) * Main.rand.NextFloat(0.3f, 0.9f);
                         dust.color = Main.rand.NextBool() ? Color.Aquamarine : Color.Teal;
                         dust.noLight = true;
+                        dust.noLightEmittence = true;
                         dust.fadeIn = Math.Max((Main.rand.NextFloat(-0.2f, -0.4f) - (Main.rand.NextBool(5) ? 0.4f : 0)) * visualMult, -0.85f);
                         dust.customData = new Vector2(1, 1);
                     }
                 }
             }
+
+            Lighting.AddLight(Projectile.Center, Color.LimeGreen.ToVector3() * 0.4f * finalEffectMult);
+            Lighting.AddLight(dropletPosition, Color.Turquoise.ToVector3() * 0.25f * dropletScaling);
 
             lastDropletPosition = dropletPosition;
             if (trueLifetime <= 0 && (!dropletAttack || (frameDelay > 3 && trueLifetime <= -extendedLifetime)))
@@ -250,14 +257,15 @@ namespace CalamityMod.Projectiles.Ranged
                 SoundEngine.PlaySound(drop1 with { Volume = 0.8f * damageMult, Pitch = Main.rand.NextFloat(0.6f, 0.7f) }, dropletPosition);
                 SoundStyle drop2 = new("CalamityMod/Sounds/Item/WaterSplash", 2);
                 SoundEngine.PlaySound(drop2 with { Volume = 0.7f * damageMult, Pitch = Main.rand.NextFloat(1.4f, 1.5f) }, dropletPosition);
-                if (damageMult >= 1)
+                if (isMaxPower)
                 {
                     SoundStyle drop3 = new("CalamityMod/Sounds/Item/HolyFireBulletExplosion");
                     SoundEngine.PlaySound(drop3 with { Volume = 0.8f, Pitch = Main.rand.NextFloat(-0.5f, -0.6f) }, dropletPosition);
                 }
 
-                float scale = (damageMult >= 1 ? 2f : 1.5f) * damageMult;
-                for (int i = 0; i <= 2; i++)
+                float scale = (isMaxPower ? 2f : 1.5f) * damageMult;
+                bool reduceVisuals = damageMult < 0.5f;
+                for (int i = 0; i <= (reduceVisuals ? 1 : 2); i++)
                 {
                     CustomColorChangeSpark bloomHit = new CustomColorChangeSpark(dropletPosition, Vector2.UnitY * 0.1f, "CalamityMod/Particles/BloomCircle", false, 10, 0.45f * scale, Color.Lime, Color.Turquoise, new Vector2(1f, 2f), true, true, colorFadeSpeed: 5, shrinkSpeed: 0.45f, extraRotation: MathHelper.PiOver2);
                     GeneralParticleHandler.SpawnParticle(bloomHit, true);
@@ -273,26 +281,29 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     float angle = MathHelper.PiOver4 / 2.5f;
                     Vector2 vel = Vector2.UnitX.RotatedBy(Math.Abs(i) == 1 ? angle : -angle) * 2.2f * Math.Sign(i) * scale;
-                    for (int t = -1; t <= 1; t++) // 3
+                    for (int t = (reduceVisuals ? 0 : -1); t <= (reduceVisuals ? 0 : 1); t++) // 3
                     {
                         Dust dust = Dust.NewDustPerfect(dropletPosition, ModContent.DustType<SquashDustPixelated>(), vel.RotatedBy(0.25f * t) * (2.5f - Math.Abs(t)) * scale);
                         dust.noGravity = true;
                         dust.scale = Main.rand.NextFloat(1.25f, 1.35f) * scale;
                         dust.color = t == 0 ? Color.Aquamarine : Color.Lime;
                         dust.noLight = true;
+                        dust.noLightEmittence = true;
                         dust.fadeIn = 1.4f * scale;
                         dust.customData = new Vector2(0.6f, 3.5f);
                     }
                     if (i == -1)
                         i++;
                 }
-                for (int i = -10; i <= 10; i++)
+                int dusts = reduceVisuals ? 4 : 10;
+                for (int i = -dusts; i <= dusts; i++)
                 {
                     Dust dust = Dust.NewDustPerfect(dropletPosition + Main.rand.NextVector2CircularEdge(10 - Math.Abs(i), 10 - Math.Abs(i)), ModContent.DustType<SquashDustPixelated>(), Vector2.UnitX * 2f * i * scale);
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(0.85f, 0.95f) * scale;
                     dust.color = Main.rand.NextBool() ? Color.Aquamarine : Color.Lime;
                     dust.noLight = true;
+                    dust.noLightEmittence = true;
                     dust.fadeIn = 0.45f * scale;
                     dust.customData = new Vector2(0.8f, 1.3f);
                     if (i == -1)
@@ -301,16 +312,16 @@ namespace CalamityMod.Projectiles.Ranged
                 if (targeted != null)
                 {
                     float blastSize = 75 * scale;
-                    float minMultiplier = 0.05f;
-                    int hitsToMinMult = (int)(6 * damageMult);
-                    int knockback = 0;// (int)(7 * damageMult * (damageMult >= 1 ? -1 : 1));
+                    float minMultiplier = 0.15f;
+                    int hitsToMinMult = (int)(3 + 5 * damageMult);
+                    int knockback = (int)(7 * damageMult * (isMaxPower ? -1 : 1)); // Give heavy knockback at full power
                     int damage = (int)(Projectile.damage * 1.5f * damageMult);
                     Projectile blast = Projectile.NewProjectileDirect(Owner.GetSource_FromThis(), targeted.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), damage, knockback, Owner.whoAmI, blastSize, minMultiplier, hitsToMinMult);
                     blast.timeLeft = 8;
                     blast.DamageType = DamageClass.Ranged;
                     blast.ArmorPenetration = Projectile.ArmorPenetration;
                 }
-                if (damageMult >= 0.8f)
+                if (damageMult >= 0.75f)
                     Owner.SetScreenshake(6f * damageMult);
             }
         }
@@ -318,26 +329,27 @@ namespace CalamityMod.Projectiles.Ranged
         {
             Projectile.extraUpdates = 2;
             int chanceReduction = (int)(2 / damageMult);
-            if (damageMult >= 1)
+            if (isMaxPower)
             {
                 SoundStyle perfectHit = new("CalamityMod/Sounds/Item/LightMetal");
                 for (int i = 0; i < 3; i++)
                     SoundEngine.PlaySound(perfectHit with { Volume = 0.85f, Pitch = Main.rand.NextFloat(-1.2f, -1.3f) + 0.6f * i, MaxInstances = 3 }, dropletPosition);
             }
-            if (damageMult >= 0.8f)
+            if (damageMult >= 0.75f)
             {
                 Owner.SetScreenshake(4f * damageMult);
                 float angle = Main.rand.NextFloat(0, MathHelper.TwoPi);
                 for (int i = -6; i <= 6; i++) // 12
                 {
                     float variance = Main.rand.NextFloat(-0.5f, 0.5f);
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<SquashDustPixelated>(), Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(variance * 0.4f).RotatedByRandom(0.1f) * (Main.rand.NextFloat(5, 6) - Math.Abs(variance * 9)) * 5 * damageMult);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<SquashDustPixelated>(), Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(variance * 0.3f).RotatedByRandom(0.1f) * (Main.rand.NextFloat(5, 6) - Math.Abs(variance * 9)) * 5 * damageMult);
                     dust.noGravity = true;
-                    dust.scale = (Main.rand.NextFloat(3.15f, 3.25f) - Math.Abs(variance * 0.5f)) * damageMult;
+                    dust.scale = (Main.rand.NextFloat(2.5f, 2.75f) - Math.Abs(variance)) * damageMult;
                     dust.color = Main.rand.NextBool() ? Color.Aquamarine : Color.Lime;
                     dust.noLight = true;
-                    dust.fadeIn = 1.65f * damageMult;
-                    dust.customData = new Vector2(0.4f, 1.3f);
+                    dust.noLightEmittence = true;
+                    dust.fadeIn = 1.25f * damageMult;
+                    dust.customData = new Vector2(0.3f, 1.7f);
                     if (i == -1)
                         i++;
                 }

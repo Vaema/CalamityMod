@@ -52,7 +52,7 @@ DryadsTear: {
 		'''
 		An extremely powerful magic bullet blessed with nature's essence that becomes unstable when multiple are nearby
 		Carries a teardrop along with it which on impact will detach and crash down upon the hit enemy and burst
-        All bullet and teardrop hits have 18 armor penetration
+		All bullet and teardrop hits have 18 armor penetration
 		[c/40E091:'Focus. Breathe. Just one more shot, and the violence will fade away...']
 		'''
 }
