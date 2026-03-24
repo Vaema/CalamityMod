@@ -155,9 +155,5 @@ namespace CalamityMod.Projectiles.Melee
             Main.spriteBatch.Draw(tex, DrawPos - Main.screenPosition, tex.Frame(2,1,0,0), modplayer.swingNum == 1 ? Color.Fuchsia : Color.Cyan, rotation + MathHelper.PiOver4, new Vector2(tex.Width * 0.25f,tex.Height * 0.5f), Projectile.scale * jawScaleMult, Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
             Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 240);
-        }
     }
 }

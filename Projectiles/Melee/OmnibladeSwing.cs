@@ -85,16 +85,6 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.velocity = newVelocity;
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 300);
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 300);
-        }
-
         public override Color? GetAlpha(Color lightColor) => new Color(200, 200, 200, 170);
 
         // Don't suffer from the same issues Murasama did in the past; encouraging people to kill their wrists for some extra DPS is bad lmao
