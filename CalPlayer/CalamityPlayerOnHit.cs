@@ -1199,15 +1199,12 @@ namespace CalamityMod.CalPlayer
             }
             if (summon && !whip)
             {
-                if (pSoulArtifact && !profanedCrystal)
-                    target.AddBuff(BuffType<HolyFlames>(), 300);
-
                 if (profanedCrystal && (DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs))
                 {
                     target.AddBuff(BuffType<HolyFlames>(), 600);
                 }
                 else if (pSoulArtifact)
-                    target.AddBuff(BuffType<HolyFlames>(), 300);
+                    target.AddBuff(BuffType<HolyFlames>(), 300);    
 
                 if (divineBless)
                     target.AddBuff(BuffType<BanishingFire>(), AngelicAlliance.BanishingFireDuration);

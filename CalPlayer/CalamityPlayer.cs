@@ -6322,7 +6322,6 @@ namespace CalamityMod.CalPlayer
             {
                 if (Main.myPlayer == Player.whoAmI)
                 {
-                    //Main.NewText(fleshTotemManaStorage);
                     fleshTotemManaStorage += manaConsumed;
                     if (fleshTotemManaStorage >= FleshTotem.manaStorageMax)
                     {

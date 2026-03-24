@@ -9,6 +9,7 @@ using CalamityMod.NPCs.BrimstoneElemental;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -22,6 +23,8 @@ namespace CalamityMod.Projectiles.Magic
         public new string LocalizationCategory => "Projectiles.Magic";
 
         public int pulseTimer = 0;
+
+        static Asset<Texture2D> totemEyeTexture;
         public Player Owner => Main.player[Projectile.owner];
         public bool visuals => Owner.Calamity().fleshTotemVisual; // Enables/disables visuals and sounds based on accessory visibility
         public override void SetDefaults()
@@ -84,7 +87,6 @@ namespace CalamityMod.Projectiles.Magic
             //When the timer reaches max, pulse and restore 30 mana
             if (pulseTimer >= pulseMax)
             {
-                //Main.NewText(pulseMax);
                 if (visuals)
                 {
                     SoundEngine.PlaySound(BrimstoneElemental.HellfireballSound with { Volume = 0.65f }, Projectile.Center);
@@ -136,7 +138,8 @@ namespace CalamityMod.Projectiles.Magic
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
             Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
-            Texture2D totemEyes = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/FleshTotemEyes").Value;
+            totemEyeTexture ??= ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/FleshTotemEyes");
+            Texture2D totemEyes = totemEyeTexture.Value;
             Vector2 eyesDrawPosition = player.Center - Main.screenPosition + Vector2.UnitY * -69f;
             Vector2 drawPosition = player.Center - Main.screenPosition + Vector2.UnitY * -67f;
             Vector2 origin = texture.Size() * 0.5f;

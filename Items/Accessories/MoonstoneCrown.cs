@@ -28,6 +28,10 @@ namespace CalamityMod.Items.Accessories
             Item.rare = ItemRarityID.Purple;
             Item.accessory = true;
         }
+        public override bool CanAccessoryBeEquippedWith(Item equippedItem, Item incomingItem, Player player)
+        {
+            return incomingItem.type != ModContent.ItemType<FeatherCrown>();
+        }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {

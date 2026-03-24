@@ -28,6 +28,10 @@ namespace CalamityMod.Items.Accessories
             Item.rare = ItemRarityID.Orange;
             Item.accessory = true;
         }
+        public override bool CanAccessoryBeEquippedWith(Item equippedItem, Item incomingItem, Player player)
+        {
+            return incomingItem.type != ModContent.ItemType<MoonstoneCrown>();
+        }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
