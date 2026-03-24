@@ -669,18 +669,16 @@ GrandDad: {
 	TooltipNormal:
 		'''
 		An unfathomably heavy blade that rips through enemies using its sheer mass
-		Heals you on hit
-		Striking weaker enemies will launch them with incredible force
-		Launched enemies take immense damage when colliding with walls and floors
-		Holding <right> while swinging will heavily reduce the damage of the blade and increase its launch damage and velocity
+		Provides healing over time to you and all nearby allies on hit
+		Striking low health enemies will launch them with incredible force
+		Launched enemies are killed instantly on impact with walls and floors
 		[c/00B8DF:'How are you swinging something that has half the mass of a star?']
 		'''
 	TooltipGFB:
 		'''
 		A high quality blade that rips through enemies
-		Striking weaker enemies will yeet them with incredible force, often leaving them Stuck Inside tiles
+		Striking low health enemies will yeet them with incredible force, nice >:]
 		Yeeted enemies will turn to JAM when SLAMMED into walls and floors
-		Holding <right> while swinging will heavily reduce the damage of the blade and increase its yeet damage and velocity, nice >:]
 		[c/00B8DF:'Please read the weapon description.']
 		'''
 }
@@ -798,7 +796,7 @@ Lightspeed: {
 	Tooltip:
 		'''
 		[c/c7f5ff:Unleash a flurry of stabs which build Elemental Mastery on hit]
-		[c/c2fff2:Elemental Mastery is lost over time but briefly stops depleting after reaching its maximum]
+		[c/c2fff2:Elemental Mastery is lost over time if it has not been gained for a few seconds]
 		[c/ffdfba:Press <right> with maximum Elemental Mastery to dash toward your cursor]
 		[c/ffc7c7:Hitting an enemy during the dash refunds some Elemental Mastery]
 		'''
@@ -820,7 +818,7 @@ Lucrecia: {
 		'''
 		[c/9370db:Fires a spiraling darklight shard when swung]
 		[c/837ce4:Hits with the blade itself build Darklight Energy]
-		[c/7489ee:Darklight Energy is lost over time but briefly stops depleting after reaching its maximum]
+		[c/7489ee:Darklight Energy is lost over time if it has not been gained for a few seconds]
 		[c/6495f7:Press <right> with maximum energy to fire a double helix comet]
 		'''
 }

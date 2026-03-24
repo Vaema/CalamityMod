@@ -168,7 +168,7 @@ BloodflareBodyArmor: {
 	Tooltip: "{$CommonItemTooltip.PercentIncreasedDamage} and {$CommonItemTooltip.PercentIncreasedCritChance@1}"
 	CommonSetBonus:
 		'''
-		Greatly increased life regen, equivalent to Crimson armor
+		{$Mods.CalamityMod.Vanilla.Armor.SetBonus.Crimson}
 		Enemies below 50% life drop a heart when struck
 		This effect has a 5 second cooldown
 		'''

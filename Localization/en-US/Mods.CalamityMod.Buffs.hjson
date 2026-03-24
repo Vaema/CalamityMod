@@ -347,7 +347,7 @@ TrueVulnerabilityHex: {
 		'''
 	ItemTooltipEnemy:
 		'''
-		Heat - 1998 DPS
+		Heat - 1332 DPS
 		Increases damage taken from all sources
 		Slows enemies
 		'''
@@ -1782,4 +1782,9 @@ SmashedEvil: {
 		10% increased damage
 		20% increased movement speed
 		'''
+}
+
+VoidConcentrationSummonTagBuff: {
+	DisplayName: Void Concentration Summon Tag Buff
+	Description: You should never see this.
 }

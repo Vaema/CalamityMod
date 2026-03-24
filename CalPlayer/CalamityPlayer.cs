@@ -361,6 +361,9 @@ namespace CalamityMod.CalPlayer
         public int amputatorBuff = 0;
         /// <summary> Variable used to track the current fuel amount for Pristine Fury's right-click. </summary>
         public int furyFuel = 1800;
+        /// <summary> Variable to track the healing over time gained from Grand Dad. </summary>
+        public int grandDadHealPool = 0;
+        public int grandDadHealTimer = 0;
         public const int FuryFuelMax = 1800;
         public float furyRefuelTimer = 0;
         /// <summary> Variable used to track if Auger can do its big slash attack. </summary>
@@ -1581,9 +1584,7 @@ namespace CalamityMod.CalPlayer
         public bool plaguebringerMK2 = false;
         public bool igneousExaltation = false;
         public bool GlacialEmbrace = false;
-        public bool voidAura = false;
-        public bool voidAuraDamage = false;
-        public bool voidConcentrationAura = false;
+        public bool VoidConcentrationStaff = false;
         public bool MutatedTruffleBool = false;
         public bool virili = false;
         public bool frostBlossom = false;
@@ -2850,9 +2851,7 @@ namespace CalamityMod.CalPlayer
             plaguebringerMK2 = false;
             igneousExaltation = false;
             GlacialEmbrace = false;
-            voidAura = false;
-            voidAuraDamage = false;
-            voidConcentrationAura = false;
+            VoidConcentrationStaff = false;
             saros = false;
             if (sarosEclipseBeamUsage > 300)
                 sarosEclipseBeamUsage = 300;
@@ -5039,7 +5038,8 @@ namespace CalamityMod.CalPlayer
 
                 //Flashlight
                 //Due to being in postUpdate we need to adjust the mousepos for the player's movement that will have happened
-                var mouseworld = Main.MouseWorld + Player.position - Player.oldPosition;
+                mouseWorldListener = true;
+                var mouseworld = mouseWorld + Player.position - Player.oldPosition;
                 EnhancedDarknessSystem.lights.Add(new(center: Player.Center + Player.DirectionTo(mouseworld) * 750f, rotation: Player.DirectionTo(mouseworld).ToRotation() - MathHelper.PiOver2, vectorScale: new Vector2(0.85f * abyssFlashlightWidthMultiplier, 0.75f), texture: Request<Texture2D>("CalamityMod/Particles/BloomLineFade").Value));
             }
 

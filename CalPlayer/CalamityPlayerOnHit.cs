@@ -54,7 +54,7 @@ namespace CalamityMod.CalPlayer
 
             if (AdamantiteSet)
             {
-                adamantiteSetDefenseBoostInterpolant += 1.75f / AdamantiteArmorSetChange.TimeUntilBoostCompletelyDecays;
+                adamantiteSetDefenseBoostInterpolant += 1f / AdamantiteArmorSetChange.TimeUntilBoostCompletelyDecays;
                 adamantiteSetDefenseBoostInterpolant = MathHelper.Clamp(adamantiteSetDefenseBoostInterpolant, 0f, 1f);
                 AdamantiteSetDecayDelay = AdamantiteArmorSetChange.TimeUntilDecayBeginsAfterAttacking;
             }
@@ -249,7 +249,7 @@ namespace CalamityMod.CalPlayer
                 if (proj.IsMinionOrSentryRelated)
                     center = proj.Center;
                 Vector2 launchVel = Utils.DirectionTo(center, target.Center);
-                target.MoveNPC(launchVel, proj.knockBack, true);
+                target.MoveNPC(launchVel, proj.knockBack, true, Player);
             }
 
             if (moscowMule || bloodyMary)

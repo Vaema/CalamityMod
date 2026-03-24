@@ -11,6 +11,7 @@ NoArmorSetBonusKey: Press the Armor Set Bonus key
 ArmorSetBonusKey: Press {0}
 DoubleTapDown: Double tap {0}
 // Miscellaneous stats/info
+MinionSlotCost: Uses {0} minion slots
 AggroBoost: Enemies are more likely to target you
 AggroReduction: Enemies are less likely to target you
 KnockbackImmunity: Grants immunity to knockback

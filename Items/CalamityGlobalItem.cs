@@ -21,7 +21,6 @@ using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Magic;
-using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs.Other;
 using CalamityMod.NPCs.TownNPCs;
@@ -637,7 +636,7 @@ namespace CalamityMod.Items
                     return true;
                 }
             }
-            
+
             return base.UseItem(item, player);
         }
 
@@ -645,21 +644,6 @@ namespace CalamityMod.Items
         {
             if (player.Calamity().profanedCrystalBuffs && item.pick == 0 && item.axe == 0 && item.hammer == 0 && item.autoReuse && (item.CountsAsClass<ThrowingDamageClass>() || item.CountsAsClass<MagicDamageClass>() || item.CountsAsClass<RangedDamageClass>() || item.CountsAsClass<MeleeDamageClass>() || item.CountsAsClass<SummonMeleeSpeedDamageClass>()))
             {
-                return false;
-            }
-            if (player.HeldItem.type == ItemType<VoidConcentrationStaff>() && player.ownedProjectileCounts[ProjectileType<VoidConcentrationBlackhole>()] == 0)
-            {
-                foreach (Projectile p in Main.ActiveProjectiles)
-                {
-                    if (p.ModProjectile is VoidConcentrationAura)
-                    {
-                        if (p.owner == player.whoAmI)
-                        {
-                            p.ModProjectile<VoidConcentrationAura>().HandleRightClick();
-                            break;
-                        }
-                    }
-                }
                 return false;
             }
             if (player.HeldItem.type == ItemType<GlacialEmbrace>())
@@ -900,15 +884,13 @@ namespace CalamityMod.Items
             // Hyperius Overflow
             if (target.Calamity().hyperiusMarked)
             {
-                int damage = 0;
-                if (target.Calamity().hyperiusDamage < damageDone)
-                    damage = damageDone - target.Calamity().hyperiusDamage;
-                else
-                    damage = damageDone;
-                target.Calamity().hyperiusDamage -= damage;
+                int damageDealt = (int)(damageDone * HyperiusBullet.overflowAppliedMult);
+                int damage = (int)Math.Min(target.Calamity().hyperiusDamage / HyperiusBullet.overflowEfficency, damageDealt);
+
+                target.Calamity().hyperiusDamage -= (int)(damage * HyperiusBullet.overflowEfficency);
 
                 // Spawn overflow hit
-                Projectile overflow = Projectile.NewProjectileDirect(target.GetSource_FromThis(), target.Center, Vector2.Zero, ProjectileType<HyperiusDamage>(), (int)(damage * HyperiusBullet.overflowEfficency), 0, player.whoAmI, target.whoAmI);
+                Projectile overflow = Projectile.NewProjectileDirect(target.GetSource_FromThis(), target.Center, Vector2.Zero, ProjectileType<HyperiusDamage>(), damage, 0, player.whoAmI, target.whoAmI);
                 overflow.DamageType = item.DamageType;
                 overflow.ArmorPenetration = item.ArmorPenetration; // Takes the armor pen from what did the hit
 
