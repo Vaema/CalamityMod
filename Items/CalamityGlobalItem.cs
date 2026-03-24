@@ -953,7 +953,7 @@ namespace CalamityMod.Items
             }
             else if (set == "SpectreHealing")
             {
-                player.GetDamage<MagicDamageClass>() += 0.4f;
+                player.GetDamage<MagicDamageClass>() += 0.2f;
                 player.setBonus = CalamityUtils.GetTextValue("Vanilla.Armor.SetBonus.SpectreHealing");
             }
             else if (set == "SolarFlare")

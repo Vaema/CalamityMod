@@ -2250,6 +2250,10 @@ namespace CalamityMod.CalPlayer
                 ataxiaDmg -= 1.5f;
             if (ataxiaDmg < 0f)
                 ataxiaDmg = 0f;
+            if (hydroHealTimer > 0f)
+                hydroHealTimer -= 0.05f;
+            if (ataxiaDmg < 0f)
+                ataxiaDmg = 0f;
             if (xerocDmg > 0f)
                 xerocDmg -= 2f;
             if (xerocDmg < 0f)

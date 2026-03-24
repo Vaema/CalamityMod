@@ -686,5 +686,49 @@ namespace CalamityMod.ILEditing
                 return orig(self);
         }
         #endregion
+
+        #region Adjust Spectre Healing lifesteal cost
+        /// <summary>
+        /// Reimplemnts our own implementation of Spectre Healing so we can customize effects
+        /// Also means it will no longer reduce lifesteal cooldown when hitting with non-magic attacks, and not proc if every player is full HP
+        /// </summary>
+        /// <param name="orig"></param>
+        /// <param name="self"></param>
+        /// <param name="dmg"></param>
+        /// <param name="Position"></param>
+        /// <param name="victim"></param>
+        private static void AdjustSpectreHealing(On_Projectile.orig_ghostHeal orig, Projectile self, int dmg, Vector2 Position, Entity victim)
+        {
+            float HealingMultiplier = 0.2f;
+            float LifestealCooldownMult = 0.66f;
+            
+            var owner = Main.player[self.owner];
+            HealingMultiplier -= self.numHits * 0.05f;
+            int AmountToHeal = (int)Math.Round(dmg * HealingMultiplier);
+            if (!self.magic || AmountToHeal <= 0 || Main.player[Main.myPlayer].lifeSteal <= 0f)
+            {
+                return;
+            }
+            float MissingLifeGoal = 0f;
+            int targetPlayer = self.owner;
+            foreach (var player in Main.ActivePlayers)
+            {
+                if (!player.dead && ((!self.hostile && !owner.hostile) || owner.team == player.team) && self.Distance(player.Center) <= 3000f)
+                {
+                    int MissingLife = player.statLifeMax2 - player.statLife;
+                    if ((float)MissingLife > MissingLifeGoal)
+                    {
+                        MissingLifeGoal = MissingLife;
+                        targetPlayer = player.whoAmI;
+                    }
+                }
+            }
+            AmountToHeal = (int)MathHelper.Min(AmountToHeal, MissingLifeGoal);
+            if (AmountToHeal <= 0)
+                return;
+            owner.lifeSteal -= AmountToHeal * LifestealCooldownMult;
+            Projectile.NewProjectile(self.GetSource_OnHit(victim, ProjectileSourceID.ToContextString(ProjectileSourceID.SetBonus_GhostHeal)), Position.X, Position.Y, 0f, 0f, ProjectileID.SpiritHeal, 0, 0f, self.owner, targetPlayer, AmountToHeal);
+        }
+        #endregion
     }
 }

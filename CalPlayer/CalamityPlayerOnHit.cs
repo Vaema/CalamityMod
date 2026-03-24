@@ -1327,21 +1327,20 @@ namespace CalamityMod.CalPlayer
                     //Nanotech has the same heal as Electrician's glove
                     Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, electricianGlove ? 10 : 5, 2f);
 
-                if (bloodflareThrowing && proj.CountsAsClass<ThrowingDamageClass>() && crit)
-                    Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, 2, 1.5f);
-
                 if (proj.CountsAsClass<MagicDamageClass>() && Player.HeldItem.CountsAsClass<MagicDamageClass>())
                 {
                     if (manaOverloader)
                     {
                         double healMult = 0.1D - proj.numHits * 0.025D;
-                        Player.SpawnLifeStealProjectile(target, proj, ProjectileType<ManaPolarizerHealOrb>(), (int)Math.Round(damage * healMult), 1.75f);
+                        Player.SpawnLifeStealProjectile(target, proj, ProjectileType<ManaPolarizerHealOrb>(), (int)Math.Round(damage * healMult), 2);
                     }
 
-                    if (ataxiaMage)
+                    if (ataxiaMage && hydroHealTimer <= 0)
                     {
                         double healMult = HydrothermicHeadMagic.OrbHealingRatio - proj.numHits * HydrothermicHeadMagic.OrbHealingRatioLossPerPierce;
-                        Player.SpawnLifeStealProjectile(target, proj, ProjectileType<HydrothermicHealOrb>(), (int)Math.Round(damage * healMult), HydrothermicHeadMagic.OrbHealingCooldownMult);
+                        var heal = (int)Math.Round(damage * healMult);
+                        hydroHealTimer += heal;
+                        Player.SpawnLifeStealProjectile(target, proj, ProjectileType<HydrothermicHealOrb>(), heal, HydrothermicHeadMagic.OrbHealingCooldownMult);
                     }
                 }
             }

@@ -243,6 +243,7 @@ BloodflareHeadRogue: {
 		'''
 		{$Common.RogueDamage} and {$Common.RogueCrit@1}
 		{$CommonItemTooltip.PercentIncreasedMovementSpeed@2}
+		Increases regeneration by {3} HP/s
 		'''
 	SetBonus:
 		'''
@@ -252,7 +253,6 @@ BloodflareHeadRogue: {
 	SetBonusEffect:
 		'''
 		Grants {0} defense when above {1}% life
-		Rogue critical strikes have lifesteal
 		{$BloodflareBodyArmor.CommonSetBonus}
 		'''
 }

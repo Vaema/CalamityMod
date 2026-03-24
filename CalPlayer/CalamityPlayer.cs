@@ -1272,6 +1272,7 @@ namespace CalamityMod.CalPlayer
         public bool plaguebringerPatronSet = false;
         public bool plaguebringerCarapace = false;
         public float ataxiaDmg;
+        public float hydroHealTimer = 0;
         public bool ataxiaMage = false;
         public bool ataxiaGeyser = false;
         public float xerocDmg;
