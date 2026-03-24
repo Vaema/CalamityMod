@@ -4840,10 +4840,8 @@ namespace CalamityMod.CalPlayer
                     }
                 }
             }
-            if (moonshine)
-                Player.statLifeMax2 = (int)(Player.statLifeMax2 * (1 + Moonshine.MaxLifePercentBoost));
-            if (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.Moonshine))
-                Player.statLifeMax2 = (int)(Player.statLifeMax2 * (1 + Moonshine.MaxLifePercentBoost));
+            if (moonshine || Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.Moonshine))
+                Player.statLifeMax2 = (int)(Player.statLifeMax2 * (1 + ((moonshine ? Moonshine.MaxLifePercentBoost : 1) * (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.Moonshine) ? Moonshine.MaxLifePercentBoost : 1))));
             ForceVariousEffects();
         }
         #endregion
