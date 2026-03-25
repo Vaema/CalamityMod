@@ -3654,7 +3654,7 @@ namespace CalamityMod.CalPlayer
             if (eutrophication)
                 Player.velocity = Vector2.Zero;
 
-            if ((vaporfied) || galvanicCorrosion)
+            if (vaporfied || galvanicCorrosion)
                 Player.velocity *= 0.98f;
 
             if (molluskHelmet)
@@ -3664,7 +3664,7 @@ namespace CalamityMod.CalPlayer
             if (molluskLegs)
                 Player.velocity.X *= 0.996f;
 
-            if ((warped) && !Player.slowFall && !Player.mount.Active)
+            if (warped && !Player.slowFall && !Player.mount.Active)
             {
                 float velocityYMultiplier = 1.01f;
                 Player.velocity.Y *= velocityYMultiplier;

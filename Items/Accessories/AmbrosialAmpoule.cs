@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.aAmpoule = true;
-            if (!(modPlayer.purity) && !hideVisual)
+            if (!modPlayer.purity && !hideVisual)
                 Lighting.AddLight(player.Center, new Vector3(1.2f, 1.2f, 0.72f));
         }
 
