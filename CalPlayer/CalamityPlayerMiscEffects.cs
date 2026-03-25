@@ -45,6 +45,7 @@ using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.Astral;
@@ -1224,7 +1225,7 @@ namespace CalamityMod.CalPlayer
             }
 
             if (brittleStar && brittleStarBuffMode)
-                Player.statDefense += 4 * Player.ownedProjectileCounts[ModContent.ProjectileType<BrittleStarMinion>()];
+                Player.statDefense += BrittleStarStaff.DefenseBoostPerBuffStar * Player.ownedProjectileCounts[ModContent.ProjectileType<BrittleStarMinion>()];
 
             // Reduce the rate of recovery of the Lifesteal variable
             // Classic Mode: 36 HP/s to 12 HP/s
@@ -2665,7 +2666,7 @@ namespace CalamityMod.CalPlayer
                 if (Player.isNearFairy())
                 {
                     Player.lifeRegen += 2;
-                    Player.statDefense += 6;
+                    Player.statDefense += 4;
                     Player.moveSpeed += 0.1f;
                 }
             }
@@ -3359,7 +3360,6 @@ namespace CalamityMod.CalPlayer
             if (graxDefense)
             {
                 Player.statDefense += Grax.DefenseBoost;
-                Player.endurance += Grax.DamageReductionBoost;
                 Player.GetDamage<GenericDamageClass>() += Grax.DamageBoost;
             }
 

@@ -288,12 +288,10 @@ namespace CalamityMod.Items
                 #endregion
 
                 #region CATEGORY 2: Defense Balancing
-                { ItemID.LavaSkull, Do(DefenseExact(3)) }, // Magma Skull
-                { ItemID.MoltenCharm, Do(DefenseExact(3)) }, //Magma Charm
-                { ItemID.MoltenSkullRose, Do(DefenseExact(4)) },
-                { ItemID.ObsidianSkull, Do(DefenseExact(2)) },
-                { ItemID.ObsidianSkullRose, Do(DefenseExact(3)) },
-                { ItemID.Shackle, Do(DefenseExact(3)) },
+                { ItemID.LavaSkull, Do(DefenseExact(1)) }, // Magma Skull
+                { ItemID.MoltenCharm, Do(DefenseExact(1)) }, //Magma Charm
+                { ItemID.MoltenSkullRose, Do(DefenseExact(3)) },
+                { ItemID.ObsidianSkullRose, Do(DefenseExact(1)) },
                 { ItemID.SquireAltHead, Do(DefenseDelta(-2)) }, // Valhalla Knight set
                 { ItemID.SquireAltPants, Do(DefenseDelta(-3)) },
                 { ItemID.SquireAltShirt, Do(DefenseDelta(-3)) },

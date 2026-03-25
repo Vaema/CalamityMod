@@ -1496,9 +1496,9 @@ SandCloak: {
 	Tooltip:
 		'''
 		Dashing creates a large protective sand veil which damages enemies inside it
-		The sand veil lasts 15 seconds, but dissipates early if you dash again
-		The veil slowly follows you, and any player inside it gains 4 defense and 1.75x acceleration
-		After dissipating, the sand veil has a 15 second cooldown before it can be used again
+		The sand veil lasts {0} seconds, but dissipates early if you dash again
+		The veil slowly follows you, and any player inside it gains {1} defense and {2}% acceleration
+		After dissipating, the sand veil has a {3} second cooldown before it can be used again
 		'''
 }
 
@@ -1999,7 +1999,7 @@ UnholyTonic: {
 	DisplayName: Unholy Tonic
 	Tooltip:
 		'''
-		Increases damage reduction by 4% and defense by 6 while in the corruption
+		Increases defense by {0} while in the corruption
 		Grants immunity to [cbuffplr:CalamityMod/BrainRot]
 		'''
 }
@@ -2040,7 +2040,7 @@ ViciousTonic: {
 	DisplayName: Vicious Tonic
 	Tooltip:
 		'''
-		Increases damage reduction by 4% and defense by 6 while in the crimson
+		Increases defense by {0} while in the crimson
 		Grants immunity to [cbuffplr:CalamityMod/BurningBlood]
 		'''
 }
