@@ -51,7 +51,7 @@ namespace CalamityMod.Projectiles.Typeless
                 Projectile.Center += Vector2.Normalize(Owner.Center - Projectile.Center) * (ownerDist > Radius * 0.5f ? 2.5f : 1.25f);
 
             // Kill the sand veil early if the owner dashes
-            if (Owner.dashDelay == -1 && Projectile.timeLeft < Duration - 45)
+            if (Owner.dashDelay == -1 && Projectile.timeLeft < SandCloak.SandVeilDuration - 45)
             {
                 if (Projectile.timeLeft > 25)
                     Projectile.timeLeft = 25;
@@ -84,8 +84,8 @@ namespace CalamityMod.Projectiles.Typeless
             Color drawCol = Projectile.GetAlpha(Color.Lerp(lightColor, Color.White, 0.5f));
             float drawTransparency = 0.1f;
 
-            if (Projectile.timeLeft > Duration - 10)
-                drawTransparency = (Duration - Projectile.timeLeft) * 0.01f;
+            if (Projectile.timeLeft > SandCloak.SandVeilDuration - 10)
+                drawTransparency = (SandCloak.SandVeilDuration - Projectile.timeLeft) * 0.01f;
             else if (Projectile.timeLeft < 25)
                 drawTransparency = Projectile.timeLeft * 0.004f;
 

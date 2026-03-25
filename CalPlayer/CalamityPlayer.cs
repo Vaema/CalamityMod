@@ -5151,7 +5151,7 @@ namespace CalamityMod.CalPlayer
                     (dragonScales ? 0.1f : 0f) +
                     (CobaltSet ? CobaltArmorSetChange.SpeedBoostSetBonusPercentage * 0.01f : 0f) +
                     (silvaSet ? SilvaArmor.AccelerationBoost : 0f) +
-                    (getSandCloakAccelBoost ? SandCloak.SandVeilAccelerationBoost : 0f) +
+                    (getSandCloakAccelBoost ? Items.Accessories.SandCloak.SandVeilAccelerationBoost : 0f) +
                     (ascendantInsignia ? (AscendantInsignia.AccelerationBoost - 0.25f) : 0f) + // Subtracted 0.25 provided by Soaring Insignia
                     (statisNinjaBelt ? 0.6f : 0f) +
                     (statisVoidSash ? 0.85f : 0f) +
