@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public int effectSpeedMod = 0; // Used to add variance to effects when firing rapidly
         public int fadeLifetime => (int)(35 + effectSpeedMod * Math.Max(1 - damageMult, 0)); // The time in which the projectile fades out and can no longer hit anything
-        public int extendedLifetime => (int)(85 + effectSpeedMod * Math.Max(1 - damageMult, 0)); // The time after lifetime reaches zero where the droplet does its attack
+        public int extendedLifetime => (int)(85 * Math.Min(damageMult, 1) + effectSpeedMod * Math.Max(1 - damageMult, 0)); // The time after lifetime reaches zero where the droplet does its attack
         public bool fading => trueLifetime <= fadeLifetime; // If the projectile is fading away
 
         public float explosionDamageMult = 1.4f;
@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (Main.dedServ)
                 return;
 
-            ShineTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/BasicCircle");
+            ShineTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowSpark");
             BloomTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
         }
         public Player Owner => Main.player[Projectile.owner];
@@ -68,6 +68,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             ProjectileID.Sets.TrailCacheLength[Type] = 35;
             ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
         }
         public override void SetDefaults()
         {
@@ -92,7 +93,8 @@ namespace CalamityMod.Projectiles.Ranged
             if (dropletAttack && targeted != null && (targeted.life <= 0 || !targeted.active || !targeted.CanBeChasedBy(Projectile))) // If the chosen target becomes invalid, target a near enemy instead
                 targeted = dropletPosition.ClosestNPCAt(1200); if (targeted == null) dropletAttack = false; // If that fails, cancel the teardrop effect
             Projectile.timeLeft++; // Keep regular lifetime from going down, since it uses it's own lifetime timer
-            Projectile.scale = 1 - MathF.Pow(Utils.GetLerpValue(fadeLifetime, 0, trueLifetime, true), 3); // fade out the bullet scale when lifetime is at its end
+            float mainBulletFadeTime = -extendedLifetime * 0.3f;
+            Projectile.scale = 1 - MathF.Pow(Utils.GetLerpValue(fadeLifetime, mainBulletFadeTime, trueLifetime, true), 1.3f); // fade out the bullet scale when lifetime is at its end
             
             if (turnDirection == 0)
             {
@@ -107,8 +109,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             visualMult = MathHelper.Lerp(visualMult, damageMult, 0.1f / Projectile.MaxUpdates);
 
-            float speed = 8 * MathF.Pow(visualMult, 0.3f) * Math.Max(MathF.Pow(Utils.GetLerpValue(0, fadeLifetime, trueLifetime, true), 2), 0.1f);
-
+            float speed = 8 * MathF.Pow(visualMult, 0.3f) * Math.Max(MathF.Pow(Utils.GetLerpValue(0, fadeLifetime, trueLifetime, true), 2), 0.15f);
             bool chanceForDust = Main.rand.NextBool((int)Math.Clamp((fading ? 8 : 5) / finalEffectMult, 3, 60));
             if (time > 12 && chanceForDust && finalEffectMult > 0.1f) // Some dust effects
             {
@@ -150,7 +151,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 if (detachEffects)
                 {
-                    Projectile.extraUpdates = startingUpdates;
+                    Projectile.Opacity = 0;
                     float scale = 0.7f * damageMult;
                     SoundEngine.PlaySound(SoundID.DD2_WitherBeastCrystalImpact with { Volume = 0.9f * damageMult, Pitch = 0.3f }, Projectile.Center);
                     for (int i = 0; i <= 2; i++)
@@ -208,13 +209,13 @@ namespace CalamityMod.Projectiles.Ranged
             }
 
             if (lastDropletPosition == Vector2.Zero) lastDropletPosition = dropletPosition;
-            bool lowLifetime = trueLifetime <= fadeLifetime / 5;
+            bool lowLifetime = trueLifetime <= mainBulletFadeTime;
             float dropletScaling = (dropletAttack ? (1 + (1 - dropletAttackLerp)) * damageMult : finalEffectMult);
             if (time > 1 * Projectile.MaxUpdates && (!lowLifetime || dropletAttack))
             {
                 if (!lowLifetime)
                 {
-                    CustomColorChangeSpark trail = new CustomColorChangeSpark(Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.UnitX) * (20 - Math.Min(9f / finalEffectMult, 40)), -Projectile.velocity.SafeNormalize(Vector2.UnitX) * 0.1f, "CalamityMod/Particles/BloomCircle", false,
+                    CustomColorChangeSpark trail = new CustomColorChangeSpark(Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.UnitX) * (20 - Math.Min(9f / finalEffectMult, 20)), -Projectile.velocity.SafeNormalize(Vector2.UnitX) * 0.1f, "CalamityMod/Particles/BloomCircle", false,
                         (int)(18 * finalEffectMult), 0.2f * finalEffectMult, Color.Turquoise, Color.Lime, new Vector2(0.25f, 2.25f * Utils.Remap(speed, 7, 0.5f, 1, 0.1f)), noShrink: true, colorFadeSpeed: 5);
                     GeneralParticleHandler.SpawnParticle(trail, true);
                 }
