@@ -44,7 +44,6 @@ namespace CalamityMod.Items.Armor.Bloodflare
             modPlayer.rogueStealthMax += SetBonusRogueStealth;
             modPlayer.wearingRogueArmor = true;
             player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusRogueStealth.ToStealth(), DefenseBoostAboveHealthThreshold, DefenseBoostHealthThreshold.ToPercent());
-            player.crimsonRegen = true;
         }
 
         public override void UpdateEquip(Player player)
