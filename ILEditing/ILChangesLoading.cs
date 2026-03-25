@@ -112,6 +112,7 @@ namespace CalamityMod.ILEditing
             IL_Player.UpdateBuffs += UpdateBuffsBalancingChanges;
             IL_Player.ApplyVanillaHurtEffectModifiers += RemoveBeetleAndSolarFlareMultiplicativeDR;
             On_Projectile.ghostHeal += AdjustSpectreHealing;
+            On_Projectile.vampireHeal += AdjustVampireHealing;
 
             // Movement speed balance
             IL_Player.UpdateJumpHeight += FixJumpHeightBoosts;

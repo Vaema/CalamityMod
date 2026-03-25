@@ -687,7 +687,7 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Adjust Spectre Healing lifesteal cost
+        #region Adjust lifesteal costs
         /// <summary>
         /// Reimplemnts our own implementation of Spectre Healing so we can customize effects
         /// Also means it will no longer reduce lifesteal cooldown when hitting with non-magic attacks, and not proc if every player is full HP
@@ -728,6 +728,24 @@ namespace CalamityMod.ILEditing
                 return;
             owner.lifeSteal -= AmountToHeal * LifestealCooldownMult;
             Projectile.NewProjectile(self.GetSource_OnHit(victim, ProjectileSourceID.ToContextString(ProjectileSourceID.SetBonus_GhostHeal)), Position.X, Position.Y, 0f, 0f, ProjectileID.SpiritHeal, 0, 0f, self.owner, targetPlayer, AmountToHeal);
+        }
+        /// <summary>
+        /// Adjust Vampire Knives implementation, stopping them from trying to heal when at full HP
+        /// </summary>
+        /// <param name="orig"></param>
+        /// <param name="self"></param>
+        /// <param name="dmg"></param>
+        /// <param name="Position"></param>
+        /// <param name="victim"></param>
+        private static void AdjustVampireHealing(On_Projectile.orig_vampireHeal orig, Projectile self, int dmg, Vector2 Position, Entity victim)
+        {
+            int healAmount = (int)(dmg * 0.075f);
+            float LifestealCooldownMult = 1f;
+            if ((int)healAmount != 0 && !(Main.player[Main.myPlayer].lifeSteal <= 0f) && Main.player[Main.myPlayer].statLifeMax2 > Main.player[Main.myPlayer].statLife)
+            {
+                Main.player[Main.myPlayer].lifeSteal -= healAmount * LifestealCooldownMult;
+                Projectile.NewProjectile(self.GetSource_OnHit(victim, ProjectileSourceID.ToContextString(ProjectileSourceID.VampireKnives)), Position.X, Position.Y, 0f, 0f, ProjectileID.VampireHeal, 0, 0f, self.owner, self.owner, healAmount);
+            }
         }
         #endregion
     }
