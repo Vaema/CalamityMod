@@ -4853,8 +4853,7 @@ namespace CalamityMod.CalPlayer
             //For use when the player runs out of mana. Currently only used for Feather and Moonstone Crown
             if (Player.HeldItem.mana > 0 && Player.controlUseItem && Player.itemAnimation == 0)
             {
-                int manaCost = Player.GetManaCost(Player.HeldItem);
-                if (Player.statMana < manaCost)
+                if (!Player.CheckMana(Player.HeldItem, -1, false, true))
                 {
                     if (moonCrown || featherCrown)
                     {
