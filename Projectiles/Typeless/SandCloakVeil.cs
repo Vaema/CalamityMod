@@ -12,7 +12,6 @@ namespace CalamityMod.Projectiles.Typeless
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
         private const float Radius = 360f;
-        private const int Duration = 900;
 
         public override void SetDefaults()
         {
@@ -22,7 +21,7 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = Duration;
+            Projectile.timeLeft = SandCloak.SandVeilDuration;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 10;
             Projectile.scale = 1.5f;
@@ -74,7 +73,7 @@ namespace CalamityMod.Projectiles.Typeless
         }
 
         // Add Sand Cloak cooldown after the sand veil dies
-        public override void OnKill(int timeLeft) => Main.player[Projectile.owner].AddCooldown(Cooldowns.SandCloak.ID, CalamityUtils.SecondsToFrames(15));
+        public override void OnKill(int timeLeft) => Main.player[Projectile.owner].AddCooldown(Cooldowns.SandCloak.ID, SandCloak.SandVeilCooldown);
 
         public override bool PreDraw(ref Color lightColor)
         {
