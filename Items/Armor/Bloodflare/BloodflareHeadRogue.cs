@@ -53,7 +53,7 @@ namespace CalamityMod.Items.Armor.Bloodflare
             player.GetDamage<ThrowingDamageClass>() += RogueDamageBoost;
             player.GetCritChance<ThrowingDamageClass>() += RogueCritBoost;
             player.moveSpeed += MoveSpeedBoost;
-            player.lifeRegen += 4;
+            player.lifeRegen += RegenBonus;
         }
 
         public override void AddRecipes()
