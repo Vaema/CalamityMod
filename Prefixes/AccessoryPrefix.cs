@@ -58,7 +58,7 @@ namespace CalamityMod.Prefixes
 
         public static int GetHealthBoostAmount()
         {
-            return 15;
+            return 20;
         }
     }
 }
