@@ -11,7 +11,7 @@ namespace CalamityMod.Items.Accessories
     {
         public new string LocalizationCategory => "Items.Accessories";
 
-        public static float ChiBuffDamageReductionBoost = 0.08f;
+        public static float ChiBuffDamageReductionBoost = 0.2f;
         public static int ChiBuffHitlessTime = CalamityUtils.SecondsToFrames(10);
         public static int RegenBoost = 1;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(ChiBuffDamageReductionBoost.ToPercent(), ChiBuffHitlessTime.FramesToSeconds(), RegenBoost.ToRegenPerSecond());
