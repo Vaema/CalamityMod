@@ -132,6 +132,7 @@ namespace CalamityMod.CalPlayer
         /// <summary> If set to true, completely disables ALL life regeneration effects. Used by Omega Blue armor. </summary>
         public bool noLifeRegen = false;
         public float ammoCost = 1f;
+        public float partialLifeRegen = 0f;
         public float healingPotionMultiplier = 1f;
         /// <summary>
         /// Tracks whether or not the player is currently holding Gael's Greatsword.<br/>
@@ -311,6 +312,7 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Timer and Counter
+        public float partialLifeRegenCounter = 0f;
         public int gaelSwipes = 0;
         public int arsenalCooldown = 0;
         public int killModeCooldown = 0;
@@ -903,12 +905,16 @@ namespace CalamityMod.CalPlayer
         public bool lAmbergrisVisual = false;
         public bool tortShell = false;
         public bool absorber = false;
+        /// <summary>
+        /// Used for detetcing life regen hindering debuffs
+        /// </summary>
+        bool _hasNoNaturalRegen = false;
         public bool hadLifeRegenHinderingDebuff = false;
         public bool alwaysHoneyRegen = false;
         public float alwaysHoneyRegenAmount = 0;
         public bool honeyTurboRegen = false;
-        public bool honeyDewHalveDebuffs = false;
-        public bool livingDewHalveDebuffs = false;
+        public bool honeyDew = false;
+        public bool livingDew = false;
         public int jewelBonusDefense = 0;
         /// <summary>
         /// Counter variable for spawning Toxic Heart's pulses.<br/>
@@ -922,8 +928,6 @@ namespace CalamityMod.CalPlayer
         public float pulseRate = 1;
         public bool aAmpoule = false;
         public bool rOoze = false;
-        public float radiantOozeRegen = 0;
-        public float purityRegen = 0;
         public bool fBarrier = false;
         public bool aBrain = false;
         public bool amalgam = false;
@@ -983,7 +987,6 @@ namespace CalamityMod.CalPlayer
         public bool purity = false;
         /// <summary> If true, reduces the damage of electricity debuffs by 50%. </summary>
         public bool eleResist = false;
-        public int PurityHealSlowdownFrames = 0;
         public bool harpyRing = false;
         public bool angelTreads = false;
         /// <summary> Makes Flesh Knuckles and its upgrades increase the player's max health. </summary>
@@ -2388,12 +2391,10 @@ namespace CalamityMod.CalPlayer
             lAmbergris = false;
             tortShell = false;
             absorber = false;
-            honeyDewHalveDebuffs = false;
-            livingDewHalveDebuffs = false;
+            honeyDew = false;
+            livingDew = false;
             aAmpoule = false;
             rOoze = false;
-            radiantOozeRegen = 0;
-            purityRegen = 0;
             fBarrier = false;
             aBrain = false;
             amalgam = false;
@@ -2515,6 +2516,7 @@ namespace CalamityMod.CalPlayer
             lunicCorpsLegs = false;
 
             ammoCost = 1f;
+            partialLifeRegen = 0f;
             healingPotionMultiplier = 1f;
 
             avertorBonus = false;
@@ -3050,6 +3052,7 @@ namespace CalamityMod.CalPlayer
             if (Player.HeldItem.IsAir || Player.HeldItem.fishingPole == 0)
                 consecutiveCaughtFish = 0;
             heldGaelsLastFrame = false;
+            partialLifeRegenCounter = 0f;
             gaelSwipes = 0;
             whitewaterHeal = 0;
             luxorHit = false;
@@ -3169,7 +3172,6 @@ namespace CalamityMod.CalPlayer
             vaporfied = false;
             banishingFire = false;
             wither = false;
-            PurityHealSlowdownFrames = 0;
             ImmobilityDebuffImmunityTimer = 0;
             TypelessDebuffMultiplier = new();
             HeatDebuffMultiplier = new();
@@ -3285,6 +3287,7 @@ namespace CalamityMod.CalPlayer
             healCounter = 300;
             danceOfLightCharge = 0;
             ammoCost = 1f;
+            partialLifeRegen = 0f;
             healingPotionMultiplier = 1f;
             avertorBonus = false;
             divineBless = false;
@@ -5016,6 +5019,9 @@ namespace CalamityMod.CalPlayer
                 if (gSabaton && Player.whoAmI == Main.myPlayer)
                     Player.jumpSpeedBoost += 2f;
             }
+
+            //Update life regen that needs to happen before calculating debuffs
+            GeneralLifeRegen();
         }
         #endregion
 

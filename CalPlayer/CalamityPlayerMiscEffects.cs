@@ -1580,7 +1580,7 @@ namespace CalamityMod.CalPlayer
 
                     if (Player.whoAmI == Main.myPlayer)
                     {
-                        Player.HealPlayer(15);
+                        Player.HealPlayer(10);
 
                         if (profanedCrystal)
                         {
@@ -2664,7 +2664,7 @@ namespace CalamityMod.CalPlayer
             {
                 if (Player.isNearFairy())
                 {
-                    Player.lifeRegen += 4;
+                    Player.lifeRegen += 2;
                     Player.statDefense += 6;
                     Player.moveSpeed += 0.1f;
                 }
@@ -3366,7 +3366,7 @@ namespace CalamityMod.CalPlayer
             // Trinket of Chi bonus
             if (trinketOfChi)
             {
-                if (chiBuffTimer < TrinketofChi.ChiBuffTimerMax)
+                if (chiBuffTimer < TrinketofChi.ChiBuffHitlessTime)
                     chiBuffTimer++;
                 else
                     Player.AddBuff(ModContent.BuffType<ChiBuff>(), 6);
@@ -3641,24 +3641,24 @@ namespace CalamityMod.CalPlayer
             if (tarraSet)
                 Player.lifeMagnet = true;
 
-            if (whisperingDeath && !laudanum && !purity)
+            if (whisperingDeath && !laudanum)
                 Player.GetDamage<GenericDamageClass>() -= 0.2f;
 
-            if (armorCrunch && !laudanum && !purity)
+            if (armorCrunch && !laudanum)
             {
                 Player.statDefense -= ArmorCrunch.DefenseReduction;
                 Player.endurance *= ArmorCrunch.MultiplicativeDamageReductionPlayer;
             }
 
-            if (wither && !purity)
+            if (wither)
             {
                 Player.statDefense -= RemsRevenge.WitherDefenseReduction;
             }
 
-            if (eutrophication && !purity)
+            if (eutrophication)
                 Player.velocity = Vector2.Zero;
 
-            if ((vaporfied && !purity) || galvanicCorrosion)
+            if (vaporfied || galvanicCorrosion)
                 Player.velocity *= 0.98f;
 
             if (molluskHelmet)
@@ -3668,7 +3668,7 @@ namespace CalamityMod.CalPlayer
             if (molluskLegs)
                 Player.velocity.X *= 0.996f;
 
-            if ((warped) && !Player.slowFall && !Player.mount.Active)
+            if (warped && !Player.slowFall && !Player.mount.Active)
             {
                 float velocityYMultiplier = 1.01f;
                 Player.velocity.Y *= velocityYMultiplier;

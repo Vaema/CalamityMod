@@ -2,6 +2,7 @@
 using CalamityMod.CalPlayer;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -9,7 +10,11 @@ namespace CalamityMod.Items.Accessories
     public class TrinketofChi : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
-        internal const int ChiBuffTimerMax = 600;
+
+        public static float ChiBuffDamageReductionBoost = 0.08f;
+        public static int ChiBuffHitlessTime = CalamityUtils.SecondsToFrames(10);
+        public static int RegenBoost = 1;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(ChiBuffDamageReductionBoost.ToPercent(), ChiBuffHitlessTime.FramesToSeconds(), RegenBoost.ToRegenPerSecond());
 
         public override void SetDefaults()
         {
