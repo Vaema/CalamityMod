@@ -221,7 +221,6 @@ namespace CalamityMod.Items
                 { ItemID.ShadowFlameKnife, Do(DamageExact(50)) }, // VANILLA: 38 DMG
                 { ItemID.SharpTears, Do(DamageExact(49)) }, // Blood Thorn. VANILLA: 34 DMG
                 { ItemID.Shotgun, Do(DamageExact(36)) }, // VANILLA: 24 DMG
-                { ItemID.Shroomerang, Do(ShootSpeedExact(11)) }, // VANILLA: 10.5 VEL
                 { ItemID.SilverBullet, Do(DamageExact(8)) }, // VANILLA: 9 DMG
                 { ItemID.SilverShortsword, Do(TrueMelee, DamageExact(14)) }, // VANILLA: 9 DMG
                 { ItemID.SkyFracture, Do(DamageExact(46)) }, // VANILLA: 38 DMG
