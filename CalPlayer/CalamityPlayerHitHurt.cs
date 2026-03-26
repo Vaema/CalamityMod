@@ -60,9 +60,6 @@ using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using CalamityMod.Projectiles.Melee;
-using CalamityMod.Items.Tools;
-using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses.BrainOfCthulhu;
 
 namespace CalamityMod.CalPlayer
 {
