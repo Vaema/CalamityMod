@@ -1691,6 +1691,39 @@ namespace CalamityMod.CalPlayer
                     }
                 }
             }
+            float minVis = 0.001f;
+            if (fishStockVisual > minVis) // Fish stock effects are active as long as the UI exists, even if the player removes the item
+            {
+                fishStockSlidingPower = MathHelper.Lerp(fishStockSlidingPower, fishStockPower, 0.05f);
+                if (Player.miscCounter % 60 == 0)
+                {
+                    bool isExtreme = fishStockPower > 1.5f || fishStockPower < -1.5f;
+                    float smallJump = Main.rand.NextBool(4) ? 0.55f : 0;
+                    float bigJump = Main.rand.NextBool(isExtreme ? 7 : 10) ? 1.8f : 0;
+                    int riseOrFall = Main.rand.NextBool() ? -1 : 1;
+                    float newFishStockPower = Player.controlUp ? 0 : Math.Clamp(fishStockPower + (Main.rand.NextFloat(0.1f, 0.2f) + Math.Max(smallJump, bigJump)) * riseOrFall, -2, 2);
+                    fishStockOldPower = // Cycle each power point up as the new point is gotten
+                        (fishStockPower,
+                        fishStockOldPower.Item1,
+                        fishStockOldPower.Item2,
+                        fishStockOldPower.Item3,
+                        fishStockOldPower.Item4);
+                    fishStockPower = newFishStockPower;
+                }
+                // Stats
+                Player.GetDamage<GenericDamageClass>() += 0.15f * fishStockPower;
+                Player.GetCritChance<GenericDamageClass>() += 15 * fishStockPower;
+                Player.Calamity().critDamage += 0.15f * fishStockPower;
+                Player.endurance += 0.1f * fishStockPower;
+                Player.lifeRegen += (int)(4 * fishStockPower);
+                Player.pickSpeed -= 0.40f * fishStockPower;
+                Player.fishingSkill += (int)(50 * fishStockPower);
+            }
+            // Only put away fish stocks if the stocks are even or higher, or if they've already been started to be put away
+            float goalVis = (!fishStocks && (fishStockPower >= 0 || fishStockVisual < 0.9f)) ? 0 : 1;
+            fishStockVisual = MathF.Round(MathHelper.Lerp(fishStockVisual, goalVis, 0.05f), 4); // Fade in and out the U
+            
+
 
             // The fire boots debuff boosts
             // bootLevel exists SO THAT THEY DO NOT STACK. Please help me maintain my sanity so we're not "fixing" this issue seventy times

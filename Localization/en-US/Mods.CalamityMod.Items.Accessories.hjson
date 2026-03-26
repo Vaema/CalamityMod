@@ -778,6 +778,23 @@ FilthyGlove: {
 	Tooltip: Stealth strikes have +8 armor penetration and deal 8% more damage
 }
 
+FishStocks: {
+	DisplayName: Fish Stocks
+	Tooltip:
+		'''
+		Pulls up a view of the fish stocks
+		Provides stats that are multiplied by the state of fish stocks
+		Stats include:
+		+15% damage
+		+15% critical strike chance
+		+15% critical strike damage
+		+10% damage reduction
+		+2HP/s life regeneration
+		+40% mining speed
+		+50 fishing power
+		'''
+}
+
 FlameLickedShell: {
 	DisplayName: Flame-Licked Shell
 	Tooltip:

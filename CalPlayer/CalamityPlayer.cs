@@ -873,6 +873,11 @@ namespace CalamityMod.CalPlayer
         public bool ascendantInsignia = false;
         public int ascendantInsigniaBuffTime = 0;
         public int ascendantInsigniaCooldown = 0;
+        public bool fishStocks = false;
+        public float fishStockVisual = 0;
+        public float fishStockPower = 0;
+        public float fishStockSlidingPower = 0;
+        public (float, float, float, float, float) fishStockOldPower = (0, 0, 0, 0, 0);
         /// <summary> Used to toggle dust spawned while swinging, through accessory visibility. </summary>
         public bool magmaStoneVisuals = true;
         public bool eGauntlet = false;
@@ -2443,6 +2448,7 @@ namespace CalamityMod.CalPlayer
             teslaVisuals = true;
             cryogenSoul = false;
             ascendantInsignia = false;
+            fishStocks = false;
             magmaStoneVisuals = true;
             eGauntlet = false;
             eGauntletVisuals = true;
