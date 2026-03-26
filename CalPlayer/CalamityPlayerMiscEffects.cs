@@ -458,6 +458,30 @@ namespace CalamityMod.CalPlayer
 
             }
 
+            if (v8Engine || v8000Engine)
+            {
+                if (Player.dashDelay == 1 && !v8EngineFXPlayed)
+                {
+
+                    SoundStyle maxEnergyReached = new("CalamityMod/Sounds/Custom/ScornJump");
+                    SoundEngine.PlaySound(maxEnergyReached with { Volume = 0.7f }, Player.Center);
+
+                    for (int i = 0; i < 10; i++) // Circular ring of particles burst from player
+                    {
+                        float angle = MathHelper.TwoPi * (i / 10f);
+                        Vector2 spawnDirection = angle.ToRotationVector2();
+                        Vector2 velocity = spawnDirection * 18f;
+
+                        CritSpark spark = new CritSpark(Player.Center + spawnDirection * 3f, velocity, Color.Lerp(Player.Calamity().DashID == V8EngineDash.ID ? Color.OrangeRed : Color.Cyan, Color.White, Main.rand.NextFloat(1f)), Color.White * 0.5f, 1.2f, 12, 0.3f, 1.2f);
+                        GeneralParticleHandler.SpawnParticle(spark);
+                    }
+                    v8EngineFXPlayed = true;
+                }
+
+                if (Player.dashDelay == -1)
+                    v8EngineFXPlayed = false;
+            }
+
             if (XykVisualsBlue || XykVisualsOrange)
             {
                 bool Orange = XykVisualsOrange;

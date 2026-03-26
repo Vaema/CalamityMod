@@ -948,6 +948,9 @@ namespace CalamityMod.CalPlayer
         public bool seraphTracers = false;
         public bool frostFlare = false;
         public bool evolution = false;
+        public bool v8Engine = false;
+        public bool v8000Engine = false;
+        public bool v8EngineFXPlayed = false;
         public bool procDodgeEffects = true;
         public bool nanotech = false;
         public bool deadshotBrooch = false;
@@ -1106,6 +1109,7 @@ namespace CalamityMod.CalPlayer
         public int spectralVeilImmunity = 0;
         /// <summary> Check for if the player has Plagued Fuel Pack OR Blunder Booster equipped. </summary>
         public bool hasJetpack = false;
+        public bool hasEngineDash = false;
         public bool plaguedFuelPack = false;
         public bool blunderBooster = false;
         public bool blunderBoosterVisibility = true;
@@ -2400,6 +2404,8 @@ namespace CalamityMod.CalPlayer
             amalgam = false;
             frostFlare = false;
             evolution = false;
+            v8Engine = false;
+            v8000Engine = false;
             nanotech = false;
             deadshotBrooch = false;
             tesla = false;
@@ -2631,6 +2637,7 @@ namespace CalamityMod.CalPlayer
             sandCloak = false;
             spectralVeil = false;
             hasJetpack = false;
+            hasEngineDash = false;
             plaguedFuelPack = false;
             blunderBooster = false;
             blunderBoosterVisibility = true;

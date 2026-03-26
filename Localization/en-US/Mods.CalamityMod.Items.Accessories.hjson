@@ -2013,6 +2013,21 @@ UnstableGraniteCore: {
 		'''
 }
 
+V8Engine: {
+	DisplayName: V8 Engine
+	Tooltip: Grants a short dash with a long cooldown that works while mounted
+}
+
+V8000Engine: {
+	DisplayName: V8000 Engine
+	Tooltip:
+		'''
+		Grants a dash with a long cooldown that works while mounted
+		This dash can ram through enemies without taking damage
+		'Are soul-powered engines eco-friendly?'
+		'''
+}
+
 VampiricTalisman: {
 	DisplayName: Vampiric Talisman
 	Tooltip:
