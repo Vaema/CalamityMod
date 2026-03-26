@@ -334,7 +334,7 @@ namespace CalamityMod.Items
                 { ItemID.IronAxe, Do(UseTimeExact(15), AxePower(60)) }, // VANILLA: 19 SPD, 45 AXE
                 { ItemID.IronHammer, Do(UseTimeExact(11), HammerPower(45)) }, // VANILLA: 20 SPD, 40 HAM
                 { ItemID.IronPickaxe, Do(UseTimeExact(8)) }, // VANILLA: 13 SPD
-                { ItemID.LaserDrill, Do(DamageExact(54), UseTimeExact(4), PickPower(220), AxePower(120)) }, // VANILLA: 35 DMG, 6 SPD, 230 PICK, 0 AXE
+                { ItemID.LaserDrill, Do(DamageExact(54), UseTimeExact(4), PickPower(220)) }, // VANILLA: 35 DMG, 6 SPD, 230 PICK
                 { ItemID.LeadAxe, Do(UseTimeExact(15), AxePower(60)) }, // VANILLA: 19 SPD, 50 AXE
                 { ItemID.LeadHammer, Do(UseTimeExact(11), HammerPower(45)) }, // VANILLA: 19 SPD, 43 HAM
                 { ItemID.LeadPickaxe, Do(UseTimeExact(8), PickPower(40)) }, // VANILLA: 12 SPD, 43 PICK
