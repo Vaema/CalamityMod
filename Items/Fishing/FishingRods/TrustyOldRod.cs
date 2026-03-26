@@ -12,8 +12,8 @@ namespace CalamityMod.Items.Fishing.FishingRods
         public static (int, int) enemyChance = (1, 3); // x/x Chance to pull up enemies
         public override void SetDefaults()
         {
-            Item.width = 24;
-            Item.height = 28;
+            Item.width = 70;
+            Item.height = 70;
             Item.useAnimation = 8;
             Item.useTime = 8;
             Item.useStyle = ItemUseStyleID.Swing;

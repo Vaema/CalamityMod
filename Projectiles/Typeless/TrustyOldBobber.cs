@@ -8,8 +8,8 @@ namespace CalamityMod.Projectiles.Typeless
         public new string LocalizationCategory => "Projectiles.Typeless";
         public override void SetDefaults()
         {
-            Projectile.width = 14;
-            Projectile.height = 14;
+            Projectile.width = 16;
+            Projectile.height = 16;
             Projectile.aiStyle = ProjAIStyleID.Bobber;
             Projectile.bobber = true;
         }
