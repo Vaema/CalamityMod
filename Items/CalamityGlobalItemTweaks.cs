@@ -271,7 +271,6 @@ namespace CalamityMod.Items
                 { ItemID.UnholyArrow, Do(DamageExact(11)) },
                 { ItemID.UnholyTrident, Do(ManaRatio(0.78f), DamageRatio(0.91f)) },  // Uses ratios due to remix seed
                 { ItemID.Uzi, Do(UseExact(8)) },
-                { ItemID.VampireKnives, Do(DamageExact(38)) },
                 { ItemID.ValkyrieYoyo, Do(DamageExact(48)) }, // Red's Throw and Valkyrie Yoyo have the same stats
                 { ItemID.VenomStaff, Do(UseExact(27)) },
                 { ItemID.WaspGun, Do(DamageExact(44)) },
