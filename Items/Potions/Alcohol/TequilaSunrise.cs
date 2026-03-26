@@ -3,6 +3,7 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Ores;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -19,17 +20,18 @@ namespace CalamityMod.Items.Potions.Alcohol
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;
+            Main.RegisterItemAnimation(Type, new DrawAnimationVertical(int.MaxValue, 3));
             ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
                 new Color(220, 75, 59),
                 new Color(229, 147, 47),
                 new Color(255, 190, 76)
             };
+            ItemID.Sets.IsFood[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.DefaultToFood(22, 28, ModContent.BuffType<TequilaSunriseBuff>(), CalamityUtils.MinutesToFrames(6), true);
-
             Item.value = Item.sellPrice(silver: 2);
             Item.rare = ItemRarityID.LightRed;
         }
@@ -42,6 +44,11 @@ namespace CalamityMod.Items.Potions.Alcohol
                 AddIngredient<StarblightSoot>(10).
                 AddTile(TileID.Kegs).
                 Register();
+        }
+        public override void UseStyle(Player player, Rectangle heldItemFrame)
+        {
+            player.itemLocation.X += 9 * player.direction;
+            player.itemLocation.Y -= 10;
         }
     }
 }
