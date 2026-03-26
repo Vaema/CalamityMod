@@ -75,7 +75,6 @@ namespace CalamityMod.Items
                 { ItemID.ChlorophytePartisan, Do(UseMeleeSpeed, DamageExact(95)) },
                 { ItemID.ChlorophyteSaber, Do(UseMeleeSpeed, DamageExact(92), UseExact(10)) },
                 { ItemID.ChristmasTreeSword, Do(UseTurn, UseMeleeSpeed, DamageExact(80), UseExact(30)) },
-                { ItemID.ClingerStaff, Do(DamageExact(63)) },
                 { ItemID.ClockworkAssaultRifle, Do(DamageExact(21)) },
                 { ItemID.CobaltNaginata, Do(TrueMelee, DamageExact(55), UseExact(9), ShootSpeedExact(12f)) },
                 { ItemID.CobaltRepeater, Do(UseExact(18)) },
