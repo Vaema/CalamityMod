@@ -3820,14 +3820,6 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            if (CalamityKeybinds.DashHotkey.JustPressed)
-            {
-                if (godSlayer && !Player.pulley && Player.grappling[0] == -1 && !Player.tongued && !Player.mount.Active && !Player.HasCooldown(GodSlayerDash.ID) && Player.dashDelay == 0)
-                {
-                    godSlayerDashHotKeyPressed = true;
-                }
-            }
-
             //Right click dash on Speed Blaster
             if (sBlasterDashActivated == true)
             {

@@ -20,7 +20,7 @@ namespace CalamityMod.CalPlayer.Dashes
     {
         public static new string ID { get; private set; }
 
-        public override DashCollisionType CollisionType => DashCollisionType.ShieldSlam;
+        public override DashCollisionType CollisionType => DashCollisionType.NoCollision;
 
         public override bool IsOmnidirectional => false;
         public int Time = 0;
