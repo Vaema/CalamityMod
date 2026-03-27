@@ -300,7 +300,7 @@ namespace CalamityMod.Items
                 #region CATEGORY 3: Tool Balancing
                 { ItemID.AcornAxe, Do(AxePower(100)) }, // Axe of Regrowth. VANILLA: 150% AXE
                 { ItemID.AdamantiteChainsaw, Do(TrueMeleeNoSpeed, DamageExact(75), AxePower(90), TileBoostExact(+0)) }, // VANILLA: 33 DMG, 100 AXE, -1 TILE
-                { ItemID.AdamantiteDrill, Do(TrueMeleeNoSpeed, DamageExact(32), TileBoostExact(+1)) }, // VANILLA: 20 DMG, -1 TILE
+                { ItemID.AdamantiteDrill, Do(TrueMeleeNoSpeed, DamageExact(32), TileBoostExact(+0)) }, // VANILLA: 20 DMG, -1 TILE
                 { ItemID.AdamantitePickaxe, Do(TileBoostExact(+1)) }, // VANILLA: 0 TILE
                 { ItemID.AdamantiteWaraxe, Do(UseTimeExact(10), AxePower(160), TileBoostExact(+1)) }, // VANILLA: 8 SPD, 100 AXE, 0 TILE
                 { ItemID.BloodLustCluster, Do(UseTimeExact(13), AxePower(100)) }, // VANILLA: 15 SPD, 75 AXE
@@ -309,10 +309,10 @@ namespace CalamityMod.Items
                 { ItemID.ButchersChainsaw, Do(TrueMeleeNoSpeed, UseTimeExact(3), TileBoostExact(+0)) }, // VANILLA: 4 SPD, -1 TILE
                 { ItemID.CactusPickaxe, Do(UseTimeExact(9)) }, // VANILLA: 16 SPD
                 { ItemID.CnadyCanePickaxe, Do(UseTimeExact(9), TileBoostExact(+1)) }, // Candy Cane Pickaxe. VANILLA: 16 SPD
-                { ItemID.ChlorophyteChainsaw, Do(TrueMeleeNoSpeed, DamageExact(112), UseTimeExact(3), AxePower(120)) }, // VANILLA: 50 DMG, 4 SPD, 115 AXE
-                { ItemID.ChlorophyteDrill, Do(TrueMeleeNoSpeed, DamageExact(43), TileBoostExact(+2)) }, // VANILLA: 35 DMG, 0 TILE
+                { ItemID.ChlorophyteChainsaw, Do(TrueMeleeNoSpeed, DamageExact(112), UseTimeExact(3), AxePower(120), TileBoostExact(+1)) }, // VANILLA: 50 DMG, 4 SPD, 115 AXE, 0 TILE
+                { ItemID.ChlorophyteDrill, Do(TrueMeleeNoSpeed, DamageExact(43), TileBoostExact(+1)) }, // VANILLA: 35 DMG, 0 TILE
                 { ItemID.ChlorophyteGreataxe, Do(AxePower(165), TileBoostExact(+2)) }, // VANILLA: 115 AXE, +1 TILE
-                { ItemID.ChlorophyteJackhammer, Do(TrueMeleeNoSpeed, UseTimeExact(5)) }, // VANILLA: 4 SPD
+                { ItemID.ChlorophyteJackhammer, Do(TrueMeleeNoSpeed, DamageExact(53), UseTimeExact(5), TileBoostExact(+1)) }, // VANILLA: 45 DMG, 4 SPD, 0 TILE
                 { ItemID.ChlorophytePickaxe, Do(TileBoostExact(+2)) }, // VANILLA: +1 TILE
                 { ItemID.ChlorophyteWarhammer, Do(UseTimeExact(8), TileBoostExact(+2)) }, // VANILLA: 14 SPD, +1 TILE
                 { ItemID.CobaltChainsaw, Do(TrueMeleeNoSpeed, DamageExact(51), UseTimeExact(4)) }, // VANILLA: 23 DMG, 7 SPD
@@ -323,7 +323,7 @@ namespace CalamityMod.Items
                 { ItemID.CopperHammer, Do(UseTimeExact(12), TileBoostExact(+0)) }, // VANILLA: 23 SPD, -1 TILE
                 { ItemID.CopperPickaxe, Do(UseTimeExact(10), TileBoostExact(+0)) }, // VANILLA: 15 SPD, -1 TILE
                 { ItemID.DeathbringerPickaxe, Do(UseTimeExact(10)) }, // VANILLA: 14 SPD
-                { ItemID.Drax, Do(TrueMeleeNoSpeed, DamageExact(80), TileBoostExact(+1)) }, // VANILLA: 35 DMG, -1 TILE
+                { ItemID.Drax, Do(TrueMeleeNoSpeed, DamageExact(80), TileBoostExact(+0)) }, // VANILLA: 35 DMG, -1 TILE
                 { ItemID.EbonwoodHammer, Do(UseTimeExact(9), HammerPower(25)) }, // VANILLA: 20 SPD, 40 HAM
                 { ItemID.FleshGrinder, Do(UseTimeExact(13), HammerPower(70)) }, // VANILLA: 19 SPD, 55 HAM
                 { ItemID.GoldAxe, Do(UseTimeExact(14), AxePower(80)) }, // VANILLA: 18 SPD, 55 AXE
@@ -349,7 +349,7 @@ namespace CalamityMod.Items
                 { ItemID.MythrilDrill, Do(TrueMeleeNoSpeed, DamageExact(26), UseTimeExact(4), PickPower(160)) }, // VANILLA: 15 DMG, 6 SPD, 150 PICK
                 { ItemID.MythrilPickaxe, Do(UseTimeExact(8), PickPower(160)) }, // VANILLA: 10 SPD, 150 PICK
                 { ItemID.MythrilWaraxe, Do(UseTimeExact(11), AxePower(140)) }, // VANILLA: 10 SPD, 85 AXE
-                { ItemID.NebulaDrill, Do(TrueMeleeNoSpeed, DamageExact(95), UseTimeExact(3), TileBoostExact(+4)) }, // VANILLA: 50 DMG, 2 SPD, +2 TILE
+                { ItemID.NebulaDrill, Do(TrueMeleeNoSpeed, DamageExact(95), UseTimeExact(3), TileBoostExact(+3)) }, // VANILLA: 50 DMG, 2 SPD, +2 TILE
                 { ItemID.NightmarePickaxe, Do(UseTimeExact(9), PickPower(66)) }, // VANILLA: 15 SPD, 65 PICK
                 { ItemID.OrichalcumChainsaw, Do(TrueMeleeNoSpeed, DamageExact(63), UseTimeExact(4), AxePower(80)) }, // VANILLA: 31 DMG, 5 SPD, 90 AXE
                 { ItemID.OrichalcumDrill, Do(TrueMeleeNoSpeed, DamageExact(26), UseTimeExact(4), PickPower(160)) }, // VANILLA: 17 DMG, 5 SPD, 165 PICK
@@ -373,22 +373,22 @@ namespace CalamityMod.Items
                 { ItemID.SilverAxe, Do(UseTimeExact(14), AxePower(70)) }, // VANILLA: 18 SPD, 50 AXE
                 { ItemID.SilverHammer, Do(UseTimeExact(10), HammerPower(55)) }, // VANILLA: 19 SPD, 45 HAM
                 { ItemID.SilverPickaxe, Do(PickPower(50)) }, // VANILLA: 45 PICK
-                { ItemID.SolarFlareDrill, Do(TrueMeleeNoSpeed, DamageExact(95), UseTimeExact(3), TileBoostExact(+4)) }, // VANILLA: 50 DMG, 2 SPD, +2 TILE
+                { ItemID.SolarFlareDrill, Do(TrueMeleeNoSpeed, DamageExact(95), UseTimeExact(3), TileBoostExact(+3)) }, // VANILLA: 50 DMG, 2 SPD, +2 TILE
                 { ItemID.SpectreHamaxe, Do(AxePower(170), TileBoostExact(+4)) }, // VANILLA: 150 AXE, +3 TILE
                 { ItemID.SpectrePickaxe, Do(TileBoostExact(+4)) }, // VANILLA: +3 TILE
-                { ItemID.StardustDrill, Do(TrueMeleeNoSpeed, DamageExact(95), UseTimeExact(3), TileBoostExact(+4)) }, // VANILLA: 50 DMG, 2 SPD, +2 TILE
+                { ItemID.StardustDrill, Do(TrueMeleeNoSpeed, DamageExact(95), UseTimeExact(3), TileBoostExact(+3)) }, // VANILLA: 50 DMG, 2 SPD, +2 TILE
                 { ItemID.TheBreaker, Do(UseTimeExact(13), HammerPower(70)) }, // VANILLA: 19 SPD, 55 HAM
                 { ItemID.TinAxe, Do(UseTimeExact(16), AxePower(50)) }, // VANILLA: 20 SPD, 40 AXE
                 { ItemID.TinHammer, Do(UseTimeExact(12), HammerPower(35)) }, // VANILLA: 21 SPD, 38 HAM
                 { ItemID.TinPickaxe, Do(UseTimeExact(10)) }, // VANILLA: 14 SPD
                 { ItemID.TitaniumChainsaw, Do(TrueMeleeNoSpeed, DamageExact(75), AxePower(90), TileBoostExact(+0)) }, // VANILLA: 34 DMG, 105 AXE, -1 TILE
-                { ItemID.TitaniumDrill, Do(TrueMeleeNoSpeed, DamageExact(32), PickPower(180), TileBoostExact(+1)) }, // VANILLA: 27 DMG, 190 PICK, -1 TILE
+                { ItemID.TitaniumDrill, Do(TrueMeleeNoSpeed, DamageExact(32), PickPower(180), TileBoostExact(+0)) }, // VANILLA: 27 DMG, 190 PICK, -1 TILE
                 { ItemID.TitaniumPickaxe, Do(PickPower(180), UseTimeExact(8), TileBoostExact(+1)) }, // VANILLA: 7 SPD, 190 PICK, 0 TILE
                 { ItemID.TitaniumWaraxe, Do(AxePower(160), UseTimeExact(10), TileBoostExact(+1)) }, // VANILLA: 7 SPD, 105 AXE, 0 TILE
                 { ItemID.TungstenAxe, Do(UseTimeExact(14), AxePower(70)) }, // VANILLA: 18 SPD, 55 AXE
                 { ItemID.TungstenHammer, Do(UseTimeExact(10), HammerPower(55)) }, // VANILLA: 25 SPD, 50 HAM
                 { ItemID.TungstenPickaxe, Do(UseTimeExact(11)) }, // VANILLA: 19 SPD
-                { ItemID.VortexDrill, Do(TrueMeleeNoSpeed, DamageExact(95), UseTimeExact(3), TileBoostExact(+4)) }, // VANILLA: 50 DMG, 2 SPD, +2 TILE
+                { ItemID.VortexDrill, Do(TrueMeleeNoSpeed, DamageExact(95), UseTimeExact(3), TileBoostExact(+3)) }, // VANILLA: 50 DMG, 2 SPD, +2 TILE
                 { ItemID.WarAxeoftheNight, Do(UseTimeExact(13), AxePower(100)) }, // VANILLA: 15 SPD, 75 AXE
                 { ItemID.WoodenHammer, Do(UseTimeExact(11), TileBoostExact(+0)) }, // VANILLA: 25 SPD, -1 TILE
                 #endregion
