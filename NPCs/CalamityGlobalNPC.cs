@@ -155,6 +155,7 @@ namespace CalamityMod.NPCs
         // Cold debuff effects
         public bool IncreasedColdEffects_EskimoSet = false;
         public bool IncreasedColdEffects_CryoStone = false;
+        public bool IncreasedColdEffects_FrozenCube = false;
 
         // Electric effects
         public bool IncreasedElectricityEffects_Unused = false;
@@ -518,6 +519,7 @@ namespace CalamityMod.NPCs
 
             myClone.IncreasedColdEffects_EskimoSet = IncreasedColdEffects_EskimoSet;
             myClone.IncreasedColdEffects_CryoStone = IncreasedColdEffects_CryoStone;
+            myClone.IncreasedColdEffects_FrozenCube = IncreasedColdEffects_FrozenCube;
             myClone.IncreasedElectricityEffects_Unused = IncreasedElectricityEffects_Unused;
             myClone.IncreasedHeatEffects_Fireball = IncreasedHeatEffects_Fireball;
             myClone.IncreasedHeatEffects_CinnamonRoll = IncreasedHeatEffects_CinnamonRoll;

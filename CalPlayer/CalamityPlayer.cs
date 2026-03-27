@@ -1122,6 +1122,8 @@ namespace CalamityMod.CalPlayer
         public bool scionsCurioGotHit = false;
         public bool scionsCurioVisuals = false;
         public float scionsCurioDebuffDamage = 0;
+        public bool frozenCube = false;
+        public float frozenCubePower = 0;
         public bool miniOldDuke = false;
         public bool miniOldDukeVanity = false;
         public bool starbusterCore = false;
@@ -2499,6 +2501,7 @@ namespace CalamityMod.CalPlayer
             camper = false;
             corrosiveSpine = false;
             scionsCurio = false;
+            frozenCube = false;
             rottenDogTooth = false;
             angelicAlliance = false;
             ChaosStone = false;
