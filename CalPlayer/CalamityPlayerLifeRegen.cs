@@ -102,6 +102,7 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(whisperingDeath, 0, laudanum);
 
             ApplyDoTDebuff(irradiated, 4);
+            ApplyDoTDebuff(windChilled, 4);
             int sulphurDoT = 6 - (sulphurSet ? 2 : 0) - (sulphurskin ? 2 : 0) - (corrosiveSpine ? 2 : 0);
             ApplyDoTDebuff(sulphurPoison, sulphurDoT);
             ApplyDoTDebuff(riptide, 6);

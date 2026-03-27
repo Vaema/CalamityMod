@@ -67,7 +67,7 @@ namespace CalamityMod.Systems.Collections
                 BuffType<Dragonfire>(), BuffType<VermillionFlux>(), BuffType<AuricRebuke>(), BuffType<StaticDischarge>(), BuffType<Nightwither>(), BuffType<Voidfrost>(),
                 BuffType<VulnerabilityHex>(), BuffType<MiracleBlight>(), BuffType<WhisperingDeath>(), BuffType<FrozenLungs>(), BuffType<FishAlert>(), BuffType<HolyInferno>(),
                 BuffType<IcarusFolly>(), BuffType<DoGExtremeGravity>(), BuffType<PopoNoselessBuff>(), BuffType<SagePoison>(), BuffType<SearingLava>(), BuffType<WeakBrimstoneFlames>(), BuffType<Withered>(), BuffType<ManaBurn>(), 
-                BuffType<DemonicFlames>(), BuffType<Bane>(), BuffType<Shred>());
+                BuffType<DemonicFlames>(), BuffType<Bane>(), BuffType<Shred>(), BuffType<WindChilled>());
 
         /// <summary>
         /// If <see langword="true"/> for a buff type, then that buff is a whip tag buff on the player.<br/>
