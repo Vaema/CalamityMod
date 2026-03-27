@@ -459,7 +459,6 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.NettleBurstLeft, defaultIFrames },
                 { ProjectileID.NettleBurstRight, defaultIFrames },
                 { ProjectileID.NightBeam, defaultIFrames },
-                { ProjectileID.NorthPoleSnowflake, defaultIFrames },
                 { ProjectileID.NorthPoleSpear, defaultIFrames },
                 { ProjectileID.NorthPoleWeapon, defaultIFrames },
                 { ProjectileID.NurseSyringeHeal, defaultIFrames },
