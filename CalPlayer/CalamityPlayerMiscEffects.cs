@@ -2092,7 +2092,7 @@ namespace CalamityMod.CalPlayer
 
             if (whitewaterHeal > 0)
             {
-                if (whitewaterHeal % 15 == 0)
+                if (whitewaterHeal % 20 == 0)
                     Player.HealPlayer(1);
                 whitewaterHeal--;
 

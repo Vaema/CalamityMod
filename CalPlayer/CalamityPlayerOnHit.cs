@@ -1320,19 +1320,19 @@ namespace CalamityMod.CalPlayer
                     if (heal > 2)
                         heal = 2;
 
-                    Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, heal, (raiderCritLifespan > 0 && !proj.Calamity().stealthStrike) ? 1.3f : 1.6f);
+                    Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, heal, (raiderCritLifespan > 0 && !proj.Calamity().stealthStrike) ? 1.2f : 1.5f);
                 }
 
                 if (bloodyGlove && proj.CountsAsClass<RogueDamageClass>() && modProj.stealthStrike && proj.numHits < 1)
                     //Nanotech has the same heal as Electrician's glove
-                    Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, electricianGlove ? 10 : 5, 2f);
+                    Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, electricianGlove ? 10 : 5, electricianGlove ? 2f : 3f);
 
                 if (proj.CountsAsClass<MagicDamageClass>() && Player.HeldItem.CountsAsClass<MagicDamageClass>())
                 {
                     if (manaOverloader)
                     {
                         double healMult = 0.1D - proj.numHits * 0.025D;
-                        Player.SpawnLifeStealProjectile(target, proj, ProjectileType<ManaPolarizerHealOrb>(), (int)Math.Round(damage * healMult), 2);
+                        Player.SpawnLifeStealProjectile(target, proj, ProjectileType<ManaPolarizerHealOrb>(), (int)Math.Round(damage * healMult), 2f);
                     }
 
                     if (ataxiaMage && hydroHealTimer <= 0)
