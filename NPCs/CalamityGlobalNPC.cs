@@ -3568,8 +3568,6 @@ namespace CalamityMod.NPCs
                         target.AddBuff(BuffType<ArmorCrunch>(), 480);
                     break;
 
-                case NPCID.GolemHead:
-                case NPCID.GolemHeadFree:
                 case NPCID.GolemFistRight:
                 case NPCID.GolemFistLeft:
                     if (CalamityWorld.revenge)

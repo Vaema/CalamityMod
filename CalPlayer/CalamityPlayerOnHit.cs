@@ -316,10 +316,6 @@ namespace CalamityMod.CalPlayer
                     target.AddBuff(BuffID.Venom, 60);
                     break;
 
-                case ProjectileID.BoneArrow:
-                    target.AddBuff(BuffType<Crumbling>(), 300);
-                    break;
-
                 case ProjectileID.NorthPoleWeapon:
                     target.AddBuff(BuffID.Frostburn, 300);
                     break;
