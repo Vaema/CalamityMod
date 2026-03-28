@@ -17,7 +17,6 @@ using static Terraria.Player;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
-    [PierceResistException]
     public class CountermeasureMittHoldout : BaseGunHoldoutProjectile
     {
         public new string LocalizationCategory => "Projectiles.Misc";
