@@ -4619,7 +4619,7 @@ namespace CalamityMod.Projectiles
             if (grapeBeer)
             {
                 var dis = target.Distance(Main.player[projectile.owner].Center);
-                float remap = Utils.Remap(dis, GrapeBeer.CloseRangeDistance, GrapeBeer.LongRangeDistance, GrapeBeer.CloseRangeDamage, GrapeBeer.LongRangeDamage);
+                float remap = Utils.Remap(dis, 0, GrapeBeer.LongRangeDistance, GrapeBeer.CloseRangeDamage, GrapeBeer.LongRangeDamage);
                 modifiers.SourceDamage *= remap;
             }
 
