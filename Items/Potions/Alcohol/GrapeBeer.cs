@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Buffs.Alcohol;
+﻿using System;
 using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -11,9 +12,10 @@ namespace CalamityMod.Items.Potions.Alcohol
     public class GrapeBeer : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Potions";
-        public static float LongRangeDistance = 1000;
-        public static float CloseRangeDamage = 0.8f;
-        public static float LongRangeDamage = 0.4f;
+        public static float CloseRangeDistance = 80;
+        public static float LongRangeDistance = 1200;
+        public static float CloseRangeDamage = 0.75f;
+        public static float LongRangeDamage = 0.25f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(LongRangeDamage,LongRangeDistance/16f);
 
         public override void SetStaticDefaults()
