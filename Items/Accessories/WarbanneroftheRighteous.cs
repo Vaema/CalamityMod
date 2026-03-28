@@ -110,8 +110,8 @@ namespace CalamityMod.Items.Accessories
             NPC closestTarget = player.Center.ClosestNPCAt(MaxDistance * 7); // extra range is to account for bonus range from massive targets
             if (closestTarget != null)
             {
-                float generousHitboxWidth = Math.Max(closestTarget.Hitbox.Width / 2f, closestTarget.Hitbox.Height / 2f) + 100; // Adds some room so max bonus isnt when you're ON the hitbox
-                bonus = Utils.Remap(Utils.Distance(player.Center, closestTarget.Center), MaxDistance + generousHitboxWidth, generousHitboxWidth, 0, MaxBonus, true);
+                Vector2 pointToCheck = Vector2.Clamp(player.Center, closestTarget.TopLeft, closestTarget.BottomRight);
+                bonus = Utils.Remap(Utils.Distance(player.Center, pointToCheck), MaxDistance + 80, 80, 0, MaxBonus, true);
             }
             else
                 bonus = 0;
