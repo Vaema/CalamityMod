@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Accessories
     {
         public new string LocalizationCategory => "Items.Accessories";
         internal const float MaxBonus = 0.3f;
-        internal const float MaxDistance = 700f;
+        internal const float MaxDistance = 720f;
 
         public override void SetStaticDefaults()
         {
@@ -111,7 +111,7 @@ namespace CalamityMod.Items.Accessories
             if (closestTarget != null)
             {
                 Vector2 pointToCheck = Vector2.Clamp(player.Center, closestTarget.TopLeft, closestTarget.BottomRight);
-                bonus = Utils.Remap(Utils.Distance(player.Center, pointToCheck), MaxDistance + 80, 80, 0, MaxBonus, true);
+                bonus = Utils.Remap(Utils.Distance(player.Center, pointToCheck), MaxDistance, 80, 0, MaxBonus, true);
             }
             else
                 bonus = 0;
