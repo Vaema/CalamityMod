@@ -393,6 +393,7 @@ namespace CalamityMod.NPCs
         public bool trueVulnerabilityHex = false;
         public bool banishingFire = false;
         public bool wither = false;
+        public bool windChilled = false;
         /// <summary>
         /// If greater than 0, this enemy will appear to disintegrate into ash when killed.<br/>
         /// Used by Rancor's laser beam.
@@ -643,6 +644,7 @@ namespace CalamityMod.NPCs
             myClone.trueVulnerabilityHex = trueVulnerabilityHex;
             myClone.banishingFire = banishingFire;
             myClone.wither = wither;
+            myClone.windChilled = windChilled;
             myClone.ashesOnDeath = ashesOnDeath;
 
             myClone.fortunesFavor = fortunesFavor;
@@ -812,6 +814,7 @@ namespace CalamityMod.NPCs
                 ladHearts--;
             banishingFire = false;
             wither = false;
+            windChilled = false;
             if (ashesOnDeath > 0)
                 ashesOnDeath--;
 
@@ -898,9 +901,13 @@ namespace CalamityMod.NPCs
                 ActiveColdDebuffMultiplier += 1;
                 ActiveHeatDebuffMultiplier -= 0.5f;
             }
-            if (npc.HasBuff(BuffID.Chilled)) //Nothing inflicts this at the moment. Put here so we can start using it.
+            if (npc.HasBuff(ModContent.BuffType<WindChilled>()))
             {
                 ActiveWaterDebuffMultiplier += 1;
+            }
+            if (npc.buffType.Any(i => BuffDatasets.DebuffDataset[i] is not null && BuffDatasets.DebuffDataset[i].WaterDebuffScaling > 0) || npc.wet || npc.honeyWet || npc.dripping)
+            {
+
             }
             if (VulnerableToHeat.HasValue)
             {
@@ -4843,6 +4850,9 @@ namespace CalamityMod.NPCs
             if (voidfrost)
                 Voidfrost.DrawEffects(npc, ref drawColor);
 
+            if (windChilled)
+                WindChilled.DrawEffects(npc, ref drawColor);
+
             // TODO -- These debuff visuals cannot be moved because they correspond to vanilla debuffs
             if (electrified)
             {
@@ -4981,6 +4991,7 @@ namespace CalamityMod.NPCs
             ("CalamityMod/Buffs/DamageOverTime/VermillionFlux", NPC => NPC.Calamity().vermillionFlux),
             ("CalamityMod/Buffs/DamageOverTime/Voidfrost", NPC => NPC.Calamity().voidfrost),
             ("CalamityMod/Buffs/DamageOverTime/VulnerabilityHex", NPC => NPC.Calamity().vulnerabilityHex),
+            ("CalamityMod/Buffs/DamageOverTime/WindChilled", NPC => NPC.Calamity().windChilled),
 
             // All other important Calamity debuffs, in alphabetical order
             ("CalamityMod/Buffs/StatDebuffs/AbsorberAffliction", NPC => NPC.Calamity().absorberAffliction),

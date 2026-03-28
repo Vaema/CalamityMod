@@ -1402,6 +1402,7 @@ namespace CalamityMod.CalPlayer
         public bool vaporfied = false;
         public bool banishingFire = false;
         public bool wither = false;
+        public bool windChilled = false;
         public bool ManaBurn = false;
 
         /// <summary> Counter variable used to prevent the player from being inflicted with another immobilizing debuff for a short time after being inflicted with one. </summary>
@@ -2699,6 +2700,7 @@ namespace CalamityMod.CalPlayer
             vaporfied = false;
             banishingFire = false;
             wither = false;
+            windChilled = false;
             ManaBurn = false;
 
             TypelessDebuffMultiplier = new();
@@ -3182,6 +3184,7 @@ namespace CalamityMod.CalPlayer
             vaporfied = false;
             banishingFire = false;
             wither = false;
+            windChilled = false;
             ImmobilityDebuffImmunityTimer = 0;
             TypelessDebuffMultiplier = new();
             HeatDebuffMultiplier = new();
