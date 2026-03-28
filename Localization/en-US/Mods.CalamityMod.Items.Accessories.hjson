@@ -2221,3 +2221,8 @@ XyksBlessingOrange: {
 		[c/E1B65F:Prove that it was never a waste.']
 		'''
 }
+
+FrozenCube: {
+	DisplayName: Frozen Cube
+	Tooltip: ""
+}
