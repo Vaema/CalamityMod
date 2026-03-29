@@ -17,13 +17,13 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 82;
             Item.height = 88;
-            Item.damage = 500;
+            Item.damage = 900;
             Item.knockBack = 3.5f;
             Item.useAnimation = Item.useTime = 24;
             Item.autoReuse = true;
             Item.DamageType = RogueDamageClass.Instance;
-            Item.shootSpeed = 15f;
-            Item.shoot = ModContent.ProjectileType<EclipsesFallMain>();
+            Item.shootSpeed = 32f;
+            Item.shoot = ModContent.ProjectileType<EclipsesFallSpear>();
 
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
@@ -35,9 +35,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.Calamity().StealthStrikeAvailable())
-                type = ModContent.ProjectileType<EclipsesStealth>();
-
             int proj = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
             if (proj.WithinBounds(Main.maxProjectiles))
                 Main.projectile[proj].Calamity().stealthStrike = player.Calamity().StealthStrikeAvailable();
@@ -50,9 +47,8 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             CreateRecipe().
                 AddIngredient<Vega>().
-                AddIngredient<CosmiliteBar>(8).
-                AddIngredient<DarksunFragment>(8).
-                AddIngredient<SolarVeil>(12).
+                AddIngredient<AuricBar>(5).
+                AddIngredient<DarksunFragment>(15).
                 AddTile<CosmicAnvil>().
                 Register();
         }
