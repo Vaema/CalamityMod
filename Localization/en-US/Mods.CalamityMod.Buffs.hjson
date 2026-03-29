@@ -398,9 +398,9 @@ WeakBrimstoneFlames: {
 }
 
 WindChilled: {
-    DisplayName: Wind Chilled
-    Description: Should have worn a coat
-    ItemTooltipPlayer:
+	DisplayName: Wind Chilled
+	Description: Should have worn a coat
+	ItemTooltipPlayer:
 		'''
 		Cold - 2 DPS
 		Reduced movement speed
@@ -409,7 +409,7 @@ WindChilled: {
 		'''
 		Cold - 10 DPS
 		1.5x damage if the enemy is inflicted with a Water debuff
-        Enhances Water debuff damage
+		      Enhances Water debuff damage
 		'''
 }
 

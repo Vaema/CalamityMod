@@ -5,6 +5,7 @@ using CalamityMod.Dusts;
 using CalamityMod.Items.Accessories;
 using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -12,6 +13,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace CalamityMod.Projectiles.Typeless
 {
@@ -48,6 +50,10 @@ namespace CalamityMod.Projectiles.Typeless
         public bool mammothOops = false;
         public float hopSize = 0;
         public int hopTimer = 0;
+        public bool attackedThisFrame = false;
+        public int attackDirection = 1;
+        public float mistShootTimer = 0;
+        public float maxTrunkRot => -MathHelper.PiOver2 * 1.1f;
         public int attackTime => (int)(FrozenCube.baseAttackSpeed);
         public int cooldownTime => (int)(FrozenCube.baseAttackCooldown / GetPower(0.5f));
 
@@ -97,6 +103,7 @@ namespace CalamityMod.Projectiles.Typeless
             if (Projectile.spriteDirection != newDirection)
             {
                 trunkRotation *= -1;
+                Projectile.rotation *= -1;
             }
             Projectile.spriteDirection = newDirection;
         }
@@ -124,12 +131,12 @@ namespace CalamityMod.Projectiles.Typeless
                 mammothOops = false;
             else if (mammothOops)
                 Projectile.rotation = Projectile.rotation.AngleLerp(0, Utils.GetLerpValue(0, hopTimerMax, hopTimer, true));
+            else if (hopTimer > 0)
+                trunkRotation = trunkRotation.AngleLerp(maxTrunkRot * Projectile.spriteDirection, Utils.GetLerpValue(0, hopTimerMax, hopTimer, true));
 
-            Main.NewText(hopSize);
             Vector2 offsetY = -Vector2.UnitY * (Owner.height / 2 + Projectile.height / 2.5f) * (1 + 0.4f * sine2 * fallLerp + 5 * CalamityUtils.EaseInOutExp(fallLerp, 2f, 2f)) * hop;
             Vector2 offsetX = Vector2.UnitX * ((3 * Projectile.spriteDirection) + 17 * sine3 * fallLerp);
             goalPosition = Owner.MountedCenter + offsetX + offsetY;
-
 
             if (dashing)
             {
@@ -140,8 +147,9 @@ namespace CalamityMod.Projectiles.Typeless
             }
             else
             {
+                int direction = Owner.ItemAnimationActive ? (Math.Sign(Projectile.Center.DirectionTo(Owner.ClampedMouseWorld()).X)) : (Owner.direction);
                 if (fallTimer == 0)
-                    SetDirection(Owner.direction);
+                    SetDirection(direction);
                 Projectile.Center = goalPosition;
 
                 if (targeted == null)
@@ -153,15 +161,34 @@ namespace CalamityMod.Projectiles.Typeless
                     {
                         SoundStyle attack = new("CalamityMod/Sounds/Item/ElumphantSound");
                         SoundEngine.PlaySound(attack with { Pitch = Main.rand.NextFloat(-0.2f, 0.2f) }, Projectile.Center);
+
                         Projectile.soundDelay = 0;
                         Projectile.frameCounter = 1;
                     }
                     SetDirection(Math.Sign(Projectile.Center.DirectionTo(targeted.Center).X));
                     horizontalSquash = 0.5f;
-                    trunkRotation = Utils.AngleLerp(trunkRotation, Projectile.Center.DirectionTo(targeted.Center).ToRotation() - MathHelper.PiOver2, 0.07f);
-                    if (attackTimer == cooldownTime + attackTime)
-                        Projectile.frame = 0;
+                    float angleSweep = MathF.Sin(attackTimer * 0.085f) * attackDirection;
+                    float goalAngle = Projectile.Center.DirectionTo(targeted.Center).ToRotation() - MathHelper.PiOver2;
+                    Projectile.rotation = Projectile.rotation.AngleLerp((goalAngle + MathHelper.PiOver2 * Projectile.spriteDirection) * fallLerp, 0.07f);
+                    trunkRotation = trunkRotation.AngleLerp(goalAngle - Projectile.rotation - MathHelper.PiOver4 * angleSweep, 0.12f);
 
+                    if (mistShootTimer == 0)
+                    {
+                        Vector2 shootVel = (trunkRotation + Projectile.rotation + MathHelper.PiOver2).ToRotationVector2();
+                        int damage = (int)Owner.GetTotalDamage<GenericDamageClass>().ApplyTo(FrozenCube.mistBaseDamage);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + shootVel * 5, shootVel * 10, ModContent.ProjectileType<PristineSecondary>(), damage, 0, Owner.whoAmI);
+                    }
+                    mistShootTimer += 0.5f * GetPower(0.5f);
+                    if (mistShootTimer >= 5)
+                        mistShootTimer = 0;
+
+
+                    attackedThisFrame = true;
+                    if (attackTimer == cooldownTime + attackTime)
+                    {
+                        attackDirection *= -1;
+                        Projectile.frame = 0;
+                    }
                 }
                 else // Idle
                 {
@@ -186,7 +213,7 @@ namespace CalamityMod.Projectiles.Typeless
                             SoundStyle cry = new("CalamityMod/Sounds/Item/ElumphantCry");
                             SoundEngine.PlaySound(cry with { Pitch = Main.rand.NextFloat(-0.2f, 0.2f) }, Projectile.Center, _ => new ProjectileAudioTracker(Projectile).IsActiveAndInGame());
                         }
-                        trunkRotation = Utils.AngleLerp(trunkRotation, -MathHelper.PiOver2 * 1.1f * Projectile.spriteDirection, 0.025f);
+                        trunkRotation = Utils.AngleLerp(trunkRotation, maxTrunkRot * Projectile.spriteDirection, 0.025f);
                     }
                     else
                         trunkRotation = Utils.AngleLerp(trunkRotation, 0, 0.11f);
@@ -210,7 +237,7 @@ namespace CalamityMod.Projectiles.Typeless
                     Projectile.soundDelay += 2; // Naturally decreases by 1, so to make it count up, increases it by 2
                 }
 
-                if (hopTimer == 0)
+                if (hopTimer == 0 && !attackedThisFrame)
                 {
                     if (mammothFlip)
                     {
@@ -243,10 +270,33 @@ namespace CalamityMod.Projectiles.Typeless
                 float rotation = MathHelper.WrapAngle(Projectile.rotation + MathHelper.Pi);
                 if (mammothFlip && rotation < MathHelper.PiOver2 && rotation > -MathHelper.PiOver2 && landPower > 0.2f)
                 {
+                    SoundStyle bonk = new("CalamityMod/Sounds/Item/Bonk");
+                    SoundEngine.PlaySound(bonk with { Pitch = Main.rand.NextFloat(0.1f, 0.2f) }, Projectile.Center);
+
+                    int halfDusts = 7;
+                    Owner.SetScreenshake(2);
+                    Projectile.frame = 1;
+                    SetRandBlink();
+                    for (int i = -halfDusts; i <= halfDusts; i++)
+                    {
+                        Vector2 dustVel = Vector2.UnitX.RotatedByRandom(0.2f) * Main.rand.NextFloat(0.6f, 1.8f);
+                        Vector2 dustPos = Owner.MountedCenter - (Vector2.UnitY * Owner.height / 2) + dustVel * 1.5f;
+                        Dust dust2 = Dust.NewDustPerfect(dustPos, ModContent.DustType<SquashDustPixelated>(),
+                            dustVel * (i * 0.4f), 0, default, Main.rand.NextFloat(0.2f, 0.45f) * 3);
+                        dust2.noGravity = true;
+                        dust2.color = Main.rand.NextBool() ? color1 : color2;
+                        dust2.customData = new Vector2(0.6f, 1.5f);
+                        dust2.fadeIn = -0.4f;
+                        if (i == -1)
+                            i = 1;
+                    }
+
+                    trunkRotation = maxTrunkRot * Projectile.spriteDirection;
                     SoundStyle ahh = new("CalamityMod/Sounds/Item/ElumphantSound");
-                    SoundEngine.PlaySound(ahh with { Pitch = Main.rand.NextFloat(0.4f, 0.6f) }, Projectile.Center);
-                    verticalSquash = 1.5f * landPower;
+                    SoundEngine.PlaySound(ahh with { Pitch = Main.rand.NextFloat(0.4f, 0.6f), volume = 0.6f }, Projectile.Center);
                     CombatText.NewText(Projectile.Hitbox, usedColor, "!");
+
+                    verticalSquash = 1.5f * landPower;
                     mammothOops = true;
                 }
                 else
@@ -267,6 +317,8 @@ namespace CalamityMod.Projectiles.Typeless
 
             squashTimerX += 0.1f + horizontalSquash;
             squashTimerY += 0.1f + verticalSquash;
+
+            attackedThisFrame = false;
 
             if (!Owner.Calamity().frozenCube)
                 Projectile.Kill();

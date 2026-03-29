@@ -5,7 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 
 using CalamityMod.DataStructures;
+using CalamityMod.Dusts;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Magic;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -19,6 +22,7 @@ namespace CalamityMod.Buffs.DamageOverTime
         public static DebuffData debuffData = new DebuffData()
         {
             EnemyLostRegen = 20,
+            NPCLifeRegenMethod = WindChilledNPCLifeRegen,
             ColdDebuffScaling = 1
         };
         public override void SetStaticDefaults()
@@ -29,63 +33,81 @@ namespace CalamityMod.Buffs.DamageOverTime
             BuffID.Sets.LongerExpertDebuff[Type] = true;
             BuffDatasets.DebuffDataset[Type] = debuffData;
         }
+        public static void WindChilledNPCLifeRegen(NPC npc, int buffType, ref int buffIndex, ref int damage)
+        {
+            var cnpc = npc.Calamity();
+            
+            int baseDoTValue = (int)(cnpc.windChilledMult * debuffData.EnemyLostRegen);
+            cnpc.ApplyDPSDebuff(baseDoTValue, Math.Max((int)(baseDoTValue * debuffData.MultiplierDamageTickSize), debuffData.MinimumDamageTickSize), ref npc.lifeRegen, ref damage);
+        }
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.Calamity().windchilled = true;
+            player.Calamity().windChilled = true;
         }
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            npc.Calamity().windchilled = true;
+            npc.Calamity().windChilled = true;
         }
 
         internal static void DrawEffects(PlayerDrawSet drawInfo, bool hasDebuffResistance = false)
         {
-            Player Player = drawInfo.drawPlayer;
+            Player player = drawInfo.drawPlayer;
 
-            if (Main.rand.NextBool(5))
+            float widthMult = 1;
+            float hightMult = 1;
+            Color color = Elumphant.color1;
+            Color color2 = Elumphant.color2;
+            float sine = (float)Math.Sin((Main.GlobalTimeWrappedHourly * 9.0f) / MathHelper.Pi);
+            if (Main.rand.NextBool(16))
             {
-                Vector2 Vect = new Vector2(0f, Main.rand.NextBool(4) ? -5f : -9f).RotatedByRandom(MathHelper.ToRadians(25f)) * Main.rand.NextFloat(0.1f, 1.9f);
-                SnowflakeSparkle snowflake = new SnowflakeSparkle(Player.Calamity().RandomDebuffVisualSpot, Vect, Main.rand.NextBool() ? Color.Cyan : Color.DarkBlue, Color.DodgerBlue, 0.4f, 15, 2f, 1.9f);
-                GeneralParticleHandler.SpawnParticle(snowflake);
+                bool start = !Main.rand.NextBool(4);
+                Vector2 particleVel = Vector2.UnitY * Main.rand.NextFloat(-1.25f, 1.25f) * Math.Max(hightMult, widthMult) * (Main.rand.NextBool(5) ? 1.5f : 1) + player.velocity * 0.85f;
+                Vector2 particlePos = player.Center + Main.rand.NextVector2Circular(3 * widthMult + 8, 3 * widthMult + 8) * Math.Max(hightMult, widthMult);
+                Particle mist = new CustomPulsingSpark(particlePos, particleVel, "CalamityMod/Particles/ThinSparkle", "CalamityMod/Particles/BloomCircle", false, 65, Main.rand.NextFloat(0.95f, 1.35f) * MathF.Pow(widthMult, 0.45f), start ? color : color2, start ? color2 : color,
+                    new Vector2(0.6f, 1.2f), true, true, Main.rand.Next(4, 7 + 1), colorFadeSpeed: 0.85f, noShrink: true, extraRotation: -particleVel.ToRotation(), shrinkSpeed: 0.1f, sineRate: Main.rand.NextFloat(0.25f, 0.55f), sineIntensity: (int)(Main.rand.Next(12, 19 + 1) * Math.Max(hightMult, widthMult)));
+                GeneralParticleHandler.SpawnParticle(mist, true, Enums.GeneralDrawLayer.AfterPlayers);
             }
-            if (Main.rand.NextBool(40))
+            if (Main.rand.NextBool(11))
             {
-                Vector2 Vect = new Vector2(0f, Main.rand.NextBool(4) ? -5f : -9f).RotatedByRandom(MathHelper.ToRadians(25f)) * Main.rand.NextFloat(0.1f, 1.9f);
-                MediumMistParticle mist = new MediumMistParticle(Player.Calamity().RandomDebuffVisualSpot, Vect, new Color(172, 238, 255), new Color(145, 170, 188), Main.rand.NextFloat(0.5f, 1.5f), 245 - Main.rand.Next(50), 0.02f);
-                GeneralParticleHandler.SpawnParticle(mist);
+                Vector2 dustVel = Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(0.2f, 1.1f) * Math.Max(hightMult, widthMult) * 2 * (Main.rand.NextBool(5) ? 2f : 1);
+                Dust dust2 = Dust.NewDustPerfect(player.Center + dustVel * Main.rand.NextFloat(3, 4), ModContent.DustType<SquashDustPixelated>(),
+                        Vector2.Zero, 0, default, Main.rand.NextFloat(0.2f, 0.45f) * Math.Max(hightMult, widthMult));
+                dust2.noGravity = false;
+                dust2.color = Main.rand.NextBool() ? color : color2;
+                dust2.customData = new Vector2(0.7f, 1.4f);
+                dust2.fadeIn = 0.1f * Math.Max(hightMult, widthMult);
             }
-            Vector2 dustCorner = Player.position - 2f * Vector2.One;
-            Vector2 dustVel = Player.velocity + new Vector2(0f, Main.rand.NextFloat(-11f, -2f));
-            Dust dust = Dust.NewDustDirect(dustCorner, Player.width + 4, Player.height + 4, Main.rand.NextBool(4) ? 20 : 113, dustVel.X, dustVel.Y);
-            dust.noGravity = true;
-            dust.scale = Main.rand.NextFloat(1f, 0.3f);
-            dust.alpha = 10;
         }
 
         internal static void DrawEffects(NPC npc, ref Color drawColor)
         {
-            Vector2 npcSize = npc.Center + new Vector2(Main.rand.NextFloat(-npc.width / 2, npc.width / 2), Main.rand.NextFloat(-npc.height / 2, npc.height / 2));
-            if (Main.rand.NextBool(5))
+            float maxSizeMult = 10f;
+            float widthMult = MathF.Pow(Utils.Remap(npc.width, 10, 500, 1f, maxSizeMult, false), 0.8f);
+            float hightMult = MathF.Pow(Utils.Remap(npc.height, 10, 500, 1f, maxSizeMult, false), 0.8f);
+            Color color = Elumphant.color1;
+            Color color2 = Elumphant.color2;
+            float sine = (float)Math.Sin((Main.GlobalTimeWrappedHourly * 9.0f) / MathHelper.Pi);
+            if (Main.rand.NextBool(16))
             {
-                Vector2 Vect = new Vector2(0f, Main.rand.NextBool(4) ? -5f : -9f).RotatedByRandom(MathHelper.ToRadians(25f)) * Main.rand.NextFloat(0.1f, 1.9f);
-                SnowflakeSparkle snowflake = new SnowflakeSparkle(npcSize, Vect, Main.rand.NextBool() ? Color.Cyan : Color.DarkBlue, Color.DodgerBlue, 0.8f, 15, 2f, 1.9f);
-                GeneralParticleHandler.SpawnParticle(snowflake);
+                bool start = !Main.rand.NextBool(4);
+                Vector2 particleVel = Vector2.UnitY * Main.rand.NextFloat(-1.25f, 1.25f) * Math.Max(hightMult, widthMult) * (Main.rand.NextBool(5) ? 1.5f : 1) + npc.velocity * 0.85f;
+                Vector2 particlePos = npc.Center + Main.rand.NextVector2Circular(3 * widthMult + 8, 3 * widthMult + 8) * Math.Max(hightMult, widthMult);
+                Particle mist = new CustomPulsingSpark(particlePos, particleVel, "CalamityMod/Particles/ThinSparkle", "CalamityMod/Particles/BloomCircle", false, 65, Main.rand.NextFloat(0.95f, 1.35f) * MathF.Pow(widthMult, 0.45f), start ? color : color2, start ? color2 : color, 
+                    new Vector2(0.6f, 1.2f), true, true, Main.rand.Next(4, 7 + 1), colorFadeSpeed: 0.85f, noShrink: true, extraRotation: -particleVel.ToRotation(), shrinkSpeed: 0.1f, sineRate: Main.rand.NextFloat(0.25f, 0.55f), sineIntensity: (int)(Main.rand.Next(12, 19 + 1) * Math.Max(hightMult, widthMult)));
+                GeneralParticleHandler.SpawnParticle(mist, true, Main.rand.NextBool() ? Enums.GeneralDrawLayer.AfterNPCs : Enums.GeneralDrawLayer.BeforeNPCs);
             }
-            if (Main.rand.NextBool(40))
+            if (Main.rand.NextBool(11))
             {
-                Vector2 Vect = new Vector2(0f, Main.rand.NextBool(4) ? -5f : -9f).RotatedByRandom(MathHelper.ToRadians(25f)) * Main.rand.NextFloat(0.1f, 1.9f);
-                MediumMistParticle mist = new MediumMistParticle(npcSize, Vect, new Color(172, 238, 255), new Color(145, 170, 188), Main.rand.NextFloat(0.5f, 1.5f), 245 - Main.rand.Next(50), 0.02f);
-                GeneralParticleHandler.SpawnParticle(mist);
+                Vector2 dustVel = Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(0.2f, 1.1f) * Math.Max(hightMult, widthMult) * 2 * (Main.rand.NextBool(5) ? 2f : 1);
+                Dust dust2 = Dust.NewDustPerfect(npc.Center + dustVel * Main.rand.NextFloat(3, 4), ModContent.DustType<SquashDustPixelated>(),
+                        Vector2.Zero, 0, default, Main.rand.NextFloat(0.2f, 0.45f) * Math.Max(hightMult, widthMult));
+                dust2.noGravity = false;
+                dust2.color = Main.rand.NextBool() ? color : color2;
+                dust2.customData = new Vector2(0.7f, 1.4f);
+                dust2.fadeIn = 0.1f * Math.Max(hightMult, widthMult);
             }
-
-            Vector2 dustCorner = npc.position - 2f * Vector2.One;
-            Vector2 dustVel = npc.velocity + new Vector2(0f, Main.rand.NextFloat(-11f, -2f));
-            Dust dust = Dust.NewDustDirect(dustCorner, npc.width + 4, npc.height + 4, Main.rand.NextBool(4) ? 20 : 113, dustVel.X, dustVel.Y);
-            dust.noGravity = true;
-            dust.scale = Main.rand.NextFloat(1f, 0.3f);
-            dust.alpha = 10;
         }
     }
 }

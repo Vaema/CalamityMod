@@ -394,6 +394,7 @@ namespace CalamityMod.NPCs
         public bool banishingFire = false;
         public bool wither = false;
         public bool windChilled = false;
+        public float windChilledMult = 1;
         /// <summary>
         /// If greater than 0, this enemy will appear to disintegrate into ash when killed.<br/>
         /// Used by Rancor's laser beam.
@@ -903,11 +904,11 @@ namespace CalamityMod.NPCs
             }
             if (npc.HasBuff(ModContent.BuffType<WindChilled>()))
             {
-                ActiveWaterDebuffMultiplier += 1;
+                ActiveWaterDebuffMultiplier += 0.5f;
             }
             if (npc.buffType.Any(i => BuffDatasets.DebuffDataset[i] is not null && BuffDatasets.DebuffDataset[i].WaterDebuffScaling > 0) || npc.wet || npc.honeyWet || npc.dripping)
             {
-
+                windChilledMult = 1.5f;
             }
             if (VulnerableToHeat.HasValue)
             {
