@@ -10,7 +10,7 @@ namespace CalamityMod.Utilities
 {
     internal static class HitModiferUtils
     {
-        extension(NPC.HitModifiers modifiers)
+        extension(ref NPC.HitModifiers modifiers)
         {
             internal void ApplyScalingForcedCrit(Projectile Projectile)
             {
