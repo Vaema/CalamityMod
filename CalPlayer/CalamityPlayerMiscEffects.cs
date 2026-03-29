@@ -2004,7 +2004,7 @@ namespace CalamityMod.CalPlayer
                 int MaxSigils = 4; //Starts at 0, so cap is 5
                 if (mageCrownTimer == 0)
                 {
-                    if (mageCrownCount <= MaxSigils)
+                    if (mageCrownCount <= MaxSigils && Main.myPlayer == Player.whoAmI)
                     {
                         mageCrownCount += 1;
                         float start = 360f / mageCrownCount;
@@ -2022,7 +2022,7 @@ namespace CalamityMod.CalPlayer
                 int MaxSigils = 9; //Starts at 0, so cap is 10
                 if (mageCrownTimer == 0)
                 {
-                    if (mageCrownCount <= MaxSigils)
+                    if (mageCrownCount <= MaxSigils && Main.myPlayer == Player.whoAmI)
                     {
                         mageCrownCount += 1;
                         float start = 360f / mageCrownCount;

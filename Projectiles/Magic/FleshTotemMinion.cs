@@ -84,7 +84,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 pulseMax = 60;
             }
-            //When the timer reaches max, pulse and restore 30 mana
+            //When the timer reaches max, pulse and restore 20 mana
             if (pulseTimer >= pulseMax)
             {
                 if (visuals)
