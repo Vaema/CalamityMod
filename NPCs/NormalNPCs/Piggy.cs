@@ -49,7 +49,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
             NPCID.Sets.CantTakeLunchMoney[Type] = true;
             NPCID.Sets.TakesDamageFromHostilesWithoutBeingFriendly[Type] = true;
-            NPCID.Sets.NormalGoldCritterBestiaryPriority.Insert(NPCID.Sets.NormalGoldCritterBestiaryPriority.IndexOf(NPCID.Bunny) + 1, Type);
+            NPCID.Sets.NormalGoldCritterBestiaryPriority.Insert(NPCID.Sets.NormalGoldCritterBestiaryPriority.IndexOf(NPCID.GoldBunny) + 1, Type);
         }
 
         public override void SetDefaults()
@@ -59,7 +59,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.height = 26;
             NPC.lifeMax = 2000;
             NPC.aiStyle = -1;
-            NPC.knockBackResist = 0.99f;
+            NPC.knockBackResist = 1.15f;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.catchItem = (short)ModContent.ItemType<PiggyItem>();
@@ -311,7 +311,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
             Texture2D baseTexture = TextureAssets.Npc[Type].Value;
             Vector2 scale = SquashVector * NPC.scale;
-            SpriteEffects spriteEffects = NPC.spriteDirection > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+            SpriteEffects spriteEffects = NPC.spriteDirection < 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
             spriteBatch.Draw(baseTexture, NPC.Center - screenPos + Vector2.UnitY * (NPC.gfxOffY + 4f), NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, NPC.frame.Size() * 0.5f, scale, spriteEffects, 0f);
             return false;
         }

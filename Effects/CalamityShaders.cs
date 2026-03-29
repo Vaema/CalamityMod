@@ -254,6 +254,9 @@ namespace CalamityMod.Effects
 
         // The distorted circular effect seen emanating from the distortion rift during DoG's fight.
         internal static Asset<Effect> DoGRiftAuraShader;
+
+        // A simple chromatic abberation effect shader with support for custom abberation colors.
+        internal static Asset<Effect> ChromaticAbberationShader;
         #endregion
 
         #region Big E's Shaders
@@ -513,6 +516,9 @@ namespace CalamityMod.Effects
 
             DoGRiftAuraShader = LoadShader("DoGRiftAuraShader");
             RegisterMiscShader(DoGRiftAuraShader, "DoGRiftAuraPass", "DoGRiftAura");
+
+            ChromaticAbberationShader = LoadShader("ChromaticAbberationShader");
+            RegisterMiscShader(ChromaticAbberationShader, "ChormaAbberationPass", "ChromaticAbberation");
             #endregion
 
             #region Loading Big E's Shaders
