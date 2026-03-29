@@ -1058,10 +1058,9 @@ namespace CalamityMod.CalPlayer
                         break;
                 }
             }
-
-            if (modProj.stealthStrike && rogueCrownCooldown <= 0 && modProj.stealthStrikeHitCount < 3)
+            if (modProj.stealthStrike && nanotechHitCooldown <= 0 && modProj.stealthStrikeHitCount < 3)
             {
-                bool spawnedFeathers = false;
+                bool spawnedFlares = false;
                 if (nanotech)
                 {
                     for (int i = 0; i < 3; i++)
@@ -1072,41 +1071,7 @@ namespace CalamityMod.CalPlayer
                         Projectile.NewProjectile(spawnSource, source, velocity, ProjectileType<NanoFlare>(), damage, 3f, proj.owner);
                     }
                 }
-                else if (moonCrown)
-                {
-                    int lunarFlareDamage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(MoonstoneCrown.BaseDamage);
-                    float lunarFlareKB = 3f;
-
-                    for (int i = 0; i < 3; i++)
-                    {
-                        Vector2 source = new Vector2(position.X + Main.rand.Next(-201, 201), Main.screenPosition.Y - 600f - Main.rand.Next(50));
-                        Vector2 velocity = (position - source) / 10f;
-                        int flare = Projectile.NewProjectile(spawnSource, source, velocity, ProjectileID.LunarFlare, lunarFlareDamage, lunarFlareKB, proj.owner);
-                        if (flare.WithinBounds(Main.maxProjectiles))
-                            Main.projectile[flare].DamageType = DamageClass.Generic;
-                    }
-                }
-                else if (featherCrown)
-                {
-                    for (int i = 0; i < 3; i++)
-                    {
-                        Vector2 source = new Vector2(position.X + Main.rand.Next(-201, 201), Main.screenPosition.Y - 600f - Main.rand.Next(50));
-                        float speedX = (position.X - source.X) / 30f;
-                        float speedY = (position.Y - source.Y) * 8;
-                        Vector2 velocity = new Vector2(speedX, speedY);
-
-                        int featherDamage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(25);
-
-                        int feather = Projectile.NewProjectile(spawnSource, source, velocity, ProjectileType<StickyFeather>(), featherDamage, 3f, proj.owner);
-                        if (feather.WithinBounds(Main.maxProjectiles))
-                        {
-                            Main.projectile[feather].DamageType = DamageClass.Generic;
-                            Main.projectile[feather].extraUpdates += 3;
-                        }
-                    }
-                    spawnedFeathers = true;
-                }
-                rogueCrownCooldown = spawnedFeathers ? 15 : 60;
+                nanotechHitCooldown = spawnedFlares ? 15 : 60;
             }
 
             if (titanHeartSet && modProj.stealthStrike && titanCooldown <= 0 && modProj.stealthStrikeHitCount < 3)
@@ -1221,12 +1186,25 @@ namespace CalamityMod.CalPlayer
                     target.AddBuff(BuffType<AstralInfectionDebuff>(), TitanHeartMask.OnHitDebuffDuration);
                 }
             }
+            if (magic)
+            {
+                if (moonCrown && mageCrownCount == 10)
+                {
+                    target.AddBuff(BuffType<Nightwither>(), 360);
+                }
+                if(featherCrown && mageCrownCount == 5)
+                {
+                    target.AddBuff(BuffType<StaticDischarge>(), 120);
+                }
+            }
             if (summon && !whip)
             {
-                if (profanedCrystal && DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs)
+                if (profanedCrystal && (DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs))
+                {
                     target.AddBuff(BuffType<HolyFlames>(), 600);
+                }
                 else if (pSoulArtifact)
-                    target.AddBuff(BuffType<HolyFlames>(), 300);
+                    target.AddBuff(BuffType<HolyFlames>(), 300);    
 
                 if (divineBless)
                     target.AddBuff(BuffType<BanishingFire>(), AngelicAlliance.BanishingFireDuration);

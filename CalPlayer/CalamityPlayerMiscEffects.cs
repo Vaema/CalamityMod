@@ -2030,6 +2030,42 @@ namespace CalamityMod.CalPlayer
                 if (Player.velocity.Length() < 6)
                     hookPullVisuals = 0;
             }
+            if (featherCrown)
+            {
+                int MaxSigils = 4; //Starts at 0, so cap is 5
+                if (mageCrownTimer == 0)
+                {
+                    if (mageCrownCount <= MaxSigils && Main.myPlayer == Player.whoAmI)
+                    {
+                        mageCrownCount += 1;
+                        float start = 360f / mageCrownCount;
+                        Projectile.NewProjectile(Player.GetSource_Accessory(FindAccessory<FeatherCrown>()), new Vector2((int)(Player.Center.X + (Math.Sin(0 * start) * 300)), (int)(Player.Center.Y + (Math.Cos(0 * start) * 300))), Vector2.Zero, ModContent.ProjectileType<SpectralFeather>(), 0, 0, Player.whoAmI, 0, mageCrownCount);
+                    }
+                    mageCrownTimer = 120;
+                }
+                else if (!Player.dead)
+                {
+                    mageCrownTimer--;
+                }
+            }
+            if (moonCrown)
+            {
+                int MaxSigils = 9; //Starts at 0, so cap is 10
+                if (mageCrownTimer == 0)
+                {
+                    if (mageCrownCount <= MaxSigils && Main.myPlayer == Player.whoAmI)
+                    {
+                        mageCrownCount += 1;
+                        float start = 360f / mageCrownCount;
+                        Projectile.NewProjectile(Player.GetSource_Accessory(FindAccessory<MoonstoneCrown>()), new Vector2((int)(Player.Center.X + (Math.Sin(0 * start) * 300)), (int)(Player.Center.Y + (Math.Cos(0 * start) * 300))), Vector2.Zero, ModContent.ProjectileType<MoonSigil>(), 0, 0, Player.whoAmI, 0, mageCrownCount);
+                    }
+                    mageCrownTimer = 120;
+                }
+                else if (!Player.dead)
+                {
+                    mageCrownTimer--;
+                }
+            }
 
             if (unstableGraniteCore)
             {
@@ -2218,8 +2254,8 @@ namespace CalamityMod.CalPlayer
                 silvaMageCooldown--;
             if (scuttlerCooldown > 0)
                 scuttlerCooldown--;
-            if (rogueCrownCooldown > 0)
-                rogueCrownCooldown--;
+            if (nanotechHitCooldown > 0)
+                nanotechHitCooldown--;
             if (spectralVeilImmunity > 0)
                 spectralVeilImmunity--;
             if (jetPackDash > 0)

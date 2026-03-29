@@ -4095,20 +4095,6 @@ namespace CalamityMod.Projectiles
                                 }
                             }
                         }
-                        else if (modPlayer.moonCrown)
-                        {
-                            if (Main.player[projectile.owner].miscCounter % 120 == 0 && projectile.FinalExtraUpdate())
-                            {
-                                if (projectile.owner == Main.myPlayer && player.ownedProjectileCounts[ProjectileType<MoonSigil>()] < 5)
-                                {
-                                    int damage = (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(42);
-
-                                    int proj = Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, ProjectileType<MoonSigil>(), damage, 0f, projectile.owner);
-                                    if (proj.WithinBounds(Main.maxProjectiles))
-                                        Main.projectile[proj].DamageType = DamageClass.Generic;
-                                }
-                            }
-                        }
 
                         if (modPlayer.dragonScales)
                         {
