@@ -1164,7 +1164,7 @@ NecklaceofVexation: {
 		'''
 		Up to 30% increased damage the lower your life is
 		Current boost: [DAMAGE]%
-		All attacks inflict acid venom
+		All attacks inflict [cbuff:Venom]
 		Revenge
 		'''
 }
@@ -1671,7 +1671,7 @@ SpringStool: {
 	DisplayName: Spring Stool
 	Tooltip:
 		'''
-		Hold Up to reach higher
+		Hold {$Key.UP} to reach higher
 		Press [KEY] to jump super high
 		Super jumps can only be performed once every {0} seconds and after landing
 		+{1}% critical strike chance when striking enemies below you
