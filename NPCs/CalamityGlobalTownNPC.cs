@@ -204,6 +204,7 @@ namespace CalamityMod.NPCs
             "Mausi", // <@!194156349347594241> (sadouken)
             "Fiona", // <@!475216964168450048> (thatgayguy69)
             "Tikoh", // <@!618149904224616458> (r.fractal)
+            "Vivienne", // <@!1043188879185952848> (thanat.oshi)
         ];
         private static readonly string[] PainterNames =
         [
