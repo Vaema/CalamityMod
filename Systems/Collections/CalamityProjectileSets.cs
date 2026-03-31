@@ -102,7 +102,6 @@ namespace CalamityMod.Systems.Collections
             // North Pole
             ProjectileID.NorthPoleWeapon, ProjectileID.NorthPoleWeapon,
             ProjectileID.NorthPoleSpear, ProjectileID.NorthPoleWeapon,
-            ProjectileID.NorthPoleSnowflake, ProjectileID.NorthPoleWeapon,
             // Spore gas clouds
             ProjectileID.SporeTrap, ProjectileID.SporeTrap,
             ProjectileID.SporeTrap2, ProjectileID.SporeTrap,
