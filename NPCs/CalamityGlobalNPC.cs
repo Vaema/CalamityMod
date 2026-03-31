@@ -334,8 +334,8 @@ namespace CalamityMod.NPCs
         public int hyperiusDamage = 0;
         public static int hyperiusOverflowTime = 100;
         public int hyperiusOverflowTimer = hyperiusOverflowTime;
-        /// <summary> Constant variable representing the % of max health Hyperius Bullet's damage stacks must reach before they start to overflow. </summary>
-        public const float HyperiusLifePercentThreshold = 0.07f;
+        /// <summary> Constant variable representing the % of max health Hyperius Bullet's damage stacks must reach before they start to bleed. </summary>
+        public const float HyperiusLifePercentThreshold = 0.10f;
         public int hyperiusFxTimer = 0;
 
         public int glaiveShredTimer = 0;
@@ -3179,7 +3179,7 @@ namespace CalamityMod.NPCs
                     SoundEngine.PlaySound(fullPower with { Volume = 0.7f, Pitch = 0.7f }, npc.Center);
                     warbannerBurnStacks++;
                 }
-                if (warbannerBurnIntensity > 2.5f && npc.CanBeMoved(true))
+                if (warbannerBurnIntensity > 2.5f && npc.CanBeMoved())
                 {
                     npc.velocity *= 1f - 0.25f * Utils.GetLerpValue(2.5f, 3, warbannerBurnIntensity);
                     if (npc.velocity.Length() > 5 && warbannerBurnIntensity > 2.85f) // Repel leaping enemies
@@ -3355,7 +3355,7 @@ namespace CalamityMod.NPCs
                 pearlAuraOwner = -1;
             }
 
-            if (demonSwordImpales > 0 && npc.CanBeMoved(true))
+            if (demonSwordImpales > 0 && npc.CanBeMoved())
             {
                 npc.velocity *= Utils.Remap(demonSwordImpales, 1, 5, 0.95f, 0.3f, true);
                 if (impalePacketTimer > 30) // There's probably a better solution, but this is the best for now

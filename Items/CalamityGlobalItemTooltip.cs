@@ -188,7 +188,7 @@ namespace CalamityMod.Items
                 // If holding SHIFT, actually display the extended tooltip.
                 if (holdingShift && firstTooltipIndex != -1)
                 {
-                    string holdShiftText = item.ModItem.GetLocalizedValue(holdShiftItem.TooltipExtensionKey);
+                    string holdShiftText = holdShiftItem.TooltipExtensionText == LocalizedText.Empty ? item.ModItem.GetLocalizedValue(holdShiftItem.TooltipExtensionKey) : holdShiftItem.TooltipExtensionText.ToString();
                     TooltipLine holdShiftLine = new TooltipLine(Mod, IHoldShiftTooltipItem.ExtensionTooltipID, holdShiftText);
                     if (holdShiftItem.TooltipExtensionColor is not null)
                         holdShiftLine.OverrideColor = holdShiftItem.TooltipExtensionColor;
@@ -884,10 +884,7 @@ namespace CalamityMod.Items
 
             // Crimson
             if (item.type == ItemID.CrimsonHelmet || item.type == ItemID.CrimsonScalemail || item.type == ItemID.CrimsonGreaves)
-            {
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("3%", "6%"));
                 EditTooltipByNum(0, (line) => line.Text += AddedTooltip("CrimsonArmorPieces"));
-            }
 
             // Magic Hat nerf
             if (item.type == ItemID.MagicHat)
@@ -926,19 +923,9 @@ namespace CalamityMod.Items
             if (item.type == ItemID.CobaltHat)
                 EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("40", $"{CobaltArmorSetChange.MaxManaBoost + 40}"));
 
-            // Palladium
-            if (item.type == ItemID.PalladiumBreastplate)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("3%", $"{PalladiumArmorSetChange.ChestplateDamagePercentageBoost + 3}%"));
-            if (item.type == ItemID.PalladiumLeggings)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("2%", $"{PalladiumArmorSetChange.LeggingsDamagePercentageBoost + 2}%"));
-
             // Mythril
             if (item.type == ItemID.MythrilHood)
                 EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("60", $"{MythrilArmorSetChange.MaxManaBoost + 60}"));
-
-            // Orichalcum
-            if (item.type == ItemID.OrichalcumBreastplate)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("6%", $"{OrichalcumArmorSetChange.ChestplateCritChanceBoost + 6}%"));
 
             // Adamantite
             if (item.type == ItemID.AdamantiteHeadgear)

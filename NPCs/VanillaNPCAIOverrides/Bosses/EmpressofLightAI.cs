@@ -848,10 +848,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         }
 
                         // Chance to stop using the lance walls and switch to a different attack after 3 lance walls are used.
-                        if (Main.rand.NextBool(5 - ((int)calamityGlobalNPC.newAI[1] - 2)) && calamityGlobalNPC.newAI[1] >= 2f)
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            NPC.ai[1] = lanceWallPhaseTime;
-                            NPC.netUpdate = true;
+                            if (Main.rand.NextBool(5 - ((int)calamityGlobalNPC.newAI[1] - 2)) && calamityGlobalNPC.newAI[1] >= 2f)
+                            {
+                                NPC.ai[1] = lanceWallPhaseTime;
+                                NPC.netUpdate = true;
+                            }
                         }
                     }
 

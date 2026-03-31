@@ -58,10 +58,8 @@ Bloodfin: {
 	DisplayName: Bloodfin
 	Tooltip:
 		'''
-		Grants a buff that massively boosts natural life regen and grants +{0} HP/s life regen
-		This increases to +{1} HP/s while suffering from damage over time debuffs
-		This buff also directly restores HP every {2} seconds if below {3}% health
-		{$CommonItemTooltip.SecondDuration@4}
+		Grants a buff that restores 1 HP every {0} seconds
+		{$CommonItemTooltip.SecondDuration@1}
 		'The wonders of angiogenesis'
 		'''
 }

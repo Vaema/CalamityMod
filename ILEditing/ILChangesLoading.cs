@@ -3,7 +3,6 @@ using CalamityMod.Tiles.FurnitureExo;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
-using Terraria.GameContent.Biomes;
 using Terraria.GameContent.Drawing;
 using Terraria.GameContent.Events;
 using Terraria.GameContent.ItemDropRules;
@@ -112,6 +111,8 @@ namespace CalamityMod.ILEditing
             On_Projectile.IsDamageDodgable += GFBNurseMeteorUndodgeable;
             IL_Player.UpdateBuffs += UpdateBuffsBalancingChanges;
             IL_Player.ApplyVanillaHurtEffectModifiers += RemoveBeetleAndSolarFlareMultiplicativeDR;
+            On_Projectile.ghostHeal += AdjustSpectreHealing;
+            On_Projectile.vampireHeal += AdjustVampireHealing;
 
             // Movement speed balance
             IL_Player.UpdateJumpHeight += FixJumpHeightBoosts;

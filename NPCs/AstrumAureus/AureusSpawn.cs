@@ -18,6 +18,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.AstrumAureus
 {
+    [HeavyKnockbackWhitelisted]
     public class AureusSpawn : ModNPC
     {
         public static Asset<Texture2D> GlowTexture;

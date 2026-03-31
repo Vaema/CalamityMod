@@ -24,10 +24,9 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 40;
             Item.height = 82;
-            Item.damage = 4375;
+            Item.damage = 2570;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = 45;
-            Item.useAnimation = 45;
+            Item.useTime = Item.useAnimation = 45;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5f;
@@ -74,7 +73,9 @@ namespace CalamityMod.Items.Weapons.Ranged
                             Main.LocalPlayer.SetScreenshake(2f);
                         if (Main.myPlayer == player.whoAmI)
                         {
-                            Projectile.NewProjectile(Item.GetSource_FromThis(), player.Center + Vector2.UnitX.RotatedBy(player.itemRotation) * 2016, Vector2.UnitX.RotatedBy(player.itemRotation), ModContent.ProjectileType<FriendlyLaserWallBeam>(), storedDMG, storedKB, player.whoAmI, -1, 1);
+                            int p = Projectile.NewProjectile(player.GetSource_ItemUse(Item), player.Center + Vector2.UnitX.RotatedBy(player.itemRotation) * 2016, Vector2.UnitX.RotatedBy(player.itemRotation), ModContent.ProjectileType<FriendlyLaserWallBeam>(), storedDMG, storedKB, player.whoAmI, -1, 1);
+                            if (Main.projectile.IndexInRange(p))
+                                Main.projectile[p].DamageType = DamageClass.Ranged;
                         }
                     }
                 }
@@ -89,9 +90,10 @@ namespace CalamityMod.Items.Weapons.Ranged
                         Main.LocalPlayer.SetScreenshake(5f);
                     if (Main.myPlayer == player.whoAmI)
                     {
-                        int p = Projectile.NewProjectile(Item.GetSource_FromThis(), player.Center + Vector2.UnitX.RotatedBy(player.itemRotation) * 2016, Vector2.UnitX.RotatedBy(player.itemRotation), ModContent.ProjectileType<FriendlyLaserWallBeam>(), storedDMG*4, storedKB, player.whoAmI,-0.25f,1);
+                        int p = Projectile.NewProjectile(player.GetSource_ItemUse(Item), player.Center + Vector2.UnitX.RotatedBy(player.itemRotation) * 2016, Vector2.UnitX.RotatedBy(player.itemRotation), ModContent.ProjectileType<FriendlyLaserWallBeam>(), storedDMG*4, storedKB, player.whoAmI,-0.25f,1);
                         if (Main.projectile.IndexInRange(p))
                         {
+                            Main.projectile[p].DamageType = DamageClass.Ranged;
                             Main.projectile[p].scale = 4;
                         }
                     }

@@ -135,8 +135,10 @@ SkyFlareFriendly.DisplayName: Flare
 SlimeStream.DisplayName: Slime Stream
 SlurperBobber.DisplayName: Slurper Bobber
 SpiritOriginBullseye.DisplayName: Spirit Origin Bullseye
+SpringStoolFX.DisplayName: Spring Stool
 StandingFire.DisplayName: Flame
 StarStruckWaterBottle.DisplayName: Bottle
+StepStoolBonusFX.DisplayName: Step Stool Bonus
 StickyFeatherAero.DisplayName: Feather
 StomperSlam.DisplayName: Stomper Slam
 SuicideBomberDemon.DisplayName: Demon
@@ -146,6 +148,7 @@ TarraEnergy.DisplayName: Tarra Energy
 TarragonAura.DisplayName: Tarragon Aura
 TatteredFairyDust.DisplayName: Tattered Fairy Dust
 TeslaAura.DisplayName: Tesla's Electricity
+TileSlamDamage.DisplayName: Grand Damage
 TitanHeartBoom.DisplayName: Titan Heart Boom
 TransformerAura.DisplayName: Transformer Aura
 TransformerBlob.DisplayName: Transformer Shard

@@ -237,7 +237,7 @@ namespace CalamityMod.Projectiles.Typeless
             else
                 modifiers.SourceDamage *= 0.2f;
 
-            target.MoveNPC(Utils.DirectionTo(Owner.Center, target.Center), (poweredTimer == 0 ? 7 : 3));
+            target.MoveNPC(Utils.DirectionTo(Owner.Center, target.Center), (poweredTimer == 0 ? 7 : 3), false, Owner);
 
             if (Projectile.numHits == 0 && poweredTimer == 0)
             {

@@ -98,11 +98,8 @@ AmbrosialAmpoule: {
 	DisplayName: Ambrosial Ampoule
 	Tooltip:
 		'''
-		+{0} max life
-		Grants +{1} to +{2} HP/s life regen based on missing health
-		Grants the [cbuffplr:Honey] buff
-		Current boost: +[REGEN] HP/s
-		Fire and sickness debuff durations are halved
+		+{0} to +{1} HP/s life regen based on missing health [c/999999:(Current: +[REGEN] HP/s)]
+		Natural life regen is {2}% more potent and returns {3}% faster
 		You emit yellow light if visibility is enabled
 		'''
 }
@@ -467,8 +464,8 @@ CrownJewel: {
 	DisplayName: Crown Jewel
 	Tooltip:
 		'''
-		+1 HP/s life regen
-		You gain an additional +1.5 HP/s life regen while afflicted with any debuff
+		+{0} HP/s life regen
+		Reduces damage over time taken by {1} HP/s
 		'''
 }
 
@@ -759,8 +756,11 @@ FeatherCrown: {
 	DisplayName: Feather Crown
 	Tooltip:
 		'''
-		15% increased rogue projectile velocity
-		Stealth strikes cause feathers to fall from the sky on enemy hits
+		Summons a [c/81B7F7:Skyline Feather] every 2 seconds, up to a maximum of 5
+		Each [c/81B7F7:Skyline Feather] increases magic damage by 2% and decreases mana cost by 1%
+		With 5 feathers, increases magic critical strike chance by 5% and all magic attacks inflict [cbuff:CalamityMod/StaticDischarge]
+		Running out of mana or drinking a mana potion sheds all feathers
+		Upon shedding a feather, no new feathers can be gained for 5 seconds
 		'''
 }
 
@@ -786,8 +786,12 @@ FleshTotem: {
 	DisplayName: Flesh Totem
 	Tooltip:
 		'''
-		Halves enemy contact damage
-		When you take contact damage this effect has a 20 second cooldown
+		5% increased magic critical strike chance
+		+30 max mana
+		Summons an effigy above your head that stores mana as you use it, up to 600 mana
+		The effigy occasionally pulses, restoring 20 mana
+		Pulses appear more frequently the more mana is stored
+		Upon being struck, the effigy unleashes all stored up mana as vengeful souls that chase your enemies
 		'''
 }
 
@@ -908,9 +912,9 @@ HallowedRune: {
 		'''
 	HoldShiftTooltip:
 		'''
-		[c/8ce0ff:  Hallowed Power] [c/ccf1ff: grants 10% increased summon damage and rains stars on enemies]
-		[c/d08aff:  Hallowed Defense] [c/eed4ff: grants 5 defense]
-		[c/ff8cb5:  Hallowed Regen] [c/ffccde: grants +1.5 HP/s life regen]
+		[c/8ce0ff:  Hallowed Power] [c/ccf1ff: grants {0}% increased summon damage and rains stars on enemies]
+		[c/d08aff:  Hallowed Defense] [c/eed4ff: grants {1} defense]
+		[c/ff8cb5:  Hallowed Regen] [c/ffccde: grants +{2} HP/s life regen]
 		'''
 }
 
@@ -946,12 +950,7 @@ HideofAstrumDeus: {
 
 HoneyDew: {
 	DisplayName: Honey Dew
-	Tooltip:
-		'''
-		+10 max life
-		Grants the [cbuffplr:Honey] buff
-		Sickness debuff durations are halved
-		'''
+	Tooltip: Natural life regen is {0}% more potent
 }
 
 HowlsHeart: {
@@ -977,11 +976,9 @@ InfectedJewel: {
 	DisplayName: Infected Jewel
 	Tooltip:
 		'''
-		Passively grants +1 HP/s life regen
-		Grants 12 defense and +2 HP/s life regen while afflicted with any debuff
-		Granted defense fades away quickly when not afflicted with any debuffs
-		Each debuff beyond the first grants 4 additional defense
-		Nullifies the [cbuffplr:CalamityMod/AstralInfectionDebuff]
+		+{0} HP/s life regen
+		Reduces damage over time taken by {1} HP/s
+		Jump-starts regeneration after a damaging debuff ends
 		'A beautiful gemstone tarnished by spaceborne rot'
 		'''
 }
@@ -1078,12 +1075,7 @@ LifeJelly: {
 
 LivingDew: {
 	DisplayName: Living Dew
-	Tooltip:
-		'''
-		+25 max life
-		Grants the [cbuffplr:Honey] buff
-		Fire and sickness debuff durations are halved
-		'''
+	Tooltip: Natural life regen is {0}% more potent and returns {1}% faster
 }
 
 LuxorsGift: {
@@ -1133,9 +1125,13 @@ MoonstoneCrown: {
 	DisplayName: Moonstone Crown
 	Tooltip:
 		'''
-		15% increased rogue projectile velocity
-		Stealth strikes release lunar flares on enemy hits
-		Rogue projectiles summon homing moon sigils as they travel
+		+70 max mana
+		Summons a [c/27F5E0:Lunar Sigil] every 2 seconds, up to a maximum of 10
+		Each [c/27F5E0:Lunar Sigil] increases magic damage by 2% and reduces mana cost by 1%
+		With 5 sigils, increases mana regeneration by +5 MP/s
+		With 10 sigils, increases magic critical strike chance by 10% and all magic attacks inflict [cbuff:CalamityMod/Nightwither]
+		Running out of mana or using a mana potion shatters all sigils
+		Upon shattering a sigil, no new sigils can appear for 5 seconds 
 		'''
 }
 
@@ -1168,7 +1164,7 @@ NecklaceofVexation: {
 		'''
 		Up to 30% increased damage the lower your life is
 		Current boost: [DAMAGE]%
-		All attacks inflict acid venom
+		All attacks inflict [cbuff:Venom]
 		Revenge
 		'''
 }
@@ -1292,9 +1288,9 @@ PhantomicArtifact: {
 		'''
 	HoldShiftTooltip:
 		'''
-		[c/8ce0ff:  Phantomic Empowerment] [c/ccf1ff: grants 10% increased summon damage and throws knives at enemies]
-		[c/d08aff:  Phantomic Shield] [c/eed4ff: grants 10 defense and a 20% damage reduction bulwark]
-		[c/ff8cb5:  Phantomic Regen] [c/ffccde: grants 1 HP/s life regen and occasionally drops phantom hearts which grant an additional 1 HP/s life regen]
+		[c/8ce0ff:  Phantomic Empowerment] [c/ccf1ff: grants {0}% increased summon damage and throws knives at enemies]
+		[c/d08aff:  Phantomic Shield] [c/eed4ff: grants {1} defense and a 20% damage reduction bulwark]
+		[c/ff8cb5:  Phantomic Regen] [c/ffccde: grants {2} HP/s life regen and occasionally drops phantom hearts which grant an additional 1 HP/s life regen]
 		'''
 }
 
@@ -1331,7 +1327,7 @@ ProfanedSoulArtifact: {
 		[ADREN]
 		Once depleted, the rocks are flung outward and will regenerate 5 seconds after being hit
 		Taking damage resets the timer
-		The healer guardian restores 15 health every few seconds
+		The healer guardian restores 10 health every few seconds
 		Purity
 		'''
 	ShieldAdren: Halved Adrenaline loss if all damage is absorbed
@@ -1392,22 +1388,11 @@ Radiance: {
 	DisplayName: Radiance
 	Tooltip:
 		'''
-		+70 max life
-		Provides greatly improved life regen, increasing with lost health
-		Gain increased defense from debuffs inflicted on you, and greatly reduces their effectiveness
-		Current boosts: +[REGEN] HP/s and [DEFENSE] defense.
+		+{0} to +{1} HP/s life regen based on missing health [c/999999:(Current: +[REGEN] HP/s)]
+		Reduces damage over time taken by {2} HP/s and jump-starts regeneration after a damaging debuff ends
+		Natural life regen is {3}% more potent and returns {4}% faster
 		You emit shining blue light if visibility is enabled
 		'A once putrid crystal, now glimmering with immaculate purity'
-		'''
-	HoldShiftTooltip:
-		'''
-		[c/CDF69C:Grants +2 to +5 HP/s life regen based on missing health]
-		[c/CDF69C:Recover an additional 6 HP/s while inflicted with a debuff]
-		[c/CDF69C:This eventually slows to 1.33 HP/s when debuffed for an extended time period]
-		[c/CDF69C:Grants the Honey buff]
-		[c/CDF69C:Grants 15 defense while afflicted with any debuff]
-		[c/CDF69C:Each additional debuff grants 5 defense, which slowly decays while not debuffed]
-		[c/CDF69C:Weak damaging debuffs are harmless and halves the duration of most other debuffs]
 		'''
 }
 
@@ -1415,9 +1400,9 @@ RadiantOoze: {
 	DisplayName: Radiant Ooze
 	Tooltip:
 		'''
-		Grants +{0} to +{1} HP/s life regen based on missing health
-		Current boost: +[REGEN] HP/s
+		+{0} to +{1} HP/s life regen based on missing health 
 		You emit yellow light if visibility is enabled
+		[c/999999:(Current regen: +[REGEN] HP/s)]
 		'''
 }
 
@@ -1522,9 +1507,9 @@ SandCloak: {
 	Tooltip:
 		'''
 		Dashing creates a large protective sand veil which damages enemies inside it
-		The sand veil lasts 15 seconds, but dissipates early if you dash again
-		The veil slowly follows you, and any player inside it gains 4 defense and 1.75x acceleration
-		After dissipating, the sand veil has a 15 second cooldown before it can be used again
+		The sand veil lasts {0} seconds, but dissipates early if you dash again
+		The veil slowly follows you, and any player inside it gains {1} defense and {2}% acceleration
+		After dissipating, the sand veil has a {3} second cooldown before it can be used again
 		'''
 }
 
@@ -1676,9 +1661,20 @@ SpiritGlyph: {
 	Tooltip: Minion attacks provide various buffs
 	HoldShiftTooltip:
 		'''
-		[c/8ce0ff:  Spirit Power] [c/ccf1ff:grants 10% increased summon damage]
-		[c/d08aff:  Spirit Defense] [c/eed4ff:grants 3 defense]
-		[c/ff8cb5:  Spirit Regen] [c/ffccde:grants +1 HP/s life regeneration]
+		[c/8ce0ff:  Spirit Power] [c/ccf1ff:grants {0}% increased summon damage]
+		[c/d08aff:  Spirit Defense] [c/eed4ff:grants {1} defense]
+		[c/ff8cb5:  Spirit Regen] [c/ffccde:grants +{2} HP/s life regeneration]
+		'''
+}
+
+SpringStool: {
+	DisplayName: Spring Stool
+	Tooltip:
+		'''
+		Hold {$Key.UP} to reach higher
+		Press [KEY] to jump super high
+		Super jumps can only be performed once every {0} seconds and after landing
+		+{1}% critical strike chance when striking enemies below you
 		'''
 }
 
@@ -2004,9 +2000,9 @@ TrinketofChi: {
 	DisplayName: Trinket of Chi
 	Tooltip:
 		'''
-		Increases damage reduction by 8% if you avoid taking damage for 10 seconds
+		Increases damage reduction by {0}% if you avoid taking damage for {1} seconds
 		This buff expires on hit
-		+1 HP/s life regen for you and your teammates
+		+{2} HP/s life regen for you and your teammates
 		'''
 }
 
@@ -2014,7 +2010,7 @@ UnholyTonic: {
 	DisplayName: Unholy Tonic
 	Tooltip:
 		'''
-		Increases damage reduction by 4% and defense by 6 while in the corruption
+		Increases defense by {0} while in the corruption
 		Grants immunity to [cbuffplr:CalamityMod/BrainRot]
 		'''
 }
@@ -2025,6 +2021,21 @@ UnstableGraniteCore: {
 		'''
 		Gain an energy field that periodically zaps enemies with arcing energy
 		The arcing energy ignores a substantial amount of enemy defense
+		'''
+}
+
+V8Engine: {
+	DisplayName: V8 Engine
+	Tooltip: Grants a short dash with a long cooldown that works while mounted
+}
+
+V8000Engine: {
+	DisplayName: V8000 Engine
+	Tooltip:
+		'''
+		Grants a dash with a long cooldown that works while mounted
+		This dash can ram through enemies without taking damage
+		'Are soul-powered engines eco-friendly?'
 		'''
 }
 
@@ -2055,7 +2066,7 @@ ViciousTonic: {
 	DisplayName: Vicious Tonic
 	Tooltip:
 		'''
-		Increases damage reduction by 4% and defense by 6 while in the crimson
+		Increases defense by {0} while in the crimson
 		Grants immunity to [cbuffplr:CalamityMod/BurningBlood]
 		'''
 }
