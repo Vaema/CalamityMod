@@ -2803,10 +2803,10 @@ namespace CalamityMod.CalPlayer
                 Player.buffImmune[BuffID.Chilled] = true;
             }
 
-            // Cosmic Discharge Cosmic Freeze buff, gives surrounding enemies the Glacial State debuff
+            // Cosmic Discharge Cosmic Freeze buff, gives surrounding enemies the Frozen debuff
             if (cFreeze)
             {
-                int buffType = ModContent.BuffType<GlacialState>();
+                int buffType = BuffID.Frozen;
                 float freezeDist = 200f;
                 if (Player.whoAmI == Main.myPlayer)
                 {

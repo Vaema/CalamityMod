@@ -102,7 +102,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             base.OnHitNPC(target, hit, damageDone);
             if (SwingMode == 2)
-                target.AddBuff(BuffType<GlacialState>(), 20);
+                target.AddBuff(BuffID.Frozen, 20);
         }
 
         public override void AI()

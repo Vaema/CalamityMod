@@ -2322,7 +2322,7 @@ namespace CalamityMod.CalPlayer
                             if (duration > 120)
                                 duration = 120;
 
-                            npc.AddBuff(ModContent.BuffType<GlacialState>(), (int)duration, false);
+                            npc.AddBuff(BuffID.Frozen, (int)duration, false);
                         }
                     }
                 }
