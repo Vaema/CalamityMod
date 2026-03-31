@@ -10,7 +10,7 @@ namespace CalamityMod.Items.Accessories
         public new string LocalizationCategory => "Items.Accessories";
 
         public static int BlazeDamage => CalamityUtils.ScaleWithDifficulty(50);
-        public static int StarDamage => 75;
+        public static int StarDamage => 320;
 
         public override void SetDefaults()
         {
