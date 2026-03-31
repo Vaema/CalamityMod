@@ -1,4 +1,5 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using System.Linq;
+using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -11,14 +12,7 @@ namespace CalamityMod.Projectiles.Rogue
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/SpearofPaleolith";
 
-        private bool stealthInit = false;
-
-        public override void SetStaticDefaults()
-        {
-            ProjectileID.Sets.TrailCacheLength[Type] = 6;
-            ProjectileID.Sets.TrailingMode[Type] = 0;
-        }
-
+        public static int Lifetime => 600;
         public override void SetDefaults()
         {
             Projectile.width = 12;
@@ -26,33 +20,51 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.penetrate = 1;
-            Projectile.aiStyle = ProjAIStyleID.StickProjectile;
-            Projectile.timeLeft = 600;
-            AIType = ProjectileID.BoneJavelin;
+            Projectile.extraUpdates = 5;
+            Projectile.timeLeft = Lifetime * Projectile.MaxUpdates;
             Projectile.DamageType = RogueDamageClass.Instance;
         }
-
+        public float StuckEnemyID
+        {
+            get { return Projectile.ai[0]; }
+            set { Projectile.ai[0] = value; }
+        }
+        public float StuckEnemyDistance
+        {
+            get { return Projectile.ai[1]; }
+            set { Projectile.ai[1] = value; }
+        }
+        public float StuckEnemyRotation
+        {
+            get { return Projectile.ai[2]; }
+            set { Projectile.ai[2] = value; }
+        }
         public override void AI()
         {
-            if (Projectile.Calamity().stealthStrike && !stealthInit)
+            if (StuckEnemyID > 0)
             {
-                Projectile.velocity *= 0.5f;
-                Projectile.timeLeft = 1800;
-                stealthInit = true;
+                Projectile.tileCollide = false;
+                if (!Main.npc[(int)StuckEnemyID - 1].active)
+                {
+                    StuckEnemyID = 0;
+                    Projectile.velocity = -Vector2.UnitY.RotatedByRandom(0.25f) * Main.rand.NextFloat(0, 1f);
+                    Projectile.tileCollide = true;
+                    return;
+                }
+                Projectile.Center = Main.npc[(int)StuckEnemyID - 1].Center + Vector2.UnitX.RotatedBy(StuckEnemyRotation) * StuckEnemyDistance;
+                return;
             }
 
-            if (Main.rand.NextBool(4))
+            Projectile.velocity *= 0.998f;
+            if (Projectile.timeLeft < (Lifetime - 25) * Projectile.MaxUpdates)
+                Projectile.velocity.Y += 0.02f;
+
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4;
+            if (Main.rand.NextBool(20))
             {
                 Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Teleporter, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
-            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.ToRadians(45f);
-            if (Projectile.timeLeft % 3 == 0)
-            {
-                if (Projectile.owner == Main.myPlayer)
-                {
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<FossilShardThrown>(), (int)(Projectile.damage * 0.5), Projectile.knockBack, Projectile.owner, 0f, 0f);
-                }
-            }
+
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -63,13 +75,32 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnKill(int timeLeft)
         {
-            for (int i = 0; i <= 10; i++)
+            for (int i = 0; i <= 5; i++)
             {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Teleporter, Projectile.oldVelocity.X * 0.5f, Projectile.oldVelocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Teleporter, Projectile.oldVelocity.X*2.5f, Projectile.oldVelocity.Y*2.5f);
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 120);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            if (Projectile.Calamity().stealthStrike)
+            {
+                Projectile.stopsDealingDamageAfterPenetrateHits = true;
+                StuckEnemyID = target.whoAmI + 1;
+                StuckEnemyDistance = Projectile.Distance(target.Center);
+                StuckEnemyRotation = Projectile.DirectionFrom(target.Center).ToRotation();
+                Projectile.timeLeft = Lifetime * Projectile.MaxUpdates;
+            }
+
+            bool strongSplit = Main.projectile.Any(x => x.active && x.owner == Projectile.owner && x.type == Projectile.type && x.ai[0] == (target.whoAmI + 1));
+            int shardCount = strongSplit ? 5 : 3;
+            for (var i = 0; i < shardCount; i++)
+            {
+                var p = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, new Vector2(0,-1).RotatedByRandom(1) * (strongSplit ? 10 : 7.5f), ModContent.ProjectileType<FossilShardThrown>(), 0 /*Shard dmg is set in its AI*/, Projectile.knockBack, Projectile.owner, 0f, 0f);
+                p.localNPCImmunity[target.whoAmI] = 30;
+            }
+            target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 120);
+        }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 120);
     }
