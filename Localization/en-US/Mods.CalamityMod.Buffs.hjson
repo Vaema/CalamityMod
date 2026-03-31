@@ -1068,7 +1068,7 @@ Bane: {
 	Description: An ancient curse envelops you
 	ItemTooltipEnemy:
 		'''
-		Typeless - 45 DPS
+		Typeless - 20 DPS
 		Does not scale with debuff multipliers
 		Scales based on your critical strike chance
 		'''
@@ -1209,7 +1209,7 @@ WitherDebuff: {
 		Withered...
 		Defense decreased by {0}
 		'''
-	ItemTooltipPlayer: Decreases defense
+	ItemTooltipEnemy: Decreases defense
 }
 
 // Summons
