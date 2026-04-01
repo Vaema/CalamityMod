@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using CalamityMod.Prefixes;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -11,6 +12,7 @@ namespace CalamityMod.Items.Tools
     public static class VoucherReforgeSystem
     {
         public static int ForcedPrefix = -1;
+        public static bool RollWon = false;
     }
 
     public class VoucherGlobalItem : GlobalItem
@@ -36,6 +38,30 @@ namespace CalamityMod.Items.Tools
                         if (invItem.stack <= 0)
                             invItem.TurnToAir();
 
+                        if (Main.netMode != NetmodeID.Server)
+                        {
+                            if (VoucherReforgeSystem.RollWon)
+                            {
+                                for (int d = 0; d < 24; d++)
+                                {
+                                    int dust = Dust.NewDust(player.position, player.width, player.height, DustID.Confetti, 0f, 0f, 100, default, 1f);
+                                    Main.dust[dust].velocity *= 2f;
+                                    Main.dust[dust].noGravity = false;
+                                }
+
+                                SoundEngine.PlaySound(SoundID.Item4, player.position);
+                            }
+                            else
+                            {
+                                for (int d = 0; d < 20; d++)
+                                {
+                                    int dust = Dust.NewDust(player.position, player.width, player.height, DustID.Smoke, 0f, 0f, 100, default, 1.2f);
+                                    Main.dust[dust].velocity *= 1.5f;
+                                }
+
+                                SoundEngine.PlaySound(SoundID.Item16, player.position);
+                            }
+                        }
                         break;
                     }
                 }
@@ -137,15 +163,21 @@ namespace CalamityMod.Items.Tools
             if (prefixChoices.Length == 0)
                 return -1;
 
-            // Combat Voucher handles 50/50 loss logic for weapons on its own
             if (isAccessory)
             {
                 if (Main.rand.NextBool())
+                {
+                    VoucherReforgeSystem.RollWon = true;
                     return prefixChoices[chosenPrefix];
+                }
                 else
+                {
+                    VoucherReforgeSystem.RollWon = false;
                     return ModContent.PrefixType<Friendly>();
+                }
             }
 
+            VoucherReforgeSystem.RollWon = true;
             return prefixChoices[chosenPrefix];
         }
     }
@@ -182,7 +214,16 @@ namespace CalamityMod.Items.Tools
             else
                 prefix = PrefixID.Godly;
 
-            return Main.rand.NextBool() ? prefix : ModContent.PrefixType<Horrible>();
+            if (Main.rand.NextBool())
+            {
+                VoucherReforgeSystem.RollWon = true; 
+                return prefix;
+            }
+            else
+            {
+                VoucherReforgeSystem.RollWon = false;
+                return ModContent.PrefixType<Horrible>();
+            }
         }
     }
 
