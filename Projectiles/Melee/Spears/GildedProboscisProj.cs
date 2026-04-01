@@ -3,6 +3,7 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
+using CalamityMod.Utilities;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -268,10 +269,6 @@ namespace CalamityMod.Projectiles.Melee.Spears
             Projectile.damage = (int)(Projectile.damage * 0.925f); //Both are needed as it doesn't recalculate till next frame
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
-            modifiers.SetCrit();
-            float critDamage = Main.player[Projectile.owner].GetTotalCritChance(Projectile.DamageType) * 0.02f;
-            modifiers.CritDamage += critDamage;
-        }
+            => modifiers.ApplyScalingForcedCrit(Projectile);
     }
 }
