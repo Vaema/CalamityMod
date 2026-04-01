@@ -20,6 +20,7 @@ using Terraria.ModLoader.Utilities;
 
 namespace CalamityMod.NPCs.Abyss
 {
+    [HeavyKnockbackWhitelisted]
     public class ReaperShark : ModNPC
     {
         public static Asset<Texture2D> ManTexture;

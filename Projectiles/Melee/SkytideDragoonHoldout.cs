@@ -298,7 +298,7 @@ namespace CalamityMod.Projectiles.Melee
             SoundEngine.PlaySound(fire2 with { Volume = 0.65f, Pitch = 0.4f }, Projectile.Center);
 
             Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
-            target.MoveNPC(launchVel, 23, true);
+            target.MoveNPC(launchVel, 23, true, Owner);
 
             target.AddBuff(BuffID.Electrified, 230);
         }

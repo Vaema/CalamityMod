@@ -392,7 +392,7 @@ namespace CalamityMod.Projectiles.Melee
             }
 
             Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
-            CalamityUtils.MoveNPC(target, launchVel, 40, true);
+            CalamityUtils.MoveNPC(target, launchVel, 40, true, Owner);
 
             if (target.Calamity().demonSwordImpales != 0 || Projectile.numHits == 0)
             {

@@ -126,6 +126,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.ButchersChainsaw, Do(TrueMeleeNoSpeed, ArmorPenetrationDelta(+15), LocalIFrames(7), ScaleExact(1.5f)) },
                 { ProjectileID.ChlorophyteChainsaw, standardChainsawTweaks },
                 { ProjectileID.ChlorophyteDrill, standardDrillTweaks },
+                { ProjectileID.ChlorophyteJackhammer, standardDrillTweaks },
                 { ProjectileID.ChlorophyteOrb, Do(NoPiercing) },
                 { ProjectileID.CobaltChainsaw, standardChainsawTweaks },
                 { ProjectileID.CobaltDrill, standardDrillTweaks },
@@ -217,7 +218,6 @@ namespace CalamityMod.Projectiles
                 #endregion
 
                 #region CATEGORY 3: True Melee support
-                { ProjectileID.ChlorophyteJackhammer, trueMeleeNoSpeed },
                 { ProjectileID.CopperShortswordStab, trueMelee },
                 { ProjectileID.DarkLance, trueMelee },
                 { ProjectileID.GoldShortswordStab, trueMelee },
@@ -459,7 +459,6 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.NettleBurstLeft, defaultIFrames },
                 { ProjectileID.NettleBurstRight, defaultIFrames },
                 { ProjectileID.NightBeam, defaultIFrames },
-                { ProjectileID.NorthPoleSnowflake, defaultIFrames },
                 { ProjectileID.NorthPoleSpear, defaultIFrames },
                 { ProjectileID.NorthPoleWeapon, defaultIFrames },
                 { ProjectileID.NurseSyringeHeal, defaultIFrames },

@@ -202,7 +202,7 @@ namespace CalamityMod.Projectiles.Melee
             SoundEngine.PlaySound(fire2 with { Volume = 0.55f, Pitch = 0.6f }, Projectile.Center);
 
             Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
-            target.MoveNPC(launchVel, 17, true);
+            target.MoveNPC(launchVel, 17, true, Owner);
 
             for (int i = 0; i < MathHelper.Clamp(10 - Projectile.numHits * 2, 2, 10); i++)
             {

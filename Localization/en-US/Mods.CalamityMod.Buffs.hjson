@@ -1073,7 +1073,7 @@ Bane: {
 	Description: An ancient curse envelops you
 	ItemTooltipEnemy:
 		'''
-		Typeless - 45 DPS
+		Typeless - 20 DPS
 		Does not scale with debuff multipliers
 		Scales based on your critical strike chance
 		'''
@@ -1129,12 +1129,6 @@ GalvanicCorrosion: {
 	DisplayName: Galvanic Corrosion
 	Description: Your limbs have begun to corrode
 	ItemTooltipEnemy: Slows enemies
-}
-
-GlacialState: {
-	DisplayName: Glacial State
-	Description: Cannot move
-	ItemTooltipEnemy: Freezes enemies
 }
 
 IcarusFolly: {
@@ -1214,7 +1208,7 @@ WitherDebuff: {
 		Withered...
 		Defense decreased by {0}
 		'''
-	ItemTooltipPlayer: Decreases defense
+	ItemTooltipEnemy: Decreases defense
 }
 
 // Summons
@@ -1796,4 +1790,9 @@ SmashedEvil: {
 		10% increased damage
 		20% increased movement speed
 		'''
+}
+
+VoidConcentrationSummonTagBuff: {
+	DisplayName: Void Concentration Summon Tag Buff
+	Description: You should never see this.
 }

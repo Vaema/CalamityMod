@@ -47,7 +47,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 for (int i = 0; i < Main.maxNPCs; i++)
                 {
                     NPC target = Main.npc[i];
-                    if (target != null && target.CanBeMoved(true) && Collision.CanHit(Projectile.Center, 1, 1, target.Center, 1, 1) && Vector2.Distance(target.Center, Projectile.Center) < 650)
+                    if (target != null && target.CanBeMoved() && Collision.CanHit(Projectile.Center, 1, 1, target.Center, 1, 1) && Vector2.Distance(target.Center, Projectile.Center) < 650)
                     {
                         Vector2 moveDir = target.Center.DirectionTo(Projectile.Center).SafeNormalize(Vector2.UnitX);
                         target.velocity = moveDir;
@@ -67,7 +67,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 for (int i = 0; i < Main.maxNPCs; i++)
                 {
                     NPC target = Main.npc[i];
-                    if (target != null && target.CanBeMoved(true) && Collision.CanHit(Projectile.Center, 1, 1, target.Center, 1, 1))
+                    if (target != null && target.CanBeMoved() && Collision.CanHit(Projectile.Center, 1, 1, target.Center, 1, 1))
                     {
                         if (Vector2.Distance(target.Center, Projectile.Center) > 15 && Vector2.Distance(target.Center, Projectile.Center) < 300)
                         {

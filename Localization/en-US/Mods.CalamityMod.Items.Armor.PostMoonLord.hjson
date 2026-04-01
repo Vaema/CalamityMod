@@ -168,7 +168,6 @@ BloodflareBodyArmor: {
 	Tooltip: "{$CommonItemTooltip.PercentIncreasedDamage} and {$CommonItemTooltip.PercentIncreasedCritChance@1}"
 	CommonSetBonus:
 		'''
-		{$Mods.CalamityMod.Vanilla.Armor.SetBonus.Crimson}
 		Enemies below 50% life drop a heart when struck
 		This effect has a 5 second cooldown
 		'''
@@ -243,6 +242,7 @@ BloodflareHeadRogue: {
 		'''
 		{$Common.RogueDamage} and {$Common.RogueCrit@1}
 		{$CommonItemTooltip.PercentIncreasedMovementSpeed@2}
+		Increases regeneration by {3} HP/s
 		'''
 	SetBonus:
 		'''
@@ -252,7 +252,6 @@ BloodflareHeadRogue: {
 	SetBonusEffect:
 		'''
 		Grants {0} defense when above {1}% life
-		Rogue critical strikes have lifesteal
 		{$BloodflareBodyArmor.CommonSetBonus}
 		'''
 }

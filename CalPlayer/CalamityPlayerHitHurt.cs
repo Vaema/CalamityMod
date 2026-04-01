@@ -41,6 +41,7 @@ using CalamityMod.NPCs.Providence;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
@@ -790,10 +791,6 @@ namespace CalamityMod.CalPlayer
             // The amount of damage that will be dealt is yet to be determined.
             //
 
-            // Can't have any cooldowns here because dodges grrrrr....
-            if (fleshTotem && !Player.HasCooldown(Cooldowns.FleshTotem.ID) && TotalEnergyShielding <= 0)
-                modifiers.FinalDamage *= 0.5f;
-
             if (tarragonCloak && tarraMelee && !Player.HasCooldown(Cooldowns.TarragonCloak.ID))
                 modifiers.FinalDamage *= (1f - TarragonHeadMelee.CloakContactDamageReduction);
 
@@ -1083,10 +1080,9 @@ namespace CalamityMod.CalPlayer
             if (!hasIFrames && !Player.creativeGodMode)
                 nextHitDealsDefenseDamage |= npc.Calamity().canBreakPlayerDefense;
 
-            // ModifyHit (Flesh Totem effect happens here) -> Hurt (includes dodges) -> OnHit
+            // ModifyHit -> Hurt (includes dodges) -> OnHit
             // As such, to avoid cooldowns proccing from dodge hits, do it here
-            if (fleshTotem && !Player.HasCooldown(Cooldowns.FleshTotem.ID) && hurtInfo.Damage > 0)
-                Player.AddCooldown(Cooldowns.FleshTotem.ID, CalamityUtils.SecondsToFrames(20));
+
 
             if (NPC.AnyNPCs(ModContent.NPCType<THELORDE>()))
                 Player.AddBuff(ModContent.BuffType<NOU>(), 15, true);
@@ -2326,9 +2322,34 @@ namespace CalamityMod.CalPlayer
                             if (duration > 120)
                                 duration = 120;
 
-                            npc.AddBuff(ModContent.BuffType<GlacialState>(), (int)duration, false);
+                            npc.AddBuff(BuffID.Frozen, (int)duration, false);
                         }
                     }
+                }
+
+                if (fleshTotem && hurtInfo.Damage > 0)
+                {
+                    SoundStyle Counter = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Shield_Down");
+                    if (fleshTotemManaStorage >= 100 && fleshTotemVisual)
+                        SoundEngine.PlaySound(Counter with { Volume = 0.75f}, Player.Center);
+                    int lostSoulAmount = fleshTotemManaStorage / 25;
+                    if (Player.ownedProjectileCounts[ModContent.ProjectileType<FleshTotemMinion>()] != 0)
+                    {
+                        for (int i = 0; i < Main.maxProjectiles; i++)
+                        {
+                            Projectile proj = Main.projectile[i];
+                            if (proj.active && proj.owner == Player.whoAmI && proj.type == ModContent.ProjectileType<FleshTotemMinion>())
+                            {
+                                for (int k = 0; k < lostSoulAmount; k++)
+                                {
+                                    Projectile.NewProjectile(Player.GetSource_Accessory_OnHurt(FindAccessory<FleshTotem>(), hurtInfo.DamageSource), proj.Center, new Vector2(10, 10).RotatedByRandom(100) * Main.rand.NextFloat(0.4f, 0.55f), ModContent.ProjectileType<FleshTotemSoul>(), FleshTotem.lostSoulDamage, 0f, Main.myPlayer, 0f, 0f, 3f);
+                                }
+                                break;
+                            }
+                        }
+                    }
+
+                    fleshTotemManaStorage = 0;
                 }
 
                 // By setting brainOfConfusionItem, these accessories have this code already,

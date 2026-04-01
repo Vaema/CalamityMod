@@ -23,7 +23,7 @@ AddedTooltip: {
 	FairyBoots:
 		'''
 		Fairies can spawn at any time on the surface and spawn far more frequently
-		Nearby fairies grant +2 HP/s life regen, 6 defense and 10% movement speed
+		Nearby fairies grant +1 HP/s life regen, 4 defense and 10% movement speed
 		Fairies are immune to damage and will no longer flee
 		'''
 	FleshKnucklesLine: Max life increased by 25
@@ -142,11 +142,7 @@ EditedTooltip: {
 	/*
 	OOA armors
 	*/
-	ApprenticeHat: Increases your max number of sentries by 1, 10% reduced mana cost
-	ApprenticeRobe: 15% increased summon damage and magic damage
-	ApprenticeTrousers: 10% increased summon damage, 15% increased magic critical strike chance, 20% increased movement speed
 	SquireGreatHelm: Increases your max number of sentries by 1 and grants +2 HP/s life regen
-	SquireGreaves: 10% increased summon damage, 15% increased melee critical strike chance and movement speed
 	MonkBrows: Increases your max number of sentries by 1 and increases rogue velocity by 20%
 	MonkShirt: 20% increased summon and rogue damage
 	MonkPants: 15% increased rogue critical strike chance and 20% increased movement speed
