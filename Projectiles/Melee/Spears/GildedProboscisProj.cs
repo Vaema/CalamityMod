@@ -90,7 +90,10 @@ namespace CalamityMod.Projectiles.Melee.Spears
                 else
                 {
                     if (timer == StartupTime - 1)
-                        Projectile.damage = (int)(Projectile.damage * 0.75 * (channelCharge / 75f)); //scales from 0x to 3x power
+                    {
+                        Projectile.originalDamage = (int)(Projectile.originalDamage * 0.75 * (channelCharge / 75f)); //scales from 0x to 3x power
+                        Projectile.damage = (int)(Projectile.damage * 0.75 * (channelCharge / 75f)); //Both are needed 
+                    }
                 }
                 //Make the sprite rotation look right in game
                 Projectile.rotation -= (MathHelper.PiOver2) * (angle.X > 0 ? 1 : -1);
@@ -261,8 +264,8 @@ namespace CalamityMod.Projectiles.Melee.Spears
         {
             target.AddBuff(ModContent.BuffType<VermillionFlux>(), 900);
             Main.player[Projectile.owner].SpawnLifeStealProjectile(target, Projectile, ProjectileID.VampireHeal, (int)Math.Round(hit.Damage * 0.0015), 0.5f);
-            if (Projectile.damage > 1)
-                Projectile.damage = (int)(Projectile.damage * 0.925f);
+            Projectile.originalDamage = (int)(Projectile.originalDamage * 0.925f);
+            Projectile.damage = (int)(Projectile.damage * 0.925f); //Both are needed as it doesn't recalculate till next frame
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {

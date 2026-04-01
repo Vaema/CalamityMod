@@ -1,4 +1,5 @@
 ﻿using CalamityMod.DataStructures;
+using CalamityMod.Projectiles.Summon;
 using CalamityMod.Systems.Collections;
 using Terraria;
 using Terraria.ModLoader;
@@ -17,8 +18,17 @@ namespace CalamityMod.Buffs.DamageOverTime
         public static float ViridVanguardPoisonMultiplier => 2;
         public static void SagePoisonPower(NPC npc, int buffType, ref int buffIndex, ref int damage)
         {
-            // The base DoT is multiplied by the amount of Viral Sprouts you have when applied
-            // See SageNeedle.cs for details
+            int viralCount = 0;
+            int viridCount = 0;
+            foreach (var item in Main.ActiveProjectiles)
+            {
+                if (item.type == ModContent.ProjectileType<SageSpirit>())
+                    viralCount++;
+                if (item.type == ModContent.ProjectileType<ViridVanguardBlade>())
+                    viridCount++;
+            }
+            if ((viralCount + viridCount) <= 0)
+                return;
 
             //Reduce power of weakness/resistances but leave sickness debuff boosters at full power
             //We first need to apply Irradiated as that isn't included in SicknessDebuffMultiplier due to needing to dynamically update if Irradiated is applied
@@ -39,8 +49,9 @@ namespace CalamityMod.Buffs.DamageOverTime
                     multiplier *= NewResistanceEffectiveness;
 
             //Apply the DOT
-            int baseSagePoisonDoTValue = (int)multiplier.ApplyTo(npc.Calamity().sagePoisonDamage);
-            npc.Calamity().ApplyDPSDebuff(baseSagePoisonDoTValue, baseSagePoisonDoTValue / 5, ref npc.lifeRegen, ref damage);
+            float SagePoisonRegen = (viralCount + ViridVanguardPoisonMultiplier * viridCount) * debuffData.EnemyLostRegen;
+            int totalDoT = (int)multiplier.ApplyTo(SagePoisonRegen);
+            npc.Calamity().ApplyDPSDebuff(totalDoT, totalDoT/(2*(viridCount+viralCount)), ref npc.lifeRegen, ref damage);
         }
         public override void SetStaticDefaults()
         {
