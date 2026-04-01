@@ -78,11 +78,11 @@ namespace CalamityMod.Items.Accessories
 
                 // If the NPC can be moved, violently shove them away. Make them susceptible to fall damage on empowered parries.
                 // Otherwise, simply deal a large amount of damage to them if empowered.
-                if (npc.CanBeMoved(true))
+                if (npc.CanBeMoved())
                 {
                     // The NPC has to actually have its velocity changed, because TileCollisionHarmNPC only changes its position. Not confusing at all!
                     Vector2 shoveVelocity = Utils.DirectionTo(player.Center, npc.Center) * (Main.zenithWorld ? 35f : 12.5f) - Vector2.UnitY * 6f;
-                    npc.MoveNPC(Vector2.Normalize(shoveVelocity), shoveVelocity.Length(), true);
+                    npc.MoveNPC(Vector2.Normalize(shoveVelocity), shoveVelocity.Length(), true, player);
 
                     int scaledFallDamage = CalamityUtils.ScaleWithDifficulty(ShoveFallBaseDamage);
                     var flungNPC = npc.GetGlobalNPC<CalamityTileCollisionHarmNPC>();

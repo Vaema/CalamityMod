@@ -107,7 +107,7 @@ namespace CalamityMod.Projectiles.Rogue
                     for (int i = 0; i < Main.maxNPCs; i++)
                     {
                         NPC target = Main.npc[i];
-                        if (target != null && target.active && target.CanBeMoved(true) && Collision.CanHit(Projectile.Center, 1, 1, target.Center, 1, 1) && Vector2.Distance(target.Center, Projectile.Center) < maxPullDistance)
+                        if (target != null && target.active && target.CanBeMoved() && Collision.CanHit(Projectile.Center, 1, 1, target.Center, 1, 1) && Vector2.Distance(target.Center, Projectile.Center) < maxPullDistance)
                         {
                             if (target.whoAmI == stuckNPC)
                                 continue;

@@ -39,7 +39,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             Vector2 launchVel = Projectile.Center.DirectionTo(target.Center);
             float launchPower = 20;
-            target.MoveNPC(launchVel, launchPower, true);
+            target.MoveNPC(launchVel, launchPower, true, Owner);
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 450, targetHitbox);
     }

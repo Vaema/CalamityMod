@@ -111,7 +111,7 @@ namespace CalamityMod.Projectiles.Typeless
 
             Vector2 launchVel = Utils.DirectionTo(Projectile.Center, target.Center) - Vector2.UnitY;
             float launchPower = 6;
-            target.MoveNPC(launchVel, launchPower, true);
+            target.MoveNPC(launchVel, launchPower, true, Owner);
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, Projectile.width * 0.5f * Projectile.scale, targetHitbox);
         public override bool? CanDamage()

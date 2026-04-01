@@ -878,7 +878,7 @@ MonolithSword: {
 
 MonstrousKnives: {
 	DisplayName: Monstrous Knives
-	Tooltip: Throws a spread of short-range knives that have a chance to heal the user
+	Tooltip: Throws a spread of short-range knives that heal the user
 }
 
 Mourningstar: {

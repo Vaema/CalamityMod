@@ -64,15 +64,21 @@ namespace CalamityMod.Projectiles.Typeless
             {
                 target.AddBuff((int)(Projectile.localAI[2]), (int)(Projectile.localAI[1]));
             }
-            pushVelocity = Utils.DirectionTo(Projectile.Center, target.Center) * customKnockback;
+            pushVelocity = Utils.DirectionTo(Projectile.Center, target.Center);
             float minMult = Projectile.ai[1];
             int hitsToMinMult = (int)Projectile.ai[2];
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
             modifiers.SourceDamage *= damageMult;
 
-            if (customKnockback != 0 && target.CanBeMoved(hasStongDisplacement))
+            if (customKnockback != 0)
+                target.MoveNPC(pushVelocity, customKnockback, hasStongDisplacement, Main.player[Projectile.owner]);
+
+            if (Projectile.owner != -1)
             {
-                target.velocity = (pushVelocity * (target.knockBackResist == 0 ? 0.5f : 1));
+                Player Owner = Main.player[Projectile.owner];
+                bool crit = Main.rand.Next(0, 100 + 1) < Owner.GetTotalCritChance(Projectile.DamageType);
+                if (crit)
+                    modifiers.SetCrit();
             }
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
