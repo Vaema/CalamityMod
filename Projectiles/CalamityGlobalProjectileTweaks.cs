@@ -143,7 +143,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.DeadlySphere, Do(LocalIFrames(30)) },
                 { ProjectileID.EmeraldBolt, Do(NoPiercing) },
                 { ProjectileID.EnchantedBoomerang, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
-                { ProjectileID.ExplosiveBullet, Do(ExtraUpdatesDelta(+2), IDStaticIFrames(5)) }, // Has an exception in Vanilla iframe code, uses 5 iframes
+                { ProjectileID.ExplosiveBullet, Do(ExtraUpdatesDelta(+2), IDStaticIFrames(5), SingleHitImmunity) }, // Has an exception in Vanilla iframe code, uses 5 iframes
                 { ProjectileID.FairyQueenRangedItemShot, Do(PiercingExact(7), ExtraUpdatesExact(1))  }, // Eventide Convert
                 { ProjectileID.FlaironBubble, Do(ExtraUpdatesExact(1), TimeLeftExact(150), DefaultIDStaticIFrames) },
                 { ProjectileID.Flamarang, Do(ExtraUpdatesExact(2), DefaultIDStaticIFrames) },
