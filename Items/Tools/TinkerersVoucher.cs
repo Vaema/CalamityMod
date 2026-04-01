@@ -188,8 +188,8 @@ namespace CalamityMod.Items.Tools
 
         public override void SetDefaults()
         {
-            Item.width = 24;
-            Item.height = 28;
+            Item.width = 36;
+            Item.height = 20;
             Item.rare = ItemRarityID.Green;
             Item.value = 0;
         }
@@ -243,8 +243,8 @@ namespace CalamityMod.Items.Tools
 
         public override void SetDefaults()
         {
-            Item.width = 24;
-            Item.height = 28;
+            Item.width = 36;
+            Item.height = 20;
             Item.rare = ItemRarityID.Green;
             Item.value = 0;
         }
@@ -271,8 +271,8 @@ namespace CalamityMod.Items.Tools
 
         public override void SetDefaults()
         {
-            Item.width = 24;
-            Item.height = 28;
+            Item.width = 36;
+            Item.height = 20;
             Item.rare = ItemRarityID.Green;
             Item.value = 0;
         }
@@ -297,8 +297,8 @@ namespace CalamityMod.Items.Tools
 
         public override void SetDefaults()
         {
-            Item.width = 24;
-            Item.height = 28;
+            Item.width = 36;
+            Item.height = 20;
             Item.rare = ItemRarityID.Green;
             Item.value = 0;
         }
@@ -325,8 +325,8 @@ namespace CalamityMod.Items.Tools
 
         public override void SetDefaults()
         {
-            Item.width = 24;
-            Item.height = 28;
+            Item.width = 36;
+            Item.height = 20;
             Item.rare = ItemRarityID.Green;
             Item.value = 0;
         }
