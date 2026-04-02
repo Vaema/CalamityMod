@@ -83,7 +83,7 @@ namespace CalamityMod.Items.Placeables.Furniture.Paintings
             "_tofu",
             "Tomat",
             "Triangle",
-            "TYESKI (Universe)",
+            "TYESKI",
             "Xyk",
             "YuH",
             // Former devs
