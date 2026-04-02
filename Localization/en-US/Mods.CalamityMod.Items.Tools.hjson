@@ -390,7 +390,7 @@ WulfrumDiggingTurtle: {
 
 WulfrumDrill: {
 	DisplayName: Wulfrum Drill
-	Tooltip: ""
+	Tooltip: {$Common.ArmorPenetration}
 }
 
 WulfrumScaffoldKit: {
