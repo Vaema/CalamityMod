@@ -202,6 +202,7 @@ CoralSpout: {
 		'''
 		Casts a shotgun-like blast of coral shards
 		Keep the attack button held down to narrow the spread
+		Coral shards ignore 5 points of enemy defense
 		Fully charging the attack releases a single, bigger chunk of coral that sticks to enemies
 		Grabbing the chunk of coral after it falls from the enemy replenishes 150 mana
 		The mana-charged coral also provides the [cbuffplr:CalamityMod/CoralSymbiosis] buff

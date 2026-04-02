@@ -61,7 +61,7 @@ namespace CalamityMod.Systems.Collections
                 BuffID.Silenced, BuffID.BrokenArmor, BuffID.CursedInferno, BuffID.Frostburn, BuffID.Chilled, BuffID.Frozen, BuffID.Burning, BuffID.Suffocation, BuffID.Ichor,
                 BuffID.Venom, BuffID.Blackout, BuffID.Electrified, BuffID.Rabies, BuffID.Webbed, BuffID.Stoned, BuffID.Dazed, BuffID.VortexDebuff, BuffID.WitheredArmor, BuffID.WitheredWeapon, BuffID.ShadowFlame,
                 BuffID.OgreSpit, BuffID.BetsysCurse, BuffID.Wet, BuffID.Slimed, BuffID.OnFire3, BuffID.Frostburn2, BuffType<SulphuricPoisoning>(), BuffType<Shadowflame>(), BuffType<Daybroken>(), BuffType<BrimstoneFlames>(), BuffType<BurningBlood>(),
-                BuffType<BrainRot>(), BuffType<ElementalMix>(), BuffType<GlacialState>(), BuffType<GodSlayerInferno>(), BuffType<AstralInfectionDebuff>(), BuffType<HolyFlames>(),
+                BuffType<BrainRot>(), BuffType<ElementalMix>(), BuffType<GodSlayerInferno>(), BuffType<AstralInfectionDebuff>(), BuffType<HolyFlames>(),
                 BuffType<Irradiated>(), BuffType<Plague>(), BuffType<CrushDepth>(), BuffType<HadopelagicPressure>(), BuffType<RiptideDebuff>(), BuffType<MarkedforDeath>(),
                 BuffType<HeavyBleeding>(), BuffType<Laceration>(), BuffType<AbsorberAffliction>(), BuffType<ArmorCrunch>(), BuffType<Crumbling>(), BuffType<Vaporfied>(), BuffType<Eutrophication>(),
                 BuffType<Dragonfire>(), BuffType<VermillionFlux>(), BuffType<AuricRebuke>(), BuffType<StaticDischarge>(), BuffType<Nightwither>(), BuffType<Voidfrost>(),

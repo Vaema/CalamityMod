@@ -26,8 +26,6 @@ namespace CalamityMod.Buffs.StatDebuffs
         public override void Update(NPC npc, ref int buffIndex)
         {
             npc.Calamity().galvanicCorrosion = true;
-            if ((CalamityNPCSets.ResistSlowingDebuffsAndOtherSpecialEffects[npc.type] || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
-                npc.Calamity().debuffResistanceTimer = CalamityGlobalNPC.slowingDebuffResistanceMin + npc.buffTime[buffIndex];
         }
 
         public override void Update(Player player, ref int buffIndex)

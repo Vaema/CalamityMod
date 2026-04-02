@@ -305,7 +305,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // First Frame dash effects
-            bool dashStart = (Player.dashDelay == -1 && ((!HasCustomDash && IsFirstDashFrame) || (HasCustomDash && UsedDash.DashTimeAdjustedForStartup == 1)));
+            bool dashStart = (Player.Calamity().DashID == DefaultDash.ID && Player.timeSinceLastDashStarted == 1 && Player.dashDelay != 0 ) || (Player.dashDelay == -1 && ((!HasCustomDash && IsFirstDashFrame) || (HasCustomDash && UsedDash.DashTimeAdjustedForStartup == 1)));
             int dir = MathF.Sign(Player.velocity.X);
 
             if (dashStart)
@@ -553,7 +553,7 @@ namespace CalamityMod.CalPlayer
                 // Spawn sand veil when dashing if it does not exist and you do not have the cooldown
                 if (!(CalamityUtils.AnyProjectiles(ModContent.ProjectileType<SandCloakVeil>()) || Player.HasCooldown(Cooldowns.SandCloak.ID)))
                 {
-                    Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ModContent.ProjectileType<SandCloakVeil>(), 13, 2.5f, Player.whoAmI);
+                    Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ModContent.ProjectileType<SandCloakVeil>(), 10, 2.5f, Player.whoAmI);
                     SoundEngine.PlaySound(SoundID.Item45, Player.Center);
                 }
             }
@@ -1853,7 +1853,7 @@ namespace CalamityMod.CalPlayer
                 {
                     if (numOfEnergy < energyCap)
                     {
-                        int energyDamage = (int)Player.GetBestClassDamage().ApplyTo(8);
+                        int energyDamage = (int)Player.GetBestClassDamage().ApplyTo(12);
                         Projectile energy = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, (Vector2.One * 4).RotatedByRandom(MathHelper.TwoPi), ModContent.ProjectileType<AmuletEnergy>(), energyDamage, 0f, Player.whoAmI, 0, numOfEnergy);
                         if (numOfEnergy + 1 == energyCap && Player.Calamity().sSpiritAmuletVisual)
                         {
@@ -2029,6 +2029,42 @@ namespace CalamityMod.CalPlayer
                 hookPullVisuals--;
                 if (Player.velocity.Length() < 6)
                     hookPullVisuals = 0;
+            }
+            if (featherCrown)
+            {
+                int MaxSigils = 4; //Starts at 0, so cap is 5
+                if (mageCrownTimer == 0)
+                {
+                    if (mageCrownCount <= MaxSigils && Main.myPlayer == Player.whoAmI)
+                    {
+                        mageCrownCount += 1;
+                        float start = 360f / mageCrownCount;
+                        Projectile.NewProjectile(Player.GetSource_Accessory(FindAccessory<FeatherCrown>()), new Vector2((int)(Player.Center.X + (Math.Sin(0 * start) * 300)), (int)(Player.Center.Y + (Math.Cos(0 * start) * 300))), Vector2.Zero, ModContent.ProjectileType<SpectralFeather>(), 0, 0, Player.whoAmI, 0, mageCrownCount);
+                    }
+                    mageCrownTimer = 120;
+                }
+                else if (!Player.dead)
+                {
+                    mageCrownTimer--;
+                }
+            }
+            if (moonCrown)
+            {
+                int MaxSigils = 9; //Starts at 0, so cap is 10
+                if (mageCrownTimer == 0)
+                {
+                    if (mageCrownCount <= MaxSigils && Main.myPlayer == Player.whoAmI)
+                    {
+                        mageCrownCount += 1;
+                        float start = 360f / mageCrownCount;
+                        Projectile.NewProjectile(Player.GetSource_Accessory(FindAccessory<MoonstoneCrown>()), new Vector2((int)(Player.Center.X + (Math.Sin(0 * start) * 300)), (int)(Player.Center.Y + (Math.Cos(0 * start) * 300))), Vector2.Zero, ModContent.ProjectileType<MoonSigil>(), 0, 0, Player.whoAmI, 0, mageCrownCount);
+                    }
+                    mageCrownTimer = 120;
+                }
+                else if (!Player.dead)
+                {
+                    mageCrownTimer--;
+                }
             }
 
             if (unstableGraniteCore)
@@ -2218,8 +2254,8 @@ namespace CalamityMod.CalPlayer
                 silvaMageCooldown--;
             if (scuttlerCooldown > 0)
                 scuttlerCooldown--;
-            if (rogueCrownCooldown > 0)
-                rogueCrownCooldown--;
+            if (nanotechHitCooldown > 0)
+                nanotechHitCooldown--;
             if (spectralVeilImmunity > 0)
                 spectralVeilImmunity--;
             if (jetPackDash > 0)
@@ -2767,10 +2803,10 @@ namespace CalamityMod.CalPlayer
                 Player.buffImmune[BuffID.Chilled] = true;
             }
 
-            // Cosmic Discharge Cosmic Freeze buff, gives surrounding enemies the Glacial State debuff
+            // Cosmic Discharge Cosmic Freeze buff, gives surrounding enemies the Frozen debuff
             if (cFreeze)
             {
-                int buffType = ModContent.BuffType<GlacialState>();
+                int buffType = BuffID.Frozen;
                 float freezeDist = 200f;
                 if (Player.whoAmI == Main.myPlayer)
                 {

@@ -4095,20 +4095,6 @@ namespace CalamityMod.Projectiles
                                 }
                             }
                         }
-                        else if (modPlayer.moonCrown)
-                        {
-                            if (Main.player[projectile.owner].miscCounter % 120 == 0 && projectile.FinalExtraUpdate())
-                            {
-                                if (projectile.owner == Main.myPlayer && player.ownedProjectileCounts[ProjectileType<MoonSigil>()] < 5)
-                                {
-                                    int damage = (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(42);
-
-                                    int proj = Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, ProjectileType<MoonSigil>(), damage, 0f, projectile.owner);
-                                    if (proj.WithinBounds(Main.maxProjectiles))
-                                        Main.projectile[proj].DamageType = DamageClass.Generic;
-                                }
-                            }
-                        }
 
                         if (modPlayer.dragonScales)
                         {
@@ -4318,153 +4304,149 @@ namespace CalamityMod.Projectiles
                     }
                 }
 
-                if (brimstoneBullets)
+                if (projectile.Opacity > 0 && projectile.scale > 0.01f) // Only apply bullet visuals if the bullet is visible
                 {
-                    PointParticle spark = new PointParticle(projectile.Center + projectile.velocity * 3, projectile.velocity, false, 2, 0.9f, Color.Crimson * 0.7f);
-                    GeneralParticleHandler.SpawnParticle(spark);
+                    if (brimstoneBullets)
+                    {
+                        PointParticle spark = new PointParticle(projectile.Center + projectile.velocity * 3, projectile.velocity, false, 2, 0.9f * projectile.scale, Color.Crimson * 0.7f);
+                        GeneralParticleHandler.SpawnParticle(spark);
 
-                    Dust dust = Dust.NewDustPerfect(projectile.Center - projectile.velocity, Main.rand.NextBool(3) ? 90 : DustType<BrimstoneFlame>(), projectile.velocity * Main.rand.NextFloat(0.05f, 0.9f));
-                    dust.noGravity = true;
-                    dust.scale = Main.rand.NextFloat(0.5f, 1f);
-                }
-                if (fireBullet)
-                {
-                    if (projectile.timeLeft > 200)
+                        Dust dust = Dust.NewDustPerfect(projectile.Center - projectile.velocity, Main.rand.NextBool(3) ? 90 : DustType<BrimstoneFlame>(), projectile.velocity * Main.rand.NextFloat(0.05f, 0.9f));
+                        dust.noGravity = true;
+                        dust.scale = Main.rand.NextFloat(0.5f, 1f) * projectile.scale;
+                    }
+                    if (fireBullet)
                     {
                         float helixOffset = (float)Math.Sin(projectile.timeLeft / 25f * MathHelper.TwoPi) * 8f;
-                        Vector2 spawnOffset = new Vector2(helixOffset, 10f).RotatedBy(projectile.rotation);
+                        Vector2 spawnOffset = new Vector2(helixOffset, 10f).RotatedBy(projectile.rotation) * projectile.scale;
 
                         for (int i = 0; i < 2; ++i)
                         {
                             Dust dust = Dust.NewDustPerfect(projectile.Center + spawnOffset, Main.rand.NextBool() ? 174 : 6, projectile.velocity * Main.rand.NextFloat(0.1f, 0.9f));
                             dust.noGravity = true;
-                            dust.scale = Main.rand.NextFloat(0.4f, 0.8f);
+                            dust.scale = Main.rand.NextFloat(0.4f, 0.8f) * projectile.scale;
                         }
                     }
-                }
-                if (iceBullet)
-                {
-                    if (projectile.timeLeft > 200)
+                    if (iceBullet)
                     {
                         float helixOffset = (float)Math.Sin(projectile.timeLeft / 25f * MathHelper.TwoPi) * -8f;
-                        Vector2 spawnOffset = new Vector2(helixOffset, 10f).RotatedBy(projectile.rotation);
+                        Vector2 spawnOffset = new Vector2(helixOffset, 10f).RotatedBy(projectile.rotation) * projectile.scale;
 
                         for (int i = 0; i < 2; ++i)
                         {
                             Dust dust = Dust.NewDustPerfect(projectile.Center + spawnOffset, Main.rand.NextBool() ? 135 : 137, projectile.velocity * Main.rand.NextFloat(0.1f, 0.9f));
                             dust.noGravity = true;
-                            dust.scale = Main.rand.NextFloat(0.4f, 0.8f);
+                            dust.scale = Main.rand.NextFloat(0.4f, 0.8f) * projectile.scale;
                         }
                     }
-                }
-                if (shockBullet)
-                {
-                    float targetDist = Vector2.Distance(player.Center, projectile.Center);
-                    if (projectile.timeLeft > 200 && targetDist < 1400f)
+                    if (shockBullet)
                     {
-                        SparkParticle spark = new SparkParticle(projectile.Center + projectile.velocity, -projectile.velocity * 0.05f, false, 2, 1.1f, Color.Turquoise * 0.75f);
-                        GeneralParticleHandler.SpawnParticle(spark);
-                        if (Main.rand.NextBool(3))
+                        float targetDist = Vector2.Distance(player.Center, projectile.Center);
+                        if (targetDist < 1400f)
                         {
-                            SparkParticle spark2 = new SparkParticle(projectile.Center + Main.rand.NextVector2Circular(6, 6), -projectile.velocity * Main.rand.NextFloat(0.05f, 0.4f), false, 20, 0.4f, Color.Turquoise * 0.75f);
-                            GeneralParticleHandler.SpawnParticle(spark2);
+                            SparkParticle spark = new SparkParticle(projectile.Center + projectile.velocity, -projectile.velocity * 0.05f, false, 2, 1.1f * projectile.scale, Color.Turquoise * 0.75f);
+                            GeneralParticleHandler.SpawnParticle(spark);
+                            if (Main.rand.NextBool(3))
+                            {
+                                SparkParticle spark2 = new SparkParticle(projectile.Center + Main.rand.NextVector2Circular(6, 6) * projectile.scale, -projectile.velocity * Main.rand.NextFloat(0.05f, 0.4f), false, 20, 0.4f * projectile.scale, Color.Turquoise * 0.75f);
+                                GeneralParticleHandler.SpawnParticle(spark2);
+                            }
                         }
                     }
-                }
-                if ((pearlBullet1 || pearlBullet2 || pearlBullet3))
-                {
-                    float targetDist = Vector2.Distance(player.Center, projectile.Center);
-                    if (projectile.timeLeft > 200 && targetDist < 1400f)
+                    if ((pearlBullet1 || pearlBullet2 || pearlBullet3))
                     {
-                        Color color = pearlBullet1 ? Color.LightBlue : pearlBullet2 ? Color.LightPink : Color.Khaki;
-                        Particle spark = new GlowSparkParticle(projectile.Center + projectile.velocity * 1.5f, -projectile.velocity * 0.05f, false, 3, 0.0093f, color, new Vector2(0.6f, 1.8f), false, false);
-                        GeneralParticleHandler.SpawnParticle(spark);
-                        if (Main.rand.NextBool(5))
+                        float targetDist = Vector2.Distance(player.Center, projectile.Center);
+                        if (targetDist < 1400f)
                         {
-                            PearlParticle pearl1 = new PearlParticle(projectile.Center + Main.rand.NextVector2Circular(6, 6), -projectile.velocity * Main.rand.NextFloat(0.05f, 0.3f), false, Main.rand.Next(15, 20 + 1), Main.rand.NextFloat(0.4f, 0.55f), color, 0.9f, Main.rand.NextFloat(1, -1), true);
-                            GeneralParticleHandler.SpawnParticle(pearl1);
+                            Color color = pearlBullet1 ? Color.LightBlue : pearlBullet2 ? Color.LightPink : Color.Khaki;
+                            Particle spark = new GlowSparkParticle(projectile.Center + projectile.velocity * 1.5f, -projectile.velocity * 0.05f, false, 3, 0.0093f * projectile.scale, color, new Vector2(0.6f, 1.8f), false, false);
+                            GeneralParticleHandler.SpawnParticle(spark);
+                            if (Main.rand.NextBool(5))
+                            {
+                                PearlParticle pearl1 = new PearlParticle(projectile.Center + Main.rand.NextVector2Circular(6, 6) * projectile.scale, -projectile.velocity * Main.rand.NextFloat(0.05f, 0.3f), false, Main.rand.Next(15, 20 + 1), Main.rand.NextFloat(0.4f, 0.55f) * projectile.scale, color, 0.9f, Main.rand.NextFloat(1, -1), true);
+                                GeneralParticleHandler.SpawnParticle(pearl1);
+                            }
                         }
                     }
-                }
-                if (lifeBullet)
-                {
-                    float targetDist = Vector2.Distance(player.Center, projectile.Center);
-                    if (projectile.timeLeft > 200 && targetDist < 1400f)
+                    if (lifeBullet)
                     {
-                        SparkParticle spark = new SparkParticle(projectile.Center + projectile.velocity, -projectile.velocity * 0.05f, false, 2, 0.85f, Color.White * 0.75f);
-                        GeneralParticleHandler.SpawnParticle(spark);
-
-                        for (int i = 0; i < 2; ++i)
+                        float targetDist = Vector2.Distance(player.Center, projectile.Center);
+                        if (targetDist < 1400f)
                         {
-                            Dust dust = Dust.NewDustPerfect(projectile.Center + projectile.velocity, DustID.AncientLight, -projectile.velocity * Main.rand.NextFloat(0.1f, 0.9f));
-                            dust.noGravity = true;
-                            dust.scale = Main.rand.NextFloat(0.65f, 0.9f);
-                            dust.alpha = 100;
+                            SparkParticle spark = new SparkParticle(projectile.Center + projectile.velocity, -projectile.velocity * 0.05f, false, 2, 0.85f * projectile.scale, Color.White * 0.75f);
+                            GeneralParticleHandler.SpawnParticle(spark);
+
+                            for (int i = 0; i < 2; ++i)
+                            {
+                                Dust dust = Dust.NewDustPerfect(projectile.Center + projectile.velocity, DustID.AncientLight, -projectile.velocity * Main.rand.NextFloat(0.1f, 0.9f));
+                                dust.noGravity = true;
+                                dust.scale = Main.rand.NextFloat(0.65f, 0.9f) * projectile.scale;
+                                dust.alpha = 100;
+                            }
+
                         }
-
                     }
-                }
-
-                #region betterLifeBullet
-                if (betterLifeBullet1)
-                {
-                    float targetDist = Vector2.Distance(player.Center, projectile.Center);
-                    if (projectile.timeLeft > 200 && targetDist < 1400f)
+                    #region betterLifeBullet
+                    if (betterLifeBullet1)
                     {
-                        int randomColor = Main.rand.Next(1, 3 + 1);
-                        Color color = randomColor == 1 ? Color.LightBlue : randomColor == 2 ? Color.LightPink : Color.Khaki;
-
-                        float helixOffset = (float)Math.Sin(projectile.timeLeft / 25f * MathHelper.TwoPi) * -8f;
-                        Vector2 spawnOffset = new Vector2(helixOffset, 10f).RotatedBy(projectile.rotation);
-
-                        for (int i = 0; i < 3; ++i)
+                        float targetDist = Vector2.Distance(player.Center, projectile.Center);
+                        if (targetDist < 1400f)
                         {
-                            Dust dust = Dust.NewDustPerfect(projectile.Center + spawnOffset, DustID.FireworksRGB, projectile.velocity * Main.rand.NextFloat(0.05f, 0.2f));
-                            dust.noGravity = true;
-                            dust.scale = Main.rand.NextFloat(0.35f, 0.45f);
-                            dust.color = color;
-                        }
+                            int randomColor = Main.rand.Next(1, 3 + 1);
+                            Color color = randomColor == 1 ? Color.LightBlue : randomColor == 2 ? Color.LightPink : Color.Khaki;
 
-                        SparkParticle spark = new SparkParticle(projectile.Center + projectile.velocity, projectile.velocity * 0.05f, false, 2, 0.85f, color);
-                        GeneralParticleHandler.SpawnParticle(spark);
+                            float helixOffset = (float)Math.Sin(projectile.timeLeft / 25f * MathHelper.TwoPi) * -8f;
+                            Vector2 spawnOffset = new Vector2(helixOffset, 10f).RotatedBy(projectile.rotation);
 
-                        if (Main.rand.NextBool(3))
-                        {
-                            SparkParticle spark3 = new SparkParticle(projectile.Center + Main.rand.NextVector2Circular(6, 6), -projectile.velocity * Main.rand.NextFloat(0.05f, 0.3f), false, 20, 0.55f, color * 0.5f);
-                            GeneralParticleHandler.SpawnParticle(spark3);
+                            for (int i = 0; i < 3; ++i)
+                            {
+                                Dust dust = Dust.NewDustPerfect(projectile.Center + spawnOffset, DustID.FireworksRGB, projectile.velocity * Main.rand.NextFloat(0.05f, 0.2f));
+                                dust.noGravity = true;
+                                dust.scale = Main.rand.NextFloat(0.35f, 0.45f) * projectile.scale;
+                                dust.color = color;
+                            }
+
+                            SparkParticle spark = new SparkParticle(projectile.Center + projectile.velocity, projectile.velocity * 0.05f, false, 2, 0.85f * projectile.scale, color);
+                            GeneralParticleHandler.SpawnParticle(spark);
+
+                            if (Main.rand.NextBool(3))
+                            {
+                                SparkParticle spark3 = new SparkParticle(projectile.Center + Main.rand.NextVector2Circular(6, 6) * projectile.scale, -projectile.velocity * Main.rand.NextFloat(0.05f, 0.3f), false, 20, 0.55f * projectile.scale, color * 0.5f);
+                                GeneralParticleHandler.SpawnParticle(spark3);
+                            }
                         }
                     }
-                }
-                if (betterLifeBullet2)
-                {
-                    float targetDist = Vector2.Distance(player.Center, projectile.Center);
-                    if (projectile.timeLeft > 200 && targetDist < 1400f)
+                    if (betterLifeBullet2)
                     {
-                        int randomColor = Main.rand.Next(1, 3 + 1);
-                        Color color = randomColor == 1 ? Color.LightBlue : randomColor == 2 ? Color.LightPink : Color.Khaki;
-
-                        float helixOffset = (float)Math.Sin(projectile.timeLeft / 25f * MathHelper.TwoPi) * 8f;
-                        Vector2 spawnOffset = new Vector2(helixOffset, 10f).RotatedBy(projectile.rotation);
-
-                        for (int i = 0; i < 3; ++i)
+                        float targetDist = Vector2.Distance(player.Center, projectile.Center);
+                        if (targetDist < 1400f)
                         {
-                            Dust dust = Dust.NewDustPerfect(projectile.Center + spawnOffset, DustID.FireworksRGB, projectile.velocity * Main.rand.NextFloat(0.05f, 0.2f));
-                            dust.noGravity = true;
-                            dust.scale = Main.rand.NextFloat(0.35f, 0.45f);
-                            dust.color = color;
-                        }
+                            int randomColor = Main.rand.Next(1, 3 + 1);
+                            Color color = randomColor == 1 ? Color.LightBlue : randomColor == 2 ? Color.LightPink : Color.Khaki;
 
-                        SparkParticle spark = new SparkParticle(projectile.Center + projectile.velocity, projectile.velocity * 0.05f, false, 2, 0.85f, color);
-                        GeneralParticleHandler.SpawnParticle(spark);
+                            float helixOffset = (float)Math.Sin(projectile.timeLeft / 25f * MathHelper.TwoPi) * 8f;
+                            Vector2 spawnOffset = new Vector2(helixOffset, 10f).RotatedBy(projectile.rotation) * projectile.scale;
 
-                        if (Main.rand.NextBool(3))
-                        {
-                            SparkParticle spark3 = new SparkParticle(projectile.Center + Main.rand.NextVector2Circular(6, 6), -projectile.velocity * Main.rand.NextFloat(0.05f, 0.3f), false, 20, 0.55f, color * 0.5f);
-                            GeneralParticleHandler.SpawnParticle(spark3);
+                            for (int i = 0; i < 3; ++i)
+                            {
+                                Dust dust = Dust.NewDustPerfect(projectile.Center + spawnOffset, DustID.FireworksRGB, projectile.velocity * Main.rand.NextFloat(0.05f, 0.2f));
+                                dust.noGravity = true;
+                                dust.scale = Main.rand.NextFloat(0.35f, 0.45f) * projectile.scale;
+                                dust.color = color;
+                            }
+
+                            SparkParticle spark = new SparkParticle(projectile.Center + projectile.velocity, projectile.velocity * 0.05f, false, 2, 0.85f * projectile.scale, color);
+                            GeneralParticleHandler.SpawnParticle(spark);
+
+                            if (Main.rand.NextBool(3))
+                            {
+                                SparkParticle spark3 = new SparkParticle(projectile.Center + Main.rand.NextVector2Circular(6, 6) * projectile.scale, -projectile.velocity * Main.rand.NextFloat(0.05f, 0.3f), false, 20, 0.55f * projectile.scale, color * 0.5f);
+                                GeneralParticleHandler.SpawnParticle(spark3);
+                            }
                         }
                     }
+                    #endregion
                 }
-                #endregion
             }
         }
         #endregion

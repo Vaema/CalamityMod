@@ -42,6 +42,9 @@ namespace CalamityMod.Rarities
                 ChatManager.DrawColorCodedString(spriteBatch, font, text, new Vector2(X, Y) + new Vector2(pulsing, 0f).RotatedBy(f + time * 2f % MathHelper.TwoPi), textColor * 0.5f, rotation, origin, baseScale);
             }
 
+            if (Item.expert)
+                textColor = Main.DiscoColor;
+
             textColor.A = 255;
 
             ChatManager.DrawColorCodedStringShadow(spriteBatch, font, text, new Vector2(X, Y), textColor * 2f, rotation, origin, baseScale);
