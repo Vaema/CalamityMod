@@ -2086,6 +2086,15 @@ VitalJelly: {
 	Tooltip: 12% increased movement and jump speed
 }
 
+VoidofCalamity: {
+	DisplayName: Void of Calamity
+	Tooltip:
+		'''
+		12% increased damage
+		Brimstone fire rains down after getting hit
+		'''
+}
+
 VoltaicJelly: {
 	DisplayName: Voltaic Jelly
 	Tooltip:

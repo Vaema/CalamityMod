@@ -1052,8 +1052,9 @@ namespace CalamityMod.NPCs.CalClone
 
                 // Equipment
                 // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
-                // normalOnly.Add(ModContent.ItemType<Regenerator>());
+                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<VoidofCalamity>()));
                 normalOnly.Add(ModContent.ItemType<ChaosStone>(), DropHelper.NormalWeaponDropRateFraction);
+                normalOnly.Add(ModContent.ItemType<Regenerator>(), DropHelper.NormalWeaponDropRateFraction);
 
                 // Materials
                 normalOnly.Add(ModContent.ItemType<EssenceofHavoc>(), 1, 8, 10);

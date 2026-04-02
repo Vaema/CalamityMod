@@ -1037,6 +1037,7 @@ namespace CalamityMod.CalPlayer
         public bool baroclaw = false;
         public bool IsFirstDashFrame = true;
         public int fallingBootVelCheckTimer = 0;
+        public bool voidOfCalamity = false;
         public bool apollyon = false;
         public bool eArtifact = false;
         public bool dArtifact = false;
@@ -2465,6 +2466,7 @@ namespace CalamityMod.CalPlayer
             darkSunRing = false;
             crawCarapace = false;
             baroclaw = false;
+            voidOfCalamity = false;
             apollyon = false;
             eArtifact = false;
             dArtifact = false;
