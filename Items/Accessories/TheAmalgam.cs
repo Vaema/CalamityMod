@@ -39,11 +39,11 @@ namespace CalamityMod.Items.Accessories
             modPlayer.rBrain = true; // Handles shaderain cloud spawning on hit
             modPlayer.amalgam = true;
             player.brainOfConfusionItem = Item;
-            modPlayer.HeatDebuffMultiplier += 2f;
-            modPlayer.ColdDebuffMultiplier += 2f;
-            modPlayer.SicknessDebuffMultiplier += 2f;
-            modPlayer.WaterDebuffMultiplier += 2f;
-            modPlayer.ElectricDebuffMultiplier += 2f;
+            modPlayer.HeatDebuffMultiplier += 3f;
+            modPlayer.ColdDebuffMultiplier += 3f;
+            modPlayer.SicknessDebuffMultiplier += 3f;
+            modPlayer.WaterDebuffMultiplier += 3f;
+            modPlayer.ElectricDebuffMultiplier += 3f;
         }
 
         public override void AddRecipes()
@@ -51,11 +51,11 @@ namespace CalamityMod.Items.Accessories
             CreateRecipe().
                 AddIngredient<AmalgamatedBrain>().
                 AddIngredient<AscendantSpiritEssence>(4).
-                AddIngredient(ItemID.LunarBar, 10).
-                AddIngredient(ItemID.FragmentSolar, 10).
+                AddIngredient<AshesofCalamity>(12).
+                AddIngredient<EssenceofEleum>(15).
                 AddIngredient<PlagueCellCanister>(15).
                 AddIngredient<DepthCells>(15).
-                AddIngredient<EffulgentFeather>(8).
+                AddIngredient<ArmoredShell>(4).
                 AddTile<CosmicAnvil>().
                 Register();
         }

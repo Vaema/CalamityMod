@@ -2,10 +2,12 @@ Abaddon: {
 	DisplayName: Abaddon
 	Tooltip:
 		'''
-		{$CommonItemTooltip.PercentIncreasedCritChance}
-		Critical strikes explode, igniting nearby foes with [cbuff:CalamityMod/BrimstoneFlames]
-		Reduces damage taken from [cbuff:CalamityMod/BrimstoneFlames] by {1}%
+		Critical strikes curse enemies with [cbuff:CalamityMod/Bane] that scales off of your critical strike chance
+		When critically hit, enemies spread all debuffs they are afflicted with that are weaker than your [cbuff:CalamityMod/Bane] to nearby enemies
+		[DAMAGELINE]
 		'''
+	Equipped: Current [cbuff:CalamityMod/Bane] damage: {0} DPS
+	Unequipped: Equip this accessory to view your current [cbuff:CalamityMod/Bane] damage
 }
 
 AbyssalDivingGear: {
@@ -28,8 +30,8 @@ AbyssalDivingSuit: {
 		Grants the ability to swim, extends underwater breathing, emits light underwater, and improves mobility on ice
 		Provides a moderate amount of light, reduces breath loss, and reduces damage caused by drowning in the abyss
 		Abyss creatures are less likely to see you, mitigates the abyss' defense reduction, and lets you sink faster in liquids
-		Grants immunity to the sulphurous waters and [cbuff:CalamityMod/CrushDepth]'s increased breath loss
-		Grants resistance to the increased breath loss caused by [cbuff:CalamityMod/HadopelagicPressure]
+		Grants immunity to the sulphurous waters and [cbuffplr:CalamityMod/CrushDepth]'s increased breath loss
+		Grants resistance to the increased breath loss caused by [cbuffplr:CalamityMod/HadopelagicPressure]
 		'''
 }
 
@@ -65,9 +67,9 @@ AlchemicalDecanter: {
 	DisplayName: Alchemical Decanter
 	Tooltip:
 		'''
-		All attacks inflict the [cbuff:CalamityMod/Plague] and reduces damage taken from the [cbuff:CalamityMod/Plague] by {0}%
+		All attacks inflict the [cbuff:CalamityMod/Plague] and reduces damage taken from the [cbuffplr:CalamityMod/Plague] by {0}%
 		Projectiles spawn plague seekers on enemy hits
-		Releases plague bees and douses you in [cbuff:Honey] when damaged
+		Releases plague bees and douses you in [cbuffplr:Honey] when damaged
 		'''
 }
 
@@ -96,11 +98,8 @@ AmbrosialAmpoule: {
 	DisplayName: Ambrosial Ampoule
 	Tooltip:
 		'''
-		+{0} max life
-		Grants +{1} to +{2} HP/s life regen based on missing health
-		Grants the [cbuff:Honey] buff
-		Current boost: +[REGEN] HP/s
-		Fire and sickness debuff durations are halved
+		+{0} to +{1} HP/s life regen based on missing health [c/999999:(Current: +[REGEN] HP/s)]
+		Natural life regen is {2}% more potent and returns {3}% faster
 		You emit yellow light if visibility is enabled
 		'''
 }
@@ -152,6 +151,19 @@ AngelTreads: {
 		'''
 }
 
+Apollyon: {
+	DisplayName: Apollyon
+	Tooltip:
+		'''
+		Critical strikes curse enemies with [cbuff:CalamityMod/Bane] that greatly scales off of your critical strike chance
+		When critically hit, enemies spread all debuffs they are afflicted with that are weaker than your [cbuff:CalamityMod/Bane] to nearby enemies
+		Critical strikes deal an additional 3% damage per debuff on the enemy
+		[DAMAGELINE]
+		'''
+	Equipped: Current [cbuff:CalamityMod/Bane] damage: {0} DPS
+	Unequipped: Equip this accessory to view your current [cbuff:CalamityMod/Bane] damage
+}
+
 AquaticEmblem: {
 	DisplayName: Aquatic Emblem
 	Tooltip:
@@ -177,7 +189,7 @@ AquaticHeart: {
 		Wow, you can swim now!
 		Being underwater increases max speed and acceleration by {0}%
 		Greatly reduces breath loss and reduces the darkness intensity in the abyss
-		Attackers are inflicted with [cbuff:CalamityMod/GlacialState]
+		Attackers are inflicted with [cbuff:Frozen]
 		Gain a fragile ice barrier that grants {1}% damage reduction for one hit
 		The ice shield regenerates after {2} seconds
 		'''
@@ -220,8 +232,8 @@ AsgardianAegis: {
 	Tooltip:
 		'''
 		{$Common.KnockbackImmunity}
-		Allows the ability to dash, empowered by a cosmic inferno
-		This dash can ram through enemies without taking damage
+		Allows the ability to ram dash, empowered by a cosmic inferno
+		This dash can ram through enemies without taking damage, inflicting [cbuff:CalamityMod/GodSlayerInferno]
 		'''
 }
 
@@ -258,7 +270,7 @@ Baroclaw: {
 	Tooltip:
 		'''
 		10% increased damage and 5% increased damage reduction
-		Attackers take high damage and are inflicted with Armor Crunch and Crush Depth
+		Attackers take high damage and are inflicted with [cbuff:CalamityMod/ArmorCrunch] and [cbuff:CalamityMod/CrushDepth]
 		'''
 }
 
@@ -351,7 +363,7 @@ BlunderBooster: {
 		'''
 		12% increased rogue damage and 15% increased rogue projectile velocity
 		Stealth generates 10% faster
-		Summons a red lightning aura around the player that electrifies nearby enemies
+		Summons a red lightning aura around the player that electrifies nearby enemies with [cbuff:CalamityMod/VermillionFlux]
 		The aura has reduced opacity if visibility is disabled
 		Press [KEY] to consume 25% of your maximum stealth to perform a swift upwards diagonal dash
 		This dash leaves a trail of red lightning bolts
@@ -364,9 +376,9 @@ Calamity: {
 	Tooltip:
 		'''
 		Lights your cursor ablaze with the Witch's flames, engulfing it in a blazing aura
-		Enemies touching the blaze take immense damage and are inflicted with Vulnerability Hex
+		Enemies touching the blaze take immense damage and are inflicted with [cbuff:CalamityMod/VulnerabilityHex]
 		Focusing an enemy for 2.5 seconds curses them, ascending Vulnerability Hex to its True form
-		Foes afflicted with True Vulnerability Hex take 1.15x damage from all sources
+		Foes afflicted with [cbuff:CalamityMod/TrueVulnerabilityHex] take 1.15x damage from all sources
 		This effect is increased to 2.5x for the blazing cursor itself
 		Equip in a vanity slot to change the cursor without dealing damage
 		These changes work in conjunction with the Rainbow Cursor
@@ -425,7 +437,7 @@ CorrosiveSpine: {
 		'''
 		5% increased movement speed
 		25% increased Sickness and Water debuff damage
-		All attacks irradiate enemies and reduces the severity of the sulphuric waters
+		All attacks inflict [cbuff:CalamityMod/Irradiated] and reduces the severity of the sulphuric waters
 		You burst into radioactive clouds when struck
 		'''
 }
@@ -444,7 +456,7 @@ CrawCarapace: {
 	Tooltip:
 		'''
 		7% increased damage
-		Attackers take damage and are inflicted with Crumbling
+		Attackers take damage and are inflicted with [cbuff:CalamityMod/Crumbling]
 		'''
 }
 
@@ -452,8 +464,8 @@ CrownJewel: {
 	DisplayName: Crown Jewel
 	Tooltip:
 		'''
-		+1 HP/s life regen
-		You gain an additional +1.5 HP/s life regen while afflicted with any debuff
+		+{0} HP/s life regen
+		Reduces damage over time taken by {1} HP/s
 		'''
 }
 
@@ -544,7 +556,7 @@ DeificAmulet: {
 	DisplayName: Deific Amulet
 	Tooltip:
 		'''
-		Releases a burst of homing star-bees[TOGGLE] and drenches you in [cbuff:Honey] after taking damage
+		Releases a burst of homing star-bees[TOGGLE] and drenches you in [cbuffplr:Honey] after taking damage
 		Increases the length of invincibility, with it increasing even more when at low health
 		[c/aaaaaa:Shift-<right> this item in your inventory to toggle] [i:PanicNecklace] [c/aaaaaa:Panic Necklace's effect]
 		'''
@@ -556,7 +568,7 @@ DepthCharm: {
 	Tooltip:
 		'''
 		Reduces the damage caused by drowning in the abyss
-		Removes the increased breath loss of Crush Depth
+		Removes the increased breath loss of [cbuffplr:CalamityMod/CrushDepth]
 		'''
 }
 
@@ -569,9 +581,9 @@ DiamondOfTheDeep: {
 		Dash to disperse the spirits and have them attack enemies
 		When dispersed [c/CB7AD7:below 50% life], the spirits support you instead
 		The spirits appear in order and have different effects based on color:
-		[c/3CB371: Explodes on impact and inflicts Crush Depth] / [c/CB7AD7:Heals for 8 HP]
-		[c/FF4500: Pierces enemies and inflicts Hellfire] / [c/CB7AD7:Increases defense by 10 temporarily]
-		[c/1E90FF: Hits multiple times and inflicts Hadopelagic Pressure] / [c/CB7AD7:Heals 5% of max HP]
+		[c/3CB371: Explodes on impact and inflicts] [cbuff:CalamityMod/CrushDepth] / [c/CB7AD7:Heals for 8 HP]
+		[c/FF4500: Pierces enemies and inflicts] [cbuff:OnFire3] / [c/CB7AD7:Increases defense by 10 temporarily]
+		[c/1E90FF: Hits multiple times and inflicts] [cbuff:CalamityMod/HadopelagicPressure] / [c/CB7AD7:Heals 5% of max HP]
 		Spirits are transparent and silent when visibility is toggled off
 		'''
 }
@@ -615,7 +627,7 @@ DragonScales: {
 		Rogue projectiles spawn slow fireballs as they travel
 		Stealth strikes create infernados where they hit
 		+10% max run speed and acceleration
-		Grants immunity to Dragonfire
+		Grants immunity to [cbuffplr:CalamityMod/Dragonfire]
 		'Only a living dragon holds true treasure'
 		'''
 }
@@ -626,7 +638,7 @@ DynamoStemCells: {
 		'''
 		10% increased ranged damage and movement speed
 		Ranged weapons fire a powerful mini swarmer every 3 seconds
-		Reduces damage taken from Dragonfire
+		Reduces damage taken from [cbuffplr:CalamityMod/Dragonfire]
 		'''
 }
 
@@ -651,7 +663,7 @@ EldritchSoulArtifact: {
 	Tooltip:
 		'''
 		Boosts melee speed by 10%, ranged velocity by 25%, rogue stealth regen by 15%, max minions by 1 and reduces mana cost by 25%
-		Grants immunity to Whispering Death
+		Grants immunity to [cbuffplr:CalamityMod/WhisperingDeath]
 		Knowledge
 		'''
 }
@@ -669,7 +681,7 @@ ElementalGauntlet: {
 	DisplayName: Elemental Gauntlet
 	Tooltip:
 		'''
-		Melee attacks and projectiles inflict Elemental Mix
+		Melee attacks and projectiles inflict [cbuff:CalamityMod/ElementalMix]
 		15% increased melee damage and melee speed
 		5% increased melee critical strike chance
 		20% increased true melee damage and increased melee knockback
@@ -689,7 +701,7 @@ ElysianAegis: {
 		'''
 		{$Common.KnockbackImmunity}
 		Allows the ability to dash, empowered by holy fire
-		This dash can ram through enemies without taking damage
+		This dash can ram through enemies without taking damage, inflicting [cbuff:CalamityMod/HolyFlames]
 		'Blessed by the Profaned Flame'
 		'''
 }
@@ -744,8 +756,16 @@ FeatherCrown: {
 	DisplayName: Feather Crown
 	Tooltip:
 		'''
-		15% increased rogue projectile velocity
-		Stealth strikes cause feathers to fall from the sky on enemy hits
+		Summons a [c/81B7F7:Skyline Feather] every 2 seconds, up to a maximum of 5
+		Each [c/81B7F7:Skyline Feather] increases magic damage by 2% and decreases mana cost by 1%
+		With 5 feathers, increases magic critical strike chance by 5% and all magic attacks inflict [cbuff:CalamityMod/StaticDischarge]
+		Running out of mana or drinking a mana potion sheds all feathers
+		Upon shedding a feather, no new feathers can be gained for 5 seconds	      
+		'''
+	HoldShiftTooltip:
+		'''
+		[c/81B7F7:Young mages would don feathers and gaze into the starlit night, as if welcoming the breath of the heavens.]
+		[c/81B7F7:To commune with mana was to commune with the world, and further, its draconic masters.]
 		'''
 }
 
@@ -771,8 +791,12 @@ FleshTotem: {
 	DisplayName: Flesh Totem
 	Tooltip:
 		'''
-		Halves enemy contact damage
-		When you take contact damage this effect has a 20 second cooldown
+		5% increased magic critical strike chance
+		+30 max mana
+		Summons an effigy above your head that stores mana as you use it, up to 600 mana
+		The effigy occasionally pulses, restoring 20 mana
+		Pulses appear more frequently the more mana is stored
+		Upon being struck, the effigy unleashes all stored up mana as vengeful souls that chase your enemies
 		'''
 }
 
@@ -789,7 +813,7 @@ FrostFlare: {
 	DisplayName: Frost Flare
 	Tooltip:
 		'''
-		All attacks and projectiles inflict Frostbite
+		All attacks and projectiles inflict [cbuff:Frostburn2]
 		Grants immunity to Frostburn, Chilled and Frozen
 		Being above 50% life grants 10% increased damage
 		Being below 50% life grants 15 defense and 15% increased max movement speed and acceleration
@@ -811,8 +835,8 @@ FungalSymbiote: {
 	Tooltip:
 		'''
 		You grow mushrooms on the grass beneath you
-		Consuming mushrooms provides the Mushy buff, granting 5 defense and +1 HP/s life regen
-		10% increased damage while you have the Mushy buff
+		Consuming mushrooms provides [cbuffplr:CalamityMod/Mushy], granting 5 defense and +1 HP/s life regen
+		10% increased damage while you have [cbuffplr:CalamityMod/Mushy]
 		'''
 }
 
@@ -821,7 +845,7 @@ GiantPearl: {
 	Tooltip:
 		'''
 		You have a light aura around you
-		Enemies within the aura are slowed down
+		Enemies within the aura are afflicted with [cbuff:CalamityMod/PearlAura] and slowed down
 		Enemies that remain within the aura are bombarded by homing prism shards
 		{$Common.AbyssGlow}
 		'''
@@ -893,9 +917,9 @@ HallowedRune: {
 		'''
 	HoldShiftTooltip:
 		'''
-		[c/8ce0ff:  Hallowed Power] [c/ccf1ff: grants 10% increased summon damage and rains stars on enemies]
-		[c/d08aff:  Hallowed Defense] [c/eed4ff: grants 5 defense]
-		[c/ff8cb5:  Hallowed Regen] [c/ffccde: grants +1.5 HP/s life regen]
+		[c/8ce0ff:  Hallowed Power] [c/ccf1ff: grants {0}% increased summon damage and rains stars on enemies]
+		[c/d08aff:  Hallowed Defense] [c/eed4ff: grants {1} defense]
+		[c/ff8cb5:  Hallowed Regen] [c/ffccde: grants +{2} HP/s life regen]
 		'''
 }
 
@@ -925,18 +949,13 @@ HideofAstrumDeus: {
 		True melee strikes drops astral stars from the sky
 		Releases an explosion and temporarily increases true melee damage by 30% when damaged
 		Boost duration scales with the amount of damage you took, up to 10 seconds
-		Nullifies the Astral Infection debuff
+		Nullifies the [cbuffplr:CalamityMod/AstralInfectionDebuff]
 		'''
 }
 
 HoneyDew: {
 	DisplayName: Honey Dew
-	Tooltip:
-		'''
-		+10 max life
-		Grants the Honey buff
-		Sickness debuff durations are halved
-		'''
+	Tooltip: Natural life regen is {0}% more potent
 }
 
 HowlsHeart: {
@@ -952,7 +971,7 @@ IlmerisSpark: {
 	DisplayName: Ilmeris' Spark
 	Tooltip:
 		'''
-		Attacks inflict Static Discharge while underwater
+		Attacks inflict [cbuff:CalamityMod/StaticDischarge] while underwater
 		Taking damage causes the enemy to be shocked
 		Shocked enemies constantly release sparks
 		'''
@@ -962,11 +981,9 @@ InfectedJewel: {
 	DisplayName: Infected Jewel
 	Tooltip:
 		'''
-		Passively grants +1 HP/s life regen
-		Grants 12 defense and +2 HP/s life regen while afflicted with any debuff
-		Granted defense fades away quickly when not afflicted with any debuffs
-		Each debuff beyond the first grants 4 additional defense
-		Nullifies the Astral Infection debuff
+		+{0} HP/s life regen
+		Reduces damage over time taken by {1} HP/s
+		Jump-starts regeneration after a damaging debuff ends
 		'A beautiful gemstone tarnished by spaceborne rot'
 		'''
 }
@@ -1024,7 +1041,7 @@ JellyChargedBattery: {
 	Tooltip:
 		'''
 		Increases your max number of minions by 1, and summon damage by 7%
-		Minion attacks create orbs of static discharge
+		Minion attacks create orbs of [cbuff:CalamityMod/StaticDischarge]
 		'''
 }
 
@@ -1047,7 +1064,7 @@ LeviathanAmbergris: {
 	Tooltip:
 		'''
 		120% increased initial dash velocity, 33% faster dash cooldown, and greatly increased dash deceleration
-		Your dashes are empowered by water, knocking back and damaging nearby enemies with viscous currents
+		Your dashes are empowered by water, knocking back and damaging enemies with vicious currents that inflict [cbuff:CalamityMod/RiptideDebuff]
 		Visual effects are reduced if visibility is disabled
 		'''
 }
@@ -1063,12 +1080,7 @@ LifeJelly: {
 
 LivingDew: {
 	DisplayName: Living Dew
-	Tooltip:
-		'''
-		+25 max life
-		Grants the Honey buff
-		Fire and sickness debuff durations are halved
-		'''
+	Tooltip: Natural life regen is {0}% more potent and returns {1}% faster
 }
 
 LuxorsGift: {
@@ -1118,9 +1130,18 @@ MoonstoneCrown: {
 	DisplayName: Moonstone Crown
 	Tooltip:
 		'''
-		15% increased rogue projectile velocity
-		Stealth strikes release lunar flares on enemy hits
-		Rogue projectiles summon homing moon sigils as they travel
+		+70 max mana
+		Summons a [c/27F5E0:Lunar Sigil] every 2 seconds, up to a maximum of 10
+		Each [c/27F5E0:Lunar Sigil] increases magic damage by 2% and reduces mana cost by 1%
+		With 5 sigils, increases mana regeneration by +5 MP/s
+		With 10 sigils, increases magic critical strike chance by 10% and all magic attacks inflict [cbuff:CalamityMod/Nightwither]
+		Running out of mana or using a mana potion shatters all sigils
+		Upon shattering a sigil, no new sigils can appear for 5 seconds 
+		'''
+	HoldShiftTooltip:
+		'''
+		[c/27F5E0:Countless tears were shed over Chrysadia's marring: when its eventide clouds gave way not to beloved stars,]
+		[c/27F5E0:or to dear patrons, but to a ravenous void and its unyielding dread.]
 		'''
 }
 
@@ -1153,7 +1174,7 @@ NecklaceofVexation: {
 		'''
 		Up to 30% increased damage the lower your life is
 		Current boost: [DAMAGE]%
-		All attacks inflict acid venom
+		All attacks inflict [cbuff:Venom]
 		Revenge
 		'''
 }
@@ -1163,8 +1184,8 @@ NuclearFuelRod: {
 	Tooltip:
 		'''
 		Increases your max number of minions by 1
-		Minions release an irradiated aura on enemy hits
-		Grants immunity to Irradiated
+		Minions release an [cbuff:CalamityMod/Irradiated] aura on enemy hits
+		Grants immunity to [cbuffplr:CalamityMod/Irradiated]
 		'''
 }
 
@@ -1173,7 +1194,7 @@ Nucleogenesis: {
 	Tooltip:
 		'''
 		Increases your max number of minions by 4
-		Grants immunity to Shadowflame and Irradiated
+		Grants immunity to [cbuffplr:CalamityMod/Shadowflame] and [cbuffplr:CalamityMod/Irradiated]
 		15% increased summon damage, and increased minion knockback
 		Minions inflict a variety of debuffs
 		Minions spawn damaging sparks on enemy hits
@@ -1243,7 +1264,7 @@ OrnateShield: {
 	Tooltip:
 		'''
 		Allows the ability to dash
-		This dash can ram through enemies without taking damage
+		This dash can ram through enemies without taking damage, inflicting [cbuff:Frostburn2]
 		'''
 }
 
@@ -1277,9 +1298,9 @@ PhantomicArtifact: {
 		'''
 	HoldShiftTooltip:
 		'''
-		[c/8ce0ff:  Phantomic Empowerment] [c/ccf1ff: grants 10% increased summon damage and throws knives at enemies]
-		[c/d08aff:  Phantomic Shield] [c/eed4ff: grants 10 defense and a 20% damage reduction bulwark]
-		[c/ff8cb5:  Phantomic Regen] [c/ffccde: grants 1 HP/s life regen and occasionally drops phantom hearts which grant an additional 1 HP/s life regen]
+		[c/8ce0ff:  Phantomic Empowerment] [c/ccf1ff: grants {0}% increased summon damage and throws knives at enemies]
+		[c/d08aff:  Phantomic Shield] [c/eed4ff: grants {1} defense and a 20% damage reduction bulwark]
+		[c/ff8cb5:  Phantomic Regen] [c/ffccde: grants {2} HP/s life regen and occasionally drops phantom hearts which grant an additional 1 HP/s life regen]
 		'''
 }
 
@@ -1316,7 +1337,7 @@ ProfanedSoulArtifact: {
 		[ADREN]
 		Once depleted, the rocks are flung outward and will regenerate 5 seconds after being hit
 		Taking damage resets the timer
-		The healer guardian restores 15 health every few seconds
+		The healer guardian restores 10 health every few seconds
 		Purity
 		'''
 	ShieldAdren: Halved Adrenaline loss if all damage is absorbed
@@ -1338,7 +1359,7 @@ ProfanedSoulCrystal: {
 		'''
 		Provides passive buffs depending on the time of day
 		Greatly boosts the power of the Guardian's relics
-		Grants additional effects if you have {0} minion slots
+		Grants additional effects if you have {0} unused minion slots
 		Summons your own personal Guardians to fight alongside you
 		All non-summon attacks are transformed, and are empowered if no minions are active
 		[c/ffa680:Melee] [c/ffd2bf:attacks become a barrage of spears]
@@ -1377,22 +1398,11 @@ Radiance: {
 	DisplayName: Radiance
 	Tooltip:
 		'''
-		+70 max life
-		Provides greatly improved life regen, increasing with lost health
-		Gain increased defense from debuffs inflicted on you, and greatly reduces their effectiveness
-		Current boosts: +[REGEN] HP/s and [DEFENSE] defense.
+		+{0} to +{1} HP/s life regen based on missing health [c/999999:(Current: +[REGEN] HP/s)]
+		Reduces damage over time taken by {2} HP/s and jump-starts regeneration after a damaging debuff ends
+		Natural life regen is {3}% more potent and returns {4}% faster
 		You emit shining blue light if visibility is enabled
 		'A once putrid crystal, now glimmering with immaculate purity'
-		'''
-	HoldShiftTooltip:
-		'''
-		[c/CDF69C:Grants +2 to +5 HP/s life regen based on missing health]
-		[c/CDF69C:Recover an additional 6 HP/s while inflicted with a debuff]
-		[c/CDF69C:This eventually slows to 1.33 HP/s when debuffed for an extended time period]
-		[c/CDF69C:Grants the Honey buff]
-		[c/CDF69C:Grants 15 defense while afflicted with any debuff]
-		[c/CDF69C:Each additional debuff grants 5 defense, which slowly decays while not debuffed]
-		[c/CDF69C:Weak damaging debuffs are harmless and halves the duration of most other debuffs]
 		'''
 }
 
@@ -1400,9 +1410,9 @@ RadiantOoze: {
 	DisplayName: Radiant Ooze
 	Tooltip:
 		'''
-		Grants +{0} to +{1} HP/s life regen based on missing health
-		Current boost: +[REGEN] HP/s
+		+{0} to +{1} HP/s life regen based on missing health 
 		You emit yellow light if visibility is enabled
+		[c/999999:(Current regen: +[REGEN] HP/s)]
 		'''
 }
 
@@ -1416,7 +1426,7 @@ RampartofDeities: {
 	Tooltip:
 		'''
 		{$Common.KnockbackImmunity}
-		Releases a blast of homing star-bees[TOGGLE] and drenches you in [cbuff:Honey] after taking damage
+		Releases a blast of homing star-bees[TOGGLE] and drenches you in [cbuffplr:Honey] after taking damage
 		Increases the length of invincibility, with it increasing even more when at low health or taking high damage attacks
 		Reduces damage taken by 25% when below 50% life
 		Absorbs 25% of damage done to players on your team when you are above 25% life
@@ -1477,7 +1487,7 @@ RottenBrain: {
 
 RottenDogtooth: {
 	DisplayName: Rotten Dogtooth
-	Tooltip: Stealth strikes inflict Crumbling for 2.5 seconds and deal 8% more damage
+	Tooltip: Stealth strikes inflict [cbuff:CalamityMod/Crumbling] and deal 8% more damage
 }
 
 RoverDrive: {
@@ -1507,9 +1517,9 @@ SandCloak: {
 	Tooltip:
 		'''
 		Dashing creates a large protective sand veil which damages enemies inside it
-		The sand veil lasts 15 seconds, but dissipates early if you dash again
-		The veil slowly follows you, and any player inside it gains 4 defense and 1.75x acceleration
-		After dissipating, the sand veil has a 15 second cooldown before it can be used again
+		The sand veil lasts {0} seconds, but dissipates early if you dash again
+		The veil slowly follows you, and any player inside it gains {1} defense and {2}% acceleration
+		After dissipating, the sand veil has a {3} second cooldown before it can be used again
 		'''
 }
 
@@ -1632,9 +1642,9 @@ SlagsplitterPauldron: {
 	DisplayName: Slagsplitter Pauldron
 	Tooltip:
 		'''
-		Your dashes become empowered by flame, erupting on contact with enemies
+		Your dashes become empowered by [cbuff:OnFire3], erupting on contact with enemies
 		Grants immunity to knockback and 10% damage reduction while dashing
-		Enemies hit by your dashes have their armor crushed
+		Enemies hit by your dashes are afflicted with [cbuff:CalamityMod/ArmorCrunch]
 		Visual effects are reduced if visibility is disabled
 		'''
 }
@@ -1661,9 +1671,20 @@ SpiritGlyph: {
 	Tooltip: Minion attacks provide various buffs
 	HoldShiftTooltip:
 		'''
-		[c/8ce0ff:  Spirit Power] [c/ccf1ff:grants 10% increased summon damage]
-		[c/d08aff:  Spirit Defense] [c/eed4ff:grants 3 defense]
-		[c/ff8cb5:  Spirit Regen] [c/ffccde:grants +1 HP/s life regeneration]
+		[c/8ce0ff:  Spirit Power] [c/ccf1ff:grants {0}% increased summon damage]
+		[c/d08aff:  Spirit Defense] [c/eed4ff:grants {1} defense]
+		[c/ff8cb5:  Spirit Regen] [c/ffccde:grants +{2} HP/s life regeneration]
+		'''
+}
+
+SpringStool: {
+	DisplayName: Spring Stool
+	Tooltip:
+		'''
+		Hold {$Key.UP} to reach higher
+		Press [KEY] to jump super high
+		Super jumps can only be performed once every {0} seconds and after landing
+		+{1}% critical strike chance when striking enemies below you
 		'''
 }
 
@@ -1672,7 +1693,7 @@ StarbusterCore: {
 	Tooltip:
 		'''
 		Increases your max number of minions by 1
-		Summons release an astral explosion on enemy hits
+		Summons release an [cbuff:CalamityMod/AstralInfectionDebuff] explosion on enemy hits
 		'''
 }
 
@@ -1682,7 +1703,7 @@ StarTaintedGenerator: {
 		'''
 		Increases your max number of minions by 2, and summon damage by 7%
 		Minion attacks spawn astral explosions and inflict several debuffs
-		Grants immunity to Irradiated
+		Grants immunity to [cbuffplr:CalamityMod/Irradiated]
 		Does not stack with downgrades
 		'''
 }
@@ -1702,7 +1723,7 @@ StatisCurse: {
 		'''
 		Increases your max number of minions by 3, and summon damage by 12%
 		Increased minion knockback
-		Minion attacks inflict Shadowflame, and grants immunity to Shadowflame
+		Minion attacks inflict [cbuff:CalamityMod/Shadowflame], and grants immunity to [cbuffplr:CalamityMod/Shadowflame]
 		Does not stack with downgrades
 		'''
 }
@@ -1833,9 +1854,10 @@ TeslasAmulet: {
 	DisplayName: Tesla's Amulet
 	Tooltip:
 		'''
-		Generates an electrifying field that slows enemies
+		Generates an electrifying field around you
+		The field inflicts [cbuff:CalamityMod/StaticDischarge] and [cbuff:CalamityMod/GalvanicCorrosion]
 		The field has reduced opacity if visibility is disabled
-		Reduces the duration of the Static Discharge debuff
+		Reduces the duration of [cbuffplr:CalamityMod/StaticDischarge]
 		'''
 }
 
@@ -1845,7 +1867,7 @@ TheAbsorber: {
 		'''
 		{$Common.KnockbackImmunity}
 		{0}% increased movement and jump speed
-		Attackers take immense damage and are afflicted with a crippling sickness debuff
+		Attackers take immense damage and are afflicted with [cbuff:CalamityMod/AbsorberAffliction]
 		Using a healing potion will spawn a green aura that lasts for {1} seconds
 		Walking into the aura removes all debuffs once and grants {2} HP/s regen, {3}% damage, and {4}% damage reduction
 		{5}% of the damage from enemy attacks is converted into healing
@@ -1856,7 +1878,7 @@ TheAmalgam: {
 	DisplayName: The Amalgam
 	Tooltip:
 		'''
-		All attacks inflict a variety of debuffs, 200% increased elemental debuff damage
+		All attacks inflict a variety of debuffs, 300% increased elemental debuff damage
 		Most buffs last twice as long, and persist after dying
 		Taking damage confuses nearby enemies and spawns a dank creeper
 		The dank creeper flies above you, exploding into several shaderain clouds
@@ -1923,7 +1945,7 @@ TheFirstShadowflame: {
 	Tooltip:
 		'''
 		Increases your max number of minions by 1
-		Minion attacks inflict Shadowflame, and grants immunity to Shadowflame
+		Minion attacks inflict [cbuff:CalamityMod/Shadowflame], and grants immunity to [cbuffplr:CalamityMod/Shadowflame]
 		'''
 }
 
@@ -1977,7 +1999,7 @@ ToxicHeart: {
 	DisplayName: Toxic Heart
 	Tooltip:
 		'''
-		Your heart beats with the plague, pulsing outside of your body
+		Your heart beats with the [cbuff:CalamityMod/Plague], pulsing outside of your body
 		Pulse frequency scale with regen, and pulses that kill enemies pulse again to heal you
 		50% increased Sickness debuff damage
 		Effects are transparent and silent if visibility is disabled
@@ -1988,9 +2010,9 @@ TrinketofChi: {
 	DisplayName: Trinket of Chi
 	Tooltip:
 		'''
-		Increases damage reduction by 8% if you avoid taking damage for 10 seconds
+		Increases damage reduction by {0}% if you avoid taking damage for {1} seconds
 		This buff expires on hit
-		+1 HP/s life regen for you and your teammates
+		+{2} HP/s life regen for you and your teammates
 		'''
 }
 
@@ -1998,8 +2020,8 @@ UnholyTonic: {
 	DisplayName: Unholy Tonic
 	Tooltip:
 		'''
-		Increases damage reduction by 4% and defense by 6 while in the corruption
-		Grants immunity to Brain Rot
+		Increases defense by {0} while in the corruption
+		Grants immunity to [cbuffplr:CalamityMod/BrainRot]
 		'''
 }
 
@@ -2012,13 +2034,28 @@ UnstableGraniteCore: {
 		'''
 }
 
+V8Engine: {
+	DisplayName: V8 Engine
+	Tooltip: Grants a short dash with a long cooldown that works while mounted
+}
+
+V8000Engine: {
+	DisplayName: V8000 Engine
+	Tooltip:
+		'''
+		Grants a dash with a long cooldown that works while mounted
+		This dash can ram through enemies without taking damage
+		'Are soul-powered engines eco-friendly?'
+		'''
+}
+
 VampiricTalisman: {
 	DisplayName: Vampiric Talisman
 	Tooltip:
 		'''
 		Rogue critical strikes steal enemy life
 		Stealth strikes grant 15% critical strike chance and increased lifesteal to non-stealth strikes for 10 seconds
-		Stealth strikes inflict Heavy Bleeding and Armor Crunch, and deal 8% more damage
+		Stealth strikes inflict [cbuff:CalamityMod/HeavyBleeding] and [cbuff:CalamityMod/ArmorCrunch], and deal 8% more damage
 		'Possessing the talisman makes you yearn for blood'
 		'''
 	YearningForBlood: THIS ENDLESS HUNGER WON'T END
@@ -2039,8 +2076,8 @@ ViciousTonic: {
 	DisplayName: Vicious Tonic
 	Tooltip:
 		'''
-		Increases damage reduction by 4% and defense by 6 while in the crimson
-		Grants immunity to Burning Blood
+		Increases defense by {0} while in the crimson
+		Grants immunity to [cbuffplr:CalamityMod/BurningBlood]
 		'''
 }
 
@@ -2054,17 +2091,7 @@ VoidofCalamity: {
 	Tooltip:
 		'''
 		12% increased damage
-		Brimstone fire rains down after getting hit
-		'''
-}
-
-VoidofExtinction: {
-	DisplayName: Void of Extinction
-	Tooltip:
-		'''
-		{$CommonItemTooltip.PercentIncreasedCritChance}
-		Critical strikes explode, igniting nearby foes with [cbuff:CalamityMod/BrimstoneFlames]
-		Reduces damage taken from [cbuff:CalamityMod/BrimstoneFlames] by {1}%
+		Calamitous flames rain down while invincible
 		'''
 }
 
@@ -2073,7 +2100,7 @@ VoltaicJelly: {
 	Tooltip:
 		'''
 		Increases your max number of minions by 1
-		Minion attacks inflict Static Discharge
+		Minion attacks inflict [cbuff:CalamityMod/StaticDischarge]
 		'''
 }
 
@@ -2083,7 +2110,7 @@ WarbanneroftheRighteous: {
 		'''
 		Multiplies all damage based on how close you are to enemies
 		Maximum damage boost is 15%, minimum damage boost is -15%
-		Emit a blazing aura that burns and repels nearby enemies
+		Emit a blazing aura that burns and repels nearby enemies with [cbuff:CalamityMod/HolyFlames]
 		Enemies take increasing damage the closer they are to you and the longer they are near you
 		Effects are transparent and silent if visibility is disabled
 		'''
@@ -2120,9 +2147,9 @@ YharimsGift: {
 	Tooltip:
 		'''
 		{$Common.KnockbackImmunity}
-		Flaming meteors rain down after getting hit
-		Volatile dragon dust trails behind you
-		Increases damage and movement speed by 15%
+		Increases damage by 10% and movement speed by 20%
+		All attacks inflict [cbuff:CalamityMod/AuricRebuke]
+		Flaming meteors rain down while invincible
 		[c/FCA92B:'The power to kill a god pulses from within this artifact']
 		'''
 }

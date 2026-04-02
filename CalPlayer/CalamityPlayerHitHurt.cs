@@ -8,6 +8,7 @@ using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Cooldowns;
+using CalamityMod.DataStructures;
 using CalamityMod.Dusts;
 using CalamityMod.Enums;
 using CalamityMod.Events;
@@ -27,7 +28,7 @@ using CalamityMod.Items.Armor.Tarragon;
 using CalamityMod.Items.Armor.Victide;
 using CalamityMod.Items.Armor.Wulfrum;
 using CalamityMod.Items.Potions;
-using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Items.Tools;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Rogue;
@@ -40,6 +41,8 @@ using CalamityMod.NPCs.Providence;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Magic;
+using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Typeless;
@@ -52,13 +55,11 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.Chat;
 using Terraria.DataStructures;
-using Terraria.Graphics.Shaders;
 using Terraria.GameContent.Creative;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using CalamityMod.Projectiles.Melee;
-using CalamityMod.Items.Tools;
 
 namespace CalamityMod.CalPlayer
 {
@@ -460,7 +461,53 @@ namespace CalamityMod.CalPlayer
         }
         #endregion
 
+        #region OnHitNPC
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            if (Player.Calamity().yharimsGift)
+                target.AddBuff(ModContent.BuffType<AuricRebuke>(),120);
+
+            int debuffSpreadProj = ModContent.ProjectileType<DebuffSpreadEffect>();
+            if ((Player.Calamity().abaddon || Player.Calamity().apollyon) && (target.Calamity().abaddonEffected || target.Calamity().apollyonEffected) && hit.Crit && abaddonCooldown == 0 && Player.ownedProjectileCounts[debuffSpreadProj] == 0)
+            {
+                int maxTargetNum = target.Calamity().apollyonEffected ? 10 : 6;
+                Projectile.NewProjectile(Player.GetSource_FromThis(), target.Center, Vector2.Zero, debuffSpreadProj, 0, 0, Player.whoAmI, 0, target.whoAmI, maxTargetNum);
+                abaddonCooldown = -1; // Prevents multiple projectiles hitting on the same frame from spawning multiple of these
+            }
+        }
+        #endregion
+
         #region Modify Hit NPC
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            if (target.HasBuff<SmashedEvil>())
+            {
+                //This is essentially 10 AP, but independent of armor amount
+                modifiers.FlatBonusDamage += 5;
+            }
+
+            if (Player.Calamity().apollyon)
+            {
+                target.Calamity().apollyonEffected = true;
+                // Check here for the amount of debuffs on enemy
+                int numOfDebuffs = 0;
+                for (int index = 0; index < target.buffType.Length; index++)
+                {
+                    int type = target.buffType[index];
+                    var debuffData = BuffDatasets.DebuffDataset[type];
+                    if (debuffData != null)
+                        numOfDebuffs++;
+                }
+                modifiers.CritDamage += Apollyon.critDamageBoostPerDebuff * numOfDebuffs;
+            }
+            else if (Player.Calamity().abaddon)
+                target.Calamity().abaddonEffected = true;
+            else
+            {
+                target.Calamity().abaddonEffected = false;
+                target.Calamity().apollyonEffected = false;
+            }
+        }
         public override void ModifyHitNPCWithItem(Item item, NPC target, ref NPC.HitModifiers modifiers)
         {
             modifiers.CritDamage += critDamage;
@@ -744,10 +791,6 @@ namespace CalamityMod.CalPlayer
             // The amount of damage that will be dealt is yet to be determined.
             //
 
-            // Can't have any cooldowns here because dodges grrrrr....
-            if (fleshTotem && !Player.HasCooldown(Cooldowns.FleshTotem.ID) && TotalEnergyShielding <= 0)
-                modifiers.FinalDamage *= 0.5f;
-
             if (tarragonCloak && tarraMelee && !Player.HasCooldown(Cooldowns.TarragonCloak.ID))
                 modifiers.FinalDamage *= (1f - TarragonHeadMelee.CloakContactDamageReduction);
 
@@ -848,7 +891,7 @@ namespace CalamityMod.CalPlayer
                     float cooldownDurationScalar = MathHelper.Clamp((actualProjDamage - dodgeDamageGateValue) / (float)maxCooldownDurationDamageValue, 0f, 1f);
 
                     // The Evolution
-                    if (evolution)
+                    if (evolution && !Player.HasBuff<SilvaRevival>())
                     {
                         if (Player.whoAmI == Main.myPlayer)
                         {
@@ -1037,10 +1080,9 @@ namespace CalamityMod.CalPlayer
             if (!hasIFrames && !Player.creativeGodMode)
                 nextHitDealsDefenseDamage |= npc.Calamity().canBreakPlayerDefense;
 
-            // ModifyHit (Flesh Totem effect happens here) -> Hurt (includes dodges) -> OnHit
+            // ModifyHit -> Hurt (includes dodges) -> OnHit
             // As such, to avoid cooldowns proccing from dodge hits, do it here
-            if (fleshTotem && !Player.HasCooldown(Cooldowns.FleshTotem.ID) && hurtInfo.Damage > 0)
-                Player.AddCooldown(Cooldowns.FleshTotem.ID, CalamityUtils.SecondsToFrames(20));
+
 
             if (NPC.AnyNPCs(ModContent.NPCType<THELORDE>()))
                 Player.AddBuff(ModContent.BuffType<NOU>(), 15, true);
@@ -1887,10 +1929,6 @@ namespace CalamityMod.CalPlayer
                     Rectangle location = new Rectangle((int)Player.position.X, (int)Player.position.Y - 16, Player.width, Player.height);
                     CombatText.NewText(location, Color.LightBlue, Language.GetTextValue(shieldDamageText));
 
-                    // Give the player iframes for taking a shield hit, regardless of whether or not the shields broke.
-                    int shieldHitIFrames = Player.ComputeHitIFrames(info);
-                    Player.GiveIFrames(info.CooldownCounter, shieldHitIFrames, true);
-
                     // Spawn particles when hit with the shields up, regardless of whether or not the shields broke.
                     // More particles spawn if a shield broke.
                     if (pSoulArtifact)
@@ -1961,6 +1999,10 @@ namespace CalamityMod.CalPlayer
                 // If the shields completely absorbed the hit, then delete the hit using reflection.
                 if (shieldsFullyAbsorbedHit)
                 {
+                    // Give the player iframes for taking a shield hit
+                    int shieldHitIFrames = Player.ComputeHitIFrames(info);
+                    Player.GiveIFrames(info.CooldownCounter, shieldHitIFrames, true);
+
                     freeDodgeFromShieldAbsorption = true;
 
                     // Cancel defense damage, if it was going to occur this frame.
@@ -2174,9 +2216,6 @@ namespace CalamityMod.CalPlayer
                     LoseAdrenalineOnHurt(hurtInfo, false);
                 }
 
-                if (evilSmasherBoost > 0)
-                    evilSmasherBoost -= 1;
-
                 if (trinketOfChi)
                     chiBuffTimer = 0;
 
@@ -2283,9 +2322,34 @@ namespace CalamityMod.CalPlayer
                             if (duration > 120)
                                 duration = 120;
 
-                            npc.AddBuff(ModContent.BuffType<GlacialState>(), (int)duration, false);
+                            npc.AddBuff(BuffID.Frozen, (int)duration, false);
                         }
                     }
+                }
+
+                if (fleshTotem && hurtInfo.Damage > 0)
+                {
+                    SoundStyle Counter = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Shield_Down");
+                    if (fleshTotemManaStorage >= 100 && fleshTotemVisual)
+                        SoundEngine.PlaySound(Counter with { Volume = 0.75f}, Player.Center);
+                    int lostSoulAmount = fleshTotemManaStorage / 25;
+                    if (Player.ownedProjectileCounts[ModContent.ProjectileType<FleshTotemMinion>()] != 0)
+                    {
+                        for (int i = 0; i < Main.maxProjectiles; i++)
+                        {
+                            Projectile proj = Main.projectile[i];
+                            if (proj.active && proj.owner == Player.whoAmI && proj.type == ModContent.ProjectileType<FleshTotemMinion>())
+                            {
+                                for (int k = 0; k < lostSoulAmount; k++)
+                                {
+                                    Projectile.NewProjectile(Player.GetSource_Accessory_OnHurt(FindAccessory<FleshTotem>(), hurtInfo.DamageSource), proj.Center, new Vector2(10, 10).RotatedByRandom(100) * Main.rand.NextFloat(0.4f, 0.55f), ModContent.ProjectileType<FleshTotemSoul>(), FleshTotem.lostSoulDamage, 0f, Main.myPlayer, 0f, 0f, 3f);
+                                }
+                                break;
+                            }
+                        }
+                    }
+
+                    fleshTotemManaStorage = 0;
                 }
 
                 // By setting brainOfConfusionItem, these accessories have this code already,
@@ -2366,7 +2430,7 @@ namespace CalamityMod.CalPlayer
                 Player.AddBuff(BuffID.Honey, 300, false);
 
             // Handle hit effects from the gem tech armor set.
-            Player.Calamity().GemTechState.PlayerOnHitEffects((int)hurtInfo.Damage);
+            Player.Calamity().GemTechState.PlayerOnHitEffects(hurtInfo);
 
             if (Player.whoAmI == Main.myPlayer)
             {
@@ -2408,10 +2472,10 @@ namespace CalamityMod.CalPlayer
                 if (dAmulet)
                 {
                     var source = Player.GetSource_Accessory_OnHurt(FindAccessory<DeificAmulet>(), hurtInfo.DamageSource);
-                    int projAmount = (rampartOfDeities ? 12 : 6);
+                    var projAmount = (rampartOfDeities ? 12 : 6) * (Player.strongBees ? 1.5f : 1f);
                     for (int n = 0; n < projAmount; n++)
                     {
-                        int deificProjDamage = (int)(Player.GetBestClassDamage().ApplyTo(DeificAmulet.StarDamage) * (Player.strongBees ? 0.85f : 1f));
+                        int deificProjDamage = (int)(Player.GetBestClassDamage().ApplyTo(DeificAmulet.StarDamage));
 
                         Projectile onHitProj = Main.projectile[Projectile.NewProjectile(source, Player.Center, new Vector2(0,-15 * (rampartOfDeities && n % 2 == 0 ? 0.75f: 1.25f)).RotatedBy(MathHelper.TwoPi/projAmount*n), ModContent.ProjectileType<AstralStar>(), deificProjDamage, 4f, Player.whoAmI)];
                         if (onHitProj.whoAmI.WithinBounds(Main.maxProjectiles))
@@ -2422,8 +2486,6 @@ namespace CalamityMod.CalPlayer
                             onHitProj.tileCollide = false;
                             onHitProj.extraUpdates = 1;
                             onHitProj.Calamity().conditionalHomingRange = 600f;
-                            if (Player.strongBees)
-                                onHitProj.penetrate += 1;
                         }
                     }
                 }

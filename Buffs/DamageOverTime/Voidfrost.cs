@@ -12,7 +12,7 @@ namespace CalamityMod.Buffs.DamageOverTime
     {
         public static DebuffData debuffData = new DebuffData()
         {
-            EnemyLostRegen = 400,
+            EnemyLostRegen = 500, //250 dps is extra strong for its tier due to being difficult to inflict
             ColdDebuffScaling = 1
         };
         public override void SetStaticDefaults()

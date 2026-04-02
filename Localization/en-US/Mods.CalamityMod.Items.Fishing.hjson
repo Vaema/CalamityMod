@@ -46,8 +46,8 @@ UrsaSergeant: {
 	DisplayName: Ursa Sergeant
 	Tooltip:
 		'''
-		Attacks maul enemies with astral claw swipes
-		Taking damage reduces the cooldown, but inflicts you with {$Buffs.AstralInfectionDebuff.DisplayName}
+		Attacks maul enemies with astral claw swipes that inflict [cbuff:CalamityMod/AstralInfectionDebuff]
+		Taking damage reduces the cooldown, but inflicts you with [cbuffplr:CalamityMod/AstralInfectionDebuff]
 		Enemy kills also reduce the cooldown
 		Swipes will be translucent and silent if visibility is disabled
 		'''
@@ -58,10 +58,8 @@ Bloodfin: {
 	DisplayName: Bloodfin
 	Tooltip:
 		'''
-		Grants a buff that massively boosts natural life regen and grants +{0} HP/s life regen
-		This increases to +{1} HP/s while suffering from damage over time debuffs
-		This buff also directly restores HP every {2} seconds if below {3}% health
-		{$CommonItemTooltip.SecondDuration@4}
+		Grants a buff that restores 1 HP every {0} seconds
+		{$CommonItemTooltip.SecondDuration@1}
 		'The wonders of angiogenesis'
 		'''
 }
@@ -336,7 +334,7 @@ NavyFishingRod: {
 	DisplayName: Navy Fishing Rod
 	Tooltip:
 		'''
-		Fires bobbers that inflict Static Discharge on nearby enemies
+		Fires bobbers that inflict [cbuff:CalamityMod/StaticDischarge] on nearby enemies
 		'The sea is a city. Just below are highways, boulevards,
 		streets, and roundabouts bustling with submarine traffic.'
 		'''

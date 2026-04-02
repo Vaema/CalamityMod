@@ -39,7 +39,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.localNPCHitCooldown = 10 * Projectile.MaxUpdates;
         }
 
-        public override bool? CanDamage() => ((time > 10 && !isLaunched) || (isLaunched && !setStats)) ? null : false;
+        public override bool? CanDamage() => (Projectile.ai[0] == 10 && Projectile.numHits > 5) ? false : ((time > 10 && !isLaunched) || (isLaunched && !setStats)) ? null : false;
 
         public override void AI()
         {
@@ -50,7 +50,8 @@ namespace CalamityMod.Projectiles.Melee
                 isLaunched = true;
             else
                 Projectile.ai[2] = 0;
-            
+            if (Projectile.ai[0] == 10)
+                Projectile.localNPCHitCooldown = 60 * Projectile.MaxUpdates;
 
             Projectile.scale = Utils.GetLerpValue(0, 40, Projectile.timeLeft, true);
 

@@ -47,8 +47,8 @@ BallisticPoisonBomb: {
 	DisplayName: Ballistic Poison Bomb
 	Tooltip:
 		'''
-		Throws a sticky bomb that explodes into spikes and venomous clouds
-		Stealth strikes erupt into more clouds with a longer lasting venom
+		Throws a sticky bomb that explodes into spikes and [cbuff:Venom] clouds
+		Stealth strikes erupt into more clouds with a longer lasting [cbuff:Venom]
 		'''
 }
 
@@ -79,7 +79,7 @@ BloodsoakedCrasher: {
 		Throws a bloody axe that is affected by gravity and can bounce twice
 		The axe speeds up over time, but will slow down upon hitting an enemy
 		Spews blood orbs upon enemy hits
-		Picking up these blood orbs reduces the duration of [cbuff:PotionSickness]
+		Picking up these blood orbs reduces the duration of [cbuffplr:PotionSickness]
 		Stealth strikes spawn homing blood bolts on hit
 		'''
 }
@@ -107,7 +107,7 @@ BurningStrife: {
 	DisplayName: Burning Strife
 	Tooltip:
 		'''
-		Throws a shadowflame spiky ball that explodes into flames
+		Throws a [cbuff:CalamityMod/Shadowflame] spiky ball that explodes into flames
 		Stealth strikes make the ball erupt into tentacles on hit
 		'Definitely not pocket safe'
 		'''
@@ -157,7 +157,7 @@ ContaminatedBile: {
 	DisplayName: Contaminated Bile
 	Tooltip:
 		'''
-		Throws a flask of irradiated bile which shatters and lingers in a cloud
+		Throws a flask of [cbuff:CalamityMod/Irradiated] bile which shatters and lingers in a cloud
 		Stealth strikes cause sulphuric bubbles to quickly rise from the cloud
 		'''
 }
@@ -259,8 +259,8 @@ CursedDagger: {
 	DisplayName: Cursed Dagger
 	Tooltip:
 		'''
-		Throws a fast cursed dagger and two inaccurate weaker daggers
-		Stealth strikes throw a single dagger that bursts into a vortex of cursed flames
+		Throws a fast cursed dagger and two inaccurate weaker daggers that inflict [cbuff:CursedInferno]
+		Stealth strikes throw a single dagger that bursts into a [cbuff:CursedInferno] vortex
 		'''
 }
 
@@ -278,7 +278,7 @@ DeepWounder: {
 	DisplayName: Deep Wounder
 	Tooltip:
 		'''
-		Throws an abyssal hatchet that inflicts Heavy Bleeding and Crush Depth to the enemies it hits
+		Throws an abyssal hatchet that inflicts [cbuff:CalamityMod/HeavyBleeding] and [cbuff:CalamityMod/CrushDepth] to the enemies it hits
 		Stealth strikes cause the hatchet to stick to struck enemies, releasing a barrage of water projectiles
 		Water projectiles launch at the closest enemy after a brief delay
 		'''
@@ -299,7 +299,7 @@ DesecratedWater: {
 	Tooltip:
 		'''
 		Throws an unholy flask of water that explodes into an explosion of evil bubbles
-		Stealth strikes spawn additional bubbles that inflict Ichor and Cursed Inferno
+		Stealth strikes spawn additional bubbles that inflict [cbuff:Ichor] and [cbuff:CursedInferno]
 		'''
 }
 
@@ -378,7 +378,7 @@ EpidemicShredder: {
 	DisplayName: Epidemic Shredder
 	Tooltip:
 		'''
-		Throws a plagued boomerang that releases plague seekers when it hits tiles or enemies
+		Throws a [cbuff:CalamityMod/Plague] boomerang that releases plague seekers when it hits tiles or enemies
 		Stealth strikes cause the boomerang to release plague seekers constantly as it travels
 		Contrary to its name, it will probably cause an epidemic if used incorrectly
 		'''
@@ -388,7 +388,7 @@ Equanimity: {
 	DisplayName: Equanimity
 	Tooltip:
 		'''
-		Throws a confusing boomerang that ricochets between enemies
+		Throws a boomerang that ricochets between enemies and makes them [cbuff:Confused]
 		Enemy hits alternate summoning homing light shards or piercing dark shards
 		Stealth strikes cause an alternating explosion of light or dark on every ricochet, empowering the opposite color of shard
 		'''
@@ -398,7 +398,7 @@ ExecutionersBlade: {
 	DisplayName: Executioner's Blade
 	Tooltip:
 		'''
-		Throws a stream of homing blades
+		Throws a stream of homing blades that inflict [cbuff:CalamityMod/GodSlayerInferno]
 		Stealth strikes summon a guillotine of blades on hit
 		'''
 }
@@ -477,7 +477,7 @@ GelDart: {
 	DisplayName: Gel Dart
 	Tooltip:
 		'''
-		Throws bouncing gel darts that cover struck enemies in slime
+		Throws bouncing gel darts that cover enemies in [cbuff:Slimed]
 		Stealth strikes ignore gravity, bounce more vigorously, and constantly leak slime
 		'''
 }
@@ -537,7 +537,7 @@ GraveGrimreaver: {
 		Hurls a cursed scythe which homes in
 		The scythe summons skulls as it flies and explodes into bats on hit
 		Stealth strikes spawn a flood of bats and falling skulls when destroyed
-		Inflicts cursed flames and confusion
+		Inflicts [cbuff:CursedInferno] and [cbuff:Confused]
 		'A dapper skeleton's weapon of choice'
 		'''
 }
@@ -593,7 +593,7 @@ IchorSpear: {
 	DisplayName: Ichor Spear
 	Tooltip:
 		'''
-		Throws a high-velocity ichor tipped javelin that pierces through enemies
+		Throws a high-velocity [cbuff:Ichor] tipped javelin that pierces through enemies
 		Stealth strikes impale enemies and deal repeated damage
 		'''
 }
@@ -612,7 +612,7 @@ InfestedClawmerang: {
 	Tooltip:
 		'''
 		Fires a slow, long-ranged boomerang
-		Stealth strikes grant the Mushy buff to the user on enemy hits and summon homing spores
+		Stealth strikes grant the [cbuffplr:CalamityMod/Mushy] buff to the user on enemy hits and summon homing spores
 		'''
 }
 
@@ -629,9 +629,9 @@ JawsOfOblivion: {
 	DisplayName: Jaws of Oblivion
 	Tooltip:
 		'''
-		Throws a tight spread of six venomous reaper teeth that stick in enemies
-		This venom can stack when more teeth are stuck in an enemy
-		Stealth strikes cause the teeth to emit a crushing shockwave on impact
+		Throws a tight spread of six reaper teeth with [cbuff:Venom] that stick in enemies
+		The [cbuff:Venom] can stack when more teeth are stuck in an enemy
+		Stealth strikes cause the teeth to emit a crushing [cbuff:CalamityMod/HadopelagicPressure] shockwave on impact
 		'You're gonna need a bigger boat'
 		'''
 }
@@ -688,8 +688,8 @@ Lionfish: {
 	DisplayName: Lionfish
 	Tooltip:
 		'''
-		Sticks to enemies and injects a potent venom
-		This venom can stack when more lionfish are stuck in an enemy
+		Sticks to enemies and injects a potent [cbuff:Venom]
+		The [cbuff:Venom] can stack when more lionfish are stuck in an enemy
 		Stealth strikes spawn homing urchin spikes as they travel
 		'''
 }
@@ -698,7 +698,7 @@ LunarKunai: {
 	DisplayName: Lunar Kunai
 	Tooltip:
 		'''
-		Throws out a set of three kunai that ignore gravity and slightly home in on enemies
+		Throws out a set of three kunai that ignore gravity and slightly home in on enemies, inflicting [cbuff:CalamityMod/Nightwither]
 		After traveling enough distance, the kunai supercharge with lunar energy, homing in far more aggressively and exploding on impact
 		Stealth strikes instantly throw ten supercharged Kunai
 		'''
@@ -708,7 +708,7 @@ Malachite: {
 	DisplayName: Malachite
 	Tooltip:
 		'''
-		Throws a stream of kunai that stick to enemies and explode
+		Throws a stream of kunai that stick to enemies and explode into [cbuff:CalamityMod/Plague]
 		Press <right> to throw a single kunai that pierces, after piercing an enemy it emits a massive explosion on the next enemy hit
 		Stealth strikes fire three kunai that home in, stick to enemies, and explode
 		'''
@@ -773,13 +773,13 @@ Mycoroot: {
 		'''
 		Fires a stream of short-range fungal roots
 		Stealth strikes spawn an explosion of fungi spores
-		This grants you and nearby players on your team the Mushy buff for 15 seconds
+		This grants you and nearby players on your team the [cbuffplr:CalamityMod/Mushy] buff for 15 seconds
 		'''
 }
 
 MythrilKnife: {
 	DisplayName: Mythril Knife
-	Tooltip: Stealth strikes are coated in deadly toxins, inflicting irradiated, poison, and acid venom
+	Tooltip: Stealth strikes are coated in deadly toxins, inflicting [cbuff:CalamityMod/Irradiated], [cbuff:Poisoned], and [cbuff:Venom]
 }
 
 NanoblackReaper: {
@@ -847,7 +847,7 @@ Plaguenade: {
 	DisplayName: Plaguenade
 	Tooltip:
 		'''
-		Releases a swarm of angry plague bees
+		Releases a swarm of angry [cbuff:CalamityMod/Plague] bees
 		Stealth strikes spawn more bees and generate a larger explosion
 		'''
 }
@@ -975,8 +975,8 @@ ScourgeoftheSeas: {
 	DisplayName: Scourge of the Seas
 	Tooltip:
 		'''
-		Snaps apart into irradiated clouds upon striking an enemy
-		Stealth strikes irradiate for longer and are additionally coated with venomous toxins
+		Snaps apart into [cbuff:CalamityMod/Irradiated] clouds upon striking an enemy
+		Stealth strikes cause a longer [cbuff:CalamityMod/Irradiated] and are additionally coated with [cbuff:Venom]
 		'''
 }
 
@@ -1068,8 +1068,8 @@ SnapClam: {
 	DisplayName: Snap Clam
 	Tooltip:
 		'''
-		Can latch on enemies and deal damage over time
-		Stealth strikes throw five clams at once that cause increased damage over time
+		Can latch on enemies and inflict [cbuff:CalamityMod/SnapClamDebuff]
+		Stealth strikes throw five clams at once
 		'''
 }
 
@@ -1098,7 +1098,7 @@ SpentFuelContainer: {
 		'''
 		Throws a fuel container with trace amounts of plutonium that causes a nuclear explosion
 		The explosion does not occur if there are no tiles below it
-		Stealth strikes leave a lingering irradiated zone after the explosion dissipates
+		Stealth strikes leave a lingering [cbuff:CalamityMod/Irradiated] zone after the explosion dissipates
 		'War Never Changes'
 		'''
 }
@@ -1107,7 +1107,7 @@ SporeKnife: {
 	DisplayName: Spore Knife
 	Tooltip:
 		'''
-		Throws an overgrown dagger that bursts into a cloud of poisonous spores
+		Throws an overgrown dagger that bursts into a cloud of [cbuff:Poisoned] spores
 		Stealth strikes erupt into hungry homing buds that stick to enemies and gnaw them
 		'''
 }
@@ -1137,7 +1137,7 @@ StormfrontRazor: {
 	DisplayName: Stormfront Razor
 	Tooltip:
 		'''
-		Throws a knife that summons lightning on hit
+		Throws a knife that summons [cbuff:CalamityMod/StaticDischarge] lightning on hit
 		Stealth strikes cause the knife to be faster and summon multiple lightning bolts on hit
 		[c/24C7F0:'Strike and stem the flow']
 		'''
@@ -1158,7 +1158,7 @@ Supernova: {
 		'''
 		Tosses a smart bomb that locks onto and tracks targets
 		If no target is found it will return to you
-		Each bomb creates a miniature supernova that drags in weak enemies and chases strong enemies
+		Each bomb creates a miniature [cbuff:CalamityMod/MiracleBlight] supernova that drags in weak enemies and chases strong enemies
 		Stealth strikes create a blast that shakes the foundations of reality itself
 		'''
 }
@@ -1206,10 +1206,10 @@ TheOldReaper: {
 	DisplayName: The Old Reaper
 	Tooltip:
 		'''
-		Throws an irradiated scythe that cuts through enemies
+		Throws a [cbuff:CalamityMod/SulphuricPoisoning] scythe that cuts through enemies
 		Deposits unstable isotopes on hit, which create delayed nuclear explosions when they decay
 		Stealth strikes are thrown into the sky and fall upon enemies a few seconds later
-		On hit, stealth strikes create a focused deluge of acid rain
+		On hit, stealth strikes create a focused deluge of [cbuff:CalamityMod/SulphuricPoisoning] acid rain
 		'''
 }
 
@@ -1218,8 +1218,8 @@ TheSyringe: {
 	Tooltip:
 		'''
 		Throws a high velocity syringe that increases damage as it travels
-		Shatters into glass and plague cinders on impact
-		Stealth strikes also shatter into plague bees
+		Shatters into glass and [cbuff:CalamityMod/Plague] cinders on impact
+		Stealth strikes also shatter into [cbuff:CalamityMod/Plague] bees
 		'I'm pretty sure this isn't healthy'
 		'''
 }
@@ -1237,7 +1237,7 @@ TimeBolt: {
 	DisplayName: Time Bolt
 	Tooltip:
 		'''
-		Throws a temporal knife that distorts time around enemies
+		Throws a temporal knife that causes [cbuff:CalamityMod/TimeDistortion] around enemies
 		Stealth strikes can hit more enemies and create a larger time field
 		'There should be no boundary to human endeavor'
 		'''
@@ -1258,7 +1258,7 @@ TotalityBreakers: {
 	Tooltip:
 		'''
 		Explodes into highly flammable black tar
-		Black tar oils enemies and sets them alight
+		Black tar makes enemies [cbuff:Oiled] and lights them with [cbuff:OnFire3]
 		Stealth strikes leak black tar as they fly
 		'I need a bigger breaker'
 		'''
@@ -1268,8 +1268,8 @@ ToxicantTwister: {
 	DisplayName: Toxicant Twister
 	Tooltip:
 		'''
-		Throws a fan of four spinning disks that swirl around your cursor
-		Stealth strikes swirl in a wider range and create a vortex of toxic raindrops that home in on enemies
+		Throws a fan of four spinning disks that swirl around your cursor and inflict [cbuff:CalamityMod/SulphuricPoisoning]
+		Stealth strikes swirl in a wider range and create a vortex of [cbuff:CalamityMod/SulphuricPoisoning] raindrops that home in on enemies
 		'''
 }
 
@@ -1287,7 +1287,7 @@ TwistingThunder: {
 	DisplayName: Twisting Thunder
 	Tooltip:
 		'''
-		Fires a lightning bolt to electrocute enemies
+		Fires an [cbuff:Electrified] lightning bolt to electrocute enemies
 		The lightning bolt travels faster while it is raining
 		Summons lightning from the sky on impact
 		Stealth strikes summon more lightning and travel faster
@@ -1298,9 +1298,9 @@ UrchinStinger: {
 	DisplayName: Urchin Stinger
 	Tooltip:
 		'''
-		Sticks into enemies and injects an extremely potent poison
-		Stealth strikes stick into and poison enemies for longer
-		Sticking seven stingers in an enemy with a stealth strike stuck in it spawns an irradiated blast
+		Sticks into enemies and injects an extremely potent [cbuff:Poisoned] effect
+		Stealth strikes stick into and make enemies [cbuff:Poisoned] for longer
+		Sticking seven stingers in an enemy with a stealth strike stuck in it spawns an [cbuff:CalamityMod/Irradiated] blast
 		'''
 }
 
@@ -1308,8 +1308,8 @@ UtensilPoker: {
 	DisplayName: Utensil Poker
 	Tooltip:
 		'''
-		Fires utensils in bursts of three
-		Stealth strikes replace any utensil with a powerful butcher knife
+		Fires utensils in bursts of three that cause [cbuff:CalamityMod/HeavyBleeding]
+		Stealth strikes replace any utensil with a powerful butcher knife that causes [cbuff:CalamityMod/Laceration]
 		'Space chickens, that is all'
 		'''
 }
@@ -1349,7 +1349,7 @@ WebBall: {
 	DisplayName: Web Ball
 	Tooltip:
 		'''
-		Throws a web-covered ball that covers enemies in cobwebs to slow them down
+		Throws a web-covered ball that gets enemies [cbuff:Webbed] and slows them down
 		Stealth strikes slow enemies down longer
 		'''
 }
@@ -1370,7 +1370,7 @@ Wrathwing: {
 	DisplayName: Wrathwing
 	Tooltip:
 		'''
-		Throws an agile, homing winged spear that constantly spits fire
+		Throws an agile, homing winged spear of [cbuff:CalamityMod/Dragonfire] that constantly spits fire
 		Stealth strikes create an eruption of cinders on hit
 		'''
 }

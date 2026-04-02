@@ -28,6 +28,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
             Projectile.DamageType = TrueMeleeNoSpeedDamageClass.Instance;
+            Projectile.ContinuouslyUpdateDamageStats = true;
             Projectile.ownerHitCheck = true;
             Projectile.usesIDStaticNPCImmunity = true;
             Projectile.idStaticNPCHitCooldown = 3;
@@ -82,16 +83,6 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.netUpdate = true;
 
             Projectile.velocity = newVelocity;
-        }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 300);
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 300);
         }
 
         public override Color? GetAlpha(Color lightColor) => new Color(200, 200, 200, 170);

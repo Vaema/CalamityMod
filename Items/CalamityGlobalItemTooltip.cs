@@ -8,6 +8,7 @@ using CalamityMod.CustomRecipes;
 using CalamityMod.DataStructures;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
+using CalamityMod.Items.Accessories.Wings;
 using CalamityMod.Items.Armor.Demonshade;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.VanillaArmorChanges;
@@ -162,6 +163,20 @@ namespace CalamityMod.Items
                 }
             }
 
+            //Replace Crit Chance with Crit Damage on applicable tooltips
+            if (CalamityItemSets.ShowScalingCritDamageTooltip[item.type])
+            {
+                float cdmg = 2f + Main.LocalPlayer.Calamity().critDamage + Main.LocalPlayer.GetTotalCritChance(item.DamageType) * 0.02f;
+                tooltips.FirstOrDefault(x => x.Name == "CritChance")!.Text = CalamityUtils.GetText("Common.CritDamageTootip").Format(cdmg.ToPercent());
+            }
+            
+            //Add "Uses X Minion Slots right above "Uses X Mana"
+            if (ItemID.Sets.StaffMinionSlotsRequired[item.type] > 1 || ContentSamples.ProjectilesByType[item.shoot].minionSlots > 0)
+            {
+                tooltips.Insert(tooltips.FindIndex(0, (x) => x.Name == "Knockback") + 1, new(Mod, "Minions", CalamityUtils.GetText(ItemID.Sets.StaffMinionSlotsRequired[item.type] > 1 ? "Common.MinionSlotCost" : "Common.MinionSlotCostSingle").Format(ItemID.Sets.StaffMinionSlotsRequired[item.type])));
+            }
+
+
             // Everything below this line can only apply to modded items. If the item is vanilla, stop here for efficiency.
             if (item.type < ItemID.Count)
                 return;
@@ -187,7 +202,7 @@ namespace CalamityMod.Items
                 // If holding SHIFT, actually display the extended tooltip.
                 if (holdingShift && firstTooltipIndex != -1)
                 {
-                    string holdShiftText = item.ModItem.GetLocalizedValue(holdShiftItem.TooltipExtensionKey);
+                    string holdShiftText = holdShiftItem.TooltipExtensionText == LocalizedText.Empty ? item.ModItem.GetLocalizedValue(holdShiftItem.TooltipExtensionKey) : holdShiftItem.TooltipExtensionText.ToString();
                     TooltipLine holdShiftLine = new TooltipLine(Mod, IHoldShiftTooltipItem.ExtensionTooltipID, holdShiftText);
                     if (holdShiftItem.TooltipExtensionColor is not null)
                         holdShiftLine.OverrideColor = holdShiftItem.TooltipExtensionColor;
@@ -278,8 +293,9 @@ namespace CalamityMod.Items
                 tooltips.Insert(++difficultyTooltipIndex, donorLine);
             }
 
-            var buffIdsInTooltip = new HashSet<int>();
-
+            // The int is the buff ID
+            // The byte determines what information to show; 0 = enemy, 1 = player, 2 = both
+            var buffIdsInTooltip = new Dictionary<int, byte>();
             foreach (var tooltip in tooltips)
             {
                 // Parse the tags of each line of text to find our buff tags'
@@ -287,9 +303,18 @@ namespace CalamityMod.Items
                 var snippets = ChatManager.ParseMessage(tooltip.Text, Color.White);
                 foreach (var snippet in snippets)
                 {
-                    if (snippet is CalamityBuffTagHandler.Snippet buffSnippet)
+                    if (snippet is BuffTagEnemyEffectHandler.Snippet enemy)
                     {
-                        buffIdsInTooltip.Add(buffSnippet.BuffId);
+                        if (!buffIdsInTooltip.ContainsKey(enemy.BuffId))
+                            buffIdsInTooltip.Add(enemy.BuffId, 0);
+                    }
+                    else if (snippet is BuffTagPlayerEffectHandler.Snippet player)
+                    {
+                        if (!buffIdsInTooltip.TryAdd(player.BuffId, 1))
+                        {
+                            buffIdsInTooltip.Remove(player.BuffId);
+                            buffIdsInTooltip.Add(player.BuffId, 2);
+                        }
                     }
                 }
             }
@@ -298,26 +323,36 @@ namespace CalamityMod.Items
             {
                 bool showTheTip = false;
                 bool foundDebuff = false;
-                foreach (int buffId in buffIdsInTooltip)
+                foreach (var buffInfo in buffIdsInTooltip)
                 {
                     string tooltipKey = "";
-                    if (buffId < BuffID.Count)
+                    string secondTooltipKey = "";
+                    // Change the localization based on whether it should display player or enemy info, or both
+                    string locKey = buffInfo.Value == 1 ? "ItemTooltipPlayer" : "ItemTooltipEnemy";
+                    string secondLocKey = buffInfo.Value == 2 ? "ItemTooltipPlayer" : "";
+
+                    if (buffInfo.Key < BuffID.Count)
                     {
-                        tooltipKey = $"Mods.Terraria.Buffs.{BuffID.Search.GetName(buffId)}.ItemTooltip";
+                        tooltipKey = $"Mods.Terraria.Buffs.{BuffID.Search.GetName(buffInfo.Key)}.{locKey}";
+                        if (buffInfo.Value == 2)
+                            secondTooltipKey = $"Mods.Terraria.Buffs.{BuffID.Search.GetName(buffInfo.Key)}.{secondLocKey}";
                     }
                     else
                     {
-                        var modBuff = BuffLoader.GetBuff(buffId);
-                        tooltipKey = $"Mods.{modBuff.Mod.Name}.Buffs.{modBuff.Name}.ItemTooltip";
+                        var modBuff = BuffLoader.GetBuff(buffInfo.Key);
+                        tooltipKey = $"Mods.{modBuff.Mod.Name}.Buffs.{modBuff.Name}.{locKey}";
+                        if (buffInfo.Value == 2)
+                            secondTooltipKey = $"Mods.{modBuff.Mod.Name}.Buffs.{modBuff.Name}.{secondLocKey}";
                     }
 
-                    if (!Language.Exists(tooltipKey))
-                    {
-                        continue;
-                    }
+                    var text = "";
+                    var secondText = "";
+                    if (Language.Exists(tooltipKey))
+                        text = Language.GetTextValue(tooltipKey);
+                    if (Language.Exists(secondTooltipKey))
+                        secondText = Language.GetTextValue(secondTooltipKey);
 
-                    var text = Language.GetTextValue(tooltipKey);
-                    if (string.IsNullOrWhiteSpace(text))
+                    if (string.IsNullOrWhiteSpace(text) && string.IsNullOrWhiteSpace(secondText))
                     {
                         continue;
                     }
@@ -329,7 +364,11 @@ namespace CalamityMod.Items
                         break;
                     }
 
-                    tooltips.Insert(++lastTooltipIndex, new TooltipLine(Mod, "CalamityMod:AltExpandTooltip" + buffId, $"[cbuff:{buffId}]\n{text}"));
+                    string extraLoc = GetTextValue(buffInfo.Value == 1 ? "Buffs.OnPlayer" : "Buffs.OnEnemy");
+                    if (!string.IsNullOrWhiteSpace(text))
+                        tooltips.Insert(++lastTooltipIndex, new TooltipLine(Mod, "CalamityMod:AltExpandTooltip" + buffInfo.Key, $"[cbuff:{buffInfo.Key}] {extraLoc}\n{text}"));
+                    if (buffInfo.Value == 2 && !string.IsNullOrWhiteSpace(secondText))
+                        tooltips.Insert(++lastTooltipIndex, new TooltipLine(Mod, "CalamityMod:AltExpandTooltip" + buffInfo.Key, $"[cbuff:{buffInfo.Key}] {GetTextValue("Buffs.OnPlayer")}\n{secondText}"));
                 }
 
                 if (showTheTip)
@@ -859,10 +898,7 @@ namespace CalamityMod.Items
 
             // Crimson
             if (item.type == ItemID.CrimsonHelmet || item.type == ItemID.CrimsonScalemail || item.type == ItemID.CrimsonGreaves)
-            {
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("3%", "6%"));
                 EditTooltipByNum(0, (line) => line.Text += AddedTooltip("CrimsonArmorPieces"));
-            }
 
             // Magic Hat nerf
             if (item.type == ItemID.MagicHat)
@@ -901,19 +937,9 @@ namespace CalamityMod.Items
             if (item.type == ItemID.CobaltHat)
                 EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("40", $"{CobaltArmorSetChange.MaxManaBoost + 40}"));
 
-            // Palladium
-            if (item.type == ItemID.PalladiumBreastplate)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("3%", $"{PalladiumArmorSetChange.ChestplateDamagePercentageBoost + 3}%"));
-            if (item.type == ItemID.PalladiumLeggings)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("2%", $"{PalladiumArmorSetChange.LeggingsDamagePercentageBoost + 2}%"));
-
             // Mythril
             if (item.type == ItemID.MythrilHood)
                 EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("60", $"{MythrilArmorSetChange.MaxManaBoost + 60}"));
-
-            // Orichalcum
-            if (item.type == ItemID.OrichalcumBreastplate)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("6%", $"{OrichalcumArmorSetChange.ChestplateCritChanceBoost + 6}%"));
 
             // Adamantite
             if (item.type == ItemID.AdamantiteHeadgear)
@@ -1093,45 +1119,59 @@ namespace CalamityMod.Items
                 float baseJumpSpeed = (CalamityServerConfig.Instance.FasterJumpSpeed ? BalancingConstants.ConfigBoostedBaseJumpSpeed : 5.01f) + 1f;
                 StringBuilder sb = new StringBuilder(512);
                 sb.Append('\n');
-                sb.Append(CalamityUtils.GetText($"Common.WingStats").Format(time.FramesToSeconds(), run.ToMph(), (tMax * baseJumpSpeed).ToMph()));
-                sb.Append('\n');
                 if (Main.keyState.PressingShift())
                 {
-                    sb.Append(CalamityUtils.GetText($"Common.WingStatsAcceleration").Format(rAcc.ToMphps(), asc.ToMphps(), (asc + rise).ToMphps(), (rMax * baseJumpSpeed).ToMph(), (asc + fall).ToMphps()));
+                    sb.Append(GetText($"Common.WingStatsFull").Format(time.FramesToSeconds(),
+                    BaseWings.HorizontalSpeedText(run), run.ToMph(),
+                    BaseWings.VerticalSpeedText(tMax), (tMax * baseJumpSpeed).ToMph(),
+                    BaseWings.HorizontalAccelerationText(stats.AccRunAccelerationMult), rAcc.ToMphps(),
+                    BaseWings.VerticalAccelerationText(asc), asc.ToMphps(),
+                    (asc + rise).ToMphps(), (rMax * baseJumpSpeed).ToMph(),
+                    (asc + fall).ToMphps()));
                     if (hover)
                     {
                         sb.Append('\n');
-                        sb.Append(CalamityUtils.GetText($"Common.WingStatsHover").Format(hSpeed.ToMph(), hAcc.ToMphps()));
+                        sb.Append(GetText($"Common.WingStatsHover").Format(hSpeed.ToMph(), hAcc.ToMphps()));
                     }
                 }
                 else
-                    sb.Append($"[c/B8B8B8:{CalamityUtils.GetTextValue("UI.HoldShiftTooltipExtensionIndicator")}]");
+                {
+                    sb.Append(GetText($"Common.WingStats").Format(time.FramesToSeconds(), BaseWings.HorizontalSpeedText(run), BaseWings.VerticalSpeedText(tMax),
+                    BaseWings.HorizontalAccelerationText(stats.AccRunAccelerationMult), BaseWings.VerticalAccelerationText(asc)));
+                    sb.Append('\n');
+                    sb.Append($"[c/B8B8B8:{GetTextValue("UI.HoldShiftTooltipExtensionIndicator")}]");                
+                }
 
                 if (extraKey != null)
                 {
                     sb.Append('\n');
-                    sb.Append(CalamityUtils.GetTextValue($"Vanilla.Wings.{extraKey}"));
+                    sb.Append(GetTextValue($"Vanilla.Wings.{extraKey}"));
                 }
                 return sb.ToString();
             }
 
             // This function is shorthand for appending a stat sheet to a pair of wings.
-            void AddWingStats(int slot, float fall, float rise, float rMax, float tMax, float asc, string extraKey = null) => EditTooltipByNum(0, (line) => line.Text += WingStatsTooltip(ArmorIDs.Wing.Sets.Stats[slot], fall, rise, rMax, tMax, asc, extraKey));
+            void AddWingStats(int slot, float fall, float rise, float rMax, float tMax, float asc, string extraKey = null)
+            {
+                TooltipLine commonWingTooltipLine = tooltips.FirstOrDefault(x => x.Text == Language.GetTextValue("CommonItemTooltip.FlightAndSlowfall") && x.Mod == "Terraria");
+                if (commonWingTooltipLine != null)
+                    commonWingTooltipLine.Text += WingStatsTooltip(ArmorIDs.Wing.Sets.Stats[slot], fall, rise, rMax, tMax, asc, extraKey);
+            }
 
             if (item.type == ItemID.CreativeWings)
                 AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
 
             if (item.type == ItemID.AngelWings)
-                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.95f, 0.15f);
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.8f, 0.135f);
 
             if (item.type == ItemID.DemonWings)
-                AddWingStats(item.wingSlot, 1f, 0.2f, 1f, 1.5f, 0.1f, "DemonWings");
+                AddWingStats(item.wingSlot, 1f, 0.1f, 0.5f, 1.5f, 0.1f, "DemonWings");
 
             if (item.type == ItemID.Jetpack)
                 AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
 
             if (item.type == ItemID.ButterflyWings)
-                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.35f, 0.5f);
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1f, 0.5f);
 
             if (item.type == ItemID.FairyWings)
                 AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
@@ -1146,13 +1186,13 @@ namespace CalamityMod.Items
                 AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.66f, 0.1f, "BoneWings");
 
             if (item.type == ItemID.FlameWings)
-                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.8f, 0.135f);
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.66f, 0.125f);
 
             if (item.type == ItemID.FrozenWings)
                 AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
 
             if (item.type == ItemID.GhostWings)
-                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.5f);
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1f, 0.5f);
 
             if (item.type == ItemID.BeetleWings)
                 AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.66f, 0.1f);

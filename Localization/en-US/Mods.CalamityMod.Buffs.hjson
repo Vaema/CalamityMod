@@ -1,3 +1,7 @@
+// General (Player) and (Enemy) indicators for buff tags
+OnPlayer: (Player)
+OnEnemy: (Enemy)
+
 // Alcohols (including Odd Mushroom)
 AlcoholPoisoning: {
 	DisplayName: Alcohol Poisoning
@@ -129,85 +133,104 @@ Withered: {
 AstralInfectionDebuff: {
 	DisplayName: Astral Infection
 	Description: Your flesh is melting off
-	ItemTooltip: Sickness - 37.5 DPS
+	ItemTooltipPlayer: Sickness - 12 DPS
+	ItemTooltipEnemy: Sickness - 37.5 DPS
 }
 
 AuricRebuke: {
 	DisplayName: Auric Rebuke
 	Description: Your cells are violently bouncing off each other
-	ItemTooltip: Electric - 100 DPS. Deals 4x damage against moving targets
+	ItemTooltipPlayer: Electric - 8 DPS. Deals 5x damage against moving players
+	ItemTooltipEnemy: Electric - 100 DPS. Deals 4x damage against moving targets
 }
 
 BanishingFire: {
 	DisplayName: Banishing Fire
 	Description: You shall not be forgiven for your sins
-	ItemTooltip: Heat - Deals DPS equal to 0.1% of max HP or 2000, whichever is greater
+	ItemTooltipEnemy: Heat - Deals DPS equal to 0.1% of max HP or 2000, whichever is greater
 }
 
 BrimstoneFlames: {
 	DisplayName: Brimstone Flames
 	Description: Incinerating both body and mind
-	ItemTooltip: Heat - 30 DPS
+	ItemTooltipPlayer: Heat - 15 DPS
+	ItemTooltipEnemy: Heat - 30 DPS
 }
 
 BurningBlood: {
 	DisplayName: Burning Blood
 	Description: Your blood is on fire
-	ItemTooltip: Sickness - 20 DPS
+	ItemTooltipPlayer: Sickness - 4 DPS
+	ItemTooltipEnemy: Sickness - 20 DPS
 }
 
 BrainRot: {
 	DisplayName: Brain Rot
 	Description: Your neurons are popping like corn kernels
-	ItemTooltip: Sickness - 20 DPS
+	ItemTooltipPlayer: Sickness - 4 DPS
+	ItemTooltipEnemy: Sickness - 20 DPS
 }
 
 DemonicFlames: {
 	DisplayName: Demonic Flames
 	Description: Immolating flames sear your soul
-	ItemTooltip: Heat - DPS depends on inflicting item
+	ItemTooltipEnemy: Heat - DPS depends on inflicting item
 }
 
 ElementalMix: {
 	DisplayName: Elemental Mix
 	Description: A beautiful elemental symphony is flaying you alive
-	ItemTooltip: Typeless - 200 DPS
+	ItemTooltipEnemy: Typeless - 200 DPS
 }
 
 CrushDepth: {
 	DisplayName: Crush Depth
 	Description: Crushed by aquatic pressure
-	ItemTooltip: Water - 50 DPS
-}
-
-RiptideDebuff: {
-	DisplayName: Riptide
-	Description: Lashed at by powerful waters
-	ItemTooltip: Water - 15 DPS
+	ItemTooltipPlayer:
+		'''
+		Water - 9 DPS
+		Increases breath loss rate in the Abyss
+		'''
+	ItemTooltipEnemy: Water - 50 DPS
 }
 
 Dragonfire: {
 	DisplayName: Dragonfire
 	Description: Engulfed by roaring flames
-	ItemTooltip: Heat - 480 DPS
+	ItemTooltipPlayer: Heat - 25 DPS
+	ItemTooltipEnemy: Heat - 480 DPS
 }
 
 GodSlayerInferno: {
 	DisplayName: God Slayer Inferno
 	Description: Your flesh is burning off
-	ItemTooltip: Heat - 250 DPS
+	ItemTooltipPlayer: Heat - 20 DPS
+	ItemTooltipEnemy: Heat - 250 DPS
+}
+
+HadopelagicPressure: {
+	DisplayName: Hadopelagic Pressure
+	Description: Rapidly sinking to a watery grave
+	ItemTooltipPlayer:
+		'''
+		Water - 20 DPS
+		Increases breath loss rate in the Abyss
+		'''
+	ItemTooltipEnemy: Water - 175 DPS
 }
 
 HeavyBleeding: {
 	DisplayName: Heavy Bleeding
 	Description: That's gonna need stitches
-	ItemTooltip: Typeless - 40 DPS
+	ItemTooltipPlayer: Typeless - 8 DPS
+	ItemTooltipEnemy: Typeless - 40 DPS
 }
 
 HolyFlames: {
 	DisplayName: Holy Flames
 	Description: Dissolving from holy light
-	ItemTooltip: Heat - 150 DPS
+	ItemTooltipPlayer: Heat - 20 DPS
+	ItemTooltipEnemy: Heat - 150 DPS
 }
 
 HolyInferno: {
@@ -218,41 +241,52 @@ HolyInferno: {
 Laceration: {
 	DisplayName: Laceration
 	Description: You're a bloody mess
-	ItemTooltip: Typeless - 200 DPS
+	ItemTooltipPlayer: Typeless - 18 DPS
+	ItemTooltipEnemy: Typeless - 200 DPS
 }
 
 ManaBurn: {
 	DisplayName: Mana Burn
 	Description: The excess of mana sears your body and mind
-	ItemTooltip:
+	ItemTooltipEnemy:
 		'''
 		Typeless
-		Every 100 negative mana reduces your life regen by 4 HP/s, but burns enemies for 3% of dealt damage
+		Every 100 negative mana reduces your life regen by 4 HP/s, but burns enemies for 5% of dealt damage
 		'''
 }
 
 MiracleBlight: {
 	DisplayName: Miracle Blight
 	Description: Exotic resonance shreds your corporeal form
-	ItemTooltip: Typeless - 1500 DPS
+	ItemTooltipPlayer: Typeless - 30 DPS
+	ItemTooltipEnemy: Typeless - 1500 DPS
 }
 
 Nightwither: {
 	DisplayName: Nightwither
 	Description: Incinerated by lunar rays
-	ItemTooltip: Cold - 100 DPS
+	ItemTooltipPlayer: Cold - 20 DPS
+	ItemTooltipEnemy: Cold - 100 DPS
 }
 
 Plague: {
 	DisplayName: Plague
 	Description: Rotting from the inside
-	ItemTooltip: Sickness - 50 DPS
+	ItemTooltipPlayer: Sickness - 15 DPS
+	ItemTooltipEnemy: Sickness - 50 DPS
+}
+
+RiptideDebuff: {
+	DisplayName: Riptide
+	Description: Lashed at by powerful waters
+	ItemTooltipPlayer: Water - 3 DPS
+	ItemTooltipEnemy: Water - 15 DPS
 }
 
 SagePoison: {
 	DisplayName: Sage Poison
 	Description: Poisoned
-	ItemTooltip:
+	ItemTooltipEnemy:
 		'''
 		Sickness - 25 DPS per Viral Sprout / 50 DPS per Virid Vanguard
 		Ignores 75% of enemy sickness weaknesses and resistances
@@ -262,7 +296,8 @@ SagePoison: {
 SearingLava: {
 	DisplayName: Searing Lava
 	Description: The brimstone lava sears your flesh
-	ItemTooltip:
+	ItemTooltipPlayer: Heat - 15 DPS
+	ItemTooltipEnemy:
 		'''
 		Heat - 20 DPS
 		Ignores enemy heat weaknesses and resistances
@@ -273,37 +308,46 @@ SearingLava: {
 ShellfishClaps: {
 	DisplayName: Shellfish Claps
 	Description: Clamfest
+	ItemTooltipEnemy: Typeless - 75 DPS for each Shellfish minion
 }
 
 Shred: {
 	DisplayName: Shred
 	Description: Someone built ten Tri-Tip Daggers...
-	ItemTooltip: ""
+	ItemTooltipEnemy: ""
 }
 
 SnapClamDebuff: {
 	DisplayName: Clammed
 	Description: Clapped by Snap Clams
+	ItemTooltipEnemy: Typeless - 7.5 DPS for each latched clam
 }
 
 StaticDischarge: {
 	DisplayName: Static Discharge
 	Description: Shocked by static electricity
-	ItemTooltip: Electric - 2.5 DPS. 4x damage to moving targets
+	ItemTooltipPlayer: Electric - 1.5 DPS. 4x damage to moving players
+	ItemTooltipEnemy: Electric - 2.5 DPS. 4x damage to moving targets
 }
 
 SulphuricPoisoning: {
 	DisplayName: Sulphuric Poisoning
 	Description: The acidic water burns away your flesh
-	ItemTooltip: Sickness - 120 DPS
+	ItemTooltipPlayer: Sickness - 3 DPS
+	ItemTooltipEnemy: Sickness - 175 DPS
 }
 
 TrueVulnerabilityHex: {
 	DisplayName: True Vulnerability Hex
 	Description: The end has come
-	ItemTooltip:
+	ItemTooltipPlayer:
 		'''
-		Heat - 1998 DPS
+		Heat - 25 DPS
+		Increases damage taken from all sources
+		'''
+	ItemTooltipEnemy:
+		'''
+		Heat - 1332 DPS
 		Increases damage taken from all sources
 		Slows enemies
 		'''
@@ -312,7 +356,7 @@ TrueVulnerabilityHex: {
 Vaporfied: {
 	DisplayName: Vaporfied
 	Description: Vape
-	ItemTooltip:
+	ItemTooltipEnemy:
 		'''
 		Typeless - 15 DPS
 		Slows enemies
@@ -322,19 +366,26 @@ Vaporfied: {
 VermillionFlux: {
 	DisplayName: Vermillion Flux
 	Description: Sharp arcs of scarlet course through you
-	ItemTooltip: Electric - 50 DPS. Deals 4x damage against moving targets
+	ItemTooltipPlayer: Electric - 5 DPS. 5x damage to moving players
+	ItemTooltipEnemy: Electric - 37.5 DPS. 4x damage to moving targets
 }
 
 Voidfrost: {
 	DisplayName: Voidfrost
 	Description: The emptiness of space devours all warmth and life
-	ItemTooltip: Cold - 200 DPS
+	ItemTooltipPlayer: Cold - 20 DPS
+	ItemTooltipEnemy: Cold - 250 DPS
 }
 
 VulnerabilityHex: {
 	DisplayName: Vulnerability Hex
 	Description: Your mental fortitude is fading
-	ItemTooltip:
+	ItemTooltipPlayer:
+		'''
+		Heat - 15 DPS
+		Reduces defense and damage reduction
+		'''
+	ItemTooltipEnemy:
 		'''
 		Heat - 1332 DPS
 		Slows enemies
@@ -713,7 +764,7 @@ AbsorberRegen: {
 		You are blessed by the culmimation of nature's powers
 		Life regen increased by {0} HP/s, damage increased by {1}%, damage reduction increased by {2}%
 		'''
-	ItemTooltip: Increases life regeneration, damage, and damage reduction
+	ItemTooltipPlayer: Increases life regeneration, damage, and damage reduction
 }
 
 AbyssalDivingSuitBuff: {
@@ -738,6 +789,7 @@ AeolianEarthBuff: {
 		You are strengthened by primordial powers
 		Damage reduction increased by {0}%, damage increased by {1}%, and massively buffed mana regen
 		'''
+	ItemTooltipPlayer: Increases damage, damage reduction, and mana regeneration
 }
 
 Afflicted: {
@@ -804,12 +856,13 @@ ChiRegenBuff: {
 CoralSymbiosis: {
 	DisplayName: Coral Symbiosis
 	Description: Coral Spout charges up faster and deals {0} extra damage
+	ItemTooltipPlayer: Increases Coral Spout's charge rate and damage
 }
 
 CosmicFreeze: {
 	DisplayName: Cosmic Freeze
 	Description: You feel as cold as the empty expanse of outer space
-	ItemTooltip: Increases regeneration, especially when standing still, and freezes nearby enemies
+	ItemTooltipPlayer: Increases regeneration, especially when standing still, and freezes nearby enemies
 }
 
 DivineBless: {
@@ -820,6 +873,7 @@ DivineBless: {
 EmpyreanWrath: {
 	DisplayName: Empyrean Wrath
 	Description: Wrath of the cosmos
+	ItemTooltipPlayer: Increases damage and critical strike chance
 }
 
 Encased: {
@@ -870,7 +924,7 @@ IceShieldBuff: {
 Mushy: {
 	DisplayName: Mushy
 	Description: Increased defense by {0} and life regen by {1} HP/s
-	ItemTooltip: Increases defense and life regeneration
+	ItemTooltipPlayer: Increases defense and life regeneration
 }
 
 PhantomicEmpowerment: {
@@ -941,7 +995,7 @@ ReaverRage: {
 		Rage of the earth
 		Defense increased by {0} and damage increased by {1}%
 		'''
-	ItemTooltip: Increased defense and damage
+	ItemTooltipPlayer: Increased defense and damage
 }
 
 SandsWindBuff: {
@@ -951,6 +1005,7 @@ SandsWindBuff: {
 		You are strengthened by the powers of sand
 		Defense increased by {0}, damage increased by {1}%, and greatly buffed mana regen 
 		'''
+	ItemTooltipPlayer: Increases damage, defense, and mana regeneration
 }
 
 SilvaRevival: {
@@ -986,14 +1041,14 @@ TarragonImmunity: {
 TarraLifeRegen: {
 	DisplayName: Tarra Life
 	Description: Rapid healing
-	ItemTooltip: ""
+	ItemTooltipPlayer: ""
 }
 
 // Stat debuffs
 AbsorberAffliction: {
 	DisplayName: Absorber Affliction
 	Description: Damn nature, you scary!
-	ItemTooltip: Sickness - 200 DPS
+	ItemTooltipEnemy: Sickness - 200 DPS
 }
 
 AndromedaCripple: {
@@ -1004,13 +1059,25 @@ AndromedaCripple: {
 ArmorCrunch: {
 	DisplayName: Armor Crunch
 	Description: Your armor is shredded
-	ItemTooltip: Damage Reduction is 15% less effective
+	ItemTooltipPlayer: Reduces defense and damage reduction
+	ItemTooltipEnemy: Damage Reduction is 15% less effective
+}
+
+Bane: {
+	DisplayName: Bane
+	Description: An ancient curse envelops you
+	ItemTooltipEnemy:
+		'''
+		Typeless - 20 DPS
+		Does not scale with debuff multipliers
+		Scales based on your critical strike chance
+		'''
 }
 
 Crumbling: {
 	DisplayName: Crumbling
 	Description: Your armor is damaged
-	ItemTooltip: Damage Reduction is 8% less effective
+	ItemTooltipEnemy: Damage Reduction is 8% less effective
 }
 
 Clamity: {
@@ -1035,7 +1102,7 @@ Enraged: {
 Eutrophication: {
 	DisplayName: Eutrophication
 	Description: Excessive nutrients restrict your movement
-	ItemTooltip: Slows enemies
+	ItemTooltipEnemy: Slows enemies
 }
 
 ExoFreeze: {
@@ -1056,19 +1123,7 @@ FrozenLungs: {
 GalvanicCorrosion: {
 	DisplayName: Galvanic Corrosion
 	Description: Your limbs have begun to corrode
-	ItemTooltip: Slows enemies
-}
-
-GlacialState: {
-	DisplayName: Glacial State
-	Description: Cannot move
-	ItemTooltip: Freezes enemies
-}
-
-HadopelagicPressure: {
-	DisplayName: Hadopelagic Pressure
-	Description: Rapidly sinking to a watery grave
-	ItemTooltip: Water - 200 DPS
+	ItemTooltipEnemy: Slows enemies
 }
 
 IcarusFolly: {
@@ -1083,7 +1138,12 @@ IcarusFolly: {
 Irradiated: {
 	DisplayName: Irradiated
 	Description: Your skin is burning off
-	ItemTooltip:
+	ItemTooltipPlayer:
+		'''
+		Typeless - 2 DPS
+		Reduces defense and damage reduction
+		'''
+	ItemTooltipEnemy:
 		'''
 		Typeless - 10 DPS
 		Increases damage taken from Sickness debuffs
@@ -1093,12 +1153,13 @@ Irradiated: {
 MarkedforDeath: {
 	DisplayName: Marked for Death
 	Description: Damage reduction reduced
-	ItemTooltip: Damage reduction is 50% less effective
+	ItemTooltipEnemy: Damage reduction is 50% less effective
 }
 
 PearlAura: {
 	DisplayName: Pearl Aura
 	Description: Slowed down
+	ItemTooltipEnemy: Slows enemies
 }
 
 ProfanedWeakness: {
@@ -1109,13 +1170,13 @@ ProfanedWeakness: {
 TemporalSadness: {
 	DisplayName: Temporal Sadness
 	Description: You are crying
-	ItemTooltip: Freezes enemies
+	ItemTooltipEnemy: Slows enemies
 }
 
 TimeDistortion: {
 	DisplayName: Time Distortion
 	Description: Time is slowed
-	ItemTooltip: Slows enemies
+	ItemTooltipEnemy: Slows enemies
 }
 
 Warped: {
@@ -1131,7 +1192,8 @@ WeakPetrification: {
 WhisperingDeath: {
 	DisplayName: Whispering Death
 	Description: Death approaches; attack power and life regen reduced
-	ItemTooltip: Reduced contact damage
+	ItemTooltipPlayer: Negates life regen, reduces damage
+	ItemTooltipEnemy: Reduced contact damage
 }
 
 WitherDebuff: {
@@ -1141,6 +1203,7 @@ WitherDebuff: {
 		Withered...
 		Defense decreased by {0}
 		'''
+	ItemTooltipEnemy: Decreases defense
 }
 
 // Summons
@@ -1287,11 +1350,6 @@ DankCreeperBuff: {
 DazzlingStabberBuff: {
 	DisplayName: Dazzling Stabber
 	Description: En garde!
-}
-
-DemonshadeSetDevilBuff: {
-	DisplayName: Red Devil
-	Description: The red devil will protect you
 }
 
 EnchantedKnifeStaffBuff: {
@@ -1679,12 +1737,14 @@ PopoNoselessBuff: {
 
 Daybroken: {
 	DisplayName: Daybroken
-	ItemTooltip: Heat - 100 DPS
+	ItemTooltipPlayer: Heat - 20 DPS
+	ItemTooltipEnemy: Heat - 100 DPS
 }
 
 Shadowflame: {
 	DisplayName: Shadowflame
-	ItemTooltip: Heat - 30 DPS
+	ItemTooltipPlayer: Heat - 15 DPS
+	ItemTooltipEnemy: Heat - 30 DPS
 }
 
 ForbiddenStealthSummonTagBuff: {
@@ -1700,4 +1760,25 @@ SeaKingsAssurance: {
 CnidarianSummonTagBuff: {
 	DisplayName: Cnidarian Summon Tag Buff
 	Description: you are not seeing this
+}
+
+SmashedEvil: {
+	DisplayName: Smashed Evil
+	Description: Increased damage, movement speed, and regeneration
+	ItemTooltipEnemy:
+		'''
+		All types - 20 DPS
+		+5 damage taken
+		'''
+	ItemTooltipPlayer:
+		'''
+		Regen returns to full strength 200% faster
+		10% increased damage
+		20% increased movement speed
+		'''
+}
+
+VoidConcentrationSummonTagBuff: {
+	DisplayName: Void Concentration Summon Tag Buff
+	Description: You should never see this.
 }
