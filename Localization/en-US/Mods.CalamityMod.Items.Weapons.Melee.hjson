@@ -906,7 +906,7 @@ Nadir: {
 	DisplayName: Nadir
 	Tooltip:
 		'''
-		Fires void essences which flay nearby enemies with [cbuff:CalamityMod/Nightwither] tentacles
+		Fires void essences which flay nearby enemies with [cbuff:CalamityMod/Voidfrost] tentacles
 		'The abyss has stared back at you long enough. It now speaks, and it does not speak softly'
 		'''
 }
