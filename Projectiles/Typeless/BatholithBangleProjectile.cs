@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Particles;
+using CalamityMod.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -117,9 +118,7 @@ namespace CalamityMod.Projectiles.Typeless
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            modifiers.SetCrit();
-            float critDamage = Math.Min(Owner.GetTotalCritChance(AverageDamageClass.Instance) * 0.01f, 1f);
-            modifiers.SourceDamage *= 1 + critDamage;
+            modifiers.ApplyScalingForcedCrit(Projectile);
 
             Vector2 launchVel = Utils.DirectionTo(Owner.Center, target.Center) - Vector2.UnitY;
             float launchPower = 9;
