@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.height = 32;
             Item.damage = 27;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 10;
+            Item.mana = 14;
             Item.useAnimation = Item.useTime = 19;
             Item.knockBack = 0.25f;
             Item.shoot = ModContent.ProjectileType<LightningArc>();
