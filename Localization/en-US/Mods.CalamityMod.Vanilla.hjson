@@ -410,3 +410,166 @@ WitchDoctorChat: {
 }
 
 WizardChat.Hardmode: Space just got way too close for comfort.
+
+TownNPCMood: {
+	// Default dialogues if, for example, a modded NPC does not have a dialogue line registered
+	DefaultMonument: I hate The Monument.
+	DefaultGiftPositive: I love The Gift.
+	DefaultGiftNegative: I hate The Gift.
+
+	Angler: {
+		Monument: That monument is sooooooo ugly! I think it needs some chopped fish thrown allllll over it!
+		GiftPositive: Hey! I don't know how you got a hold of all that squishy gross stuff in that gift, but it might be the best prank material I've ever seen! He he he!
+		GiftNegative: Are you stupid?! I would NEVER fall for such a laaaaame gift prank like that! You better catch a lot of awesome fish to make up!
+	}
+
+	ArmsDealer: {
+		Monument: Was anyone really itchin' to have a big ol' statue in my firing ground, because I wasn't!
+		GiftPositive: That new ammo belt was just the gift I've been lookin' for, buddy! Let's test it out together later!
+		GiftNegative: Do you know what you're doin' by pullin' a bomb in a box prank on me? I can kill you in over seven hundred ways, and that's just with my guns!
+	}
+
+	BestiaryGirl: {
+		Monument: placeholder
+		GiftPositive: placeholder
+		GiftNegative: placeholder
+	}
+
+	Clothier: {
+		Monument: placeholder
+		GiftPositive: placeholder
+		GiftNegative: placeholder
+	}
+
+	Cyborg: {
+		Monument: Analysis of nearby monument: Provides zero positive qualities to all lifeforms nearby.
+		GiftPositive: Gift content scan revealed extremely pure silicon for use in upgraded processors. It appears I appreicate that.
+		GiftNegative: Gift content scan revealed attempt to trigger malfunction in my systems. Translation: I hate this.
+	}
+
+	DD2Bartender: {
+		Monument: placeholder
+		GiftPositive: placeholder
+		GiftNegative: placeholder
+	}
+
+	Demolitionist: {
+		Monument: placeholder
+		GiftPositive: placeholder
+		GiftNegative: placeholder
+	}
+
+	Dryad: {
+		Monument: placeholder
+		GiftPositive: placeholder
+		GiftNegative: placeholder
+	}
+
+	DyeTrader: {
+		Monument: placeholder
+		GiftPositive: placeholder
+		GiftNegative: placeholder
+	}
+
+	GoblinTinkerer: {
+		Monument: placeholder
+		GiftPositive: placeholder
+		GiftNegative: placeholder
+	}
+
+	Golfer: {
+		Monument: placeholder
+		GiftPositive: placeholder
+		GiftNegative: placeholder
+	}
+
+	Guide: {
+		Monument: I quite dislike that monument you have over there. How could one have such little humbleness!
+		GiftPositive: A thoughtful gift in this world is always a welcome sight. I greatly appreciate it!
+		GiftNegative: Apologies, I'm currently in shock over your decision to gift me my own voodoo doll. If only I could curse you!
+	}
+
+	Mechanic: {
+		Monument: placeholder
+		GiftPositive: placeholder
+		GiftNegative: placeholder
+	}
+
+	Merchant: {
+		Monument: That awful monument is driving away my business!
+		GiftPositive: What a lovely gift of exotic wares you gave me, friend! Please peruse my shop at clearance rates.
+		GiftNegative: Why offer a "gift" of rubbish Angel Statues? I tire of your jokes, so if you want business, it'll be extra.
+	}
+
+	Nurse: {
+		Monument: Eww, who would put such an ugly rock in this town?
+		GiftPositive: Hey! Thanks for that gift from earlier. You ever need face reconstruction, you know who to call.
+		GiftNegative: YOU, I hope you understand that gifting the ONLY DOCTOR HERE some snake oil is how to make me never want to treat you!
+	}
+
+	Painter: {
+		Monument: placeholder
+		GiftPositive: placeholder
+		GiftNegative: placeholder
+	}
+
+	PartyGirl: {
+		Monument: placeholder
+		GiftPositive: placeholder
+		GiftNegative: placeholder
+	}
+
+	Pirate: {
+		Monument: placeholder
+		GiftPositive: placeholder
+		GiftNegative: placeholder
+	}
+
+	Princess: {
+		Monument: placeholder
+		GiftPositive: placeholder
+		GiftNegative: placeholder
+	}
+
+	SantaClaus: {
+		Monument: placeholder
+		GiftPositive: placeholder
+		GiftNegative: placeholder
+	}
+
+	Steampunker: {
+		Monument: placeholder
+		GiftPositive: placeholder
+		GiftNegative: placeholder
+	}
+
+	Stylist: {
+		Monument: placeholder
+		GiftPositive: placeholder
+		GiftNegative: placeholder
+	}
+
+	TaxCollector: {
+		Monument: HA! Yes! What a fantastic monument celebrating what I have accomplished!
+		GiftPositive: What a steal, getting a gift full of the only thing worth a damn in this world -- money!
+		GiftNegative: Bah! You think you're a jester with that lump of coal? Get out of my sight!
+	}
+
+	Truffle: {
+		Monument: Your kind have very strange decorative tastes, such as that monument nearby.
+		GiftPositive: I love them, my new gifted shroomble companions. It's great to see more of our kind around here!
+		GiftNegative: A little pig jumped out of that gift you gave me earlier, and tried to eat my face! Perhaps I can't trust you either.
+	}
+
+	WitchDoctor: {
+		Monument: placeholder
+		GiftPositive: placeholder
+		GiftNegative: placeholder
+	}
+
+	Wizard: {
+		Monument: placeholder
+		GiftPositive: placeholder
+		GiftNegative: placeholder
+	}
+}

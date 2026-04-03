@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Tools
@@ -79,6 +80,15 @@ namespace CalamityMod.Items.Tools
             {
                 self._currentPriceAdjustment += TheMonument.MonumentHappinessReduction;
                 self.LimitAndRoundMultiplier(self._currentPriceAdjustment);
+                string dialogueKey;
+                if (npc.type < NPCID.Count)
+                    dialogueKey = $"Mods.CalamityMod.Vanilla.TownNPCMood.{NPCID.Search.GetName(npc.type)}.Monument";
+                else
+                {
+                    var modNPC = NPCLoader.GetNPC(npc.type);
+                    dialogueKey = $"Mods.{modNPC.Mod.Name}.NPCs.{modNPC.Name}.TownNPCMood.Monument";
+                }
+                self._currentHappiness += Language.Exists(dialogueKey) ? Language.GetTextValue(dialogueKey) : CalamityUtils.GetTextValue("Vanilla.TownNPCMood.DefaultMonument") + " ";
             }
 
             // The Gift sets happiness to a fixed either extremely high or extremely low value, depending on its random state.
@@ -89,6 +99,18 @@ namespace CalamityMod.Items.Tools
                     self._currentPriceAdjustment = 0.5f;
                 else
                     self._currentPriceAdjustment = 1.75f;
+
+                string locKey = gift.Value ? "GiftPositive" : "GiftNegative";
+                string dialogueKey;
+                if (npc.type < NPCID.Count)
+                    dialogueKey = $"Mods.CalamityMod.Vanilla.TownNPCMood.{NPCID.Search.GetName(npc.type)}.{locKey}";
+                else
+                {
+                    var modNPC = NPCLoader.GetNPC(npc.type);
+                    dialogueKey = $"Mods.{modNPC.Mod.Name}.NPCs.{modNPC.Name}.TownNPCMood.{locKey}";
+                }
+                // Yes, it's intentional that this completely overrides all other happiness report dialogue
+                self._currentHappiness = Language.Exists(dialogueKey) ? Language.GetTextValue(dialogueKey) : CalamityUtils.GetTextValue($"Vanilla.TownNPCMood.Default{locKey}") + " ";
             }
         }
     }
