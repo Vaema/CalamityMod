@@ -899,7 +899,7 @@ namespace CalamityMod.CalPlayer
                     {
                         if (Player.ownedProjectileCounts[ProjectileType<PhantomicDagger>()] < 3 && Main.rand.NextBool(4))
                         {
-                            int damage = (int)Player.GetTotalDamage<SummonDamageClass>().ApplyTo(100);
+                            int damage = (int)Player.GetTotalDamage<SummonDamageClass>().ApplyTo(PhantomicArtifact.DaggerDamage);
                             Projectile.NewProjectile(source, Player.Center, new Vector2(Player.velocity.X,Player.velocity.Y-10).RotatedByRandom(0.3f), ProjectileType<PhantomicDagger>(), damage, 1f, Player.whoAmI);
                         }
                     }
