@@ -336,7 +336,7 @@ namespace CalamityMod.Projectiles.Ranged
                     blast.ArmorPenetration = Projectile.ArmorPenetration;
                 }
                 if (damageMult >= 0.75f)
-                    Owner.SetScreenshake(6f * damageMult);
+                    Owner.SetScreenshake(3f * damageMult);
             }
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
@@ -351,7 +351,6 @@ namespace CalamityMod.Projectiles.Ranged
             }
             if (damageMult >= 0.75f)
             {
-                Owner.SetScreenshake(4f * damageMult);
                 float angle = Main.rand.NextFloat(0, MathHelper.TwoPi);
                 for (int i = -6; i <= 6; i++) // 12
                 {
