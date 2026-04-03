@@ -77,7 +77,7 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.rotation = 0f;
             }
             //Pulses happen every 4 seconds, divided by how much mana the totem has stored
-            int pulseMax = (modPlayer.fleshTotemManaStorage * 3 / 10);
+            float pulseMax = Utils.Remap(modPlayer.fleshTotemManaStorage, 0, FleshTotem.manaStorageMax, FleshTotem.MaxDelay, FleshTotem.MinDelay);
             //Ensure the pulse timer can never go below 1 second
             if (pulseMax < 60)
             {
