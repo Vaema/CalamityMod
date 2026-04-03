@@ -951,8 +951,9 @@ namespace CalamityMod.CalPlayer
         public bool v8Engine = false;
         public bool v8000Engine = false;
         public bool v8EngineFXPlayed = false;
-        public bool procDodgeEffects = true;
+        public bool procDodgeEffects = false;
         public bool nanotech = false;
+        public int nanotechHitCooldown = 0;
         public bool deadshotBrooch = false;
         public bool shadowMinions = false;
         public bool holyMinions = false;
@@ -973,6 +974,9 @@ namespace CalamityMod.CalPlayer
         public bool community = false;
         public bool shatteredCommunity = false;
         public bool fleshTotem = false;
+        public bool fleshTotemMinion = false;
+        public bool fleshTotemVisual = false;
+        public int fleshTotemManaStorage = 0;
         public bool bloodPact = false;
         public bool bloodflareCore = false;
         public int bloodflareCoreRemainingHealOverTime = 0;
@@ -1094,7 +1098,9 @@ namespace CalamityMod.CalPlayer
         public bool eclipseMirror = false;
         public bool featherCrown = false;
         public bool moonCrown = false;
-        public int rogueCrownCooldown = 0;
+        public bool mageCrownVisibility = false;
+        public int mageCrownTimer = 0;
+        public int mageCrownCount = 0;
         public bool dragonScales = false;
         public bool gloveOfPrecision = false;
         public bool gloveOfRecklessness = false;
@@ -2410,6 +2416,7 @@ namespace CalamityMod.CalPlayer
             v8Engine = false;
             v8000Engine = false;
             nanotech = false;
+            nanotechHitCooldown = 0;
             deadshotBrooch = false;
             tesla = false;
             teslaVisuals = true;
@@ -2445,6 +2452,8 @@ namespace CalamityMod.CalPlayer
             stressPills = false;
             laudanum = false;
             fleshTotem = false;
+            fleshTotemVisual = false;
+            fleshTotemMinion = false;
             bloodPact = false;
             bloodflareCore = false;
             chaliceOfTheBloodGod = false;
@@ -2631,6 +2640,7 @@ namespace CalamityMod.CalPlayer
             eclipseMirror = false;
             featherCrown = false;
             moonCrown = false;
+            mageCrownVisibility = false;
             dragonScales = false;
             gloveOfPrecision = false;
             gloveOfRecklessness = false;
@@ -3126,7 +3136,7 @@ namespace CalamityMod.CalPlayer
             andromedaCripple = 0;
             theBeeCooldown = 0;
             scuttlerCooldown = 0;
-            rogueCrownCooldown = 0;
+            mageCrownTimer = 0;
             wingProjectileCooldown = 0;
             hallowedRuneCooldown = 0;
             sulphurBubbleCooldown = 0;
@@ -4850,6 +4860,29 @@ namespace CalamityMod.CalPlayer
         }
         #endregion
 
+        #region PreItemChecks
+        public override bool PreItemCheck()
+        {
+            //For use when the player runs out of mana. Currently only used for Feather and Moonstone Crown
+            if (Player.HeldItem.mana > 0 && Player.controlUseItem && Player.itemAnimation == 0)
+            {
+                if (!Player.CheckMana(Player.HeldItem, -1, false, true))
+                {
+                    if (moonCrown || featherCrown)
+                    {
+                        if (mageCrownCount > 0)
+                        {
+                            mageCrownCount = 0;
+                            mageCrownTimer = 300;
+                        }
+                        if (mageCrownCount < 0) mageCrownCount = 0;
+                    }
+                }
+            }
+            return true;
+        }
+        #endregion
+
         #region PostUpdateEquips
         public override void PostUpdateEquips()
         {
@@ -6298,6 +6331,18 @@ namespace CalamityMod.CalPlayer
                     life.scale = Main.rand.NextFloat(1.5f, 1.72f);
                     life.fadeIn = 0.7f;
                     life.noGravity = true;
+                }
+            }
+
+            if (modPlayer.fleshTotem)
+            {
+                if (Main.myPlayer == Player.whoAmI)
+                {
+                    fleshTotemManaStorage += manaConsumed;
+                    if (fleshTotemManaStorage >= FleshTotem.manaStorageMax)
+                    {
+                        fleshTotemManaStorage = FleshTotem.manaStorageMax;
+                    }
                 }
             }
         }

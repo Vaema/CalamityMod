@@ -3,6 +3,7 @@ using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Rarities;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -16,6 +17,11 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class ThreadOfEradication : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ShowScalingCritDamageTooltip[Type] = true;
+        }
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
             tooltips.FindAndReplaceAll("ff00ff", Utils.Hex3(DevourerofGodsHead.SpecialMoveColor));
@@ -24,7 +30,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 40;
             Item.height = 82;
-            Item.damage = 2570;
+            Item.damage = 1500;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = Item.useAnimation = 45;
             Item.useStyle = ItemUseStyleID.Shoot;

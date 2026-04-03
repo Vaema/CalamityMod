@@ -156,11 +156,13 @@ namespace CalamityMod.Buffs
                 }
             }
 
+            if (type == BuffID.Frozen)
+            {
+                npc.Calamity().frozen = true;
+            }
             if (type == BuffID.Webbed)
             {
                 npc.Calamity().webbed = true;
-                if ((CalamityNPCSets.ResistSlowingDebuffsAndOtherSpecialEffects[npc.type] || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
-                    npc.Calamity().debuffResistanceTimer = CalamityGlobalNPC.slowingDebuffResistanceMin + npc.buffTime[buffIndex];
             }
             if (type == BuffID.Electrified)
             {
