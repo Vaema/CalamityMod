@@ -792,7 +792,7 @@ FleshTotem: {
 	Tooltip:
 		'''
 		5% increased magic critical strike chance
-		+30 max mana
+		+20 max mana
 		Summons an effigy above your head that stores mana as you use it, up to 600 mana
 		The effigy occasionally pulses, restoring 20 mana
 		Pulses appear more frequently the more mana is stored
@@ -1130,7 +1130,7 @@ MoonstoneCrown: {
 	DisplayName: Moonstone Crown
 	Tooltip:
 		'''
-		+70 max mana
+		+40 max mana
 		Summons a [c/27F5E0:Lunar Sigil] every 2 seconds, up to a maximum of 10
 		Each [c/27F5E0:Lunar Sigil] increases magic damage by 2% and reduces mana cost by 1%
 		With 5 sigils, increases mana regeneration by +5 MP/s
