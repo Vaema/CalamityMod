@@ -1,13 +1,17 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.Linq;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Boss;
+using CalamityMod.Utilities.Daybreak;
+using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Graphics.PackedVector;
 using Terraria;
 using Terraria.Audio;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -25,6 +29,8 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override void SetDefaults()
         {
+            ProjectileID.Sets.TrailCacheLength[Type] = 8;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
             Projectile.width = 20;
             Projectile.height = 20;
             Projectile.friendly = true;
@@ -36,6 +42,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.localNPCHitCooldown = 30;
             Projectile.timeLeft = 600;
             Projectile.tileCollide = false;
+            Projectile.scale = 0.75f;
         }
 
         public override bool? CanHitNPC(NPC target)
@@ -51,6 +58,14 @@ namespace CalamityMod.Projectiles.Rogue
         NPC target = null;
         public override void AI()
         {
+            Projectile.frameCounter++;
+            if (Projectile.frameCounter > 3)
+            {
+                Projectile.frame++;
+                Projectile.frameCounter = 0;
+            }
+            if (Projectile.frame >= Main.projFrames[Type])
+                Projectile.frame = 0;
 
             if (Projectile.originalDamage == 0)
             {
@@ -61,7 +76,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 Projectile.Calamity().HomingTarget = target.whoAmI;
                 var dis = Projectile.Distance(target.Center);
-                Projectile.velocity = Projectile.velocity.ToRotation().AngleLerp(Projectile.DirectionTo(target.Center).ToRotation(), (Projectile.Distance(target.Center) < 160 ? 0.1f + (1 - dis/160)*0.4f : 0.1f)).ToRotationVector2() * Projectile.velocity.Length();
+                Projectile.velocity = Projectile.velocity.ToRotation().AngleLerp(Projectile.DirectionTo(target.Center).ToRotation(), (Projectile.Distance(target.Center) < 160 ? 0.1f + (1 - dis / 160) * 0.4f : 0.1f)).ToRotationVector2() * Projectile.velocity.Length();
             }
             else
             {
@@ -90,13 +105,60 @@ namespace CalamityMod.Projectiles.Rogue
             SoundEngine.PlaySound(SoundID.DD2_BetsyFireballImpact.WithPitchOffset(0.6f), Projectile.Center);
             SoundEngine.PlaySound(SoundID.Item100.WithPitchOffset(0.4f), Projectile.Center);
         }
-
         public override bool PreDraw(ref Color lightColor)
         {
+
+            Main.spriteBatch.End(out var ss);
+            var device = Main.instance.GraphicsDevice;
+            using var lease = RenderTargetPool.Shared.Rent(
+                device,
+                Main.screenWidth / 2,
+                Main.screenHeight / 2,
+                RenderTargetDescriptor.Default
+            );
+            using (lease.Scope(clearColor: Color.Transparent))
+            {
+                var list = Projectile.oldPos.Take(8).ToList();
+
+                GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
+                PrimitiveRenderer.RenderTrail(list.ToArray(), new(FireWidthFunction, FireColorFunction, (_, _) => Projectile.Size * 0.5f, smoothen: true, pixelate: false, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"], useUnscaledMatrices: true), Projectile.oldPos.Length + 32);
+            }
+
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.Transform);
+            Main.spriteBatch.Draw(lease.Target, Vector2.Zero, null, Color.White * 0.75f, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0f);
+            Main.spriteBatch.End();
+
+            Main.spriteBatch.Begin(ss);
+
             Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             var frame = tex.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
-            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, frame, Color.White, Projectile.rotation, frame.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, frame, Color.White, Projectile.rotation, frame.Size() *0.5f, Projectile.scale, SpriteEffects.None, 0);
             return false;
+        }
+        public float FireWidthFunction(float completion, Vector2 pos)
+        {
+            float width;
+            float maxBodyWidth = 16f * Projectile.scale;
+            float curveRatio = 0.2f;
+            var positions = Projectile.oldPos.ToList();
+            positions.RemoveAll(x => x == Vector2.Zero);
+            // Crop the tip of the trail into a conic shape.
+            if (completion < curveRatio)
+                width = MathF.Pow(completion / curveRatio, 0.5f) * maxBodyWidth;
+            else
+                width = Utils.Remap(completion, curveRatio, 1f, maxBodyWidth, 0f);
+
+            // Pulse inwards and outwards over time.
+            float pulseInterpolant = MathF.Cos(MathHelper.Pi * completion - Main.GlobalTimeWrappedHourly * 20f) * 0.5f + 0.5f;
+            float additionalPulseWidth = MathHelper.Lerp(0f, 12f, pulseInterpolant);
+            return (width + additionalPulseWidth) * positions.Count() / (float)ProjectileID.Sets.TrailCacheLength[Type];
+        }
+
+        public Color FireColorFunction(float completion, Vector2 pos)
+        {
+            Color mainColor = ProvUtils.GetProjectileColor(255);
+            Color endColor = Color.Lerp(mainColor, Color.Transparent, Utils.GetLerpValue(0.8f, 1f, completion, true));
+            return Color.Lerp(mainColor, endColor, completion) * Projectile.Opacity;
         }
 
         NPC GetTargetInRange(float range)

@@ -93,16 +93,16 @@ namespace CalamityMod.Projectiles.Rogue
 
                         List<Vector2> posList = [];
                         //For the prim to render properly I need to divide the distance between the positions into a couple points. Just using start and end doesn't render.
-                        for (var i = 0; i <= 10; i++)
+                        for (var i = 0; i <= 2; i++)
                         {
-                            posList.Add(Vector2.Lerp(Projectile.position, LinePos.end, i / 10f));
+                            posList.Add(Vector2.Lerp(Projectile.position, LinePos.end, i / 2f));
                         }
                         var pos = posList.ToArray();
 
                         GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
-                        PrimitiveRenderer.RenderTrail(pos, new(FireWidthFunction, FireColorFunction, (_, _) => Projectile.Size * 0.5f, smoothen: true, pixelate: false, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"], useUnscaledMatrices: true), pos.Length + 32);
+                        PrimitiveRenderer.RenderTrail(pos, new(FireWidthFunction, FireColorFunction, (_, _) => Projectile.Size * 0.5f, smoothen: true, pixelate: false, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"], useUnscaledMatrices: true), pos.Length);
                         GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
-                        PrimitiveRenderer.RenderTrail(pos, new(FireCoreWidthFunction, FireCoreColorFunction, (_, _) => Projectile.Size * 0.5f, smoothen: true, pixelate: false, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"], useUnscaledMatrices: true), pos.Length + 24);
+                        PrimitiveRenderer.RenderTrail(pos, new(FireCoreWidthFunction, FireCoreColorFunction, (_, _) => Projectile.Size * 0.5f, smoothen: true, pixelate: false, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"], useUnscaledMatrices: true), pos.Length);
                     }
 
                     Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);

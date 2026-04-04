@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -96,8 +97,21 @@ namespace CalamityMod.Projectiles.Rogue
             int shardCount = strongSplit ? 5 : 3;
             for (var i = 0; i < shardCount; i++)
             {
-                var p = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, new Vector2(0,-1).RotatedByRandom(1) * (strongSplit ? 10 : 7.5f), ModContent.ProjectileType<FossilShardThrown>(), 0 /*Shard dmg is set in its AI*/, Projectile.knockBack, Projectile.owner, 0f, 0f);
+                var p = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, new Vector2(0,-1).RotatedByRandom(1) * (strongSplit ? 10 : 7.5f) * Main.rand.NextFloat(0.9f,1.1f), ModContent.ProjectileType<FossilShardThrown>(), 0 /*Shard dmg is set in its AI*/, Projectile.knockBack, Projectile.owner, 0f, 0f);
                 p.localNPCImmunity[target.whoAmI] = 30;
+            }
+            for (int i = 0; i < shardCount; i++)
+            {
+                int sparkLifetime = Main.rand.Next(8, 22);
+                float sparkScale = Main.rand.NextFloat(0.5f, 1f);
+                var sparkColor = Main.rand.NextBool() ? Color.DarkGoldenrod : Color.SandyBrown;
+
+                if (Main.rand.NextBool(5))
+                    sparkScale *= 1.4f;
+
+                Vector2 sparkVelocity = Vector2.UnitY.RotatedByRandom(1) * MathHelper.Lerp(-7.5f, -15, Main.rand.NextFloat());
+                SparkParticle spark = new SparkParticle(target.Center, sparkVelocity, false, sparkLifetime, sparkScale, sparkColor);
+                GeneralParticleHandler.SpawnParticle(spark);
             }
             target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 120);
         }

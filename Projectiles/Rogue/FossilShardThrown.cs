@@ -34,7 +34,16 @@ namespace CalamityMod.Projectiles.Rogue
             }
 
             Projectile.velocity.X *= 0.975f;
-            return true;
+            var tile = Main.tile[(Projectile.Bottom + Vector2.UnitY).ToTileCoordinates()];
+            if (tile.HasUnactuatedTile && tile.TileType == TileID.ConveyorBeltLeft)
+            {
+                Projectile.velocity.X = 2;
+            }
+            else if (tile.HasUnactuatedTile && tile.TileType == TileID.ConveyorBeltRight)
+            {
+                Projectile.velocity.X = -2;
+            }
+                return true;
         }
         public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
         {
