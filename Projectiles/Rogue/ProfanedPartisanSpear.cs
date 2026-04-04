@@ -1,5 +1,5 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.NPCs.Providence;
+using CalamityMod.Items.Weapons.Rogue;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -39,6 +39,12 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void AI()
         {
+            if (Projectile.originalDamage == 0)
+            {
+                Projectile.originalDamage = ProfanedPartisan.SpearBaseDamage;
+                Projectile.ContinuouslyUpdateDamageStats = true;
+            }
+
             float timeGateValue = 30f;
             if (Projectile.ai[0] <= 0f) //Copied from HolySpear.cs
             {

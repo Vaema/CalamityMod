@@ -166,12 +166,7 @@ namespace CalamityMod.Projectiles.Rogue
             if (!strongSplit)
                 for (var i = 0; i < 3; i++)
                 {
-                    var p = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, (Projectile.rotation - MathHelper.PiOver4).ToRotationVector2().RotatedBy((i-1)*0.25f + Main.rand.NextFloat(-0.1f,0.1f)) * 10, splitType, (int)(Projectile.damage * 0.25), Projectile.knockBack, Projectile.owner, 0f, 0f);
-                    p.hostile = false;
-                    p.friendly = true;
-                    p.DamageType = Projectile.DamageType;
-                    if (strongSplit)
-                        p.Calamity().conditionalHomingRange = 600;
+                    var p = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, (Projectile.rotation - MathHelper.PiOver4).ToRotationVector2().RotatedBy((i-1)*0.25f + Main.rand.NextFloat(-0.1f,0.1f)) * 10, splitType, 0, Projectile.knockBack, Projectile.owner, 0f, 0f);
                     p.localNPCImmunity[target.whoAmI] = 60;
                 }
             target.AddBuff(ModContent.BuffType<HolyFlames>(), 180);

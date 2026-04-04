@@ -69,7 +69,7 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (Projectile.originalDamage == 0)
             {
-                Projectile.originalDamage = ProfanedPartisan.ShardBaseDamage;
+                Projectile.originalDamage = ProfanedPartisan.StarBaseDamage;
                 Projectile.ContinuouslyUpdateDamageStats = true;
             }
             if (target != null && Projectile.localNPCImmunity[target.whoAmI] <= 0 && target.active && !target.dontTakeDamage)

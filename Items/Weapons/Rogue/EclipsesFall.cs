@@ -17,11 +17,11 @@ namespace CalamityMod.Items.Weapons.Rogue
         /// Base damage of the spear, dynamically updated to match rogue stats.
         /// This is reduced if the spear has less fragments than MaxFragmentCount
         /// </summary>
-        public static int EclipseSpearBaseDmg => 1000;
+        public static int EclipseSpearBaseDmg => 1250;
         /// <summary>
         /// How much damage fragments and sparks should do
         /// </summary>
-        public static float FragmentDmgMult => 0.5f;
+        public static float FragmentDmgMult => 0.33f;
         /// <summary>
         /// How many fragments are spawned per spear hit
         /// </summary>
@@ -36,7 +36,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 82;
             Item.height = 88;
-            Item.damage = 900;
+            Item.damage = 1000;
             Item.knockBack = 3.5f;
             Item.useAnimation = Item.useTime = 24;
             Item.autoReuse = true;

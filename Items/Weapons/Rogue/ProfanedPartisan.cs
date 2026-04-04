@@ -11,12 +11,13 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class ProfanedPartisan : RogueWeapon
     {
-        public static int ShardBaseDamage => 88;
+        public static int SpearBaseDamage => 125;
+        public static int StarBaseDamage => 80;
         public override void SetDefaults()
         {
             Item.width = 68;
             Item.height = 68;
-            Item.damage = 333;
+            Item.damage = 300;
             Item.crit = 15;
             Item.knockBack = 8f;
             Item.useStyle = ItemUseStyleID.Swing;
