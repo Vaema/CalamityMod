@@ -823,10 +823,6 @@ namespace CalamityMod.Items
             }
 
             // Mana Flower tinker buffs.
-            if (item.type == ItemID.MagnetFlower)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("8%", "10%"));
-            if (item.type == ItemID.ArcaneFlower || item.type == ItemID.ManaCloak)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("8%", "12%"));
             if (item.type == ItemID.ArcaneFlower)
                 EditTooltipByNum(2, (line) => line.Text += AddedTooltip("ArcaneFlower"));
 
