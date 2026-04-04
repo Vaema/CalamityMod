@@ -61,8 +61,6 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public Vector2 SquashVector;
 
-        public Vector2 SigilPosition;
-
         public Vector2 IdleMovementVector;
 
         private SlotId SoundSlot;
@@ -90,6 +88,8 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void Load()
         {
             On_Main.HoverOverNPCs += DivineSwineRightClickInteraction;
+            On_Main.DrawInfoAccs_AdjustInfoTextColorsForNPC += AdjustLifeformAnalyzerTextColor;
+
             if (!Main.dedServ)
             {
                 BloomCircle = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
@@ -116,14 +116,16 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 32;
             NPC.height = 34;
             NPC.lifeMax = 999999;
+            NPC.defense = 999999;
+            NPC.rarity = 5;
             NPC.aiStyle = -1;
             NPC.knockBackResist = 0.1f;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.immortal = true;
             NPC.noGravity = true;
-            Banner = NPC.type;
-            BannerItem = ModContent.ItemType<PiggyBanner>();
+            //Banner = NPC.type;
+            //BannerItem = ModContent.ItemType<PiggyBanner>();
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
@@ -132,7 +134,6 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void OnSpawn(IEntitySource source)
         {
             SquashVector = Vector2.One;
-            SigilPosition = NPC.Center;
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -150,7 +151,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             writer.Write(ShouldTurnAway);
             writer.WriteVector2(SquashVector);
             writer.WriteVector2(IdleMovementVector);
-            writer.WriteVector2(SigilPosition);
 
             for (int i = 0; i < 3; i++)
                 writer.Write(NPC.localAI[i]);
@@ -162,7 +162,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             ShouldTurnAway = reader.ReadBoolean();
             SquashVector = reader.ReadVector2();
             IdleMovementVector = reader.ReadVector2();
-            SigilPosition = reader.ReadVector2();
 
             for (int i = 0; i < 3; i++)
                 NPC.localAI[i] = reader.ReadSingle();
@@ -197,7 +196,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             }
 
             SquashVector = Vector2.Lerp(SquashVector, Vector2.One, 0.05f);
-            SigilPosition = Vector2.Lerp(SigilPosition, NPC.Center, 0.015f);
             ShouldTurnAway = NPC.ArcCollisionCheck(-0.3f, 0.3f, 0.05f, optionalCollisionCheckOverride: (arcBasePoint, arcPoint) =>
             {
                 return !Collision.CanHitLine(arcBasePoint, 1, 1, arcPoint, 1, 1) || Collision.WetCollision(arcPoint, 1, 1);
@@ -316,6 +314,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             AdditionalBrightness = Utils.Remap(Timer, 0f, 45f, 1f, 0f, true);
             NPC.scale *= 0.96f;
             NPC.velocity *= 0.9f;
+            NPC.ShowNameOnHover = false;
         }
 
         public void MainBehavior_OfferingFailed()
@@ -358,6 +357,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             }
 
             NPC.velocity *= 0.9f;
+            NPC.ShowNameOnHover = false;
         }
 
         public void HelperBehavior_AvoidTileCollision(float maxSpeed, float turnAwayStrength = 0.125f)
@@ -504,6 +504,18 @@ namespace CalamityMod.NPCs.NormalNPCs
             return true;
         }
 
+        private static void AdjustLifeformAnalyzerTextColor(On_Main.orig_DrawInfoAccs_AdjustInfoTextColorsForNPC orig, Main self, NPC npc, ref Color infoTextColor, ref Color infoTextShadowColor)
+        {
+            orig(self, npc, ref infoTextColor, ref infoTextShadowColor);
+            if (npc.type == ModContent.NPCType<DivineSwine>())
+            {
+                infoTextColor = Color.Lerp(DivineBlue, DivineYellow, MathF.Sin((float)Main.timeForVisualEffects / 45f) * 0.5f + 0.5f);
+                infoTextShadowColor = infoTextColor * 0.1f;
+                infoTextColor.A = Main.mouseTextColor;
+                infoTextShadowColor.A = Main.mouseTextColor;
+            }
+        }
+
         public override void FindFrame(int frameHeight)
         {
             if (NPC.IsABestiaryIconDummy)
@@ -534,7 +546,6 @@ namespace CalamityMod.NPCs.NormalNPCs
 
             Texture2D baseTexture = TextureAssets.Npc[Type].Value;
             Vector2 drawPosition = NPC.Center - screenPos + Vector2.UnitY * NPC.gfxOffY;
-            Vector2 sigilDrawPosition = SigilPosition - screenPos;
             SpriteEffects spriteEffects = NPC.spriteDirection < 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
             var device = Main.graphics.GraphicsDevice;
@@ -548,21 +559,21 @@ namespace CalamityMod.NPCs.NormalNPCs
                 spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, PixelationManager.PixelationMatrix);
 
                 float bloomFlareScale = MathHelper.Lerp(0.4f, 0.7f, MathF.Sin((float)Main.timeForVisualEffects / 60f) * 0.5f + 0.5f) * GlowingVisualScale;
-                spriteBatch.Draw(BloomFlare.Value, sigilDrawPosition, null, NPC.GetAlpha(DivineYellow with { A = 0 }) * (0.8f + AdditionalBrightness), MathHelper.PiOver4, BloomFlare.Size() * 0.5f, bloomFlareScale, 0, 0f);
+                spriteBatch.Draw(BloomFlare.Value, drawPosition, null, NPC.GetAlpha(DivineYellow with { A = 0 }) * (0.8f + AdditionalBrightness), MathHelper.PiOver4, BloomFlare.Size() * 0.5f, bloomFlareScale, 0, 0f);
 
-                spriteBatch.Draw(ShineFlare.Value, sigilDrawPosition, null, NPC.GetAlpha(DivineYellow with { A = 0 }) * (1f + AdditionalBrightness), 0f, MagicStarCircle.Size() * 0.5f, bloomFlareScale, 0, 0f);
-                spriteBatch.Draw(MagicStarCircle.Value, sigilDrawPosition, null, NPC.GetAlpha(DivineYellow with { A = 0 }) * (0.8f + AdditionalBrightness), 0f, MagicStarCircle.Size() * 0.5f, 0.5f * GlowingVisualScale, 0, 0f);
+                spriteBatch.Draw(ShineFlare.Value, drawPosition, null, NPC.GetAlpha(DivineYellow with { A = 0 }) * (1f + AdditionalBrightness), 0f, MagicStarCircle.Size() * 0.5f, bloomFlareScale, 0, 0f);
+                spriteBatch.Draw(MagicStarCircle.Value, drawPosition, null, NPC.GetAlpha(DivineYellow with { A = 0 }) * (0.8f + AdditionalBrightness), 0f, MagicStarCircle.Size() * 0.5f, 0.5f * GlowingVisualScale, 0, 0f);
 
                 spriteBatch.End();
 
                 Effect chromaAbberShader = CalamityShaders.ChromaticAbberationShader.Value;
                 chromaAbberShader.Parameters["abberationStrength"].SetValue(10f);
-                chromaAbberShader.Parameters["impactPosition"].SetValue(sigilDrawPosition);
+                chromaAbberShader.Parameters["impactPosition"].SetValue(drawPosition);
 
                 spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, chromaAbberShader, PixelationManager.PixelationMatrix);
 
                 float starRingScale = MathHelper.Lerp(0.7f, 1f, MathF.Sin((float)Main.timeForVisualEffects / 180f) * 0.5f + 0.5f) * GlowingVisualScale;
-                spriteBatch.Draw(FadedStarRing.Value, sigilDrawPosition, null, NPC.GetAlpha(DivineBlue with { A = 0 }) * (0.7f + AdditionalBrightness), (float)(Main.timeForVisualEffects / 720f) + NPC.whoAmI, FadedStarRing.Size() * 0.5f, starRingScale, 0, 0f);
+                spriteBatch.Draw(FadedStarRing.Value, drawPosition, null, NPC.GetAlpha(DivineBlue with { A = 0 }) * (0.7f + AdditionalBrightness), (float)(Main.timeForVisualEffects / 720f) + NPC.whoAmI, FadedStarRing.Size() * 0.5f, starRingScale, 0, 0f);
 
                 spriteBatch.End();
             }
