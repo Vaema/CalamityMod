@@ -2784,7 +2784,7 @@ namespace CalamityMod.CalPlayer
             if (permafrostsConcoction)
             {
                 Player.manaCost -= 0.15f;
-                Player.statManaMax2 += 50;
+                Player.statManaMax2 += 40;
             }
 
             if (encased)
