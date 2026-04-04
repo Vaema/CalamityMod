@@ -956,7 +956,7 @@ namespace CalamityMod.CalPlayer
         public bool v8Engine = false;
         public bool v8000Engine = false;
         public bool v8EngineFXPlayed = false;
-        public bool procDodgeEffects = true;
+        public bool procDodgeEffects = false;
         public bool nanotech = false;
         public int nanotechHitCooldown = 0;
         public bool deadshotBrooch = false;

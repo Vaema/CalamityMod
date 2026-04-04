@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Particles;
+using CalamityMod.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -54,13 +55,13 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            modifiers.SetCrit();
+            modifiers.ApplyScalingForcedCrit(Projectile);
+
             Player Owner = Main.player[Projectile.owner];
-            float critDamage = Math.Min(Owner.GetTotalCritChance(Projectile.DamageType) * 0.01f, 1f);
             float minMult = 0.25f;
             int hitsToMinMult = 7;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
-            modifiers.SourceDamage *= damageMult + critDamage;
+            modifiers.SourceDamage *= damageMult;
 
             Vector2 launchVel = Projectile.velocity.SafeNormalize(Vector2.UnitX);
             float launchPower = 40;
