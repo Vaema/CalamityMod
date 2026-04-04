@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shootSpeed = 23.5f;
             Item.DamageType = DamageClass.Magic;
             Item.noMelee = true;
-            Item.mana = 12;
+            Item.mana = 16;
             Item.useAnimation = Item.useTime = 21;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.autoReuse = true;
