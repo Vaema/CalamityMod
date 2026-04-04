@@ -3,8 +3,8 @@ using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.NPCs.Providence;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Boss;
 using CalamityMod.Utilities.Daybreak;
 using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.localNPCHitCooldown = 30;
             Projectile.timeLeft = 600;
             Projectile.tileCollide = false;
-            Projectile.scale = 0.75f;
+            Projectile.scale = 1f;
         }
 
         public override bool? CanHitNPC(NPC target)
@@ -107,32 +107,87 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override bool PreDraw(ref Color lightColor)
         {
+            Color hiColor = new Color(255, 155, 25, 255);
+            Color loColor = new Color(255, 0, 0, 0);
 
+            Projectile.Opacity = 1;
             Main.spriteBatch.End(out var ss);
             var device = Main.instance.GraphicsDevice;
-            using var lease = RenderTargetPool.Shared.Rent(
+            using var trailLease = RenderTargetPool.Shared.Rent(
                 device,
                 Main.screenWidth / 2,
                 Main.screenHeight / 2,
                 RenderTargetDescriptor.Default
             );
-            using (lease.Scope(clearColor: Color.Transparent))
-            {
-                var list = Projectile.oldPos.Take(8).ToList();
+            //Everything is drawn to this lease, which then is drawn to screen with the desired opacity.
+            //This is used to allow projectile opacity to scale nicely
+            using var mainLease = RenderTargetPool.Shared.Rent(
+                device,
+                Main.screenWidth,
+                Main.screenHeight,
+                RenderTargetDescriptor.Default
+            );
 
-                GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
-                PrimitiveRenderer.RenderTrail(list.ToArray(), new(FireWidthFunction, FireColorFunction, (_, _) => Projectile.Size * 0.5f, smoothen: true, pixelate: false, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"], useUnscaledMatrices: true), Projectile.oldPos.Length + 32);
+            using (mainLease.Scope(clearColor: Color.Transparent))
+            {
+                using (trailLease.Scope(clearColor: Color.Transparent))
+                {
+                    GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
+                    PrimitiveRenderer.RenderTrail(Projectile.oldPos.Take(5).ToArray(), new(FireWidthFunction, FireColorFunction, (_, _) => Projectile.Size * 0.5f, smoothen: true, pixelate: false, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"], useUnscaledMatrices: true), Projectile.oldPos.Length + 32);
+                }
+
+                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Matrix.Identity);
+                Main.spriteBatch.Draw(trailLease.Target, Vector2.Zero, null, Color.White * 0.75f, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0f);
+
+
+                float lerpMult = MathHelper.Lerp(0.5f, 1.5f, Math.Abs(MathF.Sin(Projectile.localAI[1] / 10f)));
+
+                Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[ModContent.ProjectileType<HolyBurnOrb>()].Value;
+                Vector2 drawPos = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
+                Color baseColor = Color.Lerp(hiColor, loColor, 0.5f);
+                Color baseColor2 = hiColor;
+                baseColor.A = 0;
+                baseColor *= lerpMult;
+                baseColor2 *= lerpMult;
+                Vector2 origin = texture.Size() / 2f;
+                Vector2 scale = new Vector2(0.5f, 1f) * ((lerpMult - 1) * 0.5f + 1f) * 1.2f * Projectile.scale;
+
+                SpriteEffects spriteEffects = SpriteEffects.None;
+                if (Projectile.spriteDirection == -1)
+                    spriteEffects = SpriteEffects.FlipHorizontally;
+
+                Projectile.rotation += MathHelper.ToRadians(lerpMult * 2f);
+
+                float upRight = MathHelper.PiOver4;
+                float up = MathHelper.PiOver2;
+                float upLeft = 3f * MathHelper.PiOver4;
+                float left = MathHelper.Pi;
+                Main.EntitySpriteDraw(texture, drawPos, null, baseColor, upLeft + Projectile.rotation, origin, scale, spriteEffects, 0);
+                Main.EntitySpriteDraw(texture, drawPos, null, baseColor, upRight - Projectile.rotation, origin, scale, spriteEffects, 0);
+                Main.EntitySpriteDraw(texture, drawPos, null, baseColor2, upLeft + Projectile.rotation, origin, scale * 0.6f, spriteEffects, 0);
+                Main.EntitySpriteDraw(texture, drawPos, null, baseColor2, upRight - Projectile.rotation, origin, scale * 0.6f, spriteEffects, 0);
+                Main.EntitySpriteDraw(texture, drawPos, null, baseColor, up + Projectile.rotation, origin, scale * 0.6f, spriteEffects, 0);
+                Main.EntitySpriteDraw(texture, drawPos, null, baseColor, left - Projectile.rotation, origin, scale * 0.6f, spriteEffects, 0);
+                Main.EntitySpriteDraw(texture, drawPos, null, baseColor2, up + Projectile.rotation, origin, scale * 0.36f, spriteEffects, 0);
+                Main.EntitySpriteDraw(texture, drawPos, null, baseColor2, left - Projectile.rotation, origin, scale * 0.36f, spriteEffects, 0);
+
+                scale = new Vector2(1f, 1f);
+                texture = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowOrbParticle").Value;
+                using (Main.spriteBatch.Scope())
+                {
+
+                    Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Matrix.Identity);
+                    Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, baseColor2, 0, texture.Size() * 0.5f, 1f, 0, 0f);
+                    Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, Color.White, 0, texture.Size() * 0.5f, 0.5f, 0, 0f);
+                    Main.spriteBatch.End();
+                }
+                Main.spriteBatch.End();
             }
 
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.Transform);
-            Main.spriteBatch.Draw(lease.Target, Vector2.Zero, null, Color.White * 0.75f, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0f);
+            Main.spriteBatch.Draw(mainLease.Target, Vector2.Zero, null, Color.White * Projectile.Opacity, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
             Main.spriteBatch.End();
-
             Main.spriteBatch.Begin(ss);
-
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
-            var frame = tex.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
-            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, frame, Color.White, Projectile.rotation, frame.Size() *0.5f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
         public float FireWidthFunction(float completion, Vector2 pos)
@@ -156,9 +211,9 @@ namespace CalamityMod.Projectiles.Rogue
 
         public Color FireColorFunction(float completion, Vector2 pos)
         {
-            Color mainColor = ProvUtils.GetProjectileColor(255);
+            Color mainColor = new Color(255, 155, 25, 255);
             Color endColor = Color.Lerp(mainColor, Color.Transparent, Utils.GetLerpValue(0.8f, 1f, completion, true));
-            return Color.Lerp(mainColor, endColor, completion) * Projectile.Opacity;
+            return Color.Lerp(mainColor, Color.Transparent, completion);
         }
 
         NPC GetTargetInRange(float range)

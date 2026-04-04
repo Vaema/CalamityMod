@@ -869,7 +869,7 @@ ProfanedPartisan: {
 		'''
 		Throws a profaned spear that splits into miniature spears upon hitting an enemy
 		Stealth strikes remain impaled in an enemy for 10 seconds
-		While an enemy is impaled, all spears that strike them instead erupt into homing fireballs
+		While an enemy is impaled, all spears that strike them instead shatter into exploding stars
 		Inflicts [cbuff:CalamityMod/HolyFlames]
 		'''
 }

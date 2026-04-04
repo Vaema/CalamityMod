@@ -67,9 +67,20 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.ai[0] = -1;
                 LineWidth = 1f;
                 LinePos.start = Projectile.Center;
+                Projectile.localAI[1] = 0;
+            }
+
+            
+            LineWidth -= 0.05f;
+            Projectile.localAI[1]++;
+            if (Projectile.localAI[1] > 60)
+            {
+                var dis = Projectile.Distance(Main.player[Projectile.owner].Center);
+                Projectile.velocity += Projectile.DirectionTo(Main.player[Projectile.owner].Center) * dis / 320f;
+                Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4;
+
             }
             Projectile.velocity *= 0.9f;
-            LineWidth -= 0.05f;
         }
         public override bool PreDraw(ref Color lightColor)
         {
