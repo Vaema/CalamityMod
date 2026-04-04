@@ -82,7 +82,12 @@ namespace CalamityMod.Items.Tools
                 self.LimitAndRoundMultiplier(self._currentPriceAdjustment);
                 string dialogueKey;
                 if (npc.type < NPCID.Count)
+                {
                     dialogueKey = $"Mods.CalamityMod.Vanilla.TownNPCMood.{NPCID.Search.GetName(npc.type)}.Monument";
+                    // Zoologist has separate dialogue when transformed
+                    if (npc.type == NPCID.BestiaryGirl && npc.ShouldBestiaryGirlBeLycantrope())
+                        dialogueKey += "Transformed";
+                }
                 else
                 {
                     var modNPC = NPCLoader.GetNPC(npc.type);
@@ -103,7 +108,12 @@ namespace CalamityMod.Items.Tools
                 string locKey = gift.Value ? "GiftPositive" : "GiftNegative";
                 string dialogueKey;
                 if (npc.type < NPCID.Count)
+                {
                     dialogueKey = $"Mods.CalamityMod.Vanilla.TownNPCMood.{NPCID.Search.GetName(npc.type)}.{locKey}";
+                    // Zoologist has separate dialogue when transformed
+                    if (npc.type == NPCID.BestiaryGirl && npc.ShouldBestiaryGirlBeLycantrope())
+                        dialogueKey += "Transformed";
+                }
                 else
                 {
                     var modNPC = NPCLoader.GetNPC(npc.type);

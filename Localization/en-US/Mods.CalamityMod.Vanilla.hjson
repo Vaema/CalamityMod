@@ -430,9 +430,12 @@ TownNPCMood: {
 	}
 
 	BestiaryGirl: {
-		Monument: placeholder
-		GiftPositive: placeholder
-		GiftNegative: placeholder
+		Monument: This monument is like, totally giving me the creeps, bro!
+		MonumentTransformed: Rrr... BIG ROCK. BAD! NO!!
+		GiftPositive: Hey!! You're like, suuuper rad and all for gifting me that cute little bunny! Now umm... I need to think of a name for it!
+		GiftPositiveTransformed: LOVE. GOOD GIFT. CUTE!
+		GiftNegative: Eek!! Did you really, like, gift me a dead bunny? I really totally hate when people think that's funny!
+		GiftNegativeTransformed: Grahh!! HATE. CRUEL. GIFT. WATCH YOURSELF!!
 	}
 
 	Clothier: {
@@ -478,9 +481,9 @@ TownNPCMood: {
 	}
 
 	Golfer: {
-		Monument: placeholder
-		GiftPositive: placeholder
-		GiftNegative: placeholder
+		Monument: This must be mockery. I don't want a monument of greed erected so close to my home.
+		GiftPositive: I don't know where you found that wedge, but it's been a real lifesaver in the sand. Thanks for helping my game!
+		GiftNegative: Tell me something. Why did the shoddy driver in that gift splinter all over the place after one swing? Golf is a delicate sport, and this really hurts!
 	}
 
 	Guide: {
