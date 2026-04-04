@@ -352,6 +352,9 @@ Archmage: {
 		DislikeNPC: I dislike {NPCName}'s blatant disregard of magic. I cannot blame his functions, but he is quite ignorant.
 		LikeNPC_Princess: "{NPCName} has some very quaint spells. I'm quite impressed, for someone of her age."
 		Princess_LovesNPC: "{NPCName} makes the best ice cream I've ever tasted, it's so good!"
+		Monument: placeholder
+		GiftPositive: placeholder
+		GiftNegative: placeholder
 	}
 }
 
@@ -432,6 +435,9 @@ Bandit: {
 		DislikeNPC: What a goody two shoes, {NPCName} is! I dislike her out of principle! …And because she has almost no material goods.
 		LikeNPC_Princess: I couldn't bear to steal anything from {NPCName}, she's so cute!
 		Princess_LovesNPC: "{NPCName} gifts me with nice exact replicas of other's things, I wonder how they do it!"
+		Monument: Yo, if your pockets ever feel lighter, that's not me, alright? You brought this on yourself buddy.
+		GiftPositive: Heeeey, my man! How's it goin'? I really 'preciate your gift, I have no idea how you got your hands on that kind of lockpicker's kit, but you'd catch me dead before I asked any questions!
+		GiftNegative: Hey man, what the hell is up with that gift?! I'm the most wanted in seven different city-states, do you got any idea how much a warrant on my name messes up my work?! You better do something to clean that mess before they have me walking to the gallows!
 	}
 }
 
@@ -475,6 +481,9 @@ BrimstoneWitch: {
 		DislikeNPC: Such a racket! All {NPCName} does is make noise, day in and day out! I can't stand her!
 		LikeNPC_Princess: What a strangely pleasant kid {NPCName} is to be around.
 		Princess_LovesNPC: "{NPCName} is always lonely, it's why I want to hang out with her, no one should be left alone like that!"
+		Monument: placeholder
+		GiftPositive: Hey, uh... thanks for the gift, really. I never thought you'd ever give me anything, for obvious reasons. But... thanks, really. It's lovely.
+		GiftNegative: What the hell was that gift? You know what, I don't even want to think about it. Screw you.
 	}
 }
 
@@ -558,6 +567,9 @@ SeaKing: {
 		HateNPC: "{NPCName} is just a child, but his attitude towards marine life is unacceptable! Absolutely unacceptable!"
 		LikeNPC_Princess: That child, {NPCName}. She is an innocent soul. Let us hope the horrors of war never reach her.
 		Princess_LovesNPC: "{NPCName} always smiles when I'm nearby, I like being around him just for that!"
+		Monument: placeholder
+		GiftPositive: placeholder
+		GiftNegative: placeholder
 	}
 }
 

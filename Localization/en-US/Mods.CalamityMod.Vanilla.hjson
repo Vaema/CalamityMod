@@ -424,7 +424,7 @@ TownNPCMood: {
 	}
 
 	ArmsDealer: {
-		Monument: Was anyone really itchin' to have a big ol' statue in my firing ground, because I wasn't!
+		Monument: Was anyone really itchin' to have a big ol' statue in my firing ground? Because I wasn't!
 		GiftPositive: That new ammo belt was just the gift I've been lookin' for, buddy! Let's test it out together later!
 		GiftNegative: Do you know what you're doin' by pullin' a bomb in a box prank on me? I can kill you in over seven hundred ways, and that's just with my guns!
 	}
@@ -436,14 +436,14 @@ TownNPCMood: {
 	}
 
 	Clothier: {
-		Monument: placeholder
+		Monument: I think I am becoming too old to understand this... "modern art".
 		GiftPositive: placeholder
 		GiftNegative: placeholder
 	}
 
 	Cyborg: {
 		Monument: Analysis of nearby monument: Provides zero positive qualities to all lifeforms nearby.
-		GiftPositive: Gift content scan revealed extremely pure silicon for use in upgraded processors. It appears I appreicate that.
+		GiftPositive: Gift content scan revealed extremely pure silicon for use in upgraded processors. It appears I appreciate that.
 		GiftNegative: Gift content scan revealed attempt to trigger malfunction in my systems. Translation: I hate this.
 	}
 
@@ -508,9 +508,9 @@ TownNPCMood: {
 	}
 
 	Painter: {
-		Monument: placeholder
-		GiftPositive: placeholder
-		GiftNegative: placeholder
+		Monument: Oh, no no no, that statue has gotta be the dullest artpiece I have ever seen.
+		GiftPositive: How did ya know exactly the paint color I have been looking for? My newest mural greatly appreciates dat!
+		GiftNegative: You must be sick and cruel, because that water bomb prank of yours washed all over my latest work! Aye, you oughta be covered in red, and not paint!
 	}
 
 	PartyGirl: {
@@ -532,9 +532,9 @@ TownNPCMood: {
 	}
 
 	SantaClaus: {
-		Monument: placeholder
-		GiftPositive: placeholder
-		GiftNegative: placeholder
+		Monument: Is this what the holiday season means to people now? Naughty, you are!
+		GiftPositive: Ho ho ho! What an unusual feeling for someone to be gifting me something at this time of year! You'd be great taking up the mantle!
+		GiftNegative: What a horrible gift you thought you could give me. You will get no presents this year!
 	}
 
 	Steampunker: {
