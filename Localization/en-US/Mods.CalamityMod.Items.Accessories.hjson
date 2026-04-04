@@ -729,8 +729,8 @@ EtherealTalisman: {
 	DisplayName: Ethereal Talisman
 	Tooltip:
 		'''
-		15% increased magic damage, 5% increased magic critical strike chance
-		+150 max mana and 10% decreased mana usage
+		{$CommonItemTooltip.IncreasesMaxManaBy} and {$CommonItemTooltip.PercentReducedManaCost@1}
+		{$CommonItemTooltip.PercentIncreasedMagicDamage@2} and {$CommonItemTooltip.PercentIncreasedMagicCritChance@3}
 		Increases pickup range for mana stars
 		You automatically use mana potions when needed
 		[c/aaaaaa:Shift-<right> in your inventory to toggle] [i:ManaFlower] [c/aaaaaa:Mana Flower's effect]
@@ -1627,8 +1627,8 @@ SigilofCalamitas: {
 	DisplayName: Sigil of Calamitas
 	Tooltip:
 		'''
-		15% increased magic damage and 10% decreased mana usage
-		+100 max mana
+		{$CommonItemTooltip.IncreasesMaxManaBy}
+		{$CommonItemTooltip.PercentIncreasedMagicDamage@1}
 		Increases pickup range for mana stars
 		'''
 }
