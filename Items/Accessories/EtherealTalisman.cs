@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Accessories
     {
         public new string LocalizationCategory => "Items.Accessories";
 
-        public static int MaxManaBoost = 100;
+        public static int MaxManaBoost = 60;
         public static float ManaCostReduction = 0.08f;
         public static float MagicDamageBoost = 0.15f;
         public static int MagicCritBoost = 5;

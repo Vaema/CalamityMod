@@ -11,7 +11,7 @@ namespace CalamityMod.Items.Accessories
     {
         public new string LocalizationCategory => "Items.Accessories";
 
-        public static int MaxManaBoost = 100;
+        public static int MaxManaBoost = 60;
         public static float MagicDamageBoost = 0.15f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MaxManaBoost, MagicDamageBoost.ToPercent());
 
