@@ -335,8 +335,9 @@ WrathwingSpear.DisplayName: Wrathwing
 WulfrumKnifeProj.DisplayName: Wulfrum Knife
 NanoblackLightspeedCarveSlashVisual.DisplayName: Nanoblack Light-speed Carve Visuals
 EclipseFragment.DisplayName: Eclipse Fragment
-EclipseGuandao.DisplayName: Eclipse Guandao
 EclipsesFallSpear.DisplayName: Eclipses Fall Spear
 EclipseSpark.DisplayName: Eclipse Spark
 EclipseSpear.DisplayName: Eclipse Spear
 ProfanedPartisanFlare.DisplayName: Profaned Partisan Flare
+EclipseExplosion.DisplayName: Eclipse Explosion
+PaleoShatterExplosion.DisplayName: Paleo Shatter Explosion

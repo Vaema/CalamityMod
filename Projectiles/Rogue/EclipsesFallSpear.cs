@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CalamityMod.CalPlayer;
+using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Particles;
-using CalamityMod.Systems.Mechanic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -18,13 +17,7 @@ namespace CalamityMod.Projectiles.Rogue
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/EclipsesFall";
-        private int SplitProjDamage => (int)(Projectile.damage * 0.5f);
-
-        public override void SetStaticDefaults()
-        {
-            ProjectileID.Sets.TrailCacheLength[Type] = 6;
-            ProjectileID.Sets.TrailingMode[Type] = 0;
-        }
+        private int SplitProjDamage => (int)(Projectile.damage * EclipsesFall.FragmentDmgMult);
 
         public override void SetDefaults()
         {
@@ -55,7 +48,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            int onHitCount = 6;
+            int onHitCount = EclipsesFall.FragmentCount + 4;
             float spread = 20f;
             int projectileDamage = SplitProjDamage;
             float kb = 5f;
@@ -63,36 +56,37 @@ namespace CalamityMod.Projectiles.Rogue
             int starID = ModContent.ProjectileType<EclipseFragment>();
             for (int i = 0; i < onHitCount; i++)
             {
-                int projID = i % 3 == 0 ? starID : sparkID;
+                int projID = i < EclipsesFall.FragmentCount ? starID : sparkID;
                 Vector2 velocity = Projectile.oldVelocity.RotateRandom(MathHelper.ToRadians(spread)) * 0.5f;
                 float speed = Main.rand.NextFloat(1.5f, 2f);
                 float moveDuration = Main.rand.Next(5, 15);
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity * speed, projID, projectileDamage, kb, Projectile.owner, 0f, moveDuration,20);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity * speed, projID, projectileDamage, kb, Projectile.owner, 0f, moveDuration, 20);
             }
 
             SoundEngine.PlaySound(SoundID.Item62 with { Volume = SoundID.Item62.Volume * 0.6f }, Projectile.position);
             SoundEngine.PlaySound(SoundID.Item68 with { Volume = SoundID.Item68.Volume * 0.2f }, Projectile.position);
             SoundEngine.PlaySound(SoundID.Item122 with { Volume = SoundID.Item122.Volume * 0.4f }, Projectile.position);
 
-           
+
             List<Projectile> frags = new();
             var p = -2;
             foreach (var item in Main.ActiveProjectiles)
             {
 
-                if (item.type == ModContent.ProjectileType<EclipseSpear>() && item.owner == Projectile.owner)
+                if (item.type == ModContent.ProjectileType<EclipseSpear>() && item.owner == Projectile.owner && item.Opacity > 0.1f)
                 {
-                    if (Projectile.Calamity().stealthStrike)
+                    if (Projectile.Calamity().stealthStrike && item.timeLeft > 600 * item.MaxUpdates)
                     {
-                        if (item.timeLeft < 520)
+                        if (item.timeLeft < 1120 * item.MaxUpdates)
                         {
-                            item.Kill();
+                            item.timeLeft = 60 * item.MaxUpdates;
+                            item.ai[0] = target.whoAmI;
                             continue;
                         }
-                        item.timeLeft = 600;
+                        item.timeLeft = 1200 * item.MaxUpdates;
                         p = item.whoAmI;
                     }
-                        item.ai[0] = target.whoAmI;
+                    item.ai[0] = target.whoAmI;
                 }
                 if (item.type == ModContent.ProjectileType<EclipseFragment>() && item.owner == Projectile.owner && item.ai[0] > -2)
                 {
@@ -104,14 +98,14 @@ namespace CalamityMod.Projectiles.Rogue
                 {
                     int projID = ModContent.ProjectileType<EclipseSpear>();
                     Vector2 velocity = Vector2.Zero;
-                    var proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity.SafeNormalize(default) * 64f, projID, Projectile.damage, kb, Projectile.owner, target.whoAmI,0,Math.Min(20,frags.Count(x => x.ai[0] == 0)));
+                    var proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity.SafeNormalize(default) * 64f, projID, Projectile.damage, kb, Projectile.owner, target.whoAmI, 0, Math.Min(20, frags.Count(x => x.ai[0] == 0)));
                     proj.rotation = Projectile.rotation;
                     p = proj.whoAmI;
                 }
 
 
             frags = frags.OrderBy(x => x.timeLeft).ToList();
-            int toRemove = frags.Count(x => x.ai[0] == 0) - 20;
+            int toRemove = frags.Count(x => x.ai[0] == 0) - EclipsesFall.MaxFragmentCount;
             foreach (var item in frags)
             {
                 if (toRemove > 0 && item.ai[0] == 0)

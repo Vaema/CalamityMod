@@ -10,6 +10,9 @@ namespace CalamityMod.Items.Weapons.Rogue
     public class SpearofPaleolith : RogueWeapon
     {
         public static int ShardBaseDamage => 25;
+
+        public static int NormalShardCount => 3;
+        public static int ImpaledShardCount => 5;
         public override void SetDefaults()
         {
             Item.width = 54;

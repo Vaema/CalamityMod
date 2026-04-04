@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Linq;
 using CalamityMod.Graphics.Primitives;
+using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Utilities.Daybreak;
 using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
@@ -69,15 +71,19 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 if (Main.projectile.IndexInRange((int)Projectile.ai[0] - 1) && Main.projectile[(int)Projectile.ai[0] - 1].active)
                 {
+                    var proj = Main.projectile[(int)Projectile.ai[0] - 1];
                     if (Projectile.timeLeft > 100)
                         Projectile.timeLeft = 100;
-                    Projectile.Center = Vector2.Lerp(Projectile.Center, Main.projectile[(int)Projectile.ai[0] - 1].Center, (1 - (Projectile.timeLeft / 100f)));
+                    Projectile.Center = Vector2.Lerp(Projectile.Center, proj.Center, (1 - (Projectile.timeLeft / 100f)));
                     Projectile.velocity = new(0, 1E-05f);
-                    if (Projectile.Distance(Main.projectile[(int)Projectile.ai[0] - 1].Center) < 16)
+                    if (Projectile.Distance(proj.Center) < 16)
                     {
-                        Main.projectile[(int)Projectile.ai[0] - 1].ai[2]++;
-                        Main.projectile[(int)Projectile.ai[0] - 1].netUpdate = true;
+                        proj.ai[2]++;
+                        proj.netUpdate = true;
+                        if (proj.ai[2] == proj.localAI[0])
+                        SoundEngine.PlaySound(SarosPossession.SpawnSound with { Pitch = 1f, Volume = 1f, }, Projectile.Center);
                         Projectile.active = false;
+
                     }
                 }
             }

@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs;
-using CalamityMod.Particles;
 using CalamityMod.Utilities.Daybreak;
 using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -45,7 +43,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 1;
-            Projectile.timeLeft = 600 * Projectile.MaxUpdates;
+            Projectile.timeLeft = 1200 * Projectile.MaxUpdates;
             Projectile.ContinuouslyUpdateDamageStats = true;
         }
         public override void AI()
@@ -58,8 +56,8 @@ namespace CalamityMod.Projectiles.Rogue
                 initialized = true;
             }
 
-            Projectile.originalDamage = (int)(1000 * (Projectile.ai[2]/20f));
-            if (Projectile.ai[0] >= 0 && Projectile.ai[2] >= Projectile.localAI[0])
+            Projectile.originalDamage = (int)(EclipsesFall.EclipseSpearBaseDmg * (Projectile.ai[2] / (float)EclipsesFall.MaxFragmentCount));
+            if (Projectile.ai[0] >= 0 && Projectile.ai[2] >= Projectile.localAI[0] && Projectile.Opacity > 0)
             {
                 LinePos.end = Projectile.position;
                 Projectile.velocity = Projectile.DirectionTo(Main.npc[(int)Projectile.ai[0]].Center) * 64;
@@ -75,7 +73,7 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            
+
             if (LineWidth > 0)
             {
                 var device = Main.instance.GraphicsDevice;
@@ -112,11 +110,12 @@ namespace CalamityMod.Projectiles.Rogue
                 }
             }
             var tex = TextureAssets.Item[ModContent.ItemType<EclipsesFall>()];
-            Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, tex.Size() * 0.5f, Projectile.scale, 0);
+            if (Projectile.Opacity > 0.5f)
+                Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition, null, Color.White * Projectile.Opacity, Projectile.rotation, tex.Size() * 0.5f, Projectile.scale, 0);
             using (Main.spriteBatch.Scope())
             {
-                Main.spriteBatch.Begin(default, BlendState.NonPremultiplied,null,null,null,null,Main.Transform);
-                Main.EntitySpriteDraw(TextureAssets.Projectile[Type].Value, Projectile.Center - Main.screenPosition, null, Color.White * (Projectile.localAI[0] > 0 ? Projectile.ai[2]/Projectile.localAI[0] : 1), Projectile.rotation, TextureAssets.Projectile[Type].Size() * 0.5f, Projectile.scale, 0);
+                Main.spriteBatch.Begin(default, BlendState.NonPremultiplied, null, null, null, null, Main.Transform);
+                Main.EntitySpriteDraw(TextureAssets.Projectile[Type].Value, Projectile.Center - Main.screenPosition, null, Color.White * Projectile.Opacity * (Projectile.localAI[0] > 0 ? Projectile.ai[2] / Projectile.localAI[0] : 1), Projectile.rotation, TextureAssets.Projectile[Type].Size() * 0.5f, Projectile.scale, 0);
                 Main.spriteBatch.End();
             }
             return false;
@@ -125,7 +124,7 @@ namespace CalamityMod.Projectiles.Rogue
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             float _ = 0;
-            if (Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(),targetHitbox.Size(),Projectile.oldPosition+ new Vector2(Projectile.width,Projectile.height)*0.5f,Projectile.Center,48f,ref _))
+            if (Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.oldPosition + new Vector2(Projectile.width, Projectile.height) * 0.5f, Projectile.Center, 48f, ref _))
             {
                 return true;
             }
@@ -149,12 +148,24 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            //Projectile.ai[0] = -1;
+
+            if (Projectile.timeLeft < 600 * Projectile.MaxUpdates && Projectile.ai[0] == target.whoAmI)
+            {
+                Projectile.Opacity = 0;
+                Projectile.Center = target.Center;
+                Projectile.timeLeft = 60 * Projectile.MaxUpdates;
+                Projectile.velocity = new(0, 1E-05f);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<EclipseExplosion>(), Projectile.damage, 0, Projectile.owner);
+            }
             Projectile.netUpdate = true;
+            if (Projectile.ai[0] == target.whoAmI)
+                SoundEngine.PlaySound(SarosPossession.FiringSound with { Pitch = -1f, Volume = 0.75f, }, Projectile.Center);
         }
 
         public override void OnKill(int timeLeft)
         {
+            if (Projectile.Opacity > 0)
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<EclipseExplosion>(), Projectile.damage, 0, Projectile.owner);
             return;
         }
 
@@ -166,7 +177,7 @@ namespace CalamityMod.Projectiles.Rogue
         public Color FireColorFunction(float completion, Vector2 vertexPos)
         {
             Color mainColor = Color.Lerp(new Color(238, 226, 153), new Color(255, 191, 73), (MathF.Sin(completion * MathHelper.TwoPi + Main.GlobalTimeWrappedHourly * 5) + 1) * 0.5f);
-            return mainColor * MathF.Pow(1 - completion*1.1f, 0.5f);
+            return mainColor * MathF.Pow(1 - completion * 1.1f, 0.5f);
         }
 
         public float FireCoreWidthFunction(float completion, Vector2 vertexPos)

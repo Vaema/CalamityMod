@@ -6,6 +6,7 @@ using CalamityMod.Projectiles.Boss;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -21,8 +22,8 @@ namespace CalamityMod.Projectiles.Rogue
         public int ExplodeTime => 60 * Projectile.MaxUpdates;
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Type] = 6;
-            ProjectileID.Sets.TrailingMode[Type] = -1;
+            ProjectileID.Sets.TrailCacheLength[Type] = 24;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -135,6 +136,12 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
+
+            for (var i = 0; i < ProjectileID.Sets.TrailCacheLength[Type]; i += 3)
+            {
+                Main.EntitySpriteDraw(TextureAssets.Projectile[Type].Value, Projectile.oldPos[i] + Projectile.Size * 0.5f - Main.screenPosition, null, lightColor * Projectile.Opacity * (i > 0 ? (1 - i / (float)ProjectileID.Sets.TrailCacheLength[Type]) * 0.25f : 1), Projectile.rotation, TextureAssets.Projectile[Type].Size() * 0.5f, Projectile.scale, 0);
+            }
+
             float glowIntensity = Projectile.damage == 0 && StuckEnemyID == 0 ? 4f * (1-(Projectile.timeLeft/(float)ExplodeTime)) : 0f;
             Projectile.DrawProjectileWithBackglow(Color.Yellow, lightColor, glowIntensity);
             return false;

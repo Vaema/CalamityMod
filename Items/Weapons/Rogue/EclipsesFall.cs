@@ -13,6 +13,25 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class EclipsesFall : RogueWeapon
     {
+        /// <summary>
+        /// Base damage of the spear, dynamically updated to match rogue stats.
+        /// This is reduced if the spear has less fragments than MaxFragmentCount
+        /// </summary>
+        public static int EclipseSpearBaseDmg => 1000;
+        /// <summary>
+        /// How much damage fragments and sparks should do
+        /// </summary>
+        public static float FragmentDmgMult => 0.5f;
+        /// <summary>
+        /// How many fragments are spawned per spear hit
+        /// </summary>
+        public static int FragmentCount => 2;
+        /// <summary>
+        /// How many fragments can exist before they start homing in.
+        /// Also the required amount of fragments for 100% base dmg on Eclipse Spear
+        /// </summary>
+        public static int MaxFragmentCount => 20;
+
         public override void SetDefaults()
         {
             Item.width = 82;
