@@ -32,13 +32,15 @@ namespace CalamityMod.Particles
         public float SineRate = 0;
         public float SineIntensity = 0;
         public float Sine = 0;
+        public float SineRotation = 0;
+        public float TurnRate = 0;
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public bool AltVisual = true;
         public override bool UseAdditiveBlend => AltVisual;
         public override bool SetLifetime => true;
         public override bool UseCustomDraw => true;
 
-        public CustomPulsingSpark(Vector2 relativePosition, Vector2 velocity, string frontTexture, string backTexture, bool affectedByGravity, int lifetime, float scale, Color color, Color backColor, Vector2 stretch, bool useAddativeBlend = true, bool glowCenter = false, int pulseRate = 10, float sineRate = 1, float sineIntensity = 0, float extraRotation = 0, bool fadeIn = false, bool affectedByLight = false, float shrinkSpeed = 0, float glowCenterScale = 1, float glowOpacity = 1, bool flipHorizontal = false, bool noShrink = false, float spin = 0, float colorFadeSpeed = 3)
+        public CustomPulsingSpark(Vector2 relativePosition, Vector2 velocity, string frontTexture, string backTexture, bool affectedByGravity, int lifetime, float scale, Color color, Color backColor, Vector2 stretch, bool useAddativeBlend = true, bool glowCenter = false, int pulseRate = 10, float turnRate = 0, float sineRate = 1, float sineIntensity = 0, float sineRotation = 0, float extraRotation = 0, bool fadeIn = false, bool affectedByLight = false, float shrinkSpeed = 0, float glowCenterScale = 1, float glowOpacity = 1, bool flipHorizontal = false, bool noShrink = false, float spin = 0, float colorFadeSpeed = 3)
         {
             Position = relativePosition;
             Velocity = velocity;
@@ -67,6 +69,8 @@ namespace CalamityMod.Particles
             randTimeAdd = Main.rand.Next(0, 200 + 1);
             SineRate = sineRate;
             SineIntensity = sineIntensity;
+            SineRotation = sineRotation;
+            TurnRate = turnRate;
 
             if (FadeIn)
                 Scale = 0f;
@@ -102,6 +106,8 @@ namespace CalamityMod.Particles
             Rotation = Velocity.ToRotation() + MathHelper.PiOver2 + ExtraRotation;
 
             Sine = (float)Math.Sin(((Time + randTimeAdd) * SineRate) / MathHelper.Pi) * SineIntensity;
+            if (TurnRate != 0)
+                Velocity = Velocity.RotatedBy(TurnRate);
 
             Stretch.X *= (1 - 0.2f * ShrinkSpeed);
             Stretch.Y *= (1 + 0.2f * ShrinkSpeed);
@@ -117,7 +123,7 @@ namespace CalamityMod.Particles
             Color col = Color;
             Color backCol = BackColor;
 
-            Vector2 drawPos = Position + Vector2.UnitX * Sine;
+            Vector2 drawPos = Position + Vector2.UnitX.RotatedBy(SineRotation) * Sine;
             if (AffectedByLight)
             {
                 col = Lighting.GetColor((drawPos / 16).ToPoint()).MultiplyRGB(Color);

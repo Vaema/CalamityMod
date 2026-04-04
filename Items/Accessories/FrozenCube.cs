@@ -31,12 +31,12 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.frozenCube = true;
-            modPlayer.ColdDebuffMultiplier += modPlayer.frozenCubePower;
 
             int projectile = ProjectileType<Elumphant>();
             if (player.ownedProjectileCounts[projectile] < 1 && !player.dead)
             {
-                Projectile.NewProjectileDirect(player.GetSource_FromThis(), player.Center, Vector2.Zero, projectile, 0, 0f, player.whoAmI);
+                int damage = (int)player.GetTotalDamage<GenericDamageClass>().ApplyTo(slamBaseDamage);
+                Projectile.NewProjectileDirect(player.GetSource_FromThis(), player.Center, Vector2.Zero, projectile, damage, 0f, player.whoAmI);
             }
         }
         public override void ModifyTooltips(List<TooltipLine> list)

@@ -21,7 +21,7 @@ namespace CalamityMod.Buffs.DamageOverTime
     {
         public static DebuffData debuffData = new DebuffData()
         {
-            EnemyLostRegen = 20,
+            EnemyLostRegen = 12,
             NPCLifeRegenMethod = WindChilledNPCLifeRegen,
             ColdDebuffScaling = 1
         };
@@ -37,8 +37,8 @@ namespace CalamityMod.Buffs.DamageOverTime
         {
             var cnpc = npc.Calamity();
             
-            int baseDoTValue = (int)(cnpc.windChilledMult * debuffData.EnemyLostRegen);
-            cnpc.ApplyDPSDebuff(baseDoTValue, Math.Max((int)(baseDoTValue * debuffData.MultiplierDamageTickSize), debuffData.MinimumDamageTickSize), ref npc.lifeRegen, ref damage);
+            int baseDoTValue = (int)(cnpc.windChilledMult * npc.Calamity().ActiveColdDebuffMultiplier.ApplyTo(debuffData.EnemyLostRegen));
+            cnpc.ApplyDPSDebuff(baseDoTValue, Math.Max((int)(baseDoTValue * debuffData.MultiplierDamageTickSize), debuffData.MinimumDamageTickSize) / 2, ref npc.lifeRegen, ref damage);
         }
 
         public override void Update(Player player, ref int buffIndex)

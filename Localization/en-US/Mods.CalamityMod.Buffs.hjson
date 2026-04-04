@@ -407,9 +407,9 @@ WindChilled: {
 		'''
 	ItemTooltipEnemy:
 		'''
-		Cold - 10 DPS
+		Cold - 6 DPS
 		1.5x damage if the enemy is inflicted with a Water debuff
-		      Enhances Water debuff damage
+		Enhances Water debuff damage
 		'''
 }
 

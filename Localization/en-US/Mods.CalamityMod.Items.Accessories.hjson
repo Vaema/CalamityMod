@@ -2245,5 +2245,13 @@ XyksBlessingOrange: {
 
 FrozenCube: {
 	DisplayName: Frozen Cube
-	Tooltip: ""
+	Tooltip:
+		'''
+		A frozen block of ice with something inside
+		Summons an Elumphant to sit atop your head and protect you
+		The Elumphant will cycle between shooting cold air that inflicts [cbuff:CalamityMod/WindChilled], and headbutting enemies
+		Elumphant's headbutts only target enemies inflicted with [cbuff:CalamityMod/WindChilled]
+		Reduces your defense by 33%, but uses that defense to boost the Elumphant's power and your cold debuff damage
+		[c/7497ED:What I wanna know is, where's the mammoth?']
+		'''
 }
