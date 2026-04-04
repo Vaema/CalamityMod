@@ -23,7 +23,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.arrow = true;
             Projectile.coldDamage = true;
-            Projectile.penetrate = -1;
+            Projectile.penetrate = 4;
             Projectile.extraUpdates = 6;
             Projectile.timeLeft = 1000;
             Projectile.usesLocalNPCImmunity = true;
