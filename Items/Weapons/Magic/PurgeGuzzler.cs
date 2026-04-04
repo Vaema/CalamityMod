@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.height = 48;
             Item.damage = 152;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 100;
+            Item.mana = 14;
             Item.useAnimation = Item.useTime = 38;
             Item.autoReuse = true;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -33,6 +33,14 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
         }
+
+        // Cancels out the mana used to summon the holdout
+        public override void OnConsumeMana(Player player, int manaConsumed)
+        {
+            if (player.ownedProjectileCounts[Item.shoot] <= 0)
+                player.statMana += manaConsumed;
+        }
+
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
 
         public override void HoldItem(Player player) => player.Calamity().mouseRotationListener = true;
