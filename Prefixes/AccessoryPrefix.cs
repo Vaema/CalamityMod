@@ -76,7 +76,7 @@ namespace CalamityMod.Prefixes
         {
             valueMult = 2.5f;
         }
-        public override float RollChance(Item item) => 10; // Is manually applied by an item, can't be rerolled normally
+        public override float RollChance(Item item) => 0; // Is manually applied by an item, can't be rerolled normally
         public override bool CanRoll(Item item)
         {
             return true;

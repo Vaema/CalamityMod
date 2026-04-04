@@ -18,7 +18,7 @@ AggressiveVoucher: {
 	Tooltip:
 		'''
 		Favorite this item in your inventory to increase the likelihood of obtaining a desirable reforge
-		      This effect only applies when reforging accessories
+		This effect only applies when reforging accessories
 		Targeted Reforge: {0}
 		Selectable Reforges: {1}
 		[c/aaaaaa:Shift-<right> in your inventory to cycle between targeted reforges]
@@ -158,7 +158,7 @@ CombatVoucher: {
 	Tooltip:
 		'''
 		Favorite this item in your inventory to increase the likelihood of obtaining a desirable reforge
-		      This effect only applies when reforging weapons
+		This effect only applies when reforging weapons
 		'''
 }
 
@@ -231,7 +231,7 @@ HurriedVoucher: {
 	Tooltip:
 		'''
 		Favorite this item in your inventory to increase the likelihood of obtaining a desirable reforge
-		      This effect only applies when reforging accessories
+		This effect only applies when reforging accessories
 		Targeted Reforge: {0}
 		Selectable Reforges: {1}
 		[c/aaaaaa:Shift-<right> in your inventory to cycle between targeted reforges]
@@ -306,7 +306,7 @@ OddVoucher: {
 	Tooltip:
 		'''
 		Favorite this item in your inventory to increase the likelihood of obtaining a desirable reforge
-		      This effect only applies when reforging accessories
+		This effect only applies when reforging accessories
 		Targeted Reforge: {0}
 		Selectable Reforges: {1}
 		[c/aaaaaa:Shift-<right> in your inventory to cycle between targeted reforges]
@@ -429,7 +429,7 @@ UnbreakableVoucher: {
 	Tooltip:
 		'''
 		Favorite this item in your inventory to increase the likelihood of obtaining a desirable reforge
-		      This effect only applies when reforging accessories
+		This effect only applies when reforging accessories
 		Targeted Reforge: {0}
 		Selectable Reforges: {1}
 		[c/aaaaaa:Shift-<right> in your inventory to cycle between targeted reforges]
