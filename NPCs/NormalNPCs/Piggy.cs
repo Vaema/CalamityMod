@@ -39,7 +39,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[Type] = 5;
+            Main.npcFrameCount[Type] = 1;
             Main.npcCatchable[Type] = true;
             NPCID.Sets.CountsAsCritter[Type] = true;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
@@ -274,34 +274,34 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void FindFrame(int frameHeight)
         {
-            if (NPC.velocity.Y == 0f)
-            {
-                if (!NPC.IsABestiaryIconDummy)
-                {
-                    if (NPC.velocity.X == 0f)
-                    {
-                        NPC.frame.Y = 0;
-                        NPC.frameCounter = 0.0;
-                        return;
-                    }
-                }
-                NPC.frameCounter += NPC.IsABestiaryIconDummy ? 0.6f : Math.Abs(NPC.velocity.X) * 0.25f;
-                NPC.frameCounter += 1.0;
-                if (NPC.frameCounter > 12.0)
-                {
-                    NPC.frame.Y = NPC.frame.Y + frameHeight;
-                    NPC.frameCounter = 0.0;
-                }
-                if (NPC.frame.Y / frameHeight >= Main.npcFrameCount[Type] - 1)
-                {
-                    NPC.frame.Y = frameHeight;
-                }
-            }
-            else
-            {
-                NPC.frameCounter = 0.0;
-                NPC.frame.Y = frameHeight * 2;
-            }
+            //if (NPC.velocity.Y == 0f)
+            //{
+            //    if (!NPC.IsABestiaryIconDummy)
+            //    {
+            //        if (NPC.velocity.X == 0f)
+            //        {
+            //            NPC.frame.Y = 0;
+            //            NPC.frameCounter = 0.0;
+            //            return;
+            //        }
+            //    }
+            //    NPC.frameCounter += NPC.IsABestiaryIconDummy ? 0.6f : Math.Abs(NPC.velocity.X) * 0.25f;
+            //    NPC.frameCounter += 1.0;
+            //    if (NPC.frameCounter > 12.0)
+            //    {
+            //        NPC.frame.Y = NPC.frame.Y + frameHeight;
+            //        NPC.frameCounter = 0.0;
+            //    }
+            //    if (NPC.frame.Y / frameHeight >= Main.npcFrameCount[Type] - 1)
+            //    {
+            //        NPC.frame.Y = frameHeight;
+            //    }
+            //}
+            //else
+            //{
+            //    NPC.frameCounter = 0.0;
+            //    NPC.frame.Y = frameHeight * 2;
+            //}
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -312,7 +312,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             Texture2D baseTexture = TextureAssets.Npc[Type].Value;
             Vector2 scale = SquashVector * NPC.scale;
             SpriteEffects spriteEffects = NPC.spriteDirection < 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-            spriteBatch.Draw(baseTexture, NPC.Center - screenPos + Vector2.UnitY * (NPC.gfxOffY + 4f), NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, NPC.frame.Size() * 0.5f, scale, spriteEffects, 0f);
+            spriteBatch.Draw(baseTexture, NPC.Center - screenPos + Vector2.UnitY * NPC.gfxOffY, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, NPC.frame.Size() * 0.5f, scale, spriteEffects, 0f);
             return false;
         }
     }
