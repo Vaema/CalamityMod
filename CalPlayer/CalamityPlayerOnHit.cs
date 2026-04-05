@@ -109,15 +109,6 @@ namespace CalamityMod.CalPlayer
                     target.AddBuff(BuffID.Electrified, 300);
                     break;
 
-                case ItemID.BeeKeeper:
-                case ItemID.BladeofGrass:
-                    target.AddBuff(BuffID.Poisoned, 240);
-                    break;
-
-                case ItemID.FieryGreatsword:
-                    target.AddBuff(BuffID.OnFire3, 90);
-                    break;
-
                 case ItemID.IceSickle:
                 case ItemID.Frostbrand:
                     target.AddBuff(BuffID.Frostburn2, 300);
@@ -125,11 +116,6 @@ namespace CalamityMod.CalPlayer
 
                 case ItemID.IceBlade:
                     target.AddBuff(BuffID.Frostburn, 120);
-                    break;
-
-                case (>= ItemID.BluePhaseblade and <= ItemID.YellowPhaseblade) or ItemID.OrangePhaseblade:
-                case (>= ItemID.BluePhasesaber and <= ItemID.YellowPhasesaber) or ItemID.OrangePhasesaber:
-                    // TODO: find an EPIC lightsaber sound
                     break;
             }
 
@@ -272,6 +258,7 @@ namespace CalamityMod.CalPlayer
 
             switch (proj.type)
             {
+                // Remove this in 1.4.5 port
                 case ProjectileID.ObsidianSwordfish:
                     target.AddBuff(BuffID.OnFire3, 180);
                     break;
@@ -287,11 +274,13 @@ namespace CalamityMod.CalPlayer
                     target.AddBuff(BuffType<StaticDischarge>(), 90);
                     break;
 
+                // Replace with Broken Armor in 1.4.5 port
                 case ProjectileID.GolemFist:
                     target.AddBuff(BuffType<ArmorCrunch>(), 180);
                     break;
 
                 case ProjectileID.ButchersChainsaw:
+                // Remove this in 1.4.5 port
                 case ProjectileID.MechanicalPiranha:
                     target.AddBuff(BuffType<HeavyBleeding>(), 180);
                     break;
@@ -300,19 +289,8 @@ namespace CalamityMod.CalPlayer
                     target.AddBuff(BuffType<Nightwither>(), 180);
                     break;
 
-                case ProjectileID.Cascade:
                 case ProjectileID.FlamingMace:
                     target.AddBuff(BuffID.OnFire, 60);
-                    break;
-
-                case ProjectileID.Bee:
-                case ProjectileID.GiantBee:
-                case ProjectileID.BladeOfGrass:
-                    target.AddBuff(BuffID.Poisoned, 120);
-                    break;
-
-                case ProjectileID.Wasp:
-                    target.AddBuff(BuffID.Venom, 60);
                     break;
 
                 case ProjectileID.NorthPoleWeapon:
