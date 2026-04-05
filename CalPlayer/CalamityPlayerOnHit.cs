@@ -276,7 +276,6 @@ namespace CalamityMod.CalPlayer
                     target.AddBuff(BuffID.OnFire3, 180);
                     break;
 
-                case ProjectileID.InfluxWaver:
                 case ProjectileID.UFOLaser:
                 case ProjectileID.Electrosphere:
                     target.AddBuff(BuffID.Electrified, 180);
