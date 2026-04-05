@@ -1,4 +1,7 @@
 ﻿using System;
+using CalamityMod.NPCs.DevourerofGods;
+using CalamityMod.Utilities.Daybreak;
+using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Graphics;
@@ -15,10 +18,14 @@ namespace CalamityMod.ChatTags
         protected override string[] TagNames { get; } = ["ceffect"];
         public override TextSnippet Parse(string text, Color baseColor = new(), string options = null)
         {
+            if (!CalamityClientConfig.Instance.TextEffects)
+                return new TextSnippet(text);
             if (options.Equals("darksun", StringComparison.OrdinalIgnoreCase))
                 return new DarksunTextSnippet(text);
             if (options.Equals("drunk", StringComparison.OrdinalIgnoreCase))
                 return new DrunkTextSnippet(text);
+            if (options.Equals("dog", StringComparison.OrdinalIgnoreCase))
+                return new DoGTextSnippet(text);
             return new TextSnippet(text);
         }
     }
@@ -80,6 +87,53 @@ namespace CalamityMod.ChatTags
 
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, Main.UIScaleMatrix);
+            }
+            return true;
+        }
+        public override float GetStringLength(DynamicSpriteFont font)
+        {
+            float size = font.MeasureString(text).X;
+            return size * Scale;
+        }
+    }
+
+    public sealed class DoGTextSnippet(string text) : TextSnippet
+    {
+        public override bool UniqueDraw(bool justCheckingString, out Vector2 size, SpriteBatch spriteBatch, Vector2 position = new Vector2(), Color color = new Color(), float scale = 1)
+        {
+            size = new Vector2(GetStringLength(FontAssets.MouseText.Value), FontAssets.MouseText.Value.MeasureString(" ").Y * scale);
+
+            if (!justCheckingString && (color.R != 0 || color.G != 0 || color.B != 0))
+            {
+                var pos = position;
+                using var lease = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice);
+                string txt = "";
+                using (spriteBatch.Scope())
+                {
+                    using (lease.Scope(clearColor: Color.Transparent))
+                    {
+
+                        spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.UIScaleMatrix);
+                        foreach (var item in text)
+                        {
+                            pos = position;
+                            pos.X += FontAssets.MouseText.Value.MeasureString(txt).X;
+                            float sin = MathHelper.SmoothStep(0, 1, (MathF.Sin(pos.X * 0.02f + Main.GlobalTimeWrappedHourly * -1.5f) + 1) * 0.5f);
+                            var c = Color.Lerp(Color.Cyan, Color.Fuchsia, sin);
+                            ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, item.ToString(), pos + new Vector2(0, -2 + sin * 4), c, 0, Vector2.Zero, new Vector2(scale));
+                            txt += item;
+                        }
+                        spriteBatch.End();
+                    }
+
+                    spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Matrix.Identity);
+                    foreach (var item in ChatManager.ShadowDirections)
+                    {
+                        spriteBatch.Draw(lease.Target, Vector2.Zero + item * 2, null, Color.Black, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                    }
+                    spriteBatch.Draw(lease.Target, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                    spriteBatch.End();
+                }
             }
             return true;
         }
