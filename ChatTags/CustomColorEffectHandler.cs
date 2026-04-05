@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.NPCs.DevourerofGods;
+using CalamityMod.Rarities;
 using CalamityMod.Utilities.Daybreak;
 using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
@@ -15,7 +16,7 @@ namespace CalamityMod.ChatTags
     // i.e [ceffect/darksun:Hello World] would apply darksun effect to "Hello World".
     public sealed class CustomColorEffectHandler : AbstractTagHandler<CustomColorEffectHandler>
     {
-        protected override string[] TagNames { get; } = ["ceffect"];
+        protected override string[] TagNames { get; } = ["ceffect", "ce"];
         public override TextSnippet Parse(string text, Color baseColor = new(), string options = null)
         {
             if (!CalamityClientConfig.Instance.TextEffects)
@@ -26,6 +27,14 @@ namespace CalamityMod.ChatTags
                 return new DrunkTextSnippet(text);
             if (options.Equals("dog", StringComparison.OrdinalIgnoreCase))
                 return new DoGTextSnippet(text);
+            if (options.Equals("cosmic", StringComparison.OrdinalIgnoreCase))
+                return new CosmicPurple.CustomTextSnippet(text);
+            if (options.Equals("auric", StringComparison.OrdinalIgnoreCase))
+                return new BurnishedAuric.CustomTextSnippet(text);
+            if (options.Equals("calamity", StringComparison.OrdinalIgnoreCase))
+                return new CalamityRed.CustomTextSnippet(text);
+            if (options.Equals("exo", StringComparison.OrdinalIgnoreCase))
+                return new ExoticRainbow.CustomTextSnippet(text);
             return new TextSnippet(text);
         }
     }
@@ -65,9 +74,9 @@ namespace CalamityMod.ChatTags
 
             if (!justCheckingString && (color.R != 0 || color.G != 0 || color.B != 0))
             {
-
-                Main.spriteBatch.End();
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, null, null, null, null, Main.UIScaleMatrix);
+                var matrix = spriteBatch.transformMatrix;
+                Main.spriteBatch.End(out var ss);
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, null, null, null, null, matrix);
 
                 for (int i = 0; i < 3; i++) // Draw 3 lines of differing opacity, color, and displacement.
                 {
@@ -86,7 +95,7 @@ namespace CalamityMod.ChatTags
                 }
 
                 Main.spriteBatch.End();
-                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, Main.UIScaleMatrix);
+                Main.spriteBatch.Begin(ss);
             }
             return true;
         }
@@ -108,12 +117,13 @@ namespace CalamityMod.ChatTags
                 var pos = position;
                 using var lease = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice);
                 string txt = "";
+                var matrix = spriteBatch.transformMatrix;
                 using (spriteBatch.Scope())
                 {
                     using (lease.Scope(clearColor: Color.Transparent))
                     {
 
-                        spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.UIScaleMatrix);
+                        spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, matrix);
                         foreach (var item in text)
                         {
                             pos = position;
@@ -129,7 +139,7 @@ namespace CalamityMod.ChatTags
                     spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Matrix.Identity);
                     foreach (var item in ChatManager.ShadowDirections)
                     {
-                        spriteBatch.Draw(lease.Target, Vector2.Zero + item * 2, null, Color.Black, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                        spriteBatch.Draw(lease.Target, Vector2.Zero + Vector2.TransformNormal(item * 2,matrix), null, Color.Black, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
                     }
                     spriteBatch.Draw(lease.Target, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
                     spriteBatch.End();
