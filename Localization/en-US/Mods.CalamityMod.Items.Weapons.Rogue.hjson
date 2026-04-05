@@ -360,9 +360,9 @@ EclipsesFall: {
 		'''
 		Throws a javelin that shatters into fragments of primordial light upon enemy hits
 		If more than 20 fragments exist, the oldest fragments will seek out enemies to attack
-		Stealth strikes coalsce fragments into an eclipse spear, gaining power based on the number of fragments
-		The eclipse spear will pierce though any enemy hit by Eclipse's Fall
-		'When the sun goes dark, you will know judgement'
+		Stealth strikes coalesce fragments into [ceffect/darksun:Spear of Obscuration,] gaining power based on the number of fragments
+		[ceffect/darksun:Spear of Obscuration] will pierce though any enemy hit by Eclipse's Fall
+		[ceffect/darksun:'When the sun goes dark, you will know judgement']
 		'''
 }
 

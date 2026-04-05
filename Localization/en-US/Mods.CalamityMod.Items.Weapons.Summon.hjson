@@ -679,8 +679,8 @@ SarosPossession: {
 		'''
 		Summons a radiant aura harnessing the power of primordial light
 		Repeated summons increase the power of the aura
-		<left> with full summon slots to channel an eclipse beam that decays over time
-		This beam recharges when not in use
+		<left> with full summon slots to channel [ceffect/darksun:Totality Ray]
+		[ceffect/darksun:Totality Ray] decays while in use and recharges when not in use
 		'''
 }
 
