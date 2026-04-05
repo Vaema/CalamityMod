@@ -1032,7 +1032,7 @@ IVDripOnTheRocks: {
 		Multiplies all weapon damage by {1}x
 		Counts as an alcohol stack toward Alcohol Poisoning
 		{$Common.AlcoholWarning}
-		'(drunken mumbling)'
+		[ceffect/drunk:'(drunken mumbling)']
 		'''
 }
 
