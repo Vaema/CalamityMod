@@ -26,8 +26,8 @@ namespace CalamityMod.Items.Fishing.FishingRods
         }
         public override void ModifyFishingLine(Projectile bobber, ref Vector2 lineOriginOffset, ref Color lineColor)
         {
-            lineOriginOffset = new Vector2(45f, -43f);
-            lineColor = new Color(122, 169, 52, 0);
+            lineOriginOffset = new Vector2(68f, -52f);
+            lineColor = new Color(171, 171, 171, 0);
         }
     }
 }
