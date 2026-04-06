@@ -223,7 +223,7 @@ namespace CalamityMod.Items.Tools
             Item.width = 36;
             Item.height = 20;
             Item.rare = ItemRarityID.Green;
-            Item.value = 0;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.maxStack = 9999;
         }
 
@@ -279,7 +279,7 @@ namespace CalamityMod.Items.Tools
             Item.width = 36;
             Item.height = 20;
             Item.rare = ItemRarityID.Green;
-            Item.value = 0;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.maxStack = 9999;
         }
 
@@ -308,7 +308,7 @@ namespace CalamityMod.Items.Tools
             Item.width = 36;
             Item.height = 20;
             Item.rare = ItemRarityID.Green;
-            Item.value = 0;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.maxStack = 9999;
         }
 
@@ -335,7 +335,7 @@ namespace CalamityMod.Items.Tools
             Item.width = 36;
             Item.height = 20;
             Item.rare = ItemRarityID.Green;
-            Item.value = 0;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.maxStack = 9999;
         }
 
@@ -364,7 +364,7 @@ namespace CalamityMod.Items.Tools
             Item.width = 36;
             Item.height = 20;
             Item.rare = ItemRarityID.Green;
-            Item.value = 0;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.maxStack = 9999;
         }
 
