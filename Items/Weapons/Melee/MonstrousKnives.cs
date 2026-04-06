@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 18;
             Item.height = 20;
-            Item.damage = 9;
+            Item.damage = 8;
             Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -60,7 +60,7 @@ namespace CalamityMod.Items.Weapons.Melee
             xDist *= speedMult;
             yDist *= speedMult;
 
-            int knifeAmt = Main.rand.Next(4, 7);
+            int knifeAmt = Main.rand.Next(3, 5);
             for (int i = 0; i < knifeAmt; i++)
             {
                 float xVec = xDist;

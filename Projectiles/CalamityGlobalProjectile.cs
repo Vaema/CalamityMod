@@ -11,17 +11,20 @@ using CalamityMod.EntitySources;
 using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.ExtraTextures;
+using CalamityMod.Graphics;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Ammo;
-using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.Armor.Daedalus;
 using CalamityMod.Items.Armor.Reaver;
+using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.NPCs;
+using CalamityMod.NPCs.OldDuke;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
-using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.Packets.Entities;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Healing;
@@ -54,7 +57,6 @@ using Terraria.Utilities;
 using Terraria.WorldBuilding;
 using static Terraria.ModLoader.ModContent;
 using NanotechProjectile = CalamityMod.Projectiles.Typeless.Nanotech;
-using CalamityMod.Graphics;
 
 namespace CalamityMod.Projectiles
 {
@@ -190,6 +192,8 @@ namespace CalamityMod.Projectiles
         /// Used by Arterial Assault, Deific Amulet's stars, and certain sand projectiles from the Sand Gun.
         /// </summary>
         public float conditionalHomingRange = 0f;
+        public float conditionalHomingVelocity = 12f;
+        public float conditionalHomingInertia = 20f;
 
         /// <summary>
         /// Whether or not this proj was spawned with grape beer on
@@ -322,6 +326,7 @@ namespace CalamityMod.Projectiles
 
             void ApplyGrapeBeer()
             {
+                grapeBeer = true;
                 conditionalHomingRange = 600;
                 if (projectile.timeLeft > 300 * projectile.MaxUpdates)
                     projectile.timeLeft = 300 * projectile.MaxUpdates;
@@ -329,13 +334,13 @@ namespace CalamityMod.Projectiles
                 projectile.usesLocalNPCImmunity = true;
                 projectile.localNPCHitCooldown = -1;
             }
-            if (source is EntitySource_ItemUse_WithAmmo {Item: Item item})
+            if (source is EntitySource_ItemUse_WithAmmo { Item: Item item })
             {
                 if (source is EntitySource_Parent { Entity: Player player })
                 {
                     if (player.Calamity().grapeBeer && (item.useAmmo == AmmoID.Bullet || item.useAmmo == AmmoID.Arrow || item.useAmmo == AmmoID.Dart || item.useAmmo == AmmoID.Rocket))
                     {
-                        if (player.heldProj != projectile.whoAmI && projectile.aiStyle != ProjAIStyleID.HeldProjectile && projectile.damage > 0 && player.Calamity().grapeBeerTimer < 5)
+                        if (player.heldProj != projectile.whoAmI && projectile.aiStyle != ProjAIStyleID.HeldProjectile && projectile.damage > 0 && !CalamityProjectileSets.DoesNotGetHomingWithGrapeBeer[projectile.type])
                             ApplyGrapeBeer();
                         else
                             grapeBeer = true;
@@ -356,11 +361,14 @@ namespace CalamityMod.Projectiles
                 //Grape Beer homing
                 if (parent.Calamity().grapeBeer)
                 {
-                    if (Main.player[projectile.owner].heldProj != projectile.whoAmI && projectile.aiStyle != ProjAIStyleID.HeldProjectile && projectile.damage > 0 && Main.player[projectile.owner].Calamity().grapeBeerTimer < 5)
+                    if (Main.player[projectile.owner].heldProj != projectile.whoAmI && projectile.aiStyle != ProjAIStyleID.HeldProjectile && projectile.damage > 0 && !CalamityProjectileSets.DoesNotGetHomingWithGrapeBeer[projectile.type])
                         ApplyGrapeBeer();
                     else
                         grapeBeer = true;
                 }
+
+                if (parent.Calamity().IgnoreBoCIllusions)
+                    IgnoreBoCIllusions = true;
 
                 // Nerf Crystal bullet shard damage by 45%
                 // Vanilla crystal shards deal 50% of the bullet's damage which is absurd, this nerfs them to 27.5%
@@ -425,7 +433,7 @@ namespace CalamityMod.Projectiles
             if (ProjectileID.Sets.LightPet[projectile.type] && Main.LocalPlayer.Calamity().ZoneAbyss)
                 EnhancedDarknessSystem.lights.Add(new() { center = projectile.Center, scale = 1 });
 
-            if (projectile.bobber && projectile.type != ProjectileType<VictideBobber>() && RunFishingMinigames(projectile))
+            if (projectile.bobber && projectile.type != ProjectileType<VictideBobber>() && RunFishingMinigames(projectile) && !Main.LocalPlayer.dead)
                 return false;
             //Reset the Homing Target immediately before AI can re-set it on applicable projectiles
             HomingTarget = -1;
@@ -2963,6 +2971,10 @@ namespace CalamityMod.Projectiles
                     {
                         NPC.SpawnOnPlayer(owner.whoAmI, 370);
                     }
+                    else
+                    {
+                        NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, owner.whoAmI, 370f);
+                    }
                     projectile.ai[0] = 2f;
                 }
                 else if (projectile.localAI[1] < 1)
@@ -3306,10 +3318,38 @@ namespace CalamityMod.Projectiles
                             {
                                 projectile.Center = Main.npc[(int)PersistentFishingData].Center + PersistentFishingDataVector2;
                                 projectile.velocity = Vector2.Zero;
+
+                                if (owner.Distance(Main.npc[(int)PersistentFishingData].Center) > 1450) // Slightly before when fishing lines stop rendering due to distance from target
+                                {
+                                    projectile.ai[0] = 1;
+                                }
+
                                 if (cplayer.mouseRight && projectile.ai[1] == 0 && owner.miscCounter % 10 == 0)
                                 {
                                     owner.lifeRegenCount -= 600; // -5 health per 10 ticks
-                                    var projID = Projectile.NewProjectile(projectile.GetSource_FromThis(), Main.npc[(int)PersistentFishingData].Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), (int)owner.GetBestClassDamage().ApplyTo(owner.HeldItem.fishingPole + owner.fishingSkill + owner.ChooseAmmo(owner.HeldItem).bait), 0f, owner.whoAmI, Main.npc[(int)PersistentFishingData].whoAmI);
+                                    owner.Fishing_GetBait(out Item baitItem);
+
+                                    // Diminishing returns on bait power beyond 75
+                                    int baitPower = baitItem?.bait ?? 0;
+                                    if (baitItem?.type == ItemID.TruffleWorm)
+                                    {
+                                        projectile.ai[0] = 1;
+                                        projectile.localAI[1] = 1;
+                                        ReelTheBobberChecks();
+                                    }
+                                    else if (baitItem?.type == ItemType<BloodwormItem>())
+                                    {
+                                        projectile.ai[0] = 1;
+                                        projectile.localAI[1] = NPCType<OldDuke>() * -1;
+                                        baitPower = BloodwormItem.SpoofBaitNumber; // Manually set the power to the displayed value
+                                        ReelTheBobberChecks();
+                                    }
+                                    else if (baitPower > 75)
+                                    {
+                                        baitPower = (int)Math.Pow((baitPower - 75), 0.5f) + 75;
+                                    }
+
+                                    var projID = Projectile.NewProjectile(projectile.GetSource_FromThis(), Main.npc[(int)PersistentFishingData].Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), (int)owner.GetBestClassDamage().ApplyTo(owner.HeldItem.fishingPole + owner.fishingSkill + baitPower), 0f, owner.whoAmI, Main.npc[(int)PersistentFishingData].whoAmI);
                                     if (Main.projectile.IndexInRange(projID))
                                     {
                                         Main.projectile[projID].ArmorPenetration = 100; //This should ignore almost all armor
@@ -3590,9 +3630,10 @@ namespace CalamityMod.Projectiles
                             if (TimerToCatch <= 0)
                             {
                                 projectile.FishingCheck();
-                                if (projectile.ai[1] < 0 && !(projectile.lavaWet && !owner.accLavaFishing))
+                                var fishingCond = Main.player[projectile.owner].GetFishingConditions();
+                                bool canLavaFish = ItemID.Sets.CanFishInLava[fishingCond.PoleItemType] || ItemID.Sets.IsLavaBait[fishingCond.BaitItemType] || Main.player[projectile.owner].accLavaFishing;
+                                if (projectile.ai[1] < 0 && !(projectile.lavaWet && !canLavaFish))
                                 {
-
                                     CaughtItemID = (int)projectile.localAI[1];
                                     projectile.ai[1] = 0;
                                     projectile.localAI[1] = 0;
@@ -4054,20 +4095,6 @@ namespace CalamityMod.Projectiles
                                 }
                             }
                         }
-                        else if (modPlayer.moonCrown)
-                        {
-                            if (Main.player[projectile.owner].miscCounter % 120 == 0 && projectile.FinalExtraUpdate())
-                            {
-                                if (projectile.owner == Main.myPlayer && player.ownedProjectileCounts[ProjectileType<MoonSigil>()] < 5)
-                                {
-                                    int damage = (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(42);
-
-                                    int proj = Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, ProjectileType<MoonSigil>(), damage, 0f, projectile.owner);
-                                    if (proj.WithinBounds(Main.maxProjectiles))
-                                        Main.projectile[proj].DamageType = DamageClass.Generic;
-                                }
-                            }
-                        }
 
                         if (modPlayer.dragonScales)
                         {
@@ -4256,157 +4283,170 @@ namespace CalamityMod.Projectiles
                     arcFlashCooldown--;
                 if (arcFlashCooldown == 0)
                     showArcFlash = true;
-                if (conditionalHomingRange > 0f)
+                if (conditionalHomingRange > 0f && Main.player[projectile.owner].heldProj != projectile.whoAmI && projectile.aiStyle != ProjAIStyleID.HeldProjectile && !grapeBeer)
                 {
-                    CalamityUtils.HomeInOnNPC(projectile, !projectile.tileCollide, conditionalHomingRange, 12f, 20f,true);
+                    CalamityUtils.HomeInOnNPC(projectile, !projectile.tileCollide, conditionalHomingRange, conditionalHomingVelocity, conditionalHomingInertia, true);
                 }
-                if (brimstoneBullets)
-                {
-                    PointParticle spark = new PointParticle(projectile.Center + projectile.velocity * 3, projectile.velocity, false, 2, 0.9f, Color.Crimson * 0.7f);
-                    GeneralParticleHandler.SpawnParticle(spark);
 
-                    Dust dust = Dust.NewDustPerfect(projectile.Center - projectile.velocity, Main.rand.NextBool(3) ? 90 : DustType<BrimstoneFlame>(), projectile.velocity * Main.rand.NextFloat(0.05f, 0.9f));
-                    dust.noGravity = true;
-                    dust.scale = Main.rand.NextFloat(0.5f, 1f);
-                }
-                if (fireBullet)
+                // Grape beer-specific homing. If the projectile is aligned a certain amount to the direction to the target, it will home in.
+                else if (conditionalHomingRange > 0f && Main.player[projectile.owner].heldProj != projectile.whoAmI && projectile.aiStyle != ProjAIStyleID.HeldProjectile && grapeBeer)
                 {
-                    if (projectile.timeLeft > 200)
+                    NPC target = projectile.Center.ClosestNPCAt(conditionalHomingRange);
+                    if (target is not null)
+                    {
+                        Vector2 targetDirection = projectile.SafeDirectionTo(target.Center);
+
+                        float trackingSpeed = Vector2.Dot(targetDirection, projectile.velocity.SafeNormalize(Vector2.UnitX)) > 0.835f ? 0.01325f : 0f; // Delicate values, please test changes you make to them
+
+                        Vector2 currVelocity = projectile.velocity;
+
+                        projectile.velocity = projectile.velocity.ToRotation().AngleTowards(targetDirection.ToRotation(), trackingSpeed).ToRotationVector2() * currVelocity.Length();
+                    }
+                }
+
+                if (projectile.Opacity > 0 && projectile.scale > 0.01f) // Only apply bullet visuals if the bullet is visible
+                {
+                    if (brimstoneBullets)
+                    {
+                        PointParticle spark = new PointParticle(projectile.Center + projectile.velocity * 3, projectile.velocity, false, 2, 0.9f * projectile.scale, Color.Crimson * 0.7f);
+                        GeneralParticleHandler.SpawnParticle(spark);
+
+                        Dust dust = Dust.NewDustPerfect(projectile.Center - projectile.velocity, Main.rand.NextBool(3) ? 90 : DustType<BrimstoneFlame>(), projectile.velocity * Main.rand.NextFloat(0.05f, 0.9f));
+                        dust.noGravity = true;
+                        dust.scale = Main.rand.NextFloat(0.5f, 1f) * projectile.scale;
+                    }
+                    if (fireBullet)
                     {
                         float helixOffset = (float)Math.Sin(projectile.timeLeft / 25f * MathHelper.TwoPi) * 8f;
-                        Vector2 spawnOffset = new Vector2(helixOffset, 10f).RotatedBy(projectile.rotation);
+                        Vector2 spawnOffset = new Vector2(helixOffset, 10f).RotatedBy(projectile.rotation) * projectile.scale;
 
                         for (int i = 0; i < 2; ++i)
                         {
                             Dust dust = Dust.NewDustPerfect(projectile.Center + spawnOffset, Main.rand.NextBool() ? 174 : 6, projectile.velocity * Main.rand.NextFloat(0.1f, 0.9f));
                             dust.noGravity = true;
-                            dust.scale = Main.rand.NextFloat(0.4f, 0.8f);
+                            dust.scale = Main.rand.NextFloat(0.4f, 0.8f) * projectile.scale;
                         }
                     }
-                }
-                if (iceBullet)
-                {
-                    if (projectile.timeLeft > 200)
+                    if (iceBullet)
                     {
                         float helixOffset = (float)Math.Sin(projectile.timeLeft / 25f * MathHelper.TwoPi) * -8f;
-                        Vector2 spawnOffset = new Vector2(helixOffset, 10f).RotatedBy(projectile.rotation);
+                        Vector2 spawnOffset = new Vector2(helixOffset, 10f).RotatedBy(projectile.rotation) * projectile.scale;
 
                         for (int i = 0; i < 2; ++i)
                         {
                             Dust dust = Dust.NewDustPerfect(projectile.Center + spawnOffset, Main.rand.NextBool() ? 135 : 137, projectile.velocity * Main.rand.NextFloat(0.1f, 0.9f));
                             dust.noGravity = true;
-                            dust.scale = Main.rand.NextFloat(0.4f, 0.8f);
+                            dust.scale = Main.rand.NextFloat(0.4f, 0.8f) * projectile.scale;
                         }
                     }
-                }
-                if (shockBullet)
-                {
-                    float targetDist = Vector2.Distance(player.Center, projectile.Center);
-                    if (projectile.timeLeft > 200 && targetDist < 1400f)
+                    if (shockBullet)
                     {
-                        SparkParticle spark = new SparkParticle(projectile.Center + projectile.velocity, -projectile.velocity * 0.05f, false, 2, 1.1f, Color.Turquoise * 0.75f);
-                        GeneralParticleHandler.SpawnParticle(spark);
-                        if (Main.rand.NextBool(3))
+                        float targetDist = Vector2.Distance(player.Center, projectile.Center);
+                        if (targetDist < 1400f)
                         {
-                            SparkParticle spark2 = new SparkParticle(projectile.Center + Main.rand.NextVector2Circular(6, 6), -projectile.velocity * Main.rand.NextFloat(0.05f, 0.4f), false, 20, 0.4f, Color.Turquoise * 0.75f);
-                            GeneralParticleHandler.SpawnParticle(spark2);
+                            SparkParticle spark = new SparkParticle(projectile.Center + projectile.velocity, -projectile.velocity * 0.05f, false, 2, 1.1f * projectile.scale, Color.Turquoise * 0.75f);
+                            GeneralParticleHandler.SpawnParticle(spark);
+                            if (Main.rand.NextBool(3))
+                            {
+                                SparkParticle spark2 = new SparkParticle(projectile.Center + Main.rand.NextVector2Circular(6, 6) * projectile.scale, -projectile.velocity * Main.rand.NextFloat(0.05f, 0.4f), false, 20, 0.4f * projectile.scale, Color.Turquoise * 0.75f);
+                                GeneralParticleHandler.SpawnParticle(spark2);
+                            }
                         }
                     }
-                }
-                if ((pearlBullet1 || pearlBullet2 || pearlBullet3))
-                {
-                    float targetDist = Vector2.Distance(player.Center, projectile.Center);
-                    if (projectile.timeLeft > 200 && targetDist < 1400f)
+                    if ((pearlBullet1 || pearlBullet2 || pearlBullet3))
                     {
-                        Color color = pearlBullet1 ? Color.LightBlue : pearlBullet2 ? Color.LightPink : Color.Khaki;
-                        Particle spark = new GlowSparkParticle(projectile.Center + projectile.velocity * 1.5f, -projectile.velocity * 0.05f, false, 3, 0.0093f, color, new Vector2(0.6f, 1.8f), false, false);
-                        GeneralParticleHandler.SpawnParticle(spark);
-                        if (Main.rand.NextBool(5))
+                        float targetDist = Vector2.Distance(player.Center, projectile.Center);
+                        if (targetDist < 1400f)
                         {
-                            PearlParticle pearl1 = new PearlParticle(projectile.Center + Main.rand.NextVector2Circular(6, 6), -projectile.velocity * Main.rand.NextFloat(0.05f, 0.3f), false, Main.rand.Next(15, 20 + 1), Main.rand.NextFloat(0.4f, 0.55f), color, 0.9f, Main.rand.NextFloat(1, -1), true);
-                            GeneralParticleHandler.SpawnParticle(pearl1);
+                            Color color = pearlBullet1 ? Color.LightBlue : pearlBullet2 ? Color.LightPink : Color.Khaki;
+                            Particle spark = new GlowSparkParticle(projectile.Center + projectile.velocity * 1.5f, -projectile.velocity * 0.05f, false, 3, 0.0093f * projectile.scale, color, new Vector2(0.6f, 1.8f), false, false);
+                            GeneralParticleHandler.SpawnParticle(spark);
+                            if (Main.rand.NextBool(5))
+                            {
+                                PearlParticle pearl1 = new PearlParticle(projectile.Center + Main.rand.NextVector2Circular(6, 6) * projectile.scale, -projectile.velocity * Main.rand.NextFloat(0.05f, 0.3f), false, Main.rand.Next(15, 20 + 1), Main.rand.NextFloat(0.4f, 0.55f) * projectile.scale, color, 0.9f, Main.rand.NextFloat(1, -1), true);
+                                GeneralParticleHandler.SpawnParticle(pearl1);
+                            }
                         }
                     }
-                }
-                if (lifeBullet)
-                {
-                    float targetDist = Vector2.Distance(player.Center, projectile.Center);
-                    if (projectile.timeLeft > 200 && targetDist < 1400f)
+                    if (lifeBullet)
                     {
-                        SparkParticle spark = new SparkParticle(projectile.Center + projectile.velocity, -projectile.velocity * 0.05f, false, 2, 0.85f, Color.White * 0.75f);
-                        GeneralParticleHandler.SpawnParticle(spark);
-
-                        for (int i = 0; i < 2; ++i)
+                        float targetDist = Vector2.Distance(player.Center, projectile.Center);
+                        if (targetDist < 1400f)
                         {
-                            Dust dust = Dust.NewDustPerfect(projectile.Center + projectile.velocity, DustID.AncientLight, -projectile.velocity * Main.rand.NextFloat(0.1f, 0.9f));
-                            dust.noGravity = true;
-                            dust.scale = Main.rand.NextFloat(0.65f, 0.9f);
-                            dust.alpha = 100;
+                            SparkParticle spark = new SparkParticle(projectile.Center + projectile.velocity, -projectile.velocity * 0.05f, false, 2, 0.85f * projectile.scale, Color.White * 0.75f);
+                            GeneralParticleHandler.SpawnParticle(spark);
+
+                            for (int i = 0; i < 2; ++i)
+                            {
+                                Dust dust = Dust.NewDustPerfect(projectile.Center + projectile.velocity, DustID.AncientLight, -projectile.velocity * Main.rand.NextFloat(0.1f, 0.9f));
+                                dust.noGravity = true;
+                                dust.scale = Main.rand.NextFloat(0.65f, 0.9f) * projectile.scale;
+                                dust.alpha = 100;
+                            }
+
                         }
-
                     }
-                }
-
-                #region betterLifeBullet
-                if (betterLifeBullet1)
-                {
-                    float targetDist = Vector2.Distance(player.Center, projectile.Center);
-                    if (projectile.timeLeft > 200 && targetDist < 1400f)
+                    #region betterLifeBullet
+                    if (betterLifeBullet1)
                     {
-                        int randomColor = Main.rand.Next(1, 3 + 1);
-                        Color color = randomColor == 1 ? Color.LightBlue : randomColor == 2 ? Color.LightPink : Color.Khaki;
-
-                        float helixOffset = (float)Math.Sin(projectile.timeLeft / 25f * MathHelper.TwoPi) * -8f;
-                        Vector2 spawnOffset = new Vector2(helixOffset, 10f).RotatedBy(projectile.rotation);
-
-                        for (int i = 0; i < 3; ++i)
+                        float targetDist = Vector2.Distance(player.Center, projectile.Center);
+                        if (targetDist < 1400f)
                         {
-                            Dust dust = Dust.NewDustPerfect(projectile.Center + spawnOffset, DustID.FireworksRGB, projectile.velocity * Main.rand.NextFloat(0.05f, 0.2f));
-                            dust.noGravity = true;
-                            dust.scale = Main.rand.NextFloat(0.35f, 0.45f);
-                            dust.color = color;
-                        }
+                            int randomColor = Main.rand.Next(1, 3 + 1);
+                            Color color = randomColor == 1 ? Color.LightBlue : randomColor == 2 ? Color.LightPink : Color.Khaki;
 
-                        SparkParticle spark = new SparkParticle(projectile.Center + projectile.velocity, projectile.velocity * 0.05f, false, 2, 0.85f, color);
-                        GeneralParticleHandler.SpawnParticle(spark);
+                            float helixOffset = (float)Math.Sin(projectile.timeLeft / 25f * MathHelper.TwoPi) * -8f;
+                            Vector2 spawnOffset = new Vector2(helixOffset, 10f).RotatedBy(projectile.rotation);
 
-                        if (Main.rand.NextBool(3))
-                        {
-                            SparkParticle spark3 = new SparkParticle(projectile.Center + Main.rand.NextVector2Circular(6, 6), -projectile.velocity * Main.rand.NextFloat(0.05f, 0.3f), false, 20, 0.55f, color * 0.5f);
-                            GeneralParticleHandler.SpawnParticle(spark3);
+                            for (int i = 0; i < 3; ++i)
+                            {
+                                Dust dust = Dust.NewDustPerfect(projectile.Center + spawnOffset, DustID.FireworksRGB, projectile.velocity * Main.rand.NextFloat(0.05f, 0.2f));
+                                dust.noGravity = true;
+                                dust.scale = Main.rand.NextFloat(0.35f, 0.45f) * projectile.scale;
+                                dust.color = color;
+                            }
+
+                            SparkParticle spark = new SparkParticle(projectile.Center + projectile.velocity, projectile.velocity * 0.05f, false, 2, 0.85f * projectile.scale, color);
+                            GeneralParticleHandler.SpawnParticle(spark);
+
+                            if (Main.rand.NextBool(3))
+                            {
+                                SparkParticle spark3 = new SparkParticle(projectile.Center + Main.rand.NextVector2Circular(6, 6) * projectile.scale, -projectile.velocity * Main.rand.NextFloat(0.05f, 0.3f), false, 20, 0.55f * projectile.scale, color * 0.5f);
+                                GeneralParticleHandler.SpawnParticle(spark3);
+                            }
                         }
                     }
-                }
-                if (betterLifeBullet2)
-                {
-                    float targetDist = Vector2.Distance(player.Center, projectile.Center);
-                    if (projectile.timeLeft > 200 && targetDist < 1400f)
+                    if (betterLifeBullet2)
                     {
-                        int randomColor = Main.rand.Next(1, 3 + 1);
-                        Color color = randomColor == 1 ? Color.LightBlue : randomColor == 2 ? Color.LightPink : Color.Khaki;
-
-                        float helixOffset = (float)Math.Sin(projectile.timeLeft / 25f * MathHelper.TwoPi) * 8f;
-                        Vector2 spawnOffset = new Vector2(helixOffset, 10f).RotatedBy(projectile.rotation);
-
-                        for (int i = 0; i < 3; ++i)
+                        float targetDist = Vector2.Distance(player.Center, projectile.Center);
+                        if (targetDist < 1400f)
                         {
-                            Dust dust = Dust.NewDustPerfect(projectile.Center + spawnOffset, DustID.FireworksRGB, projectile.velocity * Main.rand.NextFloat(0.05f, 0.2f));
-                            dust.noGravity = true;
-                            dust.scale = Main.rand.NextFloat(0.35f, 0.45f);
-                            dust.color = color;
-                        }
+                            int randomColor = Main.rand.Next(1, 3 + 1);
+                            Color color = randomColor == 1 ? Color.LightBlue : randomColor == 2 ? Color.LightPink : Color.Khaki;
 
-                        SparkParticle spark = new SparkParticle(projectile.Center + projectile.velocity, projectile.velocity * 0.05f, false, 2, 0.85f, color);
-                        GeneralParticleHandler.SpawnParticle(spark);
+                            float helixOffset = (float)Math.Sin(projectile.timeLeft / 25f * MathHelper.TwoPi) * 8f;
+                            Vector2 spawnOffset = new Vector2(helixOffset, 10f).RotatedBy(projectile.rotation) * projectile.scale;
 
-                        if (Main.rand.NextBool(3))
-                        {
-                            SparkParticle spark3 = new SparkParticle(projectile.Center + Main.rand.NextVector2Circular(6, 6), -projectile.velocity * Main.rand.NextFloat(0.05f, 0.3f), false, 20, 0.55f, color * 0.5f);
-                            GeneralParticleHandler.SpawnParticle(spark3);
+                            for (int i = 0; i < 3; ++i)
+                            {
+                                Dust dust = Dust.NewDustPerfect(projectile.Center + spawnOffset, DustID.FireworksRGB, projectile.velocity * Main.rand.NextFloat(0.05f, 0.2f));
+                                dust.noGravity = true;
+                                dust.scale = Main.rand.NextFloat(0.35f, 0.45f) * projectile.scale;
+                                dust.color = color;
+                            }
+
+                            SparkParticle spark = new SparkParticle(projectile.Center + projectile.velocity, projectile.velocity * 0.05f, false, 2, 0.85f * projectile.scale, color);
+                            GeneralParticleHandler.SpawnParticle(spark);
+
+                            if (Main.rand.NextBool(3))
+                            {
+                                SparkParticle spark3 = new SparkParticle(projectile.Center + Main.rand.NextVector2Circular(6, 6) * projectile.scale, -projectile.velocity * Main.rand.NextFloat(0.05f, 0.3f), false, 20, 0.55f * projectile.scale, color * 0.5f);
+                                GeneralParticleHandler.SpawnParticle(spark3);
+                            }
                         }
                     }
+                    #endregion
                 }
-                #endregion
             }
         }
         #endregion
@@ -4693,25 +4733,25 @@ namespace CalamityMod.Projectiles
             if (BloodstoneOrbValue > 0)
                 Projectile.NewProjectile(projectile.GetSource_OnHit(target), projectile.Center, projectile.velocity.SafeNormalize(Vector2.Zero) * Math.Min(((projectile.velocity.Length() * projectile.MaxUpdates) / 4f), 4f) * Main.rand.NextFloat(0.75f, 1.25f), ModContent.ProjectileType<BloodstoneHealOrb>(), BloodstoneOrbValue, 0f, Main.player[projectile.owner].whoAmI);
             //Mana Burn
-            if (Main.player[projectile.owner].statMana < 0)
+            if (Main.player[projectile.owner].statMana < 0 && Main.player[projectile.owner].Calamity().ChaosStone)
             {
-                float burnRatio = (-Main.player[projectile.owner].statMana / 5000f); // -400 mana = +8% dmg, -700 mana = +14% dmg
-                target.Calamity().manaBurn += damageDone * burnRatio;
-                target.Calamity().playerManaBurnIntensity = -Main.player[projectile.owner].statMana / (float)Main.player[projectile.owner].statManaMax2;
+                var player = Main.player[projectile.owner];
+                float burnRatio = (-player.statMana / 100) * ChaosStone.DamageMultPer100Mana;
+                target.Calamity().manaBurn += damageDone * burnRatio * (player.Calamity().oldFashioned ? OldFashioned.DamageBoostMultiplier : 1) * (player.Calamity().ivDrip ? IVDripOnTheRocks.DamageBoostMultiplier : 1) * (player.Calamity().vodka ? 1+Vodka.DebuffBoost : 1);
+                target.Calamity().playerManaBurnIntensity = -player.statMana / (float)player.statManaMax2;
+                if (Main.netMode != NetmodeID.SinglePlayer)
+                    ManaBurnSyncPacket.Send(target);
             }
             // Hyperius Overflow
             if (projectile.type != ProjectileType<HyperiusBulletProj>() && projectile.type != ProjectileType<HyperiusSplit>() && projectile.type != ProjectileType<HyperiusDamage>() && projectile.type != ProjectileType<HyperiusBleed>() && target.Calamity().hyperiusMarked)
             {
-                int damage = 0;
-                if (target.Calamity().hyperiusDamage < damageDone)
-                    damage = damageDone - target.Calamity().hyperiusDamage;
-                else
-                    damage = damageDone;
+                int damageDealt = (int)(damageDone * HyperiusBullet.overflowAppliedMult);
+                int damage = (int)MathF.Min(target.Calamity().hyperiusDamage / HyperiusBullet.overflowEfficency, damageDealt);
 
-                target.Calamity().hyperiusDamage -= damage;
+                target.Calamity().hyperiusDamage -= (int)(damage * HyperiusBullet.overflowEfficency);
 
                 // Spawn overflow hit
-                Projectile overflow = Projectile.NewProjectileDirect(target.GetSource_FromThis(), target.Center, Vector2.Zero, ProjectileType<HyperiusDamage>(), (int)(damage * HyperiusBullet.overflowEfficency), 0, projectile.owner, target.whoAmI);
+                Projectile overflow = Projectile.NewProjectileDirect(target.GetSource_FromThis(), target.Center, Vector2.Zero, ProjectileType<HyperiusDamage>(), damage, 0, projectile.owner, target.whoAmI);
                 overflow.DamageType = projectile.DamageType;
                 overflow.ArmorPenetration = projectile.ArmorPenetration; // Takes the armor pen from what did the hit
 

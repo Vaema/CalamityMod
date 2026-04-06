@@ -25,7 +25,7 @@ namespace CalamityMod.Projectiles.Melee
         public override int CooldownTime { get; set; }
         public override int swingTime { get; set; }
         public override bool AlternateSwings { get => base.AlternateSwings; set => base.AlternateSwings = value; }
-        public override float lineCollisionLength => 158;
+        public override float lineCollisionLength => 225;
 
         public bool helixFired = false;
         public bool gotEnergyThisSwing = false;
@@ -50,13 +50,13 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.noEnchantmentVisuals = true;
             Projectile.Opacity = 0.2f; // Starting point, fades in quickly upon startup
             Projectile.width = Projectile.height = 54;
+            Projectile.scale = 1.25f;
         }
 
         public override void Spawn()
         {
             var player = Main.player[Projectile.owner];
-            var modplayer = player.GetModPlayer<BaseSwordHoldoutPlayer>();
-            var calamityPlayer = player.Calamity();
+            var lucreciaPlayer = player.GetModPlayer<LucreciaPlayer>();
 
             // Store the base use time from the item
             int baseUseTime = BaseItem.useTime;
@@ -64,7 +64,7 @@ namespace CalamityMod.Projectiles.Melee
             if (player.altFunctionUse == 2)
             {
                 // Check for energy before the projectile exists
-                if (calamityPlayer.darklightEnergy < 100)
+                if (lucreciaPlayer.darklightEnergy < 100)
                 {
                     Projectile.Kill();
                     return;
@@ -86,7 +86,7 @@ namespace CalamityMod.Projectiles.Melee
                 RotateInCooldown = 1f;
                 Projectile.knockBack = 15f;
 
-                calamityPlayer.darklightEnergy = 0; // Remove energy for startup
+                lucreciaPlayer.darklightEnergy = 0; // Remove energy for startup
             }
             else
             {
@@ -185,7 +185,7 @@ namespace CalamityMod.Projectiles.Melee
                     if (!trailFXTriggered)
                     {
                         if (Main.myPlayer == Projectile.owner)
-                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), player.Center, fireDirection * 5, ModContent.ProjectileType<LucreciaDNATrailCreator>(), Projectile.damage * 8, Projectile.knockBack, Projectile.owner, 0f, 0f);
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), player.Center, fireDirection * 5, ModContent.ProjectileType<LucreciaDNATrailCreator>(), Projectile.damage * 7, Projectile.knockBack, Projectile.owner, 0f, 0f);
                         
                         SoundStyle swish = new("CalamityMod/Sounds/Custom/MeatySlash");
                         SoundEngine.PlaySound(swish with { Volume = 0.3f, Pitch = Main.rand.NextFloat(0.1f, 0.2f) }, Projectile.Center);
@@ -239,7 +239,8 @@ namespace CalamityMod.Projectiles.Melee
                         // Smear fx on swing
                         Vector2 shootDir = player.MountedCenter.DirectionTo(mousePosition) * 10f;
                         int dir = -Math.Sign(mousePosition.X);
-                        Particle swipe = new CustomSpark(player.MountedCenter - shootDir * 4, shootDir.RotatedBy(0.075f * (dir * (modplayer.swingNum % 2 == 0 ? 1 : -1))) * 1.22f, "CalamityMod/Particles/VerticalSmearLarge", false, (int)(14 / player.GetAttackSpeed(DamageClass.Melee)), 0.3f, modplayer.swingNum % 2 == 0 ? Color.CornflowerBlue * 0.85f : Color.MediumPurple * 0.8f, new Vector2(1.1f, 1.3f), true, false, 0, false, false);
+                        float scale = lineCollisionLength / 550f;
+                        Particle swipe = new CustomSpark(player.MountedCenter - shootDir * 4, shootDir.RotatedBy(0.075f * (dir * (modplayer.swingNum % 2 == 0 ? 1 : -1))) * 1.22f, "CalamityMod/Particles/VerticalSmearLarge", false, (int)(14 / player.GetAttackSpeed(DamageClass.Melee)), scale, modplayer.swingNum % 2 == 0 ? Color.CornflowerBlue * 0.85f : Color.MediumPurple * 0.8f, new Vector2(1.1f, 1.3f), true, false, 0, false, false);
                         GeneralParticleHandler.SpawnParticle(swipe);
 
                         var fireDirection = Vector2.Normalize(mousePosition - player.MountedCenter);
@@ -321,10 +322,10 @@ namespace CalamityMod.Projectiles.Melee
 
                 gotEnergyThisSwing = true;
                 var player = Main.player[Projectile.owner];
-                var modPlayer = player.Calamity();
+                var modPlayer = player.GetModPlayer<LucreciaPlayer>();
 
-                // +25 energy on hit
-                modPlayer.darklightEnergy += 25;
+                // +20 energy on hit
+                modPlayer.darklightEnergy += 20;
                 modPlayer.darklightEnergy = Math.Min(modPlayer.darklightEnergy, Lucrecia.MaxEnergy);
 
                 // On-hit cut FX

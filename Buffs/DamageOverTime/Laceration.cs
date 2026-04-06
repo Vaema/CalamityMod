@@ -3,6 +3,7 @@ using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -40,14 +41,14 @@ namespace CalamityMod.Buffs.DamageOverTime
             if (Main.rand.NextBool())
             {
                 Vector2 randVel = new Vector2(6, 6).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 1f);
-                Dust dust = Dust.NewDustPerfect(modPlayer.RandomDebuffVisualSpot, DustID.Blood, randVel * Main.rand.NextFloat(0.1f, 0.8f), 100, default, Main.rand.NextFloat(0.6f, 0.9f));
+                Dust dust = Dust.NewDustPerfect(modPlayer.RandomDebuffVisualSpot, (!ChildSafety.Disabled ? DustID.Cloud : DustID.Blood), randVel * Main.rand.NextFloat(0.1f, 0.8f), 100, default, Main.rand.NextFloat(0.6f, 0.9f));
                 dust.noGravity = false;
-                Particle spark = new AltSparkParticle(modPlayer.RandomDebuffVisualSpot, randVel + new Vector2(0, -4), true, 12, Main.rand.NextFloat(0.25f, 0.6f), Color.DarkRed * 0.5f);
+                Particle spark = new AltSparkParticle(modPlayer.RandomDebuffVisualSpot, randVel + new Vector2(0, -4), true, 12, Main.rand.NextFloat(0.25f, 0.6f), (!ChildSafety.Disabled ? Color.CornflowerBlue : Color.DarkRed) * 0.5f);
                 GeneralParticleHandler.SpawnParticle(spark);
             }
             if (Main.rand.NextBool(8))
             {
-                Particle spark = new GlowOrbParticle(modPlayer.RandomDebuffVisualSpot, new Vector2(0, 4) * Main.rand.NextFloat(0.5f, 0.7f), true, 16, Main.rand.NextFloat(0.55f, 0.8f), Color.DarkRed * 0.8f, false, false, false);
+                Particle spark = new GlowOrbParticle(modPlayer.RandomDebuffVisualSpot, new Vector2(0, 4) * Main.rand.NextFloat(0.5f, 0.7f), true, 16, Main.rand.NextFloat(0.55f, 0.8f), (!ChildSafety.Disabled ? Color.CornflowerBlue : Color.DarkRed) * 0.8f, false, false, false);
                 GeneralParticleHandler.SpawnParticle(spark);
             }
         }
@@ -58,17 +59,17 @@ namespace CalamityMod.Buffs.DamageOverTime
             Vector2 randVel = new Vector2(6, 6).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 1f);
             if (Main.rand.NextBool(3))
             {
-                Particle spark = new AltSparkParticle(npcSize, randVel + new Vector2(0, -4), true, 12, Main.rand.NextFloat(0.25f, 0.6f), Color.DarkRed * 0.5f);
+                Particle spark = new AltSparkParticle(npcSize, randVel + new Vector2(0, -4), true, 12, Main.rand.NextFloat(0.25f, 0.6f), (!ChildSafety.Disabled ? Color.CornflowerBlue : Color.DarkRed) * 0.5f);
                 GeneralParticleHandler.SpawnParticle(spark);
             }
             else
             {
-                Dust dust = Dust.NewDustPerfect(npcSize, DustID.Blood, randVel * Main.rand.NextFloat(0.1f, 0.8f), 100, default, Main.rand.NextFloat(0.2f, 0.6f));
+                Dust dust = Dust.NewDustPerfect(npcSize, (!ChildSafety.Disabled ? DustID.Cloud : DustID.Blood), randVel * Main.rand.NextFloat(0.1f, 0.8f), 100, default, Main.rand.NextFloat(0.2f, 0.6f));
                 dust.noGravity = false;
             }
             if (Main.rand.NextBool(8))
             {
-                Particle spark = new GlowOrbParticle(npcSize, new Vector2(0, 4) * Main.rand.NextFloat(0.5f, 0.7f), true, 16, Main.rand.NextFloat(0.55f, 0.8f), Color.DarkRed * 0.8f, false, false, false);
+                Particle spark = new GlowOrbParticle(npcSize, new Vector2(0, 4) * Main.rand.NextFloat(0.5f, 0.7f), true, 16, Main.rand.NextFloat(0.55f, 0.8f), (!ChildSafety.Disabled ? Color.CornflowerBlue : Color.DarkRed) * 0.8f, false, false, false);
                 GeneralParticleHandler.SpawnParticle(spark);
             }
         }

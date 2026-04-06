@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Ranged;
+﻿using CalamityMod.Projectiles;
+using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -26,8 +27,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.UseSound = SoundID.Item14;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<PrismMine>();
-            Item.shootSpeed = 20f;
-            Item.useAmmo = AmmoID.Bullet;
+            Item.shootSpeed = 28f;
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-40f, -16f);

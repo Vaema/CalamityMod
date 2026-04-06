@@ -12,6 +12,7 @@ namespace CalamityMod.Items.Placeables.FurnitureAuric
 
         public override void SetStaticDefaults()
         {
+            Item.ResearchUnlockCount = 5;
             // Did you know Land Mines can be placed on Weapon Racks? Yeah, me neither.
             ItemID.Sets.CanBePlacedOnWeaponRacks[Type] = true;
         }

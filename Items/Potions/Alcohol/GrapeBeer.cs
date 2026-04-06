@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Potions.Alcohol
     {
         public new string LocalizationCategory => "Items.Potions";
 
-        public static float CritLoss = 75;
+        public static float CritLoss = 50;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(CritLoss);
 
         public override void SetStaticDefaults()
@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Potions.Alcohol
         {
             Item.DefaultToFood(12, 28, ModContent.BuffType<GrapeBeerBuff>(), CalamityUtils.MinutesToFrames(6), true);
 
-            Item.value = Item.sellPrice(silver: 3);
+            Item.value = Item.sellPrice(silver: 2);
             Item.rare = ItemRarityID.LightRed;
         }
 

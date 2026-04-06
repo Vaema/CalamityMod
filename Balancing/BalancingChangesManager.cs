@@ -198,9 +198,6 @@ namespace CalamityMod.Balancing
             // 75% resist to Plaguenades.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.AstrumDeus, Do(new ProjectileResistBalancingRule(0.25f, ProjectileType<PlaguenadeBee>(), ProjectileType<PlaguenadeProj>()))));
 
-            // 70% resist to Charged Blaster Cannon.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.AstrumDeus, Do(new ProjectileResistBalancingRule(0.3f, ProjectileID.ChargedBlasterLaser))));
-
             // 70% resist to Stardust Dragon Staff.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.AstrumDeus, Do(new ProjectileResistBalancingRule(0.3f, ProjectileID.StardustDragon1, ProjectileID.StardustDragon2, ProjectileID.StardustDragon3, ProjectileID.StardustDragon4))));
 
@@ -210,6 +207,9 @@ namespace CalamityMod.Balancing
             // 50% resist to Atlantis (Atlantis gaming!).
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.AstrumDeus, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<AtlantisSpear>()))));
 
+            // 50% resist to Charged Blaster Cannon.
+            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.AstrumDeus, Do(new ProjectileResistBalancingRule(0.5f, ProjectileID.ChargedBlasterLaser))));
+            
             // 35% resist to Aerial Bane.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.AstrumDeus, Do(new ProjectileResistBalancingRule(0.65f, ProjectileID.DD2BetsyArrow))));
 
@@ -293,11 +293,11 @@ namespace CalamityMod.Balancing
             // 65% resist to Wave Pounder.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.DevourerOfGods, Do(new ProjectileResistBalancingRule(0.35f, ProjectileType<WavePounderBoom>()))));
 
+            // 60% resist to Corinth Prime's grenades.
+            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.DevourerOfGods, Do(new ProjectileResistBalancingRule(0.4f, ProjectileType<CorinthPrimeAirburst>()))));
+            
             // 35% resist to Sulphuric Acid Cannon's explosions.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.DevourerOfGods, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<SulphuricAcidCannonExplosion>()))));
-
-            // 25% resist to Corinth Prime's grenades.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.DevourerOfGods, Do(new ProjectileResistBalancingRule(0.75f, ProjectileType<CorinthPrimeAirburst>()))));
 
             // 20% resist to Valediction's typhoons; will catch Nuclear Fury as well but that doesn't matter.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.DevourerOfGods, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<NuclearFuryProjectile>()))));

@@ -49,6 +49,8 @@ namespace CalamityMod.Projectiles.Magic
         {
             Projectile.width = Projectile.height = 70;
             Projectile.friendly = true;
+            Projectile.DamageType = DamageClass.Magic;
+            Projectile.ContinuouslyUpdateDamageStats = true;
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
         }
@@ -92,7 +94,7 @@ namespace CalamityMod.Projectiles.Magic
                             SoundEngine.PlaySound(CommonCalamitySounds.ELRFireSound, Owner.Center);
                             Vector2 laserPos = TipPosition + Vector2.UnitY.RotatedBy(Projectile.rotation) * Main.rand.NextFloat(-7f, 7f);
                             Vector2 laserVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld) * 20f;
-                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), laserPos, laserVel, ModContent.ProjectileType<SHPL>(), (int)(Projectile.damage * 1.35f), 3f, Projectile.owner, SoulColors[0]);
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), laserPos, laserVel, ModContent.ProjectileType<SHPL>(), (int)(Projectile.damage * 1.4f), 3f, Projectile.owner, SoulColors[0]);
 
                             if (ConsumeSoul)
                             {
@@ -143,6 +145,7 @@ namespace CalamityMod.Projectiles.Magic
             Owner.heldProj = Projectile.whoAmI;
             Owner.ChangeDir(Math.Sign((Owner.Calamity().mouseWorld - Owner.Center).X));
             Owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, (Owner.Center - Owner.Calamity().mouseWorld).ToRotation() * Owner.gravDir + MathHelper.PiOver2);
+            Owner.SetDummyItemTime(2);
             Projectile.rotation = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld).ToRotation();
             Projectile.velocity = Vector2.Zero;
             Projectile.Center = Owner.Center;

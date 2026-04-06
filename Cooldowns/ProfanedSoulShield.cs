@@ -109,16 +109,23 @@ namespace CalamityMod.Cooldowns
         public override Color CooldownStartColor => Color.Lerp(ringColorLerpStart, ringColorLerpEnd, instance.Completion);
         public override Color CooldownEndColor => Color.Lerp(ringColorLerpStart, ringColorLerpEnd, instance.Completion);
 
-        public override void Tick() => instance.player.Calamity().playedProfanedSoulShieldSound = false;
+        public override void Tick()
+        {
+            if (instance.player.whoAmI == Main.myPlayer)
+                instance.player.Calamity().playedProfanedSoulShieldSound = false;
+        }
 
         public override SoundStyle? EndSound => Providence.BurnStartSound;
 
         public override bool ShouldPlayEndSound => instance.player.Calamity().pSoulArtifact;
 
-        // When the recharge period completes, grant 1 point of shielding immediately so the rest my refill normally.
+        // When the recharge period completes, grant 1 point of shielding immediately so the rest may refill normally.
         // The shield durability cooldown is added elsewhere, in Misc Effects.
         public override void OnCompleted()
         {
+            if (instance.player.whoAmI != Main.myPlayer)
+                return;
+
             CalamityPlayer modPlayer = instance.player.Calamity();
             if (modPlayer.pSoulShieldDurability <= 0)
                 modPlayer.pSoulShieldDurability = 1;

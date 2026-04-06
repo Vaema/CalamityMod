@@ -1,4 +1,5 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Packets;
 using CalamityMod.Particles;
@@ -88,7 +89,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (target.type == NPCID.Guide)
-                modifiers.FinalDamage *= 10f;
+                modifiers.FinalDamage *= 25f;
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)
@@ -116,6 +117,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damage)
         {
+            target.AddBuff(ModContent.BuffType<SearingLava>(), 600);
             Color innerColor = new(230, 198, 198);
             Color outterColor = new(248, 63, 63);
 

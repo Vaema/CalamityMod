@@ -134,7 +134,26 @@ namespace CalamityMod
             ret += best - 1f;
             return ret;
         }
+        /// <summary>
+        /// Calculates and returns the player's total melee scale boosts. This is used mostly for melee holdouts.
+        /// </summary>
+        /// <param name="addHeldItemScale">If the item scale of the players held item should be added to the calculation.<br/>
+        /// Should be disabled for anything that doesn't lock you into holding one item.
+        /// </param>
+        public static float GetMeleeScale(this Player player, bool addHeldItemScale = true)
+        {
+            float baseScale = 1;
+            player.ApplyMeleeScale(ref baseScale); // Gets vanilla's glove scale boosts
+            // Xyk 3MARCH2026: Will be implemented better by Doze eventually
+            if (addHeldItemScale)
+                baseScale += (player.HeldItem.scale - 1);
 
+            if (player.HasBuff(BuffID.Tipsy))
+                baseScale += 0.15f;
+
+
+            return baseScale;
+        }
         public static float GetAmmoCostReduction(this Player player)
         {
             // Tally up all possible vanilla effects.
@@ -209,24 +228,40 @@ namespace CalamityMod
         }
 
         /// <summary>
-        /// Directly retrieves the best pickaxe power of the player.
+        /// Retrieves the best pickaxe item in the player's inventory.<br /></br>
+        /// May return <see langword="null"> if the player has no pickaxes.
         /// </summary>
-        /// <param name="player"></param>
-        /// <returns></returns>
-        public static int GetBestPickPower(this Player player)
+        /// <param name="player">The player whose best pickaxe is being queried.</param>
+        /// <returns>An item with a nonzero pickaxe power, or <see langword="null">.</returns>
+        internal static Item GetBestPick(this Player player)
         {
-            int highestPickPower = 35; //35% if you have no pickaxes.
+            int bestPickPower = 0;
+            Item bestPick = null;
             for (int item = 0; item < Main.InventorySlotsTotal; item++)
             {
                 if (player.inventory[item].pick <= 0)
                     continue;
 
-                if (player.inventory[item].pick > highestPickPower)
-                    highestPickPower = player.inventory[item].pick;
+                if (player.inventory[item].pick > bestPickPower)
+                {
+                    bestPick = player.inventory[item];
+                    bestPickPower = bestPick.pick;
+                }
             }
 
-            return highestPickPower;
+            return bestPick;
         }
+
+        // Pickaxe power minimum is decided by the Copper Pickaxe.
+        private static int _minimumPickPower => ContentSamples.ItemsByType[ItemID.CopperPickaxe].pick;
+
+        /// <summary>
+        /// Retrieves the best pickaxe power of the player.<br /></br>
+        /// Always returns a minimum pickaxe power equivalent to the Copper Pickaxe.
+        /// </summary>
+        /// <param name="player">The player whose pickaxe strength is being queried.</param>
+        /// <returns>A pickaxe power value, minimum 35.</returns>
+        public static int GetBestPickPower(this Player player) => player.GetBestPick()?.pick ?? _minimumPickPower;
         #endregion
 
         #region Movement and Controls

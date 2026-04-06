@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -223,7 +224,15 @@ namespace CalamityMod.DataStructures
                     .CombineWith(ApplyScalingToStatModifer(cnpc.ActiveElectricDebuffMultiplier, ElectricDebuffScaling)
                  ))))
                  :
-                 cnpc.ActiveTypelessDebuffMultiplier;
+                 // Bane doesn't scale with debuff multipliers. This should be implemented as a default feature you can apply to debuffs at some point.
+                 buffType == ModContent.BuffType<Bane>() ? cnpc.ActiveTypelessDebuffMultiplier : StatModifier.Default;
+
+            //Ensure at least 25% effectiveness
+            if (totalScaling.Multiplicative <= 0.25f)
+                totalScaling.Multiplicative = 0.25f; 
+            if (totalScaling.Additive < 0.25f)
+                totalScaling.Additive = 0.25f;
+
             totalDPS = totalScaling.ApplyTo(totalDPS);
             var totalDPSAdjusted = totalDPS-EnemyVanillaRegenToCancelOut;
             npc.Calamity().ApplyDPSDebuff((int)(totalDPSAdjusted), (int)Math.Max(totalDPS*MultiplierDamageTickSize,MinimumDamageTickSize), ref npc.lifeRegen, ref damage);
@@ -249,7 +258,15 @@ namespace CalamityMod.DataStructures
                     .CombineWith(ApplyScalingToStatModifer(cnpc.ActiveElectricDebuffMultiplier, ElectricDebuffScaling)
                  ))))
                  :
-                 cnpc.ActiveTypelessDebuffMultiplier;
+                 // Bane doesn't scale with debuff multipliers. This should be implemented as a default feature you can apply to debuffs at some point.
+                 buffType == ModContent.BuffType<Bane>() ? cnpc.ActiveTypelessDebuffMultiplier : StatModifier.Default;
+
+            //Ensure at least 25% effectiveness
+            if (totalScaling.Multiplicative <= 0.25f)
+                totalScaling.Multiplicative = 0.25f;
+            if (totalScaling.Additive < 0.25f)
+                totalScaling.Additive = 0.25f;
+
             totalDPS = totalScaling.ApplyTo(totalDPS);
             totalDPS *= (npc.velocity.X == 0 ? 1 : 4);
             totalDPS -= EnemyVanillaRegenToCancelOut * (npc.velocity.X == 0 ? 1 : 5); //Vanilla Electrified is 5x when moving, not 4x
@@ -404,7 +421,7 @@ namespace CalamityMod.DataStructures
         };
         public static DebuffData Electrified = new DebuffData(DebuffBehavior.Electric)
         {
-            EnemyLostRegen = 21,
+            EnemyLostRegen = 30, // 15 dps stationary, 60 dps moving
             EnemyVanillaRegenToCancelOut = 8,
             ElectricDebuffScaling = 1
         };

@@ -221,7 +221,7 @@ namespace CalamityMod.Projectiles.Melee
                                 Owner.SetScreenshake(3f);
                                 SoundStyle sound = new("CalamityMod/Sounds/Item/SkytideBolt");
                                 SoundEngine.PlaySound(sound with { Volume = 0.8f }, Projectile.Center);
-                                Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center + new Vector2(0, -600), new Vector2(0, 10), ModContent.ProjectileType<DragoonBigBolt>(), (int)(Projectile.damage * 9), Projectile.knockBack, Projectile.owner, 0, 0.5f);
+                                Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center + new Vector2(0, -600), new Vector2(0, 10), ModContent.ProjectileType<DragoonBigBolt>(), (int)(Projectile.damage * 10), Projectile.knockBack, Projectile.owner, 0, 0.5f);
                                 proj.timeLeft = 45;
                                 swingCount = 0;
                                 attackPower = 6;
@@ -233,7 +233,7 @@ namespace CalamityMod.Projectiles.Melee
                                 SoundEngine.PlaySound(fire with { Volume = 1f, Pitch = -0.2f }, Projectile.Center);
                                 SoundStyle fire2 = new("CalamityMod/Sounds/Item/AuricBulletHit");
                                 SoundEngine.PlaySound(fire2 with { Volume = 0.5f, Pitch = 0.2f }, Projectile.Center);
-                                Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center - aimVel * 2, aimVel.SafeNormalize(Vector2.UnitX) * -10, ModContent.ProjectileType<DragoonBigBolt>(), (int)(Projectile.damage * 9), Projectile.knockBack, Projectile.owner, 0, 1f);
+                                Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center - aimVel * 2, aimVel.SafeNormalize(Vector2.UnitX) * -10, ModContent.ProjectileType<DragoonBigBolt>(), (int)(Projectile.damage * 10), Projectile.knockBack, Projectile.owner, 0, 1f);
                                 swingCount = -1;
                                 attackPower = 0;
                             }
@@ -298,7 +298,7 @@ namespace CalamityMod.Projectiles.Melee
             SoundEngine.PlaySound(fire2 with { Volume = 0.65f, Pitch = 0.4f }, Projectile.Center);
 
             Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
-            target.MoveNPC(launchVel, 23, true);
+            target.MoveNPC(launchVel, 23, true, Owner);
 
             target.AddBuff(BuffID.Electrified, 230);
         }

@@ -1,5 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -44,10 +46,29 @@ namespace CalamityMod.Projectiles.Summon
         {
             for (int i = 0; i < 15; i++)
             {
-                Dust blood = Dust.NewDustDirect(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Blood, Projectile.velocity.X * 0.1f, Projectile.velocity.Y * 0.1f);
+                Dust blood = Dust.NewDustDirect(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, !ChildSafety.Disabled ? DustID.Cloud : DustID.Blood, Projectile.velocity.X * 0.1f, Projectile.velocity.Y * 0.1f);
                 blood.velocity = Main.rand.NextVector2Circular(1f, 2f);
                 blood.noGravity = true;
             }
+        }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            if (ChildSafety.Disabled)
+            {
+                return base.PreDraw(ref lightColor);
+            }
+
+            Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
+            int frameHeight = texture.Height / Main.projFrames[Projectile.type];
+            int startY = frameHeight * Projectile.frame;
+            Rectangle sourceRectangle = new Rectangle(0, startY, texture.Width, frameHeight);
+            Vector2 origin = sourceRectangle.Size() / 2f;
+            Color drawColor = Color.CornflowerBlue;
+            drawColor *= Projectile.Opacity;
+
+            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), sourceRectangle, drawColor, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
+            return false;
         }
     }
 }

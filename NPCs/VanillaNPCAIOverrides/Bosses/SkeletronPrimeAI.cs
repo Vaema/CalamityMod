@@ -147,16 +147,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 SoundEngine.PlaySound(SoundID.ForceRoar, NPC.Center);
             }
 
-            // Adjust slowing debuff immunity
-            bool immuneToSlowingDebuffs = NPC.ai[1] == 5f;
-            NPC.buffImmune[ModContent.BuffType<GlacialState>()] = immuneToSlowingDebuffs;
-            NPC.buffImmune[ModContent.BuffType<TemporalSadness>()] = immuneToSlowingDebuffs;
-            NPC.buffImmune[ModContent.BuffType<Eutrophication>()] = immuneToSlowingDebuffs;
-            NPC.buffImmune[ModContent.BuffType<TimeDistortion>()] = immuneToSlowingDebuffs;
-            NPC.buffImmune[ModContent.BuffType<GalvanicCorrosion>()] = immuneToSlowingDebuffs;
-            NPC.buffImmune[ModContent.BuffType<Vaporfied>()] = immuneToSlowingDebuffs;
-            NPC.buffImmune[BuffID.Webbed] = immuneToSlowingDebuffs;
-
             bool normalLaserRotation = NPC.localAI[1] % 2f == 0f;
 
             // Float near player
@@ -177,6 +167,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             if (shouldSpinAround)
                             {
                                 NPC.localAI[3] = 300f;
+                                NPC.localAI[1] = 0;
                                 NPC.SyncVanillaLocalAI();
                             }
 
@@ -543,7 +534,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             }
 
                             // Go to floating phase, or spinning phase if in phase 2
-                            if (NPC.localAI[0] >= totalSkulls)
+                            // NetMode check here fixes the strange teleporting issue prime had. The issue was that this attack was ending on the client
+                            // and then some time later ending a second time on the server, causing major de-sync and the issues of prime seeming to teleport.
+                            if (NPC.localAI[0] >= totalSkulls && Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 NPC.velocity = NPC.velocity.SafeNormalize(Vector2.UnitY);
 

@@ -46,6 +46,10 @@ namespace CalamityMod.Tiles.Abyss
         {
             num = fail ? 1 : 3;
         }
+        public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
+        {
+            World.Abyss.FillTileWithWater(i, j);
+        }
 
         public override void AnimateIndividualTile(int type, int i, int j, ref int frameXOffset, ref int frameYOffset)
         {
@@ -80,7 +84,7 @@ namespace CalamityMod.Tiles.Abyss
                 if (!down.HasTile && down.TileType != (ushort)ModContent.TileType<ViperVines>())
                 {
                     if (down.LiquidAmount == 255 &&
-                        down.WallType == (ushort)ModContent.WallType<AbyssGravelWall>() &&
+                        down.WallType == (ushort)ModContent.WallType<SafeAbyssGravelWall>() &&
                         down.LiquidType != LiquidID.Lava)
                     {
                         bool canGrowVine = false;

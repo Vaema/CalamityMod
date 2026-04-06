@@ -25,6 +25,8 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
             Projectile.timeLeft = 25;
         }
 
@@ -58,7 +60,7 @@ namespace CalamityMod.Projectiles.Typeless
         {
             target.AddBuff(BuffID.Wet, 180);
             Vector2 launchVel = Utils.DirectionTo(Owner.Center, target.Center) + Vector2.UnitY * -0.75f;
-            target.MoveNPC(launchVel, 12, false);
+            target.MoveNPC(launchVel, 12, false, Owner);
         }
         public override bool? CanCutTiles() => false;
     }

@@ -37,7 +37,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<ElementalMix>(), 480);
+            target.AddBuff(ModContent.BuffType<ElementalMix>(), 900);
         }
 
         public override void OnKill(int timeLeft)

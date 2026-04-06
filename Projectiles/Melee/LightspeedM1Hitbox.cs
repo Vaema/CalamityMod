@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs;
 using CalamityMod.Particles;
@@ -49,7 +50,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 gotEnergyThisSwing = true;
                 var player = Main.player[Projectile.owner];
-                var modPlayer = player.Calamity();
+                var modPlayer = player.GetModPlayer<LightspeedPlayer>();
 
                 // +4 energy on hit
                 modPlayer.elementalMastery += 4;
@@ -62,6 +63,8 @@ namespace CalamityMod.Projectiles.Melee
                 Particle energyLeak = new SquishyLightParticle(target.Center, particleSpeed, Main.rand.NextFloat(0.25f, 0.5f), Color.OrangeRed, 22, 2, 2.5f, hueShift: 0.06f);
                 GeneralParticleHandler.SpawnParticle(energyLeak);
             }
+
+            target.AddBuff(ModContent.BuffType<ElementalMix>(), 60);
         }
     }
 }

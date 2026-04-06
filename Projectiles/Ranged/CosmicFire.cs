@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Dusts;
+using CalamityMod.Enums;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -60,6 +61,7 @@ namespace CalamityMod.Projectiles.Ranged
                 GeneralParticleHandler.SpawnParticle(spark);
                 Particle spark2 = new CustomSpark(Projectile.Center, -Projectile.velocity * 0.05f, "CalamityMod/Particles/GlowSpark", false, 17, 0.027f, Color.LightGreen, new Vector2(0.6f, 1.3f), true, false);
                 GeneralParticleHandler.SpawnParticle(spark2);
+                spark2.DrawLayer = GeneralDrawLayer.AfterEverything;
             }
 
             if (Time == 9f)
@@ -106,10 +108,11 @@ namespace CalamityMod.Projectiles.Ranged
                 Particle blastRing = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Black, "CalamityMod/Particles/LargeBloom", Vector2.One, Main.rand.NextFloat(-10, 10), 0.35f, 0.4f, 38, false);
                 GeneralParticleHandler.SpawnParticle(blastRing);
             }
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 3; i++)
             {
                 Particle blastRing = new CustomPulse(Projectile.Center, Vector2.Zero, InnerColor, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 0.48f, 0.52f, 38);
                 GeneralParticleHandler.SpawnParticle(blastRing);
+                blastRing.DrawLayer = GeneralDrawLayer.AfterEverything;
             }
 
             float numberOfDusts = 10;

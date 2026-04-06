@@ -467,7 +467,7 @@ namespace CalamityMod.Systems
 
         public override Asset<Texture2D> TextureDisabled => _textureDisabled ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Legendary_Off");
 
-        public override SoundStyle ActivationSound => _activationSound ??= SoundID.NPCDeath10;
+        public override SoundStyle ActivationSound => _activationSound ??= new("CalamityMod/Sounds/Custom/DifficultySelection/Legendary_Mode_Select");
 
         public override int BackBoneGameModeID => GameModeID.Master;
 
@@ -502,7 +502,7 @@ namespace CalamityMod.Systems
 
         public override Asset<Texture2D> TextureDisabled => _textureDisabled ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Rev_Off");
 
-        public override SoundStyle ActivationSound => _activationSound ??= SoundID.Item119;
+        public override SoundStyle ActivationSound => _activationSound ??= new("CalamityMod/Sounds/Custom/DifficultySelection/Revengeance_Mode_Select");
 
         public override int BackBoneGameModeID => Main.getGoodWorld ? GameModeID.Normal : GameModeID.Expert;
 
@@ -558,7 +558,7 @@ namespace CalamityMod.Systems
 
         public override Asset<Texture2D> TextureDisabled => _textureDisabled ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Death_Off");
 
-        public override SoundStyle ActivationSound => _activationSound ??= DemonshadeHelm.ActivationSound;
+        public override SoundStyle ActivationSound => _activationSound ??= new("CalamityMod/Sounds/Custom/DifficultySelection/Death_Mode_Select");
 
         public override int BackBoneGameModeID => Main.getGoodWorld ? GameModeID.Expert : GameModeID.Master;
 
@@ -619,7 +619,7 @@ namespace CalamityMod.Systems
 
         public override Asset<Texture2D> TextureDisabled => _textureDisabled ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Malice_Off");
 
-        public override SoundStyle ActivationSound => _activationSound ??= DemonshadeHelm.ActivationSound;
+        public override SoundStyle ActivationSound => _activationSound ??= new("CalamityMod/Sounds/Custom/DifficultySelection/Malice_Mode_Select");
 
         public override int BackBoneGameModeID => GameModeID.Master;
 

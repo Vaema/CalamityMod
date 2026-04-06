@@ -61,7 +61,7 @@ namespace CalamityMod.Projectiles.Magic
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             float minMult = 0.35f;
-            int hitsToMinMult = 15;
+            int hitsToMinMult = 10;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
             modifiers.SourceDamage *= damageMult;
 

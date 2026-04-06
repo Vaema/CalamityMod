@@ -87,6 +87,25 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public const int ThirdBulletHellEndValue = BulletHellDuration * 3;
         public const int FourthBulletHellEndValue = BulletHellDuration * 4;
         public const int FifthBulletHellEndValue = BulletHellDuration * 5;
+
+        public bool FinishedBH1 => bulletHellCounter2 >= BulletHellDuration;
+        public bool FinishedBH2 => bulletHellCounter2 >= SecondBulletHellEndValue;
+        public bool FinishedBH3 => bulletHellCounter2 >= ThirdBulletHellEndValue;
+        public bool FinishedBH4 => bulletHellCounter2 >= FourthBulletHellEndValue;
+        public bool FinishedBH5 => bulletHellCounter2 >= FifthBulletHellEndValue;
+
+        public float lifeRatio = 1;
+
+        public bool IsAtHp_BH2 => lifeRatio <= 0.75f;
+        public bool IsAtHp_BH3 => lifeRatio <= 0.5f;
+        public bool IsAtHp_BH4 => lifeRatio <= 0.3f;
+        public bool IsAtHp_BH5 => lifeRatio <= 0.1f;
+        public bool IsAtHp_Acceptance => NPC.life < 2;
+
+        public bool IsAtBrothers => IsAtHp_BH3 && FinishedBH3;
+        public bool IsAtSeekers => IsAtHp_BH4 && FinishedBH4;
+        public bool IsAtSep2 => IsAtHp_BH5 && FinishedBH5;
+
         public const int PermafrostAbsoluteZeroDamage = 3725;
         private const float PermafrostPhotonRipperDashVelocity = 6f;
         private const float PermafrostPhotonRipperMinDistanceFromTarget = 64f;
@@ -478,7 +497,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             bool zenithAI = Main.zenithWorld && !permafrost;
 
             // Percent life remaining
-            float lifeRatio = NPC.life / (float)NPC.lifeMax;
+            lifeRatio = NPC.life / (float)NPC.lifeMax;
 
             int bulletHellblast = zenithAI ? ModContent.ProjectileType<BrimstoneWave>() : ModContent.ProjectileType<BrimstoneHellblast2>();
             int barrage = ModContent.ProjectileType<BrimstoneBarrage>();
@@ -554,7 +573,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 NPC.ai[0] == 1f || NPC.ai[0] == 2f;
 
             // Make the shield and forcefield fade away in SCal's acceptance phase.
-            if (lifeRatio <= 0.01f && hasDoneDeathAnim)
+            if (IsAtHp_Acceptance && hasDoneDeathAnim)
             {
                 shieldOpacity = MathHelper.Lerp(shieldOpacity, 0f, 0.08f);
                 forcefieldScale = MathHelper.Lerp(forcefieldScale, 0f, 0.08f);
@@ -665,9 +684,9 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 }
                 if (cataclysmAlive || catastropheAlive)
                     baseSize *= new Vector4(0.85f, 1.33f, 0.85f, 1.33f);
-                if (lifeRatio <= 0.01f)
+                if (IsAtHp_Acceptance)
                     baseSize = (Main.zenithWorld && !permafrost) ? new Vector4(22f, 22f, 22f, 22f) : new Vector4(400f, 500f, 73f, 500f);
-                else if (Main.zenithWorld && lifeRatio <= 0.08f && !wormAlive && !permafrost) // gfb
+                else if (Main.zenithWorld && IsAtHp_BH5 && !wormAlive && !permafrost && FinishedBH5) // gfb, only after Bh5 and sep both end
                     baseSize *= MathHelper.Lerp(0.22f, 1f, lifeRatio * 12.5f); // Scale down the lower health scal has
                 return baseSize;
             }
@@ -686,18 +705,21 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     c = AcceptanceColor;
                     oldColor = EpiphanyColor;
                 }
-                else if (lifeRatio <= 0.3f)
+                else if (IsAtHp_BH4)
                 {
                     c = EpiphanyColor;
                     oldColor = LamentColor;
                 }
-                else if (lifeRatio <= 0.5f)
+                else if (IsAtHp_BH3)
                     c = LamentColor;
                 return c;
             }
 
             void UpdateArena(ArenaWallSystem.Box box)
             {
+                if (Main.dedServ)
+                    return;
+
                 var x = 1f / TextureAssets.MagicPixel.Height();
                 var p = ScalArenaMetaball.SpawnParticle((box.TopLeft + box.BottomLeft) * 0.5f - new Vector2(box.borderThickness * 0.5f + 2, 0), Vector2.Zero, 1);
                 p.SizeScaling = 0;
@@ -779,7 +801,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 };
                 ArenaWallSystem.ActiveBoxes.Add(ArenaBox);
             }
-            ArenaBox.NewDimensions = Vector4.Lerp(ArenaBox.boxDimensions, GetArenaSize(), lifeRatio <= 0.01f ? 0.02f : startFourthAttack ? 0.05f : 0.1f);
+            ArenaBox.NewDimensions = Vector4.Lerp(ArenaBox.boxDimensions, GetArenaSize(), IsAtHp_Acceptance ? 0.02f : startFourthAttack ? 0.05f : 0.1f);
             var color = GetArenaColor(out Color oldColor);
             if (colorCompletion > 1.1f && color != ArenaBox.borderColor)
                 colorCompletion = 0;
@@ -936,7 +958,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             }
             #endregion
             #region FirstAttack
-            if (bulletHellCounter2 < BulletHellDuration)
+            if (!FinishedBH1)
             {
                 despawnProj = true;
                 bulletHellCounter2++;
@@ -1017,7 +1039,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             }
             #endregion
             #region SecondAttack
-            if (bulletHellCounter2 < SecondBulletHellEndValue && startSecondAttack) // Bullet hell lasts 1800
+            if (!FinishedBH2 && startSecondAttack) // Bullet hell lasts 1800
             {
                 despawnProj = true;
                 bulletHellCounter2++;
@@ -1117,7 +1139,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 return;
             }
 
-            if (!startSecondAttack && lifeRatio <= 0.75f)
+            if (!startSecondAttack && IsAtHp_BH2)
             {
                 // Bouncy Boulders
                 if (permafrost)
@@ -1148,7 +1170,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             }
             #endregion
             #region ThirdAttack
-            if (bulletHellCounter2 < ThirdBulletHellEndValue && startThirdAttack)
+            if (!FinishedBH3 && startThirdAttack)
             {
                 despawnProj = true;
                 bulletHellCounter2++;
@@ -1242,7 +1264,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 return;
             }
 
-            if (!startThirdAttack && lifeRatio <= 0.5f)
+            if (!startThirdAttack && IsAtHp_BH3)
             {
                 // Bouncy Boulders
                 if (permafrost)
@@ -1273,7 +1295,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             }
             #endregion
             #region FourthAttack
-            if (lifeRatio <= 0.3f && musicSyncCounter > -120)
+            if (IsAtHp_BH4 && musicSyncCounter > -120)
                 musicSyncCounter--;
             if (musicSyncCounter <= 126 && musicSyncCounter > 0)
             {
@@ -1302,7 +1324,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 forcefieldPureVisualScale = 1.5f;
                 postMusicHit = true;
             }
-            if (postMusicHit && lifeRatio > 0.01f && !canDespawn && NPC.ai[1] != 2f)
+            if (postMusicHit && !IsAtHp_Acceptance && !canDespawn && NPC.ai[1] != 2f)
             {
                 forcefieldPureVisualScale = MathHelper.Lerp(forcefieldPureVisualScale, 1f, 0.095f);
                 Vector2 velOffset = new Vector2(56, 56).RotatedByRandom(100) * forcefieldPureVisualScale;
@@ -1324,7 +1346,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
             }
 
-            if (bulletHellCounter2 < FourthBulletHellEndValue && startFourthAttack)
+            if (!FinishedBH4 && startFourthAttack)
             {
                 despawnProj = true;
                 bulletHellCounter2++;
@@ -1448,7 +1470,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 return;
             }
 
-            if (!startFourthAttack && lifeRatio <= 0.3f)
+            if (!startFourthAttack && IsAtHp_BH4)
             {
                 // Bouncy Boulders
                 if (permafrost)
@@ -1479,7 +1501,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             }
             #endregion
             #region FifthAttack
-            if (bulletHellCounter2 < FifthBulletHellEndValue && startFifthAttack)
+            if (!FinishedBH5 && startFifthAttack)
             {
                 despawnProj = true;
                 bulletHellCounter2++;
@@ -1595,7 +1617,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 return;
             }
 
-            if (!startFifthAttack && lifeRatio <= 0.1f)
+            if (!startFifthAttack && IsAtHp_BH5)
             {
                 // Bouncy Boulders
                 if (permafrost)
@@ -1888,7 +1910,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     return;
                 }
 
-                if (!gettingTired5 && lifeRatio <= 0.01f)
+                if (!gettingTired5 && IsAtHp_Acceptance)
                 {
                     for (int x = 0; x < Main.maxProjectiles; x++)
                     {
@@ -1975,7 +1997,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     gettingTired2 = true;
                     return;
                 }
-                else if (!gettingTired && lifeRatio <= 0.08f)
+                else if (!gettingTired && IsAtSep2)
                 {
                     attackCastDelay = sepulcherSpawnCastTime;
                     for (int i = 0; i < 40; i++)
@@ -2030,7 +2052,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             }
             #endregion
             #region TransformSeekerandBrotherTriggers
-            if (!halfLife && lifeRatio <= 0.45f && hasSummonedBrothers && (permafrost ? NPC.AnyNPCs(ModContent.NPCType<DevourerofGodsHead>()) : (NPC.AnyNPCs(ModContent.NPCType<SupremeCataclysm>()) || NPC.AnyNPCs(ModContent.NPCType<SupremeCatastrophe>()))) == false)
+            if (!halfLife && IsAtBrothers && hasSummonedBrothers && (permafrost ? NPC.AnyNPCs(ModContent.NPCType<DevourerofGodsHead>()) : (NPC.AnyNPCs(ModContent.NPCType<SupremeCataclysm>()) || NPC.AnyNPCs(ModContent.NPCType<SupremeCatastrophe>()))) == false)
             {
                 if (!BossRushEvent.BossRushActive)
                 {
@@ -2046,7 +2068,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 halfLife = true;
             }
 
-            if (lifeRatio <= 0.2f)
+            if (IsAtSeekers)
             {
                 if (!secondStage)
                 {
@@ -2104,7 +2126,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 if (attackPause > 0)
                     attackPause--;
 
-                if (lifeRatio < 0.45f && !enteredBrothersPhase)
+                if (IsAtBrothers && !enteredBrothersPhase)
                 {
                     attackPause = 5;
                     if (preventionPause == 0)
@@ -2649,8 +2671,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     }
                 }
 
-                // Previously the 40% health threshold transition
-                if (lifeRatio <= 0.45f && hasSummonedBrothers && (permafrost ? NPC.AnyNPCs(ModContent.NPCType<DevourerofGodsHead>()) : (NPC.AnyNPCs(ModContent.NPCType<SupremeCataclysm>()) || NPC.AnyNPCs(ModContent.NPCType<SupremeCatastrophe>()))) == false)
+                // Phase 2
+                if (IsAtBrothers && hasSummonedBrothers && (permafrost ? NPC.AnyNPCs(ModContent.NPCType<DevourerofGodsHead>()) : (NPC.AnyNPCs(ModContent.NPCType<SupremeCataclysm>()) || NPC.AnyNPCs(ModContent.NPCType<SupremeCatastrophe>()))) == false)
                 {
                     NPC.ai[0] = 1f;
                     NPC.ai[1] = 0f;
@@ -3489,8 +3511,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
         public void HandleMusicVariables()
         {
-            float lifeRatio = NPC.life / (float)NPC.lifeMax;
-
             CalamityGlobalNPC.SCalGrief = -1;
             CalamityGlobalNPC.SCalLament = -1;
             CalamityGlobalNPC.SCalEpiphany = -1;
@@ -3498,9 +3518,9 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
             if (startFifthAttack && gettingTired5 && (giveUpCounter < 1160 || hasDoneDeathAnim))
                 CalamityGlobalNPC.SCalAcceptance = NPC.whoAmI;
-            else if (lifeRatio <= 0.3f)
+            else if (IsAtHp_BH4)
                 CalamityGlobalNPC.SCalEpiphany = NPC.whoAmI;
-            else if (lifeRatio <= 0.5f)
+            else if (IsAtHp_BH3)
                 CalamityGlobalNPC.SCalLament = NPC.whoAmI;
             else
                 CalamityGlobalNPC.SCalGrief = NPC.whoAmI;
@@ -3754,7 +3774,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             //if (NPC.ai[0] >= 3f)
             //intensity *= 0.6f;
 
-            float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
             if (lifeRatio < 0.05f)
                 forcefieldOpacity = 0.75f;

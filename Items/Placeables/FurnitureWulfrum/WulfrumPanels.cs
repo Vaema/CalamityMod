@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.Walls;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -21,11 +22,11 @@ namespace CalamityMod.Items.Placeables.FurnitureWulfrum
                 AddIngredient<WulfrumMetalScrap>().
                 AddTile(TileID.Furnaces).
                 Register();
-            //CreateRecipe().
-            //    AddIngredient<WulfrumPlatingWall>(4).
-            //    AddTile(TileID.WorkBenches).
-            //    DisableDecraft().
-            //    Register();
+            CreateRecipe().
+                AddIngredient<WulfrumPanelWall>(4).
+                AddTile(TileID.WorkBenches).
+                DisableDecraft().
+                Register();
         }
     }
 }

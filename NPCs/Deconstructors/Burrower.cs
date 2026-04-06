@@ -50,7 +50,7 @@ namespace CalamityMod.NPCs.Deconstructors
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = false;
-
+            NPC.chaseable = false;
             Banner = ModContent.NPCType<Burrower>();
             BannerItem = ModContent.ItemType<BurrowerBanner>();
             base.SetDefaults();
@@ -204,6 +204,11 @@ namespace CalamityMod.NPCs.Deconstructors
 
         public override void AI()
         {
+            //Force burrower bestiary to unlock
+            if (Main.netMode != NetmodeID.MultiplayerClient && Main.BestiaryTracker.Kills.GetKillCount(NPC) <= 0)
+            {
+                Main.BestiaryTracker.Kills.RegisterKill(NPC);
+            }
             HandleAIStates();
             MainTimer++;
             UpdateSegments();

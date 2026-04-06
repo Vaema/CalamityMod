@@ -761,9 +761,8 @@ namespace CalamityMod.NPCs.Leviathan
                                     totalProjectiles = 6;
                                     type = ModContent.ProjectileType<SirenSong>();
                                     damage = SongDamage;
-                                    float soundPitch = (Main.rand.NextFloat() - 0.5f) * 0.5f;
-                                    Main.musicPitch = soundPitch;
-                                    SoundEngine.PlaySound(SoundID.Item26, player.Center);
+                                    SoundStyle song = new("CalamityMod/Sounds/Item/HarpEnd");
+                                    SoundEngine.PlaySound(song with { Volume = 0.6f }, player.Center);
                                     break;
                             }
                             NPC.localAI[3] += 1f;

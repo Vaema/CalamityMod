@@ -13,6 +13,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.DraedonLabThings
 {
+    [HeavyKnockbackWhitelisted]
     public class Androomba : ModNPC
     {
 
@@ -151,13 +152,10 @@ namespace CalamityMod.NPCs.DraedonLabThings
                     break;
             }
 
-            foreach (Player player in Main.ActivePlayers)
+            // Force bestiary unlock
+            if (Main.netMode != NetmodeID.MultiplayerClient && Main.BestiaryTracker.Kills.GetKillCount(NPC) <= 0)
             {
-                if (NPC.Hitbox.Intersects(player.HitboxForBestiaryNearbyCheck))
-                {
-                    Main.BestiaryTracker.Kills.RegisterKill(NPC);
-                    break;
-                }
+                Main.BestiaryTracker.Kills.RegisterKill(NPC);
             }
         }
 

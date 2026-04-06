@@ -35,7 +35,6 @@ namespace CalamityMod.Items.Accessories
         {
             CreateRecipe().
                 AddIngredient<RogueEmblem>().
-                AddIngredient<MoonstoneCrown>().
                 AddIngredient<ElectriciansGlove>().
                 AddIngredient<AscendantSpiritEssence>(4).
                 AddTile<CosmicAnvil>().

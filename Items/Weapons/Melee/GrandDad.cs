@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 124;
             Item.height = 124;
-            Item.damage = 2407; // Feel free to change these 7s as balance requires. The other 7s should stay - Update: no more 2777... :(
+            Item.damage = 3777; // Feel free to change these 7s as balance requires. The other 7s should stay - Update: no more 2777... :(
             Item.DamageType = TrueMeleeDamageClass.Instance;
             Item.useAnimation = 77;
             Item.useTime = 77;
@@ -56,14 +56,6 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             list.FindAndReplace("[GFB]", Lang.SupportGlyphs(this.GetLocalizedValue(Main.zenithWorld ? "TooltipGFB" : "TooltipNormal")));
         }
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<MajesticGuard>().
-                AddIngredient<TwistingNether>(3).
-                AddTile(TileID.MythrilAnvil).
-                Register();
-        }
         public override void OnSpawn(IEntitySource source)
         {
             time = 0;
@@ -75,7 +67,8 @@ namespace CalamityMod.Items.Weapons.Melee
             if (time == 0 && Item.velocity.Y != 0)
             {
                 oldVel = Item.velocity;
-                Item.velocity = new Vector2(Math.Sign(Item.velocity.X) * 20, -10);
+                if (!hitFloor)
+                    Item.velocity = new Vector2(Math.Sign(Item.velocity.X) * 20, -10);
             }
             if (oldVel.Y != 0 && Item.velocity.Y == 0)
             {
@@ -87,17 +80,28 @@ namespace CalamityMod.Items.Weapons.Melee
                     float blastSize = 150 * power;
                     float minMultiplier = 0.3f;
                     int hitsToMinMult = 8;
+                    hitFloor = true;
                     Projectile blast = Projectile.NewProjectileDirect(Item.GetSource_FromThis(), place, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(Item.damage * 2 * power), -35 * power, -1, blastSize, minMultiplier, hitsToMinMult);
                     blast.timeLeft = 5;
 
                     int particleNumber = (int)Math.Max(15 * power, 2);
                     for (int i = -particleNumber; i <= particleNumber; i++)
                     {
-                        Particle sparks = new AltSparkParticle(place, (Vector2.UnitX * (5 + Math.Abs(i)) * Math.Sign(i)).RotatedByRandom(0.25f) * Main.rand.NextFloat(0.5f, 1) * power, false, Main.rand.Next(17, 30 + 1), Main.rand.NextFloat(0.2f, 0.8f), Main.rand.NextBool() ? Color.Lerp(Color.Blue, Color.DodgerBlue, 0.3f) : Color.Gold);
-                        GeneralParticleHandler.SpawnParticle(sparks);
-                        Dust dust = Dust.NewDustPerfect(place, ModContent.DustType<VoidDust>(), (Vector2.UnitX * (5 + Math.Abs(i)) * Math.Sign(i)).RotatedByRandom(0.25f) * Main.rand.NextFloat(0.5f, 1) * power, 0, default, Main.rand.NextFloat(0.85f, 1.2f) * power);
+                        if (i % 2 == 0)
+                        {
+                            Vector2 vel = (Vector2.UnitX * (5 + Math.Abs(i)) * Math.Sign(i)).RotatedByRandom(0.25f) * Main.rand.NextFloat(0.5f, 1) * power;
+                            Dust dust2 = Dust.NewDustPerfect(place + vel * 13, ModContent.DustType<SquashDustPixelated>(),
+                                vel, 0, default, Main.rand.NextFloat(1.3f, 1.2f));
+                            dust2.noGravity = true;
+                            dust2.color = Main.rand.NextBool() ? Color.Gold : Color.Goldenrod;
+                            dust2.customData = new Vector2(0.2f, 1.6f);
+                            dust2.fadeIn = 2.5f;
+                        }
+                        
+                        Dust dust = Dust.NewDustPerfect(place, ModContent.DustType<VoidDustPixelated>(), (Vector2.UnitX * (5 + Math.Abs(i)) * Math.Sign(i)).RotatedByRandom(0.25f) * Main.rand.NextFloat(0.5f, 1) * power, 0, default, Main.rand.NextFloat(0.85f, 1.2f) * power);
                         dust.noGravity = true;
                         dust.color = Main.rand.NextBool() ? Color.Blue : Color.DodgerBlue;
+                        dust.customData = 7;
                     }
 
                     SoundStyle sound = new("CalamityMod/Sounds/NPCHit/ExoHit3");
@@ -123,14 +127,16 @@ namespace CalamityMod.Items.Weapons.Melee
                     highestSpeed = Item.velocity.Y;
             }
 
-            gravity = 0;
+            if (Item.velocity.Y != 0)
+                gravity = 0;
             maxFallSpeed = 75;
             oldVel = Item.velocity;
         }
-        public override void OnCreated(ItemCreationContext context)
+        public override bool OnPickup(Player player)
         {
             if (Main.zenithWorld)
                 SoundEngine.PlaySound(GrandDadEasterEggSound, Main.LocalPlayer.MountedCenter);
+            return true;
         }
     }
 }

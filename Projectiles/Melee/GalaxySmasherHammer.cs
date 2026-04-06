@@ -5,6 +5,7 @@ using CalamityMod.Dusts;
 using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
+using CalamityMod.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -166,7 +167,7 @@ namespace CalamityMod.Projectiles.Melee
                                 fire.noGravity = true;
                                 fire.scale = Main.rand.NextFloat(0.2f, 0.6f) * EmpoweredHammer;
 
-                                fire = Dust.CloneDust(fire);
+                                fire = Dust.BetterCloneDust(fire);
                                 fire.velocity = Main.rand.NextVector2Circular(3f, 3f);
                                 fire.velocity += Projectile.velocity * (EmpoweredHammer * 0.04f);
                             }

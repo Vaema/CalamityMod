@@ -20,13 +20,13 @@ namespace CalamityMod.Items.Weapons.Ranged
         public static readonly SoundStyle ShootSound = new("CalamityMod/Sounds/Item/HalleysInfernoShoot") { Volume = 0.68f };
         public static readonly SoundStyle Hit = new("CalamityMod/Sounds/Item/HalleysInfernoHit") { Volume = 0.75f };
         public static float MaxStarburstPerComet => 1;
-        public static float MaxStarburstPerStar => 0.25f;
+        public static float MaxStarburstPerStar => 0.5f;
         public static float LostAccuracyPerMiss => 4;
         public static float MaxAccuracy => 50;
 
-        public static float StarburstDmgMult => 1.25f;
+        public static float StarburstDmgMult => 2.5f;
 
-        public static float StarburstVelMult = 0.75f;
+        public static float StarburstVelMult => 0.75f;
         public override void SetDefaults()
         {
             Item.width = 84;
@@ -34,6 +34,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.damage = 444;
             Item.knockBack = 5.5f;
             Item.DamageType = DamageClass.Ranged;
+            Item.crit = 20;
 
             // Burst of 5, one every 5 frames for 25 total. Cooldown of 39 frames.
             Item.useTime = 5;
@@ -58,10 +59,11 @@ namespace CalamityMod.Items.Weapons.Ranged
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
-        // Terraria seems to really dislike high crit values in SetDefaults
-        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 20;
         public override void HoldItem(Player player)
         {
+            if (player.mount.Type == MountID.Drill)
+                return;
+
             if (Main.LocalPlayer == player)
             {
                 if (!Main.projectile.Any(x=> x.active && x.owner == player.whoAmI && x.type == Item.shoot))

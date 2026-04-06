@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.Player;
@@ -119,7 +120,7 @@ namespace CalamityMod.Projectiles.Rogue
             if (hitTimer == 0)
                 hitTimer = Projectile.localNPCHitCooldown;
 
-            if (target.CanBeMoved(true))
+            if (target.CanBeMoved())
                 target.velocity *= 0.05f;
         }
         public override bool? CanDamage() => canDamage ? null : false;
@@ -166,14 +167,14 @@ namespace CalamityMod.Projectiles.Rogue
 
                     if (!spawnedDust && toothNum > 1)
                     {
-                        Dust dust = Dust.NewDustPerfect(finalDrawPos, DustID.Blood, (rotation.ToRotationVector2().RotatedBy(MathHelper.PiOver2)).RotatedByRandom(0.5f).RotatedBy(1.2f * (isTopJaw ? -1 : 1)) * Main.rand.NextFloat(5f, 8f), 100, default, Main.rand.NextFloat(1.1f, 1.9f) * scale);
+                        Dust dust = Dust.NewDustPerfect(finalDrawPos, !ChildSafety.Disabled ? DustID.Cloud : DustID.Blood, (rotation.ToRotationVector2().RotatedBy(MathHelper.PiOver2)).RotatedByRandom(0.5f).RotatedBy(1.2f * (isTopJaw ? -1 : 1)) * Main.rand.NextFloat(5f, 8f), 100, default, Main.rand.NextFloat(1.1f, 1.9f) * scale);
                         dust.noGravity = true;
                         dust.alpha = (int)(255 * (1 - toothOpacity));
                         Particle blood = new CustomSpark(finalDrawPos, (rotation.ToRotationVector2().RotatedBy(MathHelper.PiOver2)).RotatedByRandom(0.4f).RotatedBy(1.2f * (isTopJaw ? -1 : 1)) * Main.rand.NextFloat(5f, 8f), "CalamityMod/Particles/LargeBloom", 
-                            false, 8, Main.rand.NextFloat(0.065f, 0.08f) * scale, Color.Lerp(Color.DarkRed, Color.Black, Main.rand.NextFloat(0, 0.5f)) * 0.7f * toothOpacity, new Vector2(1f, 1f), false, shrinkSpeed: 0.9f);
+                            false, 8, Main.rand.NextFloat(0.065f, 0.08f) * scale, (!ChildSafety.Disabled ? Color.CornflowerBlue : Color.Lerp(Color.DarkRed, Color.Black, Main.rand.NextFloat(0, 0.5f))) * 0.7f * toothOpacity, new Vector2(1f, 1f), false, shrinkSpeed: 0.9f);
                         GeneralParticleHandler.SpawnParticle(blood);
 
-                        Lighting.AddLight(finalDrawPos, Color.Lerp(Color.Red, Color.White, 0.85f).ToVector3() * 1.2f * toothOpacity);
+                        Lighting.AddLight(finalDrawPos, (!ChildSafety.Disabled ? Color.CornflowerBlue : Color.Lerp(Color.Red, Color.White, 0.85f)).ToVector3() * 1.2f * toothOpacity);
                     }
                 }
                 isTopJaw = (t == -1);

@@ -75,7 +75,12 @@ namespace CalamityMod.Graphics.Metaballs
                 {
                     using (target.Scope(clearColor: Color.Transparent))
                     {
+                        // -2,-2 is to account for the border appplying at screen edge. We need this to draw off-screen.
+                        // We directly adjust screen position so that drawing in the metaball functions works as expected
+                        var offset = new Vector2(-2, -2);
+                        Main.screenPosition += offset;
                         metaball.DrawInstances();
+                        Main.screenPosition -= offset;
 
                         // Flush metaball contents to its render target and reset the sprite batch for the next iteration.
                         Main.spriteBatch.End();
@@ -106,11 +111,24 @@ namespace CalamityMod.Graphics.Metaballs
             {
                 for (int i = 0; i < metaball.LayerTargets.Count; i++)
                 {
+                    // -2,-2 is to account for the border appplying at screen edge. We need this to draw off-screen.
+                    // We directly adjust screen position so that drawing in the metaball functions works as expected
+                    var offset = new Vector2(-2, -2);
+                    Main.screenPosition += offset;
                     // Prepare shaders for the given layer target.
                     metaball.PrepareShaderForTarget(i);
+                    Main.screenPosition -= offset;
 
                     // Draw the metaball's raw contents with the shader.
-                    Main.spriteBatch.Draw(metaball.LayerTargets[i].Target, Vector2.Zero, Color.White);
+                    // If using Odd Mushroom, clone the drawing to each point.
+                    Color metaballDraw = Main.LocalPlayer.Calamity().trippy ? Main.DiscoColor : Color.White;
+                    Main.spriteBatch.Draw(metaball.LayerTargets[i].Target, offset, metaballDraw);
+                    if (Main.LocalPlayer.Calamity().trippy)
+                    {
+                        Main.spriteBatch.Draw(metaball.LayerTargets[i].Target, offset, null, metaballDraw, 0f, Vector2.Zero, 1f, SpriteEffects.FlipHorizontally, 0f);
+                        Main.spriteBatch.Draw(metaball.LayerTargets[i].Target, offset, null, metaballDraw, 0f, Vector2.Zero, 1f, SpriteEffects.FlipVertically, 0f);
+                        Main.spriteBatch.Draw(metaball.LayerTargets[i].Target, offset, null, metaballDraw, 0f, Vector2.Zero, 1f, SpriteEffects.FlipHorizontally | SpriteEffects.FlipVertically, 0f);
+                    }
                 }
             }
 

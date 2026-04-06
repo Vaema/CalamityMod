@@ -47,7 +47,10 @@ namespace CalamityMod.Systems.Collections
         /// </summary>
         public static bool[] IsPersistentBuff = Factory.CreateBoolSet(BuffID.WeaponImbueVenom, BuffID.WeaponImbueCursedFlames, BuffID.WeaponImbueFire, BuffID.WeaponImbueGold,
                 BuffID.WeaponImbueIchor, BuffID.WeaponImbueNanites, BuffID.WeaponImbueConfetti, BuffID.WeaponImbuePoison, BuffType<WeaponImbueBrimstone>(),
-                BuffType<WeaponImbueCrumbling>(), BuffType<WeaponImbueHolyFlames>());
+                BuffType<WeaponImbueCrumbling>(), BuffType<WeaponImbueHolyFlames>(), BuffType<BloodyMaryBuff>(), BuffType<CaribbeanRumBuff>(), BuffType<CinnamonRollBuff>(), BuffType<EverclearBuff>(),
+                BuffType<EvergreenGinBuff>(), BuffType<FireballBuff>(), BuffType<GrapeBeerBuff>(), BuffType<ManhattanBuff>(), BuffType<MargaritaBuff>(), BuffType<MoonshineBuff>(),
+                BuffType<MoscowMuleBuff>(), BuffType<OldFashionedBuff>(), BuffType<PurpleHazeBuff>(), BuffType<RedWineBuff>(), BuffType<RumBuff>(), BuffType<ScrewdriverBuff>(),
+                BuffType<StarBeamRyeBuff>(), BuffType<TequilaBuff>(), BuffType<TequilaSunriseBuff>(), BuffType<VodkaBuff>(), BuffType<WhiskeyBuff>(), BuffType<WhiteWineBuff>());
 
         /// <summary>
         /// If <see langword="true"/> for a buff type, then that buff is considered to be a debuff.<br/>
@@ -56,14 +59,15 @@ namespace CalamityMod.Systems.Collections
         /// </summary>
         public static bool[] IsDebuff = Factory.CreateBoolSet(BuffID.Poisoned, BuffID.Darkness, BuffID.Cursed, BuffID.OnFire, BuffID.Bleeding, BuffID.Confused, BuffID.Slow, BuffID.Weak,
                 BuffID.Silenced, BuffID.BrokenArmor, BuffID.CursedInferno, BuffID.Frostburn, BuffID.Chilled, BuffID.Frozen, BuffID.Burning, BuffID.Suffocation, BuffID.Ichor,
-                BuffID.Venom, BuffID.Blackout, BuffID.Electrified, BuffID.Rabies, BuffID.Webbed, BuffID.Stoned, BuffID.Dazed, BuffID.VortexDebuff, BuffID.WitheredArmor, BuffID.WitheredWeapon,
-                BuffID.OgreSpit, BuffID.BetsysCurse, BuffType<SulphuricPoisoning>(), BuffType<Shadowflame>(), BuffType<Daybroken>(), BuffType<BrimstoneFlames>(), BuffType<BurningBlood>(),
-                BuffType<BrainRot>(), BuffType<ElementalMix>(), BuffType<GlacialState>(), BuffType<GodSlayerInferno>(), BuffType<AstralInfectionDebuff>(), BuffType<HolyFlames>(),
+                BuffID.Venom, BuffID.Blackout, BuffID.Electrified, BuffID.Rabies, BuffID.Webbed, BuffID.Stoned, BuffID.Dazed, BuffID.VortexDebuff, BuffID.WitheredArmor, BuffID.WitheredWeapon, BuffID.ShadowFlame,
+                BuffID.OgreSpit, BuffID.BetsysCurse, BuffID.Wet, BuffID.Slimed, BuffID.OnFire3, BuffID.Frostburn2, BuffType<SulphuricPoisoning>(), BuffType<Shadowflame>(), BuffType<Daybroken>(), BuffType<BrimstoneFlames>(), BuffType<BurningBlood>(),
+                BuffType<BrainRot>(), BuffType<ElementalMix>(), BuffType<GodSlayerInferno>(), BuffType<AstralInfectionDebuff>(), BuffType<HolyFlames>(),
                 BuffType<Irradiated>(), BuffType<Plague>(), BuffType<CrushDepth>(), BuffType<HadopelagicPressure>(), BuffType<RiptideDebuff>(), BuffType<MarkedforDeath>(),
                 BuffType<HeavyBleeding>(), BuffType<Laceration>(), BuffType<AbsorberAffliction>(), BuffType<ArmorCrunch>(), BuffType<Crumbling>(), BuffType<Vaporfied>(), BuffType<Eutrophication>(),
                 BuffType<Dragonfire>(), BuffType<VermillionFlux>(), BuffType<AuricRebuke>(), BuffType<StaticDischarge>(), BuffType<Nightwither>(), BuffType<Voidfrost>(),
                 BuffType<VulnerabilityHex>(), BuffType<MiracleBlight>(), BuffType<WhisperingDeath>(), BuffType<FrozenLungs>(), BuffType<FishAlert>(), BuffType<HolyInferno>(),
-                BuffType<IcarusFolly>(), BuffType<DoGExtremeGravity>(), BuffType<PopoNoselessBuff>(), BuffType<SearingLava>(), BuffType<WeakBrimstoneFlames>(), BuffType<Withered>(), BuffType<ManaBurn>());
+                BuffType<IcarusFolly>(), BuffType<DoGExtremeGravity>(), BuffType<PopoNoselessBuff>(), BuffType<SagePoison>(), BuffType<SearingLava>(), BuffType<WeakBrimstoneFlames>(), BuffType<Withered>(), BuffType<ManaBurn>(), 
+                BuffType<DemonicFlames>(), BuffType<Bane>(), BuffType<Shred>());
 
         /// <summary>
         /// If <see langword="true"/> for a buff type, then that buff is a whip tag buff on the player.<br/>

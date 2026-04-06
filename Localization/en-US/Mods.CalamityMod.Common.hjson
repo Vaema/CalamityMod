@@ -4,18 +4,21 @@ RogueCrit: "{0}% increased rogue critical strike chance"
 RogueDamageCrit: "{0}% increased rogue damage and critical strike chance"
 RogueVelocity: "{0}% increased rogue velocity"
 RogueStealth: +{0} maximum stealth
+CritDamageTootip: "{0}% critical strike damage"
 // Armor Set Bonus key states
 BothArmorSetBonusKeys: Press {0} or Double tap {1}
 NoArmorSetBonusKey: Press the Armor Set Bonus key
 ArmorSetBonusKey: Press {0}
 DoubleTapDown: Double tap {0}
 // Miscellaneous stats/info
+MinionSlotCost: Uses {0} minion slots
+MinionSlotCostSingle: Uses {0} minion slot
 AggroBoost: Enemies are more likely to target you
 AggroReduction: Enemies are less likely to target you
 KnockbackImmunity: Grants immunity to knockback
 AbyssLightLevel: Reduces the darkness intensity of the abyss
 AbyssFlashlight: Increases flashlight width in the abyss
-AbyssGlow: Increases visibily range in the abyss
+AbyssGlow: Increases visibility range in the abyss
 AbyssBreathLevel1: Slightly reduces breath loss in the abyss
 AbyssBreathLevel2: Moderately reduces breath loss in the abyss
 AbyssBreathLevel3: Greatly reduces breath loss in the abyss
@@ -26,11 +29,12 @@ NotConsumable: Not consumable
 SummonTagDamageFlat: "{0} summon tag damage"
 SummonTagDamageMult: "{0}x summon tag damage"
 SummonTagCrit: "{0}% summon tag critical strike chance"
+DodgeProvided: Grants or improves the ability to dodge attacks
 DodgeInformation:
 	'''
-	Attacks that deal less than 5% of your max life in damage will not be dodged
-	The dodge has a cooldown that ranges between 20 and 90 seconds depending on the dodged attack's damage
-	This cooldown is shared with all other dodges and reflects
+	[i/Terraria:BlackBelt] Attacks that deal less than 5% of your max life in damage will not be dodged
+	[i/Terraria:BlackBelt] This dodge has a maximum cooldown of 90 seconds, shortened depending on the dodged attack's damage
+	[i/Terraria:BlackBelt] Equipping multiple accessories that give this ability to dodge will reduce the cooldown by 15% each
 	'''
 ReflectInformation:
 	'''
@@ -45,19 +49,30 @@ GrappleStats:
 	Reelback Velocity: {2}
 	Pull Velocity: {3}
 	'''
+StatsAwful: Awful
+StatsPoor: Poor
+StatsAverage: Average
+StatsGood: Good
+StatsGreat: Great
+StatsExcellent: Excellent
 WingStats:
 	'''
 	Flight time: {0} seconds
-	Max horizontal speed: {1} mph
-	Max vertical speed: {2} mph
+	Max horizontal speed: {1}
+	Max vertical speed: {2}
+	Horizontal acceleration: {3}
+	Vertical acceleration: {4}
 	'''
-WingStatsAcceleration:
+WingStatsFull:
 	'''
-	Horizontal acceleration: {0} mph/s
-	Vertical acceleration:
-	{1} mph/s
-	{2} mph/s if ascending slower than {3} mph
-	{4} mph/s if ascending while falling
+	Flight time: {0} seconds
+	Max horizontal speed: {1} ({2} mph)
+	Max vertical speed: {3} ({4} mph)
+	Horizontal acceleration: {5} ({6} mph/s)
+	Vertical acceleration: {7}
+	- {8} mph/s
+	- {9} mph/s if ascending slower than {10} mph
+	- {11} mph/s if ascending while falling
 	'''
 WingStatsHover:
 	'''

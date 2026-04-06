@@ -127,7 +127,7 @@ namespace CalamityMod.Projectiles.Melee
                 }
 
                 Vector2 launchVel = Utils.DirectionTo(Projectile.Center, target.Center);
-                target.MoveNPC(launchVel, 20, true);
+                target.MoveNPC(launchVel, 20, true, Owner);
             }
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)

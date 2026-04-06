@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.UseSound = SoundID.DD2_DarkMageHealImpact;
             Item.DamageType = DamageClass.Summon;
             Item.mana = 10;
-            Item.damage = 43; 
+            Item.damage = 35; 
             Item.knockBack = 2f;
             Item.autoReuse = true;
             Item.useAnimation = Item.useTime = 24;
@@ -74,7 +74,6 @@ namespace CalamityMod.Items.Weapons.Summon
                 if (p.type == type && p.owner == player.whoAmI)
                 {
                     int adjustedProjCount = (int)(projCount);
-                    Main.NewText("index: " + index.ToString() + " | projCount: " + adjustedProjCount.ToString() + " | angleMax: " + angleMax.ToString());
                     p.ai[1] = index / adjustedProjCount * angleMax - angleMax / 2f;
                     p.netUpdate = true;
                     index++;

@@ -140,7 +140,7 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
                 {
                     for (var i = 0; i < 10; i++)
                         GeneralParticleHandler.SpawnParticle(new SparkParticle(Projectile.Center, (Projectile.rotation-MathHelper.PiOver4).ToRotationVector2().RotatedByRandom(0.4f) * -Main.rand.Next(10,20), false, 30, 2, new Color(69, 69, 200)));
-                    Projectile.damage *= 20;
+                    Projectile.damage = (int)(Projectile.damage*10f);
                     Projectile.Damage();
                     Owner.Calamity().StratusStarburst -= 10;
                     for (int i = 0; i < 3; i++)
@@ -153,6 +153,7 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
                             Main.projectile[proj].usesIDStaticNPCImmunity = false;
                             Main.projectile[proj].usesLocalNPCImmunity = true;
                             Main.projectile[proj].localNPCHitCooldown = 20;
+                            Main.projectile[proj].timeLeft = Main.projectile[proj].MaxUpdates * 600;
                         }
                     }
                     Projectile.velocity = (Projectile.rotation - MathHelper.PiOver4).ToRotationVector2() * -15;
@@ -184,7 +185,7 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
                 Projectile.damage = Projectile.originalDamage;
                 if (Owner.Calamity().AvaliableStarburst >= 20)
                 {
-                    Projectile.damage *= 30;
+                    Projectile.damage = (int)(Projectile.damage*20f);
                     Owner.SetImmuneTimeForAllTypes(Owner.longInvince ? 40 : 20);
                     Owner.Calamity().StratusStarburst -= 20;
                     SoundEngine.PlaySound(SoundID.DD2_MonkStaffGroundImpact, Owner.Center);
@@ -201,6 +202,8 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
                             Main.projectile[proj].usesIDStaticNPCImmunity = false;
                             Main.projectile[proj].usesLocalNPCImmunity = true;
                             Main.projectile[proj].localNPCHitCooldown = 20;
+                            Main.projectile[proj].timeLeft = Main.projectile[proj].MaxUpdates * 600;
+
                         }
                     }
                 }
@@ -216,7 +219,7 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
                 Particle boostRing = new CustomSpark(position, velocity, "CalamityMod/Particles/HighResHollowCircleHardEdgeAlt", false, lifetime, scale, color, stretch, shrinkSpeed: shrink);
                 GeneralParticleHandler.SpawnParticle(boostRing);
 
-                if (stabbedNPC.CanBeMoved(true))
+                if (stabbedNPC.CanBeMoved())
                 {
                     stabbedNPC.velocity = -Owner.velocity;
                 }

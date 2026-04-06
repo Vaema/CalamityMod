@@ -36,7 +36,6 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
 
-        public override bool CanRightClick() => true;
         public override bool AltFunctionUse(Player player) => true;
 
         public override void HoldItem(Player player)

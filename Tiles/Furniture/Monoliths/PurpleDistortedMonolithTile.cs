@@ -18,7 +18,6 @@ namespace CalamityMod.Tiles.Furniture.Monoliths
         public override int AnimationFrameCount => 6;
         public override int AnimationDelay => 8;
         public override int CursorItemType => ModContent.ItemType<PurpleDistortedMonolith>();
-        public override string HighlightTexture => "CalamityMod/Tiles/Furniture/Monoliths/BlueDistortedMonolithTile_Highlight";
         public override void SetStaticDefaults()
         {
             RegisterItemDrop(ModContent.ItemType<PurpleDistortedMonolith>());

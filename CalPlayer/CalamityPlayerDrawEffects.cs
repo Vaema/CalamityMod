@@ -4,19 +4,14 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer.DrawLayers;
-using CalamityMod.DataStructures;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Magic;
-using CalamityMod.Projectiles.Ranged;
-using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems.Collections;
 using CalamityMod.Systems.Graphic.PixelationSystem;
-using CalamityMod.Systems.Mechanic;
 using CalamityMod.Utilities.Daybreak;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -113,12 +108,13 @@ namespace CalamityMod.CalPlayer
             DevourerofGodsHead DoG = null;
             foreach (var item in Main.ActiveNPCs)
             {
-                if (item.type == ModContent.NPCType<DevourerofGodsHead>()) {
+                if (item.type == ModContent.NPCType<DevourerofGodsHead>())
+                {
                     DoG = item.ModNPC<DevourerofGodsHead>();
                     break;
                 }
             }
-            if (DoG != null && Main.mapStyle != 2)
+            if (DoG != null && Main.mapStyle != 2 && !Main.hideUI)
             {
                 int drawCount = calamityPlayer.trippy ? 4 : 1;
 
@@ -162,37 +158,40 @@ namespace CalamityMod.CalPlayer
                         var dis = Player.Distance(virtualTargetPos);
                         if ((DoG.NPC.ai[3] < 3 || !DoG.Phase2Started) && DoG.NPC.Opacity > 0.5f && !DoG.Dying && !drawInfo.drawPlayer.isDisplayDollOrInanimate)
                         {
-                            string phase1IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsHead_Head_Boss";
-                            string phase2IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsHead_P2_Head_Boss";
-                            var tex = ModContent.Request<Texture2D>((DoG.Phase2Started && DoG.NPC.localAI[2] < 300) ? phase2IconPath : phase1IconPath).Value;
-
-                            float baseRotation = DoG.NPC.rotation;
-
-                            if (calamityPlayer.trippy)
+                            int headIconIndex = -1;
+                            DoG.BossHeadSlot(ref headIconIndex);
+                            if (headIconIndex > -1)
                             {
-                                Vector2 rotVec = baseRotation.ToRotationVector2();
-                                switch (i)
+                                var tex = TextureAssets.NpcHeadBoss[headIconIndex].Value;
+
+                                float baseRotation = DoG.NPC.rotation;
+
+                                if (calamityPlayer.trippy)
                                 {
-                                    case 0:
-                                        rotVec.X *= -1;
-                                        rotVec.Y *= -1;
-                                        break;
-                                    case 1:
-                                        rotVec.Y *= -1;
-                                        break;
-                                    case 2:
-                                        break;
-                                    case 3:
-                                        rotVec.X *= -1;
-                                        break;
+                                    Vector2 rotVec = baseRotation.ToRotationVector2();
+                                    switch (i)
+                                    {
+                                        case 0:
+                                            rotVec.X *= -1;
+                                            rotVec.Y *= -1;
+                                            break;
+                                        case 1:
+                                            rotVec.Y *= -1;
+                                            break;
+                                        case 2:
+                                            break;
+                                        case 3:
+                                            rotVec.X *= -1;
+                                            break;
+                                    }
+                                    baseRotation = rotVec.ToRotation();
                                 }
-                                baseRotation = rotVec.ToRotation();
+
+                                float opacity = 0.9f * Math.Clamp(MathHelper.Lerp(0, 1, (dis - 600) / 300), 0, 1);
+                                Color drawColor = calamityPlayer.trippy ? new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, (int)(255 * 0.9f)) : Color.White * 0.9f;
+
+                                Main.spriteBatch.Draw(tex, Player.Center + directionToTarget * 196 * Math.Min(dis / 2400f, 2) - Main.screenPosition, null, drawColor * opacity, baseRotation, tex.Size() / 2f, 1, SpriteEffects.None, 0);
                             }
-
-                            float opacity = 0.9f * Math.Clamp(MathHelper.Lerp(0, 1, (dis - 600) / 300), 0, 1);
-                            Color drawColor = calamityPlayer.trippy ? new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, (int)(255 * 0.9f)) : Color.White * 0.9f;
-
-                            Main.spriteBatch.Draw(tex, Player.Center + directionToTarget * 196 * Math.Min(dis / 2400f, 2) - Main.screenPosition, null, drawColor * opacity, baseRotation, tex.Size() / 2f, 1, SpriteEffects.None, 0);
                         }
                     }
                 }
@@ -388,7 +387,7 @@ namespace CalamityMod.CalPlayer
             else
             {
                 // Mana Burn VFX disabled when hih
-                if (Player.statMana < 0)
+                if (Player.statMana < 0 && Player.Calamity().ChaosStone)
                 {
                     float compactness = Player.width * 0.6f;
                     if (compactness < 10f)
@@ -498,8 +497,7 @@ namespace CalamityMod.CalPlayer
 
             if (calamityPlayer.brimstoneFlames && drawInfo.shadow == 0f)
             {
-                bool resistsBrimstoneFlames = abaddon; // Looks weaker if you have Abaddon equipped
-                BrimstoneFlames.DrawEffects(drawInfo, resistsBrimstoneFlames);
+                BrimstoneFlames.DrawEffects(drawInfo);
             }
 
             if (calamityPlayer.brainRot && drawInfo.shadow == 0f)

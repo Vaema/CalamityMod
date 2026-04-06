@@ -272,7 +272,7 @@ Moonshine: {
 		'''
 		Increases maximum health by {0}%
 		Attacks always take at least half your defense worth of defense damage
-		Defense damage takes twice as long to recover
+		Defense damage takes three times as long to recover
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -341,10 +341,8 @@ StarBeamRye: {
 	DisplayName: Star Beam Rye
 	Tooltip:
 		'''
-		Disables natural mana regeneration
-		Mana regenerates at a fixed rate, even while using an item
-		Magic weapons deal increased damage based on how quickly they consume mana
-		This does not work while inflicted with Mana Sickness
+		Increases Mana regeneration, even while using an item
+		Magic weapons deal {0}x damage
 		{$Common.AlcoholWarning}
 		'''
 }

@@ -27,6 +27,14 @@ namespace CalamityMod.Projectiles.Summon
         public int ReformingTimer = 25;
         public bool Reforming = false;
         public int Time = 0;
+
+        public override void SetStaticDefaults()
+        {
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
+            base.SetStaticDefaults();
+        }
+
         public override void SetDefaults()
         {
             Projectile.width = 30;
@@ -207,7 +215,7 @@ namespace CalamityMod.Projectiles.Summon
             modifiers.SourceDamage *= damageMult;
 
             Vector2 launchVel = Utils.DirectionTo(Owner.Center, target.Center);
-            target.MoveNPC(launchVel, (MinionBuffMode ? 5f : 0.5f), false);
+            target.MoveNPC(launchVel, (MinionBuffMode ? 5f : 0.5f), false, Owner);
         }
         public override bool MinionContactDamage() => !Reforming;
     }

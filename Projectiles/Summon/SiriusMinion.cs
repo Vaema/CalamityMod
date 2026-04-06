@@ -4,6 +4,8 @@ using System.IO;
 using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using CalamityMod.DataStructures;
+using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Particles;
 using CalamityMod.Systems.Graphic.PixelationSystem;
@@ -12,6 +14,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using rail;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -86,11 +89,16 @@ namespace CalamityMod.Projectiles.Summon
             SpawnEffect(); // Does a dust spawn effect.
             ShootTarget(target); // If there's a target, shoot at the target.
 
-            if (target is not null && Owner.miscCounter % 30 == 0) {
-
-                if (moddedOwner.StratusStarburst <= CalamityPlayer.MaxStratusStarburst)
+            if (target is not null)
+            {
+                moddedOwner.StarburstSpawnFrameCounter += Projectile.minionSlots / (float)CalamityUtils.SecondsToFrames(3f); //0.33 starbursts per seconds per minion slot
+                while (moddedOwner.StarburstSpawnFrameCounter >= 1 && moddedOwner.StratusStarburst <= CalamityPlayer.MaxStratusStarburst)
+                {
+                    moddedOwner.StratusStarburst++;
                     moddedOwner.StarburstEntities.Add(new StarburstEntity(Projectile.Center));
-                moddedOwner.StratusStarburst++;
+                    moddedOwner.StarburstSpawnFrameCounter--;
+                }
+                
             }
             Lighting.AddLight(Projectile.Center, 0.5f, 0.5f, 1f); // Passively makes blue light.
 
@@ -109,13 +117,19 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.velocity = Owner.velocity * 0f;
 
             var SiriusPos = Projectile.Center + Projectile.velocity;
-            var SiriusScale = 0.1f;
+            var value = 0f;
+            //Count the value of starbursts in Sirius firing animation
+            if (Projectile.ai[2] > 2) foreach (var item in starburstsToFire)
+            {
+                value += item.value;
+            }
+            var SiriusScale = 0.055f + (0.001f * (moddedOwner.AvaliableStarburst + value));
             void SpawnStar(float SlotRequirement, Vector2 offset, float intensity, int flashOffset = 0, int flashMod = 100)
             {
                 if (SlotRequirement > 0 && Projectile.minionSlots < SlotRequirement)
                     return;
                 offset.X *= Projectile.spriteDirection;
-                var star = new BloomParticle(SiriusPos + offset * Projectile.scale - (Owner.oldVelocity * Math.Clamp(offset.Length() * 0.001f,0,1) ), Vector2.Zero, Color.SkyBlue * ((Owner.miscCounter + flashOffset) % flashMod < 5 ? 0.75f : 1f), 2*SiriusScale * intensity, 2*SiriusScale * intensity, 2, false);
+                var star = new BloomParticle(SiriusPos + offset * Projectile.scale - (Owner.oldVelocity * Math.Clamp(offset.Length() * 0.001f,0,1) ), Vector2.Zero, Color.SlateBlue * ((Owner.miscCounter + flashOffset) % flashMod < 5 ? 0.75f : 1f), 2*SiriusScale * intensity, 2*SiriusScale * intensity, 2, false);
                 var star2 = new CustomSpark(SiriusPos + offset * Projectile.scale - (Owner.oldVelocity * Math.Clamp(offset.Length() * 0.001f, 0, 1)), Vector2.UnitX.RotatedBy(MathHelper.Pi * (Owner.miscCounter/300f)) * 0.1f, "CalamityMod/Particles/Sparkle", false, 2, 10*SiriusScale * intensity, Color.SkyBlue, Vector2.One);
                 GeneralParticleHandler.SpawnParticle(star,false,Enums.GeneralDrawLayer.AfterProjectiles); 
                 GeneralParticleHandler.SpawnParticle(star2, false, Enums.GeneralDrawLayer.AfterProjectiles);
@@ -184,6 +198,7 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     TimerForShooting = 0;
                     // Makes a dust effect on the minion, to make a better effect of it shooting.
+                    SoundEngine.PlaySound(FrigidflashBolt.UseSound with { Volume = 1f, Pitch = -0.15f }, Projectile.Center);
                     int dustAmt = 50;
                     for (int d = 0; d < dustAmt; d++)
                     {
@@ -196,7 +211,7 @@ namespace CalamityMod.Projectiles.Summon
                     // Shoots the beam.
                     for (var i = 0; i < 2; i++)
                     {
-                        Vector2 velocity = new Vector2(20, 0).RotatedByRandom(MathHelper.Pi);
+                        Vector2 velocity = new Vector2(25, 0).RotatedByRandom(MathHelper.Pi);
                         float damageMod = 1 + MathF.Pow(0.2f * Projectile.minionSlots, 1.5f);
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + velocity, velocity, ModContent.ProjectileType<SiriusBeam>(), (int)(Projectile.damage * damageMod), Projectile.knockBack, Projectile.owner);
                     }
@@ -224,7 +239,6 @@ namespace CalamityMod.Projectiles.Summon
                     //Animate the starbursts in the animation
                     foreach (var star in starburstsToFire)
                     {
-
                         star.Center = Vector2.Lerp(star.Center, Projectile.Center + Projectile.velocity, Projectile.ai[2] / 15f);
                         star.AICooldown = 2;
                     }
@@ -237,6 +251,19 @@ namespace CalamityMod.Projectiles.Summon
                                 float damageMod = 40;
                                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + velocity, velocity, ModContent.ProjectileType<SiriusQuasar>(), (int)(Projectile.damage * damageMod), Projectile.knockBack, Projectile.owner, 1);
                             }
+                        SoundEngine.PlaySound(Exoblade.BeamHitSound, Owner.Center);
+                        Particle explosion = new DetailedExplosion(Projectile.Center, Vector2.Zero, Color.SkyBlue, Vector2.One, Main.rand.NextFloat(-5, 5), 0f, 0.65f + 0.1f, Main.rand.Next(15, 22));
+                        GeneralParticleHandler.SpawnParticle(explosion);
+                        Particle explosion2 = new DetailedExplosion(Projectile.Center, Vector2.Zero, Color.SlateBlue, Vector2.One, Main.rand.NextFloat(-5, 5), 0f, 0.45f + 0.1f, Main.rand.Next(10, 19), false);
+                        GeneralParticleHandler.SpawnParticle(explosion2);
+                        Particle explosion3 = new DetailedExplosion(Projectile.Center, Vector2.Zero, Color.SlateBlue, Vector2.One, Main.rand.NextFloat(-5, 5), 0f, 0.30f + 0.1f, Main.rand.Next(10, 19), false);
+                        GeneralParticleHandler.SpawnParticle(explosion3);
+
+                        for (int i = 0; i < 4; i++)
+                        {
+                            Particle blastRing = new CustomPulse(Projectile.Center, Vector2.Zero, Color.SkyBlue, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 0, 0.5f + 0.05f, 25);
+                            GeneralParticleHandler.SpawnParticle(blastRing);
+                        }
                         moddedOwner.StratusStarburst -= 50;
                         Projectile.ai[2] = 0;
                         foreach (var item in starburstsToFire)

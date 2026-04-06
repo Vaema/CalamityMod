@@ -1,7 +1,8 @@
-﻿using CalamityMod.Items.Weapons.Melee;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using CalamityMod.Sounds;
-using System;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -17,8 +18,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetDefaults()
         {
-            Projectile.width = 84;
-            Projectile.height = 64;
+            Projectile.width = 150;
+            Projectile.height = 75;
             Projectile.friendly = true;
             Projectile.tileCollide = false;
             Projectile.DamageType = TrueMeleeNoSpeedDamageClass.Instance;
@@ -41,10 +42,10 @@ namespace CalamityMod.Projectiles.Melee
             SoundEngine.PlaySound(CommonCalamitySounds.SwiftSliceSound with { Volume = CommonCalamitySounds.SwiftSliceSound.Volume * 0.33f }, Projectile.Center);
 
             var player = Main.player[Projectile.owner];
-            var modPlayer = player.Calamity();
+            var modPlayer = player.GetModPlayer<LightspeedPlayer>();
 
-            // Refund 20 energy if dash hits. Can get energy from multiple enemies.
-            modPlayer.elementalMastery += 20;
+            // Refund 30 energy if dash hits. Can get energy from multiple enemies.
+            modPlayer.elementalMastery += 30;
             modPlayer.elementalMastery = Math.Min(modPlayer.elementalMastery, Lightspeed.MaxEnergy);
 
             // On-hit cut FX
@@ -66,6 +67,8 @@ namespace CalamityMod.Projectiles.Melee
                 Particle energyLeak = new SquishyLightParticle(target.Center, particleSpeed, Main.rand.NextFloat(0.4f, 0.9f), Color.OrangeRed, 50, 2, 2.5f, hueShift: 0.06f);
                 GeneralParticleHandler.SpawnParticle(energyLeak);
             }
+
+            target.AddBuff(ModContent.BuffType<ElementalMix>(), 120);
         }
     }
 }

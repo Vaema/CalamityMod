@@ -23,6 +23,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public bool canHit => (completion >= 0.35f && completion <= 0.8f);
         public int swingCount = 0;
         public bool spawnProj = true;
+        public bool spawnTrueMeleeProj = true;
         public bool playSound = true;
 
         public Color clr = Color.MediumOrchid;
@@ -31,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 78;
             Item.height = 78;
-            Item.damage = 240;
+            Item.damage = 310;
             Item.DamageType = DamageClass.Melee;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useAnimation = Item.useTime = 20;
@@ -70,6 +71,7 @@ namespace CalamityMod.Items.Weapons.Melee
             bladeHitboxPos = player.Center;
             bladeRotation = 0;
             spawnProj = true;
+            spawnTrueMeleeProj = true;
             playSound = true;
             int dir = -Math.Sign(player.Center.X - player.Calamity().mouseWorld.X);
             float startRot = MathHelper.ToRadians(-90) * dir * (swingCount % 2 == 0 ? 1 : -1);
@@ -106,7 +108,8 @@ namespace CalamityMod.Items.Weapons.Melee
                 }
                 if (completion >= 0.65f && spawnProj)
                 {
-                    Projectile.NewProjectile(player.GetSource_FromThis(), player.Center, shootDir, Item.shoot, Item.damage, Item.knockBack, player.whoAmI, 0f);
+                    if (!player.Calamity().bladeArmEnchant) // Manually remove projectiles when Tainted
+                        Projectile.NewProjectile(player.GetSource_FromThis(), player.Center, shootDir, Item.shoot, Item.damage, Item.knockBack, player.whoAmI, 0f);
 
                     Particle swipe = new CustomSpark(player.Center - shootDir * 5, shootDir.RotatedBy(0.4f * (dir * (swingCount % 2 == 0 ? 1 : -1))) * 2.5f, "CalamityMod/Particles/VerticalSmearLarge", false, (int)(14 / player.GetAttackSpeed(DamageClass.Melee)), 0.6f, clr, new Vector2(1f, 1f), true, false, 0, false, false);
                     GeneralParticleHandler.SpawnParticle(swipe);
@@ -132,13 +135,17 @@ namespace CalamityMod.Items.Weapons.Melee
         }
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
-            int beamDamage = player.CalcIntDamage<MeleeDamageClass>(Item.damage * 0.4f);
-            Vector2 mouseClamped = player.ClampedMouseWorld();
-            SoundEngine.PlaySound(SoundID.Item84 with { Volume = 1f, Pitch = Main.rand.NextFloat(0.5f, 0.7f) }, player.Center);
-            for (int i = 0; i < 2; i++)
+            if (spawnTrueMeleeProj)
             {
-                Vector2 vel = player.Center.DirectionFrom(target.Center).RotatedByRandom(0.7f) * Main.rand.NextFloat(18, 20);
-                Projectile.NewProjectile(player.GetSource_ItemUse(Item), player.Center, vel, ModContent.ProjectileType<StarofJudgement>(), beamDamage, 0, player.whoAmI, 0, (i == 0 ? -1 : 1), 1);
+                int beamDamage = player.CalcIntDamage<MeleeDamageClass>(Item.damage * 0.35f);
+                Vector2 mouseClamped = player.ClampedMouseWorld();
+                SoundEngine.PlaySound(SoundID.Item84 with { Volume = 1f, Pitch = Main.rand.NextFloat(0.5f, 0.7f) }, player.Center);
+                for (int i = 0; i < 2; i++)
+                {
+                    Vector2 vel = player.Center.DirectionFrom(target.Center).RotatedByRandom(0.7f) * Main.rand.NextFloat(18, 20);
+                    Projectile.NewProjectile(player.GetSource_ItemUse(Item), player.Center, vel, ModContent.ProjectileType<StarofJudgement>(), beamDamage, 0, player.whoAmI, 0, (i == 0 ? -1 : 1), 1);
+                }
+                spawnTrueMeleeProj = false;
             }
         }
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)

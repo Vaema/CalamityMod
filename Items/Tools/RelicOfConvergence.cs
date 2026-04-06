@@ -10,7 +10,9 @@ namespace CalamityMod.Items.Tools
     {
         public new string LocalizationCategory => "Items.Tools";
 
-        public static int HealValue = 60;
+        public static int HealValue = 50;
+        public static float IncomingDamageMultiplier = 1.5f;
+        public static float DefenseMultiplier = 0.5f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(HealValue);
 
         public override void SetStaticDefaults()

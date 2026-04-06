@@ -54,8 +54,8 @@ CalamityClientConfig: {
 		Label: "[i:CalamityMod/DraedonPowerCell] Display Charge Meter"
 		Tooltip:
 			'''
-			Enables the Charge Meter UI, which displays the current charge of the player's held weapon.
-			The Charge Meter is always hidden if not holding a weapon which requires charge.
+			Enables the Charge Meter UI, which displays the current charge of the player's held item.
+			The Charge Meter is always hidden if not holding an item which requires charge.
 			'''
 	}
 
@@ -93,7 +93,7 @@ CalamityClientConfig: {
 	}
 
 	DisableGravityScreenSwap: {
-		Label: Disable Gravity Screen Flip
+		Label: "[i:GravityGlobe] Disable Gravity Screen Flip"
 		Tooltip:
 			'''
 			Disables vanilla's screen-flipping from changing gravity, flipping the player instead.
@@ -205,6 +205,15 @@ CalamityClientConfig: {
 			Reduces or disables the brightness and/or flashiness of certain visual effects.
 			Also disables all screenshake effects.
 			Highly recommended if you are photosensitive.
+			'''
+	}
+
+	BoCSpriteChange: {
+		Label: "[i:BrainOfConfusion] Remove Potentially Disturbing Imagery"
+		Tooltip:
+			'''
+			Replaces some boss sprites to remove potentially upsetting imagery that could trigger phobias.
+			Highly recommended if you are uncomfortable with body horror or have trypophobia.
 			'''
 	}
 
@@ -533,15 +542,6 @@ CalamityServerConfig: {
 			'''
 			Sets the respawn time for players when a boss is alive, in seconds. This applies equally in single player and multiplayer.
 			When no boss is alive, players will respawn in 3 seconds in both single player and multiplayer.
-			'''
-	}
-
-	SimplifyAccessoryReforge: {
-		Label: "[i:Autohammer] Simplify Accessory Reforging"
-		Tooltip:
-			'''
-			Makes accessory reforging simpler by restricting options to the following prefixes:
-			          - Warding, Menacing, Lucky, Quick, Violent, Arcane, Silent, Invigorating, Dauntless
 			'''
 	}
 

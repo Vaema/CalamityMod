@@ -190,7 +190,7 @@ namespace CalamityMod.Projectiles.Melee
             target.AddBuff(BuffID.OnFire3, 180);
 
             Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
-            CalamityUtils.MoveNPC(target, launchVel, 12, true);
+            CalamityUtils.MoveNPC(target, launchVel, 12, true, Owner);
 
             int dustNum = (int)MathHelper.Clamp(12 - Projectile.numHits * 3, 3, 12);
             for (int i = 0; i < dustNum; i++)
@@ -227,7 +227,7 @@ namespace CalamityMod.Projectiles.Melee
             float minMult = 0.3f;
             int hitsToMinMult = 7;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
-            modifiers.SourceDamage *= damageMult * (Owner.Calamity().mouseRight ? 2.5f : 1);
+            modifiers.SourceDamage *= damageMult;
         }
         public override bool PreDraw(ref Color lightColor)
         {

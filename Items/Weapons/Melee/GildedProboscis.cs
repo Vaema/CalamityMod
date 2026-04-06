@@ -1,6 +1,6 @@
 ﻿using CalamityMod.Projectiles.BaseProjectiles;
-using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Projectiles.Melee.Spears;
+using CalamityMod.Systems.Collections;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -16,6 +16,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void SetStaticDefaults()
         {
             base.SetStaticDefaults();
+            CalamityItemSets.ShowScalingCritDamageTooltip[Type] = true;
         }
         public override bool SizeModifiers => false;
         public override void SetDefaults()

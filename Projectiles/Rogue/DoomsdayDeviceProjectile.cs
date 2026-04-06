@@ -55,6 +55,11 @@ namespace CalamityMod.Projectiles.Rogue
         public override bool? CanDamage() => (flung && tileHits == 0 ? null : false);
         public override void AI()
         {
+            if (Owner.dead && !flung)
+            {
+                Projectile.Kill();
+                return;
+            }
             // The main color shifting
             float rate = (Main.GlobalTimeWrappedHourly * 6);
             List<Color> eColors = new List<Color>()
@@ -338,7 +343,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Vector2 launchDir = Utils.DirectionTo(Projectile.Center, target.Center);
                 float launchPower = ((hasReachedFullCharge ? 9 : 0) + charge * 1.5f) * finalHitMult;
 
-                target.MoveNPC(launchDir, launchPower, true);
+                target.MoveNPC(launchDir, launchPower, true, Owner);
 
                 float extraPitch = (Owner.Calamity().rogueStealthMax > 0 ? (0.25f * (Owner.Calamity().rogueStealth / Owner.Calamity().rogueStealthMax)) : 0);
                 
