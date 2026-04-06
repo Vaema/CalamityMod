@@ -736,6 +736,11 @@ SulphurskinBuff: {
 	Description: The sulphuric waters have a lesser effect on you
 }
 
+SwinesWrathBuff: {
+	DisplayName: Swine's Wrath
+	Description: Divine essence is rejecting your body
+}
+
 WeaponImbueBrimstone: {
 	DisplayName: Weapon Imbue: Brimstone
 	Description: Melee, Whip, and Rogue attacks ignite enemies with brimstone flames

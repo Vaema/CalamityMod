@@ -156,6 +156,12 @@ SupremeManaPotion: {
 	Tooltip: ""
 }
 
+TheConcoction: {
+	DisplayName: The Concoction
+	EasterEggText: Removes 500 life
+	Tooltip: ""
+}
+
 ZenPotion: {
 	DisplayName: Zen Potion
 	Tooltip: Vastly decreases enemy spawn rate
