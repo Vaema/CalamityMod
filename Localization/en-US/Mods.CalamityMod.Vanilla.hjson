@@ -451,9 +451,9 @@ TownNPCMood: {
 	}
 
 	DD2Bartender: {
-		Monument: placeholder
-		GiftPositive: placeholder
-		GiftNegative: placeholder
+		Monument: Had a lot of customers lately complaining about that big monument outside. I gotta say, they're right.
+		GiftPositive: The pint in that gift of yours reminded me of what I serve back in Etheria! Ahh, I really miss it... but that was quite thoughtful of you.
+		GiftNegative: What vile concoction of a drink was that? One sip of it and I had to wipe down the bar again! Were you conspiring with the Kobolds?!
 	}
 
 	Demolitionist: {
@@ -463,9 +463,9 @@ TownNPCMood: {
 	}
 
 	Dryad: {
-		Monument: placeholder
-		GiftPositive: placeholder
-		GiftNegative: placeholder
+		Monument: I don't like that monument. I can sense its ugly stain on nature.
+		GiftPositive: I have no need for material goods as a nature spirit... but I can at least sense your gift was given out of genuine compassion.
+		GiftNegative: It would be unwise for you to tread near me after "gifting" me an oozing mass of corruption. I question whether you are committed to purifying the world...
 	}
 
 	DyeTrader: {
