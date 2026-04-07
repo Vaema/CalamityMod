@@ -376,6 +376,7 @@ namespace CalamityMod.NPCs
             "Ozymandias", // <@!146333264871686145> (ozzatron)
             "Miss Throws a Lot", // <@!799345607847182400> (oakhamsam)
             "Brikwilla", // <@!543803736909414438> (lavendercobra)
+            "Melody", // <@!1030635650963214446> (weisslerren)
         ];
         private static readonly string[] TownDogLabradorNames =
         [
