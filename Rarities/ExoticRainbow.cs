@@ -92,7 +92,7 @@ namespace CalamityMod.Rarities
                         int draws = 16;
                         for (int i = 0; i < draws; i++)
                         {
-                            Vector2 backPosition = (MathHelper.TwoPi * i / (float)draws + Main.GlobalTimeWrappedHourly * 1.7f).ToRotationVector2() * (4 + 24 * sine);
+                            Vector2 backPosition = (MathHelper.TwoPi * i / (float)draws + Main.GlobalTimeWrappedHourly * 1.7f).ToRotationVector2() * (4 + 16 * sine);
                             spriteBatch.Draw(lease.Target, Vector2.Zero + backPosition, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
                         }
 
