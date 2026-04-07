@@ -20,10 +20,6 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             base.SetStaticDefaults();
         }
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
-            tooltips.FindAndReplaceAll("ff00ff", Utils.Hex3(DevourerofGodsHead.SpecialMoveColor));
-        }
         public override void SetDefaults()
         {
             Item.width = 78;
