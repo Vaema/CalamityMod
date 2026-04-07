@@ -8,7 +8,7 @@ AstralInjection: {
 	Tooltip:
 		'''
 		Restores {0} mana per second
-		Lower your health by {1} and inflicts {$BuffName.ManaSickness} when used
+		Inflicts [cbuff:ManaSickness] when used
 		'''
 }
 
