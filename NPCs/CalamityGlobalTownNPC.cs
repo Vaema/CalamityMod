@@ -157,6 +157,7 @@ namespace CalamityMod.NPCs
             "Basel Raiden John Clive Fantasy 16", // <@!529392083136413696> (raiden_ii)
             "Gobby, Destroyer of Wallets", // <@!429024941296582658> (bwlstorm)
             "Potential Man", // <@!320787277007552512> (veruze)
+            "Donny G", // <@!308736236523225088> (donnyg66)
         ];
         private static readonly string[] GolferNames = null;
         private static readonly string[] GuideNames =
