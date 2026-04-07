@@ -9,7 +9,6 @@ using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI.Chat;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace CalamityMod.Rarities
 {
@@ -20,7 +19,7 @@ namespace CalamityMod.Rarities
 
         public static float MaxY = 4.5f;
         public static Color BloomClr = new Color(48, 33, 4, 0);
-        public static Color TextClr = new Color(157, 110, 11, 50);
+        public static Color TextClr = new Color(157, 110, 11, 255);
         static float lastFlashTime = 0f;
         static bool isFlashing = false;
 
@@ -61,7 +60,7 @@ namespace CalamityMod.Rarities
                         spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, matrix);
                         for (float f = 0f; f < MathHelper.TwoPi; f += MathHelper.TwoPi * 0.125f)
                         {
-                            spriteBatch.Draw(lease.Target, Vector2.Zero + new Vector2(2,0).RotatedBy(f), null, borderColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                            spriteBatch.Draw(lease.Target, Vector2.Zero + new Vector2(2, 0).RotatedBy(f), null, borderColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
                         }
                         spriteBatch.Draw(lease.Target, Vector2.Zero, null, coreColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
                         spriteBatch.End();
@@ -136,8 +135,8 @@ namespace CalamityMod.Rarities
             }
 
             textColor.A = 255;
-            ChatManager.DrawColorCodedString(spriteBatch, font, snippets, new(X,Y), textColor, 0, Vector2.Zero, baseScale, out _, -1, true);
-            
+            ChatManager.DrawColorCodedString(spriteBatch, font, snippets, new(X, Y), textColor, 0, Vector2.Zero, baseScale, out _, -1, true);
+
         }
 
         public static void Draw(Item Item, string text, int X, int Y, float rotation, Vector2 origin, Vector2 baseScale, Color? textColor = null, Color? lightColor = null, bool? renderTextSparkles = null)

@@ -21,7 +21,7 @@ namespace CalamityMod.Rarities
         public static float MaxY = 4.5f;
         public static Color BloomClr = new Color(180, 20, 75, 0);
         public static Color TextClr = new Color(242, 27, 27, 255);
-        
+
         public sealed class CustomTextSnippet(string text) : TextSnippet
         {
             public bool IsExpert = false;
@@ -49,7 +49,7 @@ namespace CalamityMod.Rarities
 
                     if (IsExpert)
                         eColors = new List<Color>()
-                        { 
+                        {
                         new Color(255,70,70),
                         new Color(255,70,255),
                         new Color(70,70,255),
@@ -87,13 +87,12 @@ namespace CalamityMod.Rarities
                         }
 
                         Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, null, null, null, null, matrix);
-                        float sine = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 3 / MathHelper.Pi);
+                        float sine = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 2 / MathHelper.Pi);
                         sine = (float)Math.Pow(MathHelper.Lerp(sine, 0, 0.35f), 5);
                         int draws = 16;
                         for (int i = 0; i < draws; i++)
                         {
-                            var shake = Main.rand.NextVector2Circular(32, 32) * sine;
-                            Vector2 backPosition = (MathHelper.TwoPi * i / (float)draws).ToRotationVector2() * (4) + shake;
+                            Vector2 backPosition = (MathHelper.TwoPi * i / (float)draws + Main.GlobalTimeWrappedHourly * 1.7f).ToRotationVector2() * (4 + 24 * sine);
                             spriteBatch.Draw(lease.Target, Vector2.Zero + backPosition, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
                         }
 
@@ -110,12 +109,12 @@ namespace CalamityMod.Rarities
                 }
                 return true;
             }
-        public override float GetStringLength(DynamicSpriteFont font)
-        {
-            float size = font.MeasureString(text).X;
+            public override float GetStringLength(DynamicSpriteFont font)
+            {
+                float size = font.MeasureString(text).X;
 
-            return size * Scale;
-        }
+                return size * Scale;
+            }
         }
 
         public static void Draw(Item Item, SpriteBatch spriteBatch, string text, int X, int Y, Color textColor, Color lightColor, float rotation,
