@@ -78,7 +78,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.knockBack = 1f;
 
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<BurnishedAuric>();
+            Item.rare = ModContent.RarityType<ExoticRainbow>();
 
             Item.UseSound = SoundID.Item117;
             Item.shoot = ModContent.ProjectileType<ExoskeletonPlasmaCannon>();

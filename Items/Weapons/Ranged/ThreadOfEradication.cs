@@ -22,10 +22,6 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CalamityItemSets.ShowScalingCritDamageTooltip[Type] = true;
         }
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
-            tooltips.FindAndReplaceAll("ff00ff", Utils.Hex3(DevourerofGodsHead.SpecialMoveColor));
-        }
         public override void SetDefaults()
         {
             Item.width = 40;
