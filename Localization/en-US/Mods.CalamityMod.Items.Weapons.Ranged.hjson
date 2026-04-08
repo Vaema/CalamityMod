@@ -1385,8 +1385,6 @@ TheSevensStriker: {
 		'''
 		Press <left> to consume 1 coin and play a slot machine
 		The quality of the outcome depends on the coin used
-		Press <right> to rapidly fire a barrage of coins
-		The coin barrage has an {0}% chance to save ammo and will not fire platinum coins
 		'A gun given to a great gunslinger
 		Forged by the arms of a man given no name'
 		'''
