@@ -168,7 +168,6 @@ BloodflareBodyArmor: {
 	Tooltip: "{$CommonItemTooltip.PercentIncreasedDamage} and {$CommonItemTooltip.PercentIncreasedCritChance@1}"
 	CommonSetBonus:
 		'''
-		Greatly increased life regen, equivalent to Crimson armor
 		Enemies below 50% life drop a heart when struck
 		This effect has a 5 second cooldown
 		'''
@@ -243,6 +242,7 @@ BloodflareHeadRogue: {
 		'''
 		{$Common.RogueDamage} and {$Common.RogueCrit@1}
 		{$CommonItemTooltip.PercentIncreasedMovementSpeed@2}
+		Increases regeneration by {3} HP/s
 		'''
 	SetBonus:
 		'''
@@ -252,7 +252,6 @@ BloodflareHeadRogue: {
 	SetBonusEffect:
 		'''
 		Grants {0} defense when above {1}% life
-		Rogue critical strikes have lifesteal
 		{$BloodflareBodyArmor.CommonSetBonus}
 		'''
 }
@@ -307,7 +306,6 @@ DemonshadeHelm: {
 		{$CommonItemTooltip.IncreasesMaxMinionsBy}
 		{$CommonItemTooltip.PercentIncreasedSummonDamage@1}
 		Shadowbeams and demon scythes will fire down when you are hit
-		A friendly red devil follows you around
 		{2} to enrage nearby enemies with a dark magic spell for {3} seconds
 		This makes them take {4}x total damage, but they will deal {5}x damage to you
 		'''

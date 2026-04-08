@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Ranged;
+﻿using CalamityMod.Items.Materials;
+using CalamityMod.Projectiles.Ranged;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -21,12 +22,21 @@ namespace CalamityMod.Items.Ammo
             Item.DamageType = DamageClass.Ranged;
             Item.consumable = true;
             Item.knockBack = 2f;
-            Item.value = Item.buyPrice(copper: 80); // Sold by Archmage
+            Item.value = Item.sellPrice(copper: 16);
             Item.rare = ItemRarityID.Yellow;
             Item.shoot = ModContent.ProjectileType<HailstormBulletProj>();
             Item.shootSpeed = 0.3f;
             Item.ammo = AmmoID.Bullet;
             Item.maxStack = Item.CommonMaxStack;
+        }
+        public override void AddRecipes()
+        {
+            CreateRecipe(333).
+                AddIngredient(ItemID.MusketBall, 333).
+                AddIngredient<EssenceofEleum>().
+                AddIngredient(ItemID.Ectoplasm).
+                AddTile(TileID.MythrilAnvil).
+                Register();
         }
     }
 }

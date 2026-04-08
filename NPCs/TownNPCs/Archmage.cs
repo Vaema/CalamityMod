@@ -165,8 +165,6 @@ namespace CalamityMod.NPCs.TownNPCs
                 .Add<AbsoluteZero>(Condition.DownedEverscream, Condition.DownedSantaNK1, Condition.DownedIceQueen)
                 .Add<EternalBlizzard>(Condition.DownedEverscream, Condition.DownedSantaNK1, Condition.DownedIceQueen)
                 .Add<WintersFury>(Condition.DownedEverscream, Condition.DownedSantaNK1, Condition.DownedIceQueen)
-                .Add<HailstormBullet>(Condition.DownedEverscream, Condition.DownedSantaNK1, Condition.DownedIceQueen)
-                .Add<IcicleArrow>(Condition.DownedEverscream, Condition.DownedSantaNK1, Condition.DownedIceQueen)
                 .Add<PermafrostsConcoction>()
                 .Add(ItemID.SuperManaPotion)
                 .Add<DeliciousMeat>()

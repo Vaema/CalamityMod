@@ -120,7 +120,7 @@ namespace CalamityMod.Projectiles.Rogue
             if (hitTimer == 0)
                 hitTimer = Projectile.localNPCHitCooldown;
 
-            if (target.CanBeMoved(true))
+            if (target.CanBeMoved())
                 target.velocity *= 0.05f;
         }
         public override bool? CanDamage() => canDamage ? null : false;

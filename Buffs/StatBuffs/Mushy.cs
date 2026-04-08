@@ -9,7 +9,7 @@ namespace CalamityMod.Buffs.StatBuffs
 {
     public class Mushy : ModBuff
     {
-        public static int DefenseBoost = 5;
+        public static int DefenseBoost = 3;
         public static int RegenBoost = 2;
         public override LocalizedText Description => base.Description.WithFormatArgs(DefenseBoost, RegenBoost.ToRegenPerSecond());
 
