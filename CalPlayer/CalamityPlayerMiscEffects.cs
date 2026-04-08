@@ -311,11 +311,11 @@ namespace CalamityMod.CalPlayer
             if (dashStart)
             {
                 lastDashWasTabi = false;
-            }
 
-            if (((gShell && giantShellPostHit == 0) || (tortShell && tortShellPostHit == 0)) && dashStart)
-            {
-                Player.velocity.X *= 0.9f;
+                if ((tortShell && tortShellPostHit == 0))
+                    Player.velocity.X *= GiantTortoiseShell.DashVelocityMult;
+                if ((gShell && giantShellPostHit == 0))
+                    Player.velocity.X *= GiantShell.DashVelocityMult;
             }
 
             // Tabi/Master Ninja Gear dash change
@@ -3471,7 +3471,7 @@ namespace CalamityMod.CalPlayer
 
                 if (giantShellPostHit > 0)
                 {
-                    Player.statDefense -= 3;
+                    Player.statDefense -= GiantShell.DefenseBoost;
                     giantShellPostHit--;
                 }
                 if (giantShellPostHit < 0)
@@ -3487,11 +3487,11 @@ namespace CalamityMod.CalPlayer
 
                 if (tortShellPostHit > 0)
                 {
-                    Player.statDefense -= 6;
+                    Player.statDefense -= GiantTortoiseShell.DefenseBoost;
                     tortShellPostHit--;
                 }
                 else
-                    Player.endurance += 0.05f;
+                    Player.endurance += GiantTortoiseShell.DamageReductionBoost;
 
                 if (tortShellPostHit < 0)
                 {
@@ -3799,10 +3799,10 @@ namespace CalamityMod.CalPlayer
                 Player.buffImmune[BuffID.Chilled] = true;
                 Player.buffImmune[BuffID.Frozen] = true;
 
-                if (Player.statLife > (int)(Player.statLifeMax2 * 0.5))
-                    Player.GetDamage<GenericDamageClass>() += 0.1f;
-                if (Player.statLife <= (int)(Player.statLifeMax2 * 0.5))
-                    Player.statDefense += 15;
+                if (Player.statLife > (int)(Player.statLifeMax2 * FrostFlare.HealthRatioThreshold))
+                    Player.GetDamage<GenericDamageClass>() += FrostFlare.DamageBoost;
+                else
+                    Player.statDefense += FrostFlare.DefenseBoost;
             }
 
             if (vexation)
