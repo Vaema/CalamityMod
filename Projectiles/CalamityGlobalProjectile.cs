@@ -337,7 +337,7 @@ namespace CalamityMod.Projectiles
             {
                 grapeBeer = true;
                 var ivDripPlayer = Main.player[projectile.owner].GetModPlayer<IVDripPlayer>();
-                conditionalHomingRange = ivDripPlayer.HasAlcohol(AlcoholType.GrapeBeer) ? 1800 : 300;
+                conditionalHomingRange = ivDripPlayer.HasAlcohol(AlcoholType.GrapeBeer) ? 800 : 300;
                 if (projectile.timeLeft > 300 * projectile.MaxUpdates)
                     projectile.timeLeft = 300 * projectile.MaxUpdates;
                 //Calamity adds a hybrid iframe system when both local and static are set to true, so this works fine for both global and static projectiles.
@@ -4328,10 +4328,10 @@ namespace CalamityMod.Projectiles
                             grapeBeerHomingPower = 0.015f;
                         }
 
-                            HomingTarget = grapeBeerHomingTarget = target.whoAmI;
+                        HomingTarget = grapeBeerHomingTarget = target.whoAmI;
                         Vector2 targetDirection = projectile.SafeDirectionTo(target.Center);
 
-                        float trackingSpeed = grapeBeerHomingPower;// Vector2.Dot(targetDirection, projectile.velocity.SafeNormalize(Vector2.UnitX)) > 0.835f ? 0.01325f : 0f; // Delicate values, please test changes you make to them
+                        float trackingSpeed = grapeBeerHomingPower;
 
                         var currVelocity = projectile.velocity.Length();
                         if (currVelocity < 8)

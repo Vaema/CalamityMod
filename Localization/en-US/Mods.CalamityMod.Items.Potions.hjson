@@ -274,8 +274,9 @@ GrapeBeer: {
 	DripEffect:
 		'''
 		Bullets, Arrows, Darts, and Rockets gain homing
-		{0}% reduced critical strike damage
-		When combined with drinking Grape Beer straight, greatly increases homing range and critical strike damage loss
+		Projectiles deal less damage the further the enemy is
+		This reaches a minimum of {0}x damage at {1} tiles away
+		When combined with drinking Grape Beer straight, homing range is increased
 		'''
 }
 
