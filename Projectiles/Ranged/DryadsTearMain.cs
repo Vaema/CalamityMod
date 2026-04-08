@@ -379,7 +379,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             modifiers.SourceDamage *= damageMult;
         }
-        public override bool? CanHitNPC(NPC target) => time > 1 && Projectile.numHits == 0;
+        public override bool? CanHitNPC(NPC target) => ((time > 1) ? null : false && Projectile.numHits == 0);
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             float hitboxSize = 20 * Projectile.scale * damageMult;
