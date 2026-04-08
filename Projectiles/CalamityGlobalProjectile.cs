@@ -337,7 +337,7 @@ namespace CalamityMod.Projectiles
             {
                 grapeBeer = true;
                 var ivDripPlayer = Main.player[projectile.owner].GetModPlayer<IVDripPlayer>();
-                conditionalHomingRange = ivDripPlayer.HasAlcohol(AlcoholType.GrapeBeer) ? 1800 : 600;
+                conditionalHomingRange = ivDripPlayer.HasAlcohol(AlcoholType.GrapeBeer) ? 1800 : 300;
                 if (projectile.timeLeft > 300 * projectile.MaxUpdates)
                     projectile.timeLeft = 300 * projectile.MaxUpdates;
                 //Calamity adds a hybrid iframe system when both local and static are set to true, so this works fine for both global and static projectiles.

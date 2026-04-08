@@ -346,8 +346,9 @@ namespace CalamityMod.CalPlayer
 
                 if (tequilaSunrise)
                     Player.lifeRegenTime += 1800;
-                }
+
             }
+
             var dripPlayer = Player.GetModPlayer<IVDripPlayer>();
             if (dripPlayer.HasAlcohol(AlcoholType.TequilaSunrise))
             {
@@ -356,6 +357,7 @@ namespace CalamityMod.CalPlayer
                     Player.lifeRegenTime += 1800;
                 }
             }
+
 
             #endregion
 
