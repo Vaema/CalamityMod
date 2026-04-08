@@ -19,11 +19,14 @@ using CalamityMod.Utilities.Daybreak;
 using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Graphics;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.UI.Chat;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Items.Accessories.Wings
@@ -55,7 +58,7 @@ namespace CalamityMod.Items.Accessories.Wings
             Item.width = 22;
             Item.height = 20;
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
-            Item.rare = ModContent.RarityType<Turquoise>();
+            Item.rare = ModContent.RarityType<HotPink>();
             Item.Calamity().devItem = true;
         }
 
@@ -112,6 +115,18 @@ namespace CalamityMod.Items.Accessories.Wings
         public List<(Vector2 pos, float rot)> tailPos;
         public override void ResetEffects()
         {
+            //Handled here to prevent issues with instancing of chat tags
+            if (TiredTailTextEffects.displayTimer > 0)
+            {
+                TiredTailTextEffects.expansionFactor += 0.033f;
+
+                TiredTailTextEffects.displayTimer -= 1;
+            }
+            else
+            {
+                TiredTailTextEffects.expansionFactor = 0f;
+            }
+
             tiredTailDraw = false;
         }
         public override void PostUpdate()
@@ -172,7 +187,7 @@ namespace CalamityMod.Items.Accessories.Wings
             Main.QueueMainThreadAction(() =>
             {
                 //Load palettes automatically
-                var texture = ModContent.Request<Texture2D>("CalamityMod/Items/Accessories/Wings/TiredTailPallette",ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+                var texture = ModContent.Request<Texture2D>("CalamityMod/Items/Accessories/Wings/TiredTailPallette", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
                 var BaseArray = new Color[texture.Width * texture.Height];
                 texture.GetData(BaseArray);
                 List<Vector4> pal = new();
@@ -271,7 +286,7 @@ namespace CalamityMod.Items.Accessories.Wings
                     ColorPallettes[17]),
                 ];
             });
-            
+
         }
 
         List<(List<int> heads, List<int> bodies, List<int> legs, Vector4[] pallette)> ArmorPallettes = [];
@@ -427,6 +442,90 @@ namespace CalamityMod.Items.Accessories.Wings
                 }
             }
 
+        }
+    }
+
+    public sealed class TiredTailTextEffects(string text) : TextSnippet
+    {
+        //Handled by TiredTailPlayer as this effect is for TiredTail
+        public static float expansionFactor = 0;
+        public static int displayTimer = 0;
+        public override bool UniqueDraw(bool justCheckingString, out Vector2 size, SpriteBatch spriteBatch, Vector2 position = new Vector2(), Color color = new Color(), float scale = 1)
+        {
+            //size = new Vector2(GetStringLength(FontAssets.MouseText.Value), FontAssets.MouseText.Value.MeasureString(" ").Y * scale);
+
+            if (color == default || color == Main.MouseTextColorReal)
+            {
+                color = Colors.AlphaDarken(HotPink.TextColor);
+            }
+            var textarray = text.ToArray();
+            for (var i = 0; i < textarray.Length; i++)
+            {
+                if (expansionFactor - 10 > i)
+                {
+                    textarray[i] = (i == 0 ? 'ɔ' : '»');
+                }
+            }
+            var textToDraw = new string(textarray);
+
+            size = FontAssets.MouseText.Value.MeasureString(textToDraw)*scale;
+
+            if (!justCheckingString && (color.R != 0 || color.G != 0 || color.B != 0))
+            {
+                var pos = position;
+                using var lease = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice);
+                string txt = "";
+                var matrix = spriteBatch.transformMatrix;
+                using (spriteBatch.Scope())
+                {
+                    using (lease.Scope(clearColor: Color.Transparent))
+                    {
+                        var max = FontAssets.MouseText.Value.MeasureString(text) * Math.Min(1f,expansionFactor);
+                        spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, matrix);
+
+                        foreach (var item in textarray)
+                        {//new(92,83,117)
+                            pos = position;
+                            pos.X += Math.Min(FontAssets.MouseText.Value.MeasureString(txt).X,max.X+9999);
+                            float sin = (MathF.Sin(pos.X * 0.02f + Main.GlobalTimeWrappedHourly * -1.5f) + 1) * 0.5f;
+                            float sin2 = (MathF.Sin(pos.X * 0.02f + Main.GlobalTimeWrappedHourly * -0.9f) + 1) * 0.5f;
+                            float sin3 = MathF.Sin(pos.X * 0.02f + Main.GlobalTimeWrappedHourly * -1.5f + MathHelper.PiOver2);
+                            var c = new Color(171, 153, 204);
+                            if (txt.Length == 0 || txt.Length == text.Length-1)
+                                c = Color.Cyan;
+                            else if (txt.Length % 4 == 3)
+                            {
+                                c = Color.HotPink;
+                            }
+                            c = Color.Lerp(Colors.AlphaDarken(new Color(0, 255, 200)), c, MathHelper.Clamp(expansionFactor - 2, 0, 1));
+                            float posMult = Math.Max(MathHelper.Clamp((expansionFactor - 10) * 0.5f, 0, 3), MathHelper.Clamp((expansionFactor - 2) * 0.5f, 0, 1));
+                            var origin = FontAssets.MouseText.Value.MeasureString(item.ToString()) * 0.5f;
+                            ChatManager.DrawColorCodedString(spriteBatch, FontAssets.MouseText.Value, item.ToString(), origin + pos + new Vector2(0, item == 'ɔ' ? -1 : 0) + new Vector2((-2f + 4*sin2) * posMult, (-2 + sin * 4) * posMult), c, sin3*posMult * 0.1f, origin, new Vector2(scale));
+                            txt += item;
+                        }
+                        spriteBatch.End();
+                    }
+
+                    spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Matrix.Identity);
+                    foreach (var item in ChatManager.ShadowDirections)
+                    {
+                        spriteBatch.Draw(lease.Target, Vector2.Zero + Vector2.TransformNormal(item * 2, matrix), null, Color.Black, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                    }
+                    spriteBatch.Draw(lease.Target, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                    spriteBatch.End();
+                }
+            }
+            return true;
+        }
+
+        public override void Update()
+        {
+            displayTimer = 10;
+        }
+        public override float GetStringLength(DynamicSpriteFont font)
+        {
+            float size = font.MeasureString(text).X;
+            return size * Scale;
         }
     }
 }
