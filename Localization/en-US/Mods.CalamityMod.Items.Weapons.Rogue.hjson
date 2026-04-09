@@ -362,7 +362,7 @@ EclipsesFall: {
 		If more than 20 fragments exist, the oldest fragments will seek out enemies to attack
 		Stealth strikes coalesce fragments into [ceffect/darksun:Spear of Obscuration,] gaining power based on the number of fragments
 		[ceffect/darksun:Spear of Obscuration] will pierce though any enemy hit by Eclipse's Fall
-		[ceffect/darksun:'When the sun goes dark, you will know judgement']
+		[ceffect/darksun:'When the sun goes dark, all will know terror']
 		'''
 }
 

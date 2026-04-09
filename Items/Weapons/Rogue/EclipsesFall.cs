@@ -508,7 +508,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.height = 40;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.penetrate = 4;
+            Projectile.penetrate = 3;
             Projectile.timeLeft = lifetime;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.usesIDStaticNPCImmunity = true;
@@ -720,7 +720,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.height = 6;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.penetrate = 5;
+            Projectile.penetrate = 3;
             Projectile.timeLeft = lifetime;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.localAI[0] = 20f;

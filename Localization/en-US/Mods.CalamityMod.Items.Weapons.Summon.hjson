@@ -681,6 +681,7 @@ SarosPossession: {
 		Repeated summons increase the power of the aura
 		<left> with full summon slots to channel [ceffect/darksun:Totality Ray]
 		[ceffect/darksun:Totality Ray] decays while in use and recharges when not in use
+		[ceffect/darksun:'A ballet of light and shadow, torn from the sky']
 		'''
 }
 
