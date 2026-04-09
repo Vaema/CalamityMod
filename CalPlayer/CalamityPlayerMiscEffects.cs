@@ -2252,8 +2252,6 @@ namespace CalamityMod.CalPlayer
                 bloodflareMageCooldown--;
             if (silvaMageCooldown > 0)
                 silvaMageCooldown--;
-            if (scuttlerCooldown > 0)
-                scuttlerCooldown--;
             if (nanotechHitCooldown > 0)
                 nanotechHitCooldown--;
             if (spectralVeilImmunity > 0)
