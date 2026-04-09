@@ -1039,9 +1039,9 @@ namespace CalamityMod.CalPlayer
         public int fallingBootVelCheckTimer = 0;
         public bool voidOfCalamity = false;
         public bool apollyon = false;
-        public bool eArtifact = false;
-        public bool dArtifact = false;
-        public bool auricSArtifact = false;
+        public bool fragmentsOfAnotherWorld = false;
+        public bool crushingEgo = false;
+        public bool fadedIdolatry = false;
         public bool pSoulArtifact = false;
         public bool giantPearl = false;
         public bool shieldOfTheOcean = false;
@@ -2468,9 +2468,9 @@ namespace CalamityMod.CalPlayer
             baroclaw = false;
             voidOfCalamity = false;
             apollyon = false;
-            eArtifact = false;
-            dArtifact = false;
-            auricSArtifact = false;
+            fragmentsOfAnotherWorld = false;
+            crushingEgo = false;
+            fadedIdolatry = false;
             pSoulArtifact = false;
             giantPearl = false;
             shieldOfTheOcean = false;
@@ -6113,12 +6113,6 @@ namespace CalamityMod.CalPlayer
             {
                 stealthGenStandstill += ShadowPotion.StealthRegenBoost;
                 stealthGenMoving += ShadowPotion.StealthRegenBoost;
-            }
-
-            if (eArtifact)
-            {
-                stealthGenStandstill += 0.15f;
-                stealthGenMoving += 0.15f;
             }
 
             // Accessory modifiers can boost these stats

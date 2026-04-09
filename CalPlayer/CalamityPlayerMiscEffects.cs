@@ -3969,13 +3969,7 @@ namespace CalamityMod.CalPlayer
                 Player.npcTypeNoAggro[ModContent.NPCType<GammaSlime>()] = true;
             }
 
-            if (eArtifact)
-            {
-                Player.manaCost -= 0.25f;
-                Player.maxMinions++;
-            }
-
-            if (auricSArtifact && Player.FindBuffIndex(ModContent.BuffType<FieryDraconidBuff>()) != -1)
+            if (fadedIdolatry && Player.FindBuffIndex(ModContent.BuffType<FieryDraconidBuff>()) != -1)
                 Player.maxMinions += Player.ownedProjectileCounts[ModContent.ProjectileType<FieryDraconid>()];
 
             if (pSoulArtifact)
@@ -4410,7 +4404,7 @@ namespace CalamityMod.CalPlayer
 
             // Add any multiplicative damage bonuses here
             float multiplicativeDamage = 1;
-            if (dArtifact)
+            if (crushingEgo)
                 multiplicativeDamage += 0.2f;
             if (WarbanneroftheRighteous)
                 multiplicativeDamage += warbannerDamageMult;
