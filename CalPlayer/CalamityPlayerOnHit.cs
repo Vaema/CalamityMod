@@ -1088,8 +1088,7 @@ namespace CalamityMod.CalPlayer
             if (raiderTalisman && modProj.stealthStrike)
             {
                 raiderCritLifespan = CalamityUtils.SecondsToFrames(RaidersTalisman.RaiderCooldown);
-                // TO DO: Add nanotech here
-                Player.AddCooldown(RaiderBoost.ID, raiderCritLifespan, true, vampiricTalisman ? "Bloodfeast" : "default");
+                Player.AddCooldown(RaiderBoost.ID, raiderCritLifespan, true, nanotech ? "Nanotech" : vampiricTalisman ? "Vampiric" : "default");
                 if (raiderSoundCooldown <= 0)
                 {
                     SoundEngine.PlaySound(RaidersTalisman.StealthHitSound, Player.Center);
@@ -1297,7 +1296,7 @@ namespace CalamityMod.CalPlayer
                     Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, heal, (raiderCritLifespan > 0 && !proj.Calamity().stealthStrike) ? 1.2f : 1.5f);
                 }
 
-                if (bloodyGlove && proj.CountsAsClass<RogueDamageClass>() && modProj.stealthStrike && proj.numHits < 1)
+                if (bloodyGlove && proj.CountsAsClass<RogueDamageClass>() && (modProj.stealthStrike || (nanotech && raiderCritLifespan > 0)) && proj.numHits < 1)
                     //Nanotech has the same heal as Electrician's glove
                     Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, electricianGlove ? 10 : 5, electricianGlove ? 2f : 3f);
 

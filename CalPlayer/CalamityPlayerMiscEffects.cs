@@ -2708,11 +2708,15 @@ namespace CalamityMod.CalPlayer
             }
 
             // Raider Talisman bonus
-            if (raiderTalisman && !vampiricTalisman && !StealthStrikeAvailable() && raiderCritLifespan > 0f)
-                Player.GetCritChance<ThrowingDamageClass>() += RaidersTalisman.RaiderBonus;
-            if (vampiricTalisman && !StealthStrikeAvailable() && raiderCritLifespan > 0f)
-                Player.GetCritChance<ThrowingDamageClass>() += VampiricTalisman.RaiderBonus;
-
+            if (!StealthStrikeAvailable() && raiderCritLifespan > 0f)
+            {
+                if (nanotech)
+                    Player.GetCritChance<GenericDamageClass>() += Items.Accessories.Nanotech.RaiderBonus;
+                else if (vampiricTalisman)
+                    Player.GetCritChance<GenericDamageClass>() += VampiricTalisman.RaiderBonus;
+                else if (raiderTalisman)
+                    Player.GetCritChance<GenericDamageClass>() += RaidersTalisman.RaiderBonus;
+            }
             if (avertorBonus)
                 Player.GetDamage<GenericDamageClass>() += 0.1f;
 
