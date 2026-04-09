@@ -5545,6 +5545,8 @@ namespace CalamityMod.CalPlayer
                         {
                             Main.projectile[p].DamageType = DamageClass.Generic; //Makes it not proc shit like nanotech, extorter and other stuff
                             Main.projectile[p].Calamity().LocketClone = true; //To not have clones trigger effects like Sacrifice's Lifesteal and Final Dawn's stealth generation
+
+                            Projectile.NewProjectile(LocketSource, Main.projectile[p].Center, Vector2.Zero, ModContent.ProjectileType<DoGWeaponTeleportRift>(), 0, 0, Player.whoAmI); // Spawn a little portal!
                         }
 
                         // Handle AI edge-cases. These are like overlapping projectiles and the projectile not spawning at all
