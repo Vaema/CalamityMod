@@ -1616,7 +1616,7 @@ namespace CalamityMod.Systems
             r.AddIngredient(ItemID.Silk, 10);
             r.AddIngredient(ItemID.AntlionMandible, 2);
             r.AddIngredient<PearlShard>(5);
-            r.AddTile(TileID.Anvils);
+            r.AddTile(TileID.Loom);
             r.Register();
             r.DisableDecraft();
 
