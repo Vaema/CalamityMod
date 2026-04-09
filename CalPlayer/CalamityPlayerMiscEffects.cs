@@ -350,9 +350,9 @@ namespace CalamityMod.CalPlayer
                     if (Player.miscCounter % 4 == 0)
                         Player.HealPlayer(1, HealTextType.None);
 
-                    if (Player.dashDelay > 0) // Reduced dash cooldown
+                    if (Player.dashDelay > 1) // Reduced dash cooldown
                     {
-                        Player.dashDelay = 0;
+                        Player.dashDelay = 1;
                     }
                     if (Player.dashDelay == -1)
                     {
@@ -367,9 +367,9 @@ namespace CalamityMod.CalPlayer
                     if (Player.miscCounter % 5 == 0)
                         Player.HealPlayer(2, HealTextType.None);
 
-                    if (Player.dashDelay > 0) // Reduced dash cooldown
+                    if (Player.dashDelay > 1) // Reduced dash cooldown
                     {
-                        Player.dashDelay = 0;
+                        Player.dashDelay = 1;
                     }
                     if (Player.dashDelay == -1)
                     {
