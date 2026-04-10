@@ -27,12 +27,6 @@ namespace CalamityMod.Rarities
             var sparkle = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/UI/CrystalTextSparkle").Value;
             var fontSize = font.MeasureString(text);
             var center = fontSize / 2f;
-
-            // this was intended behavior. i'm commenting it out for now because it seems like people do not like it.
-            /*
-            if (Item.expert)
-                textColor = Main.DiscoColor;
-            */
             
             var glowPosition = new Vector2(X + center.X, Y + center.Y / 1.5f);
             textColor.A = 0;
