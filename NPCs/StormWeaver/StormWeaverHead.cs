@@ -459,7 +459,7 @@ namespace CalamityMod.NPCs.StormWeaver
                             int centralWave = totalWaves / 2;
                             float velocityY = revenge ? 10f : expertMode ? 9f : 8f;
                             int wavePatternType = revenge ? Main.rand.Next(3) : expertMode ? Main.rand.Next(2) + 1 : 2;
-                            float delayBeforeFiring = -60f;
+                            float delayBeforeFiring = -70f; // Note the actual delay is half of this number since frost waves have an extra update
                             for (int x = 0; x < totalWaves; x++)
                             {
                                 switch (wavePatternType)
@@ -496,7 +496,7 @@ namespace CalamityMod.NPCs.StormWeaver
                                 }
 
                                 // Telegraph is active for 60 frames
-                                // Frost Waves start moving after 30 frames
+                                // Frost Waves start moving after 35 frames
                                 // Frost Waves take 30 frames to reach full velocity
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileSpawnX, Main.player[NPC.target].Center.Y - 1600f, 0f, velocityY * 0.5f, ModContent.ProjectileType<StormWeaverFrostWaveTelegraph>(), 0, 0f, Main.myPlayer, 0f, velocityY);
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileSpawnX, Main.player[NPC.target].Center.Y - 1600f, 0f, velocityY * 0.1f, type, FrostWaveDamage, 0f, Main.myPlayer, delayBeforeFiring, velocityY);
