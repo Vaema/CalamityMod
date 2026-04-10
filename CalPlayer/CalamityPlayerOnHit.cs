@@ -279,7 +279,6 @@ namespace CalamityMod.CalPlayer
                     target.AddBuff(BuffType<ArmorCrunch>(), 180);
                     break;
 
-                case ProjectileID.ButchersChainsaw:
                 // Remove this in 1.4.5 port
                 case ProjectileID.MechanicalPiranha:
                     target.AddBuff(BuffType<HeavyBleeding>(), 180);

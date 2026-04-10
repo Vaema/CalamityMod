@@ -13,7 +13,6 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee.MaceFlails
 {
-    [PierceResistException]
     public class UrchinMaceProj : BaseMaceFlailProjectile
     {
         // The entire chain is on the mace sprite, in which the player swings
