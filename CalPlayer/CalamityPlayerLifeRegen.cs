@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Buffs.Potions;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.DataStructures;
@@ -138,6 +139,7 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(banishingFire, 60); // Never inflicted on the player
             int rebukeDoT = ((Player.controlLeft || Player.controlRight) ? 80 : 16) / (eleResist ? 2 : 1);
             ApplyDoTDebuff(auricRebuke, rebukeDoT);
+            ApplyDoTDebuff(Player.HasBuff<SwinesWrathBuff>(), 30);
 
             // Slowly increase the sulphuric water poisoning effect. Once it's high enough, the player takes damage and the meter resets.
             bool nearSafeZone = false;

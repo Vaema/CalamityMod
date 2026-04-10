@@ -1,6 +1,11 @@
-﻿using CalamityMod.Items.Potions;
+﻿using CalamityMod.DataStructures;
+using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Localization;
+using Terraria.DataStructures;
+using Terraria.Graphics.Shaders;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.Potions
@@ -12,6 +17,8 @@ namespace CalamityMod.Buffs.Potions
             Main.debuff[Type] = true;
             Main.pvpBuff[Type] = true;
             Main.buffNoSave[Type] = false;
+            Main.persistentBuff[Type] = true;
+            BuffID.Sets.NurseCannotRemoveDebuff[Type] = true;
         }
     }
 }

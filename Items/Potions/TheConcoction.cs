@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.Buffs.Potions;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -12,6 +14,7 @@ namespace CalamityMod.Items.Potions
     public class TheConcoction : ModItem, ILocalizedModType
     {
         private static int hoverTimer = 0;
+        private static bool wasHovering = false;
         public new string LocalizationCategory => "Items.Potions";
 
         public override void SetStaticDefaults()
@@ -32,23 +35,53 @@ namespace CalamityMod.Items.Potions
             Item.rare = ItemRarityID.Green;
         }
 
-        // Display different text for the first 8 frames of hovering over the item's tooltip
+
+        public override void OnConsumeItem(Player player)
+        {
+            TheConcoctionPlayer cocPlayer = player.GetModPlayer<TheConcoctionPlayer>();
+            cocPlayer.framesTilSwinesWrath = 600;
+        }
+
+
+        // Display different text for the first 10 frames of hovering over the item's tooltip.
+        // Only works once after loading the mod.
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
-            if (Main.HoverItem?.type != Type)
-            {
+            bool isHovering = Main.HoverItem?.type == Type;
+
+            if (isHovering && !wasHovering)
                 hoverTimer = 0;
-                return;
-            }
 
-            hoverTimer++;
+            if (isHovering)
+                hoverTimer++;
 
-            if (hoverTimer <= 8)
+            wasHovering = isHovering;
+
+            if (hoverTimer <= 10 && hoverTimer > 0)
             {
                 TooltipLine healLine = tooltips.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "HealLife");
+
                 if (healLine != null)
-                {
                     healLine.Text = this.GetLocalization("EasterEggText").Value;
+            }
+        }
+    }
+
+    public class TheConcoctionPlayer : ModPlayer
+    {
+        public int framesTilSwinesWrath = -1;
+
+        public override void PostUpdate()
+        {
+            if (framesTilSwinesWrath > 0)
+            {
+                framesTilSwinesWrath--;
+
+                if (framesTilSwinesWrath == 0)
+                {
+                    Player.AddBuff(ModContent.BuffType<SwinesWrathBuff>(), 3600);
+
+                    SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/SwinesWrathProc"), Player.Center);
                 }
             }
         }
