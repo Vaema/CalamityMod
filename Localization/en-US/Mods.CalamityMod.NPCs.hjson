@@ -352,9 +352,9 @@ Archmage: {
 		DislikeNPC: I dislike {NPCName}'s blatant disregard of magic. I cannot blame his functions, but he is quite ignorant.
 		LikeNPC_Princess: "{NPCName} has some very quaint spells. I'm quite impressed, for someone of her age."
 		Princess_LovesNPC: "{NPCName} makes the best ice cream I've ever tasted, it's so good!"
-		Monument: placeholder
-		GiftPositive: placeholder
-		GiftNegative: placeholder
+		Monument: What a hideous statue! I always advocated for artistic community projects, but this... you really should have better quality control over what gets into your town!
+		GiftPositive: "How culture shaped magic" by [name]?! I thought this book was lost centuries ago! How did you find it, and how did you...?! Well, no matter! This is the perfect gift, thank you!
+		GiftNegative: Could you please explain what your last gift was? You made an attempt on my life by trying to freeze me!? You better have a good explanation about how a snowstorm made its way inside that box!
 	}
 }
 
@@ -481,7 +481,7 @@ BrimstoneWitch: {
 		DislikeNPC: Such a racket! All {NPCName} does is make noise, day in and day out! I can't stand her!
 		LikeNPC_Princess: What a strangely pleasant kid {NPCName} is to be around.
 		Princess_LovesNPC: "{NPCName} is always lonely, it's why I want to hang out with her, no one should be left alone like that!"
-		Monument: placeholder
+		Monument: That monument is ugly as sin.
 		GiftPositive: Hey, uh... thanks for the gift, really. I never thought you'd ever give me anything, for obvious reasons. But... thanks, really. It's lovely.
 		GiftNegative: What the hell was that gift? You know what, I don't even want to think about it. Screw you.
 	}
@@ -567,9 +567,9 @@ SeaKing: {
 		HateNPC: "{NPCName} is just a child, but his attitude towards marine life is unacceptable! Absolutely unacceptable!"
 		LikeNPC_Princess: That child, {NPCName}. She is an innocent soul. Let us hope the horrors of war never reach her.
 		Princess_LovesNPC: "{NPCName} always smiles when I'm nearby, I like being around him just for that!"
-		Monument: placeholder
-		GiftPositive: placeholder
-		GiftNegative: placeholder
+		Monument: Take that horrible statue out of my sight! It is a disgrace to art, and to so unabashedly extort your people...! I expected much more of you.
+		GiftPositive: It was quite the delight to see that you gifted me custom-made shoes. Few people seem to realize that "walking" tends to leave my tail quite sore. Thank you, sincerely!
+		GiftNegative: A dead fish?! You gifted me a dead fish?! You managed to cross every line with that "gift"! Leave, I don't want to see you any longer.
 	}
 }
 

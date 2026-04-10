@@ -553,7 +553,7 @@ TownNPCMood: {
 	}
 
 	TaxCollector: {
-		Monument: HA! Yes! What a fantastic monument celebrating what I have accomplished!
+		Monument: Bah! You shouldn't be seeing this message, plebian!
 		GiftPositive: What a steal, getting a gift full of the only thing worth a damn in this world -- money!
 		GiftNegative: Bah! You think you're a jester with that lump of coal? Get out of my sight!
 	}
@@ -571,8 +571,8 @@ TownNPCMood: {
 	}
 
 	Wizard: {
-		Monument: placeholder
-		GiftPositive: placeholder
-		GiftNegative: placeholder
+		Monument: If I was your age, I would've blasted that loathsome monument with a giant fireball! Alas, I can't recall the spell.
+		GiftPositive: An authentic tome of wisdom from the Archmage himself? What a prized possession!! ...uh, who is the Archmage again?
+		GiftNegative: Do you take me for a fool to place a hex on that gift? How about I place a hex on your wallet, and all of your money disappears when you buy from me!!
 	}
 }
