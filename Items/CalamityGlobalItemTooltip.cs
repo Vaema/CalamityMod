@@ -782,11 +782,14 @@ namespace CalamityMod.Items
                 EditTooltipByNum(0, (line) => line.Text += AddedTooltip("TitanGloveLine"));
             if (item.type == ItemID.PowerGlove)
             {
-                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("PowerGlove"));
+                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("PowerBerserkerGlove"));
                 EditTooltipByNum(0, (line) => line.Text += AddedTooltip("TitanGloveLine"));
             }
             if (item.type == ItemID.BerserkerGlove)
-                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("BerserkerGlove"));
+            {
+                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("PowerBerserkerGlove"));
+                EditTooltipByNum(0, (line) => line.Text += AddedTooltip("TitanGloveLine"));
+            }
             if (item.type == ItemID.MechanicalGlove)
                 EditTooltipByNum(1, (line) => line.Text = EditedTooltip("MechanicalGlove") + AddedTooltip("TitanGloveLine"));
             if (item.type == ItemID.FireGauntlet)
