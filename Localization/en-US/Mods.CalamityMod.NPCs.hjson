@@ -353,7 +353,7 @@ Archmage: {
 		LikeNPC_Princess: "{NPCName} has some very quaint spells. I'm quite impressed, for someone of her age."
 		Princess_LovesNPC: "{NPCName} makes the best ice cream I've ever tasted, it's so good!"
 		Monument: What a hideous statue! I always advocated for artistic community projects, but this... you really should have better quality control over what gets into your town!
-		GiftPositive: "How culture shaped magic" by [name]?! I thought this book was lost centuries ago! How did you find it, and how did you...?! Well, no matter! This is the perfect gift, thank you!
+		GiftPositive: '''"How culture shaped magic" by [name]?! I thought this book was lost centuries ago! How did you find it, and how did you...?! Well, no matter! This is the perfect gift, thank you!'''
 		GiftNegative: Could you please explain what your last gift was? You made an attempt on my life by trying to freeze me!? You better have a good explanation about how a snowstorm made its way inside that box!
 	}
 }
