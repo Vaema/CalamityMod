@@ -6,7 +6,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    internal class ScoriaBobber : ModItem, ILocalizedModType
+    [LegacyName("ScoriaBobber")]
+    internal class VolcanicSinker : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Fishing";
         public override string Texture => "CalamityMod/Projectiles/Typeless/RiftReelerBobber";
@@ -23,7 +24,7 @@ namespace CalamityMod.Items.Accessories
         {
             player.accFishingBobber = true;
             player.accLavaFishing = true;
-            player.Calamity().SelectedFishingMinigame = CalamityPlayer.FishingMinigames.ScoriaBobber;
+            player.Calamity().SelectedFishingMinigame = CalamityPlayer.FishingMinigames.VolcanicSinker;
         }
         public override void AddRecipes()
         {

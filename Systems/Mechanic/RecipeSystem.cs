@@ -794,9 +794,6 @@ namespace CalamityMod.Systems
 
                 // Add 20 Souls of Flight to vanilla Luminite wings
                 { VanillaEach(ItemID.WingsSolar, ItemID.WingsVortex, ItemID.WingsNebula, ItemID.WingsStardust), LunarWingsRecipeEdits },
-
-                // Berserker's Glove recipe change now that it doesn't provide melee speed
-                { Vanilla(ItemID.BerserkerGlove), ReplaceIngredient(ItemID.PowerGlove, ItemID.TitanGlove) },
             };
 
             // Apply all recipe changes.

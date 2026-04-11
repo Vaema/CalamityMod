@@ -187,11 +187,11 @@ namespace CalamityMod.CalPlayer
         public enum FishingMinigames
         {
             None,
-            ScrapBobber,
-            NavystoneBobber,
-            SkylineBobber,
-            PerennialBobber,
-            ScoriaBobber,
+            WulfrumBobber,
+            SunkenSinker,
+            AcrobaticBobber,
+            FeralBobber,
+            VolcanicSinker,
             DevourerofCods //Not a fishing minigame but uses the same code as the rest
         }
         public FishingMinigames SelectedFishingMinigame = FishingMinigames.None;
@@ -5918,32 +5918,6 @@ namespace CalamityMod.CalPlayer
                 else if (NPC.downedBoss1)
                     vanillaPriceMult = 3;
                 price /= vanillaPriceMult;
-            }
-        }
-
-        public override void PostNurseHeal(NPC nurse, int health, bool removeDebuffs, int price)
-        {
-            // Remove excess alcohol
-            if (removeDebuffs && alcoholPoisonLevel > 3)
-            {
-                List<int[]> Alcohol = new List<int[]>();
-                for (int i = 0; i < Player.MaxBuffs; i++)
-                {
-                    int buff = Player.buffType[i];
-                    if (CalamityBuffSets.AlcoholStrength.TryGetValue(buff, out int level))
-                        Alcohol.Insert(0, new int[] { i, level });
-                }
-
-                int poison = alcoholPoisonLevel;
-                do
-                {
-                    // Obtain the index:level relationship
-                    int[] relation = Alcohol[0];
-                    Player.DelBuff(relation[0]); // Remove the alcohol
-                    poison -= relation[1]; // Cancel the poison level
-                    Alcohol.RemoveAt(0);
-                }
-                while (poison > 3);
             }
         }
         #endregion
