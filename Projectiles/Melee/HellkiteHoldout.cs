@@ -3,6 +3,7 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
+using CalamityMod.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -395,13 +396,12 @@ namespace CalamityMod.Projectiles.Melee
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (chargedSwing)
-                modifiers.SetCrit();
+                modifiers.ApplyScalingForcedCrit(Projectile);
 
-            float critDamage = Math.Min(Owner.GetTotalCritChance(Projectile.DamageType) * 0.01f, 1f);
             float minMult = 0.25f;
             int hitsToMinMult = 10;
             float damageMult = Utils.Remap(pierceReduction, 0, hitsToMinMult, 1, minMult, true);
-            modifiers.SourceDamage *= (chargedSwing ? (2.9f + critDamage) : 1) * damageMult;
+            modifiers.SourceDamage *= (chargedSwing ? 2.9f : 1) * damageMult;
         }
         public override bool PreDraw(ref Color lightColor)
         {

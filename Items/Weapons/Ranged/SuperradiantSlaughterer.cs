@@ -58,8 +58,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.damage = 100;
             Item.DamageType = DamageClass.Ranged;
             Item.crit = 21;
-            Item.useTime = 10;
-            Item.useAnimation = 10;
+            Item.useTime = Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -124,8 +123,8 @@ namespace CalamityMod.Items.Weapons.Ranged
                 return false;
             }
 
-            // The holdout deals 2x base damage.
-            Projectile.NewProjectile(source, position, velocity, Item.shoot, damage * 2, knockback, player.whoAmI);
+            // The holdout deals 1.5x base damage.
+            Projectile.NewProjectile(source, position, velocity, Item.shoot, (int)(damage * 1.5), knockback, player.whoAmI);
             return false;
         }
 

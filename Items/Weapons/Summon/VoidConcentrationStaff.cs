@@ -93,11 +93,6 @@ namespace CalamityMod.Items.Weapons.Summon
             return false;
         }
         public override bool AltFunctionUse(Player player) => true;
-
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
-            tooltips.Insert(tooltips.FindIndex(0, (x) => x.Name == "Knockback")+1,new(Mod,"Minions",CalamityUtils.GetText("Common.MinionSlotCost").Format(4)));
-        }
     }
 
     #endregion

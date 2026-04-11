@@ -136,7 +136,7 @@ SlimeStream.DisplayName: Slime Stream
 SlurperBobber.DisplayName: Slurper Bobber
 SpiritOriginBullseye.DisplayName: Spirit Origin Bullseye
 SpringStoolFX.DisplayName: Spring Stool
-StandingFire.DisplayName: Flame
+StandingFire.DisplayName: Calamitous Flame
 StarStruckWaterBottle.DisplayName: Bottle
 StepStoolBonusFX.DisplayName: Step Stool Bonus
 StickyFeatherAero.DisplayName: Feather
@@ -153,6 +153,7 @@ TitanHeartBoom.DisplayName: Titan Heart Boom
 TransformerAura.DisplayName: Transformer Aura
 TransformerBlob.DisplayName: Transformer Shard
 UrsaSlash.DisplayName: Ursa Slash
+V8000SoulVisual.DisplayName: V8000 Soul
 VerstaltiteBobber.DisplayName: Verstaltite Bobber
 VictideBarrier.DisplayName: Tidal Barrier
 VictideBobber.DisplayName: Snail Bobber

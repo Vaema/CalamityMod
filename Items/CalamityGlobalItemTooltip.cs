@@ -163,6 +163,20 @@ namespace CalamityMod.Items
                 }
             }
 
+            //Replace Crit Chance with Crit Damage on applicable tooltips
+            if (CalamityItemSets.ShowScalingCritDamageTooltip[item.type])
+            {
+                float cdmg = 2f + Main.LocalPlayer.Calamity().critDamage + Main.LocalPlayer.GetTotalCritChance(item.DamageType) * 0.02f;
+                tooltips.FirstOrDefault(x => x.Name == "CritChance")!.Text = CalamityUtils.GetText("Common.CritDamageTootip").Format(cdmg.ToPercent());
+            }
+            
+            //Add "Uses X Minion Slots right above "Uses X Mana"
+            if (ItemID.Sets.StaffMinionSlotsRequired[item.type] > 1 || ContentSamples.ProjectilesByType[item.shoot].minionSlots > 0)
+            {
+                tooltips.Insert(tooltips.FindIndex(0, (x) => x.Name == "Knockback") + 1, new(Mod, "Minions", CalamityUtils.GetText(ItemID.Sets.StaffMinionSlotsRequired[item.type] > 1 ? "Common.MinionSlotCost" : "Common.MinionSlotCostSingle").Format(ItemID.Sets.StaffMinionSlotsRequired[item.type])));
+            }
+
+
             // Everything below this line can only apply to modded items. If the item is vanilla, stop here for efficiency.
             if (item.type < ItemID.Count)
                 return;
@@ -768,11 +782,14 @@ namespace CalamityMod.Items
                 EditTooltipByNum(0, (line) => line.Text += AddedTooltip("TitanGloveLine"));
             if (item.type == ItemID.PowerGlove)
             {
-                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("PowerGlove"));
+                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("PowerBerserkerGlove"));
                 EditTooltipByNum(0, (line) => line.Text += AddedTooltip("TitanGloveLine"));
             }
             if (item.type == ItemID.BerserkerGlove)
-                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("BerserkerGlove"));
+            {
+                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("PowerBerserkerGlove"));
+                EditTooltipByNum(0, (line) => line.Text += AddedTooltip("TitanGloveLine"));
+            }
             if (item.type == ItemID.MechanicalGlove)
                 EditTooltipByNum(1, (line) => line.Text = EditedTooltip("MechanicalGlove") + AddedTooltip("TitanGloveLine"));
             if (item.type == ItemID.FireGauntlet)
@@ -1641,35 +1658,6 @@ namespace CalamityMod.Items
 
                 return false;
             }
-            // IV Drip tooltip FX
-            if (line.Mod == "Terraria" && item.type == ModContent.ItemType<IVDripOnTheRocks>() && line.Name == "Tooltip4")
-            {
-                Vector2 basePosition = new Vector2(line.X, line.Y);
-
-                Main.spriteBatch.End();
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, null, null, null, null, Main.UIScaleMatrix);
-
-                for (int i = 0; i < 3; i++) // Draw 3 lines of differing opacity, color, and displacement.
-                {
-                    float timer = (float)Math.Sin(Main.GlobalTimeWrappedHourly + 1f) / 2f;
-
-                    float angle = (Main.GlobalTimeWrappedHourly * 2f) + (i * MathHelper.TwoPi / 3f);
-                    float radius = timer * (3f + i * 6f);
-                    Vector2 offset = new Vector2((float)Math.Cos(angle) * 1.7f, (float)Math.Sin(angle) * 1f) * radius; // Offset in an elliptical pattern
-                    Vector2 pos = basePosition + offset;
-
-                    Color color = MulticolorLerp(Math.Abs(timer + (i * 0.2f)) % 1f, Color.LightBlue, Color.LightGreen, (i == 3) ? Color.Blue : (i == 2) ? Color.Red : Color.White);
-                    float opacity = 1f - (i * 0.2f);
-                    float rotation = line.Rotation + (timer * (Main.GlobalTimeWrappedHourly * 0.00001f)); // This precision is intended
-
-                    ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, pos, color * opacity, rotation, line.Origin, line.BaseScale, line.MaxWidth, line.Spread);
-                }
-
-                Main.spriteBatch.End();
-                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, Main.UIScaleMatrix);
-
-                return false;
-            }
             if (line.Mod == "Terraria" && item.type == ModContent.ItemType<OntologicalDespoiler>() && (line.Name == "Tooltip1" || line.Name == "Tooltip2" || line.Name == "Tooltip4" || line.Name == "Tooltip5" || line.Name == "Tooltip7"))
             {
                 Color rarityColor = Color.Black;
@@ -1777,60 +1765,7 @@ namespace CalamityMod.Items
             // Might be used for Miracle stuff later or something idk
             /*if (line.Name == "ItemName" && line.Mod == "Terraria" && item.type == ModContent.ItemType<Orderbringer>())
             {
-                Color rarityColor = Color.White;
-                Vector2 basePosition = new Vector2(line.X, line.Y);
-
-                float rate = Main.GlobalTimeWrappedHourly * 29;
-                List<Color> eColors = new List<Color>()
-                {
-                Color.PaleVioletRed,
-                Color.Coral,
-                Color.Khaki,
-                Color.PaleGreen,
-                Color.Turquoise,
-                Color.Violet
-                };
-
-                int colorIndex = (int)(rate / 2 % eColors.Count);
-                Color currentColor = eColors[colorIndex];
-                Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
-                Color usedColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
                 
-
-                float sine = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 3 / MathHelper.Pi);
-                sine = (float)Math.Pow(MathHelper.Lerp(sine, 0, 0.35f), 5);
-                Vector2 backScale = line.BaseScale;
-                Color backColor = usedColor;
-                Vector2 shake = Main.rand.NextVector2Circular(15, 15) * sine;
-
-                Main.spriteBatch.End();
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, null, null, null, null, Main.UIScaleMatrix);
-
-                int draws = 20;
-                for (int i = 0; i < draws; i++)
-                {
-                    shake = Main.rand.NextVector2Circular(15, 15) * sine;
-                    Vector2 backPosition = basePosition + (MathHelper.TwoPi * i / 20f).ToRotationVector2() * (5 + 0.5f * sine);
-                    ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, shake * 4 + backPosition, backColor, line.Rotation, line.Origin, backScale, line.MaxWidth, line.Spread);
-                }
-                Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
-
-                Vector2 drawPosition = basePosition;
-                Color drawColor = backColor;
-                Vector2 rotationPoint = texture.Size() * 0.5f;
-                for (int i = 0; i < 6; i++)
-                {
-                    int length = line.Text.Length;
-                    Main.EntitySpriteDraw(texture, basePosition + Vector2.UnitX * length * 4 + Vector2.UnitY * 10 + Vector2.UnitX * (i % 2 == 0 ? -7 * i : 7 * i), null, drawColor, (MathHelper.PiOver2), rotationPoint, new Vector2(1 - 0.05f * i * (1 + 0.2f * -sine), 1 + 0.75f * i * (1 + 0.2f * sine) * 1f) * 0.3f * Main.rand.NextFloat(0.9f, 1f), SpriteEffects.None);
-                }
-
-                Main.spriteBatch.End();
-                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, Main.UIScaleMatrix);
-
-                // Draw the front text as usual.
-                ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, shake + basePosition, rarityColor, line.Rotation, line.Origin, line.BaseScale, line.MaxWidth, line.Spread);
-
-                return false;
             }*/
             return true;
         }

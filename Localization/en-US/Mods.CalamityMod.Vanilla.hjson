@@ -142,11 +142,7 @@ EditedTooltip: {
 	/*
 	OOA armors
 	*/
-	ApprenticeHat: Increases your max number of sentries by 1, 10% reduced mana cost
-	ApprenticeRobe: 15% increased summon damage and magic damage
-	ApprenticeTrousers: 10% increased summon damage, 15% increased magic critical strike chance, 20% increased movement speed
 	SquireGreatHelm: Increases your max number of sentries by 1 and grants +2 HP/s life regen
-	SquireGreaves: 10% increased summon damage, 15% increased melee critical strike chance and movement speed
 	MonkBrows: Increases your max number of sentries by 1 and increases rogue velocity by 20%
 	MonkShirt: 20% increased summon and rogue damage
 	MonkPants: 15% increased rogue critical strike chance and 20% increased movement speed
@@ -162,8 +158,7 @@ EditedTooltip: {
 	*/
 	SunMoonStones: critical strike chance, life regeneration,
 	CelestialStoneShell: Minor increase to damage,
-	PowerGlove: 10% increased melee speed, does not stack with downgrades
-	BerserkerGlove: 10% increased true melee damage
+	PowerBerserkerGlove: 12% increased melee speed, does not stack with downgrades
 	MechanicalGlove:
 		'''
 		12% increased melee damage

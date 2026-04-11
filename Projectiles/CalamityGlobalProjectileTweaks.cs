@@ -123,9 +123,10 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.BlueMoon, Do(ExtraUpdatesExact(1)) },
                 { ProjectileID.Bullet, Do(ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
                 { ProjectileID.BulletHighVelocity, Do(ExtraUpdatesDelta(+2), LocalIFrames(-1)) },
-                { ProjectileID.ButchersChainsaw, Do(TrueMeleeNoSpeed, ArmorPenetrationDelta(+15), LocalIFrames(7), ScaleExact(1.5f)) },
+                { ProjectileID.ButchersChainsaw, Do(TrueMeleeNoSpeed, ArmorPenetrationDelta(+15), LocalIFrames(10), ScaleExact(1.5f)) },
                 { ProjectileID.ChlorophyteChainsaw, standardChainsawTweaks },
                 { ProjectileID.ChlorophyteDrill, standardDrillTweaks },
+                { ProjectileID.ChlorophyteJackhammer, standardDrillTweaks },
                 { ProjectileID.ChlorophyteOrb, Do(NoPiercing) },
                 { ProjectileID.CobaltChainsaw, standardChainsawTweaks },
                 { ProjectileID.CobaltDrill, standardDrillTweaks },
@@ -143,7 +144,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.DeadlySphere, Do(LocalIFrames(30)) },
                 { ProjectileID.EmeraldBolt, Do(NoPiercing) },
                 { ProjectileID.EnchantedBoomerang, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
-                { ProjectileID.ExplosiveBullet, Do(ExtraUpdatesDelta(+2), IDStaticIFrames(5)) }, // Has an exception in Vanilla iframe code, uses 5 iframes
+                { ProjectileID.ExplosiveBullet, Do(ExtraUpdatesDelta(+2), IDStaticIFrames(5), SingleHitImmunity) }, // Has an exception in Vanilla iframe code, uses 5 iframes
                 { ProjectileID.FairyQueenRangedItemShot, Do(PiercingExact(7), ExtraUpdatesExact(1))  }, // Eventide Convert
                 { ProjectileID.FlaironBubble, Do(ExtraUpdatesExact(1), TimeLeftExact(150), DefaultIDStaticIFrames) },
                 { ProjectileID.Flamarang, Do(ExtraUpdatesExact(2), DefaultIDStaticIFrames) },
@@ -217,7 +218,6 @@ namespace CalamityMod.Projectiles
                 #endregion
 
                 #region CATEGORY 3: True Melee support
-                { ProjectileID.ChlorophyteJackhammer, trueMeleeNoSpeed },
                 { ProjectileID.CopperShortswordStab, trueMelee },
                 { ProjectileID.DarkLance, trueMelee },
                 { ProjectileID.GoldShortswordStab, trueMelee },
@@ -237,6 +237,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.ShadowJoustingLance, trueMelee },
                 { ProjectileID.SilverShortswordStab, trueMelee },
                 { ProjectileID.SolarFlareChainsaw, trueMeleeNoSpeed },
+                { ProjectileID.Spark, trueMeleeNoSpeed },
                 { ProjectileID.Spear, trueMelee },
                 { ProjectileID.StardustChainsaw, trueMeleeNoSpeed },
                 { ProjectileID.Swordfish, trueMelee },
@@ -459,7 +460,6 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.NettleBurstLeft, defaultIFrames },
                 { ProjectileID.NettleBurstRight, defaultIFrames },
                 { ProjectileID.NightBeam, defaultIFrames },
-                { ProjectileID.NorthPoleSnowflake, defaultIFrames },
                 { ProjectileID.NorthPoleSpear, defaultIFrames },
                 { ProjectileID.NorthPoleWeapon, defaultIFrames },
                 { ProjectileID.NurseSyringeHeal, defaultIFrames },

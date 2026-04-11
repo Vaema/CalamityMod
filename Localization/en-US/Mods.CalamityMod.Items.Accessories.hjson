@@ -189,7 +189,7 @@ AquaticHeart: {
 		Wow, you can swim now!
 		Being underwater increases max speed and acceleration by {0}%
 		Greatly reduces breath loss and reduces the darkness intensity in the abyss
-		Attackers are inflicted with [cbuff:CalamityMod/GlacialState]
+		Attackers are inflicted with [cbuff:Frozen]
 		Gain a fragile ice barrier that grants {1}% damage reduction for one hit
 		The ice shield regenerates after {2} seconds
 		'''
@@ -756,8 +756,16 @@ FeatherCrown: {
 	DisplayName: Feather Crown
 	Tooltip:
 		'''
-		15% increased rogue projectile velocity
-		Stealth strikes cause feathers to fall from the sky on enemy hits
+		Summons a [c/81B7F7:Skyline Feather] every 2 seconds, up to a maximum of 5
+		Each [c/81B7F7:Skyline Feather] increases magic damage by 2% and decreases mana cost by 1%
+		With 5 feathers, increases magic critical strike chance by 5% and all magic attacks inflict [cbuff:CalamityMod/StaticDischarge]
+		Running out of mana or drinking a mana potion sheds all feathers
+		Upon shedding a feather, no new feathers can be gained for 5 seconds	      
+		'''
+	HoldShiftTooltip:
+		'''
+		[c/81B7F7:Young mages would don feathers and gaze into the starlit night, as if welcoming the breath of the heavens.]
+		[c/81B7F7:To commune with mana was to commune with the world, and further, its draconic masters.]
 		'''
 }
 
@@ -783,8 +791,12 @@ FleshTotem: {
 	DisplayName: Flesh Totem
 	Tooltip:
 		'''
-		Halves enemy contact damage
-		When you take contact damage this effect has a 20 second cooldown
+		5% increased magic critical strike chance
+		+30 max mana
+		Summons an effigy above your head that stores mana as you use it, up to 600 mana
+		The effigy occasionally pulses, restoring 20 mana
+		Pulses appear more frequently the more mana is stored
+		Upon being struck, the effigy unleashes all stored up mana as vengeful souls that chase your enemies
 		'''
 }
 
@@ -803,8 +815,8 @@ FrostFlare: {
 		'''
 		All attacks and projectiles inflict [cbuff:Frostburn2]
 		Grants immunity to Frostburn, Chilled and Frozen
-		Being above 50% life grants 10% increased damage
-		Being below 50% life grants 15 defense and 15% increased max movement speed and acceleration
+		Being above {0}% life grants {1}% increased damage
+		Being below {0}% life grants {2} defense and {3}% increased max movement speed and acceleration
 		Grants resistance against cold attacks
 		'''
 }
@@ -843,8 +855,8 @@ GiantShell: {
 	DisplayName: Giant Shell
 	Tooltip:
 		'''
-		10% reduced dash velocity
-		Taking a hit restores dash velocity and reduces defense for 3 seconds
+		{0}% reduced dash velocity
+		Taking a hit restores dash velocity and reduces defense for {1} seconds
 		'''
 }
 
@@ -853,8 +865,8 @@ GiantTortoiseShell: {
 	Tooltip:
 		'''
 		{$Common.KnockbackImmunity}
-		5% increased damage reduction and 10% reduced dash velocity
-		Taking a hit restores dash velocity and reduces defense and damage reduction for 3 seconds
+		{0}% increased damage reduction and {1}% reduced dash velocity
+		Taking a hit restores dash velocity and reduces defense and damage reduction for {2} seconds
 		'''
 }
 
@@ -1020,7 +1032,7 @@ IVDripOnTheRocks: {
 		Multiplies all weapon damage by {1}x
 		Counts as an alcohol stack toward Alcohol Poisoning
 		{$Common.AlcoholWarning}
-		'(drunken mumbling)'
+		[ceffect/drunk:'(drunken mumbling)']
 		'''
 }
 
@@ -1118,9 +1130,18 @@ MoonstoneCrown: {
 	DisplayName: Moonstone Crown
 	Tooltip:
 		'''
-		15% increased rogue projectile velocity
-		Stealth strikes release lunar flares on enemy hits
-		Rogue projectiles summon homing moon sigils as they travel
+		+70 max mana
+		Summons a [c/27F5E0:Lunar Sigil] every 2 seconds, up to a maximum of 10
+		Each [c/27F5E0:Lunar Sigil] increases magic damage by 2% and reduces mana cost by 1%
+		With 5 sigils, increases mana regeneration by +5 MP/s
+		With 10 sigils, increases magic critical strike chance by 10% and all magic attacks inflict [cbuff:CalamityMod/Nightwither]
+		Running out of mana or using a mana potion shatters all sigils
+		Upon shattering a sigil, no new sigils can appear for 5 seconds 
+		'''
+	HoldShiftTooltip:
+		'''
+		[c/27F5E0:Countless tears were shed over Chrysadia's marring: when its eventide clouds gave way not to beloved stars,]
+		[c/27F5E0:or to dear patrons, but to a ravenous void and its unyielding dread.]
 		'''
 }
 
@@ -1153,7 +1174,7 @@ NecklaceofVexation: {
 		'''
 		Up to 30% increased damage the lower your life is
 		Current boost: [DAMAGE]%
-		All attacks inflict acid venom
+		All attacks inflict [cbuff:Venom]
 		Revenge
 		'''
 }
@@ -1299,7 +1320,7 @@ PlanebreakersPouch: {
 	DisplayName: Planebreaker's Pouch
 	Tooltip:
 		'''
-		15% increased ranged damage, 5% increased ranged critical strike chance and 20% reduced ammo usage
+		15% increased ranged damage, 7% increased ranged critical strike chance and 20% reduced ammo usage
 		Grants a 20% chance to not consume arrows
 		Pressing [KEY] will automatically swap the ammos in your ammo slots
 		The ammo type swapped depends on the ammo of the weapon you are holding
@@ -1660,7 +1681,7 @@ SpringStool: {
 	DisplayName: Spring Stool
 	Tooltip:
 		'''
-		Hold Up to reach higher
+		Hold {$Key.UP} to reach higher
 		Press [KEY] to jump super high
 		Super jumps can only be performed once every {0} seconds and after landing
 		+{1}% critical strike chance when striking enemies below you
@@ -2013,6 +2034,21 @@ UnstableGraniteCore: {
 		'''
 }
 
+V8Engine: {
+	DisplayName: V8 Engine
+	Tooltip: Grants a short dash with a long cooldown that works while mounted
+}
+
+V8000Engine: {
+	DisplayName: V8000 Engine
+	Tooltip:
+		'''
+		Grants a dash with a long cooldown that works while mounted
+		This dash can ram through enemies without taking damage
+		'Are soul-powered engines eco-friendly?'
+		'''
+}
+
 VampiricTalisman: {
 	DisplayName: Vampiric Talisman
 	Tooltip:
@@ -2055,7 +2091,7 @@ VoidofCalamity: {
 	Tooltip:
 		'''
 		12% increased damage
-		Brimstone fire rains down after getting hit
+		Calamitous flames rain down while invincible
 		'''
 }
 

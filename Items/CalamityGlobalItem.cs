@@ -615,6 +615,17 @@ namespace CalamityMod.Items
                 }
             }
 
+            //Mana Potion interactions
+            if (item.healMana > 0)
+            {
+                //If mana potion used, kill all active Crown projectiles 
+                if ((modPlayer.moonCrown || modPlayer.featherCrown) && modPlayer.mageCrownCount > 0)
+                {
+                    modPlayer.mageCrownTimer = 300;
+                    modPlayer.mageCrownCount = 0;
+                }
+            }
+
             // Staff/Axe of Regrowth growing Calamity grass
             if (item.type == ItemID.StaffofRegrowth || item.type == ItemID.AcornAxe)
             {
@@ -1142,15 +1153,11 @@ namespace CalamityMod.Items
                 if (modPlayer.gloveLevel < 1)
                     modPlayer.gloveLevel = 1;
             }
-            if (item.type == ItemID.PowerGlove)
+            if (item.type == ItemID.PowerGlove || item.type == ItemID.BerserkerGlove)
             {
-                player.GetAttackSpeed<MeleeDamageClass>() -= 0.12f; // Power Glove 10%
+                player.GetAttackSpeed<MeleeDamageClass>() -= 0.12f; // Power/Berserker Glove 12%
                 if (modPlayer.gloveLevel < 2)
                     modPlayer.gloveLevel = 2;
-            }
-            if (item.type == ItemID.BerserkerGlove)
-            {
-                player.GetAttackSpeed<MeleeDamageClass>() -= 0.12f; // Berserker Glove 0%
             }
             if (item.type == ItemID.MechanicalGlove)
             {
@@ -1461,7 +1468,7 @@ namespace CalamityMod.Items
 
             return false;
         }
-        #endregion
+        #endregion     
 
         #region On Create
         private static int cachedForgeID = -1;
