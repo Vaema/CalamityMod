@@ -344,8 +344,8 @@ RiftReeler: {
 	DisplayName: Rift Reeler
 	Tooltip:
 		'''
-		Fires four lines at once
-		Can fish in lava
+		Fires four lines at once. Bobbers deal damage upon contact with enemies
+		Allows fishing in lava
 		'The battlefield is a scene of constant chaos.
 		The winner will be the one who controls that chaos, both the pole and the fish.'
 		'''
@@ -355,7 +355,7 @@ SlurperPole: {
 	DisplayName: Slurper Pole
 	Tooltip:
 		'''
-		Can fish in lava
+		Allows fishing in lava
 		'It is the burning lava of the soul that has a furnace within--a very volcano of grief and sorrow.'
 		'''
 }
@@ -364,7 +364,7 @@ TheDevourerofCods: {
 	DisplayName: The Devourer of Cods
 	Tooltip:
 		'''
-		Fires ten lines at once. Line never snaps and can fish from lava
+		Fires ten lines at once. Line never breaks and allows fishing in lava
 		Hooked items stay hooked forever
 		Common fish are automatically consumed while fishing
 		Consuming fish allows a bobber to hook a new item and feeds the user
