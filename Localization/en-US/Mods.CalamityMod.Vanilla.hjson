@@ -529,9 +529,9 @@ TownNPCMood: {
 	}
 
 	Princess: {
-		Monument: placeholder
-		GiftPositive: placeholder
-		GiftNegative: placeholder
+		Monument: Um... my people have been frequently complaining about that monument. May I request it be taken down, please?
+		GiftPositive: I do appreciate your thoughtfulness with this gift, my loyal subject! It's always so wonderful to see the many fantastic things inside one!
+		GiftNegative: Um... may I ask what you were implying with the contents of that gift? Perhaps I shouldn't worry so, but I do find myself concerned...
 	}
 
 	SantaClaus: {
@@ -541,15 +541,15 @@ TownNPCMood: {
 	}
 
 	Steampunker: {
-		Monument: placeholder
-		GiftPositive: placeholder
-		GiftNegative: placeholder
+		Monument: Oi, that bloody big rock you got outside is a monumental mistake! Decommission it this very instant!
+		GiftPositive: Ahh, what a deeply inspiring jetpack engine! The breakthroughs in steampunk technology from this will be exquisite! Consider this sale a return of generosity.
+		GiftNegative: When I opened your gift, a sudden blast of cold air condensed all of my steam! Were it not for my backup systems, my machines would be unusable! You bloody better watch yourself!
 	}
 
 	Stylist: {
-		Monument: placeholder
-		GiftPositive: placeholder
-		GiftNegative: placeholder
+		Monument: That statue has been the talk of the town! ...As in, everyone cannot stand the gross thing.
+		GiftPositive: Thanks hun, that gift of new exotic hair dyes was just what I was missin' in my life! I know just who else could use some of this style too!
+		GiftNegative: What were you pullin' on me with a fireball in a gift box? That could've singed me bald, and I could never be a stylist without hair! NEVER!
 	}
 
 	TaxCollector: {
