@@ -603,10 +603,10 @@ Hydra: {
 	DisplayName: Hydra
 	Tooltip:
 		'''
-		Fires a spread of 4 [cbuff:Venom] bullets
+		Fires a spread of 3 blood globs imbued with [cbuff:Venom]
 		Grows a gun-head every 3 seconds, up to a maximum of 3 heads
 		Press <left> to command any existing heads to fire
-		Press <right> to launch the heads for powerful explosive damage
+		Press <right> to launch the heads for powerful explosive damage, briefly inflicting [cbuff:CalamityMod/GalvanicCorrosion]
 		[c/9D80B0:Fusion of heavy machinery and Lernaean blood]
 		'''
 }
