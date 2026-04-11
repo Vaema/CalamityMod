@@ -16,11 +16,6 @@ namespace CalamityMod.Items.Weapons.Magic
     public class HyperdeathRiftScepter : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
-
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
-            tooltips.FindAndReplaceAll("ff00ff", Utils.Hex3(DevourerofGodsHead.SpecialMoveColor));
-        }
         public override void SetStaticDefaults()
         {
             Item.staff[Type] = true;

@@ -422,10 +422,10 @@ GodSlayerChestplate: {
 	Tooltip: "{$CommonItemTooltip.PercentIncreasedDamage} and {$CommonItemTooltip.PercentIncreasedCritChance@1}"
 	CommonSetBonus:
 		'''
-		Press {0} to [c/ff00ff:Dimensional Drive] towards your cursor for 2 seconds
+		Press {0} to [ceffect/dog:Dimensional Drive] towards your cursor for 2 seconds
 		Enemies you dash through take massive damage
-		During [c/ff00ff:Dimensional Drive] you are immune to damage and most debuffs
-		[c/ff00ff:Dimensional Drive] has a {1} second cooldown
+		During [ceffect/dog:Dimensional Drive] you are immune to damage and most debuffs
+		[ceffect/dog:Dimensional Drive] has a {1} second cooldown
 		'''
 }
 
