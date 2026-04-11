@@ -20,8 +20,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.noUseGraphic = true;
             Item.channel = true;
             Item.mana = 30;
-            Item.useTime = 27;
-            Item.useAnimation = 27;
+            Item.useAnimation = Item.useTime = 27;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5f;
