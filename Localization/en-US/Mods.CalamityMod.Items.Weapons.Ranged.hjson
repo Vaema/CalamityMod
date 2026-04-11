@@ -616,7 +616,8 @@ Infinity: {
 	Tooltip:
 		'''
 		Fires a twin stream of energy bolts that split
-		{$CommonItemTooltip.PercentChanceToSaveAmmo}
+		{$Common.ArmorPenetration}
+		{$CommonItemTooltip.PercentChanceToSaveAmmo@1}
 		'They say infinity is neverending, yet you hold it in your hands'
 		'''
 }
@@ -925,12 +926,14 @@ PolarisParrotfish: {
 		'''
 		Rapidly fires an array of colorful star shots
 		Firing speed increases the closer you are to an enemy
+		{$Common.ArmorPenetration}
 		'It carries the mark of the Northern Star'
 		'''
 	TooltipGFB:
 		'''
 		Rapidly fires an array of colorful star shots
 		Firing speed increases the closer you are to an enemy
+		{$Common.ArmorPenetration}
 		<right> to give the little girl some attention
 		'She is a happy girl'
 		'''
@@ -1303,7 +1306,8 @@ Svantechnical: {
 	Tooltip:
 		'''
 		Fires a trinity of energy bolts that split into beams that track your cursor
-		{$CommonItemTooltip.PercentChanceToSaveAmmo}
+		{$Common.ArmorPenetration}
+		{$CommonItemTooltip.PercentChanceToSaveAmmo@1}
 		'The age old balance of trading damage for frames'
 		'''
 }
