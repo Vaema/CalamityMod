@@ -437,7 +437,7 @@ Heresy: {
 
 HyperdeathRiftScepter: {
 	DisplayName: Hyperdeath Rift Scepter
-	Tooltip: Tears space in two with [c/ff00ff:Hyperdeath Rift Ripper]
+	Tooltip: Tears space in two with [ceffect/dog:Hyperdeath Rift Ripper]
 }
 
 HyphaeRod: {
