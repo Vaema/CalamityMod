@@ -4,6 +4,7 @@ using CalamityMod.Balancing;
 using CalamityMod.Buffs.Cooldowns;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.Placeables;
+using CalamityMod.Buffs.Potions;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer.Dashes;
@@ -402,6 +403,10 @@ namespace CalamityMod.CalPlayer
                 if (astralInfection)
                 {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.AstralInfection" + Main.rand.Next(1, 3 + 1)).ToNetworkText(Player.name));
+                }
+                if (Player.HasBuff<SwinesWrathBuff>())
+                {
+                    damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.SwinesWrath" + Main.rand.Next(1, 7 + 1)).ToNetworkText(Player.name));
                 }
                 if (nightwither)
                 {
