@@ -1,4 +1,4 @@
-﻿// Quest fish tooltips
+// Quest fish tooltips
 CaughtInAstral: Caught in the Astral Infection
 CaughtInBrimstoneCrag: Caught in the Brimstone Crag
 CaughtInSnow: Caught in Tundra
@@ -397,29 +397,7 @@ GrandMarquisBait: {
 }
 
 // Bobbers
-ScrapBobber: {
-	DisplayName: Wulfrum Bobber
-	Tooltip:
-		'''
-		Provides a fishing minigame
-		Hold movement inputs in the indicated directions while fishing to catch items
-		The rod empowers the longer you go without a mistake, speeding it up
-		'There's supposed to be a fish finder installed, but it only beeps when you point it at yourself...'
-		'''
-}
-
-NavystoneBobber: {
-	DisplayName: Sunken Sinker
-	Tooltip:
-		'''
-		{$ItemTooltip.FishingBobber}
-		Provides a fishing minigame
-		The bobber will float at your height underwater, allowing underwater fishing
-		Move in the indicated direction while fishing to catch items
-		'''
-}
-
-SkylineBobber: {
+AcrobaticBobber: {
 	DisplayName: Acrobatic Bobber
 	Tooltip:
 		'''
@@ -432,7 +410,7 @@ SkylineBobber: {
 		'''
 }
 
-PerennialBobber: {
+FeralBobber: {
 	DisplayName: Feral Bobber
 	Tooltip:
 		'''
@@ -444,7 +422,18 @@ PerennialBobber: {
 		'''
 }
 
-ScoriaBobber: {
+SunkenSinker: {
+	DisplayName: Sunken Sinker
+	Tooltip:
+		'''
+		{$ItemTooltip.FishingBobber}
+		Provides a fishing minigame
+		The bobber will float at your height underwater, allowing underwater fishing
+		Move in the indicated direction while fishing to catch items
+		'''
+}
+
+VolcanicSinker: {
 	DisplayName: Volcanic Sinker
 	Tooltip:
 		'''
@@ -454,5 +443,16 @@ ScoriaBobber: {
 		Moving while fishing instead moves your bobbers
 		Rifts appear over time in liquids, containing an item
 		When bobbers touch a rift, they automatically reel in the item within
+		'''
+}
+
+WulfrumBobber: {
+	DisplayName: Wulfrum Bobber
+	Tooltip:
+		'''
+		Provides a fishing minigame
+		Hold movement inputs in the indicated directions while fishing to catch items
+		The rod empowers the longer you go without a mistake, speeding it up
+		'There's supposed to be a fish finder installed, but it only beeps when you point it at yourself...'
 		'''
 }

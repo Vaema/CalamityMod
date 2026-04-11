@@ -187,11 +187,11 @@ namespace CalamityMod.CalPlayer
         public enum FishingMinigames
         {
             None,
-            ScrapBobber,
-            NavystoneBobber,
-            SkylineBobber,
-            PerennialBobber,
-            ScoriaBobber,
+            WulfrumBobber,
+            SunkenSinker,
+            AcrobaticBobber,
+            FeralBobber,
+            VolcanicSinker,
             DevourerofCods //Not a fishing minigame but uses the same code as the rest
         }
         public FishingMinigames SelectedFishingMinigame = FishingMinigames.None;
