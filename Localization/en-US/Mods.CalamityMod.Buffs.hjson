@@ -45,7 +45,7 @@ FireballBuff: {
 
 GrapeBeerBuff: {
 	DisplayName: Grape Beer
-	Description: Ranged projectiles gain homing, reduced critical strike damage
+	Description: Ranged projectiles gain homing, reduced damage to distant foes
 }
 
 ManhattanBuff: {
@@ -76,6 +76,7 @@ OldFashionedBuff: {
 RedWineBuff: {
 	DisplayName: Red Wine
 	Description: Increased vertical speed, reduced flight time
+    ItemTooltip: Causes Baguette to heal 200 HP, but reduce regeneration by 2 HP/s for 15 seconds
 }
 
 RumBuff: {
@@ -674,7 +675,7 @@ AstralInjectionBuff: {
 
 BaguetteBuff: {
 	DisplayName: Baguette
-	Description: Goes well with Red Wine
+	Description: Life regeneration reduced by 2 HP/s
 }
 
 BloodfinBoost: {

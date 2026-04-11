@@ -20,7 +20,6 @@ namespace CalamityMod.Buffs.Alcohol
         {
             var cplayer = player.Calamity();
             cplayer.grapeBeer = true;
-            cplayer.critDamage -= GrapeBeer.CritLoss * 0.01f;
         }
     }
 }

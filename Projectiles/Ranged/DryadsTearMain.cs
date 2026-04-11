@@ -330,7 +330,7 @@ namespace CalamityMod.Projectiles.Ranged
                     int hitsToMinMult = (int)(3 + 5 * damageMult);
                     int knockback = (int)(7 * damageMult * (isMaxPower ? -1 : 1)); // Give heavy knockback at full power
                     int damage = (int)(Projectile.damage * explosionDamageMult * damageMult);
-                    Projectile blast = Projectile.NewProjectileDirect(Owner.GetSource_FromThis(), targeted.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), damage, knockback, Owner.whoAmI, blastSize, minMultiplier, hitsToMinMult);
+                    Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), targeted.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), damage, knockback, Owner.whoAmI, blastSize, minMultiplier, hitsToMinMult);
                     blast.timeLeft = 8;
                     blast.DamageType = DamageClass.Ranged;
                     blast.ArmorPenetration = Projectile.ArmorPenetration;
