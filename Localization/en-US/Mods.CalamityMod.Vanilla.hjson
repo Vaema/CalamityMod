@@ -475,9 +475,9 @@ TownNPCMood: {
 	}
 
 	GoblinTinkerer: {
-		Monument: placeholder
-		GiftPositive: placeholder
-		GiftNegative: placeholder
+		Monument: You know, even the barbaric goblin camp I was once part of never considered the concept of a useless monument that just funnels funds.
+		GiftPositive: What a fascinating welding-cutting combo tool in that gift! I would love to reverse-engineer and tinker it for my own research.
+		GiftNegative: When I reached into your unassuming gift, my hands were lacerated by a handful of spiky balls! I'm afraid I will have to hike my prices to cover the medical costs.
 	}
 
 	Golfer: {
@@ -493,9 +493,9 @@ TownNPCMood: {
 	}
 
 	Mechanic: {
-		Monument: placeholder
-		GiftPositive: placeholder
-		GiftNegative: placeholder
+		Monument: Any more money I have to fork over for this monument and I'm going to have to start charging an electric bill to these people! I would hate to do that.
+		GiftPositive: Thanks to your gift of signal extenders, I can connect more of this world than ever! That extra burst of motivation is just what I need to finish wiring up this town!
+		GiftNegative: What compelled you to be so reckless as to gift me an EMP device? Everyone is yelling at me like it's MY fault! Well, now it will be YOUR problem to pay it off when you buy all your wire.
 	}
 
 	Merchant: {
