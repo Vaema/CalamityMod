@@ -190,7 +190,7 @@ Stormlion.DisplayName: Stormlion
 StormlionSentry.DisplayName: Stormlion Sentry
 Sunskater.DisplayName: Sunskater
 SuperDummyNPC.DisplayName: Super Dummy
-WildBumblefuck.DisplayName: Draconic Swarmer
+WildBumblebirb.DisplayName: Draconic Swarmer
 WulfrumAmplifier.DisplayName: Wulfrum Amplifier
 WulfrumDrone.DisplayName: Wulfrum Drone
 WulfrumGyrator.DisplayName: Wulfrum Gyrator
@@ -561,7 +561,6 @@ SeaKing: {
 	}
 }
 
-WildBumblebirb.DisplayName: Wild Bumblebirb
 DraconicSwarmer.DisplayName: Draconic Swarmer
 Dragonfolly.DisplayName: Dragonfolly
 Shoreskipper.DisplayName: Shoreskipper

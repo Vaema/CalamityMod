@@ -54,8 +54,8 @@ namespace CalamityMod.Items
                 { ItemID.BeamSword, Do(UseMeleeSpeed, DamageExact(131), UseAnimationExact(40), KnockbackExact(8)) }, // VANILLA: 52 DMG, 20 UT, 6.5 KB
                 { ItemID.BeeGun, Do(DamageExact(11), ManaExact(4)) }, // VANILLA: 9 DMG, 5 MANA
                 { ItemID.BeeKeeper, Do(UseTurn, DamageExact(32)) }, // VANILLA: 30 DMG
-                { ItemID.Beenade, Do(DamageExact(11), UseTimeExact(22), ShootSpeedExact(10f)) }, // VANILLA: 12 DMG, 15 UT, 6 VEL
-                { ItemID.BeesKnees, Do(DamageExact(21), UseExact(38)) }, // VANILLA: 23 DMG, 23 UT
+                { ItemID.Beenade, Do(UseTimeExact(22), ShootSpeedExact(10f)) }, // VANILLA: 15 UT, 6 VEL
+                { ItemID.BeesKnees, Do(DamageExact(21), UseExact(35)) }, // VANILLA: 23 DMG, 23 UT
                 { ItemID.Bladetongue, Do(UseTurn, DamageExact(120), UseExact(22)) }, // VANILLA: 55 DMG, 28 UT
                 { ItemID.BlizzardStaff, Do(DamageExact(41), ManaExact(7)) }, // VANILLA: 58 DMG, 9 MANA
                 { ItemID.BloodyMachete, Do(DamageExact(24)) }, // VANILLA: 20 DMG
@@ -270,7 +270,7 @@ namespace CalamityMod.Items
                 { ItemID.Uzi, Do(UseExact(8)) }, // VANILLA: 9 UT
                 { ItemID.ValkyrieYoyo, Do(DamageExact(48)) }, // VANILLA: 70 DMG. Has the same stats as Red's Throw
                 { ItemID.VenomStaff, Do(UseExact(27)) }, // VANILLA: 30 UT
-                { ItemID.WaspGun, Do(DamageExact(44)) }, // VANILLA: 31 DMG
+                { ItemID.WaspGun, Do(DamageExact(41)) }, // VANILLA: 31 DMG
                 { ItemID.WaterBolt, Do(DamageExact(23)) }, // VANILLA: 19 DMG
                 { ItemID.WhitePhaseblade, phaseblade },
                 { ItemID.WhitePhasesaber, phasesaber },
