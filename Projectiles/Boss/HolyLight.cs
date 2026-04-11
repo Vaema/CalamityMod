@@ -2,7 +2,7 @@
 using System.Linq;
 using CalamityMod.Dusts;
 using CalamityMod.Enums;
-using CalamityMod.Graphics.Primitives;
+using CalamityMod.NPCs.Providence;
 using CalamityMod.Particles;
 using CalamityMod.Utilities.Daybreak;
 using CalamityMod.Utilities.Daybreak.Buffers;
@@ -11,7 +11,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
-using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -21,10 +20,9 @@ namespace CalamityMod.Projectiles.Boss
     {
         public new string LocalizationCategory => "Projectiles.Boss";
         public override string Texture => "CalamityMod/Projectiles/StarProj";
-
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Type] = 15;
+            ProjectileID.Sets.TrailCacheLength[Type] = 32;
             ProjectileID.Sets.TrailingMode[Type] = 2;
         }
         public override void SetDefaults()
@@ -35,9 +33,9 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.hostile = true;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
-            Projectile.alpha = 255;
             Projectile.penetrate = 1;
             Projectile.timeLeft = 200;
+            Projectile.MaxUpdates = 4;
         }
 
         public override void OnSpawn(IEntitySource source)
@@ -56,17 +54,21 @@ namespace CalamityMod.Projectiles.Boss
         public override void AI()
         {
             Lighting.AddLight(Projectile.Center, 0f, 0.6f, 0f);
-
-            if (Projectile.ai[0] < 240f)
+            if (Projectile.FinalExtraUpdate())
             {
-                Projectile.ai[0] += 1f;
+                if (Projectile.ai[0] < 240f)
+                {
+                    Projectile.ai[0] += 1f;
 
-                if (Projectile.timeLeft < 160)
-                    Projectile.timeLeft = 160;
+                    if (Projectile.timeLeft < 160)
+                        Projectile.timeLeft = 160;
+                }
+
+                if (Projectile.velocity.Length() < 16f)
+                    Projectile.velocity *= 1.01f;
             }
 
-            if (Projectile.velocity.Length() < 16f)
-                Projectile.velocity *= 1.01f;
+            Projectile.position -= (Projectile.velocity / Projectile.MaxUpdates) * (Projectile.MaxUpdates - 1);
 
             int index = Player.FindClosest(Projectile.position, Projectile.width, Projectile.height);
             Player player = Main.player[index];
@@ -85,37 +87,31 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Projectile.Opacity = 1;
             Main.spriteBatch.End(out var ss);
             var device = Main.instance.GraphicsDevice;
-            using var lease = RenderTargetPool.Shared.Rent(
-                device,
-                Main.screenWidth / 2,
-                Main.screenHeight / 2,
-                RenderTargetDescriptor.Default
-            );
-            using var mainLease = RenderTargetPool.Shared.Rent(
-                device,
-                Main.screenWidth,
-                Main.screenHeight,
-                RenderTargetDescriptor.Default
-            );
 
-            using (mainLease.Scope(clearColor: Color.Transparent))
+            using (ProvUtils.SecondaryLease.Scope(clearColor: Color.Transparent))
+            {
+                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Matrix.Identity);
+                var tex = GeneralParticleHandler.GetTexture(GeneralParticleHandler.particleIDsByTypes[typeof(BloomParticle)]);
+                var len = Math.Min(Projectile.oldPos.Length, 32);
+                for (var i = 0; i < len; i++)
+                {
+                    Vector2 drawPos = Projectile.oldPos[i] + Projectile.Size * 0.5f - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
+                    Color color = FireCoreColorFunction(i / (float)len, Projectile.oldPos[i]);
+                    var color2 = new Color(0, 25, 0);
+                    float width = FireWidthFunction(i / (float)len, Projectile.oldPos[i]);
+                    Main.spriteBatch.Draw(tex, drawPos, null, (color2 with { A = 0 }) * (1 - i / (float)len), 0f, tex.Size() * 0.5f, new Vector2(width) / tex.Width, SpriteEffects.None, 0f);
+                    Main.spriteBatch.Draw(tex, drawPos, null, (color with { A = 0 }) * (1 - i / (float)len), 0f, tex.Size() * 0.5f, new Vector2(width) / tex.Width * 0.25f, SpriteEffects.None, 0f);
+                }
+                Main.spriteBatch.End();
+            }
+
+            using (ProvUtils.PrimaryLease.Scope(clearColor: Color.Transparent))
             {
 
-                using (lease.Scope(clearColor: Color.Transparent))
-                {
-                    GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
-                    PrimitiveRenderer.RenderTrail(Projectile.oldPos.Take(13).ToArray(), new(FireWidthFunction, FireColorFunction, (_, _) => Projectile.Size * 0.5f, smoothen: true, pixelate: false, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"], useUnscaledMatrices: true), Projectile.oldPos.Length + 32);
-
-                    Vector2[] fireCoreLength = Projectile.oldPos.Take(13).ToArray();
-                    GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
-                    PrimitiveRenderer.RenderTrail(fireCoreLength, new(FireCoreWidthFunction, FireCoreColorFunction, (_, _) => Projectile.Size * 0.5f, smoothen: true, pixelate: false, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"], useUnscaledMatrices: true), fireCoreLength.Length + 24);
-                }
-
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Matrix.Identity);
-                Main.spriteBatch.Draw(lease.Target, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0f);
+                Main.spriteBatch.Draw(ProvUtils.SecondaryLease.Target, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
 
 
                 float vel = Projectile.velocity.Length() / 8;
@@ -162,7 +158,7 @@ namespace CalamityMod.Projectiles.Boss
             }
 
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.Transform);
-            Main.spriteBatch.Draw(mainLease.Target, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+            Main.spriteBatch.Draw(ProvUtils.PrimaryLease.Target, Vector2.Zero, null, Color.White * Projectile.Opacity, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(ss);
             return false;
@@ -170,7 +166,7 @@ namespace CalamityMod.Projectiles.Boss
         public float FireWidthFunction(float completion, Vector2 pos)
         {
             float width;
-            float maxBodyWidth = 38f * Projectile.scale;
+            float maxBodyWidth = 32f * Projectile.scale;
             float curveRatio = 0.2f;
             var positions = Projectile.oldPos.ToList();
             positions.RemoveAll(x => x == Vector2.Zero);

@@ -32,6 +32,7 @@ using CalamityMod.Systems.Graphic;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.Utilities;
 using CalamityMod.Utilities.Daybreak;
+using CalamityMod.Utilities.Daybreak.Buffers;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -2885,6 +2886,14 @@ namespace CalamityMod.NPCs.Providence
     // These will be used for almost every single one of her projectiles, so it's useful to have.
     public static class ProvUtils
     {
+        /// <summary>
+        /// This lease should be used to draw all of a projectile's effects onto directly, then be drawn onto the screen as one. This is for opacity reasons
+        /// </summary>
+        public static RenderTargetLease PrimaryLease { get => field ??= ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice); set; }
+        /// <summary>
+        /// This should be used for secondary effects like trails, then drawn to PrimaryLease. This is for opacity reasons.
+        /// </summary>
+        public static RenderTargetLease SecondaryLease { get => field ??= ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice); set; }
         public static bool StandardAI() => (CalamityGlobalNPC.holyBoss == -1 || !Main.npc[CalamityGlobalNPC.holyBoss].Calamity().CurrentlyEnraged) && !Main.zenithWorld;
 
         public static int CalculateProvidenceDamage(this int damage)
