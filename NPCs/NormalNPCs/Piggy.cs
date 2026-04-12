@@ -39,7 +39,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[Type] = 1;
+            Main.npcFrameCount[Type] = 8;
             Main.npcCatchable[Type] = true;
             NPCID.Sets.CountsAsCritter[Type] = true;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
@@ -259,49 +259,59 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void HitEffect(NPC.HitInfo hit)
         {
+            int dustType = Type == ModContent.NPCType<PiggyGold>() ? DustID.GoldCritter : DustID.Blood;
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, dustType, hit.HitDirection, -1f, 0, default, 1f);
             }
+
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 15; k++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, dustType, hit.HitDirection, -1f, 0, default, 1f);
+                }
+
+                if (!Main.dedServ && Type != ModContent.NPCType<PiggyGold>())
+                {
+                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Piggy").Type, 1f);
+                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Piggy2").Type, 1f);
                 }
             }
         }
 
         public override void FindFrame(int frameHeight)
         {
-            //if (NPC.velocity.Y == 0f)
-            //{
-            //    if (!NPC.IsABestiaryIconDummy)
-            //    {
-            //        if (NPC.velocity.X == 0f)
-            //        {
-            //            NPC.frame.Y = 0;
-            //            NPC.frameCounter = 0.0;
-            //            return;
-            //        }
-            //    }
-            //    NPC.frameCounter += NPC.IsABestiaryIconDummy ? 0.6f : Math.Abs(NPC.velocity.X) * 0.25f;
-            //    NPC.frameCounter += 1.0;
-            //    if (NPC.frameCounter > 12.0)
-            //    {
-            //        NPC.frame.Y = NPC.frame.Y + frameHeight;
-            //        NPC.frameCounter = 0.0;
-            //    }
-            //    if (NPC.frame.Y / frameHeight >= Main.npcFrameCount[Type] - 1)
-            //    {
-            //        NPC.frame.Y = frameHeight;
-            //    }
-            //}
-            //else
-            //{
-            //    NPC.frameCounter = 0.0;
-            //    NPC.frame.Y = frameHeight * 2;
-            //}
+            if (NPC.velocity.Y == 0f)
+            {
+                if (!NPC.IsABestiaryIconDummy)
+                {
+                    if (NPC.velocity.X == 0f)
+                    {
+                        NPC.frame.Y = 0;
+                        NPC.frameCounter = 0.0;
+                        return;
+                    }
+                }
+
+                NPC.frameCounter += NPC.IsABestiaryIconDummy ? 0.6f : Math.Abs(NPC.velocity.X) * 0.25f;
+                NPC.frameCounter += 1.0;
+                if (NPC.frameCounter > 7.0)
+                {
+                    NPC.frame.Y = NPC.frame.Y + frameHeight;
+                    NPC.frameCounter = 0.0;
+                }
+
+                if (NPC.frame.Y / frameHeight >= Main.npcFrameCount[Type] - 1)
+                {
+                    NPC.frame.Y = frameHeight;
+                }
+            }
+            else
+            {
+                NPC.frameCounter = 0.0;
+                NPC.frame.Y = frameHeight * 2;
+            }
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
