@@ -243,30 +243,22 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             attackType = 2;
 
                         if (attackPatternLength % attackIncrement == phase1Attack2)
-                            attackType = 6;
-
-                        if (attackPatternLength % attackIncrement == phase1Attack3)
                             attackType = 8;
 
+                        if (attackPatternLength % attackIncrement == phase1Attack3)
+                            attackType = 6;
+
                         if (attackPatternLength % attackIncrement == phase1Attack4)
-                        {
-                            attackType = 4;
-
-                            // Adjust the upcoming Ethereal Lance attack depending on what random variable is chosen here.
-                            calamityGlobalNPC.newAI[3] = Main.rand.Next(2);
-
-                            // Sync the Calamity AI variables.
-                            NPC.SyncExtraAI();
-                        }
+                            attackType = 8;
 
                         if (attackPatternLength % attackIncrement == phase1Attack5)
                             attackType = 5;
 
                         if (attackPatternLength % attackIncrement == phase1Attack6)
-                            attackType = 8;
+                            attackType = 2;
 
                         if (attackPatternLength % attackIncrement == phase1Attack7)
-                            attackType = 2;
+                            attackType = 8;
 
                         if (attackPatternLength % attackIncrement == phase1Attack8)
                         {
@@ -319,27 +311,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (attackPatternLength % attackIncrement == phase2Attack3)
                             attackType = 8;
 
+                        if (attackPatternLength % attackIncrement == phase2Attack4)
+                            attackType = 11;
+
                         if (attackPatternLength % attackIncrement == phase2Attack5)
                             attackType = 5;
 
                         if (attackPatternLength % attackIncrement == phase2Attack6)
                             attackType = 2;
-
-                        if (attackPatternLength % attackIncrement == phase2Attack7)
-                        {
-                            if (phase3)
-                            {
-                                attackType = 7;
-
-                                // Adjust the upcoming Ethereal Lance attack depending on what random variable is chosen here.
-                                calamityGlobalNPC.newAI[2] = Main.rand.Next(2);
-
-                                // Sync the Calamity AI variables.
-                                NPC.SyncExtraAI();
-                            }
-                            else
-                                attackType = 6;
-                        }
 
                         if (attackPatternLength % attackIncrement == phase2Attack7)
                         {
@@ -371,9 +350,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (attackPatternLength % attackIncrement == phase2Attack9)
                             attackType = 8;
 
-                        if (attackPatternLength % attackIncrement == phase2Attack4)
-                            attackType = 11;
-
                         if (attackPatternLength % attackIncrement == phase2Attack10)
                             attackType = 12;
                     }
@@ -403,7 +379,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     NPC.ai[0] = attackType;
                     NPC.ai[1] = 0f;
-                    NPC.ai[2] += Main.rand.Next(2) + 1f;
+                    NPC.ai[2] += 1f;
                     NPC.netUpdate = true;
 
                     break;

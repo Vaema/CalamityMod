@@ -57,7 +57,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shoot = ModContent.ProjectileType<EnormousConsumingVortex>();
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = SoundID.Item84;
-            Item.rare = ModContent.RarityType<BurnishedAuric>();
+            Item.rare = ModContent.RarityType<ExoticRainbow>();
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.noMelee = true;
             Item.channel = true;

@@ -211,22 +211,22 @@ namespace CalamityMod.CalPlayer
                 if (Player.HeldItem.type == ModContent.ItemType<Starfleet>() && (Player.ownedProjectileCounts[ModContent.ProjectileType<StarfleetHoldout>()] == 0))
                 {
                     int damage = (int)Player.GetTotalDamage<RangedDamageClass>().ApplyTo(Player.HeldItem.damage);
-                    Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Player.Center.DirectionTo(Player.Calamity().mouseWorld), ModContent.ProjectileType<StarfleetHoldout>(), damage, Player.HeldItem.knockBack, Player.whoAmI);
+                    Projectile.NewProjectile(Player.GetProjectileSource_Item_WithPotentialAmmo(Player.HeldItem, 0), Player.Center, Player.Center.DirectionTo(Player.Calamity().mouseWorld), ModContent.ProjectileType<StarfleetHoldout>(), damage, Player.HeldItem.knockBack, Player.whoAmI);
                 }
                 if (Player.HeldItem.type == ModContent.ItemType<Starmada>() && (Player.ownedProjectileCounts[ModContent.ProjectileType<StarmadaHoldout>()] == 0))
                 {
                     int damage = (int)Player.GetTotalDamage<RangedDamageClass>().ApplyTo(Player.HeldItem.damage);
-                    Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Player.Center.DirectionTo(Player.Calamity().mouseWorld), ModContent.ProjectileType<StarmadaHoldout>(), damage, Player.HeldItem.knockBack, Player.whoAmI);
+                    Projectile.NewProjectile(Player.GetProjectileSource_Item_WithPotentialAmmo(Player.HeldItem, 0), Player.Center, Player.Center.DirectionTo(Player.Calamity().mouseWorld), ModContent.ProjectileType<StarmadaHoldout>(), damage, Player.HeldItem.knockBack, Player.whoAmI);
                 }
                 if (Player.HeldItem.type == ModContent.ItemType<Basher>() && (Player.ownedProjectileCounts[ModContent.ProjectileType<BasherHoldout>()] == 0))
                 {
                     int damage = (int)Player.GetTotalDamage<TrueMeleeDamageClass>().ApplyTo(Player.HeldItem.damage);
-                    Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Player.Center.DirectionTo(Player.Calamity().mouseWorld), ModContent.ProjectileType<BasherHoldout>(), damage, Player.HeldItem.knockBack, Player.whoAmI);
+                    Projectile.NewProjectile(Player.GetProjectileSource_Item_WithPotentialAmmo(Player.HeldItem, 0), Player.Center, Player.Center.DirectionTo(Player.Calamity().mouseWorld), ModContent.ProjectileType<BasherHoldout>(), damage, Player.HeldItem.knockBack, Player.whoAmI);
                 }
                 if (Player.HeldItem.type == ModContent.ItemType<GrandDad>() && (Player.ownedProjectileCounts[ModContent.ProjectileType<GrandDadHoldout>()] == 0))
                 {
                     int damage = (int)Player.GetTotalDamage<TrueMeleeDamageClass>().ApplyTo(Player.HeldItem.damage);
-                    Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Player.Center.DirectionTo(Player.Calamity().mouseWorld), ModContent.ProjectileType<GrandDadHoldout>(), damage, Player.HeldItem.knockBack, Player.whoAmI);
+                    Projectile.NewProjectile(Player.GetProjectileSource_Item_WithPotentialAmmo(Player.HeldItem, 0), Player.Center, Player.Center.DirectionTo(Player.Calamity().mouseWorld), ModContent.ProjectileType<GrandDadHoldout>(), damage, Player.HeldItem.knockBack, Player.whoAmI);
                 }
             }
 
@@ -350,9 +350,9 @@ namespace CalamityMod.CalPlayer
                     if (Player.miscCounter % 4 == 0)
                         Player.HealPlayer(1, HealTextType.None);
 
-                    if (Player.dashDelay > 0) // Reduced dash cooldown
+                    if (Player.dashDelay > 1) // Reduced dash cooldown
                     {
-                        Player.dashDelay = 0;
+                        Player.dashDelay = 1;
                     }
                     if (Player.dashDelay == -1)
                     {
@@ -367,9 +367,9 @@ namespace CalamityMod.CalPlayer
                     if (Player.miscCounter % 5 == 0)
                         Player.HealPlayer(2, HealTextType.None);
 
-                    if (Player.dashDelay > 0) // Reduced dash cooldown
+                    if (Player.dashDelay > 1) // Reduced dash cooldown
                     {
-                        Player.dashDelay = 0;
+                        Player.dashDelay = 1;
                     }
                     if (Player.dashDelay == -1)
                     {
@@ -3509,7 +3509,7 @@ namespace CalamityMod.CalPlayer
             if (gloveLevel > 0)
             {
                 // Determine the glove the player benefits from in priority of latest in progression
-                float gloveAttackSpeed = (gloveLevel == 5 ? 0.15f : gloveLevel == 4 ? 0.14f : gloveLevel == 3 ? 0.12f : gloveLevel <= 2 ? 0.10f : 0);
+                float gloveAttackSpeed = (gloveLevel == 5 ? 0.15f : gloveLevel == 4 ? 0.14f : gloveLevel >= 2 ? 0.12f : gloveLevel == 1 ? 0.10f : 0);
                 Player.GetAttackSpeed<MeleeDamageClass>() += gloveAttackSpeed; // Give the player attack speed based on the glove they have
             }
 

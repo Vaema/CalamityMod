@@ -37,18 +37,10 @@ namespace CalamityMod.Items.Potions
         public override void AddRecipes()
         {
             CreateRecipe(15).
-                AddIngredient(ItemID.BottledWater, 15).
+                AddIngredient(ItemID.SuperManaPotion, 15).
                 AddIngredient<StarblightSoot>(4).
                 AddIngredient<AureusCell>().
-                AddTile(TileID.AlchemyTable).
-                AddConsumeIngredientCallback(Recipe.IngredientQuantityRules.Alchemy).
-                Register();
-
-            CreateRecipe(15).
-                AddIngredient(ItemID.BottledWater, 15).
-                AddIngredient<BloodOrb>(5).
-                AddIngredient<AureusCell>().
-                AddTile(TileID.AlchemyTable).
+                AddTile(TileID.Bottles).
                 Register()
                 .DisableDecraft();
         }

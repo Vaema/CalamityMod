@@ -38,7 +38,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shoot = ModContent.ProjectileType<VehemenceHoldout>();
             Item.shootSpeed = 16.5f;
 
-            Item.rare = ModContent.RarityType<BurnishedAuric>();
+            Item.rare = ModContent.RarityType<CalamityRed>();
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
         }
 
