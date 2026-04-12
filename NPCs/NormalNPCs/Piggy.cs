@@ -316,4 +316,33 @@ namespace CalamityMod.NPCs.NormalNPCs
             return false;
         }
     }
+
+    public class PiggyTransformationProjectile : GlobalProjectile
+    {
+        public override bool AppliesToEntity(Projectile entity, bool lateInstantiation)
+        {
+            return entity.type == ProjectileID.VilePowder || entity.type == ProjectileID.ViciousPowder || entity.type == ProjectileID.PurificationPowder;
+        }
+
+        public override void AI(Projectile projectile)
+        {
+            foreach (NPC npc in Main.ActiveNPCs)
+            {
+                bool targetsArePigs = npc.type == ModContent.NPCType<Piggy>() || npc.type == ModContent.NPCType<PiggyGold>();
+                if (projectile.Hitbox.Intersects(npc.Hitbox) && targetsArePigs)
+                {
+                    // 11APR2026: fryzahh
+                    // Reminder to do short transformation animations for these later.
+                    if (projectile.type == ProjectileID.VilePowder || projectile.type == ProjectileID.ViciousPowder)
+                    {
+                        npc.Transform(ModContent.NPCType<HorribleHog>());
+                    }
+                    else if (projectile.type == ProjectileID.PurificationPowder)
+                    {
+                        npc.Transform(ModContent.NPCType<DivineSwine>());
+                    }
+                }
+            }
+        }
+    }
 }
