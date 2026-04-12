@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Projectiles.Pets;
-using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -13,15 +12,6 @@ namespace CalamityMod.Buffs.Pets
             Main.vanityPet[Type] = true;
         }
 
-        public override void Update(Player player, ref int buffIndex)
-        {
-            player.buffTime[buffIndex] = 18000;
-            player.Calamity().starSwallowerPetFroge = true;
-            bool petProjectileNotSpawned = player.ownedProjectileCounts[ModContent.ProjectileType<StarSwallowerPet>()] <= 0;
-            if (petProjectileNotSpawned && player.whoAmI == Main.myPlayer)
-            {
-                Projectile.NewProjectile(player.GetSource_Buff(buffIndex), player.Center, Vector2.Zero, ModContent.ProjectileType<StarSwallowerPet>(), 0, 0f, player.whoAmI, 0f, 0f);
-            }
-        }
+        public override void Update(Player player, ref int buffIndex) => player.BuffHandle_SpawnPetIfNeededAndSetTime(buffIndex, ref player.Calamity().starSwallowerPetFroge, ModContent.ProjectileType<StarSwallowerPet>());
     }
 }
