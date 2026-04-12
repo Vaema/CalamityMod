@@ -37,7 +37,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             LaughAtDeadPlayer = -2,
             DeathAnimation = -1,
             Idle,
-            Stunned,
+            Stunned,    // Currently unused. May try to find some use for it later.
 
             // Attacks.
             ChasePlayer,
@@ -89,6 +89,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public SlotId DeathLaughSoundSlot;
 
+        #region Static Properties
         public static int MaxAttacks_ChasePlayer => 2;
         public static int MaxAttacks_HogCharge => Main.expertMode ? 2 : 1;
         public static int MaxAttacks_HorribleHoller => 1;
@@ -103,14 +104,11 @@ namespace CalamityMod.NPCs.NormalNPCs
         public static int Damage_VomitBombProjectile => 18;
         public static int Damage_VomitEyeProjectile => 14;
 
-        public static int StunnedTime => 240;
-        public static int StunnedTime_Expert => 180;
-
-        public static float EngageDistance => 300f;
-        public static float EngageDistance_Expert => 400f;
-        public static float EngageDistance_Master => 500f;
+        public static float EngageDistance => 200f;
         public static float Idle_MaxSpeed => 2f;
         public static float Idle_MaxAcceleration => 0.125f;
+
+        public static int StunnedTime => Main.expertMode ? 180 : 240;
 
         public static int ChaseTime => 180;
         public static float ChasePlayer_MaxSpeed => 5f;
@@ -147,6 +145,9 @@ namespace CalamityMod.NPCs.NormalNPCs
         public static int VomitBarrage_VomitTime => 25;
         public static int VomitBarrage_PostVomitCooldown => 100;
         public static int VomitBarrage_MaxVomitChunks => CalamityWorld.revenge ? 10 : Main.expertMode ? 8 : 6;
+        public static int VomitBarrage_MinVomitBombs => CalamityWorld.death ? 3 : CalamityWorld.revenge ? 2 : 0;
+        public static int VomitBarrage_MaxVomitBombs => CalamityWorld.death ? 6 : CalamityWorld.revenge ? 5 : Main.expertMode ? 3 : 4;
+        #endregion
 
         public ref float Timer => ref NPC.ai[0];
 
@@ -222,12 +223,36 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SendExtraAI(BinaryWriter writer)
         {
-            writer.Write(SearchForTargetEveryFrame);
+            writer.Write((byte)PreviousAttackCounters.Count);
+            foreach (var pair in PreviousAttackCounters)
+            {
+                writer.Write((byte)pair.Key);
+                writer.Write((byte)pair.Value);
+            }
+
+            writer.Write((byte)AttackWeights.Count);
+            foreach (var pair in AttackWeights)
+            {
+                writer.Write((byte)pair.Key);
+                writer.Write((byte)pair.Value);
+            }
+
+            writer.WriteFlags(SearchForTargetEveryFrame, HasPlayedDeathAnimation, HasPlayedEngageAnimation, ReadyToPlayLaughingAnimation);
+            writer.WritePackedWorldPosition(LastPlayerPosition);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
-            SearchForTargetEveryFrame = reader.ReadBoolean();
+            int attackCountersLength = reader.ReadByte();
+            for (int i = 0; i < attackCountersLength; i++)
+                PreviousAttackCounters.Add((BehaviorState)reader.ReadByte(), (int)reader.ReadByte());
+
+            int attackWeightsLength = reader.ReadByte();
+            for (int i = 0; i < attackWeightsLength; i++)
+                AttackWeights.Add((BehaviorState)reader.ReadByte(), (float)reader.ReadByte());
+
+            reader.ReadFlags(out SearchForTargetEveryFrame, out HasPlayedDeathAnimation, out HasPlayedEngageAnimation, out ReadyToPlayLaughingAnimation);
+            LastPlayerPosition = reader.ReadPackedWorldPosition();
         }
 
         public override bool CheckDead()
@@ -413,8 +438,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public void MainBehavior_Idle(Player target)
         {
-            float engageDistance = Main.masterMode ? EngageDistance_Master : Main.expertMode ? EngageDistance_Expert : EngageDistance;
-            if (target.Distance(NPC.Center) <= engageDistance)
+            if (target.Distance(NPC.Center) <= EngageDistance)
             {
                 SwitchBehavior(specificAttack: BehaviorState.EngageAnimation);
                 RunEyeGlintEffect(0.5f);
@@ -460,20 +484,19 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public void MainBehavior_Stunned(Player target)
         {
-            int stunnedTime = Main.expertMode ? StunnedTime_Expert : StunnedTime;
             if (NPC.velocity.Y == 0f)
                 NPC.velocity.X *= 0.98f;
 
             // Jump back up right before resuming regular behavior.
-            if (Timer >= stunnedTime - 75 && Timer <= stunnedTime)
+            if (Timer >= StunnedTime - 75 && Timer <= StunnedTime)
             {
-                if (Timer == stunnedTime - 75)
+                if (Timer == StunnedTime - 75)
                     NPC.velocity.Y -= 6f;
 
                 NPC.direction = (target.Center.X > NPC.Center.X).ToDirectionInt();
             }
 
-            if (Timer >= stunnedTime)
+            if (Timer >= StunnedTime)
             {
                 List<BehaviorState> possibleAttacks = [BehaviorState.HogCharge, BehaviorState.HorribleHoller, BehaviorState.JumpAndDash];
                 SwitchBehavior(null, null, [.. possibleAttacks]);
@@ -1137,10 +1160,13 @@ namespace CalamityMod.NPCs.NormalNPCs
                             int damage = Damage_VomitChunkProjectile;
 
                             // Randomly replace chunks with bombs in Expert and above.
-                            if (Main.expertMode && Main.rand.NextBool(4))
+                            bool vomitBombFloorNotReached = MiscAttackCounter < VomitBarrage_MinVomitBombs;
+                            bool vomitBombCeilingNotReached = Main.rand.NextBool(4) && MiscAttackCounter >= VomitBarrage_MinVomitBombs && MiscAttackCounter < VomitBarrage_MaxVomitBombs;
+                            if (Main.expertMode && (vomitBombFloorNotReached || vomitBombCeilingNotReached))
                             {
                                 projectileType = ModContent.ProjectileType<HorribleHogVomitBomb>();
                                 damage = Damage_VomitBombProjectile;
+                                MiscAttackCounter++;
                             }
 
                             // Replace chunks with homing Demon Eyes in Rev+ during phase two when the alt attack is picked.
