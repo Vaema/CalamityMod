@@ -440,7 +440,7 @@ TownNPCMood: {
 
 	Clothier: {
 		Monument: I think I am becoming too old to understand this... "modern art".
-		GiftPositive: placeholder
+		GiftPositive: There was a simple bell in that gift, but its ring was simply extraordinary. Perhaps this means I truly believe...
 		GiftNegative: placeholder
 	}
 
@@ -469,9 +469,9 @@ TownNPCMood: {
 	}
 
 	DyeTrader: {
-		Monument: placeholder
-		GiftPositive: placeholder
-		GiftNegative: placeholder
+		Monument: Oh no no, that dull monument cannot be. Its mere presence makes me feel as though my dyes are less effective!
+		GiftPositive: What an extraordinary batch of rare flowers there was in that gift, friend! I must thank you for your help, browse my colors at reduced coin in exchange!
+		GiftNegative: You think you can pull such a drab gift prank on me, I don't think so! I want no business of yours after that attack on my precious palettes!
 	}
 
 	GoblinTinkerer: {
@@ -493,7 +493,7 @@ TownNPCMood: {
 	}
 
 	Mechanic: {
-		Monument: Any more money I have to fork over for this monument and I'm going to have to start charging an electric bill to these people! I would hate to do that.
+		Monument: Any more money I have to fork over for this monument and I'm going to have to start charging an electric bill! I would hate to do that.
 		GiftPositive: Thanks to your gift of signal extenders, I can connect more of this world than ever! That extra burst of motivation is just what I need to finish wiring up this town!
 		GiftNegative: What compelled you to be so reckless as to gift me an EMP device? Everyone is yelling at me like it's MY fault! Well, now it will be YOUR problem to pay it off when you buy all your wire.
 	}
@@ -523,9 +523,9 @@ TownNPCMood: {
 	}
 
 	Pirate: {
-		Monument: placeholder
-		GiftPositive: placeholder
-		GiftNegative: placeholder
+		Monument: Arr, ye landlubbers have filthy tastes in decoration! That statue be askin' to be washed away!
+		GiftPositive: HAR HAR! Ye bring me the best bottle o' rum I ever taste in me life! Nothin' more for me to say, sea dog!
+		GiftNegative: Arr, ye scallywag! Ye be askin' to be sent to Davy Jones' locker with that foul concoction ye gave me earlier!
 	}
 
 	Princess: {
