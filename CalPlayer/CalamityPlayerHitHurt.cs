@@ -8,6 +8,7 @@ using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Cooldowns;
+using CalamityMod.DataStructures;
 using CalamityMod.Dusts;
 using CalamityMod.Enums;
 using CalamityMod.Events;
@@ -27,7 +28,7 @@ using CalamityMod.Items.Armor.Tarragon;
 using CalamityMod.Items.Armor.Victide;
 using CalamityMod.Items.Armor.Wulfrum;
 using CalamityMod.Items.Potions;
-using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Items.Tools;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Rogue;
@@ -40,6 +41,8 @@ using CalamityMod.NPCs.Providence;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Magic;
+using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Typeless;
@@ -52,13 +55,11 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.Chat;
 using Terraria.DataStructures;
-using Terraria.Graphics.Shaders;
 using Terraria.GameContent.Creative;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using CalamityMod.Projectiles.Melee;
-using CalamityMod.Items.Tools;
 
 namespace CalamityMod.CalPlayer
 {
@@ -465,6 +466,14 @@ namespace CalamityMod.CalPlayer
         {
             if (Player.Calamity().yharimsGift)
                 target.AddBuff(ModContent.BuffType<AuricRebuke>(),120);
+
+            int debuffSpreadProj = ModContent.ProjectileType<DebuffSpreadEffect>();
+            if ((Player.Calamity().abaddon || Player.Calamity().apollyon) && (target.Calamity().abaddonEffected || target.Calamity().apollyonEffected) && hit.Crit && abaddonCooldown == 0 && Player.ownedProjectileCounts[debuffSpreadProj] == 0)
+            {
+                int maxTargetNum = target.Calamity().apollyonEffected ? 10 : 6;
+                Projectile.NewProjectile(Player.GetSource_FromThis(), target.Center, Vector2.Zero, debuffSpreadProj, 0, 0, Player.whoAmI, 0, target.whoAmI, maxTargetNum);
+                abaddonCooldown = -1; // Prevents multiple projectiles hitting on the same frame from spawning multiple of these
+            }
         }
         #endregion
 
@@ -475,6 +484,28 @@ namespace CalamityMod.CalPlayer
             {
                 //This is essentially 10 AP, but independent of armor amount
                 modifiers.FlatBonusDamage += 5;
+            }
+
+            if (Player.Calamity().apollyon)
+            {
+                target.Calamity().apollyonEffected = true;
+                // Check here for the amount of debuffs on enemy
+                int numOfDebuffs = 0;
+                for (int index = 0; index < target.buffType.Length; index++)
+                {
+                    int type = target.buffType[index];
+                    var debuffData = BuffDatasets.DebuffDataset[type];
+                    if (debuffData != null)
+                        numOfDebuffs++;
+                }
+                modifiers.CritDamage += Apollyon.critDamageBoostPerDebuff * numOfDebuffs;
+            }
+            else if (Player.Calamity().abaddon)
+                target.Calamity().abaddonEffected = true;
+            else
+            {
+                target.Calamity().abaddonEffected = false;
+                target.Calamity().apollyonEffected = false;
             }
         }
         public override void ModifyHitNPCWithItem(Item item, NPC target, ref NPC.HitModifiers modifiers)
@@ -759,10 +790,6 @@ namespace CalamityMod.CalPlayer
             // At this point, the player is guaranteed to be hit if there is no dodge.
             // The amount of damage that will be dealt is yet to be determined.
             //
-
-            // Can't have any cooldowns here because dodges grrrrr....
-            if (fleshTotem && !Player.HasCooldown(Cooldowns.FleshTotem.ID) && TotalEnergyShielding <= 0)
-                modifiers.FinalDamage *= 0.5f;
 
             if (tarragonCloak && tarraMelee && !Player.HasCooldown(Cooldowns.TarragonCloak.ID))
                 modifiers.FinalDamage *= (1f - TarragonHeadMelee.CloakContactDamageReduction);
@@ -1053,10 +1080,9 @@ namespace CalamityMod.CalPlayer
             if (!hasIFrames && !Player.creativeGodMode)
                 nextHitDealsDefenseDamage |= npc.Calamity().canBreakPlayerDefense;
 
-            // ModifyHit (Flesh Totem effect happens here) -> Hurt (includes dodges) -> OnHit
+            // ModifyHit -> Hurt (includes dodges) -> OnHit
             // As such, to avoid cooldowns proccing from dodge hits, do it here
-            if (fleshTotem && !Player.HasCooldown(Cooldowns.FleshTotem.ID) && hurtInfo.Damage > 0)
-                Player.AddCooldown(Cooldowns.FleshTotem.ID, CalamityUtils.SecondsToFrames(20));
+
 
             if (NPC.AnyNPCs(ModContent.NPCType<THELORDE>()))
                 Player.AddBuff(ModContent.BuffType<NOU>(), 15, true);
@@ -2190,9 +2216,6 @@ namespace CalamityMod.CalPlayer
                     LoseAdrenalineOnHurt(hurtInfo, false);
                 }
 
-                if (evilSmasherBoost > 0)
-                    evilSmasherBoost -= 1;
-
                 if (trinketOfChi)
                     chiBuffTimer = 0;
 
@@ -2202,7 +2225,7 @@ namespace CalamityMod.CalPlayer
                     SoundEngine.PlaySound(SoundID.Item96, Player.Center);
                 }
 
-                if (gShell) //3 seconds of no dash reduction and reduced defense
+                if (gShell)
                 {
                     if (giantShellPostHit == 0)
                     {
@@ -2219,10 +2242,10 @@ namespace CalamityMod.CalPlayer
                             dust.scale = Main.rand.NextFloat(1.5f, 1.2f);
                         }
                     }
-                    giantShellPostHit = 180;
+                    giantShellPostHit = GiantShell.PostHitCancelDuration;
                 }
 
-                if (tortShell) //3 seconds of no dash reduction and reduced defense
+                if (tortShell)
                 {
                     if (tortShellPostHit == 0)
                     {
@@ -2239,7 +2262,7 @@ namespace CalamityMod.CalPlayer
                             dust.scale = Main.rand.NextFloat(1.6f, 2.2f);
                         }
                     }
-                    tortShellPostHit = 180;
+                    tortShellPostHit = GiantTortoiseShell.PostHitCancelDuration;
                 }
 
                 if (aquaticHeartIce)
@@ -2299,9 +2322,34 @@ namespace CalamityMod.CalPlayer
                             if (duration > 120)
                                 duration = 120;
 
-                            npc.AddBuff(ModContent.BuffType<GlacialState>(), (int)duration, false);
+                            npc.AddBuff(BuffID.Frozen, (int)duration, false);
                         }
                     }
+                }
+
+                if (fleshTotem && hurtInfo.Damage > 0)
+                {
+                    SoundStyle Counter = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Shield_Down");
+                    if (fleshTotemManaStorage >= 100 && fleshTotemVisual)
+                        SoundEngine.PlaySound(Counter with { Volume = 0.75f}, Player.Center);
+                    int lostSoulAmount = fleshTotemManaStorage / 25;
+                    if (Player.ownedProjectileCounts[ModContent.ProjectileType<FleshTotemMinion>()] != 0)
+                    {
+                        for (int i = 0; i < Main.maxProjectiles; i++)
+                        {
+                            Projectile proj = Main.projectile[i];
+                            if (proj.active && proj.owner == Player.whoAmI && proj.type == ModContent.ProjectileType<FleshTotemMinion>())
+                            {
+                                for (int k = 0; k < lostSoulAmount; k++)
+                                {
+                                    Projectile.NewProjectile(Player.GetSource_Accessory_OnHurt(FindAccessory<FleshTotem>(), hurtInfo.DamageSource), proj.Center, new Vector2(10, 10).RotatedByRandom(100) * Main.rand.NextFloat(0.4f, 0.55f), ModContent.ProjectileType<FleshTotemSoul>(), FleshTotem.lostSoulDamage, 0f, Main.myPlayer, 0f, 0f, 3f);
+                                }
+                                break;
+                            }
+                        }
+                    }
+
+                    fleshTotemManaStorage = 0;
                 }
 
                 // By setting brainOfConfusionItem, these accessories have this code already,

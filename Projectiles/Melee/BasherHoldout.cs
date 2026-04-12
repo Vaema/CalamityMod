@@ -16,7 +16,6 @@ using static Terraria.Player;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    [PierceResistException]
     public class BasherHoldout : ModProjectile, ILocalizedModType
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<Basher>();
@@ -56,6 +55,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
+            Projectile.noEnchantmentVisuals = true;
+            Projectile.scale = 0;
         }
         public void OnSpawn()
         {
@@ -63,6 +64,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Projectile.knockBack = 0;
                 attackTimer = cooldown;
+                swingCount = 1;
             }
         }
         public void ResetVariables() // After a swing, reset/adjust many stats
@@ -82,7 +84,7 @@ namespace CalamityMod.Projectiles.Melee
 
             float angleVariation = (float)Math.Sin(time * 0.06f / Projectile.MaxUpdates) * 0.1f;
 
-            float outwardDistance = 5 * Projectile.scale;
+            float outwardDistance = 5;
             Owner.ChangeDir(Math.Sign(toMouse.X));
             Owner.SetCompositeArmFront(true, CompositeArmStretchAmount.Full, (toMouse.ToRotation() + (bladeRot + angleVariation) * Owner.direction + MathHelper.PiOver2 * -Owner.direction) + (Owner.direction == -1 ? MathHelper.Pi : 0));
             Vector2 handPos = Owner.GetFrontHandPosition(CompositeArmStretchAmount.None, Owner.compositeFrontArm.rotation) + (Owner.compositeFrontArm.rotation + MathHelper.PiOver2).ToRotationVector2() * outwardDistance;
@@ -98,7 +100,7 @@ namespace CalamityMod.Projectiles.Melee
             if (!Owner.CantUseHoldout(false))
                 Projectile.timeLeft = 5;
 
-            Projectile.scale = Owner.GetMeleeScale() + 0.1f;
+            Projectile.scale = MathHelper.Lerp(Projectile.scale, Owner.GetMeleeScale() + 0.1f, 0.3f / Projectile.MaxUpdates);
             toMouse = Utils.DirectionTo(Owner.Center, Owner.ClampedMouseWorld());
 
             Positioning(toMouse);
@@ -124,6 +126,7 @@ namespace CalamityMod.Projectiles.Melee
             }
             else
                 Owner.itemTime = Owner.itemAnimation = 5;
+
             #region Not Swinging
             if (attackTimer < 0) // When the sword isn't swinging
             {
@@ -235,7 +238,7 @@ namespace CalamityMod.Projectiles.Melee
             target.AddBuff(ModContent.BuffType<Irradiated>(), 300);
 
             Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
-            target.MoveNPC(launchVel, 14f, true);
+            target.MoveNPC(launchVel, 14f, true, Owner);
 
             for (int i = 0; i < MathHelper.Clamp(15 - Projectile.numHits * 3, 2, 15); i++)
             {
@@ -267,8 +270,8 @@ namespace CalamityMod.Projectiles.Melee
             float drawRotation = Projectile.rotation + ((Owner.direction == -1) ? MathHelper.Pi - MathHelper.PiOver4 : MathHelper.PiOver4);
             Vector2 rotationPoint = (Owner.direction == -1) ? new Vector2(texture.Width, texture.Height) : new Vector2(0, texture.Height);
             SpriteEffects flipSprite = (Owner.direction == -1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            Vector2 placeAdjust = (drawRotation + MathHelper.PiOver2).ToRotationVector2() * 2.5f + ((swingCount % 2 == 0 ? new Vector2(-6, 0) : new Vector2(-2, 0)).RotatedBy(drawRotation) * Owner.direction);
 
-            Vector2 placeAdjust = (drawRotation + MathHelper.PiOver2).ToRotationVector2() * 2.5f;
             Color clr = Color.Tan;
             int swingCountFlip = (swingCount % 2 == 0 ? 1 : 3) + Owner.direction == 0 ? 2 : 0;
             Vector2 vel2 = Projectile.velocity.RotatedBy(MathHelper.PiOver2);

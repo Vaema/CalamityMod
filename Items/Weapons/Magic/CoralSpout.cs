@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 28;
             Item.height = 30;
-            Item.damage = 8;
+            Item.damage = 9;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 7;
             Item.useTime = 26;
@@ -38,6 +38,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<CoralSpoutHoldout>();
             Item.shootSpeed = 16f;
+            Item.ArmorPenetration = 5;
         }
 
         public override void HoldItem(Player player)

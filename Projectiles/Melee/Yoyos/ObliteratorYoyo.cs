@@ -200,8 +200,6 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                 }
                 SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/NPCHit/OtherworldlyHit") with { Pitch = -0.45f, Volume = 0.33f }, Projectile.Center);
             }
-            else
-                target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 180);
             GFBCounter = 15;
         }
     }

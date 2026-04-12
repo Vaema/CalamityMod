@@ -1,4 +1,4 @@
-using CalamityMod.Buffs.StatBuffs;
+﻿using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
@@ -76,7 +76,7 @@ namespace CalamityMod.Items.Armor.Empyrean
             var modPlayer = player.Calamity();
             modPlayer.xerocSet = true;
             modPlayer.rogueStealthMax += SetBonusRogueStealth;
-            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusRogueStealth.ToStealth());
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusRogueStealth.ToStealth(), PermanentWrathHealthRatio.ToPercent());
             if (player.statLife <= (int)(player.statLifeMax2 * PermanentWrathHealthRatio))
                 player.AddBuff(ModContent.BuffType<EmpyreanWrath>(), 2);
             modPlayer.wearingRogueArmor = true;

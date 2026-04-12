@@ -44,6 +44,7 @@ public class BloodScythe : ModProjectile, ILocalizedModType
         Projectile.damage = 10;
         Projectile.scale = 0.1f;
         Projectile.hostile = true;
+        Projectile.Calamity().DealsDefenseDamage = true;
     }
 
     public override void OnSpawn(IEntitySource source)
