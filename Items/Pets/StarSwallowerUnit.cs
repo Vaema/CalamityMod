@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Buffs.Pets;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Pets;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -13,20 +14,10 @@ namespace CalamityMod.Items.Pets
         public new string LocalizationCategory => "Items.Pets";
         public override void SetDefaults()
         {
-            Item.width = 42;
-            Item.height = 30;
-            Item.damage = 0;
-            Item.useAnimation = 20;
-            Item.useTime = 20;
-            Item.useStyle = ItemUseStyleID.Swing;
-            Item.noMelee = true;
-
+            Item.DefaultToVanitypet(ModContent.ProjectileType<StarSwallowerPet>(), ModContent.BuffType<StarSwallowerPetBuff>());
             Item.value = Item.sellPrice(gold: 1);
             Item.rare = ModContent.RarityType<DarkOrange>();
-
-            Item.shoot = ModContent.ProjectileType<StarSwallowerPet>();
-            Item.buffType = ModContent.BuffType<StarSwallowerPetBuff>();
-            Item.UseSound = SoundID.Item10;
+            Item.useStyle = ItemUseStyleID.HoldUp;
         }
 
         public override void UseStyle(Player player, Rectangle heldItemFrame)
@@ -35,6 +26,16 @@ namespace CalamityMod.Items.Pets
             {
                 player.AddBuff(Item.buffType, 15, true);
             }
+        }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe().
+                AddIngredient(ItemID.Frog).
+                AddIngredient<MysteriousCircuitry>(8).
+                AddIngredient<DubiousPlating>(4).
+                AddTile(TileID.Anvils).
+                Register();
         }
     }
 }
