@@ -256,7 +256,7 @@ namespace CalamityMod.Projectiles.Pets
                     {
                         playerStill = 0;
                     }
-                    if (playerStill > 10 && !Collision.SolidCollision(Projectile.position, Projectile.width, Projectile.height))
+                    if (playerStill > 10 && Projectile.Center.Y <= player.Center.Y && !Collision.SolidCollision(Projectile.position, Projectile.width, Projectile.height))
                     {
                         fly = false;
                         Projectile.velocity *= 0.2f;
