@@ -57,10 +57,8 @@ namespace CalamityMod.Projectiles.Pets
         public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
         {
             Player player = Main.player[Projectile.owner];
-            Vector2 projCenter = Projectile.Center;
-            Vector2 playerDirection = player.Center - projCenter;
-            float playerDistance = playerDirection.Length();
-            fallThrough = playerDistance > 200f;
+            float heightDif = player.Center.Y - Projectile.Center.Y;
+            fallThrough = fly || heightDif >= 160f;
             return true;
         }
 
@@ -100,7 +98,7 @@ namespace CalamityMod.Projectiles.Pets
                 {
                     Projectile.velocity.Y = 15f;
                 }
-                if (playerDistance > 520f)
+                if (playerDistance > 480f)
                 {
                     fly = true;
                     Projectile.velocity.X = 0f;
@@ -110,18 +108,18 @@ namespace CalamityMod.Projectiles.Pets
                 {
                     if (player.position.X - Projectile.position.X > 0f)
                     {
-                        Projectile.velocity.X += 0.12f;
-                        if (Projectile.velocity.X > 6f)
+                        Projectile.velocity.X += 0.125f;
+                        if (Projectile.velocity.X > 6.75f)
                         {
-                            Projectile.velocity.X = 6f;
+                            Projectile.velocity.X = 6.75f;
                         }
                     }
                     else
                     {
-                        Projectile.velocity.X -= 0.12f;
-                        if (Projectile.velocity.X < -6f)
+                        Projectile.velocity.X -= 0.125f;
+                        if (Projectile.velocity.X < -6.75f)
                         {
-                            Projectile.velocity.X = -6f;
+                            Projectile.velocity.X = -6.75f;
                         }
                     }
                 }
