@@ -932,18 +932,6 @@ namespace CalamityMod.Items
             #endregion
 
             #region Hardmode Armor
-            // Cobalt
-            if (item.type == ItemID.CobaltHat)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("40", $"{CobaltArmorSetChange.MaxManaBoost + 40}"));
-
-            // Mythril
-            if (item.type == ItemID.MythrilHood)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("60", $"{MythrilArmorSetChange.MaxManaBoost + 60}"));
-
-            // Adamantite
-            if (item.type == ItemID.AdamantiteHeadgear)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("80", $"{AdamantiteArmorSetChange.MaxManaBoost + 80}"));
-
             // Titanium
             if (item.type == ItemID.TitaniumMask)
                 EditTooltipByNum(1, (line) => line.Text = line.Text.Replace("9%", "14%"));

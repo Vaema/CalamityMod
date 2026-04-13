@@ -116,7 +116,6 @@ namespace CalamityMod.Items
                 { ItemID.Flamelash, Do(DamageExact(36)) }, // VANILLA: 32 DMG
                 { ItemID.Flamethrower, Do(DamageExact(21), ShootSpeedDelta(+3f)) }, // VANILLA: 35 DMG, 7 VEL
                 { ItemID.FlowerofFire, Do(DamageRatio(0.78f)) }, // VANILLA: 48 DMG. Uses ratios due to remix seed
-                { ItemID.FlowerofFrost, Do(DamageExact(70), UseExact(22), ShootSpeedExact(14)) }, // VANILLA: 60 DMG, 12 UT, 9 VEL
                 { ItemID.FlyingKnife, Do(DamageExact(53)) }, // VANILLA: 40 DMG
                 { ItemID.Frostbrand, Do(UseMeleeSpeed, DamageExact(88)) }, // VANILLA: 49 DMG
                 { ItemID.Gatligator, Do(UseExact(6)) }, // VANILLA: 7 UT
@@ -146,7 +145,7 @@ namespace CalamityMod.Items
                 { ItemID.KOCannon, Do(DamageRatio(2.65f)) }, // VANILLA: 40 DMG. Uses ratios due to remix seed
                 { ItemID.Kraken, Do(DamageExact(65)) }, // VANILLA: 95 DMG
                 { ItemID.LaserMachinegun, Do(DamageExact(49)) }, // VANILLA: 60 DMG
-                { ItemID.LaserRifle, Do(DamageExact(46), UseExact(10)) }, // VANILLA: 29 DMG, 12 UT
+                { ItemID.LaserRifle, Do(DamageExact(46)) }, // VANILLA: 29 DMG
                 { ItemID.LastPrism, Do(DamageExact(57)) }, // VANILLA: 100 DMG
                 { ItemID.LeadShortsword, Do(TrueMelee, DamageExact(11)) }, // VANILLA: 9 DMG
                 { ItemID.LeafBlower, Do(DamageExact(61)) }, // VANILLA: 48 DMG
