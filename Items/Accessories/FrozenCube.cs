@@ -4,6 +4,7 @@ using CalamityMod.CalPlayer;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
@@ -12,11 +13,17 @@ namespace CalamityMod.Items.Accessories
 {
     public class FrozenCube : ModItem, ILocalizedModType
     {
-        public static int mistBaseDamage = 3;
-        public static int slamBaseDamage = 24;
+        public static int mistBaseDamage = 2;
+        public static int slamBaseDamage = 38;
         public static int baseAttackSpeed = 90;
         public static int baseAttackCooldown = 180;
-        public static int debuff = BuffID.Frostburn; // Wind chilled
+        public static int debuff = ModContent.BuffType<WindChilled>();
+
+        public static readonly SoundStyle noise = new("CalamityMod/Sounds/Item/ElumphantSound") { Volume = 0.6f };
+        public static readonly SoundStyle cry = new("CalamityMod/Sounds/Item/ElumphantCry") { Volume = 0.6f };
+        public static readonly SoundStyle hit = new("CalamityMod/Sounds/Item/ElumphantBop") { Volume = 0.6f };
+        public static readonly SoundStyle jokeBonk = new("CalamityMod/Sounds/Item/Bonk") { Volume = 0.6f };
+
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
@@ -26,11 +33,11 @@ namespace CalamityMod.Items.Accessories
             Item.rare = ItemRarityID.Orange;
             Item.accessory = true;
         }
-
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.frozenCube = true;
+            modPlayer.frozenCubeVisuals = !hideVisual;
 
             int projectile = ProjectileType<Elumphant>();
             if (player.ownedProjectileCounts[projectile] < 1 && !player.dead)
@@ -41,9 +48,11 @@ namespace CalamityMod.Items.Accessories
         }
         public override void ModifyTooltips(List<TooltipLine> list)
         {
-            Player player = Main.LocalPlayer;
             if (Main.LocalPlayer != null)
-                list.FindAndReplace("[DAMAGE]", ((int)(player.Calamity().frozenCubePower)).ToString() + "x");
+                list.FindAndReplace("[DAMAGELINE]", Main.LocalPlayer.Calamity().frozenCube ? 
+                    this.GetLocalization("EquippedDebuff").Format((Main.LocalPlayer.Calamity().frozenCubeDebuffBoost.ToPercent("N0")).ToString()) + "\n" +
+                    this.GetLocalization("EquippedElumphant").Format((Main.LocalPlayer.Calamity().frozenCubeElumphantBoost.ToPercent("N1")).ToString())
+                : this.GetLocalizedValue("Unequipped"));
         }
     }
 }

@@ -28,6 +28,19 @@ namespace CalamityMod.Projectiles.Typeless
         public int lifetime = 90;
         public float originalScale = 0;
         public Color mistColor = Color.White;
+        public bool vis => Owner.Calamity().frozenCubeVisuals;
+        public static Asset<Texture2D> SmokeTexture1 { get; private set; }
+        public static Asset<Texture2D> SmokeTexture2 { get; private set; }
+        public static Asset<Texture2D> SmokeTexture3 { get; private set; }
+        public override void Load()
+        {
+            if (Main.dedServ)
+                return;
+
+            SmokeTexture1 = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Typeless/SmokePuff1");
+            SmokeTexture2 = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Typeless/SmokePuff2");
+            SmokeTexture3 = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Typeless/SmokePuff3");
+        }
         public override void SetDefaults()
         {
             Projectile.width = 32;
@@ -57,12 +70,12 @@ namespace CalamityMod.Projectiles.Typeless
 
             float inverseFade = Utils.GetLerpValue(lifetime, 0, Projectile.timeLeft, true);
             float opacity = 0.4f * fade * (1.2f - inverseFade);
-            if (Main.rand.NextBool(3)) // Effects
+            if (Main.rand.NextBool(3) && vis) // Effects
             {
                 Particle trail = new CustomColorChangeSpark(Projectile.Center + Main.rand.NextVector2Circular(40, 40) * Projectile.scale * (1 - fade) - Projectile.velocity.SafeNormalize(Vector2.UnitX) * (-35 + 65 * inverseFade) * Projectile.scale, Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedByRandom(0.3f) * Main.rand.NextFloat(3, 4), Main.rand.NextBool(3) ? "CalamityMod/Particles/WaterFoam" : "CalamityMod/Particles/BloomCircle", false, Main.rand.Next(9, 12), Main.rand.NextFloat(0.75f, 1f) * Projectile.scale, (mistColor == Elumphant.color1 ? mistColor : Elumphant.color2) * opacity, (mistColor == Elumphant.color2 ? mistColor : Elumphant.color1) * opacity, new Vector2(0.15f + 0.85f * inverseFade, 1.4f - 0.4f * inverseFade));
                 GeneralParticleHandler.SpawnParticle(trail, true);
             }
-            if (Main.rand.NextBool(12))
+            if (Main.rand.NextBool(12) && vis)
             {
                 float rotation = 0;
                 Vector2 velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedByRandom(0.1f) * Main.rand.NextFloat(7f, 14f);
@@ -78,7 +91,11 @@ namespace CalamityMod.Projectiles.Typeless
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            target.AddBuff(ModContent.BuffType<WindChilled>(), (int)(300 * Projectile.ai[2]));
+            target.AddBuff(FrozenCube.debuff, (int)(300 * Projectile.ai[2]));
+            float minMult = 0.25f;
+            int hitsToMinMult = 3;
+            float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+            modifiers.SourceDamage *= damageMult;
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
@@ -88,13 +105,12 @@ namespace CalamityMod.Projectiles.Typeless
         {
             if (time == 0)
                 return false;
-            Asset<Texture2D> tex = ModContent.Request<Texture2D>(Texture);
-            Texture2D bTexture = (textureChoice == 0 ? ModContent.Request<Texture2D>("CalamityMod/Particles/SmokePuff1").Value : textureChoice == 1 ? ModContent.Request<Texture2D>("CalamityMod/Particles/SmokePuff2").Value :  ModContent.Request<Texture2D>("CalamityMod/Particles/SmokePuff3").Value);
+            Texture2D bTexture = (textureChoice == 0 ? SmokeTexture1.Value : textureChoice == 1 ? SmokeTexture2.Value : SmokeTexture3.Value);
             float inverseFade = Utils.GetLerpValue(lifetime, 0, Projectile.timeLeft, true);
 
             PixelationManager.AddPixelatedDrawer((_) =>
             {
-                Main.EntitySpriteDraw(bTexture, Projectile.Center - Main.screenPosition, null, mistColor with { A = 0 } * fade, Projectile.rotation, new Vector2(bTexture.Width / 2, bTexture.Height * (MathHelper.Lerp(0.7f, 0.4f, inverseFade))), new Vector2(0.3f + 0.7f * inverseFade, 1.4f - 0.4f * inverseFade) * Projectile.scale, SpriteEffects.None);
+                Main.EntitySpriteDraw(bTexture, Projectile.Center - Main.screenPosition, null, mistColor with { A = 0 } * fade * (vis ? 1 : 0.5f), Projectile.rotation, new Vector2(bTexture.Width / 2, bTexture.Height * (MathHelper.Lerp(0.7f, 0.4f, inverseFade))), new Vector2(0.3f + 0.7f * inverseFade, 1.4f - 0.4f * inverseFade) * Projectile.scale, SpriteEffects.None);
             }, Enums.GeneralDrawLayer.AfterProjectiles, default);
             return false;
         }
