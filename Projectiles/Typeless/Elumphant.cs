@@ -126,7 +126,7 @@ namespace CalamityMod.Projectiles.Typeless
         {
             maxTargetingDistance = (float)(500 * GetPower(0.25f));
             attackTimeAdjusted = (int)(FrozenCube.baseAttackSpeed / (GetPower(0.5f)));
-            damageScaling = (float)GetPower(0.014f, 21 * (1 + frozenCubePower));
+            damageScaling = (float)GetPower(0.015f, 22 * (1 + frozenCubePower));
             cooldownTime = (int)(FrozenCube.baseAttackCooldown / GetPower(0.5f));
         }
         public void SetElumphantPower()
@@ -137,7 +137,7 @@ namespace CalamityMod.Projectiles.Typeless
             Owner.statDefense -= usedDefense;
             frozenCubePower = usedDefense * 0.05f; // 1 point of defense = 5% effectiveness
             
-            float power = (float)(GetPower(0.02f, 14f * (1 + frozenCubePower)) - 1);
+            float power = (float)(GetPower(0.0185f, 13f * (1 + frozenCubePower)) - 1);
             Owner.Calamity().frozenCubeDebuffBoost = power;
             Owner.Calamity().frozenCubeElumphantBoost = damageScaling - 1;
             Owner.Calamity().ColdDebuffMultiplier += power; // Boost cold debuff damage
@@ -592,8 +592,8 @@ namespace CalamityMod.Projectiles.Typeless
 
             if (!Owner.Calamity().frozenCube)
             {
-                if (sound.IsPlaying)
-                    sound?.Stop();
+                if (SoundEngine.TryGetActiveSound(soundSlot, out var sound2) && sound2.IsPlaying)
+                    sound2?.Stop();
                 Projectile.Kill();
                 return;
             }

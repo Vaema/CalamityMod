@@ -13,8 +13,8 @@ namespace CalamityMod.Items.Accessories
 {
     public class FrozenCube : ModItem, ILocalizedModType
     {
-        public static int mistBaseDamage = 2;
-        public static int slamBaseDamage = 38;
+        public static int mistBaseDamage = 1;
+        public static int slamBaseDamage = 20;
         public static int baseAttackSpeed = 90;
         public static int baseAttackCooldown = 180;
         public static int debuff = ModContent.BuffType<WindChilled>();
