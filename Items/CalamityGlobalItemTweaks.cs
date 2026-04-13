@@ -267,7 +267,6 @@ namespace CalamityMod.Items
                 { ItemID.UnholyTrident, Do(DamageRatio(0.91f)) }, // VANILLA: 88 DMG. Uses ratios due to remix seed
                 { ItemID.Uzi, Do(UseExact(8)) }, // VANILLA: 9 UT
                 { ItemID.ValkyrieYoyo, Do(DamageExact(48)) }, // VANILLA: 70 DMG. Has the same stats as Red's Throw
-                { ItemID.VenomStaff, Do(UseExact(27)) }, // VANILLA: 30 UT
                 { ItemID.WaspGun, Do(DamageExact(41)) }, // VANILLA: 31 DMG
                 { ItemID.WaterBolt, Do(DamageExact(23)) }, // VANILLA: 19 DMG
                 { ItemID.WhitePhaseblade, phaseblade },

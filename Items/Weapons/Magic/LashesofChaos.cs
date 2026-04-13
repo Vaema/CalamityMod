@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 28;
             Item.height = 30;
-            Item.damage = 111;
+            Item.damage = 130;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 28;
             Item.useAnimation = Item.useTime = 46;
@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.rare = ItemRarityID.Lime;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<BrimstoneHellfireballFriendly>();
-            Item.shootSpeed = 11f;
+            Item.shootSpeed = 14f;
         }
 
         // Shoots twice as fast (and uses half as much mana to compensate) during hellblasts
