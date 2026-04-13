@@ -457,9 +457,9 @@ TownNPCMood: {
 	}
 
 	Demolitionist: {
-		Monument: placeholder
-		GiftPositive: placeholder
-		GiftNegative: placeholder
+		Monument: You know, there is a use for that monument - it'll make for a good demolition test for my biggest dynamite yet!
+		GiftPositive: Hey, is that a shipment of ale? That's the only thing us dwarves love more than blowing things up! You're da' bomb!
+		GiftNegative: ARGH! You see yourself as a joker, giving me a water gun? That's an affront to my craft in two ways! Now I'm itching to turn you into a firework!
 	}
 
 	Dryad: {
@@ -517,9 +517,9 @@ TownNPCMood: {
 	}
 
 	PartyGirl: {
-		Monument: placeholder
-		GiftPositive: placeholder
-		GiftNegative: placeholder
+		Monument: Yeeesh, we're gonna have an ugly statue of that grump around? That like, totally kills the party mood around here.
+		GiftPositive: PARTY GIFTS? FOR ME? Oh just you wait, I'm gonna throw the BIGGEST party this town has ever seen, forever and always!
+		GiftNegative: I knew you were trouble when you walked in that suspicious looking box! It's too late now to say sorry!
 	}
 
 	Pirate: {
@@ -565,9 +565,9 @@ TownNPCMood: {
 	}
 
 	WitchDoctor: {
-		Monument: placeholder
-		GiftPositive: placeholder
-		GiftNegative: placeholder
+		Monument: A vile disruption of nature, that monument is. My soul is filled with contempt in its existence.
+		GiftPositive: A kind offering to my people, this gift is. May you be blessed by kindred spirits in trying times.
+		GiftNegative: Sacrilegious defilement against my arts - I speak of your false gift. May your woes be many, and your days few.
 	}
 
 	Wizard: {
