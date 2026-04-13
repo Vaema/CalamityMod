@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using CalamityMod.DataStructures;
 using CalamityMod.Items.Placeables.Ores;
+using CalamityMod.Particles;
+using CalamityMod.Utilities.Daybreak;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -118,6 +120,12 @@ namespace CalamityMod.Tiles
                     return;
                 }
 
+                if(TimeSinceActivation % 5 == 0)
+                {
+                    HeavySmokeParticle p = new(Position.ToWorldCoordinates(24 + Main.rand.Next(-10, 11), 2), Vector2.UnitY * -2, Color.Crimson, 90, Main.rand.NextFloat(0.2f, 0.3f), 0.75f, Main.rand.NextFloat(-0.05f, 0.05f), true);
+                    GeneralParticleHandler.SpawnParticle(p);
+                }    
+
                 TimeSinceActivation++;
             }
             else
@@ -150,8 +158,10 @@ namespace CalamityMod.Tiles
         }
     }
 
-    public class GreedTransmutation : ModProjectile
+    public class GreedTransmutation : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Misc";
+
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public override void SetStaticDefaults()
@@ -198,6 +208,7 @@ namespace CalamityMod.Tiles
         private Vector2 StartPosition = Vector2.Zero;
 
         BezierCurve path = null;
+        private bool Success = false;
 
         public override void SetDefaults()
         {
@@ -215,6 +226,7 @@ namespace CalamityMod.Tiles
             StartPosition = Projectile.Center;
             PotPosition = Projectile.velocity;
             Projectile.velocity = Vector2.Zero;
+            Success = Main.rand.NextBool(3);
             Projectile.netUpdate = true;
         }
 
@@ -244,7 +256,7 @@ namespace CalamityMod.Tiles
 
             if (Projectile.timeLeft == 1)
             {
-                int i = Item.NewItem(Projectile.GetItemSource_DropAsItem(), Projectile.Center, Main.rand.NextBool(3) ? SuccessOutputItemType : ItemID.StoneBlock);
+                int i = Item.NewItem(Projectile.GetItemSource_DropAsItem(), Projectile.Center, Success ? SuccessOutputItemType : ItemID.StoneBlock);
                 Main.item[i].GetGlobalItem<GreedTransmutationGlobalItem>().FromGreedPot = true;
             }
         }
@@ -256,8 +268,79 @@ namespace CalamityMod.Tiles
             //Darken: 70 -> 80
             //Transform: 90 -> 100
             //Undarken: 110 -> 120
-            Texture2D tex = TextureAssets.Item[InputItemType].Value;
-            Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + Projectile.ai[2]) * 8), null, lightColor, Projectile.rotation, tex.Size() * 0.5f, 1f, 0, 0);
+
+            int animTime = 120 - Projectile.timeLeft;
+            bool beforeDarken = animTime < 50;
+            bool darken = animTime < 90;
+            bool transform = animTime < 110;
+
+            if(beforeDarken)
+            {
+                Texture2D tex = TextureAssets.Item[InputItemType].Value;
+                Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + Projectile.ai[2]) * 8), null, lightColor, Projectile.rotation, tex.Size() * 0.5f, 1f, 0, 0);
+            }
+            else if (darken)
+            {
+                Main.spriteBatch.End(out var snap);
+
+                var newSnap = snap with { BlendState = BlendState.Additive };
+                Main.spriteBatch.Begin(newSnap);
+
+                float glowLerp = MathHelper.Clamp((animTime - 45) / 10f, 0f, 1f);
+                glowLerp = CalamityUtils.SineInEasing(glowLerp, 1);
+
+                Texture2D glow = ModContent.Request<Texture2D>("CalamityMod/Particles/SmallBloom").Value;
+                Main.spriteBatch.Draw(glow, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + Projectile.ai[2]) * 8), null, Color.Crimson * glowLerp, Projectile.rotation, glow.Size() * 0.5f, MathHelper.Lerp(0.05f, 0.15f, glowLerp), 0, 0);
+
+                Main.spriteBatch.End();
+                Main.spriteBatch.Begin(snap);
+
+                float darkenLerp = MathHelper.Clamp((animTime - 50) / 10f, 0f, 1f);
+                darkenLerp = CalamityUtils.CircInEasing(darkenLerp, 1);
+
+                Texture2D tex = TextureAssets.Item[InputItemType].Value;
+                Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + Projectile.ai[2]) * 8), null, Color.Lerp(lightColor, Color.Black, darkenLerp), Projectile.rotation, tex.Size() * 0.5f, 1f, 0, 0);
+            }
+            else if(transform)
+            {
+                Main.spriteBatch.End(out var snap);
+
+                var newSnap = snap with { BlendState = BlendState.Additive };
+                Main.spriteBatch.Begin(newSnap);
+
+                Texture2D glow = ModContent.Request<Texture2D>("CalamityMod/Particles/SmallBloom").Value;
+                Main.spriteBatch.Draw(glow, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + Projectile.ai[2]) * 8), null, Color.Crimson, Projectile.rotation, glow.Size() * 0.5f, 0.15f, 0, 0);
+
+                Main.spriteBatch.End();
+                Main.spriteBatch.Begin(snap);
+
+                Texture2D inputTex = TextureAssets.Item[InputItemType].Value;
+                Texture2D outputTex = TextureAssets.Item[Success ? SuccessOutputItemType : ItemID.StoneBlock].Value;
+                float transformLerp = MathHelper.Clamp((animTime - 90) / 10f, 0f, 1f);
+                //transformLerp = CalamityUtils.SineInOutEasing(transformLerp, 1);
+
+                Main.spriteBatch.Draw(inputTex, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + Projectile.ai[2]) * 8), null, Color.Black, Projectile.rotation, inputTex.Size() * 0.5f, 1 - transformLerp, 0, 0);
+                Main.spriteBatch.Draw(outputTex, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + Projectile.ai[2]) * 8), null, Color.Black, Projectile.rotation, inputTex.Size() * 0.5f, transformLerp, 0, 0);
+            }
+            else
+            {
+                float undarkenLerp = MathHelper.Clamp((animTime - 110) / 10f, 0f, 1f);
+                undarkenLerp = CalamityUtils.SineOutEasing(undarkenLerp, 1);
+
+                Main.spriteBatch.End(out var snap);
+
+                var newSnap = snap with { BlendState = BlendState.Additive };
+                Main.spriteBatch.Begin(newSnap);
+
+                Texture2D glow = ModContent.Request<Texture2D>("CalamityMod/Particles/SmallBloom").Value;
+                Main.spriteBatch.Draw(glow, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + Projectile.ai[2]) * 8), null, Color.Crimson * (1 - undarkenLerp), Projectile.rotation, glow.Size() * 0.5f, MathHelper.Lerp(0.05f, 0.15f, (1 - undarkenLerp)), 0, 0);
+
+                Main.spriteBatch.End();
+                Main.spriteBatch.Begin(snap);
+
+                Texture2D tex = TextureAssets.Item[Success ? SuccessOutputItemType : ItemID.StoneBlock].Value;
+                Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition + (Vector2.UnitY * MathF.Sin(Main.GlobalTimeWrappedHourly + Projectile.ai[2]) * 8), null, Color.Lerp(Color.Black, lightColor, undarkenLerp), Projectile.rotation, tex.Size() * 0.5f, 1f, 0, 0);
+            }
             return false;
         }
     }
@@ -291,8 +374,9 @@ namespace CalamityMod.Tiles
             Projectile.NewProjectile(Projectile.GetSource_NaturalSpawn(), Main.LocalPlayer.Center, greedPotTE.Position.ToWorldCoordinates(24, 24) + Main.rand.NextVector2Circular(12, 32), ModContent.ProjectileType<GreedTransmutation>(), 0, 0, Main.LocalPlayer.whoAmI, item.type, transmutation.Result, Main.rand.Next(120));
             greedPotTE.Activated = true;
             greedPotTE.TimeSinceActivation = 0;
+            player.ApplyItemTime(item, 0.5f, false);
 
-            return true;
+            return false;
         }
 
         public override bool CanStackInWorld(Item destination, Item source)

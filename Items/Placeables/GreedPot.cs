@@ -8,7 +8,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables
 {
-    public class GreedPot : ModItem
+    public class GreedPot : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Placeables";
 
