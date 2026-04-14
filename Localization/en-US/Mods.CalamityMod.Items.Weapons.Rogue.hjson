@@ -762,7 +762,7 @@ MoltenAmputator: {
 		Throw a spinning scythe that lingers at your cursor
 		<right> to recall all existing scythes
 		Recalling a scythe while it's on an enemy rends them for massive damage
-		<right> with sufficient stealth to empower yourself, greatly increasing attack speed for a short time
+		<right> with sufficient stealth to empower the next {0} scythes and greatly increase attack speed
 		You cannot recall scythes thrown while empowered
 		'''
 }
