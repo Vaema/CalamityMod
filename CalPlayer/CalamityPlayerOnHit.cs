@@ -226,6 +226,17 @@ namespace CalamityMod.CalPlayer
             if (Player.whoAmI != Main.myPlayer)
                 return;
 
+            //Undo raider crit after hit
+            if (!proj.Calamity().stealthStrike && !proj.Calamity().stealthStrikeSubProjectile && raiderCritLifespan > 0f)
+            {
+                if (nanotech)
+                    proj.CritChance -= Items.Accessories.Nanotech.RaiderBonus;
+                else if (vampiricTalisman)
+                    proj.CritChance -= VampiricTalisman.RaiderBonus;
+                else if (raiderTalisman)
+                    proj.CritChance -= RaidersTalisman.RaiderBonus;
+            }
+
             // Apply this to player equippable sources ie. Orichalcum set bonus petal spawns
             // Do not apply if this effect is an extension of a weapon ie. Pearl God round effect as it will mess up Old Fashioned
             var source = Player.GetSource_OnHit(target);

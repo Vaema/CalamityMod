@@ -595,7 +595,19 @@ namespace CalamityMod.CalPlayer
         {
             if (proj.npcProj || proj.trap)
                 return;
-                
+
+            //Add raider crit before hit
+            if (!proj.Calamity().stealthStrike && !proj.Calamity().stealthStrikeSubProjectile && raiderCritLifespan > 0f)
+            {
+                if (nanotech)
+                    proj.CritChance += Items.Accessories.Nanotech.RaiderBonus;
+                else if (vampiricTalisman)
+                    proj.CritChance += VampiricTalisman.RaiderBonus;
+                else if (raiderTalisman)
+                    proj.CritChance += RaidersTalisman.RaiderBonus;
+            }
+
+
             modifiers.CritDamage += critDamage;
 
             // All Calamity multipliers are added together to prevent insane exponential stacking

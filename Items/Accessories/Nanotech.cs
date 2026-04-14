@@ -11,7 +11,7 @@ namespace CalamityMod.Items.Accessories
     {
         //The stealth damage boost is handled in CalamityPlayer for some reason, maybe someone didn't want em to stack?
         public new string LocalizationCategory => "Items.Accessories";
-        public const float RaiderBonus = 10f;
+        public static int RaiderBonus => 10;
         public override void SetDefaults()
         {
             Item.width = 46;
