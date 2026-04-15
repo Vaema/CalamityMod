@@ -561,6 +561,11 @@ Cometfruit: {
 		'''
 }
 
+DeliciousSlop: {
+	DisplayName: Delicious Slop
+	Tooltip: "{$CommonItemTooltip.MajorStats}"
+}
+
 Jackfruit: {
 	DisplayName: Jackfruit
 	Tooltip: "{$CommonItemTooltip.MinorStats}"
