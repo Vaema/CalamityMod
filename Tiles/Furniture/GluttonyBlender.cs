@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -83,39 +84,33 @@ namespace CalamityMod.Tiles.Furniture
 
         public override bool CanUseItem(Item item, Player player)
         {
-            Point mouseTile = Main.MouseWorld.ToTileCoordinates();
-            if (Main.LocalPlayer.whoAmI == player.whoAmI && BuffID.Sets.IsWellFed[item.buffType] &&
-                CalamityUtils.FindTileEntity<GluttonyBlenderTE>(mouseTile.X, mouseTile.Y, GluttonyBlenderTile.Width, GluttonyBlenderTile.Height) != null &&
-                player.IsInTileInteractionRange(mouseTile.X, mouseTile.Y, TileReachCheckSettings.Simple))
-            {
-                player.ApplyItemAnimation(item);
-                return false;
-            }
-            return base.CanUseItem(item, player);
-        }
-        public override bool? UseItem(Item item, Player player)
-        {
-            Main.NewText("g");
-
+            // Exit early if anyone of the following are true:
+            // * Running on client that is not the local player
+            // * The item is not a food, is not consumable, or is Delicious Slop (you cannot feed the slop back into the blender)
+            // * The Gluttony Blender tile entity doesn't exist for some reason
+            // * The player isn't within the tile's interaction range
             if (Main.LocalPlayer.whoAmI != player.whoAmI)
-                return null;
-
-            if (!BuffID.Sets.IsWellFed[item.buffType])
-                return null;
+                return true;
+            if (!BuffID.Sets.IsWellFed[item.buffType] || !item.consumable || item.type == ModContent.ItemType<DeliciousSlop>())
+                return true;
 
             Point mouseTile = Main.MouseWorld.ToTileCoordinates();
             GluttonyBlenderTE entity = CalamityUtils.FindTileEntity<GluttonyBlenderTE>(mouseTile.X, mouseTile.Y, GluttonyBlenderTile.Width, GluttonyBlenderTile.Height);
             if (entity == null)
-                return null;
-
+                return true;
             if (!player.IsInTileInteractionRange(mouseTile.X, mouseTile.Y, TileReachCheckSettings.Simple))
-                return null;
+                return true;
 
-            // Velocity doesn't get used for this thing, so it's used here to pass in the position of the top of the blender
+            // Spawns a projectile to handle the visual animation of the food moving into the blender and the conversion to slop
+            // The projectile doesn't use velocity, so the top of the blender tile is passed in as the velocity
             Projectile.NewProjectile(player.GetSource_TileInteraction(mouseTile.X, mouseTile.Y), player.Center, entity.BlenderTop, ModContent.ProjectileType<GluttonyBlenderAnimation>(),
                 0, 0f, player.whoAmI, item.type);
-            //player.ApplyItemTime(item, 1, false);
-
+            if (ItemLoader.ConsumeItem(item, player))
+            {
+                item.stack--;
+                if (item.stack <= 0)
+                    item.TurnToAir();
+            }
             return false;
         }
     }
@@ -141,9 +136,7 @@ namespace CalamityMod.Tiles.Furniture
             if (Projectile.timeLeft == 120)
             {
                 Main.NewText("s");
-                Projectile.ai[1] = Projectile.velocity.X;
-                Projectile.ai[2] = Projectile.velocity.Y;
-                Projectile.velocity = Vector2.Zero;
+                SoundEngine.PlaySound(SoundID.Item1, Projectile.Center);
             }
         }
 
@@ -151,7 +144,7 @@ namespace CalamityMod.Tiles.Furniture
         {
             Texture2D tex = TextureAssets.Item[(int)ItemType].Value;
             Rectangle frame = tex.Frame(1, Main.itemAnimations[(int)ItemType].FrameCount, 0, 0);
-            Main.EntitySpriteDraw(tex, Projectile.Center, frame, lightColor, Projectile.rotation, Projectile.Size * 0.5f, Projectile.scale, SpriteEffects.None);
+            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, frame, lightColor, Projectile.rotation, Projectile.Size * 0.5f, Projectile.scale, SpriteEffects.None);
             return false;
         }
     }
