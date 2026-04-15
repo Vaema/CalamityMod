@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Items.Placeables.Furniture;
-using CalamityMod.Tiles.DraedonStructures;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -120,31 +119,75 @@ namespace CalamityMod.Tiles.Furniture
         public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
-        public ref float ItemType => ref Projectile.ai[0];
+        private const int Lifetime = 120;
+        private const int TimeToReachBlender = 60;
+        private int ItemType => (int)Projectile.ai[0];
+        private ref float Timer => ref Projectile.ai[1];
+        private Vector2 Start;
+        private Vector2 Destination => Projectile.velocity;
 
         public override void SetDefaults()
         {
             Projectile.width = Projectile.height = 10;
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
-            Projectile.timeLeft = 120;
+            Projectile.timeLeft = Lifetime;
         }
 
         public override bool ShouldUpdatePosition() => false;
         public override void AI()
         {
-            if (Projectile.timeLeft == 120)
+            // Initialization
+            if (Timer == 0)
             {
-                Main.NewText("s");
                 SoundEngine.PlaySound(SoundID.Item1, Projectile.Center);
+                Start = Projectile.Center;
             }
+
+            if (Timer < TimeToReachBlender)
+            {
+                Vector2 moveDistBeforeArc = Destination - Start;
+                // The second half of this applies an arcing motion as the projectile moves
+                Projectile.Center += (moveDistBeforeArc / (float)TimeToReachBlender) - Vector2.UnitY * (3f - (0.1f * Timer));
+                Projectile.rotation = moveDistBeforeArc.X * 0.005f;
+
+                if (Timer >= TimeToReachBlender - 4)
+                    Projectile.scale -= 0.25f;
+            }
+            else
+            {
+                Projectile.Center = Destination;
+                if (Timer == TimeToReachBlender)
+                    SoundEngine.PlaySound(SoundID.Item22, Projectile.Center);
+
+                Color[] dustArray = ItemID.Sets.FoodParticleColors[ItemType];
+                if (dustArray == null || dustArray.Length == 0)
+                    dustArray = ItemID.Sets.DrinkParticleColors[ItemType];
+                if (dustArray != null && dustArray.Length != 0 && Main.rand.NextBool(4))
+                {
+                    Vector2 dustVel = -Vector2.UnitY.RotatedByRandom(MathHelper.Pi / 5f) * 2f;
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.FoodPiece, dustVel, 0, dustArray[Main.rand.Next(dustArray.Length)], Main.rand.NextFloat(1.3f, 1.75f));
+                    dust.fadeIn = 0f;
+                }
+            }
+
+            if (Projectile.timeLeft == 1)
+            {
+                int itemDrop = Main.rand.NextBool(GluttonyBlender.OneInXChanceForGoodSlop) ? ModContent.ItemType<DeliciousSlop>() : ModContent.ItemType<DisgustingSlop>();
+                int i = Item.NewItem(Projectile.GetItemSource_DropAsItem(), Projectile.Center, itemDrop);
+                Main.item[i].GetGlobalItem<GluttonyBlenderGlobalItem>().FromGluttonyBlender = true;
+            }
+            Timer++;
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = TextureAssets.Item[(int)ItemType].Value;
-            Rectangle frame = tex.Frame(1, Main.itemAnimations[(int)ItemType].FrameCount, 0, 0);
-            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, frame, lightColor, Projectile.rotation, Projectile.Size * 0.5f, Projectile.scale, SpriteEffects.None);
+            if (Timer >= TimeToReachBlender)
+                return false;
+
+            Texture2D tex = TextureAssets.Item[ItemType].Value;
+            Rectangle frame = tex.Frame(1, Main.itemAnimations[ItemType].FrameCount, 0, 0);
+            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, frame, lightColor, Projectile.rotation, frame.Size() * 0.5f, Projectile.scale, SpriteEffects.None);
             return false;
         }
     }
