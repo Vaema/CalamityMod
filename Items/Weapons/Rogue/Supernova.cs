@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shoot = ModContent.ProjectileType<SupernovaBomb>();
             Item.shootSpeed = 16f;
             Item.DamageType = RogueDamageClass.Instance;
-            Item.rare = ModContent.RarityType<BurnishedAuric>();
+            Item.rare = ModContent.RarityType<ExoticRainbow>();
         }
 
         public override float StealthDamageMultiplier => 0.7f;

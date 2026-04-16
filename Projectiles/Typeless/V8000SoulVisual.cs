@@ -13,8 +13,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
-    public class V8000SoulVisual : ModProjectile, IPixelatedPrimitiveRenderer
+    public class V8000SoulVisual : ModProjectile, ILocalizedModType, IPixelatedPrimitiveRenderer
     {
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public override void SetStaticDefaults()

@@ -601,10 +601,10 @@ Hydra: {
 	DisplayName: Hydra
 	Tooltip:
 		'''
-		Fires a spread of 4 [cbuff:Venom] bullets
+		Fires a spread of 3 blood globs imbued with [cbuff:Venom]
 		Grows a gun-head every 3 seconds, up to a maximum of 3 heads
 		Press <left> to command any existing heads to fire
-		Press <right> to launch the heads for powerful explosive damage
+		Press <right> to launch the heads for powerful explosive damage, briefly inflicting [cbuff:CalamityMod/GalvanicCorrosion]
 		[c/9D80B0:Fusion of heavy machinery and Lernaean blood]
 		'''
 }
@@ -614,7 +614,8 @@ Infinity: {
 	Tooltip:
 		'''
 		Fires a twin stream of energy bolts that split
-		{$CommonItemTooltip.PercentChanceToSaveAmmo}
+		{$Common.ArmorPenetration}
+		{$CommonItemTooltip.PercentChanceToSaveAmmo@1}
 		'They say infinity is neverending, yet you hold it in your hands'
 		'''
 }
@@ -923,12 +924,14 @@ PolarisParrotfish: {
 		'''
 		Rapidly fires an array of colorful star shots
 		Firing speed increases the closer you are to an enemy
+		{$Common.ArmorPenetration}
 		'It carries the mark of the Northern Star'
 		'''
 	TooltipGFB:
 		'''
 		Rapidly fires an array of colorful star shots
 		Firing speed increases the closer you are to an enemy
+		{$Common.ArmorPenetration}
 		<right> to give the little girl some attention
 		'She is a happy girl'
 		'''
@@ -1301,7 +1304,8 @@ Svantechnical: {
 	Tooltip:
 		'''
 		Fires a trinity of energy bolts that split into beams that track your cursor
-		{$CommonItemTooltip.PercentChanceToSaveAmmo}
+		{$Common.ArmorPenetration}
+		{$CommonItemTooltip.PercentChanceToSaveAmmo@1}
 		'The age old balance of trading damage for frames'
 		'''
 }
@@ -1402,9 +1406,9 @@ ThreadOfEradication: {
 	DisplayName: Thread of Eradication
 	Tooltip:
 		'''
-		Charges up [c/ff00ff:God's Bane Doombeam]
-		Channelling the weapon causes it to charge up [c/ff00ff:Hyperdeath Rift] instead
-		While charging [c/ff00ff:Hyperdeath Rift], the bow's turning speed is slowed down
+		Charges up [ceffect/dog:God's Bane Doombeam]
+		Channelling the weapon causes it to charge up [ceffect/dog:Hyperdeath Rift] instead
+		While charging [ceffect/dog:Hyperdeath Rift], the bow's turning speed is slowed down
 		'''
 }
 

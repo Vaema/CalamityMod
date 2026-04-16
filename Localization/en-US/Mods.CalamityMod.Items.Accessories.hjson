@@ -815,8 +815,8 @@ FrostFlare: {
 		'''
 		All attacks and projectiles inflict [cbuff:Frostburn2]
 		Grants immunity to Frostburn, Chilled and Frozen
-		Being above 50% life grants 10% increased damage
-		Being below 50% life grants 15 defense and 15% increased max movement speed and acceleration
+		Being above {0}% life grants {1}% increased damage
+		Being below {0}% life grants {2} defense and {3}% increased max movement speed and acceleration
 		Grants resistance against cold attacks
 		'''
 }
@@ -855,8 +855,8 @@ GiantShell: {
 	DisplayName: Giant Shell
 	Tooltip:
 		'''
-		10% reduced dash velocity
-		Taking a hit restores dash velocity and reduces defense for 3 seconds
+		{0}% reduced dash velocity
+		Taking a hit restores dash velocity and reduces defense for {1} seconds
 		'''
 }
 
@@ -865,8 +865,8 @@ GiantTortoiseShell: {
 	Tooltip:
 		'''
 		{$Common.KnockbackImmunity}
-		5% increased damage reduction and 10% reduced dash velocity
-		Taking a hit restores dash velocity and reduces defense and damage reduction for 3 seconds
+		{0}% increased damage reduction and {1}% reduced dash velocity
+		Taking a hit restores dash velocity and reduces defense and damage reduction for {2} seconds
 		'''
 }
 
@@ -1032,7 +1032,7 @@ IVDripOnTheRocks: {
 		Multiplies all weapon damage by {1}x
 		Counts as an alcohol stack toward Alcohol Poisoning
 		{$Common.AlcoholWarning}
-		'(drunken mumbling)'
+		[ceffect/drunk:'(drunken mumbling)']
 		'''
 }
 
@@ -1320,7 +1320,7 @@ PlanebreakersPouch: {
 	DisplayName: Planebreaker's Pouch
 	Tooltip:
 		'''
-		15% increased ranged damage, 5% increased ranged critical strike chance and 20% reduced ammo usage
+		15% increased ranged damage, 7% increased ranged critical strike chance and 20% reduced ammo usage
 		Grants a 20% chance to not consume arrows
 		Pressing [KEY] will automatically swap the ammos in your ammo slots
 		The ammo type swapped depends on the ammo of the weapon you are holding

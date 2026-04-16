@@ -1154,15 +1154,11 @@ namespace CalamityMod.Items
                 if (modPlayer.gloveLevel < 1)
                     modPlayer.gloveLevel = 1;
             }
-            if (item.type == ItemID.PowerGlove)
+            if (item.type == ItemID.PowerGlove || item.type == ItemID.BerserkerGlove)
             {
-                player.GetAttackSpeed<MeleeDamageClass>() -= 0.12f; // Power Glove 10%
+                player.GetAttackSpeed<MeleeDamageClass>() -= 0.12f; // Power/Berserker Glove 12%
                 if (modPlayer.gloveLevel < 2)
                     modPlayer.gloveLevel = 2;
-            }
-            if (item.type == ItemID.BerserkerGlove)
-            {
-                player.GetAttackSpeed<MeleeDamageClass>() -= 0.12f; // Berserker Glove 0%
             }
             if (item.type == ItemID.MechanicalGlove)
             {
