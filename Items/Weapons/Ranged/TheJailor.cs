@@ -12,6 +12,11 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class TheJailor : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
+        }
         public override void SetDefaults()
         {
             Item.width = 102;
@@ -23,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.noMelee = true;
             Item.knockBack = 8f;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<BurnishedAuric>();
+            Item.rare = ModContent.RarityType<ExoticRainbow>();
             Item.UseSound = SoundID.Item14;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<PrismMine>();

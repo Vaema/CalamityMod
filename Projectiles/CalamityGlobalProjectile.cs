@@ -440,6 +440,10 @@ namespace CalamityMod.Projectiles
             if (projectile.type == ProjectileID.ZapinatorLaser)
                 projectile.originalDamage = projectile.damage;
 
+            // Make Piranha Gun have dynamic stat tweaking
+            if (projectile.type == ProjectileID.MechanicalPiranha)
+                projectile.ContinuouslyUpdateDamageStats = true;
+
             // Apply Calamity Global Projectile Tweaks.
             SetDefaults_ApplyTweaks(projectile);
         }
@@ -3074,7 +3078,7 @@ namespace CalamityMod.Projectiles
             //If hooking an NPC, this is set to the NPC ID but negative. Still need to find how this gets treated upon reeling in.
             switch (owner.Calamity().SelectedFishingMinigame)
             {
-                case CalamityPlayer.FishingMinigames.ScrapBobber:
+                case CalamityPlayer.FishingMinigames.WulfrumBobber:
                     {
                         if (CatchTime < 0 || (isReelingIn == 1 && CaughtItemID > 0))
                         {
@@ -3194,7 +3198,7 @@ namespace CalamityMod.Projectiles
                     }
 
 
-                case CalamityPlayer.FishingMinigames.ScoriaBobber:
+                case CalamityPlayer.FishingMinigames.VolcanicSinker:
                     {
                         if (PersistentFishingData == -1)
                         {
@@ -3319,7 +3323,7 @@ namespace CalamityMod.Projectiles
                     }
 
 
-                case CalamityPlayer.FishingMinigames.PerennialBobber:
+                case CalamityPlayer.FishingMinigames.FeralBobber:
                     if (projectile.ai[0] == 0)
                     {
                         if (projectile.wet) //Fishing in water
@@ -3408,7 +3412,7 @@ namespace CalamityMod.Projectiles
                     break;
 
 
-                case CalamityPlayer.FishingMinigames.NavystoneBobber:
+                case CalamityPlayer.FishingMinigames.SunkenSinker:
                     {
                         if (CatchTime < 0 || (isReelingIn == 1 && CaughtItemID > 0))
                         {
@@ -3578,7 +3582,7 @@ namespace CalamityMod.Projectiles
                     return false;
 
 
-                case CalamityPlayer.FishingMinigames.SkylineBobber:
+                case CalamityPlayer.FishingMinigames.AcrobaticBobber:
                     {
                         if (CatchTime < 0 || (isReelingIn == 1 && CaughtItemID > 0))
                         {
@@ -3802,17 +3806,6 @@ namespace CalamityMod.Projectiles
                     if (CalamityProjectileSets.IsBuffedEventProjectile[projectile.type])
                         projectile.damage += 15;
                 }
-
-                if (projectile.type == ProjectileID.GiantBee || projectile.type == ProjectileID.Bee)
-                {
-                    if (projectile.timeLeft > 570) //all of these have a time left of 600 or 660
-                    {
-                        if (player.HeldItem.type == ItemID.BeesKnees)
-                            projectile.DamageType = DamageClass.Ranged;
-                    }
-                }
-                else if (projectile.type == ProjectileID.SoulDrain)
-                    projectile.DamageType = DamageClass.Magic;
 
                 frameOneHacksExecuted = true;
             }
@@ -4731,6 +4724,10 @@ namespace CalamityMod.Projectiles
                 if (!WorldUtils.Find(projectile.Center.ToTileCoordinates(), Searches.Chain(new Searches.Down(12), new Conditions.IsSolid()), out _))
                     modifiers.SourceDamage /= 1.5f;
             }
+
+            // Debuff infliction must be placed here as opposed to a more common hook like OnHitNPCWithProj because its on-hit logic breaks the loop before it reaches that hook
+            if (projectile.type == ProjectileID.InfluxWaver)
+                target.AddBuff(BuffID.Electrified, 180);
 
             // Create sparks on hit to hammer in the defense shredding.
             if (deepcoreBullet)
