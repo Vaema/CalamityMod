@@ -153,7 +153,7 @@ namespace CalamityMod.NPCs.TownNPCs
             this.GetLocalizedValue("Name.Hamm"), // Toy Story
             this.GetLocalizedValue("Name.Runt"), // Chicken Little
             this.GetLocalizedValue("Name.Roko"), // Roko's Basilisk
-            this.GetLocalizedValue("Name.RichardHamm"), // Pig from Clarkson's Farm named after Richard Hammond
+            this.GetLocalizedValue("Name.RichardHam"), // Pig from Clarkson's Farm named after Richard Hammond
             this.GetLocalizedValue("Name.Techno"), // Technoblade
             this.GetLocalizedValue("Name.JohnPork"), // John Pork
             this.GetLocalizedValue("Name.Piglet"), // Winnie-the-Pooh
