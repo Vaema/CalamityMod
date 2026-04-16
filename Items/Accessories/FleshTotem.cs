@@ -13,6 +13,8 @@ namespace CalamityMod.Items.Accessories
 
         public static int manaStorageMax = 600;
         public const int lostSoulDamage = 200;
+        public static int MinDelay => 60;
+        public static int MaxDelay => 240;
 
         public override void SetDefaults()
         {

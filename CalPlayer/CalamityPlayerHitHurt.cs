@@ -2360,7 +2360,6 @@ namespace CalamityMod.CalPlayer
                             }
                         }
                     }
-
                     fleshTotemManaStorage = 0;
                 }
 

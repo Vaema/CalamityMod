@@ -589,6 +589,7 @@ namespace CalamityMod.CalPlayer
         public bool lordePet = false;
         public bool frostyBat = false;
         public bool toastyBat = false;
+        public bool starSwallowerPetFroge = false;
         #endregion
 
         #region Rage
@@ -2287,6 +2288,7 @@ namespace CalamityMod.CalPlayer
             lordePet = false;
             frostyBat = false;
             toastyBat = false;
+            starSwallowerPetFroge = false;
 
             onyxExcavator = false;
             rimehound = false;

@@ -29,6 +29,7 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.alpha = 255;
             Projectile.timeLeft = 360;
             Projectile.penetrate = 1;
+            Projectile.Calamity().CannotProc = true;
         }
 
         public override void AI()
