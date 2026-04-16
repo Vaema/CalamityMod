@@ -7,6 +7,7 @@ using System.Linq;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.Events;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -23,7 +24,7 @@ namespace CalamityMod.NPCs.TownNPCs
             NPCID.Sets.ExtraFramesCount[Type] = 0;
             NPCID.Sets.AttackFrameCount[Type] = 0;
             NPCID.Sets.DangerDetectRange[Type] = 250;
-            NPCID.Sets.HatOffsetY[Type] = 6;
+            NPCID.Sets.HatOffsetY[Type] = -4;
             NPCID.Sets.ShimmerTownTransform[Type] = false;
             NPCID.Sets.SpecificDebuffImmunity[Type][BuffID.Shimmer] = true;
             NPCID.Sets.SpecificDebuffImmunity[Type][BuffID.Confused] = true;
@@ -57,6 +58,7 @@ namespace CalamityMod.NPCs.TownNPCs
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.knockBackResist = 0.5f;
             NPC.housingCategory = 1;
+            DrawOffsetY = -4;
             //AnimationType = NPCID.TownBunny;
         }
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -82,18 +84,48 @@ namespace CalamityMod.NPCs.TownNPCs
             NPC.spriteDirection = NPC.direction;
         }
 
+        public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            // Put a gold crown on Techno
+            if (NPC.GivenName == this.GetLocalizedValue("Name.Techno") && !BirthdayParty.PartyIsUp)
+            {
+                int equipID = ArmorIDs.Head.GoldCrown;
+                Main.instance.LoadArmorHead(equipID);
+                Texture2D crown = TextureAssets.ArmorHead[equipID].Value;
+                Rectangle crownFrame = crown.Frame(1, 20, 0, 0);
+                int frameHeight = TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type];
+                int curFrame = NPC.frame.Y / frameHeight;
+                int sheetOff = curFrame switch
+                {
+                    0 => 0,
+                    1 => -2,
+                    2 => -6,
+                    3 => -6,
+                    4 => -2,
+                    5 => -4,
+                    6 => -6,
+                    7 => -2,
+                    _ => 0
+                };
+                spriteBatch.Draw(crown, NPC.Center - screenPos + new Vector2(8 * NPC.spriteDirection, -2 + NPC.gfxOffY + sheetOff).RotatedBy(NPC.rotation), crownFrame, NPC.GetAlpha(drawColor), NPC.rotation, new Vector2(crown.Width / 2, crown.Height / 40), NPC.scale, NPC.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+            }
+        }
+
         public override void FindFrame(int frameHeight)
         {
             if (NPC.velocity.X == 0)
                 NPC.frame.Y = 0;
             else
             {
-                if (NPC.frameCounter++ % 6 == 0)
+                if (NPC.velocity.Y == 0)
                 {
-                    NPC.frame.Y += frameHeight;
-                    if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[Type])
+                    if (NPC.frameCounter++ % 6 == 0)
                     {
-                        NPC.frame.Y = frameHeight;
+                        NPC.frame.Y += frameHeight;
+                        if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[Type])
+                        {
+                            NPC.frame.Y = frameHeight;
+                        }
                     }
                 }
                 if (NPC.frame.Y < frameHeight)
@@ -122,6 +154,9 @@ namespace CalamityMod.NPCs.TownNPCs
             this.GetLocalizedValue("Name.Runt"), // Chicken Little
             this.GetLocalizedValue("Name.Roko"), // Roko's Basilisk
             this.GetLocalizedValue("Name.RichardHamm"), // Pig from Clarkson's Farm named after Richard Hammond
+            this.GetLocalizedValue("Name.Techno"), // Technoblade
+            this.GetLocalizedValue("Name.JohnPork"), // John Pork
+            this.GetLocalizedValue("Name.Piglet"), // Winnie-the-Pooh
             
             // Dedicated names
         };

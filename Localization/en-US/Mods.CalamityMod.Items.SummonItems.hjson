@@ -212,6 +212,11 @@ OverloadedSludge: {
 		'''
 }
 
+PiggyLicense: {
+	DisplayName: Piggy License
+	Tooltip: Use to adopt a piggy for your town
+}
+
 Portabulb: {
 	DisplayName: Portabulb
 	Tooltip:
