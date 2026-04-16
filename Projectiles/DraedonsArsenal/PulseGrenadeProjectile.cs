@@ -300,11 +300,9 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 
                 // Do NOT change the damage of these here, do it on the on hit
                 Projectile orb = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, (vel * 7f).RotatedBy(MathHelper.PiOver4 / 2), ModContent.ProjectileType<PulseGrenadeOrb>(), Projectile.damage, 0f, Owner.whoAmI, 0, spin, i);
-                orb.Calamity().stealthStrike = Projectile.Calamity().stealthStrike;
                 if (Projectile.Calamity().stealthStrike)
                 {
                     Projectile orb2 = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, (vel * 10f), ModContent.ProjectileType<PulseGrenadeOrb>(), Projectile.damage, 0f, Owner.whoAmI, 0, -spin, i + 1);
-                    orb2.Calamity().stealthStrike = Projectile.Calamity().stealthStrike;
                 }
             }
 

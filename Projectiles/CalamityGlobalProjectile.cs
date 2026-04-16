@@ -412,9 +412,9 @@ namespace CalamityMod.Projectiles
                     projectile.damage /= 2;
             }
 
-            if (source is EntitySource_Parent { Entity: Projectile parent })
+            if (source is EntitySource_Parent { Entity: Projectile proj })
             {
-                if (parent.Calamity().stealthStrike || parent.Calamity().stealthStrikeSubProjectile)
+                if (proj.Calamity().stealthStrike || proj.Calamity().stealthStrikeSubProjectile)
                     stealthStrikeSubProjectile = true;
             }
 
