@@ -562,7 +562,7 @@ SeaKing: {
 }
 
 TownPiggy: {
-	DisplayName: Town Piggy
+	DisplayName: Piggy
 	Census.SpawnCondition: Use a Piggy License
 
 	Name: {
