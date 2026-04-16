@@ -122,7 +122,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 Projectile.Center = Owner.Center;
                 Projectile.extraUpdates = (Projectile.Calamity().stealthStrike ? 22 : 5);
                 Projectile.rotation += Main.rand.NextFloat(-4, 4);
-                Vector2 velocity = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld) * 9;
+                Vector2 velocity = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld) * 9 * Owner.Calamity().rogueVelocity;
                 Projectile.velocity = velocity;
 
                 if (Projectile.Calamity().stealthStrike)
