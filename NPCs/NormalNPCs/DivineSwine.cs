@@ -46,9 +46,10 @@ namespace CalamityMod.NPCs.NormalNPCs
         private static Asset<Texture2D> DistortionTexture;
         private static Asset<Texture2D> DivineMeatTexture;
 
-        private static SoundStyle DivineSwine_Idle = new("CalamityMod/Sounds/Custom/DivineSwine/DivineSwine_Idle", 4);
-        private static SoundStyle DivineSwine_CoinFail = new("CalamityMod/Sounds/Custom/DivineSwine/DivineSwine_CoinFail", 3);
-        private static SoundStyle DivineSwine_NearbyLoop = new("CalamityMod/Sounds/Custom/DivineSwine/DivineSwine_NearbyLoop")
+        private static SoundStyle IdleSound = new("CalamityMod/Sounds/Custom/DivineSwine/DivineSwine_Idle", 4);
+        private static SoundStyle CoinFailSound = new("CalamityMod/Sounds/Custom/DivineSwine/DivineSwine_CoinFail", 3);
+        private static SoundStyle CoinPassSound = new("CalamityMod/Sounds/Custom/DivineSwine/DivineSwine_CoinPass", 2);
+        private static SoundStyle SwineSpeakLoopingSound = new("CalamityMod/Sounds/Custom/DivineSwine/DivineSwine_NearbyLoop")
         {
             IsLooped = true,
             PauseBehavior = PauseBehavior.PauseWithGame,
@@ -63,7 +64,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public Vector2 IdleMovementVector;
 
-        private SlotId SoundSlot;
+        private SlotId SwineSpeakSoundSlot;
 
         public static float MaxSpeed => 0.38f;
         public static float MaxAcceleration => 0.06f;
@@ -219,7 +220,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                 if (ShouldTurnAway)
                 {
-                    HelperBehavior_AvoidTileCollision(MaxSpeed + 0.6f);
+                    AvoidTileCollision(MaxSpeed + 0.6f);
                     IdleMovementTimer = 0f;
                 }
                 else
@@ -284,7 +285,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             // Meat granted
             if (Timer == 210f)
             {
-                SoundEngine.PlaySound(SoundID.Item29, NPC.Center);
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     int meat = Item.NewItem(NPC.GetSource_GiftOrReward(), NPC.Center, ModContent.ItemType<DeliciousMeat>());
@@ -335,7 +335,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 }
 
                 SoundEngine.PlaySound(SoundID.Item29 with { Volume = 0.1f }, NPC.Center);
-                SoundEngine.PlaySound(DivineSwine_Idle, NPC.Center);
+                SoundEngine.PlaySound(IdleSound, NPC.Center);
 
                 NPC.checkDead();
                 NPC.active = false;
@@ -360,7 +360,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.ShowNameOnHover = false;
         }
 
-        public void HelperBehavior_AvoidTileCollision(float maxSpeed, float turnAwayStrength = 0.125f)
+        public void AvoidTileCollision(float maxSpeed, float turnAwayStrength = 0.125f)
         {
             float distanceToCollisionLeft = CalamityUtils.DistanceToTileCollisionHit(NPC.Center, NPC.velocity.RotatedBy(MathHelper.PiOver2), 32, ShouldAvoidTile) ?? 10000f;
             float distanceToCollisionRight = CalamityUtils.DistanceToTileCollisionHit(NPC.Center, NPC.velocity.RotatedBy(-MathHelper.PiOver2), 32, ShouldAvoidTile) ?? 10000f;
@@ -374,15 +374,15 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             if (NPC.soundDelay == 0 && Main.rand.NextBool(200) && (AIState != (int)BehaviorState.OfferingAccepted || AIState != (int)BehaviorState.OfferingFailed))
             {
-                SoundEngine.PlaySound(DivineSwine_Idle, NPC.Center);
+                SoundEngine.PlaySound(IdleSound, NPC.Center);
                 SquashVector = Utils.SelectRandom(Main.rand, new Vector2(1.4f, 0.7f), new Vector2(0.7f, 1.4f));
                 AdditionalBrightness = Main.rand.NextFloat(0.3f, 0.4f);
                 NPC.soundDelay = Main.rand.Next(60, 120);
                 NPC.netUpdate = true;
             }
 
-            if (!SoundEngine.TryGetActiveSound(SoundSlot, out _))
-                SoundSlot = SoundEngine.PlaySound(DivineSwine_NearbyLoop, NPC.Center, SoundCallbackMethod);
+            if (!SoundEngine.TryGetActiveSound(SwineSpeakSoundSlot, out _))
+                SwineSpeakSoundSlot = SoundEngine.PlaySound(SwineSpeakLoopingSound, NPC.Center, SoundCallbackMethod);
 
             // Fade the music depending on the distance between the player and Divine Swine.
             float musicVolumeInterpolant = Utils.Remap(NPC.Distance(Main.LocalPlayer.Center), 600f, 100f, 1f, 0.2f, true);
@@ -418,10 +418,10 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public void AcceptOffering(bool accepted)
         {
-            SoundStyle offeringSound = accepted ? SoundID.ResearchComplete : DivineSwine_CoinFail;
+            SoundStyle offeringSound = accepted ? CoinPassSound : CoinFailSound;
             SoundEngine.PlaySound(offeringSound, NPC.Center);
             if (accepted)
-                SoundEngine.PlaySound(SoundID.Coins);
+                SoundEngine.PlaySound(SoundID.Coins, NPC.Center);
 
             AIState = accepted ? (int)BehaviorState.OfferingAccepted : (int)BehaviorState.OfferingFailed;
             Timer = 0f;

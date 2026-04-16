@@ -65,11 +65,11 @@ namespace CalamityMod.Projectiles.Enemy
                 }
                 else
                 {
-                    float turnResistance = 35f;
+                    float turnResistance = 30f;
                     Vector2 directionToPoint = target.Center - Projectile.Center;
                     directionToPoint *= 30f / directionToPoint.Length();
                     Vector2 idealVelocity = (Projectile.velocity * turnResistance + directionToPoint) / (turnResistance + 1f);
-                    Projectile.velocity = Vector2.Lerp(Projectile.velocity, idealVelocity, 0.25f);
+                    Projectile.velocity = Vector2.Lerp(Projectile.velocity, idealVelocity, 0.35f);
 
                     Projectile.rotation = Projectile.rotation.AngleLerp(Projectile.velocity.ToRotation() + MathHelper.Pi, 0.15f);
                     Projectile.tileCollide = true;

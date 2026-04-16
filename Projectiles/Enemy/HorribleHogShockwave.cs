@@ -31,7 +31,6 @@ namespace CalamityMod.Projectiles.Enemy
             Projectile.penetrate = -1;
             Projectile.alpha = 255;
             Projectile.hostile = true;
-            Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
             Projectile.usesIDStaticNPCImmunity = true;
@@ -50,6 +49,8 @@ namespace CalamityMod.Projectiles.Enemy
         // Therefore, the knockback stat modifier here needs to be multiplied by zero in order for any custom knockback effect to take place.
         // This isn't the same for NPCs, so they don't need it so long as the projectile is spawned with zero knockback.
         public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers) => modifiers.Knockback *= 0f;
+
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.FinalDamage *= 5f;
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.velocity.Y -= MathHelper.Clamp(8f + (CurrentHeight * 0.1f), 8f, 16f);
 

@@ -20,7 +20,6 @@ namespace CalamityMod.Projectiles.Enemy
             Projectile.height = 28;
             Projectile.penetrate = -1;
             Projectile.hostile = true;
-            Projectile.friendly = true;
             Projectile.hide = true;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
@@ -30,14 +29,11 @@ namespace CalamityMod.Projectiles.Enemy
 
         public override bool ShouldUpdatePosition() => false;
 
+        public override bool? CanHitNPC(NPC target) => target.whoAmI != (int)HogIndex;
+
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.FinalDamage *= 5f;
 
         public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers) => modifiers.Knockback *= 0f;
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-
-        }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
@@ -56,7 +52,5 @@ namespace CalamityMod.Projectiles.Enemy
             Projectile.Center = Main.npc[(int)HogIndex].Center;
             Projectile.velocity = Main.npc[(int)HogIndex].velocity;
         }
-
-        public override bool? CanHitNPC(NPC target) => target.whoAmI != (int)HogIndex;
     }
 }

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using CalamityMod.DataStructures;
 using CalamityMod.Effects;
+using CalamityMod.Items.Materials;
 using CalamityMod.Items.Tools;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Enemy;
@@ -21,10 +22,10 @@ using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
+using Terraria.ModLoader.Utilities;
 using Terraria.UI.Chat;
 using Terraria.Utilities;
 using Terraria.WorldBuilding;
-using static System.Net.WebRequestMethods;
 
 namespace CalamityMod.NPCs.NormalNPCs
 {
@@ -147,6 +148,8 @@ namespace CalamityMod.NPCs.NormalNPCs
         public static int VomitBarrage_MaxVomitChunks => CalamityWorld.revenge ? 10 : Main.expertMode ? 8 : 6;
         public static int VomitBarrage_MinVomitBombs => CalamityWorld.death ? 3 : CalamityWorld.revenge ? 2 : 0;
         public static int VomitBarrage_MaxVomitBombs => CalamityWorld.death ? 6 : CalamityWorld.revenge ? 5 : Main.expertMode ? 3 : 4;
+        public static float VomitBarrage_MaxSpeed => 8f;
+        public static float VomitBarrage_MaxAcceleration => 0.45f;
         #endregion
 
         public ref float Timer => ref NPC.ai[0];
@@ -413,16 +416,6 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             if (Timer == 240f)
             {
-                // Create smoke and throw up a big green "5000" on death just like the pigs in Angry Birds
-                for (int i = 0; i < 12; i++)
-                {
-                    int goreType = Main.rand.Next(GoreID.Smoke1, GoreID.Smoke3 + 1);
-                    Gore.NewGorePerfect(NPC.position, Main.rand.NextVector2Circular(2f, 2f), goreType);
-                }
-
-                CombatText.NewText(NPC.Hitbox, Color.LawnGreen, 5000);
-                SoundEngine.PlaySound(HorribleHog_Death, NPC.Center);
-
                 NPC.life = 0;
                 NPC.checkDead();
                 NPC.HitEffect();
@@ -433,15 +426,15 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.dontTakeDamage = true;
 
             if (NPC.velocity.Y == 0f)
-                NPC.velocity.X *= 0.98f;
+                NPC.velocity.X *= 0.96f;
         }
 
         public void MainBehavior_Idle(Player target)
         {
-            if (target.Distance(NPC.Center) <= EngageDistance)
+            if (target.Distance(NPC.Center) <= EngageDistance && Collision.CanHit(NPC, target))
             {
                 SwitchBehavior(specificAttack: BehaviorState.EngageAnimation);
-                RunEyeGlintEffect(0.5f);
+                RunEyeGlintEffect(0.4f);
             }
 
             // Standing still, occasionally switch directions.
@@ -509,16 +502,18 @@ namespace CalamityMod.NPCs.NormalNPCs
         #region Attacks
         public void MainBehavior_ChasePlayer(Player target)
         {
-            if (NPC.velocity.Y == 0f)
+            // Whenever the player is able to be hit, don't modify velocity mid-air.
+            // Otherwise, move as any grounded NPC would in order to get back towards the player.
+            bool canHitPlayer = NPC.velocity.Y == 0f && Collision.CanHit(NPC, target);
+            if (canHitPlayer || !Collision.CanHit(NPC, target))
             {
                 NPC.direction = (target.Center.X > NPC.Center.X).ToDirectionInt();
                 GroundedMovement(target.Center, ChasePlayer_MaxSpeed, ChasePlayer_MaxAcceleration);
             }
 
-            bool shouldJumpOverObstacle = IsNPCApproachingHole() || NPC.collideX;
             bool jumpUpToPlayer = Main.expertMode && MathHelper.Distance(NPC.Center.Y, target.Center.Y) > 64f;
             bool closeToPlayer = MathHelper.Distance(NPC.Center.X, target.Center.X) < 112f;
-            if (NPC.velocity.Y == 0f && (shouldJumpOverObstacle || (jumpUpToPlayer && closeToPlayer)))
+            if (NPC.velocity.Y == 0f && jumpUpToPlayer && closeToPlayer)
                 NPC.velocity.Y -= 8f;
 
             bool closeEnoughToAttack = MathHelper.Distance(NPC.Center.X, target.Center.X) <= 64f;
@@ -1115,7 +1110,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 if (Timer <= VomitBarrage_PreJumpTime)
                 {
                     NPC.direction = (target.Center.X > NPC.Center.X).ToDirectionInt();
-                    GroundedMovement(target.Center, ChasePlayer_MaxSpeed, ChasePlayer_MaxAcceleration, slowdownDistance: 160f);
+                    GroundedMovement(target.Center, VomitBarrage_MaxSpeed, VomitBarrage_MaxAcceleration, slowdownDistance: 200f);
 
                     float targetAngle = (NPC.velocity.Y != 0f) ? NPC.velocity.X * 0.135f * (NPC.velocity.Y < 0).ToDirectionInt() : 0f;
                     NPC.rotation = NPC.rotation.AngleLerp(targetAngle, 0.125f);
@@ -1135,7 +1130,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 {
                     SetSquashVectors(squashVector: new Vector2(0.84f, 1.14f));
                     NPC.velocity.Y -= JumpAndDash_MaxJumpHeight;
-                    NPC.velocity.X -= 6f * NPC.direction;
+                    NPC.velocity.X -= 7f * NPC.direction;
                     HorizontalShakeStrength = 0f;
                     SpawnJumpParticles(6, 9);
                 }
@@ -1181,6 +1176,8 @@ namespace CalamityMod.NPCs.NormalNPCs
                             int vomit = Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, vomitVelocity, projectileType, damage, 0f);
                             if (spawnEyeballs)
                                 Main.projectile[vomit].ai[0] = Main.rand.Next(45, 75);
+                            if (projectileType == ModContent.ProjectileType<HorribleHogVomitBomb>())
+                                Main.projectile[vomit].ai[1] = NPC.whoAmI;
                         }
                     }
 
@@ -1314,7 +1311,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             AttackWeights[BehaviorState.VomitBarrage] = 0.66f;
         }
 
-        private void GroundedMovement(Vector2 targetPosition, float maxSpeed, float maxAcceleration, float jumpHeight = 6f, float? slowdownDistance = null)
+        private void GroundedMovement(Vector2 targetPosition, float maxSpeed, float maxAcceleration, float jumpHeight = 10f, float? slowdownDistance = null)
         {
             float distanceToPlayer = MathF.Abs(NPC.Center.X - targetPosition.X);
             if (targetPosition.X > NPC.Center.X)
@@ -1354,6 +1351,27 @@ namespace CalamityMod.NPCs.NormalNPCs
             }
 
             NPC.velocity.X = MathHelper.Clamp(NPC.velocity.X, -maxSpeed, maxSpeed);
+        }
+
+        private bool IsNPCApproachingHole()
+        {
+            int npcWidthInTiles = NPC.width / 16;
+            int tileX = (int)(NPC.Center.X / 16f) - npcWidthInTiles;
+            if (NPC.velocity.X > 0)
+                tileX += npcWidthInTiles;
+
+            int tileY = (int)((NPC.position.Y + NPC.height) / 16f);
+            for (int y = tileY; y < tileY + 2; y++)
+            {
+                for (int x = tileX; x < tileX + npcWidthInTiles; x++)
+                {
+                    if (Main.tile[x, y].HasTile)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
 
         private void SpawnShockwave(int spawnImterval, int maxShockwaves, int direction, float heightMultiplier)
@@ -1402,30 +1420,51 @@ namespace CalamityMod.NPCs.NormalNPCs
             }
         }
 
-        private bool IsNPCApproachingHole()
+        public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            int npcWidthInTiles = NPC.width / 16;
-            int tileX = (int)(NPC.Center.X / 16f) - npcWidthInTiles;
-            if (NPC.velocity.X > 0)
-                tileX += npcWidthInTiles;
+            if (Main.bloodMoon && NPC.downedBoss1 && NPC.CountNPCS(Type) < 1)
+                return SpawnCondition.OverworldNightMonster.Chance * 0.001f;
+            return 0f;
+        }
 
-            int tileY = (int)((NPC.position.Y + NPC.height) / 16f);
-            for (int y = tileY; y < tileY + 2; y++)
+        public override void HitEffect(NPC.HitInfo hit)
+        {
+            if (NPC.life <= 0)
             {
-                for (int x = tileX; x < tileX + npcWidthInTiles; x++)
+                // Create smoke and throw up a big green "5000" on death just like the pigs in Angry Birds
+                for (int i = 0; i < 17; i++)
                 {
-                    if (Main.tile[x, y].HasTile)
-                    {
-                        return false;
-                    }
+                    int goreType = Main.rand.Next(GoreID.Smoke1, GoreID.Smoke3 + 1);
+                    Gore.NewGorePerfect(NPC.position, Main.rand.NextVector2Circular(2f, 2f), goreType);
                 }
+
+                CombatText.NewText(NPC.Hitbox, Color.LawnGreen, 5000);
+                SoundEngine.PlaySound(HorribleHog_Death, NPC.Center);
+                return;
             }
-            return true;
+
+            int dustAmt = Main.rand.Next(3, 7);
+            if (hit.Crit)
+                dustAmt += Main.rand.Next(2, 5);
+
+            for (int i = 0; i < dustAmt; i++)
+            {
+                int dustType = Utils.SelectRandom(Main.rand, DustID.ToxicBubble, DustID.GreenBlood, DustID.Blood);
+                Vector2 velocity = new Vector2(hit.HitDirection * Main.rand.NextFloat(1f, 2f), Main.rand.NextFloat(-2f, 2f));
+                float scale = Main.rand.NextFloat(0.8f, 1.2f);
+                if (hit.Crit)
+                {
+                    velocity *= Main.rand.NextFloat(1.25f, 1.75f);
+                    scale += Main.rand.NextFloat(0.25f, 0.5f);
+                }
+
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, dustType, velocity.X, velocity.Y, Scale: scale);
+            }
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(ModContent.ItemType<DisgustingMeat>(), 1, 1, 1);
+            npcLoot.Add(ModContent.ItemType<DisgustingMeat>());
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -1448,10 +1487,10 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                 if (CalamityClientConfig.Instance.Afterimages && AfterimageTrailOpacity > 0.05f)
                 {
-                    for (int i = 0; i < NPCID.Sets.TrailCacheLength[Type]; i++)
+                    for (int i = 0; i < NPC.oldPos.Length; i++)
                     {
                         Color afterimageColor = Color.Red * AfterimageTrailOpacity * 0.76f;
-                        afterimageColor *= (NPCID.Sets.TrailCacheLength[Type] - i) / 5f;
+                        afterimageColor *= (float)(NPC.oldPos.Length - i) / (float)NPC.oldPos.Length;
                         Vector2 afterimageDrawPosition = NPC.oldPos[i] + NPC.Size * 0.5f - screenPos;
                         spriteBatch.Draw(baseTexture, afterimageDrawPosition, NPC.frame, NPC.GetAlpha(afterimageColor), NPC.rotation, NPC.frame.Size() * 0.5f, scale, effects, 0f);
                     }

@@ -24,6 +24,8 @@ namespace CalamityMod.NPCs.NormalNPCs
             Running,
         }
 
+        private static SoundStyle IdleSound = new("CalamityMod/Sounds/Custom/Piggy/Piggy_Idle", 3);
+
         public Vector2 SquashVector;
 
         public static float MaxAcceleration_Walking => 0.035f;
@@ -106,7 +108,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         
             NPC.StepUpBlocks();
 
-            SquashVector = Vector2.Lerp(SquashVector, Vector2.One, 0.065f);
+            SquashVector = Vector2.Lerp(SquashVector, Vector2.One, 0.125f);
             Timer++;
         }
 
@@ -157,6 +159,21 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                 if (NPC.collideX && NPC.velocity.Y == 0f)
                     NPC.velocity.Y -= 6f;
+            }
+
+            // Sound effects.
+            if (NPC.soundDelay == 0 && Main.rand.NextBool(200))
+            {
+                // Small chance to do a cute lil hop as well.
+                if (Main.rand.NextBool(5))
+                {
+                    NPC.velocity.Y -= Main.rand.NextFloat(2f, 4f);
+                    SquashVector = new Vector2(0.7f, 1.3f);
+                    NPC.netUpdate = true;
+                }
+
+                SoundEngine.PlaySound(IdleSound, NPC.Center);
+                NPC.soundDelay = Main.rand.Next(60, 120);
             }
 
             NPC.spriteDirection = NPC.direction;

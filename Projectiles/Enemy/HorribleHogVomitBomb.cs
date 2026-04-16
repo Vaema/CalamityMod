@@ -19,6 +19,8 @@ namespace CalamityMod.Projectiles.Enemy
             set => Projectile.ai[0] = value.ToInt();
         }
 
+        public ref float HogIndex => ref Projectile.ai[1];
+
         public new string LocalizationCategory => "Projectiles.Enemy";
 
         public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.Bomb;
@@ -41,9 +43,13 @@ namespace CalamityMod.Projectiles.Enemy
             Projectile.localNPCHitCooldown = 15;
         }
 
+        public override bool? CanHitNPC(NPC target) => target.whoAmI != (int)HogIndex;
+
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.FinalDamage *= 5f;
+
         public override void AI()
         {
-            if (!HasExplodedYet && (Projectile.timeLeft <= 1 || Projectile.penetrate == 0))
+            if (!HasExplodedYet && Projectile.timeLeft <= 1)
             {
                 Explode();
                 return;
@@ -109,10 +115,20 @@ namespace CalamityMod.Projectiles.Enemy
             Projectile.netUpdate = true;
         }
 
-        public override bool OnTileCollide(Vector2 oldVelocity)
+        public override bool PreKill(int timeLeft)
         {
             if (!HasExplodedYet)
+            {
                 Explode();
+                return false;
+            }
+
+            return true;
+        }
+
+        public override bool OnTileCollide(Vector2 oldVelocity)
+        {
+            Explode();
             return false;
         }
 
