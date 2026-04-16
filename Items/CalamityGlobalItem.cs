@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using CalamityMod.Balancing;
+using CalamityMod.Buffs.Potions;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer;
@@ -616,7 +617,7 @@ namespace CalamityMod.Items
             }
 
             //Mana Potion interactions
-            if (item.healMana > 0)
+            if (item.healMana > 0 || player.HasBuff(ModContent.BuffType<AstralInjectionBuff>()))
             {
                 //If mana potion used, kill all active Crown projectiles 
                 if ((modPlayer.moonCrown || modPlayer.featherCrown) && modPlayer.mageCrownCount > 0)

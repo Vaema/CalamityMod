@@ -794,7 +794,7 @@ FleshTotem: {
 		5% increased magic critical strike chance
 		+20 max mana
 		Summons an effigy above your head that stores mana as you use it, up to 600 mana
-		The effigy occasionally pulses, restoring 20 mana
+		The effigy occasionally pulses, restoring 25 mana
 		Pulses appear more frequently the more mana is stored
 		Upon being struck, the effigy unleashes all stored up mana as vengeful souls that chase your enemies
 		'''
