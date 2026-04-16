@@ -789,6 +789,12 @@ namespace CalamityMod.Projectiles
 
                 return false;
             }
+            // This has extra updates but increments lifespan through AI slots, so we need to offset that
+            else if (projectile.type == ProjectileID.WeatherPainShot)
+            {
+                if (!projectile.FinalExtraUpdate())
+                    projectile.ai[1]--;
+            }
 
             else if (projectile.type == ProjectileID.BloodShot)
             {
