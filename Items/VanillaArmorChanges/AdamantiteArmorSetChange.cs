@@ -20,7 +20,8 @@ namespace CalamityMod.Items.VanillaArmorChanges
         public const int MaxManaBoost = 20;
         public const int DefenseBoostMax = 10;
         public const int TimeUntilDecayBeginsAfterAttacking = 60;
-        public const int TimeUntilBoostCompletelyDecays = 210;
+        public const int TimeUntilBoostCompletelyDecays = 210; // Unlisted use: this is also the amount of hits to max out defense.
+        public const int CritToDRConversionPercent = 25;
 
         public override void ApplyHeadPieceEffect(Player player)
         {
@@ -36,12 +37,12 @@ namespace CalamityMod.Items.VanillaArmorChanges
                 setBonusText = CalamityUtils.GetTextValue($"Vanilla.Armor.SetBonus.{ArmorSetName}.Melee");
             }
 
-            setBonusText += $"\n{CalamityUtils.GetText($"Vanilla.Armor.SetBonus.{ArmorSetName}").Format(DefenseBoostMax)}";
+            setBonusText += $"\n{CalamityUtils.GetText($"Vanilla.Armor.SetBonus.{ArmorSetName}").Format(CritToDRConversionPercent, DefenseBoostMax, TimeUntilBoostCompletelyDecays.FramesToSeconds())}";
         }
 
         public override void ApplyArmorSetBonus(Player player)
         {
-            int critBoost = (int)(MathHelper.Clamp(player.endurance, 0f, 1f) * 50f);
+            int critBoost = (int)(MathHelper.Clamp(player.endurance, 0f, 1f) * CritToDRConversionPercent);
             switch (player.armor[0].type)
             {
                 case ItemID.AdamantiteHeadgear:

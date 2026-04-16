@@ -195,7 +195,7 @@ Grax: {
 	DisplayName: Grax
 	Tooltip:
 		'''
-		Hitting an enemy will greatly boost your damage, defense, and damage reduction for a short time
+		Hitting an enemy increases your damage by {0}% and defense by {1} for {2} seconds
 		Press <right> to use without hammering down walls or chopping down trees
 		'''
 }
@@ -390,7 +390,7 @@ WulfrumDiggingTurtle: {
 
 WulfrumDrill: {
 	DisplayName: Wulfrum Drill
-	Tooltip: ""
+	Tooltip: "{$Common.ArmorPenetration}"
 }
 
 WulfrumScaffoldKit: {

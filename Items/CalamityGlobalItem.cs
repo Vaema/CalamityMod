@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using CalamityMod.Balancing;
+using CalamityMod.Buffs.Potions;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer;
@@ -21,7 +22,6 @@ using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Magic;
-using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs.Other;
 using CalamityMod.NPCs.TownNPCs;
@@ -616,6 +616,17 @@ namespace CalamityMod.Items
                 }
             }
 
+            //Mana Potion interactions
+            if (item.healMana > 0 || player.HasBuff(ModContent.BuffType<AstralInjectionBuff>()))
+            {
+                //If mana potion used, kill all active Crown projectiles 
+                if ((modPlayer.moonCrown || modPlayer.featherCrown) && modPlayer.mageCrownCount > 0)
+                {
+                    modPlayer.mageCrownTimer = 300;
+                    modPlayer.mageCrownCount = 0;
+                }
+            }
+
             // Staff/Axe of Regrowth growing Calamity grass
             if (item.type == ItemID.StaffofRegrowth || item.type == ItemID.AcornAxe)
             {
@@ -637,7 +648,7 @@ namespace CalamityMod.Items
                     return true;
                 }
             }
-            
+
             return base.UseItem(item, player);
         }
 
@@ -645,21 +656,6 @@ namespace CalamityMod.Items
         {
             if (player.Calamity().profanedCrystalBuffs && item.pick == 0 && item.axe == 0 && item.hammer == 0 && item.autoReuse && (item.CountsAsClass<ThrowingDamageClass>() || item.CountsAsClass<MagicDamageClass>() || item.CountsAsClass<RangedDamageClass>() || item.CountsAsClass<MeleeDamageClass>() || item.CountsAsClass<SummonMeleeSpeedDamageClass>()))
             {
-                return false;
-            }
-            if (player.HeldItem.type == ItemType<VoidConcentrationStaff>() && player.ownedProjectileCounts[ProjectileType<VoidConcentrationBlackhole>()] == 0)
-            {
-                foreach (Projectile p in Main.ActiveProjectiles)
-                {
-                    if (p.ModProjectile is VoidConcentrationAura)
-                    {
-                        if (p.owner == player.whoAmI)
-                        {
-                            p.ModProjectile<VoidConcentrationAura>().HandleRightClick();
-                            break;
-                        }
-                    }
-                }
                 return false;
             }
             if (player.HeldItem.type == ItemType<GlacialEmbrace>())
@@ -900,15 +896,13 @@ namespace CalamityMod.Items
             // Hyperius Overflow
             if (target.Calamity().hyperiusMarked)
             {
-                int damage = 0;
-                if (target.Calamity().hyperiusDamage < damageDone)
-                    damage = damageDone - target.Calamity().hyperiusDamage;
-                else
-                    damage = damageDone;
-                target.Calamity().hyperiusDamage -= damage;
+                int damageDealt = (int)(damageDone * HyperiusBullet.overflowAppliedMult);
+                int damage = (int)Math.Min(target.Calamity().hyperiusDamage / HyperiusBullet.overflowEfficency, damageDealt);
+
+                target.Calamity().hyperiusDamage -= (int)(damage * HyperiusBullet.overflowEfficency);
 
                 // Spawn overflow hit
-                Projectile overflow = Projectile.NewProjectileDirect(target.GetSource_FromThis(), target.Center, Vector2.Zero, ProjectileType<HyperiusDamage>(), (int)(damage * HyperiusBullet.overflowEfficency), 0, player.whoAmI, target.whoAmI);
+                Projectile overflow = Projectile.NewProjectileDirect(target.GetSource_FromThis(), target.Center, Vector2.Zero, ProjectileType<HyperiusDamage>(), damage, 0, player.whoAmI, target.whoAmI);
                 overflow.DamageType = item.DamageType;
                 overflow.ArmorPenetration = item.ArmorPenetration; // Takes the armor pen from what did the hit
 
@@ -971,7 +965,7 @@ namespace CalamityMod.Items
             }
             else if (set == "SpectreHealing")
             {
-                player.GetDamage<MagicDamageClass>() += 0.4f;
+                player.GetDamage<MagicDamageClass>() += 0.2f;
                 player.setBonus = CalamityUtils.GetTextValue("Vanilla.Armor.SetBonus.SpectreHealing");
             }
             else if (set == "SolarFlare")
@@ -1160,15 +1154,11 @@ namespace CalamityMod.Items
                 if (modPlayer.gloveLevel < 1)
                     modPlayer.gloveLevel = 1;
             }
-            if (item.type == ItemID.PowerGlove)
+            if (item.type == ItemID.PowerGlove || item.type == ItemID.BerserkerGlove)
             {
-                player.GetAttackSpeed<MeleeDamageClass>() -= 0.12f; // Power Glove 10%
+                player.GetAttackSpeed<MeleeDamageClass>() -= 0.12f; // Power/Berserker Glove 12%
                 if (modPlayer.gloveLevel < 2)
                     modPlayer.gloveLevel = 2;
-            }
-            if (item.type == ItemID.BerserkerGlove)
-            {
-                player.GetAttackSpeed<MeleeDamageClass>() -= 0.12f; // Berserker Glove 0%
             }
             if (item.type == ItemID.MechanicalGlove)
             {
@@ -1479,7 +1469,7 @@ namespace CalamityMod.Items
 
             return false;
         }
-        #endregion
+        #endregion     
 
         #region On Create
         private static int cachedForgeID = -1;

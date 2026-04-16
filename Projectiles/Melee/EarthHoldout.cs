@@ -261,7 +261,7 @@ namespace CalamityMod.Projectiles.Melee
                 armoredHits++;
 
             Vector2 launchVel = (Projectile.ai[1] != 1 ? Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld) : Utils.DirectionTo(Owner.Center, target.Center));
-            target.MoveNPC(launchVel, 37, true);
+            target.MoveNPC(launchVel, 37, true, Owner);
 
             if (spawnBoom)
             {
