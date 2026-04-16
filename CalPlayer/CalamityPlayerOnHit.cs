@@ -875,7 +875,7 @@ namespace CalamityMod.CalPlayer
                     {
                         if (Player.ownedProjectileCounts[ProjectileType<PhantomicDagger>()] < 3 && Main.rand.NextBool(4))
                         {
-                            int damage = (int)Player.GetTotalDamage<SummonDamageClass>().ApplyTo(100);
+                            int damage = (int)Player.GetTotalDamage<SummonDamageClass>().ApplyTo(PhantomicArtifact.DaggerDamage);
                             Projectile.NewProjectile(source, Player.Center, new Vector2(Player.velocity.X,Player.velocity.Y-10).RotatedByRandom(0.3f), ProjectileType<PhantomicDagger>(), damage, 1f, Player.whoAmI);
                         }
                     }
@@ -1076,12 +1076,12 @@ namespace CalamityMod.CalPlayer
             if (npcCheck)
             {
                 // Umbraphile cannot trigger off of itself. It is guaranteed on stealth strikes and 20% chance otherwise.
-                if (umbraphileSet && ((modProj.stealthStrike && modProj.stealthStrikeHitCount < 3) || Main.rand.NextBool(5)))
+                if (umbraphileSet && ((modProj.stealthStrike && modProj.stealthStrikeHitCount < 3) || Main.rand.NextBool(5)) && !modProj.CannotProc)
                 {
                     int umbraBlastDamage = CalamityUtils.DamageSoftCap(proj.damage * UmbraphileHood.ExplosionDamageRatio, UmbraphileHood.ExplosionDamageSoftcap);
                     Projectile.NewProjectile(spawnSource, proj.Center, Vector2.Zero, ProjectileType<UmbraphileBoom>(), umbraBlastDamage, 0f, Player.whoAmI);
                 }
-                if (electricianGlove && modProj.stealthStrike && modProj.stealthStrikeHitCount < 3)
+                if (electricianGlove && modProj.stealthStrike && modProj.stealthStrikeHitCount < 3 && !modProj.CannotProc)
                 {
                     for (int s = 0; s < 3; s++)
                     {
