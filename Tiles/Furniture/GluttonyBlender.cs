@@ -1,7 +1,6 @@
 ﻿using CalamityMod.Items.Placeables.Furniture;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -35,9 +34,9 @@ namespace CalamityMod.Tiles.Furniture
 
         public override void SetDrawPositions(int i, int j, ref int width, ref int offsetY, ref int height, ref short tileFrameX, ref short tileFrameY) => offsetY = 2;
 
-        /*public override void AnimateTile(ref int frame, ref int frameCounter)
+        /*public override void AnimateIndividualTile(int type, int i, int j, ref int frameXOffset, ref int frameYOffset)
         {
-            base.AnimateTile(ref frame, ref frameCounter);
+            base.AnimateIndividualTile(type, i, j, ref frameXOffset, ref frameYOffset);
         }*/
 
         public override void MouseOver(int i, int j)
@@ -132,6 +131,7 @@ namespace CalamityMod.Tiles.Furniture
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.timeLeft = Lifetime;
+            Projectile.scale = 0f;
         }
 
         public override bool ShouldUpdatePosition() => false;
@@ -151,6 +151,8 @@ namespace CalamityMod.Tiles.Furniture
                 Projectile.Center += (moveDistBeforeArc / (float)TimeToReachBlender) - Vector2.UnitY * (3f - (0.1f * Timer));
                 Projectile.rotation = moveDistBeforeArc.X * 0.005f;
 
+                if (Timer < 4)
+                    Projectile.scale += 0.25f;
                 if (Timer >= TimeToReachBlender - 4)
                     Projectile.scale -= 0.25f;
             }
