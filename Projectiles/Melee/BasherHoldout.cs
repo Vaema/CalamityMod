@@ -16,7 +16,6 @@ using static Terraria.Player;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    [PierceResistException]
     public class BasherHoldout : ModProjectile, ILocalizedModType
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<Basher>();

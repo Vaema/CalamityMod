@@ -188,11 +188,11 @@ namespace CalamityMod.CalPlayer
         public enum FishingMinigames
         {
             None,
-            ScrapBobber,
-            NavystoneBobber,
-            SkylineBobber,
-            PerennialBobber,
-            ScoriaBobber,
+            WulfrumBobber,
+            SunkenSinker,
+            AcrobaticBobber,
+            FeralBobber,
+            VolcanicSinker,
             DevourerofCods //Not a fishing minigame but uses the same code as the rest
         }
         public FishingMinigames SelectedFishingMinigame = FishingMinigames.None;
@@ -593,6 +593,7 @@ namespace CalamityMod.CalPlayer
         public bool lordePet = false;
         public bool frostyBat = false;
         public bool toastyBat = false;
+        public bool starSwallowerPetFroge = false;
         #endregion
 
         #region Rage
@@ -2297,6 +2298,7 @@ namespace CalamityMod.CalPlayer
             lordePet = false;
             frostyBat = false;
             toastyBat = false;
+            starSwallowerPetFroge = false;
 
             onyxExcavator = false;
             rimehound = false;
@@ -5230,7 +5232,7 @@ namespace CalamityMod.CalPlayer
                     ((abyssalDivingSuit && Player.IsUnderwater()) ? 0.05f : 0f) +
                     (aquaticHeartWaterBuff ? AquaticHeart.WaterSpeedBoost : 0f) +
                     (laudanum && Player.HasBuff(BuffID.VortexDebuff) ? 0.15f : 0f) +
-                    ((frostFlare && Player.statLife <= (int)(Player.statLifeMax2 * 0.5)) ? 0.15f : 0f) +
+                    ((frostFlare && Player.statLife <= (int)(Player.statLifeMax2 * FrostFlare.HealthRatioThreshold)) ? FrostFlare.AccelerationBoost : 0f) +
                     (dragonScales ? 0.1f : 0f) +
                     (CobaltSet ? CobaltArmorSetChange.SpeedBoostSetBonusPercentage * 0.01f : 0f) +
                     (silvaSet ? SilvaArmor.AccelerationBoost : 0f) +
@@ -5250,7 +5252,7 @@ namespace CalamityMod.CalPlayer
                     (stressPills ? 0.05f : 0f) +
                     ((abyssalDivingSuit && Player.IsUnderwater()) ? 0.05f : 0f) +
                     (aquaticHeartWaterBuff ? AquaticHeart.WaterSpeedBoost : 0f) +
-                    ((frostFlare && Player.statLife <= (int)(Player.statLifeMax2 * 0.5)) ? 0.15f : 0f) +
+                    ((frostFlare && Player.statLife <= (int)(Player.statLifeMax2 * FrostFlare.HealthRatioThreshold)) ? FrostFlare.AccelerationBoost : 0f) +
                     (dragonScales ? 0.1f : 0f) +
                     (CobaltSet ? CobaltArmorSetChange.SpeedBoostSetBonusPercentage * 0.01f : 0f) +
                     (silvaSet ? SilvaArmor.AccelerationBoost : 0f) +
@@ -6045,32 +6047,6 @@ namespace CalamityMod.CalPlayer
                 else if (NPC.downedBoss1)
                     vanillaPriceMult = 3;
                 price /= vanillaPriceMult;
-            }
-        }
-
-        public override void PostNurseHeal(NPC nurse, int health, bool removeDebuffs, int price)
-        {
-            // Remove excess alcohol
-            if (removeDebuffs && alcoholPoisonLevel > alcoholPoisonMax)
-            {
-                List<int[]> Alcohol = new List<int[]>();
-                for (int i = 0; i < Player.MaxBuffs; i++)
-                {
-                    int buff = Player.buffType[i];
-                    if (CalamityBuffSets.AlcoholStrength.TryGetValue(buff, out int level))
-                        Alcohol.Insert(0, new int[] { i, level });
-                }
-
-                int poison = alcoholPoisonLevel;
-                do
-                {
-                    // Obtain the index:level relationship
-                    int[] relation = Alcohol[0];
-                    Player.DelBuff(relation[0]); // Remove the alcohol
-                    poison -= relation[1]; // Cancel the poison level
-                    Alcohol.RemoveAt(0);
-                }
-                while (poison > 3);
             }
         }
         #endregion

@@ -18,14 +18,16 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public int SineCounter = 0;
 
+        public static int ArmorPenetration = 20;
         public static int AmmoSavedPercent = 80;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(ArmorPenetration, AmmoSavedPercent);
 
         public override void SetDefaults()
         {
             Item.width = 56;
             Item.height = 24;
             Item.damage = 75;
+            Item.ArmorPenetration = ArmorPenetration;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 1;
             Item.useAnimation = 4;
@@ -57,7 +59,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 for (int i = -1; i <= 1; i += 2)
                 {
                     Vector2 helixVel = (velocity * Main.rand.NextFloat(0.9f, 1.1f)).RotatedBy(MathHelper.ToRadians(i * sine));
-                    Projectile.NewProjectile(source, position, helixVel, ModContent.ProjectileType<ChargedBlast>(), damage, knockback, player.whoAmI, 0, 0, player.altFunctionUse != 2 ? 1 : 0);
+                    Projectile.NewProjectile(source, position, helixVel, ModContent.ProjectileType<ChargedBlast>(), damage, knockback, player.whoAmI, 0, 0, 1);
                 }
             }
             Particle spark2 = new LineParticle(position + Main.rand.NextVector2Circular(6, 6), (velocity * 4).RotatedByRandom(0.2f) * Main.rand.NextFloat(0.8f, 1.2f), false, Main.rand.Next(15, 25 + 1), Main.rand.NextFloat(1.5f, 2f), new Color(229, 49, 39));

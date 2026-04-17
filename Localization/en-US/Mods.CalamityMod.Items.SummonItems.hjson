@@ -71,7 +71,7 @@ CosmicWorm: {
 		'''
 		Summons the Devourer of Gods
 		{$Common.NotConsumable}
-		'The Nameless Serpent has set out for you.'
+		[ceffect/dog:'The Nameless Serpent has set out for you.']
 		'''
 }
 

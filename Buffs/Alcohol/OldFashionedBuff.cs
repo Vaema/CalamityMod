@@ -1,6 +1,5 @@
 ﻿using CalamityMod.DataStructures;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.Alcohol
@@ -17,8 +16,6 @@ namespace CalamityMod.Buffs.Alcohol
             Main.pvpBuff[Type] = true;
             Main.buffNoSave[Type] = false;
             Main.persistentBuff[Type] = true;
-            BuffID.Sets.NurseCannotRemoveDebuff[Type] = true;
-            BuffDatasets.DebuffDataset[Type] = debuffData;
         }
 
         public override void Update(Player player, ref int buffIndex)

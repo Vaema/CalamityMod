@@ -4,32 +4,30 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Fishing
+namespace CalamityMod.Items.Accessories
 {
-    internal class SkylineBobber : ModItem, ILocalizedModType
+    [LegacyName("ScrapBobber")]
+    internal class WulfrumBobber : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Fishing";
-        public override string Texture => "CalamityMod/Projectiles/Typeless/HeronBobber";
+        public override string Texture => "CalamityMod/Projectiles/Typeless/WulfrumBobber";
         public override void SetDefaults()
         {
             Item.width = 9;
             Item.height = 9;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
-            Item.rare = ItemRarityID.Orange;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
+            Item.rare = ItemRarityID.Blue;
             Item.accessory = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.accFishingBobber = true;
-            player.Calamity().SelectedFishingMinigame = CalamityPlayer.FishingMinigames.SkylineBobber;
+            player.Calamity().SelectedFishingMinigame = CalamityPlayer.FishingMinigames.WulfrumBobber;
         }
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.FishingBobber).
-                AddIngredient<AerialiteBar>(5).
-                AddIngredient(ItemID.Feather).
+                AddIngredient<WulfrumMetalScrap>(5).
                 AddTile(TileID.Anvils).
                 Register();
         }

@@ -24,6 +24,7 @@ AbyssBreathLevel2: Moderately reduces breath loss in the abyss
 AbyssBreathLevel3: Greatly reduces breath loss in the abyss
 AlcoholWarning: Drinking more than 3 different alcohols might not end well with your liver
 ArmorPenetration: Ignores {0} points of enemy Defense
+AverageDamageInfo: This weapon scales with the average of all your damage stats
 CanMineUelibloom: Can mine Uelibloom Ore
 NotConsumable: Not consumable
 SummonTagDamageFlat: "{0} summon tag damage"

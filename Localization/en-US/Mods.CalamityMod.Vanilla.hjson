@@ -158,8 +158,7 @@ EditedTooltip: {
 	*/
 	SunMoonStones: critical strike chance, life regeneration,
 	CelestialStoneShell: Minor increase to damage,
-	PowerGlove: 10% increased melee speed, does not stack with downgrades
-	BerserkerGlove: 10% increased true melee damage
+	PowerBerserkerGlove: 12% increased melee speed, does not stack with downgrades
 	MechanicalGlove:
 		'''
 		12% increased melee damage
