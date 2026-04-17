@@ -845,11 +845,11 @@ OmniGun: {
 	DisplayName: The Omnigun
 	Tooltip:
 		'''
-		A flexible weapon, for any occasion
-		The first bullet is a sniper shot that gains damage as it travels and always critically strikes
-		Then, unleashes a volley of 10 rapid rifle shots
-		After which it fires a point blank shotgun spread of bullets with extreme damage
-		Before reloading, the gun fires a powerful grenade that blows up everything, including you
+		A multipurpose weapon with several modes which are used in sequence
+		The first shot is a sniper round which gains damage over time and always critically strikes
+		The second shot is a burst of 10 standard bullets
+		The third shot is a devastating point blank spread
+		The fourth shot is a dangerous but powerful grenade which destroys everything, including you
 		'What kind of gun is it?'
 		'Yes'
 		'''

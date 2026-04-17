@@ -1,4 +1,4 @@
-using CalamityMod.Items.Weapons.Ranged;
+﻿using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
@@ -168,8 +168,8 @@ namespace CalamityMod.Projectiles.Ranged
                     {
                         Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 30;
                         #region Visuals and Sounds
-                        SoundStyle fire = new SoundStyle("CalamityMod/Sounds/Item/GunShotHeavy");
-                        SoundEngine.PlaySound(fire with { Volume = 0.7f, PitchVariance = 0.1f }, Projectile.Center);
+                        SoundStyle fire = new("CalamityMod/Sounds/Item/LauncherHeavyShot");
+                        SoundEngine.PlaySound(fire with { Volume = 0.8f, PitchVariance = 0.1f }, Projectile.Center);
                         if (Main.netMode != NetmodeID.Server)
                         {
                             string goreType = "OmniGrenadeShell";
