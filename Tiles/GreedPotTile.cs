@@ -191,11 +191,11 @@ namespace CalamityMod.Tiles
                 { ItemID.TitaniumOre, (ModContent.ItemType<HallowedOre>(), () => CalamityServerConfig.Instance.EarlyHardmodeProgressionRework ? NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3 : NPC.downedMechBossAny) },
                 { ModContent.ItemType<HallowedOre>(), (ItemID.ChlorophyteOre, () => NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3) },
                 { ItemID.ChlorophyteOre, (ModContent.ItemType<PerennialOre>(), () => NPC.downedPlantBoss) },
-                { ModContent.ItemType<PerennialOre>(), (ModContent.ItemType<ScoriaOre>(), () => NPC.downedGolemBoss) },
+                { ModContent.ItemType<PerennialOre>(), (ModContent.ItemType<ScoriaOre>(), () => NPC.downedAncientCultist) },
                 { ModContent.ItemType<ScoriaOre>(), (ItemID.LunarOre, () => NPC.downedMoonlord) },
                 { ItemID.LunarOre, (ModContent.ItemType<ExodiumCluster>(), () => NPC.downedMoonlord) },
                 { ModContent.ItemType<ExodiumCluster>(), (ModContent.ItemType<UelibloomOre>(), () => DownedBossSystem.downedProvidence) },
-                { ModContent.ItemType<UelibloomOre>(), (ModContent.ItemType<AuricOre>(), () => DownedBossSystem.downedYharon) },
+                { ModContent.ItemType<UelibloomOre>(), (ModContent.ItemType<AuricOre>(), () => DownedBossSystem.downedCalamitas || DownedBossSystem.downedExoMechs) },
             };
         }
 
