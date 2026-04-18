@@ -729,8 +729,8 @@ EtherealTalisman: {
 	DisplayName: Ethereal Talisman
 	Tooltip:
 		'''
-		15% increased magic damage, 5% increased magic critical strike chance
-		+150 max mana and 10% decreased mana usage
+		{$CommonItemTooltip.IncreasesMaxManaBy} and {$CommonItemTooltip.PercentReducedManaCost@1}
+		{$CommonItemTooltip.PercentIncreasedMagicDamage@2} and {$CommonItemTooltip.PercentIncreasedMagicCritChance@3}
 		Increases pickup range for mana stars
 		You automatically use mana potions when needed
 		[c/aaaaaa:Shift-<right> in your inventory to toggle] [i:ManaFlower] [c/aaaaaa:Mana Flower's effect]
@@ -792,7 +792,7 @@ FleshTotem: {
 	Tooltip:
 		'''
 		5% increased magic critical strike chance
-		+30 max mana
+		+20 max mana
 		Summons an effigy above your head that stores mana as you use it, up to 600 mana
 		The effigy occasionally pulses, restoring 25 mana
 		Pulses appear more frequently the more mana is stored
@@ -1098,7 +1098,7 @@ ManaPolarizer: {
 	DisplayName: Mana Polarizer
 	Tooltip:
 		'''
-		Increases max mana by 50
+		Increases max mana by 40
 		Provides life regeneration and magic damage that scales based on how much mana you have
 		Lower mana means more life regeneration, but less magic damage
 		These scale from -2 to +2 HP/s, and 15% to 5% damage
@@ -1130,7 +1130,7 @@ MoonstoneCrown: {
 	DisplayName: Moonstone Crown
 	Tooltip:
 		'''
-		+70 max mana
+		+40 max mana
 		Summons a [c/27F5E0:Lunar Sigil] every 2 seconds, up to a maximum of 10
 		Each [c/27F5E0:Lunar Sigil] increases magic damage by 2% and reduces mana cost by 1%
 		With 5 sigils, increases mana regeneration by +5 MP/s
@@ -1281,7 +1281,7 @@ PermafrostsConcoction: {
 	DisplayName: Permafrost's Concoction
 	Tooltip:
 		'''
-		Increases maximum mana by 50 and reduces mana cost by 15%
+		Increases maximum mana by 40 and reduces mana cost by 15%
 		+0.5 HP/s life regen below half health, +1 HP/s when below 25% health and +2 HP/s when below 10% health
 		+3 HP/s life regen while afflicted with any fire debuff
 		You will survive fatal damage and revive with 30% life on a 3 minute cooldown
@@ -1627,8 +1627,8 @@ SigilofCalamitas: {
 	DisplayName: Sigil of Calamitas
 	Tooltip:
 		'''
-		15% increased magic damage and 10% decreased mana usage
-		+100 max mana
+		{$CommonItemTooltip.IncreasesMaxManaBy}
+		{$CommonItemTooltip.PercentIncreasedMagicDamage@1}
 		Increases pickup range for mana stars
 		'''
 }
