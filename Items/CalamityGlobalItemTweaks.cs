@@ -49,7 +49,7 @@ namespace CalamityMod.Items
                 { ItemID.Anchor, Do(DamageExact(107), UseExact(30)) }, // VANILLA: 70 DMG, 20 UT
                 { ItemID.AntlionClaw, Do(UseExact(10)) }, // Mandible Blade. VANILLA: 18 UT
                 { ItemID.AquaScepter, Do(DamageRatio(0.9f)) }, // VANILLA: 27 DMG. Uses ratios due to remix seed
-                { ItemID.Bananarang, Do(DamageExact(76), UseExact(14)) }, // VANILLA: 45 DMG, 11 UT
+                { ItemID.Bananarang, Do(DamageExact(60)) }, // VANILLA: 45 DMG
                 { ItemID.BatScepter, Do(DamageExact(50)) }, // VANILLA: 45 DMG
                 { ItemID.BeamSword, Do(UseMeleeSpeed, DamageExact(131), UseAnimationExact(40), KnockbackExact(8)) }, // VANILLA: 52 DMG, 20 UT, 6.5 KB
                 { ItemID.BeeGun, Do(DamageExact(11), ManaExact(4)) }, // VANILLA: 9 DMG, 5 MANA
@@ -117,7 +117,7 @@ namespace CalamityMod.Items
                 { ItemID.Flamelash, Do(DamageExact(36), ManaExact(18)) }, // VANILLA: 32 DMG, 21 MANA
                 { ItemID.Flamethrower, Do(DamageExact(21), ShootSpeedDelta(+3f)) }, // VANILLA: 35 DMG, 7 VEL
                 { ItemID.FlowerofFire, Do(DamageRatio(0.78f), ManaExact(7)) }, // VANILLA: 48 DMG, 12 MANA. Uses ratios due to remix seed
-                { ItemID.FlowerofFrost, Do(DamageExact(70), UseExact(22), ManaExact(7), ShootSpeedExact(14)) }, // VANILLA: 60 DMG, 12 UT, 11 MANA, 9 VEL
+                { ItemID.FlowerofFrost, Do(DamageExact(49), ManaExact(7), ShootSpeedExact(14)) }, // VANILLA: 60 DMG, 11 MANA, 9 VEL
                 { ItemID.FlyingKnife, Do(DamageExact(53)) }, // VANILLA: 40 DMG
                 { ItemID.Frostbrand, Do(UseMeleeSpeed, DamageExact(88)) }, // VANILLA: 49 DMG
                 { ItemID.Gatligator, Do(UseExact(6)) }, // VANILLA: 7 UT
@@ -147,7 +147,7 @@ namespace CalamityMod.Items
                 { ItemID.KOCannon, Do(DamageRatio(2.65f)) }, // VANILLA: 40 DMG. Uses ratios due to remix seed
                 { ItemID.Kraken, Do(DamageExact(65)) }, // VANILLA: 95 DMG
                 { ItemID.LaserMachinegun, Do(DamageExact(49)) }, // VANILLA: 60 DMG
-                { ItemID.LaserRifle, Do(DamageExact(46), UseExact(10), ManaExact(4)) }, // VANILLA: 29 DMG, 12 UT, 8 MANA
+                { ItemID.LaserRifle, Do(DamageExact(41), UseExact(10), ManaExact(4)) }, // VANILLA: 29 DMG, 12 UT, 8 MANA
                 { ItemID.LastPrism, Do(DamageExact(57), ManaExact(10)) }, // VANILLA: 100 DMG, 12 MANA
                 { ItemID.LeadShortsword, Do(TrueMelee, DamageExact(11)) }, // VANILLA: 9 DMG
                 { ItemID.LeafBlower, Do(DamageExact(61)) }, // VANILLA: 48 DMG
