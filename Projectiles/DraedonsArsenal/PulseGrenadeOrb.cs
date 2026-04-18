@@ -33,6 +33,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
             Projectile.ArmorPenetration = 15;
+            Projectile.Calamity().CannotProc = true;
         }
         public override bool ShouldUpdatePosition() => (time < 120);
         public override void AI()

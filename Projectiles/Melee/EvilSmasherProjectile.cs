@@ -1,18 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
-using CalamityMod.Sounds;
-using Humanizer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
-using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -76,8 +70,10 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Projectile.timeLeft++;
                 timer--;
-                if (!playedChargeSound) {
-                    SoundEngine.PlaySound(SoundID.Item178,Projectile.Center);
+                if (!playedChargeSound)
+                {
+                    SoundEngine.PlaySound(SoundID.DeerclopsStep with { Volume = 2f, Pitch = 0.5f }, Projectile.Center);
+                    SoundEngine.PlaySound(Murasama.InorganicHit with { Pitch = -0.5f }, Projectile.Center);
                     playedChargeSound = true;
                     for (int i = 0; i < 5; i++)
                     {
