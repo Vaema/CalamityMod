@@ -659,7 +659,7 @@ EclipseMirror: {
 }
 
 FragmentsOfAnotherWorld: {
-	DisplayName: Fragments Of Another World
+	DisplayName: Fragments of Another World
 	Tooltip:
 		'''
 		Grants immunity to [cbuffplr:CalamityMod/WhisperingDeath]
