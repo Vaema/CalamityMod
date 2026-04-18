@@ -247,12 +247,12 @@ AsgardsValor: {
 		'''
 }
 
-AuricSoulArtifact: {
-	DisplayName: Auric Soul Artifact
+FadedIdolatry: {
+	DisplayName: Faded Idolatry
 	Tooltip:
 		'''
 		For each Fiery Draconid you have summoned, you gain 1 minion slot
-		Loyalty
+		[c/ffe100:'Once everything has crumbled to dust, what will be left of the world you created?']
 		'''
 }
 
@@ -588,12 +588,12 @@ DiamondOfTheDeep: {
 		'''
 }
 
-DimensionalSoulArtifact: {
-	DisplayName: Dimensional Soul Artifact
+CrushingEgo: {
+	DisplayName: Crushing Ego
 	Tooltip:
 		'''
 		Multiplies all damage by 1.2x, but at the cost of taking 15% increased damage
-		Power
+		[c/ff00ff:'Don the mask of arrogance, and dance by your lonesome. Once the ball has gone quiet, you'll be the last man standing.']
 		'''
 }
 
@@ -658,13 +658,17 @@ EclipseMirror: {
 	FlavorTooltip: "'Its reflection shows naught but darkness'"
 }
 
-EldritchSoulArtifact: {
-	DisplayName: Eldritch Soul Artifact
+FragmentsOfAnotherWorld: {
+	DisplayName: Fragments of Another World
 	Tooltip:
 		'''
-		Boosts melee speed by 10%, ranged velocity by 25%, rogue stealth regen by 15%, max minions by 1 and reduces mana cost by 25%
 		Grants immunity to [cbuffplr:CalamityMod/WhisperingDeath]
-		Knowledge
+		{0}% increased melee speed
+		{1}x specialist ranged damage
+		{2}% reduced mana usage
+		+{3} maximum sentries
+		{4}% increased rogue attack speed
+		[c/ff0000:'Don't speak of your desires to the shadows, they listen.']
 		'''
 }
 
@@ -1151,9 +1155,9 @@ Nanotech: {
 		'''
 		Rogue projectiles create nanoblades as they travel
 		Stealth strikes summon nanobeams and sparks on enemy hits
-		Stealth strikes have +15 armor penetration, deal 5% more damage, and heal for 2 HP
+		Stealth strikes have lifesteal, +15 armor penetration, deal 5% more damage
 		15% increased rogue damage and 15% increased rogue velocity
-		Stealth strikes grant 10% critical strike chance to non-stealth strikes for 5 seconds
+		Stealth strikes grant lifesteal and 10% critical strike chance to non-stealth strikes for 10 seconds
 		'''
 }
 

@@ -9,8 +9,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    [LegacyName("GodlySoulArtifact")]
-    public class AuricSoulArtifact : ModItem, ILocalizedModType
+    [LegacyName("DimensionalSoulArtifact")]
+    public class CrushingEgo : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
@@ -18,21 +18,21 @@ namespace CalamityMod.Items.Accessories
             Item.width = 28;
             Item.height = 28;
             Item.accessory = true;
-            Item.rare = ModContent.RarityType<BurnishedAuric>();
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.rare = ModContent.RarityType<CosmicPurple>();
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.auricSArtifact = true;
+            modPlayer.crushingEgo = true;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<YharonSoulFragment>(5).
-                AddIngredient<Plagueplate>(25).
+                AddIngredient<CosmiliteBar>(5).
+                AddIngredient<Elumplate>(25).
                 AddIngredient<ExodiumCluster>(25).
                 AddTile<CosmicAnvil>().
                 Register();

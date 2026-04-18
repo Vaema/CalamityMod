@@ -212,6 +212,17 @@ namespace CalamityMod.CalPlayer
             if (Player.whoAmI != Main.myPlayer)
                 return;
 
+            //Undo raider crit after hit
+            if (!proj.Calamity().stealthStrike && !proj.Calamity().stealthStrikeSubProjectile && raiderCritLifespan > 0f)
+            {
+                if (nanotech)
+                    proj.CritChance -= Items.Accessories.Nanotech.RaiderBonus;
+                else if (vampiricTalisman)
+                    proj.CritChance -= VampiricTalisman.RaiderBonus;
+                else if (raiderTalisman)
+                    proj.CritChance -= RaidersTalisman.RaiderBonus;
+            }
+
             // Apply this to player equippable sources ie. Orichalcum set bonus petal spawns
             // Do not apply if this effect is an extension of a weapon ie. Pearl God round effect as it will mess up Old Fashioned
             var source = Player.GetSource_OnHit(target);
@@ -1064,8 +1075,7 @@ namespace CalamityMod.CalPlayer
             if (raiderTalisman && modProj.stealthStrike)
             {
                 raiderCritLifespan = CalamityUtils.SecondsToFrames(RaidersTalisman.RaiderCooldown);
-                // TO DO: Add nanotech here
-                Player.AddCooldown(RaiderBoost.ID, raiderCritLifespan, true, vampiricTalisman ? "Bloodfeast" : "default");
+                Player.AddCooldown(RaiderBoost.ID, raiderCritLifespan, true, nanotech ? "Nanotech" : vampiricTalisman ? "Vampiric" : "default");
                 if (raiderSoundCooldown <= 0)
                 {
                     SoundEngine.PlaySound(RaidersTalisman.StealthHitSound, Player.Center);
@@ -1273,7 +1283,7 @@ namespace CalamityMod.CalPlayer
                     Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, heal, (raiderCritLifespan > 0 && !proj.Calamity().stealthStrike) ? 1.2f : 1.5f);
                 }
 
-                if (bloodyGlove && proj.CountsAsClass<RogueDamageClass>() && modProj.stealthStrike && proj.numHits < 1)
+                if (bloodyGlove && proj.CountsAsClass<RogueDamageClass>() && (modProj.stealthStrike || (nanotech && raiderCritLifespan > 0)) && proj.numHits < 1)
                     //Nanotech has the same heal as Electrician's glove
                     Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, electricianGlove ? 10 : 5, electricianGlove ? 2f : 3f);
 
