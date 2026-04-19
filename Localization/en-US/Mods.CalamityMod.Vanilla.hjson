@@ -440,7 +440,7 @@ TownNPCMood: {
 	Clothier: {
 		Monument: I think I am becoming too old to understand this... "modern art".
 		GiftPositive: There was a simple bell in that gift, but its ring was simply extraordinary. Perhaps this means I truly believe...
-		GiftNegative: placeholder
+		GiftNegative: Can we get serious now? No one warned me! No one said "You are about to receive the most wretched gift in history". No one could train for that!
 	}
 
 	Cyborg: {
