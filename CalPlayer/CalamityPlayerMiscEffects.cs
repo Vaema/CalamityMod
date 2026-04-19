@@ -3588,6 +3588,11 @@ namespace CalamityMod.CalPlayer
                 Player.manaRegenCount += StarBeamRye.ManaRegenBoost;
                 Player.GetDamage<MagicDamageClass>() *= StarBeamRye.MagicDmgMult;
             }
+            if (dripPlayer.HasAlcohol(AlcoholType.StarBeamRye))
+            {
+                Player.manaRegenCount += StarBeamRye.ManaRegenBoost;
+                Player.GetDamage<MagicDamageClass>() *= StarBeamRye.MagicDmgMult;
+            }
 
             if (whiteWine || dripPlayer.HasAlcohol(AlcoholType.WhiteWine))
             {

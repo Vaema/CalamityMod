@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         private static void ApplyStarBeamRyeEffect(Player player, float intensity)
         {
-            // out of order 20 defense
+            // See CalamityPlayerMiscEffects
         }
         public override void SetStaticDefaults()
         {

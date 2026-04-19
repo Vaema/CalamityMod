@@ -434,7 +434,11 @@ StarBeamRye: {
 		Magic weapons deal {0}x damage
 		{$Common.AlcoholWarning}
 		'''
-	DripEffect: Strangely, you feel no different...
+	DripEffect:
+		'''
+		Increases Mana regeneration, even while using an item
+		Magic weapons deal {0}x damage
+		'''
 }
 
 Tequila: {
