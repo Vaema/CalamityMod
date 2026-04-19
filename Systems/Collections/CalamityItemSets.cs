@@ -93,8 +93,8 @@ namespace CalamityMod.Systems.Collections
         /// Defaults to <see langword="false"/>.
         /// </summary>
         public static bool[] RogueBomb = Factory.CreateBoolSet(ItemType<BallisticPoisonBomb>(), ItemType<BlastBarrel>(), ItemType<ContaminatedBile>(), ItemType<ConsecratedWater>(), ItemType<CraniumSmasher>(),
-                ItemType<DesecratedWater>(), ItemType<DuststormInABottle>(), ItemType<Exorcism>(), ItemType<LeonidProgenitor>(), ItemType<MeteorFist>(), ItemType<Penumbra>(), ItemType<Plaguenade>(), 
-                ItemType<PlasmaGrenade>(), ItemType<PulseGrenade>(), ItemType<Pumpkaboom>(), ItemType<SeafoamBomb>(), ItemType<SealedSingularity>(), ItemType<SkyfinBombers>(), ItemType<SpentFuelContainer>(), 
+                ItemType<DesecratedWater>(), ItemType<DuststormInABottle>(), ItemType<Exorcism>(), ItemType<LeonidProgenitor>(), ItemType<MeteorFist>(), ItemType<Penumbra>(), ItemType<Plaguenade>(),
+                ItemType<PlasmaGrenade>(), ItemType<PulseGrenade>(), ItemType<Pumpkaboom>(), ItemType<SeafoamBomb>(), ItemType<SealedSingularity>(), ItemType<SkyfinBombers>(), ItemType<SpentFuelContainer>(),
                 ItemType<StarofDestruction>(), ItemType<Supernova>(), ItemType<TotalityBreakers>(), ItemType<WavePounder>(), ItemType<Whitewater>());
 
         /// <summary>
@@ -102,9 +102,9 @@ namespace CalamityMod.Systems.Collections
         /// Currently unused, and exists as an objective classification for the sake of the Wiki.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        public static bool[] RogueBoomerang = Factory.CreateBoolSet(ItemType<AerialTracker>(), ItemType<Brimblade>(), ItemType<Celestus>(), ItemType<DefectiveSphere>(), ItemType<DimensionTearingDisk>(), 
+        public static bool[] RogueBoomerang = Factory.CreateBoolSet(ItemType<AerialTracker>(), ItemType<Brimblade>(), ItemType<Celestus>(), ItemType<DefectiveSphere>(), ItemType<DimensionTearingDisk>(),
                 ItemType<DynamicPursuer>(), ItemType<EnchantedAxe>(), ItemType<EpidemicShredder>(), ItemType<Equanimity>(), ItemType<FishboneBoomerang>(), ItemType<FrostcrushValari>(), ItemType<GhoulishGouger>(),
-                ItemType<Icebreaker>(), ItemType<InfestedClawmerang>(), ItemType<KelvinCatalyst>(), ItemType<Kylie>(), ItemType<MangroveChakram>(), ItemType<MoltenAmputator>(), ItemType<NanoblackReaper>(), 
+                ItemType<Icebreaker>(), ItemType<InfestedClawmerang>(), ItemType<KelvinCatalyst>(), ItemType<Kylie>(), ItemType<MangroveChakram>(), ItemType<MoltenAmputator>(), ItemType<NanoblackReaper>(),
                 ItemType<ReboundingRainbow>(), ItemType<SamsaraSlicer>(), ItemType<SubductionSlicer>(), ItemType<ToxicantTwister>(), ItemType<Valediction>());
 
         /// <summary>
@@ -113,10 +113,10 @@ namespace CalamityMod.Systems.Collections
         /// Defaults to <see langword="false"/>.
         /// </summary>
         public static bool[] RogueDagger = Factory.CreateBoolSet(ItemType<AshenStalactite>(), ItemType<Cinquedea>(), ItemType<Crystalline>(), ItemType<FeatherKnife>(), ItemType<GelDart>(),
-                ItemType<GildedDagger>(), ItemType<GleamingDagger>(), ItemType<InfernalKris>(), ItemType<Mycoroot>(), ItemType<ShinobiBlade>(), ItemType<SporeKnife>(), ItemType<WulfrumKnife>(), 
+                ItemType<GildedDagger>(), ItemType<GleamingDagger>(), ItemType<InfernalKris>(), ItemType<Mycoroot>(), ItemType<ShinobiBlade>(), ItemType<SporeKnife>(), ItemType<WulfrumKnife>(),
                 ItemType<CobaltKunai>(), ItemType<CorpusAvertor>(), ItemType<CursedDagger>(), ItemType<LeviathanTeeth>(), ItemType<Malachite>(), ItemType<MythrilKnife>(), ItemType<OrichalcumSpikedGemstone>(),
                 ItemType<Prismalline>(), ItemType<RadiantStar>(), ItemType<StellarKnife>(), ItemType<StormfrontRazor>(), ItemType<TerrorTalons>(), ItemType<CosmicKunai>(), ItemType<JawsOfOblivion>(),
-                ItemType<LunarKunai>(), ItemType<Sacrifice>(), ItemType<Seraphim>(), ItemType<ShatteredDawn>(), ItemType<TarragonThrowingDart>(), ItemType<TimeBolt>(), ItemType<TwistingThunder>(), 
+                ItemType<LunarKunai>(), ItemType<Sacrifice>(), ItemType<Seraphim>(), ItemType<ShatteredDawn>(), ItemType<TarragonThrowingDart>(), ItemType<TimeBolt>(), ItemType<TwistingThunder>(),
                 ItemType<UtensilPoker>());
 
         /// <summary>
@@ -125,8 +125,8 @@ namespace CalamityMod.Systems.Collections
         /// Defaults to <see langword="false"/>.
         /// </summary>
         public static bool[] RogueJavelin = Factory.CreateBoolSet(ItemType<AntlionSkewer>(), ItemType<CrystalPiercer>(), ItemType<EclipsesFall>(), ItemType<IchorSpear>(), ItemType<Vega>(),
-                ItemType<PalladiumJavelin>(), ItemType<PhantasmalRuin>(), ItemType<ProfanedPartisan>(), ItemType<RealityRupture>(), ItemType<ScarletDevil>(), ItemType<ScourgeoftheDesert>(), 
-                ItemType<ScourgeoftheSeas>(), ItemType<ShardofAntumbra>(), ItemType<SpearofDestiny>(), ItemType<SpearofPaleolith>(), ItemType<Turbulance>(), ItemType<TheAtomSplitter>(), ItemType<WaveSkipper>(), 
+                ItemType<PalladiumJavelin>(), ItemType<PhantasmalRuin>(), ItemType<ProfanedPartisan>(), ItemType<RealityRupture>(), ItemType<ScarletDevil>(), ItemType<ScourgeoftheDesert>(),
+                ItemType<ScourgeoftheSeas>(), ItemType<ShardofAntumbra>(), ItemType<SpearofDestiny>(), ItemType<SpearofPaleolith>(), ItemType<Turbulance>(), ItemType<TheAtomSplitter>(), ItemType<WaveSkipper>(),
                 ItemType<Wrathwing>());
 
         /// <summary>
@@ -146,5 +146,10 @@ namespace CalamityMod.Systems.Collections
         /// Force display expandable tooltip debuff info for infliction on a player
         /// </summary>
         public static List<int>[] ExtraDebuffTooltip_Player = Factory.CreateCustomSet<List<int>>(new());
+
+        public static bool[] ShowScalingCritDamageTooltip = Factory
+            .CreateNamedSet("ShowScalingCritDamageTooltip")
+            .Description("Replaces Crit Chance tooltip line with Crit Damage, getting 2% crit dmg per 1% crit chance")
+            .RegisterBoolSet();
     }
 }
