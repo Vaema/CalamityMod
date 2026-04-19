@@ -149,7 +149,17 @@ namespace CalamityMod.Items.Accessories
             }
         }
         #endregion
+        public override void PreReforge()
+        {
+            if (containedAlcoholID != -1)
+            {
+                // Refund the alcohol to the player. 
+                Main.LocalPlayer.QuickSpawnItem(Main.LocalPlayer.GetSource_ItemUse(Item), containedAlcoholID);
 
+                containedAlcoholID = -1;
+                currentAlcoholType = AlcoholType.None;
+            }
+        }
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             IVDripPlayer dripPlayer = player.GetModPlayer<IVDripPlayer>();
