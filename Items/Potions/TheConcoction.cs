@@ -43,26 +43,25 @@ namespace CalamityMod.Items.Potions
         }
 
 
+        public override void UpdateInventory(Player player)
+        {
+            wasHovering = Main.HoverItem?.type == Type;
+        }
+
         // Display different text for the first 10 frames of hovering over the item's tooltip.
-        // Only works once after loading the mod.
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
             bool isHovering = Main.HoverItem?.type == Type;
 
             if (isHovering && !wasHovering)
                 hoverTimer = 0;
-
             if (isHovering)
                 hoverTimer++;
-
-            wasHovering = isHovering;
 
             if (hoverTimer <= 10 && hoverTimer > 0)
             {
                 TooltipLine healLine = tooltips.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "HealLife");
-
-                if (healLine != null)
-                    healLine.Text = this.GetLocalization("EasterEggText").Value;
+                healLine?.Text = this.GetLocalization("EasterEggText").Value;
             }
         }
     }
