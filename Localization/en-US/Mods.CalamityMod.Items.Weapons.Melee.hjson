@@ -533,7 +533,7 @@ FlarefrostBlade: {
 	Tooltip:
 		'''
 		Fires a homing flarefrost orb
-		Inflicts [cbuff:OnFire3] and [cbuff:Frostburn2]
+		Inflicts both [cbuff:OnFire3] and [cbuff:Frostburn2]
 		'''
 }
 

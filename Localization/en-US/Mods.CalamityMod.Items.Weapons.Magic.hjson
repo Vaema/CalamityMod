@@ -5,16 +5,12 @@ AbyssalTome: {
 
 AbyssShocker: {
 	DisplayName: Abyss Shocker
-	Tooltip:
-		'''
-		Fires an erratic lightning bolt that arcs and bounces between enemies
-		Inflicts [cbuff:CalamityMod/StaticDischarge]
-		'''
+	Tooltip: Fires an erratic lightning bolt that arcs and bounces between enemies
 }
 
 AcidGun: {
 	DisplayName: Acid Gun
-	Tooltip: Releases three streams of [cbuff:CalamityMod/Irradiated] acid
+	Tooltip: Releases three streams of irradiated acid
 }
 
 AetherfluxCannon: {
@@ -24,16 +20,12 @@ AetherfluxCannon: {
 
 AethersWhisper: {
 	DisplayName: Aether's Whisper
-	Tooltip:
-		'''
-		Fires void beams that inflict long-lasting [cbuff:CalamityMod/Shadowflame] and split on tile hits
-		Projectiles gain damage as they travel
-		'''
+	Tooltip: Fires void beams that gain damage as they travel and split on tile hits
 }
 
 AlulaAustralis: {
 	DisplayName: Alula Australis
-	Tooltip: Fires a beautiful aurora that spreads the [cbuff:CalamityMod/AstralInfectionDebuff] trailed by a star shower
+	Tooltip: Fires a beautiful aurora that spreads the [cbuff:CalamityMod/AstralInfectionDebuff] and is trailed by a star shower
 }
 
 AlphaDraconis: {
@@ -57,7 +49,6 @@ AnahitasArpeggio: {
 		Holding <left> casts up to 6 treble clefs that orbit the player
 		Releasing <left> causes the treble clefs to converge at the cursor
 		After converging, treble clefs seek your cursor
-		Treble clefs inflict [cbuff:Confused] on impact and apply [cbuff:Wet]
 		'''
 	TooltipGFB:
 		'''
@@ -92,14 +83,13 @@ Apotheosis: {
 	Tooltip:
 		'''
 		Unleashes interdimensional projection magic
-		Inflicts [cbuff:CalamityMod/WhisperingDeath] and [cbuff:CalamityMod/GodSlayerInferno]
 		Eat worms
 		'''
 }
 
 AquamarineStaff: {
 	DisplayName: Aquamarine Staff
-	Tooltip: Shoots two blue bolts that [cbuff:CalamityMod/RiptideDebuff] enemies
+	Tooltip: Shoots two blue bolts
 }
 
 ArchAmaryllis: {
@@ -111,7 +101,7 @@ ArcticBearPaw: {
 	DisplayName: Arctic Bear Paw
 	Tooltip:
 		'''
-		Fires spiritual claws that ignore walls and inflict [cbuff:Frostburn2]
+		Fires spiritual claws that ignore walls
 		'The savage mauling that fits in your pocket'
 		'''
 }
@@ -133,7 +123,7 @@ AstralachneaStaff: {
 
 AstralStaff: {
 	DisplayName: Astral Staff
-	Tooltip: Summons a large crystal from the sky that has a large area of effect on impact and soread the [cbuff:CalamityMod/AstralInfectionDebuff]
+	Tooltip: Summons a large crystal from the sky that has a large area of effect on impact and spreads the [cbuff:CalamityMod/AstralInfectionDebuff]
 }
 
 Atlantis: {
@@ -146,7 +136,6 @@ AuguroftheVoid: {
 	Tooltip:
 		'''
 		Casts a burst of elemental tentacles to spear your enemies
-		Tentacles inflict enemies with [cbuff:CalamityMod/ElementalMix]
 		'''
 }
 
@@ -155,7 +144,6 @@ BelchingSaxophone: {
 	Tooltip:
 		'''
 		Fires an array of dirty reeds, music notes, and sulphuric bubbles
-		Inflicts [cbuff:CalamityMod/Irradiated] onto enemies
 		Doot
 		'''
 }
@@ -172,7 +160,7 @@ BlackAnurian: {
 
 BloodBath: {
 	DisplayName: Blood Bath
-	Tooltip: Drenches your foes in blood that inflicts [cbuff:CalamityMod/BurningBlood]
+	Tooltip: Drenches your foes in blood
 }
 
 BrimroseStaff: {
@@ -180,7 +168,6 @@ BrimroseStaff: {
 	Tooltip:
 		'''
 		Fires a spread of splitting brimstone beams
-		Inflicts [cbuff:CalamityMod/BrimstoneFlames]
 		'''
 }
 
@@ -190,7 +177,7 @@ BurningSea: {
 		'''
 		Conjures a massive fireball that hovers near you and incinerates foes with [cbuff:CalamityMod/BrimstoneFlames]
 		Holding the fireball for too long causes it to burn out
-		This burns you with [cbuffplr:CalamityMod/BrimstoneFlames] and gives a long delay before another can be cast
+		This sets you alight with [cbuffplr:CalamityMod/BrimstoneFlames] and gives a long delay before another can be cast
 		'''
 }
 
@@ -208,7 +195,7 @@ ChronomancersScythe: {
 
 ClothiersWrath: {
 	DisplayName: Clothier's Wrath
-	Tooltip: Shoots 3 [cbuff:CalamityMod/Shadowflame] skulls
+	Tooltip: Shoots 3 shadowflame skulls
 }
 
 CoralSpout: {
@@ -236,7 +223,6 @@ Cryophobia: {
 	Tooltip:
 		'''
 		Fires an icy wave that splits multiple times and explodes into shards
-		Inflicts [cbuff:Frostburn2]
 		'Chill'
 		'''
 }
@@ -278,7 +264,6 @@ EidolicWail: {
 	Tooltip:
 		'''
 		Fires a string of bouncing sound waves that slow down on enemy hits
-		Sound waves crush enemies with [cbuff:CalamityMod/HadopelagicPressure]
 		RIP headphone users
 		'''
 }
@@ -315,7 +300,7 @@ EventHorizon: {
 
 EvergladeSpray: {
 	DisplayName: Everglade Spray
-	Tooltip: Fires a stream of [cbuff:CursedInferno] and [cbuff:Ichor]
+	Tooltip: Fires a stream of burning green ichor
 }
 
 FaceMelter: {
@@ -337,14 +322,14 @@ FlareBolt: {
 	DisplayName: Flare Bolt
 	Tooltip:
 		'''
-		Casts a ball of flame that inflicts with [cbuff:OnFire]
+		Casts a ball of flame
 		Balls of flame collapse into a swirling backdraft which pulls in enemies
 		'''
 }
 
 ForbiddenSun: {
 	DisplayName: Forbidden Sun
-	Tooltip: Casts a with [cbuff:OnFire3] orb that emits a gigantic explosion on hit
+	Tooltip: Casts a fire orb that emits a gigantic explosion on hit
 }
 
 FrigidflashBolt: {
@@ -362,7 +347,7 @@ FrostBolt: {
 	DisplayName: Frost Bolt
 	Tooltip:
 		'''
-		Casts a ball of frost that bounces off tiles and inflicts with [cbuff:Frostburn]
+		Casts a ball of frost that bounces off tiles
 		When hitting a tile, a small frost burst is produced
 		Frost projectiles will fall to the ground after enough time has passed
 		'''
@@ -420,7 +405,6 @@ HadalUrn: {
 	Tooltip:
 		'''
 		Fires a random assortment of ocean creatures
-		Inflicts [cbuff:CalamityMod/CrushDepth] and [cbuff:Venom] onto enemies
 		'There's no telling how long it was down there... or what lurks inside'
 		'''
 }
@@ -429,14 +413,14 @@ HeliumFlash: {
 	DisplayName: Helium Flash
 	Tooltip:
 		'''
-		Launches volatile star cores which erupt into colossal fusion blasts and inflicts [cbuff:CalamityMod/Daybroken]
+		Launches volatile star cores which erupt into colossal fusion blasts
 		'The power of a galaxy, if only for mere moments'
 		'''
 }
 
 HellwingStaff: {
 	DisplayName: Hellwing Staff
-	Tooltip: Casts flaming bats that light enemies [cbuff:OnFire]
+	Tooltip: Casts flaming bats
 }
 
 Hematemesis: {
@@ -639,7 +623,7 @@ Photosynthesis: {
 
 PlagueStaff: {
 	DisplayName: Plague Staff
-	Tooltip: Fires a tight spread of 4 plague fangs that inflict [cbuff:CalamityMod/Plague]
+	Tooltip: Fires a tight spread of 4 [cbuff:CalamityMod/Plague] fangs
 }
 
 PlasmaRifle: {
@@ -732,7 +716,7 @@ RelicofRuin: {
 
 RougeSlash: {
 	DisplayName: Rouge Slash
-	Tooltip: Fires a wave of 3 rouge air slashes that inflict [cbuff:CalamityMod/VermillionFlux]
+	Tooltip: Fires a wave of 3 rouge air slashes
 }
 
 SandstreamScepter: {
@@ -845,11 +829,7 @@ SnowstormStaff: {
 
 SoulPiercer: {
 	DisplayName: Soul Piercer
-	Tooltip:
-		'''
-		Casts a powerful ray that summons extra rays on its first hit
-		Inflicts [cbuff:CalamityMod/GodSlayerInferno]
-		'''
+	Tooltip: Casts a powerful ray that summons extra rays on its first hit
 }
 
 StaffofBlushie: {
@@ -859,7 +839,7 @@ StaffofBlushie: {
 
 StarShower: {
 	DisplayName: Star Shower
-	Tooltip: Casts a spread of astral stars from the sky that converge at the cursor and inflict [cbuff:CalamityMod/AstralInfectionDebuff]
+	Tooltip: Casts a spread of astral stars from the sky that converge at the cursor and spread the [cbuff:CalamityMod/AstralInfectionDebuff]
 }
 
 SubsumingVortex: {
@@ -871,7 +851,6 @@ SubsumingVortex: {
 		When enemies are near the vortex, it sends multiple fast-moving smaller vortices towards them
 		Releasing <right> fires the vortex towards the mouse if enough time has passed
 		Damage scales based on how long the vortex was held out
-		Inflicts [cbuff:CalamityMod/MiracleBlight]
 		'''
 }
 
@@ -888,7 +867,7 @@ TacticiansTrumpCard: {
 	DisplayName: Tactician's Trump Card
 	Tooltip:
 		'''
-		Fires a sword beam that inflicts [cbuff:Electrified] on hit
+		Fires an [cbuff:Electrified] sword beam
 		'Faint memories of a Princess from the future cross your mind...'
 		'''
 }
@@ -1047,7 +1026,7 @@ VitriolicViper: {
 	Tooltip:
 		'''
 		Charges up and fires a slithering [cbuff:CalamityMod/Irradiated] beam
-		If fully charged, instead fires a huge spread of short range fangs which inflict [cbuff:CalamityMod/SulphuricPoisoning]
+		If fully charged, instead fires a huge spread of short range fangs
 		'''
 }
 
@@ -1057,7 +1036,6 @@ VividClarity: {
 		'''
 		Fires five randomized rays of exo-energy towards the cursor
 		Enemy and tile hits either cause a big flash explosion, an additional laser from the sky, or split into energy orbs
-		Inflicts [cbuff:CalamityMod/MiracleBlight]
 		'Its majesty inspires a stroke of unparalleled genius'
 		'''
 }

@@ -1,4 +1,6 @@
-﻿using CalamityMod.Projectiles.Magic;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Projectiles.Magic;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -12,6 +14,10 @@ namespace CalamityMod.Items.Weapons.Magic
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public int shotCount = 0;
+        public override void SetStaticDefaults()
+        {
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<RiptideDebuff>()];
+        }
         public override void SetDefaults()
         {
             Item.width = 30;
