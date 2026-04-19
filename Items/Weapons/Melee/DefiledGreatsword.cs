@@ -24,8 +24,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public const float ShootSpeed = 16f;
         public override void SetStaticDefaults()
         {
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.OnFire3];
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.Venom];
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.OnFire3, BuffID.Venom];
         }
 
         public override void SetDefaults()

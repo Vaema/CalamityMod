@@ -27,8 +27,7 @@ namespace CalamityMod.Items.Weapons.Melee
         internal const int SlashCreationRate = 18;
         public override void SetStaticDefaults()
         {
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<Shadowflame>()];
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.Frostburn2];
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<Shadowflame>(), BuffID.Frostburn2];
         }
 
         public override void SetDefaults()

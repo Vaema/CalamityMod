@@ -12,10 +12,6 @@ namespace CalamityMod.Items.Weapons.Melee
     public class Omniblade : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
-        public override void SetStaticDefaults()
-        {
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<WhisperingDeath>()];
-        }
         public override void SetDefaults()
         {
             Item.width = 64;

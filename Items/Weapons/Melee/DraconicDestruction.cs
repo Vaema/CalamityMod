@@ -16,10 +16,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetStaticDefaults()
         {
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<Daybroken>()];
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<Dragonfire>()];
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.Oiled];
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.Slimed];
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<Daybroken>(), ModContent.BuffType<Dragonfire>(), BuffID.Oiled, BuffID.Slimed];
         }
         public override void SetDefaults()
         {
