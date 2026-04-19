@@ -21,15 +21,9 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<VermillionFlux>()];
             base.SetStaticDefaults();
+            CalamityItemSets.ShowScalingCritDamageTooltip[Type] = true;
         }
         public override bool SizeModifiers => false;
-
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
-            float cdmg = 2f + Main.LocalPlayer.Calamity().critDamage + Main.LocalPlayer.GetTotalCritChance(TrueMeleeNoSpeedDamageClass.Instance) * 0.02f;
-            tooltips.FirstOrDefault(x => x.Name == "CritChance")!.Text = CalamityUtils.GetText("Common.CritDamageTootip").Format(cdmg.ToPercent());
-
-        }
         public override void SetDefaults()
         {
             Item.width = 66;

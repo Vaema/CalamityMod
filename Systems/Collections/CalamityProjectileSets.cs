@@ -77,6 +77,11 @@ namespace CalamityMod.Systems.Collections
         public static bool[] DoesNotGetHomingWithGrapeBeer = Factory.CreateBoolSet(ProjectileType<NukeOfBliss>(), ProjectileType<PrismaticEnergyBlast>(), ProjectileType<PrismEnergyBullet>(),
             ProjectileType<PrismMine>(), ProjectileType<ScorchedEarthRocket>(), ProjectileType<UltimaRay>(), ProjectileType<SproutingArrowMain>());
 
+
+        public static bool[] DaawnlightBlacklist = Factory.CreateNamedSet("DaawnlightBlacklist")
+            .Description("Disables a projectile from increasing Daawnlight Spirit Origin's extra crit")
+            .RegisterBoolSet(ProjectileType<SeasSearingSpout>(), ProjectileType<WaterSpout>(), ProjectileType<TyphoonBubble>());
+
         /// <summary>
         /// Determines what other projectiles this projectile will share ID-static immunity frames with. Defaults to -1, which means that it does not share immunity frames.<br/>
         /// Each "set" of projectile which shares immunity frames is registered to point to the same ID reference, usually the first projectile in the set. If a projectile with this reference hits an NPC, all other projectiles with that reference also have their ID-static immunity cooldown set for that NPC.
@@ -102,7 +107,6 @@ namespace CalamityMod.Systems.Collections
             // North Pole
             ProjectileID.NorthPoleWeapon, ProjectileID.NorthPoleWeapon,
             ProjectileID.NorthPoleSpear, ProjectileID.NorthPoleWeapon,
-            ProjectileID.NorthPoleSnowflake, ProjectileID.NorthPoleWeapon,
             // Spore gas clouds
             ProjectileID.SporeTrap, ProjectileID.SporeTrap,
             ProjectileID.SporeTrap2, ProjectileID.SporeTrap,

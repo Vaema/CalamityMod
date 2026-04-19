@@ -26,6 +26,7 @@ using Terraria.ModLoader.Utilities;
 namespace CalamityMod.NPCs.Abyss
 {
     [LongDistanceNetSync]
+    [HeavyKnockbackWhitelisted]
     public class EidolonWyrmHead : ModNPC
     {
         private Vector2 patrolSpot = Vector2.Zero;
@@ -462,9 +463,9 @@ namespace CalamityMod.NPCs.Abyss
             // Post-Polterghast: Soul Edge, Eidolic Wail, Stardust Staff
             LeadingConditionRule postPolter = new LeadingConditionRule(DropHelper.If(() => DownedBossSystem.downedPolterghast));
             aewMinionCondition.Add(postPolter);
-            postPolter.Add(ModContent.ItemType<VoidEdge>(), 3);
             postPolter.Add(ModContent.ItemType<EidolicWail>(), 3);
             postPolter.Add(ModContent.ItemType<EidolonStaff>(), 3);
+            postPolter.Add(ModContent.ItemType<GrandDad>(), 3);
 
             // Post-Leviathan: 6-8 Lumenyl (8-11 on Expert)
             LeadingConditionRule postLevi = new LeadingConditionRule(DropHelper.If(() => DownedBossSystem.downedLeviathan));

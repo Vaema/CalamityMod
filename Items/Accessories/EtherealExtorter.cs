@@ -8,6 +8,8 @@ namespace CalamityMod.Items.Accessories
     public class EtherealExtorter : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static int soulDamage => 15;
         public override void SetDefaults()
         {
             Item.width = 28;

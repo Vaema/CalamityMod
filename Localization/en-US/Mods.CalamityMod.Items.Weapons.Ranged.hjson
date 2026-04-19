@@ -45,8 +45,8 @@ Animosity: {
 	Tooltip: "[GFB]"
 	TooltipNormal:
 		'''
-		Fires a shotgun blast with a tight spread imbued with [cbuff:CalamityMod/BrimstoneFlames]
-		Press <right> to fire a powerful brimstone round that inflicts [cbuff:CalamityMod/WhisperingDeath]
+		Fires a shotgun blast with a tight spread which is imbued with [cbuff:CalamityMod/BrimstoneFlames]
+		Press <right> to fire a powerful brimstone round that causes enemies to become [cbuff:CalamityMod/MarkedforDeath]
 		'''
 	TooltipGFB:
 		'''
@@ -290,7 +290,6 @@ Condemnation: {
 		'''
 		Fires powerful scarlet bolts suffused with hateful magics
 		Hold <left> to load up to nine bolts for powerful burst fire
-		Hold <right> to use the repeater full auto
 		'''
 }
 
@@ -313,8 +312,8 @@ ContinentalGreatbow: {
 	Tooltip:
 		'''
 		Wooden arrows are set alight with fire
-		      Fires 3 arrows at once
-		      Fires 2 additional hellfire or ichor arrows
+		Fires 3 arrows at once
+		Fires 2 additional hellfire or ichor arrows
 		'''
 }
 
@@ -430,7 +429,6 @@ FetidEmesis: {
 		Fires an accelerating stream of bullets until the barrel overheats
 		When the barrel overheats, a spread of fetid chunks is vomited out
 		After firing, the gun must cool back down before it can be used again
-		Pressing <right> while firing will instantly launch the chunks
 		{$CommonItemTooltip.PercentChanceToSaveAmmo}
 		'''
 }
@@ -461,7 +459,7 @@ FlakToxicannon: {
 	DisplayName: Flak Toxicannon
 	Tooltip:
 		'''
-		Fires a toxic shell that explodes into a cone of sludge
+		Fires a toxic shell that explodes into a cone of radioactive sludge
 		Toxic shells burst when they reach the cursor's position
 		Direct hits with the toxic shell will reduce the damage dealt by the sludge
 		Uses rockets for ammo
@@ -608,7 +606,7 @@ Hydra: {
 	DisplayName: Hydra
 	Tooltip:
 		'''
-		Fires a spread of 4 [cbuff:Venom] bullets
+		Fires a spread of 3 blood globs imbued with [cbuff:Venom]
 		Grows a gun-head every 3 seconds, up to a maximum of 3 heads
 		Press <left> to command any existing heads to fire
 		Press <right> to launch the heads for powerful explosive damage
@@ -621,8 +619,8 @@ Infinity: {
 	Tooltip:
 		'''
 		Fires a twin stream of energy bolts that split
-		Press <right> to fire a barrage of normal bullets
-		{$CommonItemTooltip.PercentChanceToSaveAmmo}
+		{$Common.ArmorPenetration}
+		{$CommonItemTooltip.PercentChanceToSaveAmmo@1}
 		'They say infinity is neverending, yet you hold it in your hands'
 		'''
 }
@@ -931,12 +929,14 @@ PolarisParrotfish: {
 		'''
 		Rapidly fires an array of colorful star shots
 		Firing speed increases the closer you are to an enemy
+		{$Common.ArmorPenetration}
 		'It carries the mark of the Northern Star'
 		'''
 	TooltipGFB:
 		'''
 		Rapidly fires an array of colorful star shots
 		Firing speed increases the closer you are to an enemy
+		{$Common.ArmorPenetration}
 		<right> to give the little girl some attention
 		'She is a happy girl'
 		'''
@@ -1064,7 +1064,7 @@ Seadragon: {
 	Tooltip:
 		'''
 		Unleashes a deluge of alternating bullets and pressurized water jets
-		Additionally fires rockets and emits devastating [cbuff:OnFire3] muzzle blasts
+		Additionally fires rockets and emits devastating muzzle blasts
 		Water jets consume no ammo
 		'''
 }
@@ -1126,7 +1126,6 @@ Shredder: {
 	Tooltip:
 		'''
 		Fires a barrage of energy bolts that split and bounce
-		Press <right> to fire a barrage of normal bullets instead
 		'The myth, the legend, the weapon that drops more frames than any other'
 		'''
 }
@@ -1283,7 +1282,7 @@ SuperradiantSlaughterer: {
 		'''
 	MainInfo:
 		'''
-		Hold <left> to rev up an elemental buzzsaw that deals close-range damage and causes [cbuff:CalamityMod/Laceration]
+		Hold <left> to rev up an elemental buzzsaw that deals close-range damage
 		Release <left> to fire the buzzsaw which bounces off tiles, releasing homing bolts when returning depending on hits
 		Revving up the saw increases its damage and allows it to pierce more enemies
 		'''
@@ -1309,8 +1308,8 @@ Svantechnical: {
 	Tooltip:
 		'''
 		Fires a trinity of energy bolts that split into beams that track your cursor
-		Press <right> to fire a barrage of normal bullets
-		{$CommonItemTooltip.PercentChanceToSaveAmmo}
+		{$Common.ArmorPenetration}
+		{$CommonItemTooltip.PercentChanceToSaveAmmo@1}
 		'The age old balance of trading damage for frames'
 		'''
 }
@@ -1391,8 +1390,6 @@ TheSevensStriker: {
 		'''
 		Press <left> to consume 1 coin and play a slot machine
 		The quality of the outcome depends on the coin used
-		Press <right> to rapidly fire a barrage of coins
-		The coin barrage has an {0}% chance to save ammo and will not fire platinum coins
 		'A gun given to a great gunslinger
 		Forged by the arms of a man given no name'
 		'''
@@ -1412,9 +1409,9 @@ ThreadOfEradication: {
 	DisplayName: Thread of Eradication
 	Tooltip:
 		'''
-		Charges up [c/ff00ff:God's Bane Doombeam]
-		Channelling the weapon causes it to charge up [c/ff00ff:Hyperdeath Rift] instead
-		While charging [c/ff00ff:Hyperdeath Rift], the bow's turning speed is slowed down
+		Charges up [ceffect/dog:God's Bane Doombeam]
+		Channelling the weapon causes it to charge up [ceffect/dog:Hyperdeath Rift] instead
+		While charging [ceffect/dog:Hyperdeath Rift], the bow's turning speed is slowed down
 		'''
 }
 

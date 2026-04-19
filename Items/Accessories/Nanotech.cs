@@ -11,6 +11,7 @@ namespace CalamityMod.Items.Accessories
     {
         //The stealth damage boost is handled in CalamityPlayer for some reason, maybe someone didn't want em to stack?
         public new string LocalizationCategory => "Items.Accessories";
+        public static int RaiderBonus => 10;
         public override void SetDefaults()
         {
             Item.width = 46;
@@ -27,6 +28,7 @@ namespace CalamityMod.Items.Accessories
             modPlayer.electricianGlove = true;
             modPlayer.filthyGlove = true;
             modPlayer.bloodyGlove = true;
+            modPlayer.raiderTalisman = true;
             player.GetDamage<ThrowingDamageClass>() += 0.15f;
             player.Calamity().rogueVelocity += 0.15f;
         }
@@ -35,7 +37,7 @@ namespace CalamityMod.Items.Accessories
         {
             CreateRecipe().
                 AddIngredient<RogueEmblem>().
-                AddIngredient<MoonstoneCrown>().
+                AddIngredient<VampiricTalisman>().
                 AddIngredient<ElectriciansGlove>().
                 AddIngredient<AscendantSpiritEssence>(4).
                 AddTile<CosmicAnvil>().

@@ -16,7 +16,6 @@ using static Terraria.Player;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    [PierceResistException]
     public class BasherHoldout : ModProjectile, ILocalizedModType
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<Basher>();
@@ -56,6 +55,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
+            Projectile.noEnchantmentVisuals = true;
+            Projectile.scale = 0;
         }
         public void OnSpawn()
         {
@@ -99,7 +100,7 @@ namespace CalamityMod.Projectiles.Melee
             if (!Owner.CantUseHoldout(false))
                 Projectile.timeLeft = 5;
 
-            Projectile.scale = Owner.GetMeleeScale() + 0.1f;
+            Projectile.scale = MathHelper.Lerp(Projectile.scale, Owner.GetMeleeScale() + 0.1f, 0.3f / Projectile.MaxUpdates);
             toMouse = Utils.DirectionTo(Owner.Center, Owner.ClampedMouseWorld());
 
             Positioning(toMouse);
@@ -125,6 +126,7 @@ namespace CalamityMod.Projectiles.Melee
             }
             else
                 Owner.itemTime = Owner.itemAnimation = 5;
+
             #region Not Swinging
             if (attackTimer < 0) // When the sword isn't swinging
             {
@@ -236,7 +238,7 @@ namespace CalamityMod.Projectiles.Melee
             target.AddBuff(ModContent.BuffType<Irradiated>(), 300);
 
             Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
-            target.MoveNPC(launchVel, 14f, true);
+            target.MoveNPC(launchVel, 14f, true, Owner);
 
             for (int i = 0; i < MathHelper.Clamp(15 - Projectile.numHits * 3, 2, 15); i++)
             {

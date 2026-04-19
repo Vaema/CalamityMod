@@ -39,7 +39,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.Frostburn2, 300);
-            target.AddBuff(ModContent.BuffType<GlacialState>(), 60);
+            target.AddBuff(BuffID.Frozen, 60);
             var source = player.GetSource_ItemUse(Item);
             int p = Projectile.NewProjectile(source, target.Center, Vector2.Zero, ModContent.ProjectileType<DarkIceZero>(), Item.damage, 12f, player.whoAmI);
             Main.projectile[p].Kill();

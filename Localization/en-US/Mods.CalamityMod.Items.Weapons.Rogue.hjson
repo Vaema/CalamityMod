@@ -308,7 +308,7 @@ DimensionTearingDisk: {
 	Tooltip:
 		'''
 		Throws a disk that tears space in the direction of the nearest enemy
-		Stealth strikes stick to enemies and unleash [c/ff00ff:God's Bane Doombeam Array]
+		Stealth strikes stick to enemies and unleash [ceffect/dog:God's Bane Doombeam Array]
 		'''
 }
 
@@ -762,7 +762,7 @@ MoltenAmputator: {
 		Throw a spinning scythe that lingers at your cursor
 		<right> to recall all existing scythes
 		Recalling a scythe while it's on an enemy rends them for massive damage
-		<right> with sufficient stealth to empower yourself, greatly increasing attack speed for a short time
+		<right> with sufficient stealth to empower the next {0} scythes and greatly increase attack speed
 		You cannot recall scythes thrown while empowered
 		'''
 }

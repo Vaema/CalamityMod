@@ -197,7 +197,7 @@ namespace CalamityMod.Projectiles.Melee
             }
 
             Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
-            target.MoveNPC(launchVel, 15, true);
+            target.MoveNPC(launchVel, 15, true, Owner);
 
             for (int i = 0; i < MathHelper.Clamp(6 - Projectile.numHits * 2, 2, 6); i++)
             {

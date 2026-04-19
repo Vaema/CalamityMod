@@ -43,7 +43,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shoot = ModContent.ProjectileType<PhotonRipperProjectile>();
             Item.shootSpeed = 1f;
 
-            Item.rare = ModContent.RarityType<BurnishedAuric>();
+            Item.rare = ModContent.RarityType<ExoticRainbow>();
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
         }
 

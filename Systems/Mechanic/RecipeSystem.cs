@@ -756,8 +756,6 @@ namespace CalamityMod.Systems
 
                 // Tier lock various items to a higher tier (sorted by progression)
                 { Vanilla(ItemID.Trimarang), AddIngredient(ItemType<PearlShard>(), 5) },
-                { Vanilla(ItemID.BundleofBalloons), AddIngredient(ItemType<AerialiteBar>(), 3) },
-                { r => r.HasResult(ItemID.HorseshoeBundle) && !r.HasIngredient(ItemID.BundleofBalloons), AddIngredient(ItemType<AerialiteBar>(), 3) },
                 { Vanilla(ItemID.NightsEdge), AddIngredient(ItemType<PurifiedGel>(), 5) },
                 { Vanilla(ItemID.FairyBoots), AddIngredient(ItemID.SoulofLight, 5) },
                 { Vanilla(ItemID.FairyBell), RemoveIngredient(ItemID.SoulofSight) },
@@ -796,9 +794,6 @@ namespace CalamityMod.Systems
 
                 // Add 20 Souls of Flight to vanilla Luminite wings
                 { VanillaEach(ItemID.WingsSolar, ItemID.WingsVortex, ItemID.WingsNebula, ItemID.WingsStardust), LunarWingsRecipeEdits },
-
-                // Berserker's Glove recipe change now that it doesn't provide melee speed
-                { Vanilla(ItemID.BerserkerGlove), ReplaceIngredient(ItemID.PowerGlove, ItemID.TitanGlove) },
             };
 
             // Apply all recipe changes.
@@ -1581,8 +1576,8 @@ namespace CalamityMod.Systems
             // Blizzard in a Bottle
             r = Recipe.Create(ItemID.BlizzardinaBottle);
             r.AddIngredient(ItemID.Bottle);
-            r.AddIngredient(ItemID.Cloud, 5);
-            r.AddRecipeGroup(AnySnowBlock, 5);
+            r.AddIngredient(ItemID.Cloud, 15);
+            r.AddRecipeGroup(AnySnowBlock, 30);
             r.AddIngredient(ItemID.Feather, 3);
             r.AddTile(TileID.Anvils);
             r.Register();
@@ -1590,7 +1585,7 @@ namespace CalamityMod.Systems
             // Cloud in a Bottle
             r = Recipe.Create(ItemID.CloudinaBottle);
             r.AddIngredient(ItemID.Bottle);
-            r.AddIngredient(ItemID.Cloud, 5);
+            r.AddIngredient(ItemID.Cloud, 30);
             r.AddIngredient(ItemID.Feather, 2);
             r.AddTile(TileID.Anvils);
             r.Register();
@@ -1598,9 +1593,8 @@ namespace CalamityMod.Systems
             // Sandstorm in a Bottle
             r = Recipe.Create(ItemID.SandstorminaBottle);
             r.AddIngredient(ItemID.Bottle);
-            r.AddIngredient(ItemID.Cloud, 5);
-            r.AddRecipeGroup("Sand", 5);
-            r.AddIngredient<PearlShard>(3);
+            r.AddIngredient(ItemID.Cloud, 15);
+            r.AddRecipeGroup("Sand", 40);
             r.AddIngredient(ItemID.Feather, 3);
             r.AddTile(TileID.Anvils);
             r.Register();
@@ -1608,7 +1602,7 @@ namespace CalamityMod.Systems
 
             // Fledgling Wings
             r = Recipe.Create(ItemID.CreativeWings);
-            r.AddIngredient(ModContent.ItemType<AncientBoneDust>(), 2);
+            r.AddIngredient<AncientBoneDust>(2);
             r.AddIngredient(ItemID.Cloud, 5);
             r.AddIngredient(ItemID.Feather, 10);
             r.AddTile(TileID.Anvils);
@@ -1619,7 +1613,7 @@ namespace CalamityMod.Systems
             r.AddIngredient(ItemID.Silk, 10);
             r.AddIngredient(ItemID.AntlionMandible, 2);
             r.AddIngredient<PearlShard>(5);
-            r.AddTile(TileID.Anvils);
+            r.AddTile(TileID.Loom);
             r.Register();
             r.DisableDecraft();
 
