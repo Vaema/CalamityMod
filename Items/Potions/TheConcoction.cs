@@ -6,6 +6,7 @@ using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -39,7 +40,7 @@ namespace CalamityMod.Items.Potions
         public override void OnConsumeItem(Player player)
         {
             TheConcoctionPlayer cocPlayer = player.GetModPlayer<TheConcoctionPlayer>();
-            cocPlayer.framesTilSwinesWrath = 600;
+            cocPlayer.swinesWrathCounter = 1200; // Creates a 10 second delay before the buff is visible (triggers at 600)
         }
 
 
@@ -68,17 +69,17 @@ namespace CalamityMod.Items.Potions
 
     public class TheConcoctionPlayer : ModPlayer
     {
-        public int framesTilSwinesWrath = -1;
-
+        public int swinesWrathCounter = -1;
+        
         public override void PostUpdate()
         {
-            if (framesTilSwinesWrath > 0)
+            if (swinesWrathCounter > 0)
             {
-                framesTilSwinesWrath--;
+                swinesWrathCounter--;
 
-                if (framesTilSwinesWrath == 0)
+                if (swinesWrathCounter <= 600 && !Player.HasBuff<SwinesWrathBuff>()) // When there is 10 seconds left
                 {
-                    Player.AddBuff(ModContent.BuffType<SwinesWrathBuff>(), 3600);
+                    Player.AddBuff(ModContent.BuffType<SwinesWrathBuff>(), 600);
 
                     SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/SwinesWrathProc"), Player.Center);
                 }

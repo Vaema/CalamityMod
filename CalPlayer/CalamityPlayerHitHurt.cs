@@ -404,10 +404,6 @@ namespace CalamityMod.CalPlayer
                 {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.AstralInfection" + Main.rand.Next(1, 3 + 1)).ToNetworkText(Player.name));
                 }
-                if (Player.HasBuff<SwinesWrathBuff>())
-                {
-                    damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.SwinesWrath" + Main.rand.Next(1, 7 + 1)).ToNetworkText(Player.name));
-                }
                 if (nightwither)
                 {
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Nightwither").ToNetworkText(Player.name));
