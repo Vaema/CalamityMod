@@ -19,9 +19,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void SetStaticDefaults()
         {
             ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<Plague>()];
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<Daybroken>()];
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.Electrified];
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<Plague>(), ModContent.BuffType<Daybroken>(), BuffID.Electrified];
         }
         public override void SetDefaults()
         {

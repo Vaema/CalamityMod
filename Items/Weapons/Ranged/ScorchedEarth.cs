@@ -28,8 +28,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public static int ProjectilesPerBurst = 4;
         public override void SetStaticDefaults()
         {
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<Daybroken>()];
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.Oiled];
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<Daybroken>(), BuffID.Oiled];
         }
         public override void SetDefaults()
         {

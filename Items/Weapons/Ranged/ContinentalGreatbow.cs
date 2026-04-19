@@ -14,8 +14,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetStaticDefaults()
         {
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.Ichor];
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.OnFire];
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.Ichor, BuffID.OnFire];
         }
         public override void SetDefaults()
         {

@@ -23,8 +23,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         private int shotCounter = 1;
         public override void SetStaticDefaults()
         {
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<CrushDepth>()];
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.OnFire3];
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<CrushDepth>(), BuffID.OnFire3];
         }
 
         public override void SetDefaults()
