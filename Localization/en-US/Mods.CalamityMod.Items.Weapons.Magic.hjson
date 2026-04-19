@@ -133,10 +133,7 @@ Atlantis: {
 
 AuguroftheVoid: {
 	DisplayName: Augur of the Void
-	Tooltip:
-		'''
-		Casts a burst of elemental tentacles to spear your enemies
-		'''
+	Tooltip: Casts a burst of elemental tentacles to spear your enemies
 }
 
 BelchingSaxophone: {
@@ -165,10 +162,7 @@ BloodBath: {
 
 BrimroseStaff: {
 	DisplayName: Brimrose Staff
-	Tooltip:
-		'''
-		Fires a spread of splitting brimstone beams
-		'''
+	Tooltip: Fires a spread of splitting brimstone beams
 }
 
 BurningSea: {
