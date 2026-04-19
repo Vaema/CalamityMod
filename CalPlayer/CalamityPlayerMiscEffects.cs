@@ -3594,6 +3594,12 @@ namespace CalamityMod.CalPlayer
                 Player.GetDamage<MagicDamageClass>() *= StarBeamRye.MagicDmgMult;
             }
 
+            if (dripPlayer.HasAlcohol(AlcoholType.Ale) || dripPlayer.HasAlcohol(AlcoholType.Sake))
+            {
+                Player.GetAttackSpeed<MeleeDamageClass>() -= 0.1f;
+                // See CalamityGlobalItem and PlayerUtils for Ale's melee size increase
+            }
+
             if (whiteWine || dripPlayer.HasAlcohol(AlcoholType.WhiteWine))
             {
                 if (whiteWine)

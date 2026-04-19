@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Potions.Alcohol;
-using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -16,7 +13,6 @@ using Terraria.UI;
 
 namespace CalamityMod.Items.Accessories
 {
-
     public enum AlcoholType
     {
         None,
@@ -42,7 +38,8 @@ namespace CalamityMod.Items.Accessories
         Vodka,
         Whiskey,
         WhiteWine,
-        Ale // DOES NOT USE IALCOHOLITEM YET
+        Ale,
+        Sake
     }
 
     public interface IAlcoholItem
@@ -50,7 +47,6 @@ namespace CalamityMod.Items.Accessories
         Action<Player, float> IVDripAlcoholEffect { get; }
         AlcoholType AlcoholVariant { get; }
         LocalizedText DripEffectText { get; }
-
     }
 
     public class IVDripOnTheRocks : ModItem, ILocalizedModType
@@ -61,7 +57,7 @@ namespace CalamityMod.Items.Accessories
 
         public override void SetStaticDefaults()
         {
-            Main.RegisterItemAnimation(Item.type, new Terraria.DataStructures.DrawAnimationVertical(1, 24));
+            Main.RegisterItemAnimation(Item.type, new Terraria.DataStructures.DrawAnimationVertical(1, 25));
             ItemID.Sets.AnimatesAsSoul[Item.type] = true;
         }
 
@@ -91,13 +87,19 @@ namespace CalamityMod.Items.Accessories
                 Item mouseItem = Main.mouseItem;
                 Item targetItem = inv[slot];
 
+                // Vanilla alcohols have to be applied manually
+                bool isMouseAle = mouseItem.type == ItemID.Ale;
+                bool isTargetAle = targetItem.type == ItemID.Ale;
+                bool isMouseSake = mouseItem.type == ItemID.Sake;
+                bool isTargetSake = targetItem.type == ItemID.Sake;
+
                 // Alcohol into this acc
-                if (targetItem.ModItem is IVDripOnTheRocks drip && mouseItem.ModItem is IAlcoholItem alcohol)
+                if (targetItem.ModItem is IVDripOnTheRocks drip && (mouseItem.ModItem is IAlcoholItem || isMouseAle || isMouseSake))
                 {
                     if (drip.containedAlcoholID == -1)
                     {
                         drip.containedAlcoholID = mouseItem.type;
-                        drip.currentAlcoholType = alcohol.AlcoholVariant;
+                        drip.currentAlcoholType = isMouseAle ? AlcoholType.Ale : (isMouseSake ? AlcoholType.Sake : (mouseItem.ModItem as IAlcoholItem).AlcoholVariant);
 
                         mouseItem.stack--;
                         if (mouseItem.stack <= 0)
@@ -108,12 +110,12 @@ namespace CalamityMod.Items.Accessories
                     }
                 }
 
-                if (mouseItem.ModItem is IVDripOnTheRocks dripHeld && targetItem.ModItem is IAlcoholItem alcoholTarget)
+                if (mouseItem.ModItem is IVDripOnTheRocks dripHeld && (targetItem.ModItem is IAlcoholItem || isTargetAle || isTargetSake))
                 {
                     if (dripHeld.containedAlcoholID == -1)
                     {
                         dripHeld.containedAlcoholID = targetItem.type;
-                        dripHeld.currentAlcoholType = alcoholTarget.AlcoholVariant;
+                        dripHeld.currentAlcoholType = isTargetAle ? AlcoholType.Ale : (isTargetSake ? AlcoholType.Sake : (targetItem.ModItem as IAlcoholItem).AlcoholVariant);
 
                         targetItem.stack--;
                         if (targetItem.stack <= 0)
@@ -124,7 +126,6 @@ namespace CalamityMod.Items.Accessories
                     }
                 }
             }
-
             return orig(inv, context, slot);
         }
 
@@ -160,6 +161,7 @@ namespace CalamityMod.Items.Accessories
                 currentAlcoholType = AlcoholType.None;
             }
         }
+
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             IVDripPlayer dripPlayer = player.GetModPlayer<IVDripPlayer>();
@@ -174,6 +176,7 @@ namespace CalamityMod.Items.Accessories
                     dripPlayer.ApplyIVDripAlcoholEffect(alcohol.IVDripAlcoholEffect);
             }
         }
+
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
             if (tooltips == null) return;
@@ -194,11 +197,14 @@ namespace CalamityMod.Items.Accessories
 
             if (effectLine != null)
             {
-                Item alcoholItem = new Item(containedAlcoholID);
+                if (containedAlcoholID == ItemID.Ale || containedAlcoholID == ItemID.Sake)
+                    effectLine.Text = this.GetLocalizedValue("SakeAndAleText");
 
-                if (alcoholItem.ModItem is IAlcoholItem alcohol)
+                else
                 {
-                    effectLine.Text = alcohol.DripEffectText.Value;
+                    Item alcoholItem = new Item(containedAlcoholID);
+                    if (alcoholItem.ModItem is IAlcoholItem alcohol)
+                        effectLine.Text = alcohol.DripEffectText.Value;
                 }
             }
 
@@ -214,7 +220,7 @@ namespace CalamityMod.Items.Accessories
         {
             Texture2D texture = TextureAssets.Item[Item.type].Value;
 
-            int frameHeight = texture.Height / 24;
+            int frameHeight = texture.Height / 25;
             int frameIndex = (int)currentAlcoholType;
 
             Rectangle targetFrame = new Rectangle(0, frameIndex * frameHeight, texture.Width, frameHeight);
@@ -260,12 +266,6 @@ namespace CalamityMod.Items.Accessories
             {
                 effect.Key.Invoke(Player, effect.Value);
             }
-        }
-
-        // For specific interactions not handled elsewhere.
-        public override void UpdateEquips()
-        {
-            base.UpdateEquips();
         }
     }
 }

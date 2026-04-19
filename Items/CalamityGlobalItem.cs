@@ -941,6 +941,8 @@ namespace CalamityMod.Items
             // Xyk 3MARCH2026: Doesn't work on any non use style 1 items currently, Doze will fix it
             if (item.CountsAsClass<MeleeDamageClass>() && player.HasBuff(BuffID.Tipsy))
                 scale += 0.15f;
+            if (item.CountsAsClass<MeleeDamageClass>() && (player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.Ale) || player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.Sake)))
+                scale += 0.15f;
         }
         public override void UpdateArmorSet(Player player, string set)
         {

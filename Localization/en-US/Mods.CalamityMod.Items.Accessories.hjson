@@ -1037,6 +1037,7 @@ IVDripOnTheRocks: {
 		'(drunken mumbling)'
 		'''
 	Empty: The drip is currently empty.
+	SakeAndAleText: Increases melee weapon scale by 15%, but decreases melee speed by 10%
 }
 
 JellyChargedBattery: {
