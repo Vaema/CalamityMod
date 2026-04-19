@@ -78,6 +78,7 @@ namespace CalamityMod.Items.Tools
             // The Monument lowers happiness by a fixed amount. This is not applied to the Tax Collector.
             if (npc.type != NPCID.TaxCollector && gtnpc.SearchForTheMonument(npc))
             {
+                float oldHappiness = self._currentPriceAdjustment;
                 self._currentPriceAdjustment += TheMonument.MonumentHappinessReduction;
                 self.LimitAndRoundMultiplier(self._currentPriceAdjustment);
                 string dialogueKey;
@@ -93,7 +94,12 @@ namespace CalamityMod.Items.Tools
                     var modNPC = NPCLoader.GetNPC(npc.type);
                     dialogueKey = $"Mods.{modNPC.Mod.Name}.NPCs.{modNPC.Name}.TownNPCMood.Monument";
                 }
-                self._currentHappiness += Language.Exists(dialogueKey) ? Language.GetTextValue(dialogueKey) : CalamityUtils.GetTextValue("Vanilla.TownNPCMood.DefaultMonument") + " ";
+
+                // If the NPC is content, it should override that text because they are no longer content
+                if (oldHappiness == 1f)
+                    self._currentHappiness = Language.Exists(dialogueKey) ? Language.GetTextValue(dialogueKey) : CalamityUtils.GetTextValue("Vanilla.TownNPCMood.DefaultMonument") + " ";
+                else
+                    self._currentHappiness += Language.Exists(dialogueKey) ? Language.GetTextValue(dialogueKey) : CalamityUtils.GetTextValue("Vanilla.TownNPCMood.DefaultMonument") + " ";
             }
 
             // The Gift sets happiness to a fixed either extremely high or extremely low value, depending on its random state.
