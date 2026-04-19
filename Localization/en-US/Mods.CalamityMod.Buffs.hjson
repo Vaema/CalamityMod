@@ -795,7 +795,7 @@ AeolianEarthBuff: {
 		You are strengthened by primordial powers
 		Damage reduction increased by {0}%, damage increased by {1}%, and massively buffed mana regen
 		'''
-	ItemTooltipPlayer: Increases damage, damage reduction, and mana regeneration
+	ItemTooltipPlayer: Increases your damage reduction by 8%, damage by 15% and massively buffs mana regen
 }
 
 Afflicted: {
@@ -1001,7 +1001,7 @@ ReaverRage: {
 		Rage of the earth
 		Defense increased by {0} and damage increased by {1}%
 		'''
-	ItemTooltipPlayer: Increased defense and damage
+	ItemTooltipPlayer: Increases your defense by 10 and damage by 10%
 }
 
 SandsWindBuff: {
