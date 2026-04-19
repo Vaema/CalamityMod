@@ -156,7 +156,6 @@ namespace CalamityMod.Items
                 { ItemID.Marrow, Do(DamageExact(60)) }, // VANILLA: 53 DMG
                 { ItemID.MedusaHead, Do(DamageExact(75)) }, // VANILLA: 40 DMG
                 { ItemID.Meowmere, Do(UseMeleeSpeed, DamageExact(240)) }, // VANILLA: 200 DMG
-                { ItemID.MeteorStaff, Do(ShootSpeedExact(13f)) }, // VANILLA: 10 VEL
                 { ItemID.MiniNukeI, Do(DamageExact(90)) }, // VANILLA: 75 DMG
                 { ItemID.MiniNukeII, Do(DamageExact(90)) },
                 { ItemID.Minishark, Do(DamageExact(4)) }, // VANILLA: 6 DMG
