@@ -520,7 +520,7 @@ GoldenEagle: {
 
 Goobow: {
 	DisplayName: Goobow
-	Tooltip: Addtionally fires two streams of damaging
+	Tooltip: Addtionally fires two streams of damaging slime
 }
 
 GunkShot: {
@@ -849,7 +849,7 @@ OpalStriker: {
 	DisplayName: Opal Striker
 	Tooltip:
 		'''
-		Fires a chargeable heated energy bolt that pierces and sets enemies [cbuff:OnFire]
+		Fires a chargeable heated energy bolt that pierces
 		Fully charged shots deal extra damage, move faster and inflict [cbuff:OnFire3]
 		'''
 }

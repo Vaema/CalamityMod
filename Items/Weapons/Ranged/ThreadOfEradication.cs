@@ -22,9 +22,6 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void SetStaticDefaults()
         {
             CalamityItemSets.ShowScalingCritDamageTooltip[Type] = true;
-        }
-        public override void SetStaticDefaults()
-        {
             CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [ModContent.BuffType<GodSlayerInferno>()];
         }
         public override void SetDefaults()

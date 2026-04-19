@@ -1406,7 +1406,7 @@ TitanArm: {
 	DisplayName: Titan Arm
 	Tooltip:
 		'''
-		Sends enemies straight to the stars at the speed of light and spreads the [cbuff:CalamityMod/AstralInfectionDebuff]
+		Sends enemies straight to the stars at the speed of light
 		Slap Hand but better
 		'''
 }

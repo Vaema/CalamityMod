@@ -17,8 +17,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.Venom];
-            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.Wet];
+            CalamityItemSets.ExtraDebuffTooltip_Enemy[Type] = [BuffID.Venom, BuffID.Wet];
         }
 
         public override void SetDefaults()
