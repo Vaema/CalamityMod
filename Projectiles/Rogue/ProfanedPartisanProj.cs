@@ -162,11 +162,10 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.timeLeft = ExplodeTime;
             } 
             bool strongSplit = Main.projectile.Any(x => x.active && x.owner == Projectile.owner && x.type == Projectile.type && x.ai[0] == (target.whoAmI + 1));
-            int splitType = strongSplit ? ModContent.ProjectileType<HolyFlare>() : ModContent.ProjectileType<ProfanedPartisanSpear>();
             if (!strongSplit)
                 for (var i = 0; i < 3; i++)
                 {
-                    var p = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, (Projectile.rotation - MathHelper.PiOver4).ToRotationVector2().RotatedBy((i-1)*0.25f + Main.rand.NextFloat(-0.1f,0.1f)) * 10, splitType, 0, Projectile.knockBack, Projectile.owner, 0f, 0f);
+                    var p = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, (Projectile.rotation - MathHelper.PiOver4).ToRotationVector2().RotatedBy((i-1)*0.25f + Main.rand.NextFloat(-0.1f,0.1f)) * 10, ModContent.ProjectileType<HolyFlare>(), 0, Projectile.knockBack, Projectile.owner, 0f, 0f);
                     p.localNPCImmunity[target.whoAmI] = 60;
                 }
             target.AddBuff(ModContent.BuffType<HolyFlames>(), 180);

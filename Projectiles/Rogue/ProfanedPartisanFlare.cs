@@ -37,17 +37,10 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.ignoreWater = true;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.penetrate = 3;
-            Projectile.extraUpdates = 0;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 30;
             Projectile.timeLeft = 600;
             Projectile.tileCollide = false;
-            Projectile.scale = 1f;
-        }
-
-        public override bool? CanHitNPC(NPC target)
-        {
-            return true;
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
