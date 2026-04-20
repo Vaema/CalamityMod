@@ -3,6 +3,7 @@ using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.Localization;
@@ -14,7 +15,7 @@ namespace CalamityMod.Items.Tools
     {
         public new string LocalizationCategory => "Items.Tools";
         public override string Texture => "Terraria/Images/Item_601"; //Placeholder
-
+        public static readonly SoundStyle BadBuzzer = new SoundStyle("CalamityMod/Sounds/Custom/BadGiftBuzzer") with { Volume = 0.85f };
         public override void SetDefaults()
         {
             Item.width = Item.height = 20;
@@ -44,26 +45,42 @@ namespace CalamityMod.Items.Tools
                 {
                     // Don't run this code for NPCs that aren't affected by happiness
                     // Also don't run this if The Gift has already been used on this NPC; they all will hold grudges against you :)
-                    if (!n.isLikeATownNPC || NPCID.Sets.NoTownNPCHappiness[n.type] || NPCID.Sets.IsTownPet[n.type] ||
-                        n.GetGlobalNPC<CalamityGlobalTownNPC>().TheGiftStatus.HasValue)
+                    if (!n.isLikeATownNPC || NPCID.Sets.NoTownNPCHappiness[n.type] || NPCID.Sets.IsTownPet[n.type] || n.GetGlobalNPC<CalamityGlobalTownNPC>().TheGiftStatus.HasValue)
                         continue;
 
                     if (Item.Hitbox.Intersects(n.Hitbox))
                     {
+                        bool positive = Main.rand.NextBool();
+                        Color c = positive ? Color.Green : Color.Red;
+                        SoundEngine.PlaySound(positive ? SoundID.ResearchComplete : BadBuzzer, n.Center);
+                        n.GetGlobalNPC<CalamityGlobalTownNPC>().TheGiftStatus = positive;
+                        n.GetGlobalNPC<CalamityGlobalTownNPC>().TheGiftReset = 0.0;
+
+                        // Visual effect to demonstrate that something happened
+                        for (int i = 0; i < 6; i++)
+                        {
+                            Vector2 spawnPos = n.Center + Main.rand.NextVector2Circular(30f, 30f);
+                            HealingPlus s = new(spawnPos, 0.5f, (spawnPos - n.Center).SafeNormalize(Vector2.Zero) * 0.65f, c, c * 0.2f, 25)
+                            {
+                                Rotation = positive ? 0f : MathHelper.PiOver4
+                            };
+                            GeneralParticleHandler.SpawnParticle(s);
+                        }
+                        for (int j = 0; j < 4; j++)
+                        {
+                            Vector2 spawnPos = n.Center + Main.rand.NextVector2Circular(50f, 50f);
+                            Vector2 arrVel = -Vector2.UnitY * 0.6f * positive.ToDirectionInt();
+                            StatChangeArrow arr = new(spawnPos, arrVel, -MathHelper.PiOver2 * positive.ToDirectionInt(), c, c * 0.1f, 0.7f, 40);
+                            GeneralParticleHandler.SpawnParticle(arr);
+                        }
+
                         Item.active = false;
                         Item.type = ItemID.None;
                         Item.stack = 0;
                         if (Main.dedServ)
                             NetMessage.SendData(MessageID.SyncItem, -1, -1, null, Item.whoAmI);
-
-                        bool positive = Main.rand.NextBool();
-                        Color c = positive ? Color.Green : Color.Red;
-                        n.GetGlobalNPC<CalamityGlobalTownNPC>().TheGiftStatus = positive;
-                        n.GetGlobalNPC<CalamityGlobalTownNPC>().TheGiftReset = 0.0;
-
-                        // Placeholder visual effect
-                        HealingPlus s = new(n.Center, 2f, Vector2.Zero, c, c, 40);
-                        GeneralParticleHandler.SpawnParticle(s);
+                        // Make sure it can't apply to multiple NPCs at once
+                        break;
                     }
                 }
             }
