@@ -601,6 +601,11 @@ SparksBuff: {
 	Description: Eats butterflies
 }
 
+StarSwallowerPetBuff: {
+	DisplayName: Star Swallower
+	Description: Mmmm myes
+}
+
 ThirdSageBuff: {
 	DisplayName: Third Sage
 	Description: Eh? No way it's an oni

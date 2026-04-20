@@ -109,15 +109,6 @@ namespace CalamityMod.CalPlayer
                     target.AddBuff(BuffID.Electrified, 300);
                     break;
 
-                case ItemID.BeeKeeper:
-                case ItemID.BladeofGrass:
-                    target.AddBuff(BuffID.Poisoned, 240);
-                    break;
-
-                case ItemID.FieryGreatsword:
-                    target.AddBuff(BuffID.OnFire3, 90);
-                    break;
-
                 case ItemID.IceSickle:
                 case ItemID.Frostbrand:
                     target.AddBuff(BuffID.Frostburn2, 300);
@@ -125,11 +116,6 @@ namespace CalamityMod.CalPlayer
 
                 case ItemID.IceBlade:
                     target.AddBuff(BuffID.Frostburn, 120);
-                    break;
-
-                case (>= ItemID.BluePhaseblade and <= ItemID.YellowPhaseblade) or ItemID.OrangePhaseblade:
-                case (>= ItemID.BluePhasesaber and <= ItemID.YellowPhasesaber) or ItemID.OrangePhasesaber:
-                    // TODO: find an EPIC lightsaber sound
                     break;
             }
 
@@ -226,6 +212,17 @@ namespace CalamityMod.CalPlayer
             if (Player.whoAmI != Main.myPlayer)
                 return;
 
+            //Undo raider crit after hit
+            if (!proj.Calamity().stealthStrike && !proj.Calamity().stealthStrikeSubProjectile && raiderCritLifespan > 0f)
+            {
+                if (nanotech)
+                    proj.CritChance -= Items.Accessories.Nanotech.RaiderBonus;
+                else if (vampiricTalisman)
+                    proj.CritChance -= VampiricTalisman.RaiderBonus;
+                else if (raiderTalisman)
+                    proj.CritChance -= RaidersTalisman.RaiderBonus;
+            }
+
             // Apply this to player equippable sources ie. Orichalcum set bonus petal spawns
             // Do not apply if this effect is an extension of a weapon ie. Pearl God round effect as it will mess up Old Fashioned
             var source = Player.GetSource_OnHit(target);
@@ -281,11 +278,11 @@ namespace CalamityMod.CalPlayer
 
             switch (proj.type)
             {
+                // Remove this in 1.4.5 port
                 case ProjectileID.ObsidianSwordfish:
                     target.AddBuff(BuffID.OnFire3, 180);
                     break;
 
-                case ProjectileID.InfluxWaver:
                 case ProjectileID.UFOLaser:
                 case ProjectileID.Electrosphere:
                     target.AddBuff(BuffID.Electrified, 180);
@@ -297,11 +294,12 @@ namespace CalamityMod.CalPlayer
                     target.AddBuff(BuffType<StaticDischarge>(), 90);
                     break;
 
+                // Replace with Broken Armor in 1.4.5 port
                 case ProjectileID.GolemFist:
                     target.AddBuff(BuffType<ArmorCrunch>(), 180);
                     break;
 
-                case ProjectileID.ButchersChainsaw:
+                // Remove this in 1.4.5 port
                 case ProjectileID.MechanicalPiranha:
                     target.AddBuff(BuffType<HeavyBleeding>(), 180);
                     break;
@@ -310,19 +308,8 @@ namespace CalamityMod.CalPlayer
                     target.AddBuff(BuffType<Nightwither>(), 180);
                     break;
 
-                case ProjectileID.Cascade:
                 case ProjectileID.FlamingMace:
                     target.AddBuff(BuffID.OnFire, 60);
-                    break;
-
-                case ProjectileID.Bee:
-                case ProjectileID.GiantBee:
-                case ProjectileID.BladeOfGrass:
-                    target.AddBuff(BuffID.Poisoned, 120);
-                    break;
-
-                case ProjectileID.Wasp:
-                    target.AddBuff(BuffID.Venom, 60);
                     break;
 
                 case ProjectileID.NorthPoleWeapon:
@@ -908,7 +895,7 @@ namespace CalamityMod.CalPlayer
                     {
                         if (Player.ownedProjectileCounts[ProjectileType<PhantomicDagger>()] < 3 && Main.rand.NextBool(4))
                         {
-                            int damage = (int)Player.GetTotalDamage<SummonDamageClass>().ApplyTo(100);
+                            int damage = (int)Player.GetTotalDamage<SummonDamageClass>().ApplyTo(PhantomicArtifact.DaggerDamage);
                             Projectile.NewProjectile(source, Player.Center, new Vector2(Player.velocity.X,Player.velocity.Y-10).RotatedByRandom(0.3f), ProjectileType<PhantomicDagger>(), damage, 1f, Player.whoAmI);
                         }
                     }
@@ -1097,8 +1084,7 @@ namespace CalamityMod.CalPlayer
             if (raiderTalisman && modProj.stealthStrike)
             {
                 raiderCritLifespan = CalamityUtils.SecondsToFrames(RaidersTalisman.RaiderCooldown);
-                // TO DO: Add nanotech here
-                Player.AddCooldown(RaiderBoost.ID, raiderCritLifespan, true, vampiricTalisman ? "Bloodfeast" : "default");
+                Player.AddCooldown(RaiderBoost.ID, raiderCritLifespan, true, nanotech ? "Nanotech" : vampiricTalisman ? "Vampiric" : "default");
                 if (raiderSoundCooldown <= 0)
                 {
                     SoundEngine.PlaySound(RaidersTalisman.StealthHitSound, Player.Center);
@@ -1109,12 +1095,12 @@ namespace CalamityMod.CalPlayer
             if (npcCheck)
             {
                 // Umbraphile cannot trigger off of itself. It is guaranteed on stealth strikes and 20% chance otherwise.
-                if (umbraphileSet && ((modProj.stealthStrike && modProj.stealthStrikeHitCount < 3) || Main.rand.NextBool(5)))
+                if (umbraphileSet && ((modProj.stealthStrike && modProj.stealthStrikeHitCount < 3) || Main.rand.NextBool(5)) && !modProj.CannotProc)
                 {
                     int umbraBlastDamage = CalamityUtils.DamageSoftCap(proj.damage * UmbraphileHood.ExplosionDamageRatio, UmbraphileHood.ExplosionDamageSoftcap);
                     Projectile.NewProjectile(spawnSource, proj.Center, Vector2.Zero, ProjectileType<UmbraphileBoom>(), umbraBlastDamage, 0f, Player.whoAmI);
                 }
-                if (electricianGlove && modProj.stealthStrike && modProj.stealthStrikeHitCount < 3)
+                if (electricianGlove && modProj.stealthStrike && modProj.stealthStrikeHitCount < 3 && !modProj.CannotProc)
                 {
                     for (int s = 0; s < 3; s++)
                     {
@@ -1306,7 +1292,7 @@ namespace CalamityMod.CalPlayer
                     Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, heal, (raiderCritLifespan > 0 && !proj.Calamity().stealthStrike) ? 1.2f : 1.5f);
                 }
 
-                if (bloodyGlove && proj.CountsAsClass<RogueDamageClass>() && modProj.stealthStrike && proj.numHits < 1)
+                if (bloodyGlove && proj.CountsAsClass<RogueDamageClass>() && (modProj.stealthStrike || (nanotech && raiderCritLifespan > 0)) && proj.numHits < 1)
                     //Nanotech has the same heal as Electrician's glove
                     Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, electricianGlove ? 10 : 5, electricianGlove ? 2f : 3f);
 

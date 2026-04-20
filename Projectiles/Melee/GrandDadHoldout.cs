@@ -316,12 +316,9 @@ namespace CalamityMod.Projectiles.Melee
                 for (int i = 0; i < 2; i++)
                 {
                     Particle spark = new CustomSpark(target.Center, launchVel * 65, "CalamityMod/Particles/GlowSpark2", false, (int)(16 - Projectile.numHits * 3), 0.145f - Projectile.numHits * 0.015f, Color.Black, new Vector2(2f, 1f), false, shrinkSpeed: 1f, colorFadeSpeed: 10);
-                    GeneralParticleHandler.SpawnParticle(spark);
-                    spark.Pixelate = true;
+                    GeneralParticleHandler.SpawnParticle(spark, true);
                     Particle spark2 = new CustomSpark(target.Center, launchVel * 65, "CalamityMod/Particles/GlowSpark", false, (int)(16 - Projectile.numHits * 3), 0.105f - Projectile.numHits * 0.015f, Color.Lerp(Color.Blue, Color.DodgerBlue, 0.65f), new Vector2(2f, 1f), true, false, shrinkSpeed: 1f, colorFadeSpeed: 10);
-                    GeneralParticleHandler.SpawnParticle(spark2);
-                    spark2.Pixelate = true;
-                    spark2.DrawLayer = GeneralDrawLayer.AfterEverything;
+                    GeneralParticleHandler.SpawnParticle(spark2, true, GeneralDrawLayer.AfterEverything);
                 }
 
                 for (int i = 0; i < 25 - Projectile.numHits * 3; i++)

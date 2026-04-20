@@ -5,12 +5,20 @@ using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Items.Placeables.Plates;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class EldritchSoulArtifact : ModItem, ILocalizedModType
+    [LegacyName("EldritchSoulArtifact")]
+    public class FragmentsOfAnotherWorld : ModItem, ILocalizedModType
     {
+        static float MeleeSpeedIncrease => 0.2f;
+        static float RangedSpecialistDmgMult => 1.15f;
+        static float ManaCostReduction => 0.25f;
+        static int MaxSentries => 2;
+        static float RogueSpeedIncrease => 0.1f;
+
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
@@ -21,12 +29,19 @@ namespace CalamityMod.Items.Accessories
             Item.rare = ItemRarityID.Purple;
         }
 
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MeleeSpeedIncrease.ToPercent(), RangedSpecialistDmgMult, ManaCostReduction.ToPercent(), MaxSentries, RogueSpeedIncrease.ToPercent());
+
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.eArtifact = true;
+            modPlayer.fragmentsOfAnotherWorld = true;
+
             player.buffImmune[ModContent.BuffType<WhisperingDeath>()] = true;
-            player.GetAttackSpeed<MeleeDamageClass>() += 0.1f;
+            player.GetAttackSpeed<MeleeDamageClass>() += MeleeSpeedIncrease;
+            player.specialistDamage *= RangedSpecialistDmgMult;
+            player.manaCost -= ManaCostReduction;
+            player.maxTurrets += MaxSentries;
+            player.GetAttackSpeed<RogueDamageClass>() += RogueSpeedIncrease;
         }
 
         public override void AddRecipes()

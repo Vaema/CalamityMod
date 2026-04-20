@@ -260,6 +260,10 @@ namespace CalamityMod.Projectiles
         /// <summary> If true, this projectile is from a rogue stealth strike. The primary variable responsible for triggering stealth strike effects. </summary>
         public bool stealthStrike = false;
         /// <summary>
+        /// If true, this projectile is spawned from a stealth strike, but is not a primary projectile. Used to avoid proccing things like Raiders Talisman.
+        /// </summary>
+        public bool stealthStrikeSubProjectile = false;
+        /// <summary>
         /// Number of times this stealth strike projectile has pierced an enemy.<br/>
         /// Used to limit the number of times a projectile can proc certain effects from rogue accessories.
         /// </summary>
@@ -408,6 +412,13 @@ namespace CalamityMod.Projectiles
                 if (e.Context == "SetBonus_GhostHurt")
                     projectile.damage /= 2;
             }
+
+            if (source is EntitySource_Parent { Entity: Projectile proj })
+            {
+                if (proj.Calamity().stealthStrike || proj.Calamity().stealthStrikeSubProjectile)
+                    stealthStrikeSubProjectile = true;
+            }
+
         }
         public override void SendExtraAI(Projectile projectile, BitWriter bitWriter, BinaryWriter binaryWriter) => binaryWriter.Write(ParentNPCIndex);
         public override void ReceiveExtraAI(Projectile projectile, BitReader bitReader, BinaryReader binaryReader) => ParentNPCIndex = binaryReader.ReadInt32();
@@ -429,6 +440,10 @@ namespace CalamityMod.Projectiles
             // This code is needed to ensure that the code for preventing damage multipliers from triggering more than once works
             if (projectile.type == ProjectileID.ZapinatorLaser)
                 projectile.originalDamage = projectile.damage;
+
+            // Make Piranha Gun have dynamic stat tweaking
+            if (projectile.type == ProjectileID.MechanicalPiranha)
+                projectile.ContinuouslyUpdateDamageStats = true;
 
             // Apply Calamity Global Projectile Tweaks.
             SetDefaults_ApplyTweaks(projectile);
@@ -785,6 +800,12 @@ namespace CalamityMod.Projectiles
                 projectile.rotation = (float)Math.Atan2(projectile.velocity.Y, projectile.velocity.X) + MathHelper.PiOver2;
 
                 return false;
+            }
+            // This has extra updates but increments lifespan through AI slots, so we need to offset that
+            else if (projectile.type == ProjectileID.WeatherPainShot)
+            {
+                if (!projectile.FinalExtraUpdate())
+                    projectile.ai[1]--;
             }
 
             else if (projectile.type == ProjectileID.BloodShot)
@@ -3064,7 +3085,7 @@ namespace CalamityMod.Projectiles
             //If hooking an NPC, this is set to the NPC ID but negative. Still need to find how this gets treated upon reeling in.
             switch (owner.Calamity().SelectedFishingMinigame)
             {
-                case CalamityPlayer.FishingMinigames.ScrapBobber:
+                case CalamityPlayer.FishingMinigames.WulfrumBobber:
                     {
                         if (CatchTime < 0 || (isReelingIn == 1 && CaughtItemID > 0))
                         {
@@ -3184,7 +3205,7 @@ namespace CalamityMod.Projectiles
                     }
 
 
-                case CalamityPlayer.FishingMinigames.ScoriaBobber:
+                case CalamityPlayer.FishingMinigames.VolcanicSinker:
                     {
                         if (PersistentFishingData == -1)
                         {
@@ -3309,7 +3330,7 @@ namespace CalamityMod.Projectiles
                     }
 
 
-                case CalamityPlayer.FishingMinigames.PerennialBobber:
+                case CalamityPlayer.FishingMinigames.FeralBobber:
                     if (projectile.ai[0] == 0)
                     {
                         if (projectile.wet) //Fishing in water
@@ -3398,7 +3419,7 @@ namespace CalamityMod.Projectiles
                     break;
 
 
-                case CalamityPlayer.FishingMinigames.NavystoneBobber:
+                case CalamityPlayer.FishingMinigames.SunkenSinker:
                     {
                         if (CatchTime < 0 || (isReelingIn == 1 && CaughtItemID > 0))
                         {
@@ -3568,7 +3589,7 @@ namespace CalamityMod.Projectiles
                     return false;
 
 
-                case CalamityPlayer.FishingMinigames.SkylineBobber:
+                case CalamityPlayer.FishingMinigames.AcrobaticBobber:
                     {
                         if (CatchTime < 0 || (isReelingIn == 1 && CaughtItemID > 0))
                         {
@@ -3792,17 +3813,6 @@ namespace CalamityMod.Projectiles
                     if (CalamityProjectileSets.IsBuffedEventProjectile[projectile.type])
                         projectile.damage += 15;
                 }
-
-                if (projectile.type == ProjectileID.GiantBee || projectile.type == ProjectileID.Bee)
-                {
-                    if (projectile.timeLeft > 570) //all of these have a time left of 600 or 660
-                    {
-                        if (player.HeldItem.type == ItemID.BeesKnees)
-                            projectile.DamageType = DamageClass.Ranged;
-                    }
-                }
-                else if (projectile.type == ProjectileID.SoulDrain)
-                    projectile.DamageType = DamageClass.Magic;
 
                 frameOneHacksExecuted = true;
             }
@@ -4692,9 +4702,7 @@ namespace CalamityMod.Projectiles
             else if (modPlayer.vampiricTalisman && projectile.Calamity().stealthStrike)
             {
                 target.AddBuff(BuffType<ArmorCrunch>(), VampiricTalisman.ArmorCrunchDebuffTime);
-
-                if (!modPlayer.nanotech)
-                    target.AddBuff(BuffType<HeavyBleeding>(), VampiricTalisman.HeavyBleedingDebuffTime);
+                target.AddBuff(BuffType<HeavyBleeding>(), VampiricTalisman.HeavyBleedingDebuffTime);
             }
 
             if (modPlayer.flamingItemEnchant && !projectile.minion && !projectile.npcProj && !projectile.Calamity().CreatedByPlayerDash)
@@ -4725,6 +4733,10 @@ namespace CalamityMod.Projectiles
                     modifiers.SourceDamage /= 1.5f;
             }
 
+            // Debuff infliction must be placed here as opposed to a more common hook like OnHitNPCWithProj because its on-hit logic breaks the loop before it reaches that hook
+            if (projectile.type == ProjectileID.InfluxWaver)
+                target.AddBuff(BuffID.Electrified, 180);
+
             // Create sparks on hit to hammer in the defense shredding.
             if (deepcoreBullet)
             {
@@ -4744,17 +4756,34 @@ namespace CalamityMod.Projectiles
             }
 
             // Scuttler's Jewel projectiles can spawn either on-hit or on-kill, but only spawn once per projectile.
-            if (projectile.owner == Main.myPlayer && !projectile.npcProj && !projectile.trap && projectile.CountsAsClass<RogueDamageClass>() && modPlayer.scuttlersJewel && stealthStrike && modPlayer.scuttlerCooldown <= 0 && !JewelSpikeSpawned)
+            if (projectile.owner == Main.myPlayer && !projectile.npcProj && !projectile.trap && projectile.CountsAsClass<RogueDamageClass>() && !CannotProc)
             {
-                int damage = (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(16);
+                if (modPlayer.scuttlersJewel && stealthStrike && !JewelSpikeSpawned)
+                {
+                    int damage = (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(16);
 
-                int spike = Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, ProjectileType<JewelSpike>(), damage, projectile.knockBack, projectile.owner);
-                Main.projectile[spike].frame = 4;
-                if (spike.WithinBounds(Main.maxProjectiles))
-                    Main.projectile[spike].DamageType = DamageClass.Generic;
-                modPlayer.scuttlerCooldown = 30;
-                JewelSpikeSpawned = true;
+                    int spike = Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, ProjectileType<JewelSpike>(), damage, projectile.knockBack, projectile.owner);
+                    Main.projectile[spike].frame = 4;
+                    JewelSpikeSpawned = true;
+                }
+                if (modPlayer.etherealExtorter && extorterBoost && Main.player[projectile.owner].ownedProjectileCounts[ProjectileType<LostSoulFriendly>()] < 5)
+                {
+                    for (int i = 0; i < 2; i++)
+                    {
+                        Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
+
+                        int damage = (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(EtherealExtorter.soulDamage);
+
+                        int soul = Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, velocity, ProjectileType<LostSoulFriendly>(), damage, 0f, projectile.owner);
+                        Main.projectile[soul].tileCollide = false;
+                        if (soul.WithinBounds(Main.maxProjectiles))
+                            Main.projectile[soul].DamageType = DamageClass.Generic;
+                    }
+                    extorterBoost = false;
+                }
             }
+
+            
         }
         #endregion
 
@@ -5231,17 +5260,18 @@ namespace CalamityMod.Projectiles
                             {
                                 Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
 
-                                int damage = (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(20);
+                                int damage = (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(EtherealExtorter.soulDamage);
 
                                 int soul = Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, velocity, ProjectileType<LostSoulFriendly>(), damage, 0f, projectile.owner);
                                 Main.projectile[soul].tileCollide = false;
                                 if (soul.WithinBounds(Main.maxProjectiles))
                                     Main.projectile[soul].DamageType = DamageClass.Generic;
                             }
+                            extorterBoost = false;
                         }
 
                         // Make sure the spike doesn't spawn again if it's already been spawned by on-hit.
-                        if (modPlayer.scuttlersJewel && stealthStrike && modPlayer.scuttlerCooldown <= 0 && !JewelSpikeSpawned)
+                        if (modPlayer.scuttlersJewel && stealthStrike && !JewelSpikeSpawned && !CannotProc)
                         {
                             int damage = (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(16);
 
@@ -5249,7 +5279,6 @@ namespace CalamityMod.Projectiles
                             Main.projectile[spike].frame = 4;
                             if (spike.WithinBounds(Main.maxProjectiles))
                                 Main.projectile[spike].DamageType = DamageClass.Generic;
-                            modPlayer.scuttlerCooldown = 30;
                         }
                     }
                 }

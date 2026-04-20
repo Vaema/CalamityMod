@@ -782,11 +782,14 @@ namespace CalamityMod.Items
                 EditTooltipByNum(0, (line) => line.Text += AddedTooltip("TitanGloveLine"));
             if (item.type == ItemID.PowerGlove)
             {
-                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("PowerGlove"));
+                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("PowerBerserkerGlove"));
                 EditTooltipByNum(0, (line) => line.Text += AddedTooltip("TitanGloveLine"));
             }
             if (item.type == ItemID.BerserkerGlove)
-                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("BerserkerGlove"));
+            {
+                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("PowerBerserkerGlove"));
+                EditTooltipByNum(0, (line) => line.Text += AddedTooltip("TitanGloveLine"));
+            }
             if (item.type == ItemID.MechanicalGlove)
                 EditTooltipByNum(1, (line) => line.Text = EditedTooltip("MechanicalGlove") + AddedTooltip("TitanGloveLine"));
             if (item.type == ItemID.FireGauntlet)
@@ -823,10 +826,6 @@ namespace CalamityMod.Items
             }
 
             // Mana Flower tinker buffs.
-            if (item.type == ItemID.MagnetFlower)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("8%", "10%"));
-            if (item.type == ItemID.ArcaneFlower || item.type == ItemID.ManaCloak)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("8%", "12%"));
             if (item.type == ItemID.ArcaneFlower)
                 EditTooltipByNum(2, (line) => line.Text += AddedTooltip("ArcaneFlower"));
 
@@ -933,18 +932,6 @@ namespace CalamityMod.Items
             #endregion
 
             #region Hardmode Armor
-            // Cobalt
-            if (item.type == ItemID.CobaltHat)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("40", $"{CobaltArmorSetChange.MaxManaBoost + 40}"));
-
-            // Mythril
-            if (item.type == ItemID.MythrilHood)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("60", $"{MythrilArmorSetChange.MaxManaBoost + 60}"));
-
-            // Adamantite
-            if (item.type == ItemID.AdamantiteHeadgear)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("80", $"{AdamantiteArmorSetChange.MaxManaBoost + 80}"));
-
             // Titanium
             if (item.type == ItemID.TitaniumMask)
                 EditTooltipByNum(1, (line) => line.Text = line.Text.Replace("9%", "14%"));
@@ -1791,60 +1778,7 @@ namespace CalamityMod.Items
             // Might be used for Miracle stuff later or something idk
             /*if (line.Name == "ItemName" && line.Mod == "Terraria" && item.type == ModContent.ItemType<Orderbringer>())
             {
-                Color rarityColor = Color.White;
-                Vector2 basePosition = new Vector2(line.X, line.Y);
-
-                float rate = Main.GlobalTimeWrappedHourly * 29;
-                List<Color> eColors = new List<Color>()
-                {
-                Color.PaleVioletRed,
-                Color.Coral,
-                Color.Khaki,
-                Color.PaleGreen,
-                Color.Turquoise,
-                Color.Violet
-                };
-
-                int colorIndex = (int)(rate / 2 % eColors.Count);
-                Color currentColor = eColors[colorIndex];
-                Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
-                Color usedColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
                 
-
-                float sine = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 3 / MathHelper.Pi);
-                sine = (float)Math.Pow(MathHelper.Lerp(sine, 0, 0.35f), 5);
-                Vector2 backScale = line.BaseScale;
-                Color backColor = usedColor;
-                Vector2 shake = Main.rand.NextVector2Circular(15, 15) * sine;
-
-                Main.spriteBatch.End();
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, null, null, null, null, Main.UIScaleMatrix);
-
-                int draws = 20;
-                for (int i = 0; i < draws; i++)
-                {
-                    shake = Main.rand.NextVector2Circular(15, 15) * sine;
-                    Vector2 backPosition = basePosition + (MathHelper.TwoPi * i / 20f).ToRotationVector2() * (5 + 0.5f * sine);
-                    ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, shake * 4 + backPosition, backColor, line.Rotation, line.Origin, backScale, line.MaxWidth, line.Spread);
-                }
-                Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
-
-                Vector2 drawPosition = basePosition;
-                Color drawColor = backColor;
-                Vector2 rotationPoint = texture.Size() * 0.5f;
-                for (int i = 0; i < 6; i++)
-                {
-                    int length = line.Text.Length;
-                    Main.EntitySpriteDraw(texture, basePosition + Vector2.UnitX * length * 4 + Vector2.UnitY * 10 + Vector2.UnitX * (i % 2 == 0 ? -7 * i : 7 * i), null, drawColor, (MathHelper.PiOver2), rotationPoint, new Vector2(1 - 0.05f * i * (1 + 0.2f * -sine), 1 + 0.75f * i * (1 + 0.2f * sine) * 1f) * 0.3f * Main.rand.NextFloat(0.9f, 1f), SpriteEffects.None);
-                }
-
-                Main.spriteBatch.End();
-                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, Main.UIScaleMatrix);
-
-                // Draw the front text as usual.
-                ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, shake + basePosition, rarityColor, line.Rotation, line.Origin, line.BaseScale, line.MaxWidth, line.Spread);
-
-                return false;
             }*/
             return true;
         }

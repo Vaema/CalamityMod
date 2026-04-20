@@ -219,9 +219,8 @@ namespace CalamityMod.CalPlayer
                 // Independently of Calamity's nerfs to Nebula life regen, it is disabled entirely by alcohol poisoning.
                 Player.nebulaLevelLife = 0;
 
-                // This has to last over 60 frames for the nurse to count the debuff, so...
                 if (Player.whoAmI == Main.myPlayer)
-                    Player.AddBuff(ModContent.BuffType<AlcoholPoisoning>(), 61, false);
+                    Player.AddBuff(ModContent.BuffType<AlcoholPoisoning>(), 2, false);
 
                 if (Player.lifeRegen > 0)
                     Player.lifeRegen = 0;

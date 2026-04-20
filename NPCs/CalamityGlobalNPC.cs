@@ -3746,7 +3746,8 @@ namespace CalamityMod.NPCs
                 // Hitbox criteria were changed to allow long one dimensional projectiles so that Condemnation would work.
                 bool acceptableVelocity = projectile.velocity != Vector2.Zero;
                 bool acceptableHitbox = (projectile.width <= 36) || (projectile.height <= 36);
-                if (bullseye != null && acceptableVelocity && acceptableHitbox)
+                
+                if (bullseye != null && acceptableVelocity && acceptableHitbox && !CalamityProjectileSets.DaawnlightBlacklist[projectile.type])
                 {
                     // Bullseyes are visually different on bosses and thus have larger hitboxes.
                     float bullseyeRadius = npc.IsABoss() ? DaawnlightSpiritOrigin.BossBullseyeRadius : DaawnlightSpiritOrigin.RegularEnemyBullseyeRadius;

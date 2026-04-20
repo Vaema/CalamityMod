@@ -13,6 +13,8 @@ namespace CalamityMod.Items.Accessories
 
         public static int manaStorageMax = 600;
         public const int lostSoulDamage = 200;
+        public static int MinDelay => 60;
+        public static int MaxDelay => 240;
 
         public override void SetDefaults()
         {
@@ -29,7 +31,7 @@ namespace CalamityMod.Items.Accessories
             modPlayer.fleshTotem = true;
             modPlayer.fleshTotemMinion = true;
             modPlayer.fleshTotemVisual = !hideVisual;
-            player.statManaMax2 += 30;
+            player.statManaMax2 += 20;
             player.GetCritChance<MagicDamageClass>() += 5;
             if (player.whoAmI == Main.myPlayer)
             {
