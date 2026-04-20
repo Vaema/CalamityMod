@@ -224,7 +224,7 @@ namespace CalamityMod.Items.Tools
             Item.height = 20;
             Item.rare = ItemRarityID.Green;
             Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
         }
 
         public override bool CanApply(Player player, Item itemBeingReforged, bool isAccessory)
@@ -280,7 +280,7 @@ namespace CalamityMod.Items.Tools
             Item.height = 20;
             Item.rare = ItemRarityID.Green;
             Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
         }
 
         public override bool CanApply(Player player, Item itemBeingReforged, bool isAccessory)
@@ -309,7 +309,7 @@ namespace CalamityMod.Items.Tools
             Item.height = 20;
             Item.rare = ItemRarityID.Green;
             Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
         }
 
         public override bool CanApply(Player player, Item itemBeingReforged, bool isAccessory)
@@ -336,7 +336,7 @@ namespace CalamityMod.Items.Tools
             Item.height = 20;
             Item.rare = ItemRarityID.Green;
             Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
         }
 
         public override bool CanApply(Player player, Item itemBeingReforged, bool isAccessory)
@@ -365,7 +365,7 @@ namespace CalamityMod.Items.Tools
             Item.height = 20;
             Item.rare = ItemRarityID.Green;
             Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
         }
 
         public override bool CanApply(Player player, Item itemBeingReforged, bool isAccessory)

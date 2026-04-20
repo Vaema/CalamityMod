@@ -471,9 +471,9 @@ TheSandwich: {
 		'''
 		A sandwich made of the finest bread, cheese, and fish in the land!
 		Minor reductions to all stats
-		{0}% increased damage for every alcohol you are effected by
+		{0}% increased damage for every alcohol you are affected by
 		Allows you to drink 2 more alcohols than normal
-		Alcohol effects don't deteriorate while under the effects of The Sandwich
+		Alcohol effects will not expire while under the effects of The Sandwich
 		'Might actually taste good if it was the only thing you'd ever eaten...'
 		'''
 }
