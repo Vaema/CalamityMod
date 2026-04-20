@@ -9,7 +9,6 @@ namespace CalamityMod.Items.Placeables.Furniture
     public class TheMonument : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Placeables";
-        public override string Texture => "Terraria/Images/Item_1177"; //Placeholder
 
         public const float MonumentTaxIncrease = 0.5f;
         public const float MonumentHappinessReduction = 0.15f;
@@ -17,6 +16,8 @@ namespace CalamityMod.Items.Placeables.Furniture
         public override void SetDefaults()
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<TheMonumentTile>());
+            Item.width = 40;
+            Item.height = 50;
             Item.rare = ItemRarityID.Pink;
             Item.value = Item.buyPrice(gold: 5);
         }

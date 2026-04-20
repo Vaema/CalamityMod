@@ -42,9 +42,9 @@ namespace CalamityMod.Items.Tools
             {
                 foreach (NPC n in Main.ActiveNPCs)
                 {
-                    // Don't run this code for the Traveling Merchant and Skeleton Merchant because they aren't affected by happiness
+                    // Don't run this code for NPCs that aren't affected by happiness
                     // Also don't run this if The Gift has already been used on this NPC; they all will hold grudges against you :)
-                    if (!n.isLikeATownNPC || n.type == NPCID.TravellingMerchant || n.type == NPCID.SkeletonMerchant ||
+                    if (!n.isLikeATownNPC || NPCID.Sets.NoTownNPCHappiness[n.type] || NPCID.Sets.IsTownPet[n.type] ||
                         n.GetGlobalNPC<CalamityGlobalTownNPC>().TheGiftStatus.HasValue)
                         continue;
 
@@ -73,6 +73,10 @@ namespace CalamityMod.Items.Tools
         private static void TheGiftHappiness(On_ShopHelper.orig_ProcessMood orig, ShopHelper self, Player player, NPC npc)
         {
             orig(self, player, npc);
+
+            // Immediately exit early if it's Remix world, or if it's an NPC that should not be affected by happiness
+            if (Main.remixWorld || NPCID.Sets.NoTownNPCHappiness[npc.type] || NPCID.Sets.IsTownPet[npc.type])
+                return;
 
             var gtnpc = npc.GetGlobalNPC<CalamityGlobalTownNPC>();
             // The Monument lowers happiness by a fixed amount. This is not applied to the Tax Collector.
