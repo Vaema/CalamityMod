@@ -8,7 +8,6 @@ namespace CalamityMod.Items.Placeables.Furniture
     public class GluttonyBlender : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Placeables";
-        public override string Texture => "Terraria/Images/Item_2193"; //Placeholder
         public const int OneInXChanceForGoodSlop = 5;
 
         public override void SetDefaults()

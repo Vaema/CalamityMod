@@ -1,6 +1,8 @@
 ﻿using CalamityMod.Items.Placeables.Furniture;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.IO;
+using System.Linq;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -13,16 +15,15 @@ namespace CalamityMod.Tiles.Furniture
 {
     public class GluttonyBlenderTile : ModTile
     {
-        public const int Width = 3;
+        public const int Width = 2;
         public const int Height = 3;
-
-        public override string Texture => "CalamityMod/Tiles/Furniture/GluttonyPlaceholder";
 
         public override void SetStaticDefaults()
         {
             Main.tileFrameImportant[Type] = true;
             Main.tileLavaDeath[Type] = true;
-            TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3);
+            TileObjectData.newTile.CopyFrom(TileObjectData.Style2xX);
+            TileObjectData.newTile.CoordinateHeights = [16, 16, 18];
             ModTileEntity entity = ModContent.GetInstance<GluttonyBlenderTE>();
             TileObjectData.newTile.HookPostPlaceMyPlayer = new PlacementHook(entity.Hook_AfterPlacement, -1, 0, true);
             TileObjectData.addTile(Type);
@@ -32,12 +33,13 @@ namespace CalamityMod.Tiles.Furniture
 
         public override bool CreateDust(int i, int j, ref int type) => false;
 
-        public override void SetDrawPositions(int i, int j, ref int width, ref int offsetY, ref int height, ref short tileFrameX, ref short tileFrameY) => offsetY = 2;
-
-        /*public override void AnimateIndividualTile(int type, int i, int j, ref int frameXOffset, ref int frameYOffset)
+        public override void AnimateIndividualTile(int type, int i, int j, ref int frameXOffset, ref int frameYOffset)
         {
-            base.AnimateIndividualTile(type, i, j, ref frameXOffset, ref frameYOffset);
-        }*/
+            if (TileEntity.TryGet<GluttonyBlenderTE>(new(i, j), out var entity))
+            {
+                frameXOffset = 36 * entity.CurrentFrame;
+            }
+        }
 
         public override void MouseOver(int i, int j)
         {
@@ -55,6 +57,9 @@ namespace CalamityMod.Tiles.Furniture
     public class GluttonyBlenderTE : ModTileEntity
     {
         public Vector2 BlenderTop => Position.ToWorldCoordinates(8 * GluttonyBlenderTile.Width, 0f);
+        public int CurrentFrame = 0;
+        private ushort FrameCounter = 0;
+        private const ushort TotalAnimFrames = 6;
 
         public override bool IsTileValidForEntity(int x, int y)
         {
@@ -71,6 +76,51 @@ namespace CalamityMod.Tiles.Furniture
                 return -1;
             }
             return Place(i, j);
+        }
+
+        public override void OnNetPlace() => NetMessage.SendData(MessageID.TileEntitySharing, -1, -1, null, ID, Position.X, Position.Y);
+        public override void NetSend(BinaryWriter writer)
+        {
+            writer.Write(CurrentFrame);
+            writer.Write(FrameCounter);
+        }
+        public override void NetReceive(BinaryReader reader)
+        {
+            CurrentFrame = reader.ReadInt32();
+            FrameCounter = reader.ReadUInt16();
+        }
+
+        public override void Update()
+        {
+            bool blenderAnim = Main.projectile.Any(i => i.active && i.type == ModContent.ProjectileType<GluttonyBlenderAnimation>() &&
+                i.ai[1] >= GluttonyBlenderAnimation.TimeToReachBlender && Vector2.DistanceSquared(BlenderTop, i.Center) < 256f);
+            if (blenderAnim)
+            {
+                if (CurrentFrame < 1)
+                    CurrentFrame = 1;
+                FrameCounter++;
+                if (FrameCounter >= 4)
+                {
+                    FrameCounter = 0;
+                    CurrentFrame++;
+                    if (CurrentFrame > TotalAnimFrames)
+                        CurrentFrame = 1;
+                    
+                    if (Main.dedServ)
+                        NetMessage.SendData(MessageID.TileEntitySharing, -1, -1, null, ID, Position.X, Position.Y);
+                }
+            }
+            else
+            {
+                if (CurrentFrame > 0)
+                {
+                    CurrentFrame = 0;
+                    FrameCounter = 0;
+
+                    if (Main.dedServ)
+                        NetMessage.SendData(MessageID.TileEntitySharing, -1, -1, null, ID, Position.X, Position.Y);
+                }
+            }
         }
     }
 
@@ -111,6 +161,11 @@ namespace CalamityMod.Tiles.Furniture
             }
             return false;
         }
+
+        public override bool CanStackInWorld(Item destination, Item source)
+        {
+            return !destination.GetGlobalItem<GluttonyBlenderGlobalItem>().FromGluttonyBlender || !destination.GetGlobalItem<GluttonyBlenderGlobalItem>().FromGluttonyBlender;
+        }
     }
 
     public class GluttonyBlenderAnimation : ModProjectile, ILocalizedModType
@@ -119,7 +174,7 @@ namespace CalamityMod.Tiles.Furniture
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         private const int Lifetime = 120;
-        private const int TimeToReachBlender = 60;
+        public const int TimeToReachBlender = 60;
         private int ItemType => (int)Projectile.ai[0];
         private ref float Timer => ref Projectile.ai[1];
         private Vector2 Start;
