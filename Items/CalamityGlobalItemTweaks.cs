@@ -95,7 +95,7 @@ namespace CalamityMod.Items
                 { ItemID.DarkLance, Do(TrueMelee, DamageExact(40)) }, // VANILLA: 34 DMG
                 { ItemID.DartRifle, Do(DamageExact(58)) }, // VANILLA: 52 DMG
                 { ItemID.DayBreak, Do(DamageExact(125), UseExact(22)) }, // VANILLA: 150 DMG, 16 UT
-                { ItemID.DD2BetsyBow, Do(DamageExact(42)) }, // VANILLA: 39 DMG. Compensation for removing aerial multiplier
+                { ItemID.DD2BetsyBow, Do(DamageExact(42)) }, // Aerial Bane. VANILLA: 39 DMG. Compensation for removing aerial multiplier
                 { ItemID.DD2SquireBetsySword, Do(UseMeleeSpeed, DamageExact(150)) }, // Flying Dragon. VANILLA: 180 DMG
                 { ItemID.DeadlySphereStaff, Do(DamageExact(50)) }, // VANILLA: 40 DMG
                 { ItemID.DeathSickle, Do(UseMeleeSpeed, DamageExact(65), ShootSpeedExact(15f)) }, // VANILLA: 57 DMG, 9 VEL
@@ -116,6 +116,7 @@ namespace CalamityMod.Items
                 { ItemID.Flamelash, Do(DamageExact(36)) }, // VANILLA: 32 DMG
                 { ItemID.Flamethrower, Do(DamageExact(21), ShootSpeedDelta(+3f)) }, // VANILLA: 35 DMG, 7 VEL
                 { ItemID.FlowerofFire, Do(DamageRatio(0.78f)) }, // VANILLA: 48 DMG. Uses ratios due to remix seed
+                { ItemID.FlowerPow, Do(DamageExact(80)) }, // Displays as 160 damage. VANILLA: 65 DMG (displays as 130)
                 { ItemID.FlyingKnife, Do(DamageExact(53)) }, // VANILLA: 40 DMG
                 { ItemID.Frostbrand, Do(UseMeleeSpeed, DamageExact(88)) }, // VANILLA: 49 DMG
                 { ItemID.Gatligator, Do(UseExact(6)) }, // VANILLA: 7 UT
