@@ -177,6 +177,7 @@ namespace CalamityMod.Tiles.Furniture
         public const int TimeToReachBlender = 60;
         private int ItemType => (int)Projectile.ai[0];
         private ref float Timer => ref Projectile.ai[1];
+        private ref float ArcVelocity => ref Projectile.ai[2];
         private Vector2 Start;
         private Vector2 Destination => Projectile.velocity;
 
@@ -197,13 +198,14 @@ namespace CalamityMod.Tiles.Furniture
             {
                 SoundEngine.PlaySound(SoundID.Item1, Projectile.Center);
                 Start = Projectile.Center;
+                ArcVelocity = Main.rand.NextFloat(2.2f, 4.4f);
             }
 
             if (Timer < TimeToReachBlender)
             {
                 Vector2 moveDistBeforeArc = Destination - Start;
                 // The second half of this applies an arcing motion as the projectile moves
-                Projectile.Center += (moveDistBeforeArc / (float)TimeToReachBlender) - Vector2.UnitY * (3f - (0.1f * Timer));
+                Projectile.Center += (moveDistBeforeArc / (float)TimeToReachBlender) - Vector2.UnitY * (ArcVelocity - (ArcVelocity / 30f * Timer));
                 Projectile.rotation = moveDistBeforeArc.X * 0.005f;
 
                 if (Timer < 4)
