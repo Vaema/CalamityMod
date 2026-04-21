@@ -61,6 +61,7 @@ namespace CalamityMod.Items.Placeables.Furniture.Paintings
             "Cooper",
             "CosmaticMango",
             "CrabBar",
+            "Critaquil",
             "Dandy",
             "Dia",
             "Done",
