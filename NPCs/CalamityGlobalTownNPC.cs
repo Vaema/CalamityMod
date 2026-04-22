@@ -122,6 +122,7 @@ namespace CalamityMod.NPCs
             "Sylux", // <@!331812782183809025> (gonkachino)
             "Nemesis", // <@!1104036024063107082> (yashimayamanata)
             "Univerze", // <@!1256376346536448150> (unizumi02)
+            "Hunk", // <@!447597886260248578> (bagel_san)
         ];
         private static readonly string[] DemolitionistNames =
         [
