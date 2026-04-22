@@ -2252,8 +2252,6 @@ namespace CalamityMod.CalPlayer
                 bloodflareMageCooldown--;
             if (silvaMageCooldown > 0)
                 silvaMageCooldown--;
-            if (scuttlerCooldown > 0)
-                scuttlerCooldown--;
             if (nanotechHitCooldown > 0)
                 nanotechHitCooldown--;
             if (spectralVeilImmunity > 0)
@@ -2707,12 +2705,6 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            // Raider Talisman bonus
-            if (raiderTalisman && !vampiricTalisman && !StealthStrikeAvailable() && raiderCritLifespan > 0f)
-                Player.GetCritChance<ThrowingDamageClass>() += RaidersTalisman.RaiderBonus;
-            if (vampiricTalisman && !StealthStrikeAvailable() && raiderCritLifespan > 0f)
-                Player.GetCritChance<ThrowingDamageClass>() += VampiricTalisman.RaiderBonus;
-
             if (avertorBonus)
                 Player.GetDamage<GenericDamageClass>() += 0.1f;
 
@@ -2784,7 +2776,7 @@ namespace CalamityMod.CalPlayer
             if (permafrostsConcoction)
             {
                 Player.manaCost -= 0.15f;
-                Player.statManaMax2 += 50;
+                Player.statManaMax2 += 40;
             }
 
             if (encased)
@@ -3969,13 +3961,7 @@ namespace CalamityMod.CalPlayer
                 Player.npcTypeNoAggro[ModContent.NPCType<GammaSlime>()] = true;
             }
 
-            if (eArtifact)
-            {
-                Player.manaCost -= 0.25f;
-                Player.maxMinions++;
-            }
-
-            if (auricSArtifact && Player.FindBuffIndex(ModContent.BuffType<FieryDraconidBuff>()) != -1)
+            if (fadedIdolatry && Player.FindBuffIndex(ModContent.BuffType<FieryDraconidBuff>()) != -1)
                 Player.maxMinions += Player.ownedProjectileCounts[ModContent.ProjectileType<FieryDraconid>()];
 
             if (pSoulArtifact)
@@ -4410,7 +4396,7 @@ namespace CalamityMod.CalPlayer
 
             // Add any multiplicative damage bonuses here
             float multiplicativeDamage = 1;
-            if (dArtifact)
+            if (crushingEgo)
                 multiplicativeDamage += 0.2f;
             if (WarbanneroftheRighteous)
                 multiplicativeDamage += warbannerDamageMult;

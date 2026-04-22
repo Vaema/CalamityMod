@@ -595,7 +595,19 @@ namespace CalamityMod.CalPlayer
         {
             if (proj.npcProj || proj.trap)
                 return;
-                
+
+            //Add raider crit before hit
+            if (!proj.Calamity().stealthStrike && !proj.Calamity().stealthStrikeSubProjectile && raiderCritLifespan > 0f)
+            {
+                if (nanotech)
+                    proj.CritChance += Items.Accessories.Nanotech.RaiderBonus;
+                else if (vampiricTalisman)
+                    proj.CritChance += VampiricTalisman.RaiderBonus;
+                else if (raiderTalisman)
+                    proj.CritChance += RaidersTalisman.RaiderBonus;
+            }
+
+
             modifiers.CritDamage += critDamage;
 
             // All Calamity multipliers are added together to prevent insane exponential stacking
@@ -1624,7 +1636,7 @@ namespace CalamityMod.CalPlayer
 
             #region Player Incoming Damage Multiplier (Increases)
             double damageMult = 1D;
-            if (dArtifact) // Dimensional Soul Artifact increases incoming damage by 15%.
+            if (crushingEgo) // Dimensional Soul Artifact increases incoming damage by 15%.
                 damageMult += 0.15;
             if (enraged) // Demonshade Enrage
                 damageMult += DemonshadeHelm.MultDamageTakenBoost;
@@ -2348,7 +2360,6 @@ namespace CalamityMod.CalPlayer
                             }
                         }
                     }
-
                     fleshTotemManaStorage = 0;
                 }
 

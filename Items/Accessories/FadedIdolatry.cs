@@ -9,7 +9,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class DimensionalSoulArtifact : ModItem, ILocalizedModType
+    [LegacyName("GodlySoulArtifact", "AuricSoulArtifact")]
+    public class FadedIdolatry : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
@@ -17,21 +18,21 @@ namespace CalamityMod.Items.Accessories
             Item.width = 28;
             Item.height = 28;
             Item.accessory = true;
-            Item.rare = ModContent.RarityType<CosmicPurple>();
-            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.dArtifact = true;
+            modPlayer.fadedIdolatry = true;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<CosmiliteBar>(5).
-                AddIngredient<Elumplate>(25).
+                AddIngredient<YharonSoulFragment>(5).
+                AddIngredient<Plagueplate>(25).
                 AddIngredient<ExodiumCluster>(25).
                 AddTile<CosmicAnvil>().
                 Register();

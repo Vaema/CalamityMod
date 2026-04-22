@@ -11,19 +11,21 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class ProfanedPartisan : RogueWeapon
     {
+        public static int SpearBaseDamage => 125;
+        public static int StarBaseDamage => 80;
         public override void SetDefaults()
         {
             Item.width = 68;
             Item.height = 68;
-            Item.damage = 222;
+            Item.damage = 300;
             Item.crit = 15;
             Item.knockBack = 8f;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.noUseGraphic = true;
 
-            Item.useTime = 18;
-            Item.useAnimation = 18;
+            Item.useTime = 21;
+            Item.useAnimation = 21;
             Item.UseSound = SoundID.Item1;
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();

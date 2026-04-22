@@ -1040,9 +1040,9 @@ namespace CalamityMod.CalPlayer
         public int fallingBootVelCheckTimer = 0;
         public bool voidOfCalamity = false;
         public bool apollyon = false;
-        public bool eArtifact = false;
-        public bool dArtifact = false;
-        public bool auricSArtifact = false;
+        public bool fragmentsOfAnotherWorld = false;
+        public bool crushingEgo = false;
+        public bool fadedIdolatry = false;
         public bool pSoulArtifact = false;
         public bool giantPearl = false;
         public bool shieldOfTheOcean = false;
@@ -2470,9 +2470,9 @@ namespace CalamityMod.CalPlayer
             baroclaw = false;
             voidOfCalamity = false;
             apollyon = false;
-            eArtifact = false;
-            dArtifact = false;
-            auricSArtifact = false;
+            fragmentsOfAnotherWorld = false;
+            crushingEgo = false;
+            fadedIdolatry = false;
             pSoulArtifact = false;
             giantPearl = false;
             shieldOfTheOcean = false;
@@ -5547,6 +5547,8 @@ namespace CalamityMod.CalPlayer
                         {
                             Main.projectile[p].DamageType = DamageClass.Generic; //Makes it not proc shit like nanotech, extorter and other stuff
                             Main.projectile[p].Calamity().LocketClone = true; //To not have clones trigger effects like Sacrifice's Lifesteal and Final Dawn's stealth generation
+
+                            Projectile.NewProjectile(LocketSource, Main.projectile[p].Center, Vector2.Zero, ModContent.ProjectileType<DoGWeaponTeleportRift>(), 0, 0, Player.whoAmI); // Spawn a little portal!
                         }
 
                         // Handle AI edge-cases. These are like overlapping projectiles and the projectile not spawning at all
@@ -6089,12 +6091,6 @@ namespace CalamityMod.CalPlayer
             {
                 stealthGenStandstill += ShadowPotion.StealthRegenBoost;
                 stealthGenMoving += ShadowPotion.StealthRegenBoost;
-            }
-
-            if (eArtifact)
-            {
-                stealthGenStandstill += 0.15f;
-                stealthGenMoving += 0.15f;
             }
 
             // Accessory modifiers can boost these stats

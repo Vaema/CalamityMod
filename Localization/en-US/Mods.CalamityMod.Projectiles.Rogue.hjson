@@ -85,10 +85,12 @@ DynamicPursuerElectricity.DisplayName: Dynamic Electricity
 DynamicPursuerLaser.DisplayName: Dynamic Laser
 DynamicPursuerProjectile.DisplayName: Dynamic Pursuer
 EclipseMirrorBurst.DisplayName: Eclipse Mirror Flash
-EclipsesFallMain.DisplayName: Eclipse's Fall
-EclipsesSmol.DisplayName: Eclipse's Small
-EclipsesStealth.DisplayName: Eclipse's Fall
-EclipseStealthBoom.DisplayName: Eclipse Blast
+EclipsesFall_Javelin.DisplayName: Eclipse's Fall
+EclipsesFall_LightFragment.DisplayName: Fragment of Primordial Light
+EclipsesFall_LightExplosion.DisplayName: Baily's Beads
+EclipsesFall_LightSpark.DisplayName: Spark of Primodial Light
+EclipsesFall_StealthSpear.DisplayName: Spear of Obscuration
+EclipsesFall_StealthSpearExplosion.DisplayName: Third Contact
 EGloveSpark.DisplayName: Electrician's Spark
 EnchantedAxe2.DisplayName: Enchanted Axe
 EnchantedAxeProj.DisplayName: Enchanted Axe
@@ -207,7 +209,8 @@ PrismallineProj.DisplayName: Prismalline
 PrismRocket.DisplayName: Prism Rocket
 PrismShurikenBlade.DisplayName: Refraction Blade
 ProfanedPartisanProj.DisplayName: Profaned Partisan
-ProfanedPartisanSpear.DisplayName: Profaned Spear
+ProfanedPartisanSpear.DisplayName: Holy Spear
+ProfanedPartisanFlare.DisplayName: Holy Light
 PumpkaboomSmall.DisplayName: Small Pumpkaboom
 PumpkaboomBoomSmall.DisplayName: Pump-kaboom!
 PumpkaboomBig.DisplayName: Big Pumpkaboom
@@ -270,6 +273,7 @@ SpearofDestinyProjectile.DisplayName: Destiny Spear
 SpearofDestinyStealth.DisplayName: Empowered Holy Lance
 SpearofDestinyStealthExplosion.DisplayName: Strong Burst
 SpearofPaleolithProj.DisplayName: Paleolith Spear
+PaleoShatterExplosion.DisplayName: Paleo Shatter Explosion
 SpentFuelContainerProjectile.DisplayName: Spent Fuel Container
 SphereBladed.DisplayName: Bladed Sphere
 SphereBlue.DisplayName: Blue Thruster Sphere

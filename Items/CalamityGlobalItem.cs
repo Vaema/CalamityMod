@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using CalamityMod.Balancing;
+using CalamityMod.Buffs.Potions;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer;
@@ -328,9 +329,6 @@ namespace CalamityMod.Items
                 if (modPlayer.gloveOfRecklessness)
                     velocity = velocity.RotatedByRandom(MathHelper.ToRadians(12f));
             }
-
-            if (modPlayer.eArtifact && item.CountsAsClass<RangedDamageClass>())
-                velocity *= 1.25f;
         }
 
         public override bool Shoot(Item item, Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockBack)
@@ -616,7 +614,7 @@ namespace CalamityMod.Items
             }
 
             //Mana Potion interactions
-            if (item.healMana > 0)
+            if (item.healMana > 0 || player.HasBuff(ModContent.BuffType<AstralInjectionBuff>()))
             {
                 //If mana potion used, kill all active Crown projectiles 
                 if ((modPlayer.moonCrown || modPlayer.featherCrown) && modPlayer.mageCrownCount > 0)
@@ -1088,13 +1086,8 @@ namespace CalamityMod.Items
                 modPlayer.fairyBoots = true;
 
             // Mana Flower tinker buffs
-            if (item.type == ItemID.MagnetFlower)
-                player.manaCost -= 0.02f;
-            if (item.type == ItemID.ArcaneFlower || item.type == ItemID.ManaCloak)
-                player.manaCost -= 0.04f;
             if (item.type == ItemID.ArcaneFlower)
                 player.GetDamage<MagicDamageClass>() += 0.05f;
-
 
             if (item.type == ItemID.EyeoftheGolem)
             {
