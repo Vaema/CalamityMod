@@ -352,6 +352,8 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             NPC.defense = NPC.defDefense;
 
             NPC.chaseable = (AIState != BrainAIState.IllusionDash && AIState != BrainAIState.IllusionTrick);
+            if (Main.getGoodWorld && AIState >= BrainAIState.Phase2TransitionOpen)
+                NPC.brainOfGravity = NPC.whoAmI;
         }
         else
             NPC.defense = (int)(NPC.defDefense * Phase1DefenseMultiplier);
