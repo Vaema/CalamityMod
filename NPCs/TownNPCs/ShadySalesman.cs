@@ -100,6 +100,12 @@ namespace CalamityMod.NPCs.TownNPCs
             return "Ooooo, you want my wares dontcha? Yeah, yeah you do.";
         }
 
+        public override void SetChatButtons(ref string button, ref string button2)
+        {
+            button = Language.GetTextValue("LegacyInterface.28");
+            //button2 = this.GetLocalizedValue("RefundButton"); ;
+        }
+
         public override void OnChatButtonClicked(bool firstButton, ref string shopName)
         {
             if (firstButton)
@@ -283,32 +289,39 @@ namespace CalamityMod.NPCs.TownNPCs
 
     public class ShadySalesmanSpawnSystem : ModSystem
     {
+        private static bool CanSpawnTonight = true;
+
         public override void PreUpdateWorld()
         {
-            if (Main.eclipse || Main.dayTime || (Main.invasionType > 0 && Main.invasionDelay == 0 && Main.invasionSize > 0))
+            if(Main.dayTime)
             {
+                CanSpawnTonight = true;
                 return;
             }
+
+            if (Main.eclipse || (Main.invasionType > 0 && Main.invasionDelay == 0 && Main.invasionSize > 0))
+                return;
+            
             for (int i = 0; i < 200; i++)
-            {
                 if (Main.npc[i].active && Main.npc[i].type == ModContent.NPCType<ShadySalesman>())
-                {
                     return;
-                }
-            }
 
             List<int> townNPCs = [];
             for (int j = 0; j < 200; j++)
-            {
                 if (Main.npc[j].active && Main.npc[j].townNPC && Main.npc[j].type != NPCID.OldMan && !Main.npc[j].homeless)
-                {
                     townNPCs.Add(j);
-                }
-            }
-            if (townNPCs.Count == 0)
+
+            if (townNPCs.Count <= 1)
                 return;
 
+            if(!Main.rand.NextBool(4))
+            {
+                CanSpawnTonight = false;
+                return;
+            }
+
             ShadySalesman.SpawnTravelNPC(townNPCs[Main.rand.Next(townNPCs.Count)]);
+            CanSpawnTonight = false;
         }
     }
 }
