@@ -154,7 +154,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             if (spawnTrueMeleeProj)
             {
-                int beamDamage = player.CalcIntDamage<MeleeDamageClass>(Item.damage * 0.35f);
+                int beamDamage = player.CalcIntDamage<MeleeDamageClass>(Item.damage * 0.10f);
                 Vector2 mouseClamped = player.ClampedMouseWorld();
                 SoundEngine.PlaySound(SoundID.Item84 with { Volume = 1f, Pitch = Main.rand.NextFloat(0.5f, 0.7f) }, player.Center);
                 for (int i = 0; i < 2; i++)
