@@ -351,7 +351,10 @@ namespace CalamityMod.NPCs
         // Town Slimes
         private static readonly string[] ClumsySlimeNames = null;
         private static readonly string[] CoolSlimeNames = null;
-        private static readonly string[] DivaSlimeNames = null;
+        private static readonly string[] DivaSlimeNames =
+        [
+            "Rise Kujikawa", // <@!630100236689342475> (roald27)
+        ];
         private static readonly string[] ElderSlimeNames = null;
         private static readonly string[] MysticSlimeNames = null;
         private static readonly string[] NerdySlimeNames =
