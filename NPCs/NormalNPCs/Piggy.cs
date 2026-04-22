@@ -44,11 +44,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             Main.npcFrameCount[Type] = 8;
             Main.npcCatchable[Type] = true;
             NPCID.Sets.CountsAsCritter[Type] = true;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
-            {
-                SpriteDirection = 1
-            };
-            NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
             NPCID.Sets.CantTakeLunchMoney[Type] = true;
             NPCID.Sets.TakesDamageFromHostilesWithoutBeingFriendly[Type] = true;
             NPCID.Sets.NormalGoldCritterBestiaryPriority.Insert(NPCID.Sets.NormalGoldCritterBestiaryPriority.IndexOf(NPCID.GoldBunny) + 1, Type);

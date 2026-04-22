@@ -76,6 +76,16 @@ namespace CalamityMod.Projectiles.Enemy
                 Projectile.velocity.Y += 0.125f;
         }
 
+        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
+        {
+            int targetIndex = Player.FindClosest(Projectile.Center, 1, 1);
+            Player target = Main.player[targetIndex];
+            if (Projectile.Center.Y > target.Center.Y - 48f)
+                fallThrough = false;
+
+            return true;
+        }
+
         public override void OnKill(int timeLeft)
         {
             int dustAmt = Main.rand.Next(15, 21);

@@ -91,6 +91,16 @@ namespace CalamityMod.Projectiles.Enemy
             Timer++;
         }
 
+        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
+        {
+            int targetIndex = Player.FindClosest(Projectile.Center, 1, 1);
+            Player target = Main.player[targetIndex];
+            if (Projectile.Center.Y > target.Center.Y - 48f)
+                fallThrough = false;
+
+            return true;
+        }
+
         public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.NPCDeath1, Projectile.Center);

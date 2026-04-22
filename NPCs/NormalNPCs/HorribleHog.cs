@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.DataStructures;
 using CalamityMod.Effects;
 using CalamityMod.Items.Materials;
@@ -19,6 +20,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.Chat;
 using Terraria.GameContent;
+using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
@@ -34,11 +36,12 @@ namespace CalamityMod.NPCs.NormalNPCs
         public enum BehaviorState
         {
             // Non-attacks.
-            EngageAnimation = -3,
-            LaughAtDeadPlayer = -2,
+            EngageAnimation = -4,
+            LaughAtDeadPlayer = -3,
+            DespawnAnimation = -2,
             DeathAnimation = -1,
             Idle,
-            Stunned,    // Currently unused. May try to find some use for it later.
+            DigTowardsTarget,
 
             // Attacks.
             ChasePlayer,
@@ -51,8 +54,25 @@ namespace CalamityMod.NPCs.NormalNPCs
         private static Asset<Texture2D> BloomCircle;
         private static Asset<Texture2D> ShineFlare;
 
-        private static SoundStyle HorribleHog_Death = new("CalamityMod/Sounds/NPCKilled/HorribleHogDeath");
-        private static SoundStyle HorribleHog_DeathLaugh = new("CalamityMod/Sounds/Custom/HorribleHog/HorribleHogDeathLaugh", 2);
+        private static SoundStyle IdleSound = new("CalamityMod/Sounds/Custom/Piggy/Piggy_Idle", 3)
+        {
+            Pitch = -0.6f,
+            PitchVariance = 0.2f,
+        };
+        private static SoundStyle DiggingSlowSound = new("CalamityMod/Sounds/Custom/HorribleHog/HorribleHogDiggingSlow")
+        {
+            IsLooped = true,
+            PauseBehavior = PauseBehavior.PauseWithGame,
+            MaxInstances = 0
+        };
+        private static SoundStyle DiggingFastSound = new("CalamityMod/Sounds/Custom/HorribleHog/HorribleHogDiggingFast")
+        {
+            IsLooped = true,
+            PauseBehavior = PauseBehavior.PauseWithGame,
+            MaxInstances = 0
+        };
+        private static SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/HorribleHogDeath");
+        private static SoundStyle DeathLaughSound = new("CalamityMod/Sounds/Custom/HorribleHog/HorribleHogDeathLaugh", 2);
 
         public Dictionary<BehaviorState, int> PreviousAttackCounters = [];
 
@@ -63,6 +83,8 @@ namespace CalamityMod.NPCs.NormalNPCs
         public bool HasPlayedEngageAnimation;
 
         public bool HasPlayedDeathAnimation;
+
+        public bool HasPlayedDespawnAnimation;
 
         public bool ReadyToPlayLaughingAnimation;
 
@@ -84,11 +106,15 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public Vector2 LastPlayerPosition;
 
+        public Vector2 DiggingEmergeSpot;
+
         public Vector2 SquashVector;
 
         public Vector2 SquashVectorTarget;
 
         public SlotId DeathLaughSoundSlot;
+
+        public SlotId DiggingSoundSlot;
 
         #region Static Properties
         public static int MaxAttacks_ChasePlayer => 2;
@@ -105,11 +131,15 @@ namespace CalamityMod.NPCs.NormalNPCs
         public static int Damage_VomitBombProjectile => 18;
         public static int Damage_VomitEyeProjectile => 14;
 
-        public static float EngageDistance => 200f;
+        public static float EngageDistance => 300f;
         public static float Idle_MaxSpeed => 2f;
         public static float Idle_MaxAcceleration => 0.125f;
 
-        public static int StunnedTime => Main.expertMode ? 180 : 240;
+        public static int MaxTimeToStartDigging => 300;
+
+        public static int DigTowardsTarget_PreJumpTime => 30;
+        public static int DigTowardsTarget_FindSuitablePositionTime => 120;
+        public static int DigTowardsTraget_MaxDiggingTime => 180;
 
         public static int ChaseTime => 180;
         public static float ChasePlayer_MaxSpeed => 5f;
@@ -164,6 +194,8 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public ref float AltAttackVariant => ref NPC.localAI[1];
 
+        public ref float DigTimer => ref NPC.localAI[2];
+
         public Vector2 VelocityBasedSquashNStretch
         {
             get
@@ -201,6 +233,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             NPCID.Sets.TrailCacheLength[Type] = 5;
             NPCID.Sets.TrailingMode[Type] = 0;
+            NPCID.Sets.CantTakeLunchMoney[Type] = true;
         }
 
         public override void SetDefaults()
@@ -212,6 +245,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.lifeMax = 600;
             NPC.knockBackResist = 0f;
             NPC.npcSlots = 5f;
+            NPC.rarity = 4;
             NPC.value = Item.buyPrice(0, 3, 0, 0);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
@@ -222,6 +256,15 @@ namespace CalamityMod.NPCs.NormalNPCs
             SquashVector = Vector2.One;
             SquashVectorTarget = Vector2.One;
             ResetAttackWeights();
+        }
+
+        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
+        {
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
+                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Events.BloodMoon,
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.HorribleHog")
+            });
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -240,8 +283,9 @@ namespace CalamityMod.NPCs.NormalNPCs
                 writer.Write((byte)pair.Value);
             }
 
-            writer.WriteFlags(SearchForTargetEveryFrame, HasPlayedDeathAnimation, HasPlayedEngageAnimation, ReadyToPlayLaughingAnimation);
+            writer.WriteFlags(SearchForTargetEveryFrame, HasPlayedEngageAnimation, HasPlayedDeathAnimation, HasPlayedDespawnAnimation, ReadyToPlayLaughingAnimation);
             writer.WritePackedWorldPosition(LastPlayerPosition);
+            writer.WritePackedWorldPosition(DiggingEmergeSpot);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
@@ -254,8 +298,9 @@ namespace CalamityMod.NPCs.NormalNPCs
             for (int i = 0; i < attackWeightsLength; i++)
                 AttackWeights.Add((BehaviorState)reader.ReadByte(), (float)reader.ReadByte());
 
-            reader.ReadFlags(out SearchForTargetEveryFrame, out HasPlayedDeathAnimation, out HasPlayedEngageAnimation, out ReadyToPlayLaughingAnimation);
+            reader.ReadFlags(out SearchForTargetEveryFrame, out HasPlayedEngageAnimation, out HasPlayedDeathAnimation, out HasPlayedDespawnAnimation, out ReadyToPlayLaughingAnimation);
             LastPlayerPosition = reader.ReadPackedWorldPosition();
+            DiggingEmergeSpot = reader.ReadPackedWorldPosition();
         }
 
         public override bool CheckDead()
@@ -273,11 +318,17 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override bool? CanFallThroughPlatforms()
         {
+            // If Hog is not in any of the transitional behavior states, don't fall through platforms.
+            bool inTransitionalBehaviorState = AIState <= (int)BehaviorState.Idle;
+            if (inTransitionalBehaviorState)
+                return false;
+
             if (NPC.HasValidTarget)
             {
                 Player target = Main.player[NPC.target];
-                return target.Center.Y > NPC.Center.Y;
+                return target.Center.Y - 8 > NPC.Center.Y;
             }
+
             return base.CanFallThroughPlatforms();
         }
 
@@ -299,6 +350,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.noGravity = false;
             NPC.noTileCollide = false;
             NPC.dontTakeDamage = false;
+            NPC.chaseable = true;
             NPC.spriteDirection = NPC.direction;
 
             // If the target dies, laugh at them.
@@ -307,6 +359,32 @@ namespace CalamityMod.NPCs.NormalNPCs
                 ReadyToPlayLaughingAnimation = false;
                 SwitchBehavior(specificAttack: BehaviorState.LaughAtDeadPlayer);
             }
+
+            // If the target is unable to be reached, count up to 5 seconds before switching behavior states and digging towards them.
+            int tileRange = 64;
+            Vector2 npcCanHitPosition = NPC.position - new Vector2(tileRange, tileRange);
+            Vector2 targetCanHitPosition = target.position - new Vector2(tileRange, tileRange);
+            bool currentlyDoingAnAttack = AIState > (int)BehaviorState.DigTowardsTarget;
+            bool targetTooHigh = (NPC.Center.Y - target.Center.Y >= 160f && target.velocity.Y == 0f) || NPC.Center.Y - target.Center.Y >= 320f;
+            bool targetTooFar = NPC.Distance(target.Center) >= 1280f;
+            bool cantHitTarget = !Collision.CanHit(npcCanHitPosition, NPC.width + tileRange, NPC.height + tileRange, targetCanHitPosition, target.width + tileRange, target.height + tileRange);
+            if (NPC.HasValidTarget && currentlyDoingAnAttack && (targetTooHigh || targetTooFar || cantHitTarget))
+            {
+                DigTimer++;
+                if (DigTimer >= 300f && NPC.velocity.Y == 0f)
+                {
+                    SwitchBehavior(specificAttack: BehaviorState.DigTowardsTarget);
+                }
+            }
+            else
+            {
+                if (DigTimer > 0f)
+                    DigTimer--;
+            }
+
+            // Despawn immediately if it's morning.
+            if (Main.dayTime && AIState != (int)BehaviorState.DespawnAnimation)
+                SwitchBehavior(specificAttack: BehaviorState.DespawnAnimation);
 
             switch ((BehaviorState)AIState)
             {
@@ -318,6 +396,10 @@ namespace CalamityMod.NPCs.NormalNPCs
                     MainBehavior_LaughADeadPlayer();
                     break;
 
+                case BehaviorState.DespawnAnimation:
+                    MainBehavior_DespawnAnimation();
+                    break;
+
                 case BehaviorState.DeathAnimation:
                     MainBehavior_DeathAnimation();
                     break;
@@ -326,8 +408,8 @@ namespace CalamityMod.NPCs.NormalNPCs
                     MainBehavior_Idle(target);
                     break;
 
-                case BehaviorState.Stunned:
-                    MainBehavior_Stunned(target);
+                case BehaviorState.DigTowardsTarget:
+                    MainBehavior_DigTowardsTarget(target);
                     break;
 
                 case BehaviorState.ChasePlayer:
@@ -386,7 +468,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 // LMFAOOOOOOOOOOOOOOOOOOOOOOOO
                 if (!SoundEngine.TryGetActiveSound(DeathLaughSoundSlot, out var _))
                 {
-                    DeathLaughSoundSlot = SoundEngine.PlaySound(HorribleHog_DeathLaugh, NPC.Center, (activeSound) =>
+                    DeathLaughSoundSlot = SoundEngine.PlaySound(DeathLaughSound, NPC.Center, (activeSound) =>
                     {
                         activeSound.Position = NPC.Center;
                         return AIState == (int)BehaviorState.LaughAtDeadPlayer;
@@ -405,17 +487,83 @@ namespace CalamityMod.NPCs.NormalNPCs
             float targetAngle = NPC.direction < 0 ? MathHelper.ToRadians(50f) : MathHelper.ToRadians(-50f);
             NPC.rotation = (NPC.velocity.Y != 0f) ? NPC.rotation.AngleLerp(targetAngle, 0.075f) : 0f;
 
-            if (Timer >= 240f)
+            if (Timer >= 240f || NPC.justHit)
             {
                 BehaviorState nextAttack = NPC.HasValidTarget ? BehaviorState.ChasePlayer : BehaviorState.Idle;
                 SwitchBehavior(specificAttack: nextAttack);
             }
         }
 
+        public void MainBehavior_DespawnAnimation()
+        {
+            // Jump into the ground and dig away.
+            if (Timer < DigTowardsTarget_PreJumpTime)
+            {
+                NPC.velocity.X *= 0.8f;
+                HorizontalShakeStrength = Utils.Remap(Timer, 0, DigTowardsTarget_PreJumpTime - 5, 0f, 6f, true);
+                SetSquashVectors(new Vector2(1.24f, 0.84f));
+            }
+
+            if (Timer == DigTowardsTarget_PreJumpTime)
+            {
+                NPC.velocity.Y -= 6f;
+                NPC.velocity.X += 4f * NPC.direction;
+                HorizontalShakeStrength = 0f;
+
+                SoundEngine.PlaySound(IdleSound, NPC.Center);
+                SetSquashVectors();
+            }
+
+            if (Timer > DigTowardsTarget_PreJumpTime)
+            {
+                if (NPC.velocity.Y == 0f)
+                {
+                    int dustAmt = Main.rand.Next(10, 15);
+                    for (int i = 0; i < dustAmt; i++)
+                    {
+                        Vector2 dustPosition = NPC.Bottom + Main.rand.NextVector2Circular(NPC.width, 0f);
+                        Vector2 dustVelocity = new Vector2(Main.rand.NextFloat(-4f, 4f), Main.rand.NextFloat(-4f, -2f));
+                        Dust.NewDust(dustPosition, 1, 1, DustID.Dirt, dustVelocity.X, dustVelocity.Y, Scale: Main.rand.NextFloat(0.8f, 1.2f));
+                    }
+
+                    int dustCloudAmt = Main.rand.Next(9, 13);
+                    for (int i = 0; i < dustCloudAmt; i++)
+                    {
+                        Vector2 spawnPosition = NPC.Bottom + Main.rand.NextVector2Circular(NPC.width, 0f);
+                        Vector2 velocity = new Vector2(Main.rand.NextFloat(-3f, 3f), Main.rand.NextFloat(-2f, -1f));
+                        Color color = Color.Lerp(Color.SandyBrown, Color.SaddleBrown, Main.rand.NextFloat());
+                        float rotationSpeed = Main.rand.NextFloat(0.01f, 0.03f) * Main.rand.NextBool().ToDirectionInt();
+
+                        TimedSmokeParticle dustCloud = new(spawnPosition, velocity, color, color, Main.rand.NextFloat(1.2f, 1.4f), 1f, Main.rand.Next(45, 55), rotationSpeed);
+                        GeneralParticleHandler.SpawnParticle(dustCloud, true);
+                    }
+
+                    CalamityUtils.AddScreenshakeAt(NPC.Center, 5f);
+                    SoundEngine.PlaySound(SoundID.Item70, NPC.Center);
+
+                    NPC.active = false;
+                    NPC.netUpdate = true;
+                }
+            }
+
+            float idealRotation = (NPC.velocity.Y != 0f) ? NPC.velocity.ToRotation() + (NPC.direction > 0 ? 0f : -MathHelper.Pi) : 0f;
+            NPC.rotation = idealRotation;
+        }
+
         public void MainBehavior_DeathAnimation()
         {
             if (Timer == 240f)
             {
+                // Create smoke and throw up a big green "5000" on death just like the pigs in Angry Birds
+                for (int i = 0; i < 17; i++)
+                {
+                    int goreType = Main.rand.Next(GoreID.Smoke1, GoreID.Smoke3 + 1);
+                    Gore.NewGorePerfect(NPC.position, Main.rand.NextVector2Circular(2f, 2f), goreType);
+                }
+
+                CombatText.NewText(NPC.Hitbox, Color.LawnGreen, 5000);
+                SoundEngine.PlaySound(DeathSound, NPC.Center);
+
                 NPC.life = 0;
                 NPC.checkDead();
                 NPC.HitEffect();
@@ -431,7 +579,9 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public void MainBehavior_Idle(Player target)
         {
-            if (target.Distance(NPC.Center) <= EngageDistance && Collision.CanHit(NPC, target))
+            bool targetIsVisible = target.Distance(NPC.Center) <= EngageDistance && Collision.CanHit(NPC, target);
+            bool wasHitByNearestTarget = NPC.HasValidTarget && NPC.justHit;
+            if (targetIsVisible || wasHitByNearestTarget)
             {
                 SwitchBehavior(specificAttack: BehaviorState.EngageAnimation);
                 RunEyeGlintEffect(0.4f);
@@ -472,29 +622,173 @@ namespace CalamityMod.NPCs.NormalNPCs
                     NPC.velocity.Y -= 6f;
             }
 
+            // Idle sounds.
+            if (NPC.soundDelay == 0f && Main.rand.NextBool(250))
+            {
+                SetSquashVectors(squashVector: new Vector2(1.24f, 0.84f));
+                SoundEngine.PlaySound(IdleSound, NPC.Center);
+                NPC.soundDelay = Main.rand.Next(30, 45);
+            }
+
+            NPC.chaseable = false;
             SearchForTargetEveryFrame = true;
         }
 
-        public void MainBehavior_Stunned(Player target)
+        public void MainBehavior_DigTowardsTarget(Player target)
         {
-            if (NPC.velocity.Y == 0f)
-                NPC.velocity.X *= 0.98f;
-
-            // Jump back up right before resuming regular behavior.
-            if (Timer >= StunnedTime - 75 && Timer <= StunnedTime)
+            // Initial animation. 
+            if (LocalAIState == 0f)
             {
-                if (Timer == StunnedTime - 75)
-                    NPC.velocity.Y -= 6f;
+                if (Timer < DigTowardsTarget_PreJumpTime)
+                {
+                    NPC.velocity.X *= 0.8f;
+                    HorizontalShakeStrength = Utils.Remap(Timer, 0, DigTowardsTarget_PreJumpTime - 5, 0f, 6f, true);
+                    SetSquashVectors(new Vector2(1.24f, 0.84f));
+                }
 
+                if (Timer == DigTowardsTarget_PreJumpTime)
+                {
+                    NPC.velocity.Y -= 6f;
+                    HorizontalShakeStrength = 0f;
+                    SetSquashVectors(squashVector: new Vector2(0.84f, 1.24f));
+                }
+
+                if (Timer > DigTowardsTarget_PreJumpTime)
+                {
+                    if (NPC.velocity.Y == 0f)
+                    {
+                        int dustAmt = Main.rand.Next(10, 15);
+                        for (int i = 0; i < dustAmt; i++)
+                        {
+                            Vector2 dustPosition = NPC.Bottom + Main.rand.NextVector2Circular(NPC.width, 0f);
+                            Vector2 dustVelocity = new Vector2(Main.rand.NextFloat(-4f, 4f), Main.rand.NextFloat(-4f, -2f));
+                            Dust.NewDust(dustPosition, 1, 1, DustID.Dirt, dustVelocity.X, dustVelocity.Y, Scale: Main.rand.NextFloat(0.8f, 1.2f));
+                        }
+
+                        int dustCloudAmt = Main.rand.Next(9, 13);
+                        for (int i = 0; i < dustCloudAmt; i++)
+                        {
+                            Vector2 spawnPosition = NPC.Bottom + Main.rand.NextVector2Circular(NPC.width, 0f);
+                            Vector2 velocity = new Vector2(Main.rand.NextFloat(-3f, 3f), Main.rand.NextFloat(-2f, -1f));
+                            Color color = Color.Lerp(Color.SandyBrown, Color.SaddleBrown, Main.rand.NextFloat());
+                            float rotationSpeed = Main.rand.NextFloat(0.01f, 0.03f) * Main.rand.NextBool().ToDirectionInt();
+
+                            TimedSmokeParticle dustCloud = new(spawnPosition, velocity, color, color, Main.rand.NextFloat(1.2f, 1.4f), 1f, Main.rand.Next(45, 55), rotationSpeed);
+                            GeneralParticleHandler.SpawnParticle(dustCloud, true);
+                        }
+
+                        SoundEngine.PlaySound(SoundID.Item70, NPC.Center);
+                        LocalAIState = 1f;
+                        Timer = 0f;
+                        SetSquashVectors();
+                        NPC.netUpdate = true;
+                    }
+                }
+            }
+
+            // Search for a position around the player to emerge.
+            if (LocalAIState == 1f)
+            {
+                NPC.damage = 0;
+                NPC.dontTakeDamage = true;
+                NPC.Opacity = 0f;
+
+                // Find closest spot around player.
+                if (Timer <= DigTowardsTarget_FindSuitablePositionTime)
+                {
+                    DiggingEmergeSpot = FindSuitableGround(target.Bottom.ToTileCoordinates()).ToWorldCoordinates();
+                }
+                else
+                {
+                    float distanceInterpolant = Utils.GetLerpValue(800f, 200f, target.Distance(DiggingEmergeSpot), true);
+                    float screenshake = Utils.Remap(Timer, DigTowardsTarget_FindSuitablePositionTime, DigTowardsTraget_MaxDiggingTime, 1f, 4f, true) * distanceInterpolant;
+                    target.SetScreenshake(screenshake);
+                }
+
+                if (Main.rand.NextBool(3))
+                {
+                    int dustAmt = Main.rand.Next(1, 3);
+                    for (int i = 0; i < dustAmt; i++)
+                    {
+                        Vector2 dustPosition = DiggingEmergeSpot + Main.rand.NextVector2Circular(NPC.width, 0f);
+                        Vector2 dustVelocity = new Vector2(Main.rand.NextFloat(-2f, 2f), Main.rand.NextFloat(-5f, -3f));
+                        Dust.NewDust(dustPosition, 1, 1, DustID.Dirt, dustVelocity.X, dustVelocity.Y, Scale: Main.rand.NextFloat(0.8f, 1.2f));
+                    }
+                }
+
+                int dustCloudAmt = Main.rand.Next(1, 3);
+                for (int i = 0; i < dustCloudAmt; i++)
+                {
+                    Vector2 spawnPosition = DiggingEmergeSpot + Main.rand.NextVector2Circular(NPC.width, 0f);
+                    Vector2 velocity = new Vector2(Main.rand.NextFloat(-2f, 2f), Main.rand.NextFloat(-5f, -3f));
+                    Color color = Color.Lerp(Color.SandyBrown, Color.SaddleBrown, Main.rand.NextFloat());
+                    float rotationSpeed = Main.rand.NextFloat(0.01f, 0.03f) * Main.rand.NextBool().ToDirectionInt();
+
+                    TimedSmokeParticle dustCloud = new(spawnPosition, velocity, color, color, Main.rand.NextFloat(0.6f, 0.8f), 1f, Main.rand.Next(25, 45), rotationSpeed);
+                    GeneralParticleHandler.SpawnParticle(dustCloud, true, Enums.GeneralDrawLayer.BeforeSolidTiles);
+                }
+
+                // Play digging sounds.
+                if (Timer <= DigTowardsTarget_FindSuitablePositionTime)
+                {
+                    if (!SoundEngine.TryGetActiveSound(DiggingSoundSlot, out _))
+                    {
+                        DiggingSoundSlot = SoundEngine.PlaySound(DiggingSlowSound, NPC.Center, (activeSound) =>
+                        {
+                            activeSound.Position = DiggingEmergeSpot;
+                            return AIState == (int)BehaviorState.DigTowardsTarget && Timer <= 120;
+                        });
+                    }
+                }
+                else
+                {
+                    if (!SoundEngine.TryGetActiveSound(DiggingSoundSlot, out _))
+                    {
+                        DiggingSoundSlot = SoundEngine.PlaySound(DiggingFastSound, NPC.Center, (activeSound) =>
+                        {
+                            activeSound.Position = DiggingEmergeSpot;
+                            activeSound.Volume = 1.5f;
+                            return AIState == (int)BehaviorState.DigTowardsTarget && Timer >= 120 && Timer <= 180;
+                        });
+                    }
+                }
+
+                // Jump out.
+                if (Timer >= DigTowardsTraget_MaxDiggingTime)
+                {
+                    CalamityUtils.AddScreenshakeAt(DiggingEmergeSpot, 4f);
+                    SoundEngine.PlaySound(SoundID.Item70, DiggingEmergeSpot);
+
+                    NPC.Center = DiggingEmergeSpot;
+                    NPC.velocity = CalamityUtils.GetProjectilePhysicsFiringVelocity(NPC.Center, target.Center, NPC.gravity, 7f) * new Vector2(1f, 1.45f);
+                    SpawnJumpParticles();
+
+                    LocalAIState = 2f;
+                    Timer = 0f;
+                    NPC.netUpdate = true;
+                }
+
+                AfterimageTrailOpacity = MathHelper.Lerp(AfterimageTrailOpacity, 0f, 0.15f);
+                NPC.rotation = NPC.rotation.AngleLerp(0f, 0.075f);
+                SpriteRotation = SpriteRotation.AngleLerp(0f, 0.075f);
+            }
+
+            // Land after jumping and go back to attacking.
+            if (LocalAIState == 2f)
+            {
+                NPC.Opacity = MathHelper.Lerp(NPC.Opacity, 1f, 0.085f);
+                if (NPC.velocity.Y == 0f && Timer > 2f)
+                {
+                    RunEyeGlintEffect(0.4f);
+                    SwitchBehavior(specificAttack: BehaviorState.ChasePlayer);
+                }
+
+                float idealRotation = (NPC.velocity.Y != 0f) ? NPC.velocity.ToRotation() + (NPC.direction > 0 ? 0f : -MathHelper.Pi) : 0f;
+                NPC.rotation = idealRotation;
                 NPC.direction = (target.Center.X > NPC.Center.X).ToDirectionInt();
             }
 
-            if (Timer >= StunnedTime)
-            {
-                List<BehaviorState> possibleAttacks = [BehaviorState.HogCharge, BehaviorState.HorribleHoller, BehaviorState.JumpAndDash];
-                SwitchBehavior(null, null, [.. possibleAttacks]);
-            }
-
+            DigTimer = 0f;
             SearchForTargetEveryFrame = true;
         }
         #endregion
@@ -511,7 +805,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 GroundedMovement(target.Center, ChasePlayer_MaxSpeed, ChasePlayer_MaxAcceleration);
             }
 
-            bool jumpUpToPlayer = Main.expertMode && MathHelper.Distance(NPC.Center.Y, target.Center.Y) > 64f;
+            bool jumpUpToPlayer = Main.expertMode && NPC.Center.Y - target.Center.Y >= 64f;
             bool closeToPlayer = MathHelper.Distance(NPC.Center.X, target.Center.X) < 112f;
             if (NPC.velocity.Y == 0f && jumpUpToPlayer && closeToPlayer)
                 NPC.velocity.Y -= 8f;
@@ -519,7 +813,9 @@ namespace CalamityMod.NPCs.NormalNPCs
             bool closeEnoughToAttack = MathHelper.Distance(NPC.Center.X, target.Center.X) <= 64f;
             if (Timer >= ChaseTime || (closeEnoughToAttack && Timer >= 120f && NPC.velocity.Y == 0f))
             {
-                List<BehaviorState> possibleAttacks = [BehaviorState.HogCharge, BehaviorState.JumpAndDash];
+                List<BehaviorState> possibleAttacks = [BehaviorState.JumpAndDash];
+                if (NPC.Center.Y - target.Center.Y < 128)
+                    possibleAttacks.Add(BehaviorState.HogCharge);
                 SwitchBehavior(BehaviorState.ChasePlayer, null, [.. possibleAttacks]);
             }
 
@@ -611,7 +907,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                     Vector2 dustPosition = new(NPC.Bottom.X + Main.rand.NextFloat(-NPC.width * 0.5f, NPC.width * 0.5f), NPC.Bottom.Y);
                     Dust.NewDustPerfect(dustPosition, DustID.Cloud, new Vector2(NPC.velocity.X * 0.2f, Main.rand.NextFloat(-0.3f, 0.3f)), 120, Color.LightGray, Main.rand.NextFloat(1f, 1.2f));
-                    if (Timer % 7 == 0f)
+                    if (Timer % 7 == 0f && NPC.velocity.Y == 0f)
                         SoundEngine.PlaySound(SoundID.Run with { Pitch = -0.4f, Identifier = "Horrible Hog Run" }, NPC.Center);
 
                     AfterimageTrailOpacity = MathHelper.Lerp(AfterimageTrailOpacity, 1f, 0.15f);
@@ -627,13 +923,13 @@ namespace CalamityMod.NPCs.NormalNPCs
                         }
                         else
                         {
-                            List<BehaviorState> possibleAttacks = [BehaviorState.HorribleHoller, BehaviorState.JumpAndDash];
+                            List<BehaviorState> possibleAttacks = [BehaviorState.HorribleHoller, BehaviorState.JumpAndDash, BehaviorState.VomitBarrage];
                             SwitchBehavior(BehaviorState.HogCharge, null, [.. possibleAttacks]);
                         }
                     }
 
                     NPC.damage = 0;
-                    NPC.rotation = (NPC.velocity.Y != 0f) ? NPC.velocity.ToRotation() + (NPC.direction > 0 ? 0f : -MathHelper.Pi) : 0f;
+                    NPC.rotation = 0f;
                 }
             }
 
@@ -643,7 +939,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 if (Timer == 0f)
                 {
-                    NPC.velocity.Y -= JumpAndDash_MaxJumpHeight * 1.2f;
+                    NPC.velocity.Y = -JumpAndDash_MaxJumpHeight * 1.2f;
                     NPC.velocity.X += JumpAndDash_MaxDashSpeed * 0.4f * NPC.direction;
                     SpawnJumpParticles();
                 }
@@ -704,6 +1000,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 {
                     if (NPC.velocity.Y == 0f)
                     {
+                        SetSquashVectors();
                         LocalAIState = 3f;
                         Timer = 0f;
                         NPC.netUpdate = true;
@@ -722,15 +1019,12 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 if (NPC.velocity.Y == 0f && Timer > 2f)
                 {
-                    NPC.rotation = 0f;
-                    SpriteRotation = 0f;
                     List<BehaviorState> possibleAttacks = [BehaviorState.HorribleHoller, BehaviorState.JumpAndDash, BehaviorState.VomitBarrage];
                     SwitchBehavior(BehaviorState.HogCharge, null, [.. possibleAttacks]);
                 }
 
-                SpriteRotation -= (MathHelper.TwoPi / 20f) * (NPC.velocity.X * 0.1f) * NPC.direction;
-                NPC.rotation = NPC.velocity.ToRotation() + (NPC.direction > 0 ? 0f : -MathHelper.Pi);
-                SetSquashVectors();
+                NPC.rotation = NPC.rotation.AngleLerp(0f, 0.075f);
+                SpriteRotation = SpriteRotation.AngleLerp(0f, 0.075f);
             }
         }
 
@@ -764,7 +1058,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                 if (Timer == JumpAndDash_PreJumpTime)
                 {
-                    NPC.velocity.Y -= JumpAndDash_MaxJumpHeight;
+                    NPC.velocity.Y = -JumpAndDash_MaxJumpHeight;
                     NPC.velocity.X += JumpAndDash_MaxDashSpeed * 0.2f * NPC.direction;
 
                     SpawnJumpParticles();
@@ -863,8 +1157,12 @@ namespace CalamityMod.NPCs.NormalNPCs
                             {
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
-                                    Vector2 chunkVelocity = NPC.SafeDirectionTo(target.Center).RotatedByRandom(MathHelper.ToRadians(30f)) * 14f;
-                                    Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, chunkVelocity, ModContent.ProjectileType<HorribleHogVomitChunk>(), Damage_VomitChunkProjectile, 0f);
+                                    int maxVomitPerShot = 2;
+                                    for (int i = 0; i < maxVomitPerShot; i++)
+                                    {
+                                        Vector2 chunkVelocity = NPC.SafeDirectionTo(target.Center).RotatedBy(MathHelper.ToRadians(MathHelper.Lerp(-22f, 22f, i / (maxVomitPerShot - 1)))) * 14f;
+                                        Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, chunkVelocity, ModContent.ProjectileType<HorribleHogVomitChunk>(), Damage_VomitChunkProjectile, 0f);
+                                    }
                                 }
 
                                 Vector2 knockbackVelocity = NPC.DirectionFrom(target.Center).SafeNormalize(-Vector2.UnitY);
@@ -965,7 +1263,7 @@ namespace CalamityMod.NPCs.NormalNPCs
     
                             if (Timer == JumpAndDash_PreGroundPoundTime)
                             {
-                                NPC.velocity.Y += 30f;
+                                NPC.velocity.Y = 30f;
                                 NPC.velocity.X *= 0f;
                             }
 
@@ -1000,7 +1298,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     }
 
                     SetSquashVectors();
-                    SpriteRotation -= NPC.velocity.X * 0.1f * NPC.direction;
+                    SpriteRotation -= (MathHelper.TwoPi / 20f) * NPC.direction;
                     NPC.rotation = NPC.velocity.ToRotation() + (NPC.direction > 0 ? 0f : -MathHelper.Pi);
                     AfterimageTrailOpacity = MathHelper.Lerp(AfterimageTrailOpacity, 0f, 0.15f);
                 }
@@ -1017,11 +1315,16 @@ namespace CalamityMod.NPCs.NormalNPCs
                 }
 
                 AfterimageTrailOpacity = MathHelper.Lerp(AfterimageTrailOpacity, 0f, 0.15f);
+                NPC.rotation = NPC.rotation.AngleLerp(0f, 0.075f);
+                SpriteRotation = SpriteRotation.AngleLerp(0f, 0.075f);
                 SetSquashVectors();
 
-                if (Timer >= JumpAndDash_CooldownTime)
+                if (Timer >= JumpAndDash_CooldownTime && NPC.velocity.Y == 0f)
                 {
-                    List<BehaviorState> possibleAttacks = [BehaviorState.VomitBarrage, BehaviorState.HorribleHoller, BehaviorState.HogCharge];
+                    List<BehaviorState> possibleAttacks = [BehaviorState.VomitBarrage, BehaviorState.HorribleHoller];
+                    if (NPC.Center.Y - target.Center.Y < 128)
+                        possibleAttacks.Add(BehaviorState.HogCharge);
+
                     SwitchBehavior(BehaviorState.JumpAndDash, null, [.. possibleAttacks]);
                 }
             }
@@ -1049,27 +1352,8 @@ namespace CalamityMod.NPCs.NormalNPCs
                     {
                         int maxTileRange = 12;
                         Vector2 zombieSpawnPosition = NPC.Center + new Vector2(Main.rand.Next(-maxTileRange * 16, (maxTileRange + 1) * 16), 0f);
-                        Point posInTileCoords = zombieSpawnPosition.ToTileCoordinates();
-
-                        Vector2 actualSpawnPosition = new();
-                        for (int x = -maxTileRange; x < maxTileRange; x++)
-                        {
-                            for (int y = -maxTileRange; y < maxTileRange; y++)
-                            {
-                                Point tilePoint = posInTileCoords + new Point(x, y);
-                                Tile tile = Main.tile[tilePoint.X, tilePoint.Y];
-                                Tile tileAbove = Main.tile[tilePoint.X, tilePoint.Y - 1];
-                                Tile tileBelow = Main.tile[tilePoint.X, tilePoint.Y + 1];
-
-                                bool solidTile = tile.HasTile && (Main.tileSolid[tile.TileType] || Main.tileSolidTop[tile.TileType]) && tile.Slope == 0;
-                                if (solidTile && !tileAbove.HasTile && tileBelow.HasTile)
-                                {
-                                    actualSpawnPosition = tilePoint.ToWorldCoordinates() - Vector2.UnitY;
-                                    break;
-                                }
-                            }
-                        }
-
+                        Vector2 actualSpawnPosition = FindSuitableGround(zombieSpawnPosition.ToTileCoordinates()).ToWorldCoordinates() + Vector2.UnitY * 16f;
+                        
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             int maxTime = 150 + Main.rand.Next(31);
@@ -1110,7 +1394,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 if (Timer <= VomitBarrage_PreJumpTime)
                 {
                     NPC.direction = (target.Center.X > NPC.Center.X).ToDirectionInt();
-                    GroundedMovement(target.Center, VomitBarrage_MaxSpeed, VomitBarrage_MaxAcceleration, slowdownDistance: 200f);
+                    GroundedMovement(target.Center, VomitBarrage_MaxSpeed, ChasePlayer_MaxAcceleration, slowdownDistance: 200f);
 
                     float targetAngle = (NPC.velocity.Y != 0f) ? NPC.velocity.X * 0.135f * (NPC.velocity.Y < 0).ToDirectionInt() : 0f;
                     NPC.rotation = NPC.rotation.AngleLerp(targetAngle, 0.125f);
@@ -1129,8 +1413,8 @@ namespace CalamityMod.NPCs.NormalNPCs
                 if (Timer == VomitBarrage_PreJumpTime)
                 {
                     SetSquashVectors(squashVector: new Vector2(0.84f, 1.14f));
-                    NPC.velocity.Y -= JumpAndDash_MaxJumpHeight;
-                    NPC.velocity.X -= 7f * NPC.direction;
+                    NPC.velocity.Y = -JumpAndDash_MaxJumpHeight;
+                    NPC.velocity.X = -12f * NPC.direction;
                     HorizontalShakeStrength = 0f;
                     SpawnJumpParticles(6, 9);
                 }
@@ -1198,7 +1482,9 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 if (Timer >= VomitBarrage_PostVomitCooldown)
                 {
-                    List<BehaviorState> possibleAttacks = [BehaviorState.HorribleHoller, BehaviorState.HogCharge];
+                    List<BehaviorState> possibleAttacks = [BehaviorState.HorribleHoller, BehaviorState.JumpAndDash];
+                    if (NPC.Center.Y - target.Center.Y < 128)
+                        possibleAttacks.Add(BehaviorState.HogCharge);
                     SwitchBehavior(BehaviorState.VomitBarrage, null, [.. possibleAttacks]);
                 }
 
@@ -1217,6 +1503,9 @@ namespace CalamityMod.NPCs.NormalNPCs
             // Reset all the previous attack counters and weights in order to start a new cycle once the maximum amount of attacks overall has been reached.
             if (MainAttackCounter >= MaxAttacksPerCycle)
             {
+                // Also search for the nearest target again once the attack cycle resets.
+                NPC.TargetClosest(false);
+
                 foreach (BehaviorState attack in PreviousAttackCounters.Keys)
                     PreviousAttackCounters[attack] = 0;
                 ResetAttackWeights();
@@ -1374,6 +1663,24 @@ namespace CalamityMod.NPCs.NormalNPCs
             return true;
         }
 
+        private Point FindSuitableGround(Point basePoint)
+        {
+            // Tile is solid. Check to ensure the tile above is also isn't solid and move up if it is.
+            if (WorldGen.ActiveAndWalkableTile(basePoint.X, basePoint.Y))
+            {
+                while (WorldGen.ActiveAndWalkableTile(basePoint.X, basePoint.Y - 1) && basePoint.Y >= 1)
+                    basePoint.Y--;
+            }
+            // Tile isn't solid. Check to ensure the tile under it is solid and move down if it isn't.
+            else
+            {
+                while (!WorldGen.ActiveAndWalkableTile(basePoint.X, basePoint.Y + 1) && basePoint.Y < Main.maxTilesY)
+                    basePoint.Y++;
+            }
+
+            return basePoint;
+        }
+
         private void SpawnShockwave(int spawnImterval, int maxShockwaves, int direction, float heightMultiplier)
         {
             int spawnerIndex = Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Bottom, Vector2.Zero, ModContent.ProjectileType<HorribleHogShockwaveSpawner>(), Damage_ShockwaveProjectile, 0f);
@@ -1387,23 +1694,48 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         private void SpawnJumpParticles(int dustCloudMin = 10, int dustCloudMax = 14, int dirtDustMin = 14, int dirtDustMax = 18)
         {
-            int dustCloudAmt = Main.rand.Next(dustCloudMin, dustCloudMax + 1);
-            for (int i = 0; i < dustCloudAmt; i++)
+            // Do fart in a jar visuals when Hog does a jump mid-air.
+            float tileCollisionDistance = CalamityUtils.DistanceToTileCollisionHit(NPC.Bottom, Vector2.UnitY, 10) ?? 9999f;
+            if (tileCollisionDistance > 18f)
             {
-                Vector2 spawnPosition = NPC.Bottom + Main.rand.NextVector2Circular(32f, 0f);
-                Vector2 velocity = NPC.velocity * (Main.rand.NextFloat(0.1f, 0.2f) + i * 0.1f);
-                Color color = Color.Lerp(Color.SaddleBrown, Color.SandyBrown, Main.rand.NextFloat());
-                float rotationSpeed = Main.rand.NextFloat(0.01f, 0.03f) * Main.rand.NextBool().ToDirectionInt();
+                int fartCloudAmt = Main.rand.Next(dustCloudMin, dustCloudMax + 1);
+                for (int i = 0; i < fartCloudAmt; i++)
+                {
+                    Vector2 spawnPosition = NPC.Bottom + Main.rand.NextVector2Circular(32f, 0f);
+                    Vector2 velocity = Main.rand.NextVector2Circular(2f, 2f);
+                    int goreType = Main.rand.Next(GoreID.FartCloud1, GoreID.FartCloud3 + 1);
+                    Gore.NewGore(spawnPosition, velocity, goreType);
+                }
 
-                TimedSmokeParticle launchCloud = new(spawnPosition, velocity, color, color, Main.rand.NextFloat(0.4f, 0.6f), Main.rand.NextFloat(0.6f, 0.8f), Main.rand.Next(30, 45), rotationSpeed);
-                GeneralParticleHandler.SpawnParticle(launchCloud, true, Enums.GeneralDrawLayer.BeforeSolidTiles);
+                int fartDustAmt = Main.rand.Next(dirtDustMin, dirtDustMax + 1);
+                for (int i = 0; i < fartDustAmt; i++)
+                {
+                    Vector2 velocity = Main.rand.NextVector2Circular(2f, 2f);
+                    Dust.NewDust(NPC.Bottom, 0, 0, DustID.FartInAJar, velocity.X, velocity.Y, Scale: Main.rand.NextFloat(0.8f, 1.2f));
+                }
+
+                SoundEngine.PlaySound(SoundID.Item16, NPC.Center);
             }
-
-            int dustAmt = Main.rand.Next(dirtDustMin, dirtDustMax + 1);
-            for (int i = 0; i < dustAmt; i++)
+            else
             {
-                Vector2 velocity = NPC.velocity * (Main.rand.NextFloat(0.1f, 0.2f) + i * 0.025f);
-                Dust.NewDust(NPC.Bottom, 0, 0, DustID.Dirt, velocity.X, velocity.Y);
+                int dustCloudAmt = Main.rand.Next(dustCloudMin, dustCloudMax + 1);
+                for (int i = 0; i < dustCloudAmt; i++)
+                {
+                    Vector2 spawnPosition = NPC.Bottom + Main.rand.NextVector2Circular(32f, 0f);
+                    Vector2 velocity = NPC.velocity * (Main.rand.NextFloat(0.1f, 0.2f) + i * 0.1f);
+                    Color color = Color.Lerp(Color.SaddleBrown, Color.SandyBrown, Main.rand.NextFloat());
+                    float rotationSpeed = Main.rand.NextFloat(0.01f, 0.03f) * Main.rand.NextBool().ToDirectionInt();
+
+                    TimedSmokeParticle launchCloud = new(spawnPosition, velocity, color, color, Main.rand.NextFloat(0.4f, 0.6f), Main.rand.NextFloat(0.6f, 0.8f), Main.rand.Next(30, 45), rotationSpeed);
+                    GeneralParticleHandler.SpawnParticle(launchCloud, true, Enums.GeneralDrawLayer.BeforeSolidTiles);
+                }
+
+                int dustAmt = Main.rand.Next(dirtDustMin, dirtDustMax + 1);
+                for (int i = 0; i < dustAmt; i++)
+                {
+                    Vector2 velocity = NPC.velocity * (Main.rand.NextFloat(0.1f, 0.2f) + i * 0.025f);
+                    Dust.NewDust(NPC.Bottom, 0, 0, DustID.Dirt, velocity.X, velocity.Y);
+                }
             }
         }
 
@@ -1423,25 +1755,18 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
             if (Main.bloodMoon && NPC.downedBoss1 && NPC.CountNPCS(Type) < 1)
-                return SpawnCondition.OverworldNightMonster.Chance * 0.001f;
+            {
+                float spawnChanceMultiplier = CalamityWorld.death ? 0.0075f : 0.025f;
+                return SpawnCondition.OverworldNightMonster.Chance * spawnChanceMultiplier;
+            }
             return 0f;
         }
 
         public override void HitEffect(NPC.HitInfo hit)
         {
+            // Death effects spawned in MainBehavior_DeathAnimation.
             if (NPC.life <= 0)
-            {
-                // Create smoke and throw up a big green "5000" on death just like the pigs in Angry Birds
-                for (int i = 0; i < 17; i++)
-                {
-                    int goreType = Main.rand.Next(GoreID.Smoke1, GoreID.Smoke3 + 1);
-                    Gore.NewGorePerfect(NPC.position, Main.rand.NextVector2Circular(2f, 2f), goreType);
-                }
-
-                CombatText.NewText(NPC.Hitbox, Color.LawnGreen, 5000);
-                SoundEngine.PlaySound(HorribleHog_Death, NPC.Center);
                 return;
-            }
 
             int dustAmt = Main.rand.Next(3, 7);
             if (hit.Crit)
@@ -1474,8 +1799,10 @@ namespace CalamityMod.NPCs.NormalNPCs
 
             Texture2D baseTexture = TextureAssets.Npc[Type].Value;
             SpriteEffects effects = NPC.spriteDirection > 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            Vector2 drawPosition = NPC.Center + Vector2.UnitY * NPC.gfxOffY - screenPos;
             Vector2 scale = NPC.scale * SquashVector;
+
+            float yOffset = scale.Y * baseTexture.Height * 0.05f;
+            Vector2 drawPosition = NPC.Center + new Vector2(0f, NPC.gfxOffY - yOffset) - screenPos;
 
             // Horrible Hog and its afterimage trail.
             using (spriteBatch.Scope())
@@ -1491,7 +1818,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     {
                         Color afterimageColor = Color.Red * AfterimageTrailOpacity * 0.76f;
                         afterimageColor *= (float)(NPC.oldPos.Length - i) / (float)NPC.oldPos.Length;
-                        Vector2 afterimageDrawPosition = NPC.oldPos[i] + NPC.Size * 0.5f - screenPos;
+                        Vector2 afterimageDrawPosition = NPC.oldPos[i] - Vector2.UnitY * yOffset + NPC.Size * 0.5f - screenPos;
                         spriteBatch.Draw(baseTexture, afterimageDrawPosition, NPC.frame, NPC.GetAlpha(afterimageColor), NPC.rotation, NPC.frame.Size() * 0.5f, scale, effects, 0f);
                     }
                 }
@@ -1500,9 +1827,9 @@ namespace CalamityMod.NPCs.NormalNPCs
                 spriteBatch.End();
             }
 
-            //string attack = $"{((BehaviorState)AIState).ToString()}\n{MainAttackCounter}";
+            //string attack = $"{DigTimer}";
             //Vector2 stringDrawPosition = drawPosition - Vector2.UnitY * 64f;
-            //ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, attack, stringDrawPosition, Color.Green, 0f, Vector2.One, Vector2.One);
+            //ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, attack, stringDrawPosition, Color.LawnGreen, 0f, Vector2.One, Vector2.One);
 
             // Eye glint.
             if (EyeGlintScale > 0.05f)

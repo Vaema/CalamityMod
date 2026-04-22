@@ -71,7 +71,6 @@ namespace CalamityMod.Projectiles.Enemy
         {
             Projectile.knockBack = 8f;
             Projectile.tileCollide = false;
-            Projectile.friendly = true;
             Projectile.hostile = true;
             Projectile.penetrate = -1;
             Projectile.timeLeft = 6;
@@ -130,6 +129,16 @@ namespace CalamityMod.Projectiles.Enemy
         {
             Explode();
             return false;
+        }
+
+        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
+        {
+            int targetIndex = Player.FindClosest(Projectile.Center, 1, 1);
+            Player target = Main.player[targetIndex];
+            if (Projectile.Center.Y > target.Center.Y - 48f)
+                fallThrough = false;
+
+            return true;
         }
 
         public override bool PreDraw(ref Color lightColor)

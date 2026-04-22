@@ -142,7 +142,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Sky,
-                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Piggy")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.DivineSwine")
             });
         }
 

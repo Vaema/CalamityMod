@@ -212,6 +212,11 @@ namespace CalamityMod.CalPlayer
             if (Player.whoAmI != Main.myPlayer)
                 return;
 
+            // Don't activate for non-friendly projectiles (obviously).
+            // Override CanHitNPC if you want a hostile projectile that can also damage enemies.
+            if (!proj.friendly)
+                return;
+
             // Apply this to player equippable sources ie. Orichalcum set bonus petal spawns
             // Do not apply if this effect is an extension of a weapon ie. Pearl God round effect as it will mess up Old Fashioned
             var source = Player.GetSource_OnHit(target);
