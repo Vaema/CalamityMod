@@ -16,7 +16,7 @@ namespace CalamityMod.Buffs.DamageOverTime
         public static Color baneColor2 = new Color(0, 232, 146);
         public static DebuffData debuffData = new DebuffData()
         {
-            EnemyLostRegen = 90,
+            EnemyLostRegen = 40,
             NPCLifeRegenMethod = BaneNPCLifeRegen
         };
         public override void SetStaticDefaults()

@@ -401,6 +401,32 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
+        #region Flail Balance Changes
+        // Make flails be unaffected by player velocity
+        private static void FlailsNoLongerAffectedByPlayerVelocity(On_Projectile.orig_AI_015_Flails orig, Projectile self)
+        {
+            orig(self);
+            if (self.ai[0] == 1f && self.ai[1] == 0f)
+                self.velocity -= Main.player[self.owner].velocity;
+        }
+
+        // Increase Flower Pow's return speed
+        private static void IncreaseFlowerPowRetSpeed(ILContext il)
+        {
+            var cursor = new ILCursor(il);
+            // Move to where Flower Pow receives its specific flail stat changes. This moves it after num2 = 23f
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdcR4(23f), i => i.MatchStloc(6)))
+            {
+                LogFailure("Flower Pow Buff", "Could not move to Flower Pow's specific flail stat changes.");
+                return;
+            }
+
+            // Emit an instruction setting num5 (the return speed) to 21. Vanilla is 16
+            cursor.Emit(OpCodes.Ldc_R4, 21f);
+            cursor.Emit(OpCodes.Stloc, 9);
+        }
+        #endregion
+
         #region Terrarian Projectile Limitation for Extra Updates
         private static void LimitTerrarianProjectiles(ILContext il)
         {
@@ -684,6 +710,68 @@ namespace CalamityMod.ILEditing
                 return false;
             else
                 return orig(self);
+        }
+        #endregion
+
+        #region Adjust lifesteal costs
+        /// <summary>
+        /// Reimplemnts our own implementation of Spectre Healing so we can customize effects
+        /// Also means it will no longer reduce lifesteal cooldown when hitting with non-magic attacks, and not proc if every player is full HP
+        /// </summary>
+        /// <param name="orig"></param>
+        /// <param name="self"></param>
+        /// <param name="dmg"></param>
+        /// <param name="Position"></param>
+        /// <param name="victim"></param>
+        private static void AdjustSpectreHealing(On_Projectile.orig_ghostHeal orig, Projectile self, int dmg, Vector2 Position, Entity victim)
+        {
+            float HealingMultiplier = 0.2f;
+            float LifestealCooldownMult = 0.66f;
+            
+            var owner = Main.player[self.owner];
+            HealingMultiplier -= self.numHits * 0.05f;
+            int AmountToHeal = (int)Math.Round(dmg * HealingMultiplier);
+            if (!self.magic || AmountToHeal <= 0 || Main.player[Main.myPlayer].lifeSteal <= 0f)
+            {
+                return;
+            }
+            float MissingLifeGoal = 0f;
+            int targetPlayer = self.owner;
+            foreach (var player in Main.ActivePlayers)
+            {
+                if (!player.dead && ((!self.hostile && !owner.hostile) || owner.team == player.team) && self.Distance(player.Center) <= 3000f)
+                {
+                    int MissingLife = player.statLifeMax2 - player.statLife;
+                    if ((float)MissingLife > MissingLifeGoal)
+                    {
+                        MissingLifeGoal = MissingLife;
+                        targetPlayer = player.whoAmI;
+                    }
+                }
+            }
+            AmountToHeal = (int)MathHelper.Min(AmountToHeal, MissingLifeGoal);
+            if (AmountToHeal <= 0)
+                return;
+            owner.lifeSteal -= AmountToHeal * LifestealCooldownMult;
+            Projectile.NewProjectile(self.GetSource_OnHit(victim, ProjectileSourceID.ToContextString(ProjectileSourceID.SetBonus_GhostHeal)), Position.X, Position.Y, 0f, 0f, ProjectileID.SpiritHeal, 0, 0f, self.owner, targetPlayer, AmountToHeal);
+        }
+        /// <summary>
+        /// Adjust Vampire Knives implementation, stopping them from trying to heal when at full HP
+        /// </summary>
+        /// <param name="orig"></param>
+        /// <param name="self"></param>
+        /// <param name="dmg"></param>
+        /// <param name="Position"></param>
+        /// <param name="victim"></param>
+        private static void AdjustVampireHealing(On_Projectile.orig_vampireHeal orig, Projectile self, int dmg, Vector2 Position, Entity victim)
+        {
+            int healAmount = (int)(dmg * 0.075f);
+            float LifestealCooldownMult = 1f;
+            if ((int)healAmount != 0 && !(Main.player[Main.myPlayer].lifeSteal <= 0f) && Main.player[Main.myPlayer].statLifeMax2 > Main.player[Main.myPlayer].statLife)
+            {
+                Main.player[Main.myPlayer].lifeSteal -= healAmount * LifestealCooldownMult;
+                Projectile.NewProjectile(self.GetSource_OnHit(victim, ProjectileSourceID.ToContextString(ProjectileSourceID.VampireKnives)), Position.X, Position.Y, 0f, 0f, ProjectileID.VampireHeal, 0, 0f, self.owner, self.owner, healAmount);
+            }
         }
         #endregion
     }

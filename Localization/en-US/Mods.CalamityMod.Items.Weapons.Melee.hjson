@@ -166,7 +166,7 @@ BansheeHook: {
 
 Basher: {
 	DisplayName: Basher
-	Tooltip: Swings a rotten club that irradiates enemies on hit while knocking you back in the process
+	Tooltip: Swings a rotten club that inflicts [cbuff:CalamityMod/Irradiated] while knocking you back in the process
 }
 
 BladecrestOathsword: {
@@ -191,7 +191,11 @@ BlightedCleaver: {
 
 Bonebreaker: {
 	DisplayName: Bonebreaker
-	Tooltip: Fires javelins that stick to enemies before bursting into shrapnel
+	Tooltip:
+		'''
+		Fires javelins that stick to enemies before bursting into shrapnel
+		Javelins cause [cbuff:CalamityMod/HeavyBleeding], [cbuff:Venom], and [cbuff:CalamityMod/ArmorCrunch]
+		'''
 }
 
 BotanicPiercer: {
@@ -266,7 +270,7 @@ Carnage: {
 
 CelestialClaymore: {
 	DisplayName: Celestial Claymore
-	Tooltip: Spawns cosmic energy stars near the cursor that inflict several debuffs
+	Tooltip: Spawns cosmic energy stars near the cursor that inflict [cbuff:Frostburn2], [cbuff:OnFire3], or [cbuff:Ichor]
 }
 
 ClamCrusher: {
@@ -287,8 +291,8 @@ CosmicDischarge: {
 	DisplayName: Cosmic Discharge
 	Tooltip:
 		'''
-		Striking an enemy with the whip causes glacial explosions and grants the player the cosmic freeze buff
-		This buff gives the player +2 HP/s life regen while standing still and freezes enemies near the player
+		Striking an enemy with the whip causes glacial explosions and grants the player the [cbuffplr:CalamityMod/CosmicFreeze] buff
+		[cbuffplr:CalamityMod/CosmicFreeze] gives the player +2 HP/s life regen while standing still and freezes enemies near the player
 		'''
 }
 
@@ -400,7 +404,7 @@ DragonRage: {
 	DisplayName: Dragon Rage
 	Tooltip:
 		'''
-		Twirls a baton that causes explosions on enemy hits
+		Twirls a baton that causes explosions of [cbuff:CalamityMod/Dragonfire] on enemy hits
 		Every ten hits will summon a ring of fireballs
 		'''
 }
@@ -416,7 +420,7 @@ Earth: {
 		'''
 		A beautiful prismatic blade with unrivaled close combat proficiency
 		Heals you greatly on hit
-		Every other swing will summon three Gaia meteors to fall upon nearby enemies
+		Every other swing will summon three Gaia meteors to annihilate nearby enemies with [cbuff:CalamityMod/MiracleBlight]
 		'All Its spawn shall know the beauty and wrath of their creator'
 		'''
 }
@@ -426,7 +430,7 @@ EarthenPike: {
 	Tooltip:
 		'''
 		Sprays fossil shards on swing
-		Crushes enemy defenses
+		Inflicts [cbuff:CalamityMod/ArmorCrunch]
 		'''
 }
 
@@ -457,7 +461,7 @@ EvilSmasher: {
 		Channels a powerful hammer strike with the capability to crush all evil
 		Striking a tile with the hammer strike will cause an explosion and push you back
 		Striking enemies inflicts [cbuff:CalamityMod/SmashedEvil] on both the user and target
-		Charging strikes increases damage, explosion radius, and [cbuff:CalamityMod/SmashedEvil] duration
+		Charging strikes increases damage, explosion radius, and [cbuffplr:CalamityMod/SmashedEvil] duration
 		'EViL! sMaSH eVIl! SmAsh... ER!'
 		'''
 	//All damage and kill dialogue has the capitalization randomized when said
@@ -498,6 +502,7 @@ Exoblade: {
 		Enemy hits from the blade during the dash result in massive damage and a rebound
 		Press <left> immediately after a rebound to perform a powerful slash
 		Powerful slashes are larger, heal you, and create a large explosion
+		Inflicts [cbuff:CalamityMod/MiracleBlight]
 		'''
 }
 
@@ -664,18 +669,16 @@ GrandDad: {
 	TooltipNormal:
 		'''
 		An unfathomably heavy blade that rips through enemies using its sheer mass
-		Heals you on hit
-		Striking weaker enemies will launch them with incredible force
-		Launched enemies take immense damage when colliding with walls and floors
-		Holding <right> while swinging will heavily reduce the damage of the blade and increase its launch damage and velocity
+		Provides healing over time to you and all nearby allies on hit
+		Striking low health enemies will launch them with incredible force
+		Launched enemies are killed instantly on impact with walls and floors
 		[c/00B8DF:'How are you swinging something that has half the mass of a star?']
 		'''
 	TooltipGFB:
 		'''
 		A high quality blade that rips through enemies
-		Striking weaker enemies will yeet them with incredible force, often leaving them Stuck Inside tiles
+		Striking low health enemies will yeet them with incredible force, nice >:]
 		Yeeted enemies will turn to JAM when SLAMMED into walls and floors
-		Holding <right> while swinging will heavily reduce the damage of the blade and increase its yeet damage and velocity, nice >:]
 		[c/00B8DF:'Please read the weapon description.']
 		'''
 }
@@ -762,7 +765,7 @@ InsidiousImpaler: {
 	DisplayName: Insidious Impaler
 	Tooltip:
 		'''
-		Throws self-propelling radioactive harpoons which chase foes
+		Throws self-propelling radioactive harpoons which chase foes and cause [cbuff:CalamityMod/SulphuricPoisoning]
 		Harpoons ricochet at close range for additional hits
 		'''
 }
@@ -775,7 +778,7 @@ Lacerator: {
 		Striking enemies conjures a bloody saw to shred them
 		The saw does more damage the more often the yoyo hits, and fades away when not striking enemies
 		Enemies touching the edge of the sawblade get blood orbs torn out of them
-		Picking up these blood orbs reduces the duration of [cbuff:PotionSickness]
+		Picking up these blood orbs reduces the duration of [cbuffplr:PotionSickness]
 		The direction of the saw's spin depends on which direction you originally threw the yoyo
 		[GFB]
 		'''
@@ -793,7 +796,7 @@ Lightspeed: {
 	Tooltip:
 		'''
 		[c/c7f5ff:Unleash a flurry of stabs which build Elemental Mastery on hit]
-		[c/c2fff2:Elemental Mastery is lost over time but briefly stops depleting after reaching its maximum]
+		[c/c2fff2:Elemental Mastery is lost over time if it has not been gained for a few seconds]
 		[c/ffdfba:Press <right> with maximum Elemental Mastery to dash toward your cursor]
 		[c/ffc7c7:Hitting an enemy during the dash refunds some Elemental Mastery]
 		'''
@@ -815,7 +818,7 @@ Lucrecia: {
 		'''
 		[c/9370db:Fires a spiraling darklight shard when swung]
 		[c/837ce4:Hits with the blade itself build Darklight Energy]
-		[c/7489ee:Darklight Energy is lost over time but briefly stops depleting after reaching its maximum]
+		[c/7489ee:Darklight Energy is lost over time if it has not been gained for a few seconds]
 		[c/6495f7:Press <right> with maximum energy to fire a double helix comet]
 		'''
 }
@@ -846,8 +849,8 @@ MawOfInfinity: {
 		'''
 		Swings a blade forged from the Devourer's maw in a 3-swing combo
 		The first swing only hits close range
-		The second swing additionally launches [c/ff00ff:Faith Incinerator]
-		The third swing unleashes [c/ff00ff:Divinity Devourer] at your cursor, exploding for massive damage
+		The second swing additionally launches [ceffect/dog:Faith Incinerator]
+		The third swing unleashes [ceffect/dog:Divinity Devourer] at your cursor, exploding for massive damage
 		'''
 }
 
@@ -875,7 +878,7 @@ MonolithSword: {
 
 MonstrousKnives: {
 	DisplayName: Monstrous Knives
-	Tooltip: Throws a spread of short-range knives that have a chance to heal the user
+	Tooltip: Throws a spread of short-range knives that heal the user
 }
 
 Mourningstar: {
@@ -896,14 +899,14 @@ Murasama: {
 
 MycelialClaws: {
 	DisplayName: Mycelial Claws
-	Tooltip: Grants the Mushy buff for 6 seconds on enemy hits
+	Tooltip: Grants the [cbuffplr:CalamityMod/Mushy] buff for 6 seconds on enemy hits
 }
 
 Nadir: {
 	DisplayName: Nadir
 	Tooltip:
 		'''
-		Fires void essences which flay nearby enemies with tentacles
+		Fires void essences which flay nearby enemies with [cbuff:CalamityMod/Voidfrost] tentacles
 		'The abyss has stared back at you long enough. It now speaks, and it does not speak softly'
 		'''
 }
@@ -933,7 +936,7 @@ Oblivion: {
 
 OldLordClaymore: {
 	DisplayName: Old Lord Claymore
-	Tooltip: A slow but powerful blade that sets enemies ablaze and has substantial knockback
+	Tooltip: A slow but powerful blade that lights enemies with [cbuff:OnFire3] and has substantial knockback
 	HoldShiftTooltip:
 		'''
 		[c/df4420:A gift to outstanding Demons, a replica of the sword used by the greatest of all Demon Lords.]
@@ -1014,7 +1017,7 @@ PhotonRipper: {
 	DisplayName: Photon Ripper
 	Tooltip:
 		'''
-		Projects a directed stream of hardlight teeth at ultra high velocity
+		Projects a directed stream of hardlight teeth at ultra high velocity which cause [cbuff:CalamityMod/MiracleBlight]
 		This weapon and its projectiles function as a chainsaw
 		Press <right> to use without chopping down trees
 		'''
@@ -1062,7 +1065,8 @@ RemsRevenge: {
 	DisplayName: Rem's Revenge
 	Tooltip:
 		'''
-		Summons blood explosions and lowers enemy defense by {0} on hit
+		Summons blood explosions and inflicts [cbuff:CalamityMod/WitherDebuff] on hit
+		[cbuff:CalamityMod/WitherDebuff] lowers enemy defense by {0}
 		'A deadly morning star befitting its demonic owner'
 		'''
 }
@@ -1112,7 +1116,7 @@ SaharaSlicers: {
 
 SausageMaker: {
 	DisplayName: Sausage Maker
-	Tooltip: Sprays homing blood on hit
+	Tooltip: Sprays homing blood and causes [cbuff:CalamityMod/BurningBlood] on hit
 }
 
 ScourgeoftheCosmos: {
@@ -1165,7 +1169,7 @@ SolsticeClaymore: {
 	Tooltip:
 		'''
 		Changes projectile color based on the time of year
-		Inflicts daybroken during the day and nightwither during the night
+		Inflicts [cbuff:CalamityMod/Daybroken] during the day and [cbuff:CalamityMod/Nightwither] during the night
 		'''
 }
 
@@ -1174,7 +1178,7 @@ SoulHarvester: {
 	Tooltip:
 		'''
 		Shoots a soul scythe
-		Enemies explode when on low health, spreading the plague
+		Enemies explode when on low health, spreading the [cbuff:CalamityMod/Plague]
 		'''
 }
 
@@ -1274,12 +1278,12 @@ Swordsplosion: {
 
 TaintedBlade: {
 	DisplayName: Tainted Blade
-	Tooltip: Inflicts poison on enemy hits
+	Tooltip: Inflicts [cbuff:Poisoned] on enemy hits
 }
 
 TeardropCleaver: {
 	DisplayName: Teardrop Cleaver
-	Tooltip: Makes your enemies cry
+	Tooltip: Gives your enemies [cbuff:CalamityMod/TemporalSadness]
 }
 
 TenebreusTides: {
@@ -1316,7 +1320,7 @@ TheBurningSky: {
 	DisplayName: The Burning Sky
 	Tooltip:
 		'''
-		Rains down a stream of draconic fire at the cursor
+		Rains down a stream of [cbuff:CalamityMod/Dragonfire] at the cursor
 		'Hold the blade to the sky, and witness Armageddon'
 		'''
 }
@@ -1365,7 +1369,7 @@ TheMutilator: {
 		'''
 		Striking enemies empowers The Mutilator, increasing its damage
 		At full charge, striking enemies causes a blood orb explosion
-		Picking up these blood orbs reduces the duration of [cbuff:PotionSickness]
+		Picking up these blood orbs reduces the duration of [cbuffplr:PotionSickness]
 		'''
 }
 
@@ -1376,7 +1380,7 @@ TheObliterator: {
 		{$Common.YoyoStatsInfinite}
 		[GFB]
 		'''
-	TooltipNormal: Occasionally performs a miniature [c/ff00ff:Dimensional Drive] at nearby foes
+	TooltipNormal: Occasionally performs a miniature [ceffect/dog:Dimensional Drive] at nearby foes
 	TooltipGFB: just a slight bit of dust spam on this weapon im afraid
 }
 
@@ -1385,7 +1389,7 @@ TheOracle: {
 	Tooltip:
 		'''
 		{$Common.YoyoStatsInfinite}
-		Emits an aura of lightning which charges up when hitting enemies
+		Emits an aura of [cbuff:CalamityMod/AuricRebuke] lightning which charges up when hitting enemies
 		Fires auric orbs when supercharged
 		'Gaze into the past, the present, the future... and the circumstances of your inevitable demise'
 		'''
@@ -1450,7 +1454,7 @@ TrueCausticEdge: {
 	Tooltip:
 		'''
 		Fires a bouncing caustic beam
-		Inflicts acid venom and slows down on enemy hits
+		Inflicts [cbuff:Venom] and slows down on enemy hits
 		'''
 }
 
@@ -1514,13 +1518,13 @@ Violence: {
 		'''
 		A demonic pitchfork, cursed to cause endless bloodshed
 		<left> commands the trident to follow your cursor and shred enemies with devastating speed
-		<right> throws the trident, violently tearing through enemies with immense power and inflicting Vulnerability Hex
+		<right> throws the trident, violently tearing through enemies with immense power and inflicting [cbuff:CalamityMod/VulnerabilityHex]
 		'''
 }
 
 Virulence: {
 	DisplayName: Virulence
-	Tooltip: Fires a plague cloud
+	Tooltip: Fires a [cbuff:CalamityMod/Plague] cloud
 }
 
 VoidEdge: {

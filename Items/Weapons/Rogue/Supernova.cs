@@ -40,7 +40,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shoot = ModContent.ProjectileType<SupernovaHoldout>();
             Item.shootSpeed = 16f;
             Item.DamageType = RogueDamageClass.Instance;
-            Item.rare = ModContent.RarityType<BurnishedAuric>();
+            Item.rare = ModContent.RarityType<ExoticRainbow>();
             Item.channel = true;
         }
 

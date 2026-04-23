@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Accessories
     {
         public new string LocalizationCategory => "Items.Accessories";
 
-        public static float critScaling = 7.5f; // How effective crit chance is at increasing debuff damage
+        public static float critScaling = 8f; // How effective crit chance is at increasing debuff damage
         public static float critDamageBoostPerDebuff = 0.03f; // 3% increased crit damage per debuff
         public override void SetDefaults()
         {
@@ -42,9 +42,9 @@ namespace CalamityMod.Items.Accessories
         }
         public override void ModifyTooltips(List<TooltipLine> list)
         {
-            Player player = Main.LocalPlayer;
             if (Main.LocalPlayer != null)
-                list.FindAndReplace("[DAMAGE]", ((int)(Bane.debuffData.EnemyLostRegen / 2 * player.Calamity().playerBaneDebuffDamage)).ToString());
+                list.FindAndReplace("[DAMAGELINE]", Main.LocalPlayer.Calamity().apollyon ? this.GetLocalization("Equipped").Format(((int)(Bane.debuffData.EnemyLostRegen / 2 * Main.LocalPlayer.Calamity().playerBaneDebuffDamage)).ToString())
+                : this.GetLocalizedValue("Unequipped"));
         }
     }
 }

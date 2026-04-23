@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.height = 130;
             Item.damage = 210;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 60;
+            Item.mana = 70;
             Item.useAnimation = Item.useTime = 49;
             Item.knockBack = 0.25f;
             Item.shoot = ModContent.ProjectileType<VoidVortexProj>();
