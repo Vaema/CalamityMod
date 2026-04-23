@@ -364,14 +364,14 @@ EclipsesFall: {
 		'''
 }
 
-ElephantGun: {
+ElephantKiller: {
 	DisplayName: Elephant Killer
 	Tooltip:
-    '''
+		'''
 		[c/1FFBFF:'My own personal weapon, used to stamp out elephant uprisings.]
-        [c/1FFBFF:Their souls are forever trapped within this weapon, ready to once again enact revenge.]
+		    [c/1FFBFF:Their souls are forever trapped within this weapon, ready to once again enact revenge.]
 		[c/1FFBFF:I have backed up the schematics in the event of the original's destruction.']
-	'''
+		'''
 }
 
 EnchantedAxe: {

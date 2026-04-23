@@ -91,6 +91,7 @@ EclipsesStealth.DisplayName: Eclipse's Fall
 EclipseStealthBoom.DisplayName: Eclipse Blast
 EGloveSpark.DisplayName: Electrician's Spark
 EnchantedAxe2.DisplayName: Enchanted Axe
+ElephantKillerThrown.DisplayName: Elephant Killer
 EnchantedAxeProj.DisplayName: Enchanted Axe
 EpidemicShredderProjectile.DisplayName: Epidemic Shredder
 EquanimityDarkShard.DisplayName: Dark Shard
@@ -333,4 +334,4 @@ WrathwingFireball.DisplayName: Wrathwing Fireball
 WrathwingSpear.DisplayName: Wrathwing
 WulfrumKnifeProj.DisplayName: Wulfrum Knife
 NanoblackLightspeedCarveSlashVisual.DisplayName: Nanoblack Light-speed Carve Visuals
-ElephantGunThrown.DisplayName: Elephant Gun Thrown
+ElephantKillerElephant.DisplayName: Elephant Killer Elephant

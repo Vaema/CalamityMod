@@ -45,6 +45,7 @@ using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.AcidRain;
@@ -238,6 +239,15 @@ namespace CalamityMod.CalPlayer
                 heldGaelsLastFrame = false;
                 rage = 0f;
             }
+
+            bool holdingElephantKiller = Player.HeldItem.type == ModContent.ItemType<ElephantKiller>();
+            if (holdingElephantKiller && !heldElephantKillerLastFrame)
+            {
+                Player.Calamity().rogueStealth = 0;
+                heldElephantKillerLastFrame = true;
+            }
+            else if (!holdingElephantKiller)
+                heldElephantKillerLastFrame = false;
 
             if (furyFuel < FuryFuelMax && furyRefuelTimer >= 0)
             {
