@@ -1636,8 +1636,8 @@ namespace CalamityMod.CalPlayer
 
             #region Player Incoming Damage Multiplier (Increases)
             double damageMult = 1D;
-            if (crushingEgo) // Dimensional Soul Artifact increases incoming damage by 15%.
-                damageMult += 0.15;
+            if (crushingEgo)
+                damageMult += 0.2;
             if (enraged) // Demonshade Enrage
                 damageMult += DemonshadeHelm.MultDamageTakenBoost;
 

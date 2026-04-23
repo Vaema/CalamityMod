@@ -251,7 +251,7 @@ FadedIdolatry: {
 	DisplayName: Faded Idolatry
 	Tooltip:
 		'''
-		For each Fiery Draconid you have summoned, you gain 1 minion slot
+		Summoned [i:CalamityMod/YharonsKindleStaff] Fiery Draconid cost one less minion slot
 		[c/ffe100:'Once everything has crumbled to dust, what will be left of the world you created?']
 		'''
 }
@@ -592,7 +592,7 @@ CrushingEgo: {
 	DisplayName: Crushing Ego
 	Tooltip:
 		'''
-		Multiplies all damage by 1.2x, but at the cost of taking 15% increased damage
+		Multiplies all damage by 1.3x, but at the cost of taking 20% increased damage
 		[c/ff00ff:'Don the mask of arrogance, and dance by your lonesome. Once the ball has gone quiet, you'll be the last man standing.']
 		'''
 }
