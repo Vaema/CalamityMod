@@ -343,6 +343,7 @@ DuststormInABottle: {
 		Throws a bottle filled with high-pressure dust that shatters on impact with a target or after a short delay
 		Hold <left> to generate stealth, but cause the bottle to shatter sooner
 		Stealth strikes cause the bottle to leak dust clouds around it for a few seconds instead of shattering
+		Will shatter in your hand if charge it for too long
 		'''
 }
 
@@ -1006,6 +1007,7 @@ SealedSingularity: {
 		Hold <left> to generate stealth, but burn through the bomb's fuse
 		After the field collapses, the singularity seeks out the strongest target that it hit and explodes
 		Stealth strikes increase the size and duration of the damaging field
+		Will explode in your hand if you hold the fuse too long
 		'''
 }
 
@@ -1414,6 +1416,7 @@ LemonNade: {
 		Disables normal stealth generation
 		Hold <left> to pull the pin and generate stealth, and release to throw
 		The longer it is held, the shorter the fuse once the 'nade is thrown
+		Will explode in your hand if the fuse is held too long
 		Stealth strikes explode into exploding lemon seeds
 		'Burn their house down!'
 		'''
