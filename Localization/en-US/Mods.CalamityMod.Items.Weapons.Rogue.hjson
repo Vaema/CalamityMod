@@ -343,7 +343,7 @@ DuststormInABottle: {
 		Throws a bottle filled with high-pressure dust that shatters on impact with a target or after a short delay
 		Hold <left> to generate stealth, but cause the bottle to shatter sooner
 		Stealth strikes cause the bottle to leak dust clouds around it for a few seconds instead of shattering
-		Will shatter in your hand if charge it for too long
+		Will shatter in your hand if charged for too long
 		'''
 }
 
