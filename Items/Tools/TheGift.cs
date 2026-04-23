@@ -14,7 +14,6 @@ namespace CalamityMod.Items.Tools
     public class TheGift : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Tools";
-        public override string Texture => "Terraria/Images/Item_601"; //Placeholder
         public static readonly SoundStyle BadBuzzer = new SoundStyle("CalamityMod/Sounds/Custom/BadGiftBuzzer") with { Volume = 0.85f };
         public override void SetDefaults()
         {
