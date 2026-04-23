@@ -61,7 +61,8 @@ namespace CalamityMod.Projectiles.Rogue
                     explodeTimer++;
                 else
                 {
-                    Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, angle * -10, ModContent.ProjectileType<SealedSingularityProjectile>(), Projectile.damage, Projectile.knockBack, Projectile.owner, explodeTimer, explodeTimeGoal, 1).hostile = true;
+                    if (Main.myPlayer == Projectile.owner)
+                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, angle * -10, ModContent.ProjectileType<SealedSingularityProjectile>(), Projectile.damage, Projectile.knockBack, Projectile.owner, explodeTimer, explodeTimeGoal, 1).hostile = true;
                     Projectile.Opacity = 0;
                     return;
                 }

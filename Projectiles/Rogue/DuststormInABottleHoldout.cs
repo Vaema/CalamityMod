@@ -63,7 +63,8 @@ namespace CalamityMod.Projectiles.Rogue
                     explodeTimer++;
                 else
                 {
-                    Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<DuststormCloudExplosion>(), Projectile.damage, Projectile.knockBack, Projectile.owner, explodeTimer, explodeTimeGoal, -1).hostile = true;
+                    if (Main.myPlayer == Projectile.owner)
+                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<DuststormCloudExplosion>(), Projectile.damage, Projectile.knockBack, Projectile.owner, explodeTimer, explodeTimeGoal, -1).hostile = true;
                     Projectile.Opacity = 0;
                     return;
                 }

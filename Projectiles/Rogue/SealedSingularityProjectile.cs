@@ -150,12 +150,13 @@ namespace CalamityMod.Projectiles.Rogue
                 Timer = 0;
                 TimerMax = 300;
                 Projectile.ResetLocalNPCHitImmunity();
-                for (int index = 0; index < 3; ++index)
-                {
-                    float SpeedX = -Projectile.velocity.X * Main.rand.Next(40, 70) * 0.01f + Main.rand.Next(-20, 21) * 0.4f;
-                    float SpeedY = -Projectile.velocity.Y * Main.rand.Next(40, 70) * 0.01f + Main.rand.Next(-20, 21) * 0.4f;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X + SpeedX, Projectile.Center.Y + SpeedY, SpeedX, SpeedY, ModContent.ProjectileType<SealedSingularityGore>(), 20, 0f, Projectile.owner, index, 0f);
-                }
+                if (Main.myPlayer == Projectile.owner)
+                    for (int index = 0; index < 3; ++index)
+                    {
+                        float SpeedX = -Projectile.velocity.X * Main.rand.Next(40, 70) * 0.01f + Main.rand.Next(-20, 21) * 0.4f;
+                        float SpeedY = -Projectile.velocity.Y * Main.rand.Next(40, 70) * 0.01f + Main.rand.Next(-20, 21) * 0.4f;
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X + SpeedX, Projectile.Center.Y + SpeedY, SpeedX, SpeedY, ModContent.ProjectileType<SealedSingularityGore>(), 20, 0f, Projectile.owner, index, 0f);
+                    }
                 Projectile.velocity = Vector2.Zero;
                 SoundEngine.PlaySound(CeaselessVoid.DeathSound with { pitch = 1f, Volume = Stealth ? 0.5f : 0.2f }, Projectile.Center);
             }
@@ -214,7 +215,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 if (field == null)
                 {
-                    var texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/SealedSingularityBlackhole",AssetRequestMode.ImmediateLoad).Value;
+                    var texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/SealedSingularityBlackhole", AssetRequestMode.ImmediateLoad).Value;
                     field = new Texture2D(Main.graphics.GraphicsDevice, texture.Width, texture.Height);
 
                     var BaseArray = new Color[field.Width * field.Height];

@@ -30,8 +30,6 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
         }
-
-        int targetID = -1;
         ref float Timer => ref Projectile.ai[0];
         ref float TimerMax => ref Projectile.ai[1];
         ref float AIState => ref Projectile.ai[2];
@@ -52,7 +50,7 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (AIState == 1)
             {
-                if (Timer % 10 == 0)
+                if (Timer % 10 == 0 && Main.myPlayer == Projectile.owner)
                 {
                     Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Main.rand.NextVector2Circular(5, 5), ModContent.ProjectileType<DuststormCloud>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner);
                 }
@@ -61,7 +59,8 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 if (!Stealth)
                 {
-                    Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<DuststormCloudExplosion>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                    if (Main.myPlayer == Projectile.owner)
+                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<DuststormCloudExplosion>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                     Projectile.Kill();
                     return;
                 }
