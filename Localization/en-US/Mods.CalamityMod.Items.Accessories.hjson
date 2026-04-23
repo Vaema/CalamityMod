@@ -251,7 +251,7 @@ FadedIdolatry: {
 	DisplayName: Faded Idolatry
 	Tooltip:
 		'''
-		Summoned [i:CalamityMod/YharonsKindleStaff] Fiery Draconid cost one less minion slot
+		Summoned [i:CalamityMod/YharonsKindleStaff] Fiery Draconids cost one less minion slot
 		[c/ffe100:'Once everything has crumbled to dust, what will be left of the world you created?']
 		'''
 }
