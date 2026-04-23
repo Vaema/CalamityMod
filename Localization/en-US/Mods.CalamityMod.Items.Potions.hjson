@@ -416,6 +416,15 @@ Cometfruit: {
 		'''
 }
 
+DivineCornucopia: {
+	DisplayName: Divine Cornucopia
+	Tooltip:
+		'''
+		{$CommonItemTooltip.MinorStats}
+		'A bottomless wellspring of the finest produce'
+		'''
+}
+
 Jackfruit: {
 	DisplayName: Jackfruit
 	Tooltip: "{$CommonItemTooltip.MinorStats}"

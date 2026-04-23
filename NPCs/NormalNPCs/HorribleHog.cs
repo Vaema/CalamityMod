@@ -54,7 +54,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         private static Asset<Texture2D> BloomCircle;
         private static Asset<Texture2D> ShineFlare;
 
-        private static SoundStyle IdleSound = new("CalamityMod/Sounds/Custom/Piggy/Piggy_Idle", 3)
+        private static SoundStyle IdleSound = new("CalamityMod/Sounds/Custom/Piggy/PiggyIdle", 3)
         {
             Pitch = -0.6f,
             PitchVariance = 0.2f,

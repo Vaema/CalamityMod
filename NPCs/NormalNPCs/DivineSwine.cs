@@ -44,12 +44,12 @@ namespace CalamityMod.NPCs.NormalNPCs
         private static Asset<Texture2D> MagicStarCircle;
         private static Asset<Texture2D> FadedStarRing;
         private static Asset<Texture2D> DistortionTexture;
-        private static Asset<Texture2D> DivineMeatTexture;
+        private static Asset<Texture2D> DivineCornucopiaTexture;
 
-        private static SoundStyle IdleSound = new("CalamityMod/Sounds/Custom/DivineSwine/DivineSwine_Idle", 4);
-        private static SoundStyle CoinFailSound = new("CalamityMod/Sounds/Custom/DivineSwine/DivineSwine_CoinFail", 3);
-        private static SoundStyle CoinPassSound = new("CalamityMod/Sounds/Custom/DivineSwine/DivineSwine_CoinPass", 2);
-        private static SoundStyle SwineSpeakLoopingSound = new("CalamityMod/Sounds/Custom/DivineSwine/DivineSwine_NearbyLoop")
+        private static SoundStyle IdleSound = new("CalamityMod/Sounds/Custom/DivineSwine/DivineSwineIdle", 4);
+        private static SoundStyle CoinFailSound = new("CalamityMod/Sounds/Custom/DivineSwine/DivineSwineCoinFail", 3);
+        private static SoundStyle CoinPassSound = new("CalamityMod/Sounds/Custom/DivineSwine/DivineSwineCoinPass", 2);
+        private static SoundStyle SwineSpeakLoopingSound = new("CalamityMod/Sounds/Custom/DivineSwine/DivineSwineNearbyLoop")
         {
             IsLooped = true,
             PauseBehavior = PauseBehavior.PauseWithGame,
@@ -99,7 +99,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 MagicStarCircle = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/MagicStarCircle");
                 FadedStarRing = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/FadedStarRing");
                 DistortionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Smudges");
-                DivineMeatTexture = ModContent.Request<Texture2D>("CalamityMod/Items/Potions/Food/DeliciousMeat");
+                DivineCornucopiaTexture = ModContent.Request<Texture2D>("CalamityMod/Items/Potions/Food/DivineCornucopia");
             }
         }
 
@@ -282,13 +282,13 @@ namespace CalamityMod.NPCs.NormalNPCs
                 }
             }
 
-            // Meat granted
+            // Cornucopia granted
             if (Timer == 210f)
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    int meat = Item.NewItem(NPC.GetSource_GiftOrReward(), NPC.Center, ModContent.ItemType<DeliciousMeat>());
-                    Main.item[meat].velocity = Vector2.UnitY * -3f;
+                    int cornucopia = Item.NewItem(NPC.GetSource_GiftOrReward(), NPC.Center, ModContent.ItemType<DivineCornucopia>());
+                    Main.item[cornucopia].velocity = Vector2.UnitY * -3f;
                 }
 
                 CustomPulse meatLightRing = new(NPC.Center, Vector2.Zero, DivineBlue, "CalamityMod/Particles/BloomRing", Vector2.One, 0f, 0f, 3f, 75);
@@ -650,7 +650,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 float rotation = (float)(Main.timeForVisualEffects / MathHelper.Pi * 0.08f) + NPC.whoAmI;
                 Vector2 backglowDrawPosition = drawPosition + Vector2.UnitX.RotatedBy(i * MathHelper.TwoPi / backShadowCount + rotation) * backShadowDistance;
-                spriteBatch.Draw(DivineMeatTexture.Value, backglowDrawPosition, DivineMeatTexture.Value.Frame(1, 3), NPC.GetAlpha(Color.White) * backShadowInterpolant, NPC.rotation, DivineMeatTexture.Value.Frame(1, 3).Size() * 0.5f, 1f, 0, 0f);
+                spriteBatch.Draw(DivineCornucopiaTexture.Value, backglowDrawPosition, DivineCornucopiaTexture.Value.Frame(1, 3), NPC.GetAlpha(Color.White) * backShadowInterpolant, NPC.rotation, DivineCornucopiaTexture.Value.Frame(1, 3).Size() * 0.5f, 1f, 0, 0f);
             }
 
             spriteBatch.SetBlendState(BlendState.AlphaBlend);
