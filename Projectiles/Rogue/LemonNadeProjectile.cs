@@ -12,6 +12,7 @@ namespace CalamityMod.Projectiles.Rogue
     public class LemonNadeProjectile : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
+        public override string Texture => "CalamityMod/Items/Weapons/Rogue/LemonNade";
 
         public override void SetStaticDefaults()
         {
@@ -71,11 +72,11 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 if (AIState == 1)
                     Projectile.damage = Projectile.originalDamage;
-                if (Projectile.Calamity().stealthStrike)
+                if (Projectile.Calamity().stealthStrike && Main.myPlayer == Projectile.owner)
                 {
                     var frags = 6f;
                     for (var i = 0; i < frags; i++)
-                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.UnitY.RotatedBy(i / frags * MathHelper.TwoPi) * -10, ModContent.ProjectileType<LemonNadeProjectile>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 20, 1);
+                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.UnitY.RotatedBy(i / frags * MathHelper.TwoPi) * -10, ModContent.ProjectileType<LemonNadeProjectile>(), Projectile.damage/2, Projectile.knockBack, Projectile.owner, 0, 20, 1);
                 }
                 Projectile.Resize(360, 360);
                 Projectile.ResetLocalNPCHitImmunity();
@@ -130,7 +131,7 @@ namespace CalamityMod.Projectiles.Rogue
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (Projectile.width < 100)
-                modifiers.SetMaxDamage(1);
+                modifiers.SourceDamage *= 0.1f;
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)

@@ -1,9 +1,5 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Melee.Spears;
-using CalamityMod.Projectiles.Rogue;
-using Microsoft.Xna.Framework;
+﻿using CalamityMod.Projectiles.Rogue;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -13,9 +9,9 @@ namespace CalamityMod.Items.Weapons.Rogue
     {
         public override void SetDefaults()
         {
-            Item.width = 32;
-            Item.height = 32;
-            Item.damage = 30;
+            Item.width = 26;
+            Item.height = 30;
+            Item.damage = 33;
             Item.DamageType = RogueDamageClass.Instance;
             Item.autoReuse = true;
             Item.noMelee = true;
@@ -41,7 +37,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             CreateRecipe().
                 AddIngredient(ItemID.Lemon).
-                AddIngredient(ItemID.BouncyGrenade,99).
+                AddIngredient(ItemID.BouncyGrenade, 99).
                 AddTile(TileID.TinkerersWorkbench).
                 Register();
         }

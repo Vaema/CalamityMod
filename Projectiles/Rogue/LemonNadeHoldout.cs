@@ -1,13 +1,10 @@
 ﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -16,7 +13,7 @@ namespace CalamityMod.Projectiles.Rogue
     public class LemonNadeHoldout : BaseSwordHoldoutProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
-        public override string Texture => "CalamityMod/Projectiles/Rogue/LemonNadeProjectile";
+        public override string Texture => "CalamityMod/Items/Weapons/Rogue/LemonNade";
         public override bool useMeleeSpeed => false;
         public override bool useMeleeSize => false;
         public override int swingWidth => 180;
@@ -26,13 +23,11 @@ namespace CalamityMod.Projectiles.Rogue
         public override int StartupTime { get; set; }
         public override int CooldownTime { get; set; }
 
-        bool isChannelable = false;
-
         int explodeTimer = 0;
 
         public override void Defaults()
         {
-            Projectile.width = 22;  Projectile.height = 28;
+            Projectile.width = 22; Projectile.height = 28;
             Projectile.MaxUpdates = 4;
             Projectile.noEnchantmentVisuals = true;
             Projectile.DamageType = RogueDamageClass.Instance;
@@ -69,12 +64,13 @@ namespace CalamityMod.Projectiles.Rogue
                     explodeTimer++;
                 else
                 {
-                    Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, angle * -10, ModContent.ProjectileType<LemonNadeProjectile>(), Projectile.damage, Projectile.knockBack, Projectile.owner, explodeTimer, explodeTimeGoal).hostile = true;
+                    if (Main.myPlayer == Projectile.owner)
+                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, angle * -10, ModContent.ProjectileType<LemonNadeProjectile>(), Projectile.damage, Projectile.knockBack, Projectile.owner, explodeTimer, explodeTimeGoal).hostile = true;
                     Projectile.Opacity = 0;
                     return;
                 }
 
-                    cplayer.rogueStealth = Projectile.Opacity <= 0 ? 0 : Math.Max(cplayer.temporaryStealthMax, cplayer.rogueStealthMax) * MathHelper.Clamp(explodeTimer / stealthTime, 0f, 1f);
+            cplayer.rogueStealth = Projectile.Opacity <= 0 ? 0 : Math.Max(cplayer.temporaryStealthMax, cplayer.rogueStealthMax) * MathHelper.Clamp(explodeTimer / stealthTime, 0f, 1f);
 
             if (timer == 1)
             {
@@ -83,7 +79,7 @@ namespace CalamityMod.Projectiles.Rogue
                 if (!Main.dedServ)
                 {
                     SoundEngine.PlaySound(SoundID.DD2_JavelinThrowersAttack with { pitch = 1f });
-                    Gore.NewGore(Projectile.GetSource_FromAI(), Projectile.position, Vector2.UnitY * -8 + angle, Mod.Find<ModGore>("LemonNadePin").Type, 1);
+                    Gore.NewGore(Projectile.GetSource_FromAI(), Projectile.Center, Vector2.UnitY * -8 + angle, Mod.Find<ModGore>("LemonNadePin").Type, 1);
                 }
             }
 
@@ -97,7 +93,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
             // Code copied from Violence / Chalice.
             float bloodVelMult = 1;
-            if (Main.rand.NextFloat() < explodeTimer/explodeTimeGoal && Projectile.Opacity > 0 && Projectile.FinalExtraUpdate())
+            if (Main.rand.NextFloat() < explodeTimer / explodeTimeGoal && Projectile.Opacity > 0 && Projectile.FinalExtraUpdate())
             {
                 int bloodLifetime = Main.rand.Next(5, 15);
                 float bloodScale = Main.rand.NextFloat(0.6f, 0.8f);
@@ -121,7 +117,7 @@ namespace CalamityMod.Projectiles.Rogue
                 {
                     if (Projectile.owner == Main.myPlayer && Projectile.Opacity > 0)
                     {
-                        var p = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, angle * -10 * cplayer.rogueVelocity, ModContent.ProjectileType<LemonNadeProjectile>(), Projectile.damage, Projectile.knockBack, Projectile.owner, explodeTimer-30, explodeTimeGoal);
+                        var p = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, angle * -10 * cplayer.rogueVelocity, ModContent.ProjectileType<LemonNadeProjectile>(), Projectile.damage, Projectile.knockBack, Projectile.owner, explodeTimer - 25, explodeTimeGoal);
                         if (player.Calamity().StealthStrikeAvailable())
                         {
                             p.Calamity().stealthStrike = true;
@@ -129,7 +125,8 @@ namespace CalamityMod.Projectiles.Rogue
                     }
                     Projectile.Opacity = 0;
                 }
-            }  
+            }
+            Projectile.rotation += MathHelper.PiOver2 * Projectile.spriteDirection;
         }
 
         public override float SwingFunction()
