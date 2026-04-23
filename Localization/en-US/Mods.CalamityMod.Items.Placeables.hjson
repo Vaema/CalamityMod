@@ -964,6 +964,11 @@ SeaMinnowJar: {
 	Tooltip: ""
 }
 
+ShroombleCage: {
+	DisplayName: Shroomble Cage
+	Tooltip: ""
+}
+
 SpitefulCandle: {
 	DisplayName: Spiteful Candle
 	Tooltip:
