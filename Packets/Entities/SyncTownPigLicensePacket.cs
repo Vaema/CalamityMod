@@ -15,6 +15,6 @@ namespace CalamityMod.Packets
             packet.Send(toClient, ignoreClient);
         }
 
-        public override void HandlePacket(BinaryReader packet, int sender) => PiggyLicense.SpawnPiggy();
+        public override void HandlePacket(BinaryReader packet, int sender) => TheHousingContract.SpawnPiggy();
     }
 }

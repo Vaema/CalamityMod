@@ -20,7 +20,7 @@ namespace CalamityMod.NPCs.TownNPCs
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[Type] = 8;
+            Main.npcFrameCount[Type] = 13;
             NPCID.Sets.ExtraFramesCount[Type] = 0;
             NPCID.Sets.AttackFrameCount[Type] = 0;
             NPCID.Sets.DangerDetectRange[Type] = 250;
@@ -51,6 +51,7 @@ namespace CalamityMod.NPCs.TownNPCs
             NPC.width = 20;
             NPC.height = 20;
             NPC.aiStyle = NPCAIStyleID.Passive;
+            AIType = NPCID.TownBunny;
             NPC.damage = 0;
             NPC.defense = 0;
             NPC.lifeMax = 50;
@@ -59,7 +60,6 @@ namespace CalamityMod.NPCs.TownNPCs
             NPC.knockBackResist = 0.5f;
             NPC.housingCategory = 1;
             DrawOffsetY = -4;
-            //AnimationType = NPCID.TownBunny;
         }
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
@@ -113,8 +113,34 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override void FindFrame(int frameHeight)
         {
-            if (NPC.velocity.X == 0)
+            // Sleep animation
+            if (NPC.ai[0] >= 20f && NPC.ai[0] <= 22f)
+            {
+                if (NPC.velocity.Y == 0)
+                {
+                    if (NPC.ai[1] > 30f && (NPC.frame.Y < frameHeight * 8))
+                    {
+                        NPC.frame.Y = frameHeight * 8;
+                    }
+                    if (NPC.frame.Y > 0)
+                    {
+                        NPC.frameCounter++;
+                    }
+                    if (NPC.frameCounter > 6)
+                    {
+                        NPC.frameCounter = 0;
+                        NPC.frame.Y += frameHeight;
+                    }
+                    if (NPC.frame.Y > 12 * frameHeight)
+                    {
+                        NPC.frame.Y = frameHeight * 8;
+                    }
+                }
+            }
+            else if (NPC.velocity.X == 0)
+            {
                 NPC.frame.Y = 0;
+            }
             else
             {
                 if (NPC.velocity.Y == 0)
@@ -122,13 +148,11 @@ namespace CalamityMod.NPCs.TownNPCs
                     if (NPC.frameCounter++ % 6 == 0)
                     {
                         NPC.frame.Y += frameHeight;
-                        if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[Type])
-                        {
-                            NPC.frame.Y = frameHeight;
-                        }
                     }
                 }
                 if (NPC.frame.Y < frameHeight)
+                    NPC.frame.Y = frameHeight;
+                if (NPC.frame.Y > frameHeight * 7)
                     NPC.frame.Y = frameHeight;
             }
         }

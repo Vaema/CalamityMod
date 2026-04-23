@@ -11,10 +11,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.SummonItems.TownPets
 {
-    public class PiggyLicense : ModItem, ILocalizedModType
+    public class TheHousingContract : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.SummonItems";
-        public override string Texture => "Terraria/Images/Item_" + ItemID.LicenseBunny;
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 5;

@@ -562,8 +562,8 @@ SeaKing: {
 }
 
 TownPiggy: {
-	DisplayName: Piggy
-	Census.SpawnCondition: Use a Piggy License
+	DisplayName: Town Piggy
+	Census.SpawnCondition: Use The Housing Contract
 
 	Name: {
 		Oolong: Oolong
@@ -584,7 +584,7 @@ TownPiggy: {
 		Curly: Curly
 		Techno: Techno
 		JohnPork: John Pork
-        Piglet: Piglet
+		Piglet: Piglet
 	}
 
 	Chat: {
