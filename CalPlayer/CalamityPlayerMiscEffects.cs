@@ -430,7 +430,7 @@ namespace CalamityMod.CalPlayer
             {
                 if (dashStart)
                 {
-                    Player.velocity.X *= 2.2f; // +120% dash speed
+                    Player.velocity.X *= 1 + LeviathanAmbergris.DashSpeedIncrease;
                     int damage = (int)Player.GetBestClassDamage().ApplyTo(LeviathanAmbergris.ambergrisDashDamage);
                     Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ModContent.ProjectileType<LeviAmberDash>(), damage, 0f, Player.whoAmI);
                 }
@@ -3961,9 +3961,6 @@ namespace CalamityMod.CalPlayer
                 Player.npcTypeNoAggro[ModContent.NPCType<GammaSlime>()] = true;
             }
 
-            if (fadedIdolatry && Player.FindBuffIndex(ModContent.BuffType<FieryDraconidBuff>()) != -1)
-                Player.maxMinions += Player.ownedProjectileCounts[ModContent.ProjectileType<FieryDraconid>()];
-
             if (pSoulArtifact)
             {
                 if (Player.whoAmI == Main.myPlayer)
@@ -4397,7 +4394,7 @@ namespace CalamityMod.CalPlayer
             // Add any multiplicative damage bonuses here
             float multiplicativeDamage = 1;
             if (crushingEgo)
-                multiplicativeDamage += 0.2f;
+                multiplicativeDamage += 0.3f;
             if (WarbanneroftheRighteous)
                 multiplicativeDamage += warbannerDamageMult;
             if (multiplicativeDamage != 1)
