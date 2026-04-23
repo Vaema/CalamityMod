@@ -339,8 +339,11 @@ DuststormInABottle: {
 	DisplayName: Duststorm in a Bottle
 	Tooltip:
 		'''
-		Explodes into a dust cloud
-		Stealth strikes form a more intense and longer lasting dust cloud
+		Disables normal stealth generation
+		Throws a bottle filled with high-pressure dust that shatters on impact with a target or after a short delay
+		Hold <left> to generate stealth, but cause the bottle to shatter sooner
+		Stealth strikes cause the bottle to leak dust clouds around it for a few seconds instead of shattering
+		Will shatter in your hand if charged for too long
 		'''
 }
 
@@ -358,9 +361,11 @@ EclipsesFall: {
 	DisplayName: Eclipse's Fall
 	Tooltip:
 		'''
-		Summons spears from the sky on hit
-		Stealth strikes impale enemies and summon a constant barrage of spears over time
-		'When the sun goes dark, you will know judgement'
+		Throws a javelin that shatters into fragments of primordial light upon enemy hits
+		If more than 20 fragments exist, the oldest fragments will seek out enemies to attack
+		Stealth strikes coalesce fragments into [ceffect/darksun:Spear of Obscuration], gaining power based on the number of fragments
+		[ceffect/darksun:Spear of Obscuration] will pierce though any enemy hit by Eclipse's Fall
+		[ceffect/darksun:'When the sun goes dark, all will know terror']
 		'''
 }
 
@@ -762,7 +767,7 @@ MoltenAmputator: {
 		Throw a spinning scythe that lingers at your cursor
 		<right> to recall all existing scythes
 		Recalling a scythe while it's on an enemy rends them for massive damage
-		<right> with sufficient stealth to empower yourself, greatly increasing attack speed for a short time
+		<right> with sufficient stealth to empower the next {0} scythes and greatly increase attack speed
 		You cannot recall scythes thrown while empowered
 		'''
 }
@@ -865,8 +870,10 @@ ProfanedPartisan: {
 	DisplayName: Profaned Partisan
 	Tooltip:
 		'''
-		Fires an unholy spear that explodes on enemy hits
-		Stealth strikes spawn smaller spears to fly along side it
+		Throws a profaned spear that splits into miniature spears upon hitting an enemy
+		Stealth strikes remain impaled in an enemy for 10 seconds
+		While an enemy is impaled, all spears that strike them instead shatter into exploding stars
+		Inflicts [cbuff:CalamityMod/HolyFlames]
 		'''
 }
 
@@ -995,8 +1002,12 @@ SealedSingularity: {
 	DisplayName: Sealed Singularity
 	Tooltip:
 		'''
-		Shatters on impact, summoning a black hole that sucks in nearby enemies
-		Stealth strikes summon a black hole that lasts longer and sucks enemies with stronger force
+		Disables normal stealth generation
+		Throws a contained singularity bomb that slows down and creates a damaging field after a short fuse
+		Hold <left> to generate stealth, but burn through the bomb's fuse
+		After the field collapses, the singularity seeks out the strongest target that it hit and explodes
+		Stealth strikes increase the size and duration of the damaging field
+		Will explode in your hand if you hold the fuse too long
 		'''
 }
 
@@ -1086,9 +1097,10 @@ SpearofPaleolith: {
 	DisplayName: Spear of Paleolith
 	Tooltip:
 		'''
-		Throws an ancient spear that shatters enemy armor
-		Spears rain fossil shards as they travel
-		Stealth strikes travel slower but further, raining more fossil shards
+		Throws an ancient spear that shatters into fossil shards upon hitting an enemy
+		Stealth strikes remain impaled in the enemy for 10 seconds
+		While an enemy is impaled, all spears that strike them erupt into even more fossil shards
+		Inflicts [cbuff:CalamityMod/ArmorCrunch]
 		'''
 }
 
@@ -1156,6 +1168,8 @@ Supernova: {
 	DisplayName: Supernova
 	Tooltip:
 		'''
+		Disables normal stealth generation
+		Hold <left> to generate stealth, or hold <right> to toss the bomb without generating stealth
 		Tosses a smart bomb that locks onto and tracks targets
 		If no target is found it will return to you
 		Each bomb creates a miniature [cbuff:CalamityMod/MiracleBlight] supernova that drags in weak enemies and chases strong enemies
@@ -1392,5 +1406,18 @@ Pumpkaboom: {
 		'''
 		Throws a pumpkin which sticks to enemies and explodes after a delay
 		Stealth strikes throw larger pumpkins which pull enemies in before releasing a larger explosion
+		'''
+}
+
+LemonNade: {
+	DisplayName: Lemon 'nade
+	Tooltip:
+		'''
+		Disables normal stealth generation
+		Hold <left> to pull the pin and generate stealth, and release to throw
+		The longer it is held, the shorter the fuse once the 'nade is thrown
+		Will explode in your hand if the fuse is held too long
+		Stealth strikes explode into exploding lemon seeds
+		'Burn their house down!'
 		'''
 }

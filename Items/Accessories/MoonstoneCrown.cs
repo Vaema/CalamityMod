@@ -38,7 +38,7 @@ namespace CalamityMod.Items.Accessories
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.moonCrown = true;
             modPlayer.mageCrownVisibility = !hideVisual;
-            player.statManaMax2 += 70;
+            player.statManaMax2 += 40;
             player.GetDamage<MagicDamageClass>() += (0.02f * modPlayer.mageCrownCount); //2% per moon sigil, up to 20%
             player.manaCost -= (0.01f * modPlayer.mageCrownCount); //1% per moon sigil, up to 10%
             if (modPlayer.mageCrownCount >= 5) //At 5 sigils, grant a mana regen bonus

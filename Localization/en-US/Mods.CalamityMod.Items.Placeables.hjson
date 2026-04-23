@@ -4695,3 +4695,8 @@ MossyStone: {
 	DisplayName: Mossy Stone
 	Tooltip: ""
 }
+
+GreedPot: {
+	DisplayName: Urn of Avarice
+	Tooltip: Offer your treasures to the Urn, and your avarice may at last be satiated
+}

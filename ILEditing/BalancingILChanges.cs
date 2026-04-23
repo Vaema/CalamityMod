@@ -401,6 +401,32 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
+        #region Flail Balance Changes
+        // Make flails be unaffected by player velocity
+        private static void FlailsNoLongerAffectedByPlayerVelocity(On_Projectile.orig_AI_015_Flails orig, Projectile self)
+        {
+            orig(self);
+            if (self.ai[0] == 1f && self.ai[1] == 0f)
+                self.velocity -= Main.player[self.owner].velocity;
+        }
+
+        // Increase Flower Pow's return speed
+        private static void IncreaseFlowerPowRetSpeed(ILContext il)
+        {
+            var cursor = new ILCursor(il);
+            // Move to where Flower Pow receives its specific flail stat changes. This moves it after num2 = 23f
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdcR4(23f), i => i.MatchStloc(6)))
+            {
+                LogFailure("Flower Pow Buff", "Could not move to Flower Pow's specific flail stat changes.");
+                return;
+            }
+
+            // Emit an instruction setting num5 (the return speed) to 21. Vanilla is 16
+            cursor.Emit(OpCodes.Ldc_R4, 21f);
+            cursor.Emit(OpCodes.Stloc, 9);
+        }
+        #endregion
+
         #region Terrarian Projectile Limitation for Extra Updates
         private static void LimitTerrarianProjectiles(ILContext il)
         {

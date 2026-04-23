@@ -318,15 +318,6 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Remove Flail Throw Velocity Being Affected By Player Velocity
-        private static void FlailsNoLongerAffectedByPlayerVelocity(On_Projectile.orig_AI_015_Flails orig, Projectile self)
-        {
-            orig(self);
-            if (self.ai[0] == 1f && self.ai[1] == 0f)
-                self.velocity -= Main.player[self.owner].velocity;
-        }
-        #endregion
-
         #region Allow Victide Bobber to Exist
         private static void WhitelistVictideBobber(ILContext il)
         {

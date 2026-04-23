@@ -35,7 +35,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.damage = 515;
             Item.DamageType = DamageClass.Magic;
             Item.crit = 20;
-            Item.mana = 6;
+            Item.mana = 26;
             Item.knockBack = 4f;
 
             Item.useStyle = ItemUseStyleID.Shoot;
