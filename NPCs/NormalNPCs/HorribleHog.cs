@@ -1827,7 +1827,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 spriteBatch.End();
             }
 
-            //string attack = $"{DigTimer}";
+            //string attack = $"{(BehaviorState)AIState}";
             //Vector2 stringDrawPosition = drawPosition - Vector2.UnitY * 64f;
             //ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, attack, stringDrawPosition, Color.LawnGreen, 0f, Vector2.One, Vector2.One);
 

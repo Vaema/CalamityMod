@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Tools
             {
                 DisgustingMeatAnimationPlayer modPlayer = player.GetModPlayer<DisgustingMeatAnimationPlayer>();
                 if (player.altFunctionUse == 2)
-                    modPlayer.EjectRevengeanceModeUpgrades = true;
+                    modPlayer.EjectMiscUpgrades = true;
                 modPlayer.DoingVomitAnimation = true;
                 return true;
             }
@@ -44,7 +44,7 @@ namespace CalamityMod.Items.Tools
 
         public static int VomitMaxTime => 130;
 
-        public bool EjectRevengeanceModeUpgrades = false;
+        public bool EjectMiscUpgrades = false;
 
         public bool DoingVomitAnimation = false;
 
@@ -53,78 +53,21 @@ namespace CalamityMod.Items.Tools
         public override void UpdateDead()
         {
             DoingVomitAnimation = false;
-            EjectRevengeanceModeUpgrades = false;
+            EjectMiscUpgrades = false;
             VomitTime = 0;
         }
 
         public override void PostUpdateMiscEffects()
         {
+            if (Player.whoAmI != Main.myPlayer)
+                return;
+
             if (DoingVomitAnimation)
             {
                 // Eject all necessary items at once.
                 if (VomitTime == VomitEjectTime)
                 {
-                    var calPlayer = Player.Calamity();
-                    if (EjectRevengeanceModeUpgrades)
-                    {
-                        // Rage and Adrenaline upgrades.
-                        TryDropBoosterItem(ref calPlayer.rageBoostOne, ModContent.ItemType<MushroomPlasmaRoot>());
-                        TryDropBoosterItem(ref calPlayer.rageBoostTwo, ModContent.ItemType<InfernalBlood>());
-                        TryDropBoosterItem(ref calPlayer.rageBoostThree, ModContent.ItemType<RedLightningContainer>());
-                        TryDropBoosterItem(ref calPlayer.adrenalineBoostOne, ModContent.ItemType<ElectrolyteGelPack>());
-                        TryDropBoosterItem(ref calPlayer.adrenalineBoostTwo, ModContent.ItemType<StarlightFuelCell>());
-                        TryDropBoosterItem(ref calPlayer.adrenalineBoostThree, ModContent.ItemType<Ectoheart>());
-                    }
-                    else
-                    {
-                        if (calPlayer.sTangerine || calPlayer.mFruit || calPlayer.tCloudberry || calPlayer.sStrawberry)
-                        {
-                            // Calamity's health boosters.
-                            TryDropBoosterItem(ref calPlayer.sTangerine, ModContent.ItemType<SanguineTangerine>());
-                            TryDropBoosterItem(ref calPlayer.mFruit, ModContent.ItemType<MiracleFruit>());
-                            TryDropBoosterItem(ref calPlayer.tCloudberry, ModContent.ItemType<TaintedCloudberry>());
-                            TryDropBoosterItem(ref calPlayer.sStrawberry, ModContent.ItemType<SacredStrawberry>());
-                        }
-                        else
-                        {
-                            // Vanilla health boosters.
-                            for (int i = 0; i < Player.ConsumedLifeFruit; i++)
-                            {
-                                int drop = Item.NewItem(Player.GetSource_DropAsItem(), Player.Hitbox, ItemID.LifeFruit);
-                                Main.item[drop].noGrabDelay = 100;
-                                Main.item[drop].velocity = new Vector2(Main.rand.NextFloat(3f, 9f) * Player.direction, Main.rand.NextFloat(-6f, -4f));
-                            }
-                            Player.ConsumedLifeFruit = 0;
-
-                            for (int j = 0; j < Player.ConsumedLifeCrystals; j++)
-                            {
-                                int drop = Item.NewItem(Player.GetSource_DropAsItem(), Player.Hitbox, ItemID.LifeCrystal);
-                                Main.item[drop].noGrabDelay = 100;
-                                Main.item[drop].velocity = new Vector2(Main.rand.NextFloat(3f, 9f) * Player.direction, Main.rand.NextFloat(-6f, -4f));
-                            }
-                            Player.ConsumedLifeCrystals = 0;
-                        }
-
-                        if (calPlayer.cShard || calPlayer.eCore || calPlayer.pHeart)
-                        {
-                            // Calamity's mana boosters.
-                            TryDropBoosterItem(ref calPlayer.cShard, ModContent.ItemType<CometShard>());
-                            TryDropBoosterItem(ref calPlayer.eCore, ModContent.ItemType<EtherealCore>());
-                            TryDropBoosterItem(ref calPlayer.pHeart, ModContent.ItemType<PhantomHeart>());
-                        }
-                        else
-                        {
-                            // Vanilla mana boosters.
-                            for (int k = 0; k < Player.ConsumedManaCrystals; k++)
-                            {
-                                int drop = Item.NewItem(Player.GetSource_DropAsItem(), Player.Hitbox, ItemID.ManaCrystal);
-                                Main.item[drop].noGrabDelay = 100;
-                                Main.item[drop].velocity = new Vector2(Main.rand.NextFloat(3f, 9f) * Player.direction, Main.rand.NextFloat(-6f, -4f));
-                            }
-                            Player.ConsumedManaCrystals = 0;
-                        }
-                    }
-
+                    EjectPermanentUpgrades();
                     SoundEngine.PlaySound(SoundID.NPCDeath13, Player.Center);
                 }
 
@@ -159,7 +102,7 @@ namespace CalamityMod.Items.Tools
                 {
                     VomitTime = 0;
                     DoingVomitAnimation = false;
-                    EjectRevengeanceModeUpgrades = false;
+                    EjectMiscUpgrades = false;
                 }
 
                 VomitTime++;
@@ -182,12 +125,118 @@ namespace CalamityMod.Items.Tools
             }
         }
 
+        private void EjectPermanentUpgrades()
+        {
+            var calPlayer = Player.Calamity();
+            if (EjectMiscUpgrades)
+            {
+                // Rage and Adrenaline upgrades.
+                TryDropBoosterItem(ref calPlayer.rageBoostOne, ModContent.ItemType<MushroomPlasmaRoot>());
+                TryDropBoosterItem(ref calPlayer.rageBoostTwo, ModContent.ItemType<InfernalBlood>());
+                TryDropBoosterItem(ref calPlayer.rageBoostThree, ModContent.ItemType<RedLightningContainer>());
+                TryDropBoosterItem(ref calPlayer.adrenalineBoostOne, ModContent.ItemType<ElectrolyteGelPack>());
+                TryDropBoosterItem(ref calPlayer.adrenalineBoostTwo, ModContent.ItemType<StarlightFuelCell>());
+                TryDropBoosterItem(ref calPlayer.adrenalineBoostThree, ModContent.ItemType<Ectoheart>());
+
+                // Celestal Onion.
+                TryDropBoosterItem(ref calPlayer.extraAccessoryML, ModContent.ItemType<CelestialOnion>());
+
+                // Demon Heart.
+                TryDropBoosterItem(ref Player.extraAccessory, ItemID.DemonHeart);
+
+                // Shimmer upgrades.
+                if (Player.usedAegisCrystal || Player.usedAegisFruit || Player.usedArcaneCrystal || Player.usedAmbrosia || Player.usedGalaxyPearl || Player.usedGummyWorm || NPC.peddlersSatchelWasUsed || NPC.combatBookWasUsed || NPC.combatBookVolumeTwoWasUsed)
+                {
+                    TryDropBoosterItem(ref Player.usedAegisCrystal, ItemID.AegisCrystal);
+                    TryDropBoosterItem(ref Player.usedAegisFruit, ItemID.AegisFruit);
+                    TryDropBoosterItem(ref Player.usedAmbrosia, ItemID.Ambrosia);
+                    TryDropBoosterItem(ref Player.usedGalaxyPearl, ItemID.GalaxyPearl);
+                    TryDropBoosterItem(ref Player.usedGummyWorm, ItemID.GummyWorm);
+
+                    // Sync the world data immediately for these three specifically since they aren't fully player side.
+                    if (NPC.peddlersSatchelWasUsed || NPC.combatBookWasUsed || NPC.combatBookVolumeTwoWasUsed)
+                    {
+                        TryDropBoosterItem(ref NPC.peddlersSatchelWasUsed, ItemID.PeddlersSatchel);
+                        TryDropBoosterItem(ref NPC.combatBookWasUsed, ItemID.CombatBook);
+                        TryDropBoosterItem(ref NPC.combatBookVolumeTwoWasUsed, ItemID.CombatBookVolumeTwo);
+                        NetMessage.SendData(MessageID.WorldData);
+                    }
+                }
+
+                // Artisan Loaf.
+                TryDropBoosterItem(ref Player.ateArtisanBread, ItemID.ArtisanLoaf);
+
+                // Torch God's Favor.
+                TryDropBoosterItem(ref Player.unlockedBiomeTorches, ItemID.TorchGodsFavor);
+
+                // Minecart Upgrade Kit.
+                TryDropBoosterItem(ref Player.unlockedSuperCart, ItemID.MinecartPowerup);
+            }
+            else
+            {
+                // Calamity health booster fruits.
+                if (calPlayer.sTangerine || calPlayer.mFruit || calPlayer.tCloudberry || calPlayer.sStrawberry)
+                {
+                    TryDropBoosterItem(ref calPlayer.sTangerine, ModContent.ItemType<SanguineTangerine>());
+                    TryDropBoosterItem(ref calPlayer.mFruit, ModContent.ItemType<MiracleFruit>());
+                    TryDropBoosterItem(ref calPlayer.tCloudberry, ModContent.ItemType<TaintedCloudberry>());
+                    TryDropBoosterItem(ref calPlayer.sStrawberry, ModContent.ItemType<SacredStrawberry>());
+                }
+
+                // Life fruit.
+                if (Player.ConsumedLifeFruit > 0)
+                {
+                    for (int i = 0; i < Player.ConsumedLifeFruit; i++)
+                    {
+                        int drop = Player.QuickSpawnItem(Player.GetSource_DropAsItem(), ItemID.LifeFruit);
+                        Main.item[drop].noGrabDelay = 100;
+                        Main.item[drop].velocity = new Vector2(Main.rand.NextFloat(3f, 9f) * Player.direction, Main.rand.NextFloat(-6f, -4f));
+                    }
+                    Player.ConsumedLifeFruit = 0;
+                }
+
+                // Heart crystals.
+                if (Player.ConsumedLifeCrystals > 0)
+                {
+                    for (int j = 0; j < Player.ConsumedLifeCrystals; j++)
+                    {
+                        int drop = Player.QuickSpawnItem(Player.GetSource_DropAsItem(), ItemID.LifeCrystal);
+                        Main.item[drop].noGrabDelay = 100;
+                        Main.item[drop].velocity = new Vector2(Main.rand.NextFloat(3f, 9f) * Player.direction, Main.rand.NextFloat(-6f, -4f));
+                    }
+                    Player.ConsumedLifeCrystals = 0;
+                }
+
+                // Calamity mana upgrades.
+                if (calPlayer.cShard || calPlayer.eCore || calPlayer.pHeart)
+                {
+                    TryDropBoosterItem(ref calPlayer.cShard, ModContent.ItemType<CometShard>());
+                    TryDropBoosterItem(ref calPlayer.eCore, ModContent.ItemType<EtherealCore>());
+                    TryDropBoosterItem(ref calPlayer.pHeart, ModContent.ItemType<PhantomHeart>());
+                }
+
+                // Mana Crystals.
+                if (Player.ConsumedManaCrystals > 0)
+                {
+                    for (int k = 0; k < Player.ConsumedManaCrystals; k++)
+                    {
+                        int drop = Player.QuickSpawnItem(Player.GetSource_DropAsItem(), ItemID.ManaCrystal);
+                        Main.item[drop].noGrabDelay = 100;
+                        Main.item[drop].velocity = new Vector2(Main.rand.NextFloat(3f, 9f) * Player.direction, Main.rand.NextFloat(-6f, -4f));
+                    }
+                    Player.ConsumedManaCrystals = 0;
+                }
+            }
+
+            NetMessage.SendData(MessageID.SyncPlayer, -1, -1, null, Player.whoAmI);
+        }
+
         private void TryDropBoosterItem(ref bool condition, int itemType)
         {
             if (condition)
             {
                 condition = false;
-                int drop = Item.NewItem(Player.GetSource_DropAsItem(), Player.Hitbox, itemType);
+                int drop = Player.QuickSpawnItem(Player.GetSource_DropAsItem(), itemType);
                 Main.item[drop].noGrabDelay = 100;
                 Main.item[drop].velocity = new Vector2(Main.rand.NextFloat(3f, 9f) * Player.direction, Main.rand.NextFloat(-6f, -4f));
             }
