@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Potions.Food;
+using CalamityMod.Items.SummonItems.TownPets;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Prefixes;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Chat;
@@ -17,6 +20,7 @@ namespace CalamityMod.NPCs.TownNPCs
     public class ShadySalesman : ModNPC
     {
         public override string Texture => "CalamityMod/NPCs/NormalNPCs/Piggy";
+        public override string HeadTexture => "CalamityMod/NPCs/TownNPCs/TownPiggy_Head";
 
         public override void SetStaticDefaults()
         {
@@ -58,10 +62,7 @@ namespace CalamityMod.NPCs.TownNPCs
             });
         }
 
-        public override List<string> SetNPCNameList() => new List<string>()
-        {
-            "Herbert"
-        };
+        public override List<string> SetNPCNameList() => ModContent.GetInstance<TownPiggy>().SetNPCNameList();
 
         public override bool PreAI()
         {
@@ -71,8 +72,18 @@ namespace CalamityMod.NPCs.TownNPCs
                     Main.NewText(Language.GetTextValue("LegacyMisc.35", NPC.FullName), 50, 125, 255);
                 else
                     ChatHelper.BroadcastChatMessage(NetworkText.FromKey("LegacyMisc.35", NPC.GetFullNetName()), new Color(50, 125, 255));
-                NPC.active = false;
-                NPC.netSkip = -1;
+
+                if (CalamityWorld.unlockedTownPig)
+                {
+                    string name = NPC.GivenName;
+                    NPC.Transform(ModContent.NPCType<TownPiggy>());
+                    NPC.GivenName = name;
+                }
+                else
+                {
+                    NPC.active = false;
+                    NPC.netSkip = -1;
+                }
                 return false;
             }
 
@@ -103,7 +114,7 @@ namespace CalamityMod.NPCs.TownNPCs
         public override void SetChatButtons(ref string button, ref string button2)
         {
             button = Language.GetTextValue("LegacyInterface.28");
-            //button2 = this.GetLocalizedValue("RefundButton"); ;
+            button2 = "Donation";// this.GetLocalizedValue("RefundButton"); ;
         }
 
         public override void OnChatButtonClicked(bool firstButton, ref string shopName)
@@ -122,10 +133,8 @@ namespace CalamityMod.NPCs.TownNPCs
         {
 
             NPCShop shop = new(Type);
-            shop.Add<DeliciousMeat>()
-                .Add(ItemID.Bacon)
-                .Add<SpearofDestiny>(Condition.DownedMechBossAll)
-                .Add<AshesofCalamity>(CalamityConditions.DownedCalamitasClone)
+            shop.Add<TheHousingContract>()
+                .Add<GreedPot>()
                 .Register();
         }
 
@@ -299,7 +308,7 @@ namespace CalamityMod.NPCs.TownNPCs
                 return;
             }
 
-            if (Main.eclipse || (Main.invasionType > 0 && Main.invasionDelay == 0 && Main.invasionSize > 0))
+            if (!CanSpawnTonight || Main.eclipse || (Main.invasionType > 0 && Main.invasionDelay == 0 && Main.invasionSize > 0))
                 return;
             
             for (int i = 0; i < 200; i++)
@@ -307,12 +316,15 @@ namespace CalamityMod.NPCs.TownNPCs
                     return;
 
             List<int> townNPCs = [];
-            for (int j = 0; j < 200; j++)
-                if (Main.npc[j].active && Main.npc[j].townNPC && Main.npc[j].type != NPCID.OldMan && !Main.npc[j].homeless)
-                    townNPCs.Add(j);
+            if (!NPC.AnyNPCs(ModContent.NPCType<TownPiggy>()))
+            {
+                for (int j = 0; j < 200; j++)
+                    if (Main.npc[j].active && Main.npc[j].townNPC && Main.npc[j].type != NPCID.OldMan && !Main.npc[j].homeless)
+                        townNPCs.Add(j);
 
-            if (townNPCs.Count <= 1)
-                return;
+                if (townNPCs.Count <= 1)
+                    return;
+            }
 
             if(!Main.rand.NextBool(4))
             {
@@ -320,7 +332,25 @@ namespace CalamityMod.NPCs.TownNPCs
                 return;
             }
 
-            ShadySalesman.SpawnTravelNPC(townNPCs[Main.rand.Next(townNPCs.Count)]);
+            int petPig = NPC.FindFirstNPC(ModContent.NPCType<TownPiggy>());
+            if (petPig == -1)
+                ShadySalesman.SpawnTravelNPC(townNPCs[Main.rand.Next(townNPCs.Count)]);
+            else
+            {
+                string name = Main.npc[petPig].GivenName;
+                Main.npc[petPig].Transform(ModContent.NPCType<ShadySalesman>());
+                Main.npc[petPig].GivenName = name;
+
+                string fullName = Main.npc[petPig].FullName;
+                if (Main.netMode == NetmodeID.SinglePlayer)
+                {
+                    Main.NewText(Language.GetTextValue("Announcement.HasArrived", fullName), 50, 125);
+                }
+                else if (Main.netMode == NetmodeID.Server)
+                {
+                    ChatHelper.BroadcastChatMessage(NetworkText.FromKey("Announcement.HasArrived", Main.npc[petPig].GetFullNetName()), new Color(50, 125, 255));
+                }
+            }
             CanSpawnTonight = false;
         }
     }
