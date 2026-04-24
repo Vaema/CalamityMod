@@ -561,6 +561,39 @@ SeaKing: {
 	}
 }
 
+TownPiggy: {
+	DisplayName: Town Piggy
+	Census.SpawnCondition: Use The Housing Contract
+
+	Name: {
+		Oolong: Oolong
+		Napoleon: Napoleon
+		Waddles: Waddles
+		Crenando: Crenando
+		Olivia: Olivia
+		Wilbur: Wilbur
+		Pumbaa: Pumbaa
+		Peppa: Peppa
+		Conan: Conan
+		Reuben: Reuben
+		Porky: Porky
+		Hamm: Hamm
+		Runt: Runt
+		Roko: Roko
+		RichardHam: Richard Ham
+		Curly: Curly
+		Techno: Techno
+		JohnPork: John Pork
+		Piglet: Piglet
+	}
+
+	Chat: {
+		0: Oink!
+		1: Squeal...
+		2: Snort!
+	}
+}
+
 DraconicSwarmer.DisplayName: Draconic Swarmer
 Dragonfolly.DisplayName: Dragonfolly
 Shoreskipper.DisplayName: Shoreskipper

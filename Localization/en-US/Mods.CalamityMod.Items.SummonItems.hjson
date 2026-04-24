@@ -289,6 +289,11 @@ Terminus: {
 	Tooltip: Hold <left> to start or end the Boss Rush
 }
 
+TheHousingContract: {
+	DisplayName: The Housing Contract
+	Tooltip: Use to adopt a piggy for your town
+}
+
 YharonEgg: {
 	DisplayName: Blessed Phoenix Egg
 	Tooltip:
