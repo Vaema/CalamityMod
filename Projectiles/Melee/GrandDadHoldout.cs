@@ -256,7 +256,7 @@ namespace CalamityMod.Projectiles.Melee
 
             float distanceToTiles = -100;
             bool canBeLaunched = false;
-            bool lowEnoughToExecute = target.life <= Projectile.damage * 15;
+            bool lowEnoughToExecute = target.life <= Projectile.damage * 5;
             bool jared = target.type == ModContent.NPCType<PrimordialWyrmHead>();
             Vector2 toMouse = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
             Vector2 launchVel = lowEnoughToExecute ? toMouse : Utils.DirectionTo(Owner.Center, target.Center);
@@ -274,7 +274,7 @@ namespace CalamityMod.Projectiles.Melee
                 SoundStyle fire2 = new("CalamityMod/Sounds/Item/FinalDawnSlash");
                 SoundEngine.PlaySound(fire2 with { Volume = 0.65f, Pitch = Main.rand.NextFloat(-0.2f, -0.3f) }, Projectile.Center);
             }
-            int heal = (int)(MathHelper.Clamp(18 - Projectile.numHits * 13, 1, 20));
+            int heal = Projectile.numHits == 0 ? 14 : 0;
             if (Projectile.numHits < 10)
             {
                 Owner.Calamity().grandDadHealPool += heal;
