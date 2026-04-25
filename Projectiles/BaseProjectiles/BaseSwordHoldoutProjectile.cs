@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CalamityMod.Graphics.Primitives;
-using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -117,7 +116,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         /// Whether or not this should get melee speed bonuses
         /// Defaults to TRUE
         /// </summary>
-        public virtual bool useMeleeSpeed { get; set; } = true;
+        public virtual bool useAttackSpeed { get; set; } = true;
 
         /// <summary>
         /// Whether or not this should get melee size bonuses (Titan Glove)
@@ -333,9 +332,9 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             StartupTime *= Projectile.MaxUpdates;
             CooldownTime *= Projectile.MaxUpdates;
             swingTime *= Projectile.MaxUpdates;
-            if (useMeleeSpeed)
+            if (useAttackSpeed)
             {
-                var speed = Main.player[Projectile.owner].GetAttackSpeed<MeleeDamageClass>();
+                var speed = Main.player[Projectile.owner].GetTotalAttackSpeed(Projectile.DamageType);
                 if (speed > 3f)
                     speed = 3f;
 

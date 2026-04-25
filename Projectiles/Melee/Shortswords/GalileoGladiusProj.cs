@@ -30,7 +30,7 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
         public override bool drawSwordTrail => false;
         public override bool AlternateSwings => false;
 
-        public override bool useMeleeSpeed => true;
+        public override bool useAttackSpeed => true;
 
         public override int swingTime { get; set; } = 8;
 
