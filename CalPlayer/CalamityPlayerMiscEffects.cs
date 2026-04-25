@@ -249,6 +249,12 @@ namespace CalamityMod.CalPlayer
             else if (!holdingElephantKiller)
                 heldElephantKillerLastFrame = false;
 
+            if (!drawingElephantKillerJoke)
+                elephantKillerJoke = 0;
+            else
+                elephantKillerJoke++;
+            drawingElephantKillerJoke = false;
+
             if (furyFuel < FuryFuelMax && furyRefuelTimer >= 0)
             {
                 furyFuel += (int)furyRefuelTimer;

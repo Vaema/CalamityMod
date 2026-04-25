@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Runtime.ConstrainedExecution;
+using System.Collections.Generic;
+using System.Linq;
 using CalamityMod.Dusts;
-using CalamityMod.NPCs.TownNPCs;
+using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems.Graphic.PixelationSystem;
-using Microsoft.VisualBasic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -14,46 +14,67 @@ using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static System.Net.Mime.MediaTypeNames;
-using static CalamityMod.CalamityUtils;
 
 namespace CalamityMod.Projectiles.Rogue
 {
     public class ElephantKillerThrown : ModProjectile, ILocalizedModType
     {
+        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public new string LocalizationCategory => "Projectiles.Rogue";
         public Player Owner => Main.player[Projectile.owner];
         public ref float time => ref Projectile.ai[0];
         public ref float rightClicking => ref Projectile.ai[1];
         public int initialDirection = 0;
-        public float throwSpeed = 0;
-        public float holdoutOffset = 0;
+        public float throwSpeed = 0; // The speed at which the gun is thrown and returns
+        public float holdoutOffset = 0; // Placement adjustments used for "recoil"
         public bool tryShooting = true; // Used in the holding mode, is used in inverse for stealth strikes
         public bool soundToss = true;
+        public bool soundCatch = true;
         public bool resetIframes = true;
 
-        public bool spinFxOn = false;
+        public bool spinFxOn = false; // Fades in spin effects if on, otherwise fades them out
         public float spinFx = 0;
-        public bool firedThisFrame = false;
+        public bool doingFireAnimation = false;
         public bool hasFiredBulletEver = false;
-        public int firingEffectDisableTimer = 0;
+        public int firingEffectDisableTimer = 0; // Timer to track the firing animation and disable it when completed
         public int disableTimerMax = 4;
         public bool resetAll = false;
+        public bool shouldDie = false;
         public Vector2 aimedTargetPos;
 
-        public float recoilRotation = 0;
+        public float recoilRotation = 0; // Rotation adjustments used for "recoil"
         public int recoilLifetime = 0;
         public int recoilLifetimeMax = 30;
-        public bool shouldDie = false;
+
         public float shineProgress = 0;
         public float shineOpacity = 0;
         public bool shineSound = true;
-        public float rumble = 0;
-        public int hitStop = 0;
-        public int tileHits = 0;
 
-        public float stealthShotDamageMult = 1.5f;
-        public float elephantBoostedShotDamageMult = 3.5f;
+        public float rumble = 0; // Shake effect for stealth strikes and thrown impacts
+        public int hitStop = 0; // A few frames where the projectile pauses on impact
+        public int tileHits = 0;
+        public bool setReturnTime = false;
+
+        public List<(NPC, float)> hitNPCs = new List<(NPC, float)>();
+        public static Asset<Texture2D> Gun { get; private set; }
+        public static Asset<Texture2D> GunFlash { get; private set; }
+        public static Asset<Texture2D> Smear { get; private set; }
+        public static Asset<Texture2D> Bloom { get; private set; }
+        public static Asset<Texture2D> BloomLine { get; private set; }
+        public static Asset<Texture2D> Shine { get; private set; }
+
+        public override void Load()
+        {
+            if (Main.dedServ)
+                return;
+
+            Gun = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Rogue/ElephantKiller");
+            GunFlash = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/ElephantKillerFlash");
+            Smear = ModContent.Request<Texture2D>("CalamityMod/Particles/CircularSmearLarge");
+            Bloom = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
+            BloomLine = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomLineFade");
+            Shine = ModContent.Request<Texture2D>("CalamityMod/Particles/FullStar");
+        }
         public override void SetDefaults()
         {
             Projectile.width = 30;
@@ -67,6 +88,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.localNPCHitCooldown = -1;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.ContinuouslyUpdateDamageStats = true;
+            Projectile.noEnchantmentVisuals = true;
         }
         public enum gunState
         {
@@ -80,12 +102,12 @@ namespace CalamityMod.Projectiles.Rogue
         public gunState mode;
         public override bool ShouldUpdatePosition()
         {
-            return !(mode == gunState.NotThrown || mode == gunState.Stealth || firedThisFrame || hitStop > 0);
+            return !(mode == gunState.NotThrown || mode == gunState.Stealth || doingFireAnimation || hitStop > 0);
         }
         public override bool? CanDamage()
         {
             //We don't want the anticipation to deal damage.
-            if (mode == gunState.NotThrown || mode == gunState.Stealth || firedThisFrame || hitStop > 0)
+            if (mode == gunState.NotThrown || mode == gunState.Stealth || doingFireAnimation || hitStop > 0)
                 return false;
 
             return null;
@@ -99,7 +121,7 @@ namespace CalamityMod.Projectiles.Rogue
                     Owner.ChangeDir(MathF.Sign(toMouse.X));
                     Owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, MathHelper.Pi * 1.5f + toMouse.ToRotation());
                 }
-                if (!firedThisFrame)
+                if (!doingFireAnimation)
                     Projectile.rotation += 0.55f * initialDirection;
                 
                 if (time > returnTime && mode != gunState.Returning)
@@ -110,8 +132,8 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (mode == gunState.Returning)
             {
-                if (time < returnTime)
-                    time = returnTime;
+                if (setReturnTime)
+                { time = returnTime; setReturnTime = false; }
                 if (time > returnTime * 1.2f && resetIframes)
                 {
                     for (int i = 0; i < Main.maxNPCs; i++)
@@ -122,10 +144,12 @@ namespace CalamityMod.Projectiles.Rogue
                 // Aim back at the player
                 Projectile.velocity = Vector2.Lerp(Projectile.velocity, Projectile.Center.DirectionTo(Owner.Center) * throwSpeed, 0.03f * (1 + 2 * Utils.GetLerpValue(returnTime, returnTime * 2, time)));
 
-                if (Projectile.numHits > 0 && time > returnTime && !hasFiredBulletEver)
+                bool afterHit = (Projectile.numHits > 0 || tileHits > 0);
+
+                if (afterHit && time > returnTime && !hasFiredBulletEver)
                     Projectile.velocity *= 0.93f;
 
-                if (Projectile.numHits > 0 && time > returnTime * 1.4f && (!hasFiredBulletEver || (hasFiredBulletEver && firedThisFrame)))
+                if (afterHit && time > returnTime * 1.4f && (!hasFiredBulletEver || (hasFiredBulletEver && doingFireAnimation)))
                 {
                     NPC attemptTarget = !hasFiredBulletEver ? Projectile.Center.ClosestNPCAt(1000, true) : null;
                     if (aimedTargetPos == Vector2.Zero && attemptTarget != null)
@@ -177,9 +201,10 @@ namespace CalamityMod.Projectiles.Rogue
                     Owner.itemTime = Owner.itemAnimation = 5;
                 if (mode == gunState.Stealth && !tryShooting)
                     rumble = MathHelper.Lerp(rumble, 11, 0.08f);
-                if ((throwAnimLerp >= dudFireEndPoint / 2 && ((mode != gunState.Stealth && tryShooting) || (mode == gunState.Stealth && !tryShooting))))
+                // The attempted fire at the start of the use animation
+                if (throwAnimLerp >= dudFireEndPoint / 2 && ((mode != gunState.Stealth && tryShooting) || (mode == gunState.Stealth && !tryShooting)))
                 {
-                    float stealthAmount = Owner.Calamity().rogueStealthMax * 0.1f;
+                    float stealthAmount = Owner.Calamity().rogueStealthMax * ElephantKiller.stealthCostToShoot;
                     bool fires = mode == gunState.Stealth || (Owner.Calamity().rogueStealthMax > 0 && rightClicking == 1 && Owner.Calamity().rogueStealth >= stealthAmount);
                     if (fires)
                     {
@@ -191,14 +216,13 @@ namespace CalamityMod.Projectiles.Rogue
                         else
                             Owner.Calamity().rogueStealth -= stealthAmount;
                         CheckStealth();
-                        FireShot(toMouse, true, stealthShotDamageMult, mode == gunState.Stealth);
+                        FireShot(toMouse, true, ElephantKiller.stealthShotDamageMult, mode == gunState.Stealth);
                     }
                     else
                     {
                         holdoutOffset = 8;
-                        SoundStyle click = new("CalamityMod/Sounds/Item/DudFire");
-                        SoundEngine.PlaySound(click with { Volume = 0.6f, Pitch = -0.2f }, Projectile.Center);
                     }
+                    SoundEngine.PlaySound(ElephantKiller.ShotFail with { Volume = 0.8f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, Projectile.Center);
                     tryShooting = mode == gunState.Stealth;
                 }
                 if (throwAnimLerp >= dudFireEndPoint)
@@ -218,14 +242,17 @@ namespace CalamityMod.Projectiles.Rogue
 
                 if (throwAnimLerp >= throwStartPoint && soundToss)
                 {
-                    SoundStyle toss = new("CalamityMod/Sounds/Item/LightThrow");
-                    SoundEngine.PlaySound(toss with { Volume = 0.6f, Pitch = -0.1f }, Projectile.Center);
+                    SoundEngine.PlaySound(ElephantKiller.Throw with { Volume = 0.9f, Pitch = Main.rand.NextFloat(-0.3f, -0.2f) }, Projectile.Center);
                     spinFx = 0.5f;
                     spinFxOn = true;
                     soundToss = false;
                 }
-                if (throwAnimLerp >= throwCutPoint)
+                if (throwAnimLerp >= throwCutPoint && soundCatch)
+                {
+                    soundCatch = false;
                     spinFxOn = false;
+                    SoundEngine.PlaySound(ElephantKiller.Catch with { Volume = 0.9f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, Projectile.Center);
+                }
 
                 float prepThrowLerp = Utils.Remap(throwAnimLerp, dudFireEndPoint, throwStartPoint, 0, 1);
                 float aim = MathHelper.PiOver2 + MathHelper.PiOver4 * (prepThrowLerp < 0.5f ? (1 - MathF.Pow(Utils.GetLerpValue(0.5f, 0, prepThrowLerp, true), 1f)) : (1 - MathF.Pow(Utils.GetLerpValue(0.5f, 1, prepThrowLerp, true), 2.5f)));
@@ -258,8 +285,7 @@ namespace CalamityMod.Projectiles.Rogue
                     shineOpacity = soundToss ? (1 - MathF.Pow(shineLerp, 3)) : 0;
                     if (shineProgress > 0 && shineSound)
                     {
-                        SoundStyle shine = new("CalamityMod/Sounds/Item/ElephantKillerShine");
-                        SoundEngine.PlaySound(shine with { Volume = 0.6f, Pitch = 0f }, Projectile.Center);
+                        SoundEngine.PlaySound(ElephantKiller.Shine with { Volume = 0.6f, Pitch = 0f }, Projectile.Center);
                         shineSound = false;
                     }
                 }
@@ -278,8 +304,7 @@ namespace CalamityMod.Projectiles.Rogue
                     spinFxOn = true;
                     Projectile.tileCollide = true;
                     Projectile.velocity = toMouse * throwSpeed;
-                    SoundStyle toss = new("CalamityMod/Sounds/Item/LightThrow");
-                    SoundEngine.PlaySound(toss with { Volume = 0.8f, Pitch = -0.3f }, Projectile.Center);
+                    SoundEngine.PlaySound(ElephantKiller.Throw with { Volume = 0.9f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, Projectile.Center);
                 }
             }
         }
@@ -292,7 +317,7 @@ namespace CalamityMod.Projectiles.Rogue
             mode = gunState.NotThrown;
             Projectile.extraUpdates = 0;
             Projectile.numHits = 0;
-            firedThisFrame = false;
+            doingFireAnimation = false;
             hasFiredBulletEver = false;
             firingEffectDisableTimer = 0;
             throwSpeed = 0;
@@ -325,9 +350,9 @@ namespace CalamityMod.Projectiles.Rogue
                 if (canStealth)
                     Projectile.Calamity().stealthStrike = true;
                 mode = (canStealth && rightClicking == 0) ? gunState.Stealth : gunState.NotThrown;
-                throwSpeed = Owner.HeldItem.shootSpeed;
+                throwSpeed = Owner.HeldItem.shootSpeed * Owner.Calamity().rogueVelocity;
             }
-            if (firedThisFrame && firingEffectDisableTimer < disableTimerMax)
+            if (doingFireAnimation && firingEffectDisableTimer < disableTimerMax)
             {
                 firingEffectDisableTimer++;
                 spinFx = 0;
@@ -335,7 +360,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
             if (firingEffectDisableTimer >= disableTimerMax)
             {
-                firedThisFrame = false;
+                doingFireAnimation = false;
                 if (mode == gunState.Stealth)
                     recoilRotation = 0.001f;
                 else
@@ -344,7 +369,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
 
             Vector2 toMouse = Owner.Center.DirectionTo(Owner.Calamity().mouseWorld);
-            int animationTimeMax = Owner.HeldItem.useAnimation * 2;
+            int animationTimeMax = (int)((Owner.HeldItem.useAnimation * 2) / Owner.GetTotalAttackSpeed<RogueDamageClass>());
             int returnTime = 30 + animationTimeMax;
 
             Held(toMouse, returnTime, animationTimeMax);
@@ -356,14 +381,14 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (Projectile.soundDelay <= 0 && spinFx > 0.3f) // Spin sounds
             {
-                SoundEngine.PlaySound(SoundID.Item7 with { MaxInstances = -1 }, Projectile.Center);
-                Projectile.soundDelay = 5 * Projectile.MaxUpdates;
+                SoundEngine.PlaySound(ElephantKiller.Woosh with { Volume = 0.3f, MaxInstances = -1, Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, Projectile.Center);
+                Projectile.soundDelay = 4 * Projectile.MaxUpdates;
             }
 
             holdoutOffset = MathHelper.Lerp(holdoutOffset, 0, 0.185f);
             if (recoilRotation != 0)
                 recoilRotation = MathHelper.Lerp(recoilRotation, mode == gunState.Stealth ? (-MathHelper.PiOver4 * (1.3f + 0.03f * recoilLifetime)) : 0, 0.245f);
-            if (!firedThisFrame)
+            if (!doingFireAnimation)
                 spinFx = MathHelper.Lerp(spinFx, spinFxOn ? 1 : 0, 0.28f);
             Projectile.scale = MathHelper.Lerp(Projectile.scale, shouldDie ? 0 : 1, 0.28f);
             if (recoilLifetime > 0)
@@ -386,15 +411,12 @@ namespace CalamityMod.Projectiles.Rogue
         {
             holdoutOffset = 15;
             Owner.SetScreenshake(3.5f + damageMult);
-            firedThisFrame = true;
+            doingFireAnimation = true;
             hasFiredBulletEver = true;
-            SoundStyle fire = new("CalamityMod/Sounds/Item/ElephantKillerShot");
-            SoundEngine.PlaySound(fire with { Volume = 0.9f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f) - (elephant ? 0.6f : 0), MaxInstances = 3 }, Projectile.Center);
+
+            SoundEngine.PlaySound(ElephantKiller.Shot with { Volume = 0.9f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f) - (elephant ? 0.6f : 0), MaxInstances = 3 }, Projectile.Center);
             if (elephant)
-            {
-                SoundStyle fire3 = new("CalamityMod/Sounds/Item/ElephantKillerShot");
-                SoundEngine.PlaySound(fire3 with { Volume = 0.9f, Pitch = 0.4f, MaxInstances = 3 }, Projectile.Center);
-            }
+                SoundEngine.PlaySound(ElephantKiller.Shot with { Volume = 0.9f, Pitch = 0.4f, MaxInstances = 3 }, Projectile.Center);
             if (recoil)
                 Owner.velocity -= velocity * 2.25f * damageMult * (elephant ? 1.5f : 1);
 
@@ -414,35 +436,36 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 float elephantDistance = 0;
                 bool elephantBoosted = false;
-                if (recoil) // Check if you shot an elephant
+
+                // Check if you shot an elephant
+                for (int x = 0; x < Main.maxProjectiles; x++)
                 {
-                    for (int x = 0; x < Main.maxProjectiles; x++)
+                    Projectile projectile = Main.projectile[x];
+                    if (projectile.active && projectile.type == ModContent.ProjectileType<ElephantKillerElephant>())
                     {
-                        Projectile projectile = Main.projectile[x];
-                        if (projectile.owner == Projectile.owner && projectile.active && projectile.type == ModContent.ProjectileType<ElephantKillerElephant>())
+                        float _ = float.NaN;
+                        bool elephantCollide = Collision.CheckAABBvLineCollision(projectile.Hitbox.TopLeft(), projectile.Hitbox.Size(), Projectile.Center, Projectile.Center + velocity * 2500, 10 * Projectile.scale, ref _);
+                        if (Projectile.Hitbox.Intersects(projectile.Hitbox))
                         {
-                            float _ = float.NaN;
-                            bool elephantCollide = Collision.CheckAABBvLineCollision(projectile.Hitbox.TopLeft(), projectile.Hitbox.Size(), Projectile.Center, Projectile.Center + velocity * 2500, 10 * Projectile.scale, ref _);
-                            if (Projectile.Hitbox.Intersects(projectile.Hitbox))
-                            {
-                                elephantCollide = true;
-                                _ = Projectile.width;
-                            }
-                            if (elephantCollide)
-                            {
-                                elephantDistance = _;
-                                Vector2 hitPoint = Projectile.Center + velocity * _;
-                                makeHitEffects(velocity, 2, hitPoint, projectile.whoAmI, false);
-                                elephantBoosted = true;
-                                Vector2 adjustedHitPoint = hitPoint + velocity * 15;
-                                projectile.ai[1] = adjustedHitPoint.X;
-                                projectile.ai[2] = adjustedHitPoint.Y;
-                                projectile.localAI[0] = velocity.ToRotation();
-                                projectile.localAI[1] = 2.5f;
-                            }
+                            elephantCollide = true;
+                            _ = Projectile.width;
+                        }
+                        if (elephantCollide)
+                        {
+                            elephantDistance = _;
+                            Vector2 hitPoint = Projectile.Center + velocity * _;
+                            makeHitEffects(velocity, 2, hitPoint, projectile.whoAmI, false);
+                            elephantBoosted = true;
+                            Vector2 adjustedHitPoint = hitPoint + velocity * 15;
+                            projectile.ai[1] = adjustedHitPoint.X;
+                            projectile.ai[2] = adjustedHitPoint.Y;
+                            projectile.localAI[0] = velocity.ToRotation();
+                            projectile.localAI[1] = 0.5f + damageMult;
                         }
                     }
                 }
+                
+                
                 for (int index = 0; index < Main.npc.Length; index++)
                 {
                     NPC target = Main.npc[index];
@@ -455,25 +478,38 @@ namespace CalamityMod.Projectiles.Rogue
                             collides = true;
                             _ = Projectile.width;
                         }
-                        Vector2 hitPoint = Projectile.Center + velocity * _;
                         if (collides)
                         {
-                            bool isAfterElephantHit = (elephantBoosted && _ >= elephantDistance);
-                            int damage = (int)(Projectile.damage * (isAfterElephantHit ? elephantBoostedShotDamageMult : damageMult));
-                            Projectile bullet = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), hitPoint, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), damage, 0, Owner.whoAmI, target.whoAmI);
-                            bullet.DamageType = RogueDamageClass.Instance;
-                            //bullet.Calamity().stealthStrike = isAfterElephantHit; // Turn bullets shot through the Elephant into stealth strikes
-
-                            makeHitEffects(velocity, damageMult, hitPoint, elephantBoosted: isAfterElephantHit);
-
-                            if (damageMult > 0.25f) // Loose 15% damage every hit, min of 25% original damage
-                                damageMult -= 0.15f;
+                            hitNPCs.Add((target, _));
+                            
                         }
                     }
                 }
+                hitNPCs = hitNPCs.OrderBy(x => x.Item2).ToList(); // Order hit NPCs by distance to hit them in order
+                for (int index = 0; index < hitNPCs.Count(); index++)
+                {
+                    float minMult = 0.15f;
+                    int hitsToMinMult = 6;
+                    float damageFalloff = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+                    float adjustedDamageMult = damageMult * damageFalloff;
+
+                    NPC target = hitNPCs.ElementAt(index).Item1;
+                    float distance = hitNPCs.ElementAt(index).Item2;
+                    Vector2 hitPoint = Projectile.Center + velocity * distance;
+
+                    bool isAfterElephantHit = (elephantBoosted && distance >= elephantDistance);
+                    int damage = (int)((Projectile.damage / 2) * (isAfterElephantHit ? ElephantKiller.elephantBoostedShotDamageMult * adjustedDamageMult : adjustedDamageMult)); // Bullets deal half of gun damage, but always crit
+                    Projectile bullet = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), hitPoint, Vector2.Zero, ModContent.ProjectileType<Gunshot>(), damage, 0, Owner.whoAmI, target.whoAmI);
+                    bullet.DamageType = RogueDamageClass.Instance;
+                    //bullet.Calamity().stealthStrike = isAfterElephantHit; // Turn bullets shot through the Elephant into stealth strikes
+
+                    makeHitEffects(velocity, adjustedDamageMult, hitPoint, elephantBoosted: isAfterElephantHit, effectMult: damageFalloff);
+                    Projectile.numHits++;
+                }
+                hitNPCs.Clear();
             }
         }
-        public void makeHitEffects(Vector2 velocity, float damageMult, Vector2 hitPoint, int shotElephantID = -50, bool elephantBoosted = false)
+        public void makeHitEffects(Vector2 velocity, float damageMult, Vector2 hitPoint, int shotElephantID = -50, bool elephantBoosted = false, float effectMult = 1)
         {
             bool shotElephant = shotElephantID != -50;
             bool blue = (shotElephant || !ChildSafety.Disabled);
@@ -482,11 +518,9 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 velocity *= 1.3f;
                 Owner.SetScreenshake(6f);
-                float falloff = Math.Min(MathF.Pow(damageMult, 3), 1);
-                SoundStyle bigHit = new("CalamityMod/Sounds/NPCHit/ThanatosHitClosed3");
-                SoundEngine.PlaySound(bigHit with { Volume = 0.8f * falloff, Pitch = Main.rand.NextFloat(1.2f, 1.3f) * falloff, MaxInstances = -1 }, hitPoint);
-                SoundStyle bigHit2 = new("CalamityMod/Sounds/NPCHit/ExoHit4");
-                SoundEngine.PlaySound(bigHit2 with { Volume = 0.8f * falloff, Pitch = Main.rand.NextFloat(0.6f, 0.75f) * falloff, MaxInstances = -1 }, hitPoint);
+
+                for (int i = 0; i < (damageMult == ElephantKiller.stealthShotDamageMult ? 2 : 1); i++)
+                    SoundEngine.PlaySound(ElephantKiller.BoostedShotHit with { Volume = 0.2f + 0.8f * effectMult, Pitch = Main.rand.NextFloat(-0.1f, 0.1f) - 0.5f * (1 - effectMult), MaxInstances = -1 }, hitPoint);
             }
             for (int y = 0; y < ((shotElephant || elephantBoosted) ? 2 : 1); y++)
             {
@@ -519,9 +553,8 @@ namespace CalamityMod.Projectiles.Rogue
                     float scale = 0.01f;
                     Particle pulse = new CustomPulse(spawnPoint, Vector2.Zero, flashColor, "CalamityMod/Particles/HigResThinCircle", Vector2.One, 0, damageMult * scale, 4f * damageMult * scale, 35);
                     GeneralParticleHandler.SpawnParticle(pulse, true);
-                    Particle pulse2 = new CustomPulse(spawnPoint, Vector2.Zero, flashColor, "CalamityMod/Particles/HigResThinCircle", Vector2.One, 0, damageMult * scale, 6f * damageMult * scale, 22);
+                    Particle pulse2 = new CustomPulse(spawnPoint, Vector2.Zero, Color.SkyBlue, "CalamityMod/Particles/HigResThinCircle", Vector2.One, 0, damageMult * scale, 6f * damageMult * scale, 22);
                     GeneralParticleHandler.SpawnParticle(pulse2, true);
-
                 }
                 
                 if ((!shotElephant && y == 0) || (y == 1 && !elephantBoosted))
@@ -529,7 +562,7 @@ namespace CalamityMod.Projectiles.Rogue
                     for (int i = 0; i < (int)(12 * damageMult); i++)
                     {
                         Vector2 bloodVel = !shotElephant ? velocity : -velocity;
-                        Color clr = blue ? (Main.rand.NextBool(3) ? Color.DodgerBlue : Color.CornflowerBlue) : (Main.rand.NextBool(3) ? Color.DarkRed : Color.Maroon);
+                        Color clr = blue ? (Main.rand.NextBool(3) ? Color.SkyBlue : Color.CornflowerBlue) : (Main.rand.NextBool(3) ? Color.DarkRed : Color.Maroon);
 
                         int dustType = blue ? ModContent.DustType<SquashDustPixelated>() : DustID.Blood;
                         bool spread = Main.rand.NextBool();
@@ -574,27 +607,32 @@ namespace CalamityMod.Projectiles.Rogue
         {
             if (Projectile.numHits == 0)
             {
-                throwCollideEffects();
-                Projectile.extraUpdates = 0;
-                Owner.Calamity().rogueStealth += Owner.Calamity().rogueStealthMax * 0.25f; // Give 25% of max on hit
+                if (tileHits == 0)
+                {
+                    throwCollideEffects();
+                    Projectile.extraUpdates = 0;
+                    setReturnTime = true;
+                    mode = gunState.Returning;
+                    Projectile.velocity = new Vector2(-Math.Sign(Projectile.Center.DirectionTo(target.Center).X) * Projectile.velocity.Length() / 2, -18 * Math.Sign(Projectile.Center.DirectionTo(target.Center).Y));
+                }
+                Owner.Calamity().rogueStealth += Owner.Calamity().rogueStealthMax * ElephantKiller.stealthGainOnThrowHit; // Give stealth on hit
                 CheckStealth();
-                mode = gunState.Returning;
-                Projectile.velocity = new Vector2(-Math.Sign(Projectile.Center.DirectionTo(target.Center).X) * Projectile.velocity.Length() / 2, -18 * Math.Sign(Projectile.Center.DirectionTo(target.Center).Y));
             }
         }
         public void throwCollideEffects()
         {
-            Particle pulse = new CustomPulse(Projectile.Center, Vector2.Zero, new Color(114, 112, 116), "CalamityMod/Particles/HigResThinCircle", Vector2.One, 0, 0.03f, 0.05f, 10, false);
-            GeneralParticleHandler.SpawnParticle(pulse, true);
-            SoundStyle bigHit2 = new("CalamityMod/Sounds/NPCHit/ExoHit3");
-            SoundEngine.PlaySound(bigHit2 with { Volume = 0.4f, Pitch = Main.rand.NextFloat(0.3f, 0.5f) + tileHits * 0.1f, MaxInstances = -1 }, Projectile.Center);
-            hitStop = Math.Max(5 - tileHits * 2, 0);
+            hitStop = Math.Max(6 - tileHits * 2, 0);
+            if (hitStop >= 2)
+            {
+                Particle pulse = new CustomPulse(Projectile.Center, Vector2.Zero, new Color(114, 112, 116), "CalamityMod/Particles/HigResThinCircle", Vector2.One, 0, 0.04f, 0.05f, hitStop, false);
+                GeneralParticleHandler.SpawnParticle(pulse, true);
+            }
+
+            SoundEngine.PlaySound(ElephantKiller.Hit with { Volume = 0.7f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f) + tileHits * 0.1f, MaxInstances = -1 }, Projectile.Center);
         }
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             throwCollideEffects();
-            if (Projectile.numHits == 0)
-                Projectile.numHits += 1;
             tileHits++;
             if (Projectile.velocity.X != oldVelocity.X)
             {
@@ -614,14 +652,14 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Asset<Texture2D> tex = ModContent.Request<Texture2D>( firedThisFrame ? "CalamityMod/Projectiles/Rogue/ElephantKillerFlash" : "CalamityMod/Items/Weapons/Rogue/ElephantKiller");
-            Asset<Texture2D> p = ModContent.Request<Texture2D>("CalamityMod/Particles/CircularSmearLarge");
-            Asset<Texture2D> flash = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
-            Asset<Texture2D> flashTip = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomLineFade");
-            Asset<Texture2D> shineTip = ModContent.Request<Texture2D>("CalamityMod/Particles/FullStar");
+            Asset<Texture2D> tex = doingFireAnimation ? GunFlash : Gun;
+            Asset<Texture2D> smear = Smear;
+            Asset<Texture2D> flash = Bloom;
+            Asset<Texture2D> flashTip = BloomLine;
+            Asset<Texture2D> shineTip = Shine;
 
             Vector2 generalDrawPos = Projectile.Center - Main.screenPosition + Main.rand.NextVector2Circular(rumble, rumble);
-            PixelationManager.AddPixelatedDrawer((_) =>
+            PixelationManager.AddPixelatedDrawer((_) => // The spinnging smear when thrown
             {
                 if (spinFx > 0.001f)
                 {
@@ -629,20 +667,20 @@ namespace CalamityMod.Projectiles.Rogue
                     Color dark = Lighting.GetColor(Projectile.Center.ToTileCoordinates()).MultiplyRGB(new Color(24, 20, 37));
                     Color light = Lighting.GetColor(Projectile.Center.ToTileCoordinates()).MultiplyRGB(new Color(114, 112, 116));
                     Color shine = Lighting.GetColor(Projectile.Center.ToTileCoordinates()).MultiplyRGB(new Color(216, 216, 216));
-                    Main.EntitySpriteDraw(p.Value, generalDrawPos, null, light * spinFx, Projectile.rotation * Main.rand.NextFloat(3.9f, 4.2f), p.Size() * 0.5f, Projectile.scale * 0.55f * scale * Main.rand.NextFloat(0.95f, 1.05f), SpriteEffects.None);
-                    Main.EntitySpriteDraw(p.Value, generalDrawPos, null, shine * spinFx, Projectile.rotation * Main.rand.NextFloat(1.2f, 1.3f), p.Size() * 0.5f, Projectile.scale * 0.45f * scale, SpriteEffects.None);
-                    Main.EntitySpriteDraw(p.Value, generalDrawPos, null, dark * spinFx, Projectile.rotation * Main.rand.NextFloat(0.7f, 0.8f), p.Size() * 0.5f, Projectile.scale * 0.4f * scale * Main.rand.NextFloat(0.95f, 1.05f), SpriteEffects.None);
+                    Main.EntitySpriteDraw(smear.Value, generalDrawPos, null, light * spinFx, Projectile.rotation * Main.rand.NextFloat(3.9f, 4.2f), smear.Size() * 0.5f, Projectile.scale * 0.55f * scale * Main.rand.NextFloat(0.95f, 1.05f), SpriteEffects.None);
+                    Main.EntitySpriteDraw(smear.Value, generalDrawPos, null, shine * spinFx, Projectile.rotation * Main.rand.NextFloat(1.2f, 1.3f), smear.Size() * 0.5f, Projectile.scale * 0.45f * scale, SpriteEffects.None);
+                    Main.EntitySpriteDraw(smear.Value, generalDrawPos, null, dark * spinFx, Projectile.rotation * Main.rand.NextFloat(0.7f, 0.8f), smear.Size() * 0.5f, Projectile.scale * 0.4f * scale * Main.rand.NextFloat(0.95f, 1.05f), SpriteEffects.None);
                 }
             }, Enums.GeneralDrawLayer.BeforeProjectiles, BlendState.NonPremultiplied);
 
             Main.EntitySpriteDraw(tex.Value, generalDrawPos + Main.rand.NextVector2Circular(hitStop * 2, hitStop * 2), null, lightColor, Projectile.rotation, tex.Size() / 2f, Projectile.scale, initialDirection == -1 ? SpriteEffects.FlipVertically : SpriteEffects.None, 0);
             
-            if (firedThisFrame)
+            if (doingFireAnimation) // The muzzle flash effect when firing
             {
                 PixelationManager.AddPixelatedDrawer((_) =>
                 {
                     float scale = (0.35f + firingEffectDisableTimer * 0.22f) * (mode == gunState.Stealth ? 2 : 1);
-                    float flashFade = !firedThisFrame ? 0 : MathF.Pow(Utils.GetLerpValue(disableTimerMax, 0, firingEffectDisableTimer, true), 3);
+                    float flashFade = !doingFireAnimation ? 0 : MathF.Pow(Utils.GetLerpValue(disableTimerMax, 0, firingEffectDisableTimer, true), 3);
                     float flashMult = Utils.GetLerpValue(0, disableTimerMax, firingEffectDisableTimer, true) * 5;
 
                     Vector2 vel = Projectile.rotation.ToRotationVector2();
@@ -656,7 +694,7 @@ namespace CalamityMod.Projectiles.Rogue
                     }
                 }, Enums.GeneralDrawLayer.AfterProjectiles, default);
             }
-            if (mode == gunState.Stealth)
+            if (mode == gunState.Stealth) // The shine effect that occurs before firing an elephant
             {
                 PixelationManager.AddPixelatedDrawer((_) =>
                 {

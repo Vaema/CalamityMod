@@ -43,6 +43,8 @@ ShiftToExpand: Hold Shift to see an expanded description
 AltExpand: Hold {0} to see buff information
 AltExpandUnset: Set a keybind to see debuff information
 LearnedSchematic: You learned how to create new things!
+RogueDamage: rogue
+RangedDamage: ranged
 CragmawVibeCheck: Vibe check.
 AutocannonHot: OUCH! HOT!
 NoComputer: No decryption computer installed

@@ -145,6 +145,7 @@ namespace CalamityMod.CalPlayer
         /// </summary>
         public bool heldElephantKillerLastFrame = false;
         public float elephantKillerJoke = 0;
+        public bool drawingElephantKillerJoke = false;
         /// <summary>
         /// Tracks whether or not the player currently has Draedon's Heart equipped.<br/>
         /// Used to reset Adrenaline when (un)equipped to prevent exploits.
