@@ -488,8 +488,8 @@ namespace CalamityMod.Projectiles.Rogue
                 hitNPCs = hitNPCs.OrderBy(x => x.Item2).ToList(); // Order hit NPCs by distance to hit them in order
                 for (int index = 0; index < hitNPCs.Count(); index++)
                 {
-                    float minMult = 0.15f;
-                    int hitsToMinMult = 6;
+                    float minMult = 0.1f;
+                    int hitsToMinMult = 4;
                     float damageFalloff = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
                     float adjustedDamageMult = damageMult * damageFalloff;
 
