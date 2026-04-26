@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using CalamityMod.Dusts;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using CalamityMod.Prefixes;
 using CalamityMod.Projectiles.Environment;
@@ -234,22 +236,39 @@ namespace CalamityMod.Items.Tools
 
         public override int GetPrefixForItem(Player player, Item itemBeingReforged, bool isAccessory)
         {
-            int prefix;
+            int prefix = -1;
+            var category = itemBeingReforged.GetPrefixCategories();
 
-            if (itemBeingReforged.DamageType == DamageClass.Melee)
-                prefix = PrefixID.Legendary;
-            else if (itemBeingReforged.DamageType == DamageClass.Ranged)
+            if (!category.Any())
+                return -1;
+
+            if ((itemBeingReforged).knockBack == 0f) // Weapons which do not apply knockback universally have demonic as their best reforge
+                prefix = PrefixID.Demonic;
+
+            else if (itemBeingReforged.CountsAsClass<MeleeDamageClass>() && itemBeingReforged.type != ModContent.ItemType<TheBurningSky>())
+            {
+                bool weirdMelee = !category.Contains(PrefixCategory.Melee); // Weapons which deal melee damage but cannot recieve melee prefixes because Item.noUseGraphic is true
+
+                if (weirdMelee || itemBeingReforged.CountsAsClass<MeleeNoSpeedDamageClass>())
+                    prefix = PrefixID.Godly;
+                else
+                    prefix = PrefixID.Legendary;
+            }
+            else if (itemBeingReforged.CountsAsClass<RangedDamageClass>() || itemBeingReforged.type == ModContent.ItemType<TheBurningSky>())
                 prefix = PrefixID.Unreal;
-            else if (itemBeingReforged.DamageType == DamageClass.Magic)
+            else if (itemBeingReforged.CountsAsClass<MagicDamageClass>())
                 prefix = PrefixID.Mythical;
-            else if (itemBeingReforged.DamageType == DamageClass.Summon)
-                prefix = PrefixID.Ruthless;
-            else
+            else if (itemBeingReforged.CountsAsClass<RogueDamageClass>())
+                prefix = ModContent.PrefixType<Flawless>();
+            else if (itemBeingReforged.CountsAsClass<SummonDamageClass>())
+                prefix = itemBeingReforged.IsWhip() ? PrefixID.Legendary : PrefixID.Ruthless;
+
+            else // Fallback case
                 prefix = PrefixID.Godly;
 
             if (Main.rand.NextBool())
             {
-                VoucherReforgeSystem.RollWon = true; 
+                VoucherReforgeSystem.RollWon = true;
                 return prefix;
             }
             else
