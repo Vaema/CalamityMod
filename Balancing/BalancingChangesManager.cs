@@ -167,9 +167,6 @@ namespace CalamityMod.Balancing
             // 50% resist to Aegis Blade's explosions because the true melee resist ain't enough.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Ravager, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<AegisBlast>()))));
 
-            // 40% resist to Icicle Arrows.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Ravager, Do(new ProjectileResistBalancingRule(0.6f, ProjectileType<IcicleArrowProj>()))));
-
             // 35% resist to Flying Dragon.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Ravager, Do(new ProjectileResistBalancingRule(0.65f, ProjectileID.DD2SquireSonicBoom))));
 
@@ -212,9 +209,6 @@ namespace CalamityMod.Balancing
             
             // 35% resist to Aerial Bane.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.AstrumDeus, Do(new ProjectileResistBalancingRule(0.65f, ProjectileID.DD2BetsyArrow))));
-
-            // 35% resist to Icicle Arrows.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.AstrumDeus, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<IcicleArrowProj>()))));
 
             // 30% resist to Aurora Blazer.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.AstrumDeus, Do(new ProjectileResistBalancingRule(0.7f, ProjectileType<AuroraFire>()))));
