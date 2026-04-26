@@ -116,7 +116,7 @@ namespace CalamityMod.DataStructures
         /// How much alcohol this counts as.
         /// Default is 0, most alcohol is 1, and Everclear is 2
         /// </summary>
-        public float AlcoholLevel = 0f;
+        public int AlcoholLevel = 0;
 
         /// <summary>
         /// UNIMPLEMENTED. WILL BE DONE IN A FUTURE PR

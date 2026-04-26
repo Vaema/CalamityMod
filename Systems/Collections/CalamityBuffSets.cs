@@ -93,36 +93,5 @@ namespace CalamityMod.Systems.Collections
             { BuffID.ThornWhipNPCDebuff, SummonTag.Snapthorn },
             { BuffType<ProfanedCrystalWhipDebuff>(), ProfanedSoulCrystal.SummonTag }
         };
-
-        /// <summary>
-        /// Associates a buff type with its alcohol poison level. Used for the Alcohol Poisoning mechanic.<br/>
-        /// If a buff type is not a key in this dictionary, then it does not increase alcohol poison level.
-        /// </summary>
-        public static Dictionary<int, int> AlcoholStrength = new Dictionary<int, int>
-        {
-            { BuffID.Tipsy, 1 },
-            { BuffType<BaconOilBuff>(), 3 },
-            { BuffType<BloodyMaryBuff>(), 1 },
-            { BuffType<CaribbeanRumBuff>(), 1 },
-            { BuffType<CinnamonRollBuff>(), 1 },
-            { BuffType<EverclearBuff>(), 2 },
-            { BuffType<EvergreenGinBuff>(), 1 },
-            { BuffType<FireballBuff>(), 1 },
-            { BuffType<GrapeBeerBuff>(), 1 },
-            { BuffType<MargaritaBuff>(), 1 },
-            { BuffType<MoonshineBuff>(), 1 },
-            { BuffType<MoscowMuleBuff>(), 1 },
-            { BuffType<OldFashionedBuff>(), 1 },
-            { BuffType<PurpleHazeBuff>(), 1 },
-            { BuffType<RedWineBuff>(), 1 },
-            { BuffType<RumBuff>(), 1 },
-            { BuffType<ScrewdriverBuff>(), 1 },
-            { BuffType<StarBeamRyeBuff>(), 1 },
-            { BuffType<TequilaBuff>(), 1 },
-            { BuffType<TequilaSunriseBuff>(), 1 },
-            { BuffType<VodkaBuff>(), 1 },
-            { BuffType<WhiskeyBuff>(), 1 },
-            { BuffType<WhiteWineBuff>(), 1 }
-        };
     }
 }

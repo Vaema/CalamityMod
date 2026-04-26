@@ -193,8 +193,8 @@ namespace CalamityMod.CalPlayer
             for (int l = 0; l < Player.MaxBuffs; l++)
             {
                 int buff = Player.buffType[l];
-                if (CalamityBuffSets.AlcoholStrength.TryGetValue(buff, out int level))
-                    alcoholPoisonLevel += level;
+                if (BuffDatasets.DebuffDataset[buff] is not null && BuffDatasets.DebuffDataset[buff].AlcoholLevel > 0)
+                    alcoholPoisonLevel += BuffDatasets.DebuffDataset[buff].AlcoholLevel;
             }
             if (Player.Calamity().ivDrip) // +1 stack of poisoning while IV Drip is equipped
                 alcoholPoisonLevel++;
@@ -557,12 +557,7 @@ namespace CalamityMod.CalPlayer
             if (community)
             {
                 int regenBoost = 1 + (int)(TheCommunity.CalculatePower() * TheCommunity.RegenMultiplier);
-                bool lesserEffect = false;
-                for (int l = 0; l < Player.MaxBuffs; l++)
-                {
-                    int hasBuff = Player.buffType[l];
-                    lesserEffect = CalamityBuffSets.AlcoholStrength.TryGetValue(hasBuff, out var a);
-                }
+                bool lesserEffect = Player.buffType.Any(i => BuffDatasets.DebuffDataset[i] is not null && BuffDatasets.DebuffDataset[i].AlcoholLevel > 0);
                 if (Player.lifeRegen < 0)
                     Player.lifeRegen += lesserEffect ? 1 : regenBoost;
             }
