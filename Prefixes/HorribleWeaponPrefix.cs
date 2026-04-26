@@ -21,7 +21,7 @@ namespace CalamityMod.Prefixes
         public virtual float sizeMult => 1f;
 
         public override PrefixCategory Category => PrefixCategory.AnyWeapon;
-        public override float RollChance(Item item) => 10; // Is manually applied by an item, can't be rerolled normally
+        public override float RollChance(Item item) => 0; // Is manually applied by an item, can't be rerolled normally
         public override bool CanRoll(Item item)
         {
             return item.DamageType != null && item.DamageType != DamageClass.Default;
