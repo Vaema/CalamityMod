@@ -468,7 +468,7 @@ TownNPCMood: {
 	}
 
 	DyeTrader: {
-		Monument: Oh no no, that dull monument cannot be. Its mere presence makes me feel as though my dyes are less effective!
+		Monument: Oh no no, that dull monument cannot be. Its mere presence is sucking the color and vibrancy out of life itself!
 		GiftPositive: What an extraordinary batch of rare flowers there was in that gift, friend! I must thank you for your help, browse my colors at reduced coin in exchange!
 		GiftNegative: You think you can pull such a drab gift prank on me, I don't think so! I want no business of yours after that attack on my precious palettes!
 	}
@@ -510,7 +510,7 @@ TownNPCMood: {
 	}
 
 	Painter: {
-		Monument: Oh, no no no, that statue has gotta be the dullest artpiece I have ever seen.
+		Monument: That statue certainly is thought provoking. I'm awestruck by how bleak, dull, and hopeless it makes its environs feel.
 		GiftPositive: How did ya know exactly the paint color I have been looking for? My newest mural greatly appreciates dat!
 		GiftNegative: You must be sick and cruel, because that water bomb prank of yours washed all over my latest work! Aye, you oughta be covered in red, and not paint!
 	}
@@ -564,7 +564,7 @@ TownNPCMood: {
 	}
 
 	WitchDoctor: {
-		Monument: A vile disruption of nature, that monument is. My soul is filled with contempt in its existence.
+		Monument: A vile disruption of nature, that monument is. My soul is wracked with contempt for this unsightly edifice.
 		GiftPositive: A kind offering to my people, this gift is. May you be blessed by kindred spirits in trying times.
 		GiftNegative: Sacrilegious defilement against my arts - I speak of your false gift. May your woes be many, and your days few.
 	}
