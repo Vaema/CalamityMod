@@ -378,8 +378,6 @@ namespace CalamityMod.CalPlayer
         /// <summary> Variable used to track if Auger can do its big slash attack. </summary>
         public bool buffedAuger = false;
 
-        public int rOfResilienceBaseTimeMax = 300;
-        public int rOfResilienceMaxPowerTime = 1800;
         public int rOfResilienceCooldown = 0;
         public int rOfResilienceEffect = 0;
         public int rOfResilienceOrbitOffset = 0;

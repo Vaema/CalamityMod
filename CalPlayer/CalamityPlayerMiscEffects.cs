@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Balancing;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.Potions;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Buffs.Summon;
@@ -1695,11 +1694,11 @@ namespace CalamityMod.CalPlayer
                 HeatDebuffMultiplier += 0.25f * bootLevel;
 
             bool holdingRoR = Player.HeldItem.type == ModContent.ItemType<RelicOfResilience>();
-            bool shieldIsSetup = (rOfResilienceEffect >= rOfResilienceBaseTimeMax);
-            bool chargedButNotHolding = (rOfResilienceEffect > rOfResilienceBaseTimeMax && !holdingRoR);
+            bool shieldIsSetup = (rOfResilienceEffect >= RelicOfResilience.baseTimeMax);
+            bool chargedButNotHolding = (rOfResilienceEffect > RelicOfResilience.baseTimeMax && !holdingRoR);
             bool reduceEffect = (!shieldIsSetup || chargedButNotHolding);
             if (rOfResilienceEffect > 0 && reduceEffect)
-                { rOfResilienceEffect -= (chargedButNotHolding ? 4 : 1); if (shieldIsSetup && rOfResilienceEffect < rOfResilienceBaseTimeMax) rOfResilienceEffect = rOfResilienceBaseTimeMax; if (rOfResilienceEffect < 0) rOfResilienceEffect = 0; }
+                { rOfResilienceEffect -= (chargedButNotHolding ? 4 : 1); if (shieldIsSetup && rOfResilienceEffect < RelicOfResilience.baseTimeMax) rOfResilienceEffect = RelicOfResilience.baseTimeMax; if (rOfResilienceEffect < 0) rOfResilienceEffect = 0; }
             if (holdingRoR) // All players close to a player holding RoR get the benefits
             {
                 if (Player.ownedProjectileCounts[ModContent.ProjectileType<RelicGuard>()] < 1 && !Player.dead && Main.netMode != NetmodeID.MultiplayerClient)
@@ -1709,22 +1708,23 @@ namespace CalamityMod.CalPlayer
                 for (int index = 0; index < Main.player.Length; index++)
                 {
                     Player fella = Main.player[index];
-                    bool validEffectBoost = Utils.Distance(fella.Center, Player.Center) < 1000 && fella.team == Player.team && fella.Calamity().rOfResilienceEffect < rOfResilienceMaxPowerTime 
-                        && fella.Calamity().rOfResilienceCooldown == 0 && (fella.Calamity().rOfResilienceEffect > rOfResilienceBaseTimeMax ? holdingRoR : true);
+                    float maxDistancePlayersCanBe = 1000;
+                    bool validEffectBoost = Utils.Distance(fella.Center, Player.Center) < maxDistancePlayersCanBe && fella.team == Player.team && fella.Calamity().rOfResilienceEffect < RelicOfResilience.maxPowerTime
+                        && fella.Calamity().rOfResilienceCooldown == 0 && (fella.Calamity().rOfResilienceEffect > RelicOfResilience.baseTimeMax ? holdingRoR : true);
                     if (validEffectBoost)
                     {
                         fella.Calamity().rOfResilienceEffect += (reduceEffect ? 2 : 1) + (Player.Calamity().profanedSoulRelicBuff ? 1 : 0); // gets subtracted by 1 every frame, so this goes up by more to keep up
                     }
                 }
             }
-            // Adds a floor for defense and dr at 150 and 10% respectivley, will not ignore defense damage
-            if (Player.Calamity().rOfResilienceCooldown >= 450 || Player.Calamity().rOfResilienceCooldown == 0)
+            // Adds a floor for defense and dr, will not ignore defense damage
+            if (Player.Calamity().rOfResilienceCooldown >= RelicOfResilience.baseCooldown / 2|| Player.Calamity().rOfResilienceCooldown == 0)
             {
-                float fadeInStats = Utils.GetLerpValue(0, rOfResilienceBaseTimeMax, rOfResilienceEffect, true);
-                float fadeStats = (Player.Calamity().rOfResilienceCooldown == 0 ? fadeInStats : MathF.Pow(Utils.GetLerpValue(450, 900, Player.Calamity().rOfResilienceCooldown, true), 3));
-                float overchargeBoost = 1 + (Utils.GetLerpValue(rOfResilienceBaseTimeMax, rOfResilienceMaxPowerTime, rOfResilienceEffect, true) * (Player.Calamity().profanedSoulRelicBuff ? 5 : 2)); // The amount of bulk this gives with artifact is way overkill but it is REALLY funny
-                int def = (int)(150 * overchargeBoost);
-                float dr = 0.10f * overchargeBoost;
+                float fadeInStats = Utils.GetLerpValue(0, RelicOfResilience.baseTimeMax, rOfResilienceEffect, true);
+                float fadeStats = (Player.Calamity().rOfResilienceCooldown == 0 ? fadeInStats : MathF.Pow(Utils.GetLerpValue(RelicOfResilience.baseCooldown / 2, RelicOfResilience.baseCooldown, Player.Calamity().rOfResilienceCooldown, true), 3));
+                float overchargeBoost = 1 + (Utils.GetLerpValue(RelicOfResilience.baseTimeMax, RelicOfResilience.maxPowerTime, rOfResilienceEffect, true) * (Player.Calamity().profanedSoulRelicBuff ? RelicOfResilience.additionalMaxPowerDefensesMult * 5 : RelicOfResilience.additionalMaxPowerDefensesMult)); // The amount of bulk this gives with artifact is way overkill but it is REALLY funny
+                int def = (int)(RelicOfResilience.baseDefenseFloor * overchargeBoost);
+                float dr = RelicOfResilience.baseDrFloor * overchargeBoost;
                 int maxDefFloor = (int)(def * fadeStats);
                 float MaxDRFloor = dr * fadeStats;
                 if (Player.statDefense < maxDefFloor)
@@ -1736,16 +1736,16 @@ namespace CalamityMod.CalPlayer
             {
                 if (Player.Calamity().mouseRight && !Player.mouseInterface && rOfResilienceCooldown == 0 && holdingRoR)
                 {
-                    int cooldownTime = 900;
+                    int cooldownTime = RelicOfResilience.baseCooldown;
                     rOfResilienceCooldown = cooldownTime;
                     Player.AddCooldown(Cooldowns.RelicOfResilienceCooldown.ID, cooldownTime);
                     SoundStyle y = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianRockShieldActivate");
                     SoundEngine.PlaySound(y with { Volume = 0.7f, Pitch = -0.1f }, Player.Center);
                 }
 
-                int shardBaseCap = (Player.Calamity().profanedSoulRelicBuff ? 50 : 30);
-                float postMaxedShards = MathHelper.Lerp(shardBaseCap, shardBaseCap * 2f, MathF.Pow(Utils.GetLerpValue(rOfResilienceBaseTimeMax, rOfResilienceMaxPowerTime, rOfResilienceEffect, true), 2));
-                int maxShards = (int)(postMaxedShards * Utils.GetLerpValue(0, rOfResilienceBaseTimeMax, rOfResilienceEffect, true));
+                int shardBaseCap = (Player.Calamity().profanedSoulRelicBuff ? (int)(RelicOfResilience.baseMaxShardCount * 1.5f) : RelicOfResilience.baseMaxShardCount);
+                float postMaxedShards = MathHelper.Lerp(shardBaseCap, shardBaseCap * RelicOfResilience.maxPowerShardMult, MathF.Pow(Utils.GetLerpValue(RelicOfResilience.baseTimeMax, RelicOfResilience.maxPowerTime, rOfResilienceEffect, true), 2));
+                int maxShards = (int)(postMaxedShards * Utils.GetLerpValue(0, RelicOfResilience.baseTimeMax, rOfResilienceEffect, true));
                 int numOfShards = 0;
                 for (int x = 0; x < Main.maxProjectiles; x++)
                 {
@@ -1774,7 +1774,7 @@ namespace CalamityMod.CalPlayer
                         shard.ai[1] = -1;
                     }
                 }
-                if (numOfShards < maxShards && Player.Calamity().rOfResilienceCooldown == 0 && (rOfResilienceEffect >= rOfResilienceBaseTimeMax || holdingRoR))
+                if (numOfShards < maxShards && Player.Calamity().rOfResilienceCooldown == 0 && (rOfResilienceEffect >= RelicOfResilience.baseTimeMax || holdingRoR))
                 {
                     if (numOfShards == 0)
                     {
@@ -1782,7 +1782,7 @@ namespace CalamityMod.CalPlayer
                         SoundStyle sound = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianDash");
                         SoundEngine.PlaySound(sound with { Volume = 0.5f, Pitch = -0.3f }, Player.Center);
                     }
-                    int shardDamage = (int)Player.GetBestClassDamage().ApplyTo(Player.Calamity().profanedSoulRelicBuff ? 950 : 250);
+                    int shardDamage = (int)Player.GetBestClassDamage().ApplyTo(Player.Calamity().profanedSoulRelicBuff ? RelicOfResilience.shardBaseDamage * 5 : RelicOfResilience.shardBaseDamage);
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                         Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, new Vector2(1, 0), ModContent.ProjectileType<ArtifactOfResilienceShards>(), shardDamage, 0f, Player.whoAmI, 0, 0, numOfShards + 1);
                 }

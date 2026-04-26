@@ -61,7 +61,7 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.Center = Owner.MountedCenter + goalPos;
             Owner.direction = Math.Sign(aimVel.X);
 
-            if (!Owner.dead && (Owner.HeldItem.type == ModContent.ItemType<RelicOfResilience>() || (Owner.Calamity().rOfResilienceEffect >= Owner.Calamity().rOfResilienceBaseTimeMax)))
+            if (!Owner.dead && (Owner.HeldItem.type == ModContent.ItemType<RelicOfResilience>() || (Owner.Calamity().rOfResilienceEffect >= RelicOfResilience.baseTimeMax)))
                 Projectile.timeLeft++;
             else
             {
@@ -69,7 +69,7 @@ namespace CalamityMod.Projectiles.Typeless
                 return;
             }
 
-            if ((!fullPower && Owner.Calamity().rOfResilienceEffect >= Owner.Calamity().rOfResilienceBaseTimeMax) || (Owner.Calamity().rOfResilienceEffect >= Owner.Calamity().rOfResilienceMaxPowerTime && !maxPower))
+            if ((!fullPower && Owner.Calamity().rOfResilienceEffect >= RelicOfResilience.baseTimeMax) || (Owner.Calamity().rOfResilienceEffect >= RelicOfResilience.maxPowerTime && !maxPower))
             {
                 if (fullPower)
                     maxPower = true;
@@ -77,9 +77,9 @@ namespace CalamityMod.Projectiles.Typeless
                 SoundEngine.PlaySound(sound with { Volume = 0.85f, Pitch = maxPower ? 0.8f : 0.6f }, Projectile.Center);
                 fullPower = true;
             }
-            else if (Owner.Calamity().rOfResilienceEffect < Owner.Calamity().rOfResilienceBaseTimeMax)
+            else if (Owner.Calamity().rOfResilienceEffect < RelicOfResilience.baseTimeMax)
                 fullPower = false;
-            if (Owner.Calamity().rOfResilienceEffect < Owner.Calamity().rOfResilienceMaxPowerTime)
+            if (Owner.Calamity().rOfResilienceEffect < RelicOfResilience.maxPowerTime)
                 maxPower = false;
 
             chargeScaling = MathHelper.Lerp(chargeScaling, maxPower ? 1.4f : fullPower ? 1.2f : 1, 0.02f);
@@ -118,7 +118,7 @@ namespace CalamityMod.Projectiles.Typeless
             Texture2D bTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
             Color drawColor = bColor;
             float CDScale = Utils.GetLerpValue(300, 0, Owner.Calamity().rOfResilienceCooldown, true);
-            float overPowerScale = Utils.GetLerpValue(Owner.Calamity().rOfResilienceBaseTimeMax, Owner.Calamity().rOfResilienceMaxPowerTime, Owner.Calamity().rOfResilienceEffect, true);
+            float overPowerScale = Utils.GetLerpValue(RelicOfResilience.baseTimeMax, RelicOfResilience.maxPowerTime, Owner.Calamity().rOfResilienceEffect, true);
             float bScale2 = 0.35f * (chargeScaling + overPowerScale * 0.5f);
 
             for (int i = 0; i < (maxPower ? 6 : fullPower ? 4 : 2); i++)

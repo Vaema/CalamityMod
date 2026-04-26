@@ -99,7 +99,7 @@ namespace CalamityMod.Projectiles.Typeless
                     Projectile projectile = Main.projectile[x];
                     if (projectile.active && projectile.type == Projectile.type && projectile.owner == Owner.whoAmI && projectile.localAI[0] == 0)
                     {
-                        projectile.localAI[0] = Utils.Remap(Owner.Calamity().rOfResilienceEffect, 0, Owner.Calamity().rOfResilienceMaxPowerTime, 1, 8, true);
+                        projectile.localAI[0] = Utils.Remap(Owner.Calamity().rOfResilienceEffect, 0, RelicOfResilience.maxPowerTime, 1, 8, true);
                     }
                 }
                 Owner.Calamity().rOfResilienceEffect = 0;
@@ -107,7 +107,7 @@ namespace CalamityMod.Projectiles.Typeless
                 Projectile.ai[1] = 1;
                 Projectile.netUpdate = true;
             }
-            if ((Owner.Calamity().rOfResilienceEffect == 0 || (Owner.Calamity().rOfResilienceEffect < Owner.Calamity().rOfResilienceBaseTimeMax && Owner.HeldItem.type != ModContent.ItemType<RelicOfResilience>())) && Projectile.ai[1] == 0)
+            if ((Owner.Calamity().rOfResilienceEffect == 0 || (Owner.Calamity().rOfResilienceEffect < RelicOfResilience.baseTimeMax && Owner.HeldItem.type != ModContent.ItemType<RelicOfResilience>())) && Projectile.ai[1] == 0)
             {
                 Projectile.ai[1] = -1;
                 Projectile.velocity = Utils.DirectionTo(Projectile.Center, goalPosition) * Main.rand.NextFloat(1f, 3f);
@@ -215,14 +215,11 @@ namespace CalamityMod.Projectiles.Typeless
             if (crit)
                 modifiers.SetCrit();
 
-            float damageMultBase = Utils.Remap(Owner.Calamity().rOfResilienceEffect, 0, Owner.Calamity().rOfResilienceMaxPowerTime, 0.2f, 0.5f);
+            float damageMultBase = Utils.Remap(Owner.Calamity().rOfResilienceEffect, 0, RelicOfResilience.maxPowerTime, RelicOfResilience.orbitDamageMult / 2, RelicOfResilience.orbitDamageMult);
             modifiers.SourceDamage *= (isAttacking ? 1 : damageMultBase);
+            int baseDebuffTime = 150;
             if (isAttacking)
-                target.AddBuff(ModContent.BuffType<ProfanedWeakness>(), (int)(150 * debuffMult));
-        }
-        public override void OnKill(int timeLeft)
-        {
-
+                target.AddBuff(ModContent.BuffType<ProfanedWeakness>(), (int)(baseDebuffTime * debuffMult));
         }
         public override bool PreDraw(ref Color lightColor)
         {
