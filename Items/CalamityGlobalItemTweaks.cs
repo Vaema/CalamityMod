@@ -197,7 +197,7 @@ namespace CalamityMod.Items
                 { ItemID.PurpleClubberfish, Do(UseTurn, KnockbackExact(10f)) }, // VANILLA: 8 KB
                 { ItemID.PurplePhaseblade, phaseblade },
                 { ItemID.PurplePhasesaber, phasesaber },
-                { ItemID.PygmyStaff, Do(DamageExact(63)) }, // VANILLA: 40 DMG
+                { ItemID.PygmyStaff, Do(DamageExact(60)) }, // VANILLA: 40 DMG
                 { ItemID.RainbowGun, Do(DamageExact(60)) }, // VANILLA: 45 DMG
                 { ItemID.RainbowRod, Do(DamageExact(40), KnockbackExact(8f)) }, // VANILLA: 50 DMG, 6 KB
                 { ItemID.Rally, Do(DamageExact(18)) }, // VANILLA: 14 DMG
