@@ -748,5 +748,73 @@ namespace CalamityMod.ILEditing
             }
         }
         #endregion
+
+        #region Tweak Pygmy Staff aggro distance logic
+
+        private static void PygmyAggroOnClosestPointInHitbox(ILContext context)
+        {
+            ILCursor cursor = new(context);
+            if (!cursor.TryGotoNext(i => i.MatchStloc(131)))
+            {// Go to the latest newly set variable near the point we wanna be, as that is an easy unique instruction to jump to
+             // 131 is the number assigned to that variable in ILview
+                LogFailure("Tweaking Pygmy Staff aggro distance logic", "Could not locate unique Stloc(131) instruction nearest to aggro distance check.");
+                return;
+            }
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdloc(126)))
+            {// Before the minion range variable emission so as to receive the value being targetted at it
+                LogFailure("Tweaking Pygmy Staff aggro distance logic", "Could not locate the minion range variable.");
+                return;
+            }
+            cursor.Emit(OpCodes.Ldarg_0); // Emit the Projectile entity as we are in Projectile.cs::AI_026
+            cursor.Emit(OpCodes.Ldloc, 129); // Emit the NPC index via the incremented loop variable
+            cursor.Emit(OpCodes.Ldloc, 6); // Emit the bool containing type check for pygmies
+            cursor.EmitDelegate((float distance, Projectile projectile, int npcIndex, bool pygmy) =>
+            {// Replace the distance with a different value calculated off of closest point in hitboxes
+                if (!pygmy)
+                    return distance;
+
+                NPC npc = Main.npc[npcIndex];
+                Player player = Main.player[projectile.owner];
+                float finalDistance = npc.Hitbox.ClosestPointInRect(player.Center).Distance(player.Hitbox.ClosestPointInRect(npc.Center));
+                return finalDistance;
+            });
+            // That was part 1, time for part 2.
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchStloc(185)))
+            {// Go directly before the instruction that's meant to receive the distance value of this tagged NPC
+                LogFailure("Tweaking Pygmy Staff aggro distance logic", "Could not locate first unique Stloc(185) instruction.");
+                return;
+            }
+            cursor.Emit(OpCodes.Ldarg_0);
+            cursor.Emit(OpCodes.Ldloc, 181); // Emit the tagged NPC
+            cursor.Emit(OpCodes.Ldloc, 6);
+            cursor.EmitDelegate((float distance, Projectile projectile, NPC npc, bool pygmy) =>
+            {// Replace the distance with a different value calculated off of closest point in hitboxes
+                if (!pygmy)
+                    return distance;
+
+                float finalDistance = npc.Hitbox.ClosestPointInRect(projectile.Center).Distance(projectile.Hitbox.ClosestPointInRect(npc.Center));
+                return finalDistance;
+            });
+            
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchStloc(189)))
+            {// Go directly before the instruction that's meant to receive the distance value of this NPC currently being iterated over
+                LogFailure("Tweaking Pygmy Staff aggro distance logic", "Could not locate first unique Stloc(189) instruction.");
+                return;
+            }
+            cursor.Emit(OpCodes.Ldarg_0);
+            cursor.Emit(OpCodes.Ldloc, 186); // Emit the NPC index via the incremented loop variable
+            cursor.Emit(OpCodes.Ldloc, 6);
+            cursor.EmitDelegate((float distance, Projectile projectile, int npcIndex, bool pygmy) =>
+            {// Replace the distance with a different value calculated off of closest point in hitboxes
+                if (!pygmy)
+                    return distance;
+
+                NPC npc = Main.npc[npcIndex];
+                float finalDistance = npc.Hitbox.ClosestPointInRect(projectile.Center).Distance(projectile.Hitbox.ClosestPointInRect(npc.Center));
+                return finalDistance;
+            });
+        }
+
+        #endregion Tweak Pygmy Staff aggro distance logic
     }
 }

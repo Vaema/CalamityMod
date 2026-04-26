@@ -187,6 +187,9 @@ namespace CalamityMod.ILEditing
             // Fix vanilla behaviour of not calling CheckDead for NPCs that realLife is set
             IL_NPC.StrikeNPC_HitInfo_bool_bool += EnsureCheckDeadOnSegments;
 
+            // Change Pygmy Staff minion AI to check distance based on closest points in hitboxes
+            IL_Projectile.AI_026 += PygmyAggroOnClosestPointInHitbox;
+
             //Additional detours that are in their own item files given they are only relevant to these specific items:
             //Rover drive detours on Player.DrawInfernoRings to draw its shield
             //Wulfrum armor hooks on Player.KeyDoubleTap and DrawPendingMouseText to activate its set bonus and spoof the mouse text to display the stats of the activated weapon if shift is held
