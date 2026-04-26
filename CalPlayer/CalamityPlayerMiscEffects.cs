@@ -1721,6 +1721,16 @@ namespace CalamityMod.CalPlayer
             if (rOfResilienceCooldown > 0)
                 rOfResilienceCooldown--;
 
+            if (Player.Calamity().friendlyMinions > 0)
+            {
+                int numOfPigs = Player.ownedProjectileCounts[ModContent.ProjectileType<Pigion>()];
+                if (numOfPigs < Player.Calamity().friendlyMinions)
+                {
+                    int pigDamage = 7;
+                    Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, new Vector2(0, -16).RotatedByRandom(MathHelper.Pi), ModContent.ProjectileType<Pigion>(), pigDamage, 0f, Player.whoAmI, 0, numOfPigs + 1);
+                }
+            }
+
             if (transformer && Player.Calamity().transformerCooldown == 0 && transformerDelay == 0) // The code for this acursed thing took much... MUCH, too long to make
             {
                 float zoneSize = 150;
@@ -3347,7 +3357,6 @@ namespace CalamityMod.CalPlayer
         #region Other Buff Effects
         private void OtherBuffEffects()
         {
-
             if (gravityNormalizer)
             {
                 Player.buffImmune[BuffID.VortexDebuff] = true;
