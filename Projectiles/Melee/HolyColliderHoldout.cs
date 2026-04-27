@@ -166,7 +166,6 @@ namespace CalamityMod.Projectiles.Melee
                     SoundEngine.PlaySound(fullCharge with { Volume = 0.7f, Pitch = 0.5f }, Projectile.Center);
 
                     chargedSwing = true;
-                    chargedSwing = true;
                     useAnim = storedUseAnim / 2;
                     chargeTimer++;
 

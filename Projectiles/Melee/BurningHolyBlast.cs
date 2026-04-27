@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
-using Microsoft.Build.Construction;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;

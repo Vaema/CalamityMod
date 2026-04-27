@@ -272,11 +272,11 @@ namespace CalamityMod.Projectiles.Melee
                             float bonus = (1 - (7 / (attackPower + 1))) * 0.3f;
                             Vector2 pos = Owner.Center + (new Vector2(160 * Projectile.scale, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.05f));
                             Vector2 vel = Projectile.rotation.ToRotationVector2().RotatedBy(MathHelper.ToRadians(-45)).RotatedByRandom(0.5f) * Main.rand.NextFloat(6f, 10f);
-                            Dust dust = Dust.NewDustPerfect(pos, Main.rand.NextBool(3) ? 278 : ModContent.DustType<SquashDust>(), vel * (1 + bonus), 0, default, Main.rand.NextFloat(1.05f, 1.4f));
-                            dust.noGravity = !(dust.type == 278);
+                            Dust dust = Dust.NewDustPerfect(pos, Main.rand.NextBool(3) ? DustID.FireworksRGB : ModContent.DustType<SquashDust>(), vel * (1 + bonus), 0, default, Main.rand.NextFloat(1.05f, 1.4f));
+                            dust.noGravity = dust.type != DustID.FireworksRGB;
                             dust.color = color;
                             dust.scale += bonus;
-                            if (dust.type != 278)
+                            if (dust.type != DustID.FireworksRGB)
                             {
                                 dust.scale *= Projectile.scale;
                                 dust.fadeIn = Projectile.scale - 1;
