@@ -51,7 +51,6 @@ DuneSandBallGun.DisplayName: Dunesand Ball
 EarlyBloomBobber.DisplayName: Early Bloom Bobber
 EmpyreanBlast.DisplayName: Empyrean Blast
 EmpyreanEmber.DisplayName: Empyrean Ember
-EmpyreanGlob.DisplayName: Empyeran Glob
 EmpyreanMarble.DisplayName: Empyrean Marble
 EmpyreanStellarDetritus.DisplayName: Empyrean Stellar Detritus
 EnergyShell.DisplayName: Energy Shell
@@ -107,6 +106,7 @@ PauldronDash.DisplayName: Pauldron Dash
 PauldronExplosion.DisplayName: Pauldron Explosion
 PearlAuraShard.DisplayName: Prism Shard
 PlaguePulse.DisplayName: Plague Pulse
+Pigion.DisplayName: Pigion
 PinkPearlFalling.DisplayName: Pink Pearl
 PoisonousSeawater.DisplayName: Seawater
 PolypSandBallFalling.DisplayName: Polyp Sand Ball
