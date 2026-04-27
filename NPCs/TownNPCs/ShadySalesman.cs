@@ -147,20 +147,16 @@ namespace CalamityMod.NPCs.TownNPCs
                 .Add<UnbreakableVoucher>()
                 .Add<HurriedVoucher>()
                 .Add<OddVoucher>()
-                //.Add<ThePotion>() ???
+                //.Add<ThePotion>() WIP
                 //.Add<TrustyOldRod>() Has PR
                 //.Add<GluttonyBlender>() Has PR
-                //.Add<CursedTrinket>() ???
                 .Add<GreedPot>()
                 .Add<TheMonument>()
-                //.Add<FishStocks>() Needs assets?
+                //.Add<FishStocks>() WIP
                 .Add<TheSandwich>()
                 .Add<BaconOil>()
-                //.Add<TheContract>() Probably Scrapped?
-                //.Add<TheContraption>() Probably Scrapped?
                 //.Add<ElephantKiller>() Has PR
-                //.Add<FrozenCube>() Has Branch
-                //.Add<ShotgunSkull>() ???
+                //.Add<FrozenCube>() WIP
                 .Add<OmniGun>(Condition.DownedGolem)
                 
                 .Register();
