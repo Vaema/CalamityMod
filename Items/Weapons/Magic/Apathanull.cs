@@ -48,7 +48,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient(ItemID.SpellTome).
-                AddIngredient<MeldConstruct>(9).
+                AddIngredient<MeldBlob>(18).
                 AddTile(TileID.Bookcases).
                 Register();
         }
