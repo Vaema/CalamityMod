@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Dusts;
+using CalamityMod.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -85,13 +86,12 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             target.MoveNPC(launchVel, launchPower, true, Owner);
 
             if (Projectile.ai[2] == 5)
-                modifiers.SetCrit();
+                modifiers.ApplyScalingForcedCrit(Projectile);
 
-            float critDamage = Math.Min(Owner.GetTotalCritChance(Projectile.DamageType) * 0.01f, 1f);
             float minMult = 0.3f;
             int hitsToMinMult = 7;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
-            modifiers.SourceDamage *= (Projectile.ai[2] == 5 ? (1f + critDamage) : 1) * damageMult;
+            modifiers.SourceDamage *= damageMult;
 
             if (Projectile.numHits == 0)
             {

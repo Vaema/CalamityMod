@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.height = 60;
             Item.damage = 890;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 50;
+            Item.mana = 90;
             Item.useAnimation = Item.useTime = 80; // 42 frames of firing animation
             Item.knockBack = 2f;
             Item.shoot = ModContent.ProjectileType<VolterionHoldout>();

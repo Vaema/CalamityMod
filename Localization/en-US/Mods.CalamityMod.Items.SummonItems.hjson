@@ -71,7 +71,7 @@ CosmicWorm: {
 		'''
 		Summons the Devourer of Gods
 		{$Common.NotConsumable}
-		'The Nameless Serpent has set out for you.'
+		[ceffect/dog:'The Nameless Serpent has set out for you.']
 		'''
 }
 
@@ -287,6 +287,11 @@ Terminus: {
 	DisplayName: Terminus
 	GFBName: Ogscule
 	Tooltip: Hold <left> to start or end the Boss Rush
+}
+
+TheHousingContract: {
+	DisplayName: The Housing Contract
+	Tooltip: Use to adopt a piggy for your town
 }
 
 YharonEgg: {

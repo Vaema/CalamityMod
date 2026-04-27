@@ -8,7 +8,7 @@ AstralInjection: {
 	Tooltip:
 		'''
 		Restores {0} mana per second
-		Lower your health by {1} and inflicts {$BuffName.ManaSickness} when used
+		Inflicts [cbuff:ManaSickness] when used
 		'''
 }
 
@@ -22,6 +22,7 @@ Baguette: {
 	Tooltip:
 		'''
 		{$CommonItemTooltip.MinorStats}
+		Goes well with [cbuff:CalamityMod/RedWineBuff]
 		[c/FCE391:'je suis Monte']
 		'''
 }
@@ -156,6 +157,12 @@ SupremeManaPotion: {
 	Tooltip: ""
 }
 
+TheConcoction: {
+	DisplayName: The Concoction
+	EasterEggText: Removes 500 life
+	Tooltip: ""
+}
+
 ZenPotion: {
 	DisplayName: Zen Potion
 	Tooltip: Vastly decreases enemy spawn rate
@@ -164,6 +171,16 @@ ZenPotion: {
 ZergPotion: {
 	DisplayName: Zerg Potion
 	Tooltip: Vastly increases enemy spawn rate
+}
+
+BaconOil: {
+	DisplayName: Bacon Oil
+	Tooltip:
+		'''
+		Provides "good" mobility that scales with your damage stat boosts
+		Counts as 3 alcohols for {$Buffs.AlcoholPoisoning.DisplayName}
+		{$Common.AlcoholWarning}
+		'''
 }
 
 BloodyMary: {
@@ -241,7 +258,8 @@ GrapeBeer: {
 	Tooltip:
 		'''
 		Bullets, Arrows, Darts, and Rockets gain homing
-		{0}% reduced critical strike damage
+		Projectiles deal less damage the further the enemy is
+		This reaches a minimum of {0}x damage at {1} tiles away
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -444,5 +462,18 @@ ShroomBowl: {
 		'''
 		{$CommonItemTooltip.MediumStats}
 		'He has been grounded'
+		'''
+}
+
+TheSandwich: {
+	DisplayName: The Sandwich
+	Tooltip:
+		'''
+		A sandwich made of the finest bread, cheese, and fish in the land!
+		Minor reductions to all stats
+		{0}% increased damage for every alcohol you are affected by
+		Allows you to drink 2 more alcohols than normal
+		Alcohol effects will not expire while under the effects of The Sandwich
+		'Might actually taste good if it was the only thing you'd ever eaten...'
 		'''
 }

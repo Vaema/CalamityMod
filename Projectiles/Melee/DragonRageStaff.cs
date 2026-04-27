@@ -14,7 +14,6 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    [PierceResistException]
     public class DragonRageStaff : ModProjectile
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<DragonRage>();

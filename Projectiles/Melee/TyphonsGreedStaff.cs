@@ -11,7 +11,6 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    [PierceResistException]
     public class TyphonsGreedStaff : ModProjectile
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<TyphonsGreed>();

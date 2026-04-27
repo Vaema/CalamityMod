@@ -137,12 +137,17 @@ namespace CalamityMod.Projectiles.Rogue
                     float speedMult = (float)Math.Pow(Utils.GetLerpValue(1, 4, charge, true), 2) + 0.05f;
                     float arcValue = hasReachedFullCharge ? 0 : (float)Math.Pow(Utils.Remap(speedMult, 0, 1f, 1f, 0.8f), 4);
                     Projectile.ai[1] = arcValue;
-                    Projectile.velocity = velocity * 9 * speedMult;
+                    Projectile.velocity = velocity * 9 * speedMult * Owner.Calamity().rogueVelocity;
 
                     SoundStyle w = new("CalamityMod/Sounds/Item/SwooshMid");
                     SoundEngine.PlaySound(w with { Volume = 1f, Pitch = 0.2f, MaxInstances = 6 }, Projectile.Center);
                     if (hasReachedFullCharge)
                     {
+                        if (Owner.Calamity().StealthStrikeAvailable())
+                        {
+                            Projectile.Calamity().stealthStrike = true;
+                            Owner.Calamity().ConsumeStealthByAttacking();
+                        }
                         rotSpeed *= 2;
                         SoundStyle w2 = new("CalamityMod/Sounds/Item/SwooshMid");
                         SoundEngine.PlaySound(w2 with { Volume = 1f, Pitch = -0.4f, MaxInstances = 6 }, Projectile.Center);
@@ -150,11 +155,7 @@ namespace CalamityMod.Projectiles.Rogue
                     else
                         Owner.Calamity().ConsumeStealthByAttacking();
 
-                    if (Owner.Calamity().StealthStrikeAvailable() && hasReachedFullCharge)
-                    {
-                        Projectile.Calamity().stealthStrike = true;
-                        Owner.Calamity().ConsumeStealthByAttacking();
-                    }
+                    
 
                     Projectile.tileCollide = true;
                     flung = true;

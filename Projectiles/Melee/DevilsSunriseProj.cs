@@ -12,7 +12,6 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    [PierceResistException]
     public class DevilsSunriseProj : ModProjectile
     {
         public static readonly SoundStyle HitSound = new SoundStyle("CalamityMod/Sounds/Item/MantisSwipe", 2) with { Pitch = 0.8f };

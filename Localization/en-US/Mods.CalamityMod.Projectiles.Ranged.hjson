@@ -67,7 +67,6 @@ DrizzlefishFire.DisplayName: Drizzlefish Flames
 DrizzlefishFireball.DisplayName: Drizzlefish Fireball
 DrizzlefishFireSplit.DisplayName: Drizzlefish Flames
 DryadsTearMain.DisplayName: Dryad's Tear
-DryadsTearSplit.DisplayName: Dryad's Tear
 ElysianArrowProj.DisplayName: Elysian Arrow
 ElysianArrowRain.DisplayName: Elysian Light
 EmesisGore.DisplayName: Rotten Gore
@@ -268,3 +267,6 @@ WaterSpout.DisplayName: Spout
 WildfireBloomFire.DisplayName: Wildfire Fire
 WildfireBloomFlare.DisplayName: Wildfire Flare
 WulfrumScrapBullet.DisplayName: High Speed Scrap
+OmniSniperShot.DisplayName: Omni Sniper Shot
+OmniGrenade.DisplayName: Omni Grenade
+OmniShotgunShot.DisplayName: Omni Shotgun Shot

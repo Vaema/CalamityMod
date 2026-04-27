@@ -64,6 +64,8 @@ namespace CalamityMod.Projectiles.Melee
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<ElementalMix>(), 180);
+            if (damageDone > 2 && !target.Calamity().IsArmored())
+                Projectile.damage = (int)(Projectile.damage * 0.8f);
             if (Projectile.numHits < 1)
             {
                 Particle orb = new GlowSparkParticle(target.Center, Projectile.velocity.SafeNormalize(Vector2.UnitY), false, 12, 0.07f, mainColor, new Vector2(1.5f, 0.8f), true);

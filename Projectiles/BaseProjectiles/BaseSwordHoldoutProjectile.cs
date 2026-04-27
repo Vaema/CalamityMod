@@ -73,7 +73,6 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         }
     }
 
-    [PierceResistException]
     //Doze 24apr2025 - Not a child of BaseCustomUseStyleProjectile because this doesn't use any of it's functionality. Comes from my melee rework mod.
     public abstract class BaseSwordHoldoutProjectile : ModProjectile
     {

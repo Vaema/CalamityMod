@@ -10,12 +10,16 @@ AstralBreastplate: {
 
 AstralHelm: {
 	DisplayName: Astral Helm
-	Tooltip: "{$CommonItemTooltip.PercentIncreasedDamage} and {$CommonItemTooltip.PercentIncreasedCritChance@1}"
+	Tooltip:
+		'''
+		{$CommonItemTooltip.PercentIncreasedDamage} and {$CommonItemTooltip.PercentIncreasedCritChance@1}
+		Detects nearby creatures, enemy projectiles, danger sources, and treasure
+		[c/aaaaaa:Shift-<right> in your inventory to toggle the] [cbuffplr:CalamityMod/Omniscience] [c/aaaaaa:effect]
+		'''
 	SetBonus:
 		'''
 		{$CommonItemTooltip.IncreasesMaxMinionsBy}
 		{$CommonItemTooltip.PercentIncreasedDamageCritChance@1}
-		Detects nearby creatures, enemy projectiles, danger sources, and treasure
 		Whenever you crit an enemy, a barrage of stars will rain down
 		This effect has a {2} {^2:second;seconds} cooldown before it can trigger again
 		'''

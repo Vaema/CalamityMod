@@ -401,6 +401,32 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
+        #region Flail Balance Changes
+        // Make flails be unaffected by player velocity
+        private static void FlailsNoLongerAffectedByPlayerVelocity(On_Projectile.orig_AI_015_Flails orig, Projectile self)
+        {
+            orig(self);
+            if (self.ai[0] == 1f && self.ai[1] == 0f)
+                self.velocity -= Main.player[self.owner].velocity;
+        }
+
+        // Increase Flower Pow's return speed
+        private static void IncreaseFlowerPowRetSpeed(ILContext il)
+        {
+            var cursor = new ILCursor(il);
+            // Move to where Flower Pow receives its specific flail stat changes. This moves it after num2 = 23f
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdcR4(23f), i => i.MatchStloc(6)))
+            {
+                LogFailure("Flower Pow Buff", "Could not move to Flower Pow's specific flail stat changes.");
+                return;
+            }
+
+            // Emit an instruction setting num5 (the return speed) to 21. Vanilla is 16
+            cursor.Emit(OpCodes.Ldc_R4, 21f);
+            cursor.Emit(OpCodes.Stloc, 9);
+        }
+        #endregion
+
         #region Terrarian Projectile Limitation for Extra Updates
         private static void LimitTerrarianProjectiles(ILContext il)
         {
@@ -686,5 +712,135 @@ namespace CalamityMod.ILEditing
                 return orig(self);
         }
         #endregion
+
+        #region Adjust lifesteal costs
+        /// <summary>
+        /// Reimplemnts our own implementation of Spectre Healing so we can customize effects
+        /// Also means it will no longer reduce lifesteal cooldown when hitting with non-magic attacks, and not proc if every player is full HP
+        /// </summary>
+        /// <param name="orig"></param>
+        /// <param name="self"></param>
+        /// <param name="dmg"></param>
+        /// <param name="Position"></param>
+        /// <param name="victim"></param>
+        private static void AdjustSpectreHealing(On_Projectile.orig_ghostHeal orig, Projectile self, int dmg, Vector2 Position, Entity victim)
+        {
+            float HealingMultiplier = 0.2f;
+            float LifestealCooldownMult = 0.66f;
+            
+            var owner = Main.player[self.owner];
+            HealingMultiplier -= self.numHits * 0.05f;
+            int AmountToHeal = (int)Math.Round(dmg * HealingMultiplier);
+            if (!self.magic || AmountToHeal <= 0 || Main.player[Main.myPlayer].lifeSteal <= 0f)
+            {
+                return;
+            }
+            float MissingLifeGoal = 0f;
+            int targetPlayer = self.owner;
+            foreach (var player in Main.ActivePlayers)
+            {
+                if (!player.dead && ((!self.hostile && !owner.hostile) || owner.team == player.team) && self.Distance(player.Center) <= 3000f)
+                {
+                    int MissingLife = player.statLifeMax2 - player.statLife;
+                    if ((float)MissingLife > MissingLifeGoal)
+                    {
+                        MissingLifeGoal = MissingLife;
+                        targetPlayer = player.whoAmI;
+                    }
+                }
+            }
+            AmountToHeal = (int)MathHelper.Min(AmountToHeal, MissingLifeGoal);
+            if (AmountToHeal <= 0)
+                return;
+            owner.lifeSteal -= AmountToHeal * LifestealCooldownMult;
+            Projectile.NewProjectile(self.GetSource_OnHit(victim, ProjectileSourceID.ToContextString(ProjectileSourceID.SetBonus_GhostHeal)), Position.X, Position.Y, 0f, 0f, ProjectileID.SpiritHeal, 0, 0f, self.owner, targetPlayer, AmountToHeal);
+        }
+        /// <summary>
+        /// Adjust Vampire Knives implementation, stopping them from trying to heal when at full HP
+        /// </summary>
+        /// <param name="orig"></param>
+        /// <param name="self"></param>
+        /// <param name="dmg"></param>
+        /// <param name="Position"></param>
+        /// <param name="victim"></param>
+        private static void AdjustVampireHealing(On_Projectile.orig_vampireHeal orig, Projectile self, int dmg, Vector2 Position, Entity victim)
+        {
+            int healAmount = (int)(dmg * 0.075f);
+            float LifestealCooldownMult = 1f;
+            if ((int)healAmount != 0 && !(Main.player[Main.myPlayer].lifeSteal <= 0f) && Main.player[Main.myPlayer].statLifeMax2 > Main.player[Main.myPlayer].statLife)
+            {
+                Main.player[Main.myPlayer].lifeSteal -= healAmount * LifestealCooldownMult;
+                Projectile.NewProjectile(self.GetSource_OnHit(victim, ProjectileSourceID.ToContextString(ProjectileSourceID.VampireKnives)), Position.X, Position.Y, 0f, 0f, ProjectileID.VampireHeal, 0, 0f, self.owner, self.owner, healAmount);
+            }
+        }
+        #endregion
+
+        #region Tweak Pygmy Staff aggro distance logic
+
+        private static void PygmyAggroOnClosestPointInHitbox(ILContext context)
+        {
+            ILCursor cursor = new(context);
+            if (!cursor.TryGotoNext(i => i.MatchStloc(131)))
+            {// Go to the latest newly set variable near the point we wanna be, as that is an easy unique instruction to jump to
+             // 131 is the number assigned to that variable in ILview
+                LogFailure("Tweaking Pygmy Staff aggro distance logic", "Could not locate unique Stloc(131) instruction nearest to aggro distance check.");
+                return;
+            }
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdloc(126)))
+            {// Before the minion range variable emission so as to receive the value being targetted at it
+                LogFailure("Tweaking Pygmy Staff aggro distance logic", "Could not locate the minion range variable.");
+                return;
+            }
+            cursor.Emit(OpCodes.Ldarg_0); // Emit the Projectile entity as we are in Projectile.cs::AI_026
+            cursor.Emit(OpCodes.Ldloc, 129); // Emit the NPC index via the incremented loop variable
+            cursor.Emit(OpCodes.Ldloc, 6); // Emit the bool containing type check for pygmies
+            cursor.EmitDelegate((float distance, Projectile projectile, int npcIndex, bool pygmy) =>
+            {// Replace the distance with a different value calculated off of closest point in hitboxes
+                if (!pygmy)
+                    return distance;
+
+                NPC npc = Main.npc[npcIndex];
+                Player player = Main.player[projectile.owner];
+                float finalDistance = npc.Hitbox.ClosestPointInRect(player.Center).Distance(player.Hitbox.ClosestPointInRect(npc.Center));
+                return finalDistance;
+            });
+            // That was part 1, time for part 2.
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchStloc(185)))
+            {// Go directly before the instruction that's meant to receive the distance value of this tagged NPC
+                LogFailure("Tweaking Pygmy Staff aggro distance logic", "Could not locate first unique Stloc(185) instruction.");
+                return;
+            }
+            cursor.Emit(OpCodes.Ldarg_0);
+            cursor.Emit(OpCodes.Ldloc, 181); // Emit the tagged NPC
+            cursor.Emit(OpCodes.Ldloc, 6);
+            cursor.EmitDelegate((float distance, Projectile projectile, NPC npc, bool pygmy) =>
+            {// Replace the distance with a different value calculated off of closest point in hitboxes
+                if (!pygmy)
+                    return distance;
+
+                float finalDistance = npc.Hitbox.ClosestPointInRect(projectile.Center).Distance(projectile.Hitbox.ClosestPointInRect(npc.Center));
+                return finalDistance;
+            });
+            
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchStloc(189)))
+            {// Go directly before the instruction that's meant to receive the distance value of this NPC currently being iterated over
+                LogFailure("Tweaking Pygmy Staff aggro distance logic", "Could not locate first unique Stloc(189) instruction.");
+                return;
+            }
+            cursor.Emit(OpCodes.Ldarg_0);
+            cursor.Emit(OpCodes.Ldloc, 186); // Emit the NPC index via the incremented loop variable
+            cursor.Emit(OpCodes.Ldloc, 6);
+            cursor.EmitDelegate((float distance, Projectile projectile, int npcIndex, bool pygmy) =>
+            {// Replace the distance with a different value calculated off of closest point in hitboxes
+                if (!pygmy)
+                    return distance;
+
+                NPC npc = Main.npc[npcIndex];
+                float finalDistance = npc.Hitbox.ClosestPointInRect(projectile.Center).Distance(projectile.Hitbox.ClosestPointInRect(npc.Center));
+                return finalDistance;
+            });
+        }
+
+        #endregion Tweak Pygmy Staff aggro distance logic
     }
 }

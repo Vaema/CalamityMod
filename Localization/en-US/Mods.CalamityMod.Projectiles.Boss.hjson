@@ -63,9 +63,9 @@ DoGBeam.DisplayName: Portal Laser
 DoGBeamPortal.DisplayName: Beam Portal
 DoGDeath.DisplayName: Death Beam
 DoGDeathBoom.DisplayName: Cosmic Explosion
-DoGFire.DisplayName: Faith Incinerator
-DoGLaserWalls.DisplayName: God's Bane Doombeam Array
-DoGLaserWallsBigBeam.DisplayName: Hyperdeath Rift Ripper
+DoGFire.DisplayName: "[ceffect/dog:Faith Incinerator]"
+DoGLaserWalls.DisplayName: "[ceffect/dog:God's Bane Doombeam Array]"
+DoGLaserWallsBigBeam.DisplayName: "[ceffect/dog:Hyperdeath Rift Ripper]"
 DoGP1EndPortal.DisplayName: Portal
 DoGRiftCrack.DisplayName: DoG Distortion Crack
 DoGTeleportRift.DisplayName: DoG Distortion Rift
@@ -87,6 +87,7 @@ HellfireExplosion.DisplayName: Brimstone Hellfire Explosion
 HiveBombGoliath.DisplayName: Hive Bomb
 HolyAura.DisplayName: Holy Aura
 HolyBlast.DisplayName: Holy Blast
+HolyBlastFrags.DisplayName: Holy Blast Fragment
 HolyBomb.DisplayName: Holy Bomb
 HolyBurnOrb.DisplayName: Holy Orb
 HolyExplosionBoom.DisplayName: Holy Explosion
