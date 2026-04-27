@@ -2,8 +2,13 @@
 using System.Collections.Generic;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Furniture;
+using CalamityMod.Items.Potions;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.Potions.Food;
 using CalamityMod.Items.SummonItems.TownPets;
+using CalamityMod.Items.Tools;
+using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Prefixes;
 using CalamityMod.World;
@@ -134,7 +139,30 @@ namespace CalamityMod.NPCs.TownNPCs
 
             NPCShop shop = new(Type);
             shop.Add<TheHousingContract>()
+                //.Add<RageBait>() Has PR
+                .Add<TheConcoction>()
+                .Add<CombatVoucher>()
+                .Add<AggressiveVoucher>()
+                .Add<CombatVoucher>()
+                .Add<UnbreakableVoucher>()
+                .Add<HurriedVoucher>()
+                .Add<OddVoucher>()
+                //.Add<ThePotion>() ???
+                //.Add<TrustyOldRod>() Has PR
+                //.Add<GluttonyBlender>() Has PR
+                //.Add<CursedTrinket>() ???
                 .Add<GreedPot>()
+                .Add<TheMonument>()
+                //.Add<FishStocks>() Needs assets?
+                .Add<TheSandwich>()
+                .Add<BaconOil>()
+                //.Add<TheContract>() Probably Scrapped?
+                //.Add<TheContraption>() Probably Scrapped?
+                //.Add<ElephantKiller>() Has PR
+                //.Add<FrozenCube>() Has Branch
+                //.Add<ShotgunSkull>() ???
+                .Add<OmniGun>(Condition.DownedGolem)
+                
                 .Register();
         }
 
