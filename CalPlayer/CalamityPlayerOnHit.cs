@@ -1030,13 +1030,6 @@ namespace CalamityMod.CalPlayer
                         Projectile.NewProjectile(spawnSource, proj.Center, Vector2.Zero, ProjectileType<EmpyreanBlast>(), blastDamage, 0f, proj.owner, 0f, 0f);
                         break;
 
-                    case 4:
-                        // Exodus Rogue Bubble: 60%
-                        int bubbleDamage = (int)(proj.damage * 0.6f);
-                        CalamityUtils.SpawnOrb(proj, bubbleDamage, ProjectileType<EmpyreanGlob>(), 800f, 15f);
-                        xerocDmg += (int)(bubbleDamage * 0.5);
-                        break;
-
                     default:
                         break;
                 }

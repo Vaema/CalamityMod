@@ -223,10 +223,7 @@ CosmicViperEngine: {
 
 Cosmilamp: {
 	DisplayName: Cosmilamp
-	Tooltip:
-		'''
-		Summons a cosmic lantern above your head to fight for you
-		'''
+	Tooltip: Summons a cosmic lantern above your head to fight for you
 }
 
 CrimslimeStaff: {
@@ -352,10 +349,7 @@ EndoHydraStaff: {
 
 EntropysVigil: {
 	DisplayName: Entropy's Vigil
-	Tooltip:
-		'''
-		Summons a mini Calamitas Clone and her brothers to protect you
-		'''
+	Tooltip: Summons a mini Calamitas Clone and her brothers to protect you
 }
 
 EtherealSubjugator: {
@@ -394,10 +388,7 @@ FleshOfInfidelity: {
 
 FlowersOfMortality: {
 	DisplayName: Flowers of Mortality
-	Tooltip:
-		'''
-		Summons five rainbow flowers over your head that inflict [cbuff:CalamityMod/ElementalMix]
-		'''
+	Tooltip: Summons five rainbow flowers over your head that inflict [cbuff:CalamityMod/ElementalMix]
 }
 
 ForgottenApexWand: {
@@ -695,10 +686,7 @@ SeashineHilt: {
 
 ShellfishStaff: {
 	DisplayName: Shellfish Staff
-	Tooltip:
-		'''
-		Summons a shellfish to latch onto enemies and inflict [cbuff:CalamityMod/ShellfishClaps]
-		'''
+	Tooltip: Summons a shellfish to latch onto enemies and inflict [cbuff:CalamityMod/ShellfishClaps]
 }
 
 Sirius: {
@@ -901,18 +889,12 @@ VoidEaterMarionette: {
 
 WarloksMoonFist: {
 	DisplayName: Warloks' Moon Fist
-	Tooltip:
-		'''
-		Summons a celestial fist to punch enemies for you
-		'''
+	Tooltip: Summons a celestial fist to punch enemies for you
 }
 
 WitherBlossomsStaff: {
 	DisplayName: Wither Blossoms Staff
-	Tooltip:
-		'''
-		Summons four decaying [cbuff:CalamityMod/Plague] flowers over your head
-		'''
+	Tooltip: Summons four decaying [cbuff:CalamityMod/Plague] flowers over your head
 }
 
 WulfrumController: {
@@ -929,8 +911,5 @@ WulfrumController: {
 
 YharonsKindleStaff: {
 	DisplayName: Yharon's Kindle Staff
-	Tooltip:
-		'''
-		Summons a fiery draconid to fight for you
-		'''
+	Tooltip: Summons a fiery draconid to fight for you
 }
