@@ -120,7 +120,7 @@ namespace CalamityMod.Items.Weapons.Melee
                         }
                     }
 
-                    Particle swipe = new CustomSpark(player.Center - shootDir * 5, shootDir.RotatedBy(0.4f * (dir * (swingCount % 2 == 0 ? 1 : -1))) * 2.5f, "CalamityMod/Particles/VerticalSmearLarge", false, (int)(14 / player.GetAttackSpeed(DamageClass.Melee)), 0.8f, player.Calamity().lightRGB, new Vector2(1f, 1f), true, false, 0, false, false);
+                    Particle swipe = new CustomSpark(player.Center - shootDir * 5 * Item.scale, shootDir.RotatedBy(0.4f * (dir * (swingCount % 2 == 0 ? 1 : -1))) * 2.5f, "CalamityMod/Particles/VerticalSmearLarge", false, (int)(14 / player.GetAttackSpeed(DamageClass.Melee)), 0.8f * Item.scale, player.Calamity().lightRGB, new Vector2(1f, 1f), true, false, 0, false, false);
                     GeneralParticleHandler.SpawnParticle(swipe);
 
                     SoundEngine.PlaySound(SoundID.Item60, player.Center);

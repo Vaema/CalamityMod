@@ -35,7 +35,7 @@ namespace CalamityMod.Systems.Collections
                 BuffID.Crate, BuffID.Warmth, BuffID.SugarRush, BuffType<AnechoicCoatingBuff>(), BuffType<AstralInjectionBuff>(), BuffType<BaguetteBuff>(), BuffType<BloodfinBoost>(),
                 BuffType<BoundingBuff>(), BuffType<CalciumBuff>(), BuffType<CeaselessHunger>(), BuffType<GravityNormalizerBuff>(), BuffType<Omniscience>(), BuffType<PhotosynthesisBuff>(),
                 BuffType<ShadowBuff>(), BuffType<Soaring>(), BuffType<SulphurskinBuff>(), BuffType<WeaponImbueBrimstone>(), BuffType<WeaponImbueCrumbling>(), BuffType<WeaponImbueHolyFlames>(),
-                BuffType<Zen>(), BuffType<Zerg>(), BuffType<BloodyMaryBuff>(), BuffType<CaribbeanRumBuff>(), BuffType<CinnamonRollBuff>(), BuffType<EverclearBuff>(), BuffType<EvergreenGinBuff>(),
+                BuffType<Zen>(), BuffType<Zerg>(), BuffType<BaconOilBuff>(), BuffType<BloodyMaryBuff>(), BuffType<CaribbeanRumBuff>(), BuffType<CinnamonRollBuff>(), BuffType<EverclearBuff>(), BuffType<EvergreenGinBuff>(),
                 BuffType<PurpleHazeBuff>(), BuffType<FireballBuff>(), BuffType<GrapeBeerBuff>(), BuffType<MargaritaBuff>(), BuffType<MoonshineBuff>(), BuffType<MoscowMuleBuff>(),
                 BuffType<RedWineBuff>(), BuffType<RumBuff>(), BuffType<ScrewdriverBuff>(), BuffType<StarBeamRyeBuff>(), BuffType<TequilaBuff>(), BuffType<TequilaSunriseBuff>(),
                 BuffType<Trippy>(), BuffType<VodkaBuff>(), BuffType<WhiskeyBuff>(), BuffType<WhiteWineBuff>());
@@ -47,7 +47,7 @@ namespace CalamityMod.Systems.Collections
         /// </summary>
         public static bool[] IsPersistentBuff = Factory.CreateBoolSet(BuffID.WeaponImbueVenom, BuffID.WeaponImbueCursedFlames, BuffID.WeaponImbueFire, BuffID.WeaponImbueGold,
                 BuffID.WeaponImbueIchor, BuffID.WeaponImbueNanites, BuffID.WeaponImbueConfetti, BuffID.WeaponImbuePoison, BuffType<WeaponImbueBrimstone>(),
-                BuffType<WeaponImbueCrumbling>(), BuffType<WeaponImbueHolyFlames>(), BuffType<BloodyMaryBuff>(), BuffType<CaribbeanRumBuff>(), BuffType<CinnamonRollBuff>(), BuffType<EverclearBuff>(),
+                BuffType<WeaponImbueCrumbling>(), BuffType<WeaponImbueHolyFlames>(), BuffType<BaconOilBuff>(), BuffType<BloodyMaryBuff>(), BuffType<CaribbeanRumBuff>(), BuffType<CinnamonRollBuff>(), BuffType<EverclearBuff>(),
                 BuffType<EvergreenGinBuff>(), BuffType<FireballBuff>(), BuffType<GrapeBeerBuff>(), BuffType<ManhattanBuff>(), BuffType<MargaritaBuff>(), BuffType<MoonshineBuff>(),
                 BuffType<MoscowMuleBuff>(), BuffType<OldFashionedBuff>(), BuffType<PurpleHazeBuff>(), BuffType<RedWineBuff>(), BuffType<RumBuff>(), BuffType<ScrewdriverBuff>(),
                 BuffType<StarBeamRyeBuff>(), BuffType<TequilaBuff>(), BuffType<TequilaSunriseBuff>(), BuffType<VodkaBuff>(), BuffType<WhiskeyBuff>(), BuffType<WhiteWineBuff>());
@@ -92,36 +92,6 @@ namespace CalamityMod.Systems.Collections
             { BuffID.SwordWhipNPCDebuff, SummonTag.Durendal },
             { BuffID.ThornWhipNPCDebuff, SummonTag.Snapthorn },
             { BuffType<ProfanedCrystalWhipDebuff>(), ProfanedSoulCrystal.SummonTag }
-        };
-
-        /// <summary>
-        /// Associates a buff type with its alcohol poison level. Used for the Alcohol Poisoning mechanic.<br/>
-        /// If a buff type is not a key in this dictionary, then it does not increase alcohol poison level.
-        /// </summary>
-        public static Dictionary<int, int> AlcoholStrength = new Dictionary<int, int>
-        {
-            { BuffID.Tipsy, 1 },
-            { BuffType<BloodyMaryBuff>(), 1 },
-            { BuffType<CaribbeanRumBuff>(), 1 },
-            { BuffType<CinnamonRollBuff>(), 1 },
-            { BuffType<EverclearBuff>(), 2 },
-            { BuffType<EvergreenGinBuff>(), 1 },
-            { BuffType<FireballBuff>(), 1 },
-            { BuffType<GrapeBeerBuff>(), 1 },
-            { BuffType<MargaritaBuff>(), 1 },
-            { BuffType<MoonshineBuff>(), 1 },
-            { BuffType<MoscowMuleBuff>(), 1 },
-            { BuffType<OldFashionedBuff>(), 1 },
-            { BuffType<PurpleHazeBuff>(), 1 },
-            { BuffType<RedWineBuff>(), 1 },
-            { BuffType<RumBuff>(), 1 },
-            { BuffType<ScrewdriverBuff>(), 1 },
-            { BuffType<StarBeamRyeBuff>(), 1 },
-            { BuffType<TequilaBuff>(), 1 },
-            { BuffType<TequilaSunriseBuff>(), 1 },
-            { BuffType<VodkaBuff>(), 1 },
-            { BuffType<WhiskeyBuff>(), 1 },
-            { BuffType<WhiteWineBuff>(), 1 }
         };
     }
 }

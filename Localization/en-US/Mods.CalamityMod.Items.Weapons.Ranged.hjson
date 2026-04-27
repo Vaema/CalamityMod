@@ -840,6 +840,20 @@ Onyxia: {
 		'''
 }
 
+OmniGun: {
+	DisplayName: The Omnigun
+	Tooltip:
+		'''
+		A multipurpose weapon with several modes which are used in sequence
+		The first shot is a sniper round which gains damage over time and always critically strikes
+		The second shot is a burst of 10 standard bullets
+		The third shot is a devastating point blank spread
+		The fourth shot is a dangerous but powerful grenade which destroys everything, including you
+		'What kind of gun is it?'
+		'Yes'
+		'''
+}
+
 OpalStriker: {
 	DisplayName: Opal Striker
 	Tooltip:
