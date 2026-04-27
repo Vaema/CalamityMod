@@ -34,7 +34,11 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
         }
-
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
+        {
+            float hitboxSize = Projectile.width * Projectile.scale;
+            return CalamityUtils.CircularHitboxCollision(Projectile.Center, hitboxSize, targetHitbox);
+        }
         public override void AI()
         {
             Player player = Main.player[Projectile.owner];
@@ -46,7 +50,7 @@ namespace CalamityMod.Projectiles.Melee
             float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
             if (Projectile.timeLeft % 12 == 0 && targetDist < 1400f)
             {
-                Particle spark = new CustomSpark(Projectile.Center, Projectile.velocity * 0.2f, "CalamityMod/Particles/BloomCircle", false, 23, 0.25f, mainColor * 0.75f, new Vector2(1f, 7.35f), true, true, shrinkSpeed: 0.2f, glowOpacity: 0.7f);
+                Particle spark = new CustomSpark(Projectile.Center, Projectile.velocity * 0.2f, "CalamityMod/Particles/BloomCircle", false, 23, 0.25f * Projectile.scale, mainColor * 0.75f, new Vector2(1f, 7.35f), true, true, shrinkSpeed: 0.2f, glowOpacity: 0.7f);
                 GeneralParticleHandler.SpawnParticle(spark);
             }
             time++;
