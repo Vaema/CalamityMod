@@ -90,7 +90,6 @@ namespace CalamityMod.CalPlayer
             target.Calamity().IncreasedElectricityEffects_Unused = false;
 
             target.Calamity().IncreasedHeatEffects_Fireball = fireball;
-            target.Calamity().IncreasedHeatEffects_CinnamonRoll = cinnamonRoll;
             target.Calamity().IncreasedHeatEffects_FireBoots = bootLevel;
 
             target.Calamity().IncreasedSicknessEffects_ToxicHeart = toxicHeart;
