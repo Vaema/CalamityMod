@@ -391,7 +391,6 @@ PurpleHaze: {
 	DripEffect:
 		'''
 		For 5 seconds after a stealth strike, all damage increased by {0}%, but stealth strike damage reduced by {1}%
-		Greatly reduces dash distance
 		'''
 }
 
