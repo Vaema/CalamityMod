@@ -21,11 +21,10 @@ namespace CalamityMod.Items.Weapons.Rogue
         public static readonly SoundStyle Shine = new("CalamityMod/Sounds/Item/ElephantKillerShine");
         public static readonly SoundStyle Woosh = new("CalamityMod/Sounds/Item/ElephantKillerWoosh");
 
-        public static float stealthGainOnThrowHit = 0.25f; // Amount of stealth gained on a thrown hit based on max stealth
-        public static float stealthCostToShoot = 0.1f; // Amount of stealth it costs to fire the gun with right click based on max stealth
-
-        public static float stealthShotDamageMult = 1.75f;
-        public static float elephantBoostedShotDamageMult = 2.2f; // This is multiplicative with the stealth shot damage boost
+        public static float stealthGainOnThrowHit => 0.25f; // Amount of stealth gained on a thrown hit based on max stealth
+        public static float stealthCostToShoot => 0.1f; // Amount of stealth it costs to fire the gun with right click based on max stealth
+        public static float stealthShotDamageMult => 1.75f;
+        public static float elephantBoostedShotDamageMult => 1.5f; // This is multiplicative with the stealth shot damage boost
         public override void SetStaticDefaults()
         {
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;

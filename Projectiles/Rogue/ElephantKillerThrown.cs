@@ -26,6 +26,8 @@ namespace CalamityMod.Projectiles.Rogue
         public ref float rightClicking => ref Projectile.ai[1];
         public int initialDirection = 0;
         public float throwSpeed = 0; // The speed at which the gun is thrown and returns
+        public int animationTimeMax = 0;
+        public int returnTime = 0;
         public float holdoutOffset = 0; // Placement adjustments used for "recoil"
         public bool tryShooting = true; // Used in the holding mode, is used in inverse for stealth strikes
         public bool soundToss = true;
@@ -55,7 +57,7 @@ namespace CalamityMod.Projectiles.Rogue
         public int tileHits = 0;
         public bool setReturnTime = false;
 
-        public List<(NPC, float)> hitNPCs = new List<(NPC, float)>();
+        public List<(NPC, float, bool)> hitNPCs = new List<(NPC, float, bool)>();
         public static Asset<Texture2D> Gun { get; private set; }
         public static Asset<Texture2D> GunFlash { get; private set; }
         public static Asset<Texture2D> Smear { get; private set; }
@@ -71,7 +73,7 @@ namespace CalamityMod.Projectiles.Rogue
             Gun = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Rogue/ElephantKiller");
             GunFlash = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/ElephantKillerFlash");
             Smear = ModContent.Request<Texture2D>("CalamityMod/Particles/CircularSmearLarge");
-            Bloom = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
+            Bloom = ModContent.Request<Texture2D>("CalamityMod/Particles/BrightFlash");
             BloomLine = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomLineFade");
             Shine = ModContent.Request<Texture2D>("CalamityMod/Particles/FullStar");
         }
@@ -199,22 +201,30 @@ namespace CalamityMod.Projectiles.Rogue
                 Owner.heldProj = Projectile.whoAmI;
                 if (recoilLifetime < recoilLifetimeMax - 7)
                     Owner.itemTime = Owner.itemAnimation = 5;
-                if (mode == gunState.Stealth && !tryShooting)
-                    rumble = MathHelper.Lerp(rumble, 11, 0.08f);
+                if (mode == gunState.Stealth)
+                {
+                    Owner.itemTime = Owner.itemAnimation = 5;
+                    if (!tryShooting)
+                        rumble = MathHelper.Lerp(rumble, 11, 0.08f);
+                }
+                
                 // The attempted fire at the start of the use animation
                 if (throwAnimLerp >= dudFireEndPoint / 2 && ((mode != gunState.Stealth && tryShooting) || (mode == gunState.Stealth && !tryShooting)))
                 {
-                    float stealthAmount = Owner.Calamity().rogueStealthMax * ElephantKiller.stealthCostToShoot;
-                    bool fires = mode == gunState.Stealth || (Owner.Calamity().rogueStealthMax > 0 && rightClicking == 1 && Owner.Calamity().rogueStealth >= stealthAmount);
+                    float roundedStealth = MathF.Round(Owner.Calamity().rogueStealth, 2);
+                    float stealthAmount = MathF.Round(Owner.Calamity().rogueStealthMax * ElephantKiller.stealthCostToShoot, 2);
+                    bool fires = mode == gunState.Stealth || (Owner.Calamity().rogueStealthMax > 0 && rightClicking == 1 && roundedStealth >= stealthAmount);
                     if (fires)
                     {
                         if (mode == gunState.Stealth)
                         {
-                            Owner.Calamity().ConsumeStealthByAttacking();
+                            //Owner.Calamity().ConsumeStealthByAttacking();
                             recoilLifetime++;
                         }
                         else
-                            Owner.Calamity().rogueStealth -= stealthAmount;
+                        {
+                            //Owner.Calamity().rogueStealth -= MathF.Round(stealthAmount, 2);
+                        }
                         CheckStealth();
                         FireShot(toMouse, true, ElephantKiller.stealthShotDamageMult, mode == gunState.Stealth);
                     }
@@ -345,12 +355,17 @@ namespace CalamityMod.Projectiles.Rogue
                 rightClicking = 0;
             if (time == 0) // On spawn
             {
+                if (!Owner.Calamity().heldElephantKillerLastFrame)
+                    Owner.Calamity().rogueStealth = 0;
+
                 resetAll = false;
                 bool canStealth = Owner.Calamity().StealthStrikeAvailable();
                 if (canStealth)
                     Projectile.Calamity().stealthStrike = true;
                 mode = (canStealth && rightClicking == 0) ? gunState.Stealth : gunState.NotThrown;
                 throwSpeed = Owner.HeldItem.shootSpeed * Owner.Calamity().rogueVelocity;
+                animationTimeMax = (int)((Owner.HeldItem.useAnimation * 2) / Owner.GetTotalAttackSpeed<RogueDamageClass>());
+                returnTime = 30 + animationTimeMax;
             }
             if (doingFireAnimation && firingEffectDisableTimer < disableTimerMax)
             {
@@ -369,8 +384,6 @@ namespace CalamityMod.Projectiles.Rogue
             }
 
             Vector2 toMouse = Owner.Center.DirectionTo(Owner.Calamity().mouseWorld);
-            int animationTimeMax = (int)((Owner.HeldItem.useAnimation * 2) / Owner.GetTotalAttackSpeed<RogueDamageClass>());
-            int returnTime = 30 + animationTimeMax;
 
             Held(toMouse, returnTime, animationTimeMax);
 
@@ -436,6 +449,8 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 float elephantDistance = 0;
                 bool elephantBoosted = false;
+                Vector2 redirectPoint = Vector2.Zero;
+                Vector2 redirectVelocity = Vector2.Zero;
 
                 // Check if you shot an elephant
                 for (int x = 0; x < Main.maxProjectiles; x++)
@@ -454,62 +469,80 @@ namespace CalamityMod.Projectiles.Rogue
                         {
                             elephantDistance = _;
                             Vector2 hitPoint = Projectile.Center + velocity * _;
-                            makeHitEffects(velocity, 2, hitPoint, projectile.whoAmI, false);
                             elephantBoosted = true;
                             Vector2 adjustedHitPoint = hitPoint + velocity * 15;
                             projectile.ai[1] = adjustedHitPoint.X;
                             projectile.ai[2] = adjustedHitPoint.Y;
-                            projectile.localAI[0] = velocity.ToRotation();
                             projectile.localAI[1] = 0.5f + damageMult;
+
+                            redirectPoint = hitPoint;
+                            NPC redirectTarget = hitPoint.ClosestNPCAt(2500, true);
+                            redirectVelocity = redirectTarget == null ? velocity : hitPoint.DirectionTo(redirectTarget.Center);
+
+                            projectile.localAI[0] = redirectVelocity.ToRotation();
+
+                            makeHitEffects(velocity, 2, hitPoint, projectile.whoAmI, false, 1, redirectVelocity.ToRotation());
                         }
                     }
                 }
-                
-                
-                for (int index = 0; index < Main.npc.Length; index++)
+
+                for (int y = 0; y < (elephantBoosted ? 2 : 1); y++)
                 {
-                    NPC target = Main.npc[index];
-                    if (!target.dontTakeDamage && target.active && target.life > 0)
+                    bool redirected = y == 1;
+                    Vector2 lineCheckVelocity = (!redirected ? velocity : redirectVelocity);
+                    Vector2 startPoint = (!redirected ? Projectile.Center : redirectPoint);
+                    Vector2 endPoint = (elephantBoosted && !redirected) ? redirectPoint : (startPoint + lineCheckVelocity * 2500);
+
+                    for (int index = 0; index < Main.npc.Length; index++)
                     {
-                        float _ = float.NaN;
-                        bool collides = Collision.CheckAABBvLineCollision(target.Hitbox.TopLeft(), target.Hitbox.Size(), Projectile.Center, Projectile.Center + velocity * 2500, 10 * Projectile.scale, ref _);
-                        if (Projectile.Hitbox.Intersects(target.Hitbox))
+                        NPC target = Main.npc[index];
+                        if (!target.dontTakeDamage && target.active && target.life > 0)
                         {
-                            collides = true;
-                            _ = Projectile.width;
-                        }
-                        if (collides)
-                        {
-                            hitNPCs.Add((target, _));
-                            
+                            float _ = float.NaN;
+                            bool collides = Collision.CheckAABBvLineCollision(target.Hitbox.TopLeft(), target.Hitbox.Size(), startPoint, endPoint, 10 * Projectile.scale, ref _);
+                            if (Projectile.Hitbox.Intersects(target.Hitbox))
+                            {
+                                collides = true;
+                                _ = Projectile.width;
+                            }
+                            if (collides)
+                                hitNPCs.Add((target, ((!redirected ? 0 : elephantDistance) + _), redirected));
                         }
                     }
                 }
+                bool resetHits = false;
                 hitNPCs = hitNPCs.OrderBy(x => x.Item2).ToList(); // Order hit NPCs by distance to hit them in order
                 for (int index = 0; index < hitNPCs.Count(); index++)
                 {
+                    NPC target = hitNPCs.ElementAt(index).Item1;
+                    float distance = hitNPCs.ElementAt(index).Item2;
+                    bool isAfterElephantHit = hitNPCs.ElementAt(index).Item3;
+
+                    if (isAfterElephantHit && !resetHits) // Getting the redirect resets num hits
+                    { resetHits = true; Projectile.numHits = 0; }
+
                     float minMult = 0.1f;
                     int hitsToMinMult = 4;
                     float damageFalloff = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
                     float adjustedDamageMult = damageMult * damageFalloff;
 
-                    NPC target = hitNPCs.ElementAt(index).Item1;
-                    float distance = hitNPCs.ElementAt(index).Item2;
-                    Vector2 hitPoint = Projectile.Center + velocity * distance;
+                    Vector2 vel = (isAfterElephantHit ? redirectVelocity : velocity);
 
-                    bool isAfterElephantHit = (elephantBoosted && distance >= elephantDistance);
+                    Vector2 hitPoint = (isAfterElephantHit ? redirectPoint : Projectile.Center) + vel * (distance - (isAfterElephantHit ? elephantDistance : 0)); // maybe here?
+
                     int damage = (int)((Projectile.damage / 2) * (isAfterElephantHit ? ElephantKiller.elephantBoostedShotDamageMult * adjustedDamageMult : adjustedDamageMult)); // Bullets deal half of gun damage, but always crit
-                    Projectile bullet = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), hitPoint, Vector2.Zero, ModContent.ProjectileType<Gunshot>(), damage, 0, Owner.whoAmI, target.whoAmI);
+                    Projectile bullet = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<Gunshot>(), damage, 0, Owner.whoAmI, target.whoAmI);
                     bullet.DamageType = RogueDamageClass.Instance;
-                    //bullet.Calamity().stealthStrike = isAfterElephantHit; // Turn bullets shot through the Elephant into stealth strikes
+                    bullet.Calamity().stealthStrike = isAfterElephantHit; // Turn bullets shot through the Elephant into stealth strikes
 
-                    makeHitEffects(velocity, adjustedDamageMult, hitPoint, elephantBoosted: isAfterElephantHit, effectMult: damageFalloff);
+                    makeHitEffects(vel, adjustedDamageMult, hitPoint, elephantBoosted: isAfterElephantHit, effectMult: damageFalloff);
+                    
                     Projectile.numHits++;
                 }
                 hitNPCs.Clear();
             }
         }
-        public void makeHitEffects(Vector2 velocity, float damageMult, Vector2 hitPoint, int shotElephantID = -50, bool elephantBoosted = false, float effectMult = 1)
+        public void makeHitEffects(Vector2 velocity, float damageMult, Vector2 hitPoint, int shotElephantID = -50, bool elephantBoosted = false, float effectMult = 1, float exitAngle = -1000)
         {
             bool shotElephant = shotElephantID != -50;
             bool blue = (shotElephant || !ChildSafety.Disabled);
@@ -524,26 +557,29 @@ namespace CalamityMod.Projectiles.Rogue
             }
             for (int y = 0; y < ((shotElephant || elephantBoosted) ? 2 : 1); y++)
             {
-                if (y == 1)
+                if (y == 1 && shotElephant)
                 {
-                    velocity *= -1;
+                    velocity = exitAngle.ToRotationVector2();
                     if (!elephantBoosted)
                     {
                         float lastCollisionDistance = float.NaN;
                         Projectile elephant = Main.projectile[shotElephantID];
-                        Vector2 lineStartPoint = hitPoint - velocity * 600;
+                        Vector2 lineStartPoint = hitPoint + velocity.SafeNormalize(Vector2.UnitX) * 600;
                         bool collides = Collision.CheckAABBvLineCollision(elephant.Hitbox.TopLeft(), elephant.Hitbox.Size(), lineStartPoint, hitPoint, 10 * Projectile.scale, ref lastCollisionDistance);
 
-                        hitPoint = lineStartPoint + velocity * lastCollisionDistance;
+                        hitPoint = lineStartPoint - velocity.SafeNormalize(Vector2.UnitX) * lastCollisionDistance;
                     }
+                    velocity *= -1;
                 }
-                Vector2 displayHitPoint = hitPoint + velocity * 25;
-                
-                Particle bloom = new CustomSpark(displayHitPoint - velocity * 8, Vector2.Zero, "CalamityMod/Particles/BloomCircle", false, Main.rand.Next(7, 8 + 1), Main.rand.NextFloat(0.3f, 0.35f) * 1.5f * damageMult, flashColor, new Vector2(1f, 1f), true, true, glowOpacity: 0.7f, colorFadeSpeed: 10);
-                GeneralParticleHandler.SpawnParticle(bloom, true);
+                Vector2 displayHitPoint = hitPoint;
+                if (y == 0)
+                {
+                    Particle bloom = new CustomSpark(displayHitPoint - velocity * 8, Vector2.Zero, "CalamityMod/Particles/BrightFlash", false, Main.rand.Next(7, 8 + 1), Main.rand.NextFloat(0.3f, 0.35f) * 1.5f * damageMult, flashColor, new Vector2(1f, 1f), true, true, glowOpacity: 0.7f, colorFadeSpeed: 10, extraRotation: Main.rand.NextFloat(0, MathHelper.TwoPi));
+                    GeneralParticleHandler.SpawnParticle(bloom, true);
+                }
                 if (elephantBoosted && y == 0)
                 {
-                    Vector2 spawnPoint = displayHitPoint - velocity * 16;
+                    Vector2 spawnPoint = displayHitPoint - velocity.SafeNormalize(Vector2.UnitX) * 16;
                     float spins = Main.rand.NextFloat(0.02f, 0.06f) * (Main.rand.NextBool() ? 1 : -1);
                     for (int i = 0; i <= 1; i++) // twice
                     {
@@ -579,7 +615,8 @@ namespace CalamityMod.Projectiles.Rogue
                             dust.noLightEmittence = true;
                         }
                         float speedMult = Main.rand.NextFloat(0, 1f);
-                        Particle spark = new CustomSpark(displayHitPoint, bloodVel.RotateRandom((1 - speedMult) * 0.12f) * 10 * (speedMult + 0.25f) * damageMult, "CalamityMod/Particles/" + (Main.rand.NextBool() ? "FadeLine" : "GlowOrbParticle"), false, Main.rand.Next(7, 11 + 1), Main.rand.NextFloat(0.2f, 0.4f) * 2f * damageMult, clr, new Vector2(1.5f, 1f), blue ? true : false, shrinkSpeed: 0.6f, colorFadeSpeed: 10);
+
+                        Particle spark = new CustomSpark(displayHitPoint, bloodVel.RotateRandom((1 - speedMult) * 0.12f) * 10 * (speedMult + 0.25f) * damageMult, "CalamityMod/Particles/" + (Main.rand.NextBool() ? "FadeLine" : "GlowOrbParticle"), false, Main.rand.Next(7, 11 + 1), Main.rand.NextFloat(0.2f, 0.4f) * 2f * damageMult, clr, new Vector2(1.5f, 1f), blue, shrinkSpeed: 0.6f, colorFadeSpeed: 10, affectedByLight: !blue);
                         GeneralParticleHandler.SpawnParticle(spark, true);
                     }
                 }
@@ -589,9 +626,10 @@ namespace CalamityMod.Projectiles.Rogue
                 {
                     if (i == 0) i++;
                     bool glow = MathF.Abs(i) == 2;
-                    Color clr = Main.rand.NextBool(3, 4) ? new Color(114, 112, 116) : new Color(216, 216, 216);
+                    Color clr = shotElephant ? (Main.rand.NextBool(3, 4) ? Color.DodgerBlue : Color.CornflowerBlue) : (Main.rand.NextBool(3, 4) ? new Color(114, 112, 116) : new Color(216, 216, 216));
                     Vector2 vel = -velocity.RotatedBy(MathHelper.PiOver2 * (elephantBoosted ? 0.1f : 0.4f) * (y == 1 ? 0.25f : 1) * Math.Sign(i)).RotatedByRandom(glow ? 0 : 0.35f) * Main.rand.NextFloat(5, 14);
-                    Particle spark = new CustomSpark(displayHitPoint + vel * (glow ? 5f : 3f) * damageMult, vel * (y == 1 ? 1.5f : 1), "CalamityMod/Particles/" + (!glow ? "FadeLine" : "ForwardSmear"), false, (int)(Main.rand.Next(29, 35 + 1) * (glow ? 0.3f : 1)), Main.rand.NextFloat(0.2f, 0.3f) * (glow ? 0.3f : 2f) * damageMult, glow ? flashColor : clr, new Vector2(glow ? 1.5f : 0.8f, 1f), glow, shrinkSpeed: glow ? 0.7f : 0.35f, colorFadeSpeed: 10);
+                    Particle spark = new CustomSpark(displayHitPoint + vel * (glow ? 5f : 3f) * damageMult, vel * (y == 1 ? 1.5f : 1), "CalamityMod/Particles/" + (!glow ? "FadeLine" : "ForwardSmear"), false, (int)(Main.rand.Next(29, 35 + 1) * (glow ? 0.3f : 1)),
+                        Main.rand.NextFloat(0.2f, 0.3f) * (glow ? 0.3f : 2f) * damageMult, glow ? flashColor : clr, new Vector2(glow ? 1.5f : 0.6f, 1f), glow || shotElephant, shrinkSpeed: glow ? 0.7f : 0.35f, colorFadeSpeed: 10);
                     GeneralParticleHandler.SpawnParticle(spark, true);
                 }
             }
@@ -615,7 +653,7 @@ namespace CalamityMod.Projectiles.Rogue
                     mode = gunState.Returning;
                     Projectile.velocity = new Vector2(-Math.Sign(Projectile.Center.DirectionTo(target.Center).X) * Projectile.velocity.Length() / 2, -18 * Math.Sign(Projectile.Center.DirectionTo(target.Center).Y));
                 }
-                Owner.Calamity().rogueStealth += Owner.Calamity().rogueStealthMax * ElephantKiller.stealthGainOnThrowHit; // Give stealth on hit
+                Owner.Calamity().rogueStealth += MathF.Round(Owner.Calamity().rogueStealthMax * ElephantKiller.stealthGainOnThrowHit, 2); // Give stealth on hit
                 CheckStealth();
             }
         }

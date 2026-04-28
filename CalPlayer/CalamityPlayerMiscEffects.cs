@@ -273,7 +273,9 @@ namespace CalamityMod.CalPlayer
             }
 
             // Apply stealth damage to rogue.
-            Player.GetDamage<RogueDamageClass>() += stealthDamage;
+            bool dontProvideStealthDamage = Player.HeldItem.type == ModContent.ItemType<ElephantKiller>();
+            if (!dontProvideStealthDamage)
+                Player.GetDamage<RogueDamageClass>() += stealthDamage;
 
             if ((XykVisualsBlue || XykVisualsOrange))
             {

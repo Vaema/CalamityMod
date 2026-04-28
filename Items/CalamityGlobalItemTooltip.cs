@@ -1509,7 +1509,7 @@ namespace CalamityMod.Items
         {
             if (line.Mod == "Terraria" && item.type == ModContent.ItemType<ElephantKiller>() && CalamityClientConfig.Instance.TextEffects && line.Name == "Damage")
             {
-                string fakeLine = line.Text.Replace(CalamityUtils.GetTextValue($"Misc.RogueDamage"), CalamityUtils.GetTextValue($"Misc.RangedDamage"));
+                string fakeLine = line.Text.Replace(" " + RogueDamageClass.Instance.DisplayName.ToString(), DamageClass.Ranged.DisplayName.ToString());
                 float fade = Utils.GetLerpValue(18, 120, Main.LocalPlayer.Calamity().elephantKillerJoke, true);
 
                 ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, fakeLine, new Vector2(line.X, line.Y), line.Color * (1 - fade), line.Rotation, line.Origin, line.BaseScale, line.MaxWidth, line.Spread);

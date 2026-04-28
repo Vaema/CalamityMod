@@ -138,30 +138,26 @@ namespace CalamityMod.Projectiles.Rogue
                 for (int x = 1; x <= framesX; x++)
                 {
                     Rectangle frame = tex.Frame(framesX, framesY, framesX - x, framesY - i);
-                    
+
                     Vector2 xPos = Vector2.UnitX.RotatedBy(Projectile.spriteDirection == -1 ? directionRot + MathHelper.Pi : directionRot) * frame.Width * x * 2 * Projectile.spriteDirection;
 
                     Vector2 frameMovement = generalDrawPos + (xPos + -Vector2.UnitY.RotatedBy(directionRot) * framesY * (Projectile.spriteDirection == 1 ? -2 * frameDivis : 0f) + -Vector2.UnitY.RotatedBy(directionRot) * frame.Height * 2 * i * Projectile.spriteDirection) * scale
                     + Vector2.UnitX.RotatedBy(directionRot) * (25 + (295 * Utils.GetLerpValue(tex.Height / 2, 0, Math.Abs(tex.Height / 2 - i), true) * lerpFade)) * sine * frameFade;
 
-                    Vector2 holePlace = new Vector2(Projectile.ai[1], Projectile.ai[2]) + (Projectile.spriteDirection * tex.Size());
                     Vector2 pixelPlace = frameMovement;
-                    Vector2 holeAdjust = pixelPlace.DirectionFrom(holePlace) * MathHelper.Lerp(0, 25, MathF.Pow(Utils.GetLerpValue(80, 0, pixelPlace.Distance(holePlace), true), 2f)) * holeSize;
 
-                    Main.EntitySpriteDraw(tex, frameMovement + holeAdjust - Main.screenPosition, frame, usedColor with { A = 0 } * (colorFade) * Projectile.Opacity, Projectile.rotation, tex.Size() / 2, Projectile.scale * scale, spriteFx, 0);
+                    Vector2 holePlace = new Vector2(Projectile.ai[1], Projectile.ai[2]) + (Projectile.spriteDirection * tex.Size());
+                    float distFromHole = pixelPlace.Distance(holePlace);
+                    Vector2 holeAdjust = pixelPlace.DirectionFrom(holePlace) * MathHelper.Lerp(0, 25, MathF.Pow(Utils.GetLerpValue(80, 0, distFromHole, true), 2f)) * holeSize;
+                    
+                    Vector2 linePlace = holePlace + Projectile.localAI[0].ToRotationVector2() * distFromHole;
+                    Vector2 lineAdjust = pixelPlace.DirectionFrom(linePlace) * MathHelper.Lerp(0, 25, MathF.Pow(Utils.GetLerpValue(80, 0, pixelPlace.Distance(linePlace), true), 2f)) * (holeSize / (8 - 7 * MathF.Pow(Utils.GetLerpValue(420, 0, distFromHole, true), 1.5f)));
+                    
+                    Main.EntitySpriteDraw(tex, frameMovement + holeAdjust + lineAdjust - Main.screenPosition, frame, usedColor with { A = 0 } * (colorFade) * Projectile.Opacity, Projectile.rotation, tex.Size() / 2, Projectile.scale * scale, spriteFx, 0);
                 }
             }
             
             return false;
-        }
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
-            float damageMult = MathHelper.Clamp(Utils.GetLerpValue(8, 1, Projectile.numHits), 0.4f, 1);
-            modifiers.SourceDamage *= damageMult;
-        }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
-            return base.Colliding(projHitbox, targetHitbox);
         }
         public override void OnKill(int timeLeft)
         {

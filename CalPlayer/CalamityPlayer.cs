@@ -5301,7 +5301,8 @@ namespace CalamityMod.CalPlayer
                 // Apply weapon modifier stealth strike damage bonus
                 // 01OCT2023: Ozzatron: This is a multiplicative bonus because it is a prefix.
                 // It should be equivalent to x1.15 (or whatever multiplier) on the base damage of the weapon for stealth only.
-                if (rogueItem.StealthStrikePrefixBonus != 0f && StealthStrikeAvailable())
+                bool dontProvideStealthDamage = Player.HeldItem.type == ModContent.ItemType<ElephantKiller>();
+                if (rogueItem.StealthStrikePrefixBonus != 0f && StealthStrikeAvailable() && !dontProvideStealthDamage)
                     damage *= rogueItem.StealthStrikePrefixBonus; // This number centers on 1f, so 1.15f = 1.15x damage.
             }
         }
