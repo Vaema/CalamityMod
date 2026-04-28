@@ -242,7 +242,7 @@ Everclear: {
 		'''
 		{0}% increased damage
 		Reduces life regen by {1} HP/s and defense by {2}%
-		When combined with drinking Everclear straight, additionally reduce count for {$Buffs.AlcoholPoisoning.DisplayName} by 1
+		Counts as giving an additional stack of alcohol for {$Buffs.AlcoholPoisoning.DisplayName}
 		'''
 }
 

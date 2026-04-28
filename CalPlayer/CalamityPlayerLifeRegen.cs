@@ -194,7 +194,7 @@ namespace CalamityMod.CalPlayer
             {
                 int buff = Player.buffType[l];
                 if (BuffDatasets.DebuffDataset[buff] is not null && BuffDatasets.DebuffDataset[buff].AlcoholLevel > 0)
-                    alcoholPoisonLevel += BuffDatasets.DebuffDataset[buff].AlcoholLevel;
+                    alcoholPoisonLevel += BuffDatasets.DebuffDataset[buff].AlcoholLevel + (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.Everclear) ? 1 : 0);
             }
             if (Player.Calamity().ivDrip) // +1 stack of poisoning while IV Drip is equipped
                 alcoholPoisonLevel++;
