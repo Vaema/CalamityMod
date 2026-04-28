@@ -5013,9 +5013,9 @@ namespace CalamityMod.CalPlayer
                         TimeHoldingRogue = (int)Whiskey.TimeToDischarge;
 
                     if (dripPlayer.HasAlcohol(AlcoholType.Whiskey) && whiskey)
-                        Player.GetDamage(RogueDamageClass.Instance) += MathHelper.Lerp(Whiskey.IVDripDamageCeiling, Whiskey.IVDripDamageFloor, TimeHoldingRogue / Whiskey.TimeToDischarge);
+                        Player.GetDamage(RogueDamageClass.Instance) += MathHelper.Lerp(Whiskey.CombinedDamageCeiling, Whiskey.CombinedDamageFloor, TimeHoldingRogue / Whiskey.TimeToDischarge);
                     else if (whiskey || dripPlayer.HasAlcohol(AlcoholType.Whiskey))
-                        Player.GetDamage(RogueDamageClass.Instance) += MathHelper.Lerp(Whiskey.MaxDamageCeiling, Whiskey.MinDamageFloor, TimeHoldingRogue / Whiskey.TimeToDischarge);
+                        Player.GetDamage(RogueDamageClass.Instance) += MathHelper.Lerp(Whiskey.StandardDamageCeiling, Whiskey.StandardDamageFloor, TimeHoldingRogue / Whiskey.TimeToDischarge);
                     
                 }
                 else

@@ -14,15 +14,15 @@ namespace CalamityMod.Items.Potions.Alcohol
     {
         public new string LocalizationCategory => "Items.Potions";
 
-        public static float MaxDamageCeiling = 0.15f;
-        public static float MinDamageFloor = -0.15f;
+        public static float StandardDamageCeiling = 0.15f;
+        public static float StandardDamageFloor = -0.15f;
         public static float TimeToDischarge = 600;
         public static float TimeToRecharge = 300;
-        public static float IVDripDamageCeiling = 0.3f;
-        public static float IVDripDamageFloor = -0.3f;
+        public static float CombinedDamageCeiling = 0.3f;
+        public static float CombinedDamageFloor = -0.3f;
 
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MinDamageFloor.ToPercent(), MaxDamageCeiling.ToPercent(), (TimeToDischarge/60).ToString("0.##"), (TimeToRecharge/60).ToString("0.##"));
-        public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.Whiskey.DripEffect").WithFormatArgs(MinDamageFloor.ToPercent(), MaxDamageCeiling.ToPercent(), (TimeToDischarge / 60).ToString("0.##"), (TimeToRecharge / 60).ToString("0.##"), IVDripDamageFloor.ToPercent(), IVDripDamageCeiling.ToPercent());
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(StandardDamageFloor.ToPercent(), StandardDamageCeiling.ToPercent(), (TimeToDischarge/60).ToString("0.##"), (TimeToRecharge/60).ToString("0.##"));
+        public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.Whiskey.DripEffect").WithFormatArgs(StandardDamageFloor.ToPercent(), StandardDamageCeiling.ToPercent(), (TimeToDischarge / 60).ToString("0.##"), (TimeToRecharge / 60).ToString("0.##"), CombinedDamageFloor.ToPercent(), CombinedDamageCeiling.ToPercent());
         public AlcoholType AlcoholVariant => AlcoholType.Whiskey;
 
         public Action<Player, float> IVDripAlcoholEffect => ApplyWhiskeyEffect;
