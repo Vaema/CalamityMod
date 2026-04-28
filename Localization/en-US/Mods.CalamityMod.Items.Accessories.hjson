@@ -1040,7 +1040,8 @@ IVDripOnTheRocks: {
 		[c/aaaaaa:Shift-<right> this item in your inventory to empty its contents]
 		'(drunken mumbling)'
 		'''
-	Empty: The drip is currently empty.
+	Empty: The IV drip is currently empty.
+	CurrentAlcoholText: Filled with
 	SakeAndAleText: Increases melee weapon scale by 15%, but decreases melee speed by 10%
 }
 

@@ -211,7 +211,7 @@ namespace CalamityMod.Items.Accessories
             if (nameLine != null)
             {
                 string alcoholName = Lang.GetItemNameValue(containedAlcoholID);
-                nameLine.Text = $"Currently filled with [c/FF81E4:{alcoholName}]";
+                nameLine.Text = this.GetLocalizedValue("CurrentAlcoholText") + $" [c/FF81E4:{alcoholName}]";
             }
         }
 
