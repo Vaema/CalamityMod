@@ -218,12 +218,12 @@ namespace CalamityMod.Projectiles.Rogue
                     {
                         if (mode == gunState.Stealth)
                         {
-                            //Owner.Calamity().ConsumeStealthByAttacking();
+                            Owner.Calamity().ConsumeStealthByAttacking();
                             recoilLifetime++;
                         }
                         else
                         {
-                            //Owner.Calamity().rogueStealth -= MathF.Round(stealthAmount, 2);
+                            Owner.Calamity().rogueStealth -= MathF.Round(stealthAmount, 2);
                         }
                         CheckStealth();
                         FireShot(toMouse, true, ElephantKiller.stealthShotDamageMult, mode == gunState.Stealth);
