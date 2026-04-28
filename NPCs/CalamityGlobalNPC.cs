@@ -4251,7 +4251,7 @@ namespace CalamityMod.NPCs
             // Only when BOTH effects are active, also applies the previous spawn rate and limit boosts multiplicatively
             if (player.Calamity().bloodyMary && player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.BloodyMary))
             {
-                spawnRate = (int)(spawnRate * BloodyMary.IVDripAdditionalSpawnRateGateMultiplier); // 1.667x spawn rate
+                spawnRate = (int)(spawnRate * BloodyMary.IVDripAdditionalSpawnRateGateMultiplier); // 1.429x spawn rate, total of 10x 
                 maxSpawns = (int)(maxSpawns * BloodyMary.IVDripAdditionalSpawnLimitMultiplier); // 1.5x spawn rate cap
             }
 
