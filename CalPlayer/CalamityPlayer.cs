@@ -4931,14 +4931,11 @@ namespace CalamityMod.CalPlayer
                     TimeHoldingMelee++;
                     if (TimeHoldingMelee > Whiskey.TimeToDischarge)
                         TimeHoldingMelee = (int)Whiskey.TimeToDischarge;
-                    if (whiskey)
-                    {
-                        Player.GetDamage(DamageClass.Melee) += MathHelper.Lerp(Whiskey.MaxDamageCeiling, Whiskey.MinDamageFloor, TimeHoldingMelee / Whiskey.TimeToDischarge);
-                    }
-                    else if (dripPlayer.HasAlcohol(AlcoholType.Whiskey) && whiskey)
-                    {
-                        Player.GetDamage(DamageClass.Melee) += MathHelper.Lerp(Whiskey.MaxDamageCeiling, Whiskey.MinDamageFloor, TimeHoldingMelee / Whiskey.TimeToDischarge);
-                    }
+
+                    if (dripPlayer.HasAlcohol(AlcoholType.Whiskey) && whiskey)
+                        Player.GetDamage(DamageClass.Melee) += MathHelper.Lerp(Whiskey.CombinedDamageCeiling, Whiskey.CombinedDamageFloor, TimeHoldingMelee / Whiskey.TimeToDischarge);
+                    else if (whiskey || dripPlayer.HasAlcohol(AlcoholType.Whiskey))
+                        Player.GetDamage(DamageClass.Melee) += MathHelper.Lerp(Whiskey.StandardDamageCeiling, Whiskey.StandardDamageFloor, TimeHoldingMelee / Whiskey.TimeToDischarge);
                 } 
                 else
                 {
@@ -4950,15 +4947,12 @@ namespace CalamityMod.CalPlayer
                 {
                     TimeHoldingRanged++;
                     if (TimeHoldingRanged > Whiskey.TimeToDischarge)
-                        TimeHoldingRanged = (int)Whiskey.TimeToDischarge; 
-                    if (whiskey)
-                    {
-                        Player.GetDamage(DamageClass.Ranged) += MathHelper.Lerp(Whiskey.MaxDamageCeiling, Whiskey.MinDamageFloor, TimeHoldingRanged / Whiskey.TimeToDischarge);
-                    }
-                    else if (dripPlayer.HasAlcohol(AlcoholType.Whiskey) && whiskey)
-                    {
-                        Player.GetDamage(DamageClass.Ranged) += MathHelper.Lerp(Whiskey.MaxDamageCeiling, Whiskey.MinDamageFloor, TimeHoldingRanged / Whiskey.TimeToDischarge);
-                    }
+                        TimeHoldingRanged = (int)Whiskey.TimeToDischarge;
+
+                    if (dripPlayer.HasAlcohol(AlcoholType.Whiskey) && whiskey)
+                        Player.GetDamage(DamageClass.Ranged) += MathHelper.Lerp(Whiskey.CombinedDamageCeiling, Whiskey.CombinedDamageFloor, TimeHoldingRanged / Whiskey.TimeToDischarge);
+                    else if (whiskey || dripPlayer.HasAlcohol(AlcoholType.Whiskey))
+                        Player.GetDamage(DamageClass.Ranged) += MathHelper.Lerp(Whiskey.StandardDamageCeiling, Whiskey.StandardDamageFloor, TimeHoldingRanged / Whiskey.TimeToDischarge);
                 }
                 else
                 {
@@ -4971,14 +4965,11 @@ namespace CalamityMod.CalPlayer
                     TimeHoldingMagic++;
                     if (TimeHoldingMagic > Whiskey.TimeToDischarge)
                         TimeHoldingMagic = (int)Whiskey.TimeToDischarge;
-                    if (whiskey)
-                    {
-                        Player.GetDamage(DamageClass.Magic) += MathHelper.Lerp(Whiskey.MaxDamageCeiling, Whiskey.MinDamageFloor, TimeHoldingMagic / Whiskey.TimeToDischarge);
-                    }
-                    else if (dripPlayer.HasAlcohol(AlcoholType.Whiskey) && whiskey)
-                    {
-                        Player.GetDamage(DamageClass.Magic) += MathHelper.Lerp(Whiskey.MaxDamageCeiling, Whiskey.MinDamageFloor, TimeHoldingMagic / Whiskey.TimeToDischarge);
-                    }
+
+                    if (dripPlayer.HasAlcohol(AlcoholType.Whiskey) && whiskey)
+                        Player.GetDamage(DamageClass.Magic) += MathHelper.Lerp(Whiskey.CombinedDamageCeiling, Whiskey.CombinedDamageFloor, TimeHoldingMagic / Whiskey.TimeToDischarge);
+                    else if (whiskey || dripPlayer.HasAlcohol(AlcoholType.Whiskey))
+                        Player.GetDamage(DamageClass.Magic) += MathHelper.Lerp(Whiskey.StandardDamageCeiling, Whiskey.StandardDamageFloor, TimeHoldingMagic / Whiskey.TimeToDischarge);
                 }
                 else
                 {
@@ -4991,14 +4982,11 @@ namespace CalamityMod.CalPlayer
                     TimeHoldingSummon++;
                     if (TimeHoldingSummon > Whiskey.TimeToDischarge)
                         TimeHoldingSummon = (int)Whiskey.TimeToDischarge;
-                    if (whiskey)
-                    {
-                        Player.GetDamage(DamageClass.Summon) += MathHelper.Lerp(Whiskey.MaxDamageCeiling, Whiskey.MinDamageFloor, TimeHoldingSummon / Whiskey.TimeToDischarge);
-                    }
-                    else if (dripPlayer.HasAlcohol(AlcoholType.Whiskey) && whiskey)
-                    {
-                        Player.GetDamage(DamageClass.Summon) += MathHelper.Lerp(Whiskey.MaxDamageCeiling, Whiskey.MinDamageFloor, TimeHoldingSummon / Whiskey.TimeToDischarge);
-                    }
+
+                    if (dripPlayer.HasAlcohol(AlcoholType.Whiskey) && whiskey)
+                        Player.GetDamage(DamageClass.Summon) += MathHelper.Lerp(Whiskey.CombinedDamageCeiling, Whiskey.CombinedDamageFloor, TimeHoldingSummon / Whiskey.TimeToDischarge);
+                    else if (whiskey || dripPlayer.HasAlcohol(AlcoholType.Whiskey))
+                        Player.GetDamage(DamageClass.Summon) += MathHelper.Lerp(Whiskey.StandardDamageCeiling, Whiskey.StandardDamageFloor, TimeHoldingSummon / Whiskey.TimeToDischarge);
                 }
                 else
                 {
