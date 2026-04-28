@@ -69,6 +69,7 @@ using CalamityMod.Systems;
 using CalamityMod.Systems.Collections;
 using CalamityMod.Systems.Mechanic;
 using CalamityMod.Utilities;
+using CalamityMod.Waters;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -4262,6 +4263,42 @@ namespace CalamityMod.CalPlayer
                 avoidLava = true,
                 avoidHurtTiles = true,
                 avoidWalls = true,
+                attemptsBeforeGivingUp = 1000,
+                maximumFallDistanceFromOrignalPoint = 30
+            };
+
+            Vector2 vector = player.CheckForGoodTeleportationSpot(ref canSpawn, halfWorldXTiles - smallerCheckRadius, largerCheckRadius, teleportStartY, teleportRangeY, settings);
+            if (!canSpawn)
+                vector = player.CheckForGoodTeleportationSpot(ref canSpawn, halfWorldXTiles - largerCheckRadius, smallerCheckRadius, teleportStartY, teleportRangeY, settings);
+
+            if (!canSpawn)
+                vector = player.CheckForGoodTeleportationSpot(ref canSpawn, halfWorldXTiles + smallerCheckRadius, smallerCheckRadius, teleportStartY, teleportRangeY, settings);
+
+            if (canSpawn)
+            {
+                return (Vector2?)vector;
+            }
+            return null;
+        }
+
+        public static Vector2? GetAbyssPosition(Player player)
+        {
+            bool canSpawn = false;
+            int x = Main.maxTilesX;
+            int genLimit = x / 2;
+            int halfWorldXTiles = Abyss.AtLeftSideOfWorld ? genLimit - (genLimit - 135) + 35 : genLimit + (genLimit - 135) - 35;
+            int largerCheckRadius = 100;
+            int smallerCheckRadius = 50;
+            int y = Main.maxTilesY;
+            int teleportStartY = Main.remixWorld ? SulphurousSea.YStart : y - 250;
+            int teleportRangeY = 80;
+            Player.RandomTeleportationAttemptSettings settings = new Player.RandomTeleportationAttemptSettings
+            {
+                mostlySolidFloor = true,
+                avoidAnyLiquid = false,
+                avoidLava = true,
+                avoidHurtTiles = true,
+                avoidWalls = false,
                 attemptsBeforeGivingUp = 1000,
                 maximumFallDistanceFromOrignalPoint = 30
             };
