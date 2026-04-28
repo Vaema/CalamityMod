@@ -162,7 +162,6 @@ namespace CalamityMod.NPCs
 
         // Heat debuff effects
         public bool IncreasedHeatEffects_Fireball = false;
-        public bool IncreasedHeatEffects_CinnamonRoll = false;
         public int IncreasedHeatEffects_FireBoots = 0;
 
         // Toxic Heart effect
@@ -515,7 +514,6 @@ namespace CalamityMod.NPCs
             myClone.IncreasedColdEffects_CryoStone = IncreasedColdEffects_CryoStone;
             myClone.IncreasedElectricityEffects_Unused = IncreasedElectricityEffects_Unused;
             myClone.IncreasedHeatEffects_Fireball = IncreasedHeatEffects_Fireball;
-            myClone.IncreasedHeatEffects_CinnamonRoll = IncreasedHeatEffects_CinnamonRoll;
             myClone.IncreasedHeatEffects_FireBoots = IncreasedHeatEffects_FireBoots;
             myClone.IncreasedSicknessEffects_ToxicHeart = IncreasedSicknessEffects_ToxicHeart;
             myClone.IncreasedWaterEffects_Amulet1 = IncreasedWaterEffects_Amulet1;
