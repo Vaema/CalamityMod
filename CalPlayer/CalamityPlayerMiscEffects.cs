@@ -562,9 +562,9 @@ namespace CalamityMod.CalPlayer
             if (cinnamonRoll && !(Main.getGoodWorld && Main.npc.Any(x=> x.active && x.type == ModContent.NPCType<DevourerofGodsHead>())))
             {
                 if (dashStart)
-                    Player.velocity.X *= 3;
+                    Player.velocity.X *= 2f;
                 else if  (Player.dashDelay == -1)
-                    Player.velocity.X *= 0.8f;
+                    Player.velocity.X *= 0.825f;
             }
 
             if (Player.dashDelay == -1)
