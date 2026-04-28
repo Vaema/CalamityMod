@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Fishing.FishingRods
             Item.shootSpeed = 14f;
             Item.shoot = ModContent.ProjectileType<TrustyOldBobber>();
             Item.rare = ItemRarityID.Green;
-            Item.value = Item.sellPrice(copper: 1);
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
         }
         public override void ModifyFishingLine(Projectile bobber, ref Vector2 lineOriginOffset, ref Color lineColor)
         {

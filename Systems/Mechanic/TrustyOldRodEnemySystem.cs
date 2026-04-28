@@ -18,6 +18,7 @@ using CalamityMod.NPCs.GreatSandShark;
 using CalamityMod.NPCs.HiveMind;
 using CalamityMod.NPCs.Leviathan;
 using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.NPCs.Other;
 using CalamityMod.NPCs.Perforator;
 using CalamityMod.NPCs.PlaguebringerGoliath;
 using CalamityMod.NPCs.PlagueEnemies;
@@ -75,8 +76,8 @@ namespace CalamityMod.Systems
                     if (common) { npcIDsCommon.Add((NPCID.Drippler, 5, false)); } // Common NPC/s
                     // 10 Blood Zombies
                     else if (rare) { npcIDsRare.Add((NPCID.BloodZombie, 10, false)); } // Rare NPC/s
-                    // 1 Ravager, 8 postML
-                    else if (ultraRare) { npcIDsUltraRare.Add((ModContent.NPCType<RavagerBody>(), postML ? 8 : 1, false)); } // Ultra Rare NPC/s
+                    // 1 Ravager, 2 postML
+                    else if (ultraRare) { npcIDsUltraRare.Add((ModContent.NPCType<RavagerBody>(), postML ? 2 : 1, false)); } // Ultra Rare NPC/s
                 }
                 if (Main.eclipse && !underground) // Eclipse takes priority over surface spawns
                 {
@@ -146,7 +147,7 @@ namespace CalamityMod.Systems
 
                     if (common) { npcIDsCommon.Add((pickCommonForest, 2, false)); } // Common NPC/s
                     else if (rare) { npcIDsRare.Add((pickRareForest, pickRareForestEnemyCount, false)); } // Rare NPC/s
-                    else if (ultraRare) { npcIDsUltraRare.Add((pickUltraRareForest, useHardmode ? 20 : postML ? 15 : hardmode ? 5 : 1, useHardmode)); } // Ultra Rare NPC/s
+                    else if (ultraRare) { npcIDsUltraRare.Add((pickUltraRareForest, useHardmode ? 20 : postML ? 3 : hardmode ? 2 : 1, useHardmode)); } // Ultra Rare NPC/s
                 }
                 if (owner.ZoneCorrupt)
                 {
@@ -165,8 +166,8 @@ namespace CalamityMod.Systems
                         if (common) { npcIDsCommon.Add((useHardmode ? NPCID.Corruptor : NPCID.DevourerHead, useHardmode ? 3 : 1, false)); } // Common NPC/s
                         // 8 Eater of Souls or 8 Slimers if hardmode
                         else if (rare) { npcIDsRare.Add((useHardmode ? NPCID.Slimer : NPCID.EaterofSouls, 8, false)); } // Rare NPC/s
-                        // 3 Hive Tumors, 7 in hardmode, 15 postML
-                        else if (ultraRare) { npcIDsUltraRare.Add((ModContent.NPCType<HiveTumor>(), postML ? 15 : hardmode ? 7 : 3, true)); } // Ultra Rare NPC/s
+                        // 3 Hive Tumors, 6 in hardmode, 12 postML
+                        else if (ultraRare) { npcIDsUltraRare.Add((ModContent.NPCType<HiveTumor>(), postML ? 12 : hardmode ? 6 : 3, true)); } // Ultra Rare NPC/s
                     }
                 }
                 if (owner.ZoneCrimson)
@@ -186,8 +187,8 @@ namespace CalamityMod.Systems
                         if (common) { npcIDsCommon.Add((useHardmode ? NPCID.Herpling : NPCID.Crimera, 3, false)); } // Common NPC/s
                         // 8 Face Monsters or 8 Crimslimes if hardmode
                         else if (rare) { npcIDsRare.Add((useHardmode ? NPCID.Crimslime : NPCID.FaceMonster, 8, false)); } // Rare NPC/s
-                        // 3 Perforator Cysts, 7 in hardmode, 15 postML
-                        else if (ultraRare) { npcIDsUltraRare.Add((ModContent.NPCType<PerforatorCyst>(), postML ? 15 : hardmode ? 7 : 3, true)); } // Ultra Rare NPC/s
+                        // 3 Perforator Cysts, 6 in hardmode, 12 postML
+                        else if (ultraRare) { npcIDsUltraRare.Add((ModContent.NPCType<PerforatorCyst>(), postML ? 12 : hardmode ? 6 : 3, true)); } // Ultra Rare NPC/s
                     }
                 }
                 if (owner.ZoneHallow)
@@ -208,8 +209,8 @@ namespace CalamityMod.Systems
                         if (common) { npcIDsCommon.Add((profaned ? ModContent.NPCType<ImpiousImmolator>() : night ? NPCID.Gastropod : NPCID.Pixie, profaned ? 5 : 3, false)); } // Common NPC/s
                         // 3 Unicorns or 3 Rainbow Slimes if raining
                         else if (rare) { npcIDsRare.Add((profaned ? ModContent.NPCType<ScornEater>() : rain ? NPCID.RainbowSlime : NPCID.Unicorn, 3, false)); } // Rare NPC/s
-                        // 1 Queen Slime or 2/3 for 1 Empress if post Plant, 5 if post ML
-                        else if (ultraRare) { npcIDsUltraRare.Add((profaned ? ModContent.NPCType<Providence>() : NPC.downedPlantBoss && Main.rand.NextBool(2, 3) ? NPCID.HallowBoss : NPCID.QueenSlimeBoss, postML && !profaned ? 5 : 1, false)); } // Ultra Rare NPC/s
+                        // 1 Queen Slime or 2/3 for 1 Empress if post Plant, 2 if post ML
+                        else if (ultraRare) { npcIDsUltraRare.Add((profaned ? ModContent.NPCType<Providence>() : NPC.downedPlantBoss && Main.rand.NextBool(2, 3) ? NPCID.HallowBoss : NPCID.QueenSlimeBoss, postML && !profaned ? 2 : 1, false)); } // Ultra Rare NPC/s
                     }
                 }
                 if (owner.ZoneSnow)
@@ -236,8 +237,8 @@ namespace CalamityMod.Systems
 
                         if (common) { npcIDsCommon.Add((pickCommonSnow, 2, false)); } // Common NPC/s
                         else if (rare) { npcIDsRare.Add((pickRareSnow, (hardmode && rain) ? 1 : 3, false)); } // Rare NPC/s
-                        // 50 Snow Flinx preHM, 1 Cryogen in harmdode, or 5 postML
-                        else if (ultraRare) { npcIDsUltraRare.Add((hardmode ? ModContent.NPCType<Cryogen>() : NPCID.SnowFlinx, postML ? 5 : hardmode ? 1 : 50, (!postML && !hardmode))); } // Ultra Rare NPC/s
+                        // 50 Snow Flinx preHM, 1 Cryogen in harmdode, or 2 postML
+                        else if (ultraRare) { npcIDsUltraRare.Add((useHardmode ? ModContent.NPCType<Cryogen>() : NPCID.SnowFlinx, postML ? 2 : hardmode ? 1 : 50, (!postML && !hardmode))); } // Ultra Rare NPC/s
                     }
                 }
                 if (owner.ZoneUndergroundDesert)
@@ -259,8 +260,8 @@ namespace CalamityMod.Systems
 
                     if (common) { npcIDsCommon.Add((pickCommonUGDesert, larva ? 10 : 2, false)); } // Common NPC/s
                     else if (rare) { npcIDsRare.Add((pickRareUGDesert, golferCheck || !useHardmode ? 1 : 2, false)); } // Rare NPC/s
-                    // 1 Desert Scourge, 5 in hardmode, 10 in postML
-                    else if (ultraRare) { npcIDsUltraRare.Add((ModContent.NPCType<DesertScourgeHead>(), postML ? 10 : hardmode ? 5 : 1, false)); } // Ultra Rare NPC/s
+                    // 1 Desert Scourge, 2 in hardmode, 3 in postML
+                    else if (ultraRare) { npcIDsUltraRare.Add((ModContent.NPCType<DesertScourgeHead>(), postML ? 3 : hardmode ? 2 : 1, false)); } // Ultra Rare NPC/s
                 }
                 else if (owner.ZoneDesert)
                 {
@@ -283,7 +284,7 @@ namespace CalamityMod.Systems
                 if (owner.ZoneBeach && !owner.Calamity().ZoneSulphur)
                 {
                     // 2 Squid, Sea Snails, or Sharks. Can also be Mantis Shrimp post Plant
-                    int pickRareOcean = Main.rand.Next(3 + (NPC.downedPlantBoss ? 1 : 0)) switch
+                    int pickRareOcean = Main.rand.Next(3 + (hardmode ? 1 : 0)) switch
                     {
                         0 => NPCID.Squid,
                         1 => NPCID.SeaSnail,
@@ -293,8 +294,8 @@ namespace CalamityMod.Systems
                     // 2 Pink Jellyfish or Crabs
                     if (common) { npcIDsCommon.Add((Main.rand.NextBool() ? NPCID.PinkJellyfish : NPCID.Crab, 2, false)); } // Common NPC/s
                     else if (rare) { npcIDsRare.Add((pickRareOcean, 2, false)); } // Rare NPC/s
-                    // 1 Leviathan, 5 postML
-                    else if (ultraRare) { npcIDsUltraRare.Add((ModContent.NPCType<Leviathan>(), postML ? 5 : 1, false)); } // Ultra Rare NPC/s
+                    // 1 Anahita, 2 postML
+                    else if (ultraRare) { npcIDsUltraRare.Add((ModContent.NPCType<Anahita>(), postML ? 2 : 1, false)); } // Ultra Rare NPC/s
                 }
                 else if (owner.Calamity().ZoneSulphur)
                 {
@@ -414,7 +415,7 @@ namespace CalamityMod.Systems
                     // 1/10 for 2 Truffle Worms, 9/10 for 2 Anomura Fungus
                     else if (rare) { npcIDsRare.Add(Main.rand.NextBool(10) ? (NPCID.TruffleWorm, 2, false) : (NPCID.AnomuraFungus, 2, false)); } // Rare NPC/s
                     // A Crabulon, or 5 of them if in hardmode, 10 postML
-                    else if (ultraRare) { npcIDsUltraRare.Add((ModContent.NPCType<Crabulon>(), postML ? 10 : hardmode ? 5 : 1, false)); } // Ultra Rare NPC/s
+                    else if (ultraRare) { npcIDsUltraRare.Add((ModContent.NPCType<Crabulon>(), postML ? 3 : hardmode ? 2 : 1, false)); } // Ultra Rare NPC/s
                 }
                 else if (owner.ZoneGranite || owner.ZoneMarble) // (Priority over Caverns)
                 {
@@ -500,8 +501,8 @@ namespace CalamityMod.Systems
                     if (common) { npcIDsCommon.Add((NPCID.Lihzahrd, 3, false)); } // Common NPC/s
                     // 5 Flying Snakes or Bohldohrs
                     else if (rare) { npcIDsRare.Add((Main.rand.NextBool() ? NPCID.FlyingSnake : ModContent.NPCType<Bohldohr>(), 5, false)); } // Rare NPC/s
-                    // Golem, 5 if postML
-                    else if (ultraRare) { npcIDsUltraRare.Add((NPCID.Golem, postML ? 5 : 1, false)); } // Ultra Rare NPC/s
+                    // Golem, 2 if postML
+                    else if (ultraRare) { npcIDsUltraRare.Add((NPCID.Golem, postML ? 2 : 1, false)); } // Ultra Rare NPC/s
                 }
                 else if (owner.ZoneJungle)
                 {
@@ -540,7 +541,7 @@ namespace CalamityMod.Systems
                         int pickUltraRareJungle = postML ? ModContent.NPCType<WildBumblebirb>() : hardmode ? NPCID.GiantFlyingFox : NPCID.JungleBat;
                         if (common) { npcIDsCommon.Add((pickCommonJungle, 3, false)); } // Common NPC/s
                         else if (rare) { npcIDsRare.Add((pickRareJungle, useHardmode ? 3 : 10, false)); } // Rare NPC/s
-                        else if (ultraRare) { npcIDsUltraRare.Add((pickUltraRareJungle, 100, true)); } // Ultra Rare NPC/s
+                        else if (ultraRare) { npcIDsUltraRare.Add((pickUltraRareJungle, 50, true)); } // Ultra Rare NPC/s
                     }
                 }
                 if (owner.ZoneGraveyard)
@@ -561,8 +562,8 @@ namespace CalamityMod.Systems
                         if (common) { npcIDsCommon.Add((glomers ? ModContent.NPCType<Glomerling>() : ModContent.NPCType<StellarCulex>(), glomers ? 15 : 2, false)); } // Common NPC/s
                         // Either 5 Astralachnea or 5 Astraglomerates
                         else if (rare) { npcIDsRare.Add((Main.rand.NextBool() ? ModContent.NPCType<AstralachneaGround>() : ModContent.NPCType<Astraglomerate>(), 5, false)); } // Rare NPC/s
-                        // 1 Astrum Aureus, 5 if post ML
-                        else if (ultraRare) { npcIDsUltraRare.Add((ModContent.NPCType<AstrumAureus>(), postML ? 5 : 1, false)); } // Ultra Rare NPC/s
+                        // 1 Astrum Aureus, 2 if post ML
+                        else if (ultraRare) { npcIDsUltraRare.Add((ModContent.NPCType<AstrumAureus>(), postML ? 2 : 1, false)); } // Ultra Rare NPC/s
                     }
                     else
                     {
@@ -607,8 +608,8 @@ namespace CalamityMod.Systems
                 if (common) { npcIDsCommon.Add((NPCID.BeeSmall, 15, false)); } // Common NPC/s
                 // 25 Bees
                 else if (rare) { npcIDsRare.Add((NPCID.Bee, 25, false)); } // Rare NPC/s
-                // 1/5/12 Queen Bees, depending on progression
-                else if (ultraRare) { npcIDsUltraRare.Add((NPCID.QueenBee, postML ? 12 : hardmode ? 5 : 1, false)); } // Ultra Rare NPC/s
+                // 1/2/3 Queen Bees, depending on progression
+                else if (ultraRare) { npcIDsUltraRare.Add((NPCID.QueenBee, postML ? 3 : hardmode ? 2 : 1, false)); } // Ultra Rare NPC/s
             }
             else if (Lava)
             {
@@ -629,14 +630,14 @@ namespace CalamityMod.Systems
                     int pickCommonHell = notInHell ? nonHellEnemy : profaned ? ModContent.NPCType<ImpiousImmolator>() : snake ? NPCID.BoneSerpentHead : (useHardmode ? NPCID.Lavabat : NPCID.Hellbat);
                     // 3 Demons or Red Devils if hardmode, or chance for Scorn Eater 
                     int pickRareHell = notInHell ? nonHellEnemy : profaned ? ModContent.NPCType<ScornEater>() : (useHardmode ? NPCID.RedDevil : NPCID.Demon);
-                    // Wall of Flesh, or chance for Profaned Guardians if postML
+                    // Wall of Flesh, or chance for Providence if postML
                     int pickUltraRareHell = notInHell ? nonHellEnemy : profaned ? ModContent.NPCType<Providence>() : NPCID.WallofFlesh;
                     if (common) { npcIDsCommon.Add((pickCommonHell, notInHell ? 2 : snake ? 1 : 5, false)); } // Common NPC/s
                     else if (rare) { npcIDsRare.Add((pickRareHell, notInHell ? 10 : 3, false)); } // Rare NPC/s
                     else if (ultraRare) { npcIDsUltraRare.Add((pickUltraRareHell, notInHell ? 50 : 1, notInHell)); } // Ultra Rare NPC/s
                 }
             }
-#endregion
+            #endregion
 
             #region NPC spawn
             // Spawn the npc/s
