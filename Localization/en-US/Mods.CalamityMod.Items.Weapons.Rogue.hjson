@@ -369,6 +369,22 @@ EclipsesFall: {
 		'''
 }
 
+ElephantKiller: {
+	DisplayName: Elephant Killer
+	Tooltip:
+		'''
+		Can be tossed to gain [STEALTHGAIN]% of max stealth on hit
+		<right> to spend [STEALTHCOST]% of max stealth and fire the gun with increased damage
+		All gun shots always critically strike, with critical strike chance increasing critical strike damage
+		Stealth strikes fire a [c/87CEFA:Spectral Elephant] from the gun
+		Any gun shots that pass through the [c/87CEFA:Spectral Elephant] are redirected and greatly empowered
+		[c/D4827A:Natural stealth generation and stealth damage is disabled when holding this weapon]
+		[c/D78DDD:'Why's my gun called the Elephant Killer?]
+		[c/D78DDD:...]
+		[c/D78DDD:Don't worry about it']
+		'''
+}
+
 EnchantedAxe: {
 	DisplayName: Enchanted Axe
 	Tooltip:

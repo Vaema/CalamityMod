@@ -1497,6 +1497,18 @@ namespace CalamityMod.Items
         #region Enchanted Rarity Text Drawing
         public override bool PreDrawTooltipLine(Item item, DrawableTooltipLine line, ref int yOffset)
         {
+            if (line.Mod == "Terraria" && item.type == ModContent.ItemType<ElephantKiller>() && CalamityClientConfig.Instance.TextEffects && line.Name == "Damage")
+            {
+                string fakeLine = line.Text.Replace(" " + RogueDamageClass.Instance.DisplayName.ToString(), DamageClass.Ranged.DisplayName.ToString());
+                float fade = Utils.GetLerpValue(18, 120, Main.LocalPlayer.Calamity().elephantKillerJoke, true);
+
+                ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, fakeLine, new Vector2(line.X, line.Y), line.Color * (1 - fade), line.Rotation, line.Origin, line.BaseScale, line.MaxWidth, line.Spread);
+                ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, new Vector2(line.X, line.Y), line.Color * fade, line.Rotation, line.Origin, line.BaseScale, line.MaxWidth, line.Spread);
+                
+                return false;
+            }
+                
+
             if (line.Name == "ItemName" && line.Mod == "Terraria" && item.type == ModContent.ItemType<XyksBlessingBlue>() && CalamityClientConfig.Instance.TextEffects)
             {
                 Color rarityColor = Color.White;

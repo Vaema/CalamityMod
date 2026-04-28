@@ -141,6 +141,13 @@ namespace CalamityMod.CalPlayer
         /// </summary>
         public bool heldGaelsLastFrame = false;
         /// <summary>
+        /// Tracks whether or not the player is currently holding Elephant Killer.<br/>
+        /// Used to reset stealth when swapping to this item.
+        /// </summary>
+        public bool heldElephantKillerLastFrame = false;
+        public float elephantKillerJoke = 0;
+        public bool drawingElephantKillerJoke = false;
+        /// <summary>
         /// Tracks whether or not the player currently has Draedon's Heart equipped.<br/>
         /// Used to reset Adrenaline when (un)equipped to prevent exploits.
         /// </summary>
@@ -3083,6 +3090,7 @@ namespace CalamityMod.CalPlayer
             if (Player.HeldItem.IsAir || Player.HeldItem.fishingPole == 0)
                 consecutiveCaughtFish = 0;
             heldGaelsLastFrame = false;
+            heldElephantKillerLastFrame = false;
             partialLifeRegenCounter = 0f;
             gaelSwipes = 0;
             whitewaterHeal = 0;
@@ -5433,7 +5441,8 @@ namespace CalamityMod.CalPlayer
                 // Apply weapon modifier stealth strike damage bonus
                 // 01OCT2023: Ozzatron: This is a multiplicative bonus because it is a prefix.
                 // It should be equivalent to x1.15 (or whatever multiplier) on the base damage of the weapon for stealth only.
-                if (rogueItem.StealthStrikePrefixBonus != 0f && StealthStrikeAvailable())
+                bool dontProvideStealthDamage = Player.HeldItem.type == ModContent.ItemType<ElephantKiller>();
+                if (rogueItem.StealthStrikePrefixBonus != 0f && StealthStrikeAvailable() && !dontProvideStealthDamage)
                     damage *= rogueItem.StealthStrikePrefixBonus; // This number centers on 1f, so 1.15f = 1.15x damage.
             }
         }
@@ -6158,6 +6167,10 @@ namespace CalamityMod.CalPlayer
             if (it.type == ItemType<DoomsdayDevice>())
                 playerUsingWeapon = false;
 
+            // Elephant Killer consumes stealth in a special wa- hey maybe this is a sign this class needs some work huh
+            if (it.type == ItemType<ElephantKiller>())
+                playerUsingWeapon = false;
+
             // Animation check depends on whether the item is "clockwork", like Clockwork Assault Rifle.
             // "Clockwork" weapons can chain-fire multiple stealth strikes (really only 2 max) until you run out of stealth.
             bool animationCheck = it.useAnimation == it.useTime
@@ -6224,7 +6237,7 @@ namespace CalamityMod.CalPlayer
             Player.ownedProjectileCounts[ProjectileType<FinalDawnThrow2>()];
 
             // If you are actively using an item, you cannot gain stealth.
-            if (Player.itemAnimation > 0 || finalDawnProjCount > 0)
+            if (Player.itemAnimation > 0 || finalDawnProjCount > 0 || (Player.ownedProjectileCounts[ProjectileType<ElephantKillerThrown>()] > 0 || Player.HeldItem.type == ModContent.ItemType<ElephantKiller>()))
                 return 0f;
 
             if (shadow)
