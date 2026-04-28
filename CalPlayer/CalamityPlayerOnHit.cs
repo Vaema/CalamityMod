@@ -1001,7 +1001,7 @@ namespace CalamityMod.CalPlayer
 
             if (xerocSet && xerocDmg <= 0 && Player.ownedProjectileCounts[ProjectileType<EmpyreanEmber>()] < 3 && Player.ownedProjectileCounts[ProjectileType<EmpyreanBlast>()] < 3)
             {
-                switch (Main.rand.Next(5))
+                switch (Main.rand.Next(4))
                 {
                     case 0:
                         // Exodus Rogue Stars: 80%

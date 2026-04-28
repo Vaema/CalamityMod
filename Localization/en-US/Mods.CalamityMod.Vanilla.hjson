@@ -255,8 +255,28 @@ BuffDescription: {
 	WeaponImbueVenom: Melee, Whip, and Rogue attacks inflict acid venom on your targets
 }
 
+HerbTooltips: {
+	Daybloom: "[C/FFEB8A:A cheerful herb which blooms under daylight]"
+	Moonglow: "[C/8AFFFF:A radiant herb which blossoms under moonlight]"
+	Waterleaf: "[C/8AFFAF:A tenacious herb that blossoms in the rain]"
+	Blinkroot: "[C/FFC28A:A fickle herb, whose blooming is unpredictable]"
+	Shiverthorn: "[C/AADEFA:A frigid herb that blooms slowly and permanently]"
+	Deathweed: "[C/A98AFF:A foul herb, blossoming under the Full or Blood Moon]"
+	Fireblossom: "[C/FF8063:A vibrant herb, blossoming in the sunset hours]"
+}
+
+SeedTooltips: {
+	Daybloom: "[C/FFEB8A:Must be planted in regular Grass]"
+	Moonglow: "[C/8AFFFF:Must be planted in Jungle Grass]"
+	Waterleaf: "[C/8AFFAF:Must be placed in Sand]"
+	Blinkroot: "[C/FFC28A:Must be sown in Dirt or Mud]"
+	Shiverthorn: "[C/AADEFA:Must be placed in Snow or Ice]"
+	Deathweed: "[C/A98AFF:Must be buried in Evil Grass or Evil Stone]"
+	Fireblossom: "[C/FF8063:Must be buried in Ash]"
+}
+
 // Vanilla NPC dialogues added by Calamity
-AnglerChat.SeaKing: Someone tell {0} to quit trying to throw me out of town, it's not going to work.
+AnglerChat.SeaKing: Hey! Someone tell {0} to quit trying to throw me outta town, it's not gonna work!
 
 ArmsDealerChat: {
 	MentionQuadBarrel: That old man left a cranky old gun on his deathbed. You catching my drift?
@@ -275,20 +295,18 @@ ClothierChat: {
 
 CyborgChat: {
 	MoonLordDefeated1: Always shoot for the moon! It has clearly worked before.
-	MoonLordDefeated2: Draedon? The guy who made these upgrades on me said he wanted to best him. But I never cared about that, I just wanted to shoot lasers from my eyes.
 	MentionPlague: Those big green roaches in the Jungle don't threaten me, but all of the animals it has consumed... Please, do me a favor and protect them.
 	Rain: All these moments will be lost in time. Like tears... in the rain.
 }
 
 DemolitionistChat: {
-	MentionSkynamite: Tired of blowing your legs off with dynamite? Not my problem, but if you aren't fond of it you could try throwing them into a Sky Mill to see if they fly.
+	MentionSkynamite: Tired of blowing your legs off with dynamite? That's part of the thrill! But maybe they'll fly if you try throwing them into a Sky Mill.
 	DoGDefeated: God Slayer Dynamite? Boy do I like the sound of that!
 }
 
 DryadChat: {
 	DarksunEclipse: There's a dark solar energy emanating from the moths that appear during this time. What's up with moths getting stronger as you do too?
 	Hardmode: That starborne illness sits upon this land like a blister. Do even more vile forces of corruption exist in worlds beyond?
-	Mushroom: I'm not here for any reason! Just picking up mushrooms for uh, later use.
 	SulphurSea: My Goddess is resting deep below this sea. If you may excuse me, I wish to pay my respects to her alone.
 }
 
@@ -310,28 +328,18 @@ GuideChat: {
 	Hardmode2: That earthquake wasn't natural, something must have caused it... Beware when exploring, whatever caused it must be a powerful entity, perhaps even otherworldly.
 }
 
-HerbTooltips: {
-	Daybloom: "[C/FFEB8A:A cheerful herb which blooms under daylight]"
-	Moonglow: "[C/8AFFFF:A radiant herb which blossoms under moonlight]"
-	Waterleaf: "[C/8AFFAF:A tenacious herb that blossoms in the rain]"
-	Blinkroot: "[C/FFC28A:A fickle herb, whose blooming is unpredictable]"
-	Shiverthorn: "[C/AADEFA:A frigid herb that blooms slowly and permanently]"
-	Deathweed: "[C/A98AFF:A foul herb, blossoming under the Full or Blood Moon]"
-	Fireblossom: "[C/FF8063:A vibrant herb, blossoming in the sunset hours]"
-}
-
 MechanicChat: {
 	HasPortalGun: Just what is that contraption? It makes my Teleporters look like child's play!
 	MoonLordDefeated: What do you mean your traps aren't making the cut? Don't look at me!
 	Eclipse: Um... should my nightlight be on?
-	AcidRain: Maybe I should've waterproofed my gadgets... They're starting to corrode.
+	AcidRain: Oh darn! I should've waterproofed my gadgets, they're starting to corrode.
 }
 
 MerchantChat: {
 	MoonLordDefeated: Every night seems more tense than the last. I feel unspeakable horrors are watching over us.
 	Eclipse: Are you daft?! Turn off those lamps!
 	AcidRain: If this acid rain keeps up, there'll be a shortage of Dirt Blocks soon enough!
-	Bandit: I happen to have several Angel Statues at the moment, a truely rare commodity. Want one?
+	Bandit: Have you any idea why I have several Angel Statues in my stock, friend? Please relieve me of them!
 }
 
 PainterChat: {
@@ -352,35 +360,25 @@ PainterChat: {
 }
 
 PartyGirlChat: {
-	Eclipse1: I think my light display is turning into an accidental bug zapper. At least the monsters are enjoying it.
+	Eclipse1: My light display is turning into an accidental bug zapper. Yeah I don't know, but at least the monsters are enjoying it.
 	Eclipse2: Ooh! I love parties where everyone wears a scary costume!
 }
 
 PirateChat: {
-	PreLeviathan: Aye, I've heard of a mythical creature in the oceans, singing with an alluring voice. Careful when yer fishin out there.
+	PreLeviathan: Aye, I hear of a mythical creature in the oceans, singing with an alluring voice. Careful when yer fishin out there, matey!
 	WetScourgeDefeated: I have to thank ye again for takin' care of that sea serpent. Or was that another one...
-	SeaKing: I remember legends about that {0}. He ain't quite how the stories make him out to be though.
-	Ocean: Now this is a scene that I can admire any time! I feel like something is watching me though.
-	SulphurSea1: It ain't much of a sight, but there's still life living in these waters.
-	SulphurSea2: Me ship might just sink from the acid alone.
-}
-
-SeedTooltips: {
-	Daybloom: "[C/FFEB8A:Must be planted in regular Grass]"
-	Moonglow: "[C/8AFFFF:Must be planted in Jungle Grass]"
-	Waterleaf: "[C/8AFFAF:Must be placed in Sand]"
-	Blinkroot: "[C/FFC28A:Must be sown in Dirt or Mud]"
-	Shiverthorn: "[C/AADEFA:Must be placed in Snow or Ice]"
-	Deathweed: "[C/A98AFF:Must be buried in Evil Grass or Evil Stone]"
-	Fireblossom: "[C/FF8063:Must be buried in Ash]"
+	SeaKing: There be many a legend about that {0}! He ain't quite how the stories make him outta be though.
+	Ocean: Aye, the open waters! This be a scene any sea dog can admire!
+	SulphurSea1: It ain't much a sight, but these waters still be teamin' with life.
+	SulphurSea2: Argh, this is no proper dock! Me ship might just sink from the acid alone!
 }
 
 SkeletonMerchantChat.Normal: What'dya buyin'?
 
 SteampunkerChat: {
 	MoonLordDefeated: Yep! I'm also considering being a space pirate now.
-	Astral: Some of my machines are starting to go haywire thanks to this Astral Infection. I probably shouldn't have built them here.
-	Hallow: I'm sorry I really don't have any Unicorn proof tech here, you're on your own.
+	Astral: Golly! Some of my machines are going haywire thanks to this Astral Infection. I shan't have built them here!
+	Hallow: I dinnae have any Unicorn proof tech here, you're a wee bit on your own mate.
 }
 
 StylistChat: {
@@ -396,16 +394,16 @@ TaxCollectorChat: {
 	DoGDefeated: Devourer of what, you said? Devourer of Funds, if its payroll is anything to go by!
 	PreBrimmy: So those punks on Azafure think they can live for free on my lands? Tell you what, do my job there and I might give you a bonus.
 	HasSlickCane: Goodness! That cane has swagger!
-	Has500Plat: Where and how are you getting all of this money?
 	Has100Plat: BAH! Doesn't seem like I'll ever be able to quarrel with the debts of the town again!
+	Has500Plat: Where and how are you getting all of this money?! Scram, you have no need for me!
 }
 
 TruffleChat.Normal: I don't feel very safe; I think there's pigs following me around and it frightens me.
 
 WitchDoctorChat: {
 	BloodMoon: This is as good a time as any to pick up the best ingredients for potions.
-	PrePlantera: I remember hearing some rumours about some villagers that were creating a monster to defend their village, maybe their magic can be of use to you?
-	Jungle: I wonder how my relatives are doing, last time I checked on them they were too busy praising the... Sun, I think.
+	PrePlantera: I recall rumors about some villagers that were creating a monster to defend their village. Such magic could never tame beasts, but perhaps it can be of use to you.
+	Jungle: I wonder how my kind is doing. Last time I checked on them they were too busy praising the... Sun, I think.
 }
 
 WizardChat.Hardmode: Space just got way too close for comfort.
