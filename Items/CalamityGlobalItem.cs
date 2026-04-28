@@ -1496,6 +1496,7 @@ namespace CalamityMod.Items
         private static readonly int Rarity14BuyPrice = Item.buyPrice(2, 0, 0, 0);
         private static readonly int Rarity15BuyPrice = Item.buyPrice(2, 40, 0, 0);
         private static readonly int Rarity16BuyPrice = Item.buyPrice(2, 80, 0, 0);
+        private static readonly int Rarity17BuyPrice = Item.buyPrice(3, 20, 0, 0); // This is Calamity's "plus" rarity (similar to vanilla 11 / Purple). Nothing uses it.
 
         private static readonly int[] RarityBuyPriceArray = new int[] {
             Rarity0BuyPrice,
@@ -1515,6 +1516,7 @@ namespace CalamityMod.Items
             Rarity14BuyPrice,
             Rarity15BuyPrice,
             Rarity16BuyPrice,
+            Rarity17BuyPrice,
         };
 
         // Canonical names which are implemented as properties that reference the base numeric rarity prices.
@@ -1536,6 +1538,7 @@ namespace CalamityMod.Items
         public static int RarityDarkBlueBuyPrice => Rarity14BuyPrice;
         public static int RarityVioletBuyPrice => Rarity15BuyPrice;
         public static int RarityHotPinkBuyPrice => Rarity16BuyPrice;
+        public static int RarityCalamityRedBuyPrice => Rarity17BuyPrice;
         #endregion
 
         //
@@ -1563,6 +1566,8 @@ namespace CalamityMod.Items
                 return RarityVioletBuyPrice;
             if (rarity == RarityType<HotPink>())
                 return RarityHotPinkBuyPrice;
+            if (rarity == RarityType<CalamityRed>())
+                return RarityCalamityRedBuyPrice;
 
             // Return 0 if it's not a progression based or other mod's rarity
             return 0;
