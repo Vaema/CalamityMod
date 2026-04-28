@@ -1038,7 +1038,8 @@ IVDripOnTheRocks: {
 		Drinking the same type of alcohol as in the IV drip does not contribute to Alcohol Poisoning
 		{$Common.AlcoholWarning}
 		[c/aaaaaa:Shift-<right> this item in your inventory to empty its contents]
-		'(drunken mumbling)'
+		[ceffect/drunk:'(drunken mumbling)']
+		      
 		'''
 	Empty: The IV drip is currently empty.
 	CurrentAlcoholText: Filled with
