@@ -23,8 +23,8 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public static float stealthGainOnThrowHit => 0.25f; // Amount of stealth gained on a thrown hit based on max stealth
         public static float stealthCostToShoot => 0.1f; // Amount of stealth it costs to fire the gun with right click based on max stealth
-        public static float stealthShotDamageMult => 1.75f;
-        public static float elephantBoostedShotDamageMult => 1.5f; // This is multiplicative with the stealth shot damage boost
+        public static float stealthShotDamageMult => 1.9f;
+        public static float elephantBoostedShotDamageMult => 1.6f; // This is multiplicative with the stealth shot damage boost
         public override void SetStaticDefaults()
         {
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 46;
             Item.height = 58;
-            Item.damage = 75;
+            Item.damage = 110;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useAnimation = Item.useTime = 38;
