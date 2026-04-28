@@ -430,7 +430,7 @@ namespace CalamityMod.CalPlayer
             {
                 if (dashStart)
                 {
-                    Player.velocity.X *= 2.2f; // +120% dash speed
+                    Player.velocity.X *= 1 + LeviathanAmbergris.DashSpeedIncrease;
                     int damage = (int)Player.GetBestClassDamage().ApplyTo(LeviathanAmbergris.ambergrisDashDamage);
                     Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ModContent.ProjectileType<LeviAmberDash>(), damage, 0f, Player.whoAmI);
                 }
@@ -1739,6 +1739,16 @@ namespace CalamityMod.CalPlayer
             }
             if (rOfResilienceCooldown > 0)
                 rOfResilienceCooldown--;
+
+            if (Player.Calamity().friendlyMinions > 0)
+            {
+                int numOfPigs = Player.ownedProjectileCounts[ModContent.ProjectileType<Pigion>()];
+                if (numOfPigs < Player.Calamity().friendlyMinions)
+                {
+                    int pigDamage = 7;
+                    Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, new Vector2(0, -16).RotatedByRandom(MathHelper.Pi), ModContent.ProjectileType<Pigion>(), pigDamage, 0f, Player.whoAmI, 0, numOfPigs + 1);
+                }
+            }
 
             if (transformer && Player.Calamity().transformerCooldown == 0 && transformerDelay == 0) // The code for this acursed thing took much... MUCH, too long to make
             {
@@ -4005,9 +4015,6 @@ namespace CalamityMod.CalPlayer
                 Player.npcTypeNoAggro[ModContent.NPCType<GammaSlime>()] = true;
             }
 
-            if (fadedIdolatry && Player.FindBuffIndex(ModContent.BuffType<FieryDraconidBuff>()) != -1)
-                Player.maxMinions += Player.ownedProjectileCounts[ModContent.ProjectileType<FieryDraconid>()];
-
             if (pSoulArtifact)
             {
                 if (Player.whoAmI == Main.myPlayer)
@@ -4441,7 +4448,7 @@ namespace CalamityMod.CalPlayer
             // Add any multiplicative damage bonuses here
             float multiplicativeDamage = 1;
             if (crushingEgo)
-                multiplicativeDamage += 0.2f;
+                multiplicativeDamage += 0.3f;
             if (WarbanneroftheRighteous)
                 multiplicativeDamage += warbannerDamageMult;
             if (multiplicativeDamage != 1)

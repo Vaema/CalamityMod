@@ -173,7 +173,10 @@ namespace CalamityMod.Items
             //Add "Uses X Minion Slots right above "Uses X Mana"
             if (ItemID.Sets.StaffMinionSlotsRequired[item.type] > 1 || ContentSamples.ProjectilesByType[item.shoot].minionSlots > 0)
             {
-                tooltips.Insert(tooltips.FindIndex(0, (x) => x.Name == "Knockback") + 1, new(Mod, "Minions", CalamityUtils.GetText(ItemID.Sets.StaffMinionSlotsRequired[item.type] > 1 ? "Common.MinionSlotCost" : "Common.MinionSlotCostSingle").Format(ItemID.Sets.StaffMinionSlotsRequired[item.type])));
+                float cost = ItemID.Sets.StaffMinionSlotsRequired[item.type];
+                if (item.type == ModContent.ItemType<YharonsKindleStaff>() && Main.LocalPlayer.Calamity().fadedIdolatry)
+                    cost--;
+                tooltips.Insert(tooltips.FindIndex(0, (x) => x.Name == "Knockback") + 1, new(Mod, "Minions", CalamityUtils.GetText(cost > 1 ? "Common.MinionSlotCost" : "Common.MinionSlotCostSingle").Format(cost)));
             }
 
 

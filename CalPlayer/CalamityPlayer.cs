@@ -43,6 +43,7 @@ using CalamityMod.Items.PermanentBoosters;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Items.Potions.Food;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.Tools.ClimateChange;
 using CalamityMod.Items.TreasureBags.MiscGrabBags;
@@ -379,9 +380,12 @@ namespace CalamityMod.CalPlayer
         public int hideOfDeusMeleeBoostTimer = 0;
         /// <summary>
         /// The player's alcohol level. Increased by 1 for each alcohol the player has drank, 2 for Everclear.<br/>
-        /// If this value is greater than 3, the player is inflicted with Alcohol Poisoning.
+        /// If this value is greater than the max (normally 3), the player is inflicted with Alcohol Poisoning.
         /// </summary>
         public int alcoholPoisonLevel = 0;
+        public static int alcoholPoisonMaxBase = 3;
+        /// <summary> The maximum alcohol level the player can reach before getting Alcohol Poisoning. </summary>
+        public int alcoholPoisonMax = alcoholPoisonMaxBase;
         public int dashTimeMod;
         /// <summary>
         /// Timer variable which tracks how long the player has spent outside of Providence's border radius, in frames.<br/>
@@ -804,6 +808,7 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Accessory
+        public int friendlyMinions = 0;
         public bool shieldOfTheHighRulerDashVelocityBoosted = false;
         public bool yharimsGift = false;
         public bool luxorsGift = false;
@@ -1395,6 +1400,7 @@ namespace CalamityMod.CalPlayer
         public bool riptide = false;
         public bool hadopelagicPressure = false;
         public bool fishAlert = false;
+        public bool malnourished = false;
         public bool clamity = false;
         public bool NOU = false;
         public bool absorberAffliction = false;
@@ -1486,6 +1492,8 @@ namespace CalamityMod.CalPlayer
         public bool whiteWine = false;
         public float whiteWineTimer = 0;
         public bool evergreenGin = false;
+        public bool baconOil = false;
+        public int baconOilSoundCooldown = 0;
         public bool tranquilityCandle = false;
         public bool chaosCandle = false;
         public bool blueCandle = false;
@@ -2162,6 +2170,7 @@ namespace CalamityMod.CalPlayer
             externalAuricRejectionImmunity = false;
 
             alcoholPoisonLevel = 0;
+            alcoholPoisonMax = alcoholPoisonMaxBase;
             noLifeRegen = false;
 
             //Stratus Starburst amount management
@@ -2251,6 +2260,7 @@ namespace CalamityMod.CalPlayer
                 if (!pSoulArtifact)
                     pSoulShieldDurability = 0;
             }
+            friendlyMinions = 0;
             pSoulShieldVisible = false;
             roverDrive = false;
             roverDriveShieldVisible = false;
@@ -2695,6 +2705,7 @@ namespace CalamityMod.CalPlayer
             riptide = false;
             hadopelagicPressure = false;
             fishAlert = false;
+            malnourished = false;
             clamity = false;
             NOU = false;
             enraged = false;
@@ -2782,6 +2793,7 @@ namespace CalamityMod.CalPlayer
             moscowMule = false;
             whiteWine = false;
             evergreenGin = false;
+            baconOil = false;
 
             tranquilityCandle = false;
             chaosCandle = false;
@@ -3179,6 +3191,7 @@ namespace CalamityMod.CalPlayer
             riptide = false;
             hadopelagicPressure = false;
             fishAlert = false;
+            malnourished = false;
             clamity = false;
             NOU = false;
             snowmanNoseless = false;
@@ -3293,6 +3306,7 @@ namespace CalamityMod.CalPlayer
             moscowMule = false;
             whiteWine = false;
             evergreenGin = false;
+            baconOil = false;
             tranquilityCandle = false;
             chaosCandle = false;
             blueCandle = false;
@@ -4850,14 +4864,34 @@ namespace CalamityMod.CalPlayer
                     }
                 }
             }
-            if (Player.whoAmI == Main.myPlayer)
+
+            if (malnourished) // Has to be here because alcoholPoisonLevel isn't updated until now
             {
-                if (moonshine)
+                alcoholPoisonMax += TheSandwich.alcoholCapBoost;
+                // Gives inverted buffs from well fed
+                Player.statDefense -= 2;
+                Player.GetCritChance<GenericDamageClass>() -= 2;
+                Player.minionKB -= 0.5f;
+                Player.moveSpeed -= 0.05f;
+                // damage nerf/boost happens in PostUpdate
+                Player.pickSpeed += 0.05f;
+
+
+                for (int l = 0; l < Player.MaxBuffs; ++l)
                 {
-                    Player.statLifeMax2 = (int)(Player.statLifeMax2 * (1 + Moonshine.MaxLifePercentBoost));
+                    int buffID = Player.buffType[l];
+                    if ((BuffDatasets.DebuffDataset[buffID] != null && BuffDatasets.DebuffDataset[buffID].AlcoholLevel > 0) || buffID == BuffID.Tipsy)
+                    {
+                        Player.buffTime[l]++;
+                    }
                 }
+
+                if (Player.wellFed)
+                    Player.ClearBuff(ModContent.BuffType<Malnourished>());
             }
-                
+
+            if (moonshine)
+                Player.statLifeMax2 = (int)(Player.statLifeMax2 * (1 + Moonshine.MaxLifePercentBoost));
             ForceVariousEffects();
         }
         #endregion
@@ -5164,6 +5198,9 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
+            if (malnourished) // Has to be here because alcoholPoisonLevel isn't updated until now
+                Player.GetDamage<GenericDamageClass>() += -0.05f + TheSandwich.statBoost * alcoholPoisonLevel;
+
             // Relic of Convergence defense cut
             if (Player.ownedProjectileCounts[ModContent.ProjectileType<RelicOfConvergenceCrystal>()] > 0 && Player.HeldItem.type == ModContent.ItemType<RelicOfConvergence>())
                 Player.statDefense *= RelicOfConvergence.DefenseMultiplier;
@@ -5294,6 +5331,90 @@ namespace CalamityMod.CalPlayer
                     ModDashMovement();
             }
             #endregion
+
+            if (Player.Calamity().baconOil && !Player.mount.Active)
+            {
+                Player.noFallDmg = true;
+                
+                float velX = Math.Abs(Player.velocity.X);
+                float velY = Math.Abs(Player.velocity.Y);
+
+                float speedMult = Player.GetBestClassDamage().ApplyTo(1);
+                float maxMoveSpeed = 10.5f * speedMult;
+                float minMoveSpeed = 3; // Minimum move speed to be at if the player can bounce
+                float hitboxSizeMult = 0.45f;
+
+                bool onPlatform = false;
+                if (Player.velocity.Y > 0 && !Player.controlDown)
+                {
+                    for (int i = 4; i < 8; i++)
+                    {
+                        Point bottom = (Player.Bottom + Vector2.UnitY * i).ToTileCoordinates();
+                        if (TileID.Sets.Platforms[CalamityUtils.ParanoidTileRetrieval(bottom.X, bottom.Y).TileType])
+                        {
+                            onPlatform = true;
+                        }
+                    }
+                }
+
+                bool hitDown =  velY > minMoveSpeed && (Collision.SolidCollision(Player.Bottom + Vector2.UnitY * Player.velocity.Y, (int)(Player.width * hitboxSizeMult), 1) || onPlatform);
+                bool hitUp =  velY > minMoveSpeed && Collision.SolidCollision(Player.Top + Vector2.UnitY * Player.velocity.Y, (int)(Player.width * hitboxSizeMult), 1);
+                bool hitSide = velX > minMoveSpeed && Collision.SolidCollision(Vector2.Lerp(Player.TopLeft, Player.Left, 0.15f) + Vector2.UnitX * Player.velocity.X, 1, (int)(Player.height * hitboxSizeMult)) || Collision.SolidCollision(Vector2.Lerp(Player.TopRight, Player.Right, 0.15f) + Vector2.UnitX * Player.velocity.X, 1, (int)(Player.height * hitboxSizeMult));
+                float acceleration = 0.05f;
+                float decceleration = -0.025f / speedMult;
+                float riseSpeed = 0.8f; // The speed the player rises when in water or rain
+                float slipPower = 0.85f; //How strong the slippery effect is
+
+                float bounceReduction = 0.9f;
+                bool makeSound = false;
+                if (hitSide)
+                {
+                    Player.velocity.X = -Player.velocity.X * bounceReduction;
+                    Player.oldVelocity.X = -Player.oldVelocity.X * bounceReduction;
+                    makeSound = true;
+                }
+                if ((hitDown || hitUp))
+                {
+                    if (Player.controlUp)
+                        bounceReduction = 1.3f;
+                    Player.velocity.Y = -Player.velocity.Y * bounceReduction;
+                    Player.oldVelocity.Y = -Player.oldVelocity.Y * bounceReduction;
+                    if (hitDown)
+                    {
+                        Player.RefreshMovementAbilities(true);
+                    }
+                    makeSound = true;
+                }
+                int soundCDMax = 150;
+                if (makeSound && baconOilSoundCooldown < soundCDMax)
+                {
+                    if (baconOilSoundCooldown < soundCDMax)
+                        baconOilSoundCooldown += 30;
+                    float pitch = 0.55f * Utils.GetLerpValue(0, soundCDMax, baconOilSoundCooldown, true);
+                    SoundStyle boyoyoing = new("CalamityMod/Sounds/Item/BaconOilBounce");
+                    SoundEngine.PlaySound(boyoyoing with { Volume = 0.45f, Pitch = hitSide ? pitch - 0.3f : pitch, MaxInstances = 5 }, Player.Center);
+                }
+
+                bool playerMoving = Player.controlLeft || Player.controlRight;
+                bool playerMovingInDirection = (Player.controlLeft && Player.oldVelocity.X < 0) || (Player.controlRight && Player.oldVelocity.X > 0);
+                if (((Player.oldVelocity.X > 0 && Player.velocity.X > 0) || (Player.oldVelocity.X < 0 && Player.velocity.X < 0)))
+                    Player.velocity.X = MathHelper.Clamp(Player.velocity.X + maxMoveSpeed * MathF.Sign(Player.oldVelocity.X) * 
+                        ((playerMovingInDirection || !playerMoving) ? Player.dashDelay == -1 ? decceleration : // If dashing, deccelerate to prevent infinite dash
+                        // If not moving or holding in move direction, accelerate to max speed, otherwise deccelerate
+                        acceleration : decceleration), -maxMoveSpeed, maxMoveSpeed);
+
+                bool raining = Player.Center.Y < Main.worldSurface * 16.0 && Main.raining;
+                if ((Player.wet || raining) && Player.velocity.Y > -maxMoveSpeed)
+                {
+                    Player.velocity.Y -= riseSpeed; // Cover yourself in oil (go up in liquid)
+                }
+
+
+                Vector2 lerpedVel = Vector2.Lerp(Player.velocity, Player.oldVelocity, slipPower);
+                Player.velocity = new Vector2(lerpedVel.X, Player.velocity.Y);
+            }
+            if (baconOilSoundCooldown > 0)
+                baconOilSoundCooldown = (int)MathHelper.Lerp(baconOilSoundCooldown, 0, 0.027f);
 
             Player.oldVelocity = Player.velocity; // Apparently this value is not updated on its own, so we do it
         }

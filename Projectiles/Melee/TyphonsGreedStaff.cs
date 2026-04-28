@@ -40,6 +40,7 @@ namespace CalamityMod.Projectiles.Melee
             float rotationSpeed = -0.7853982f;
             Vector2 actualPosition = player.RotatedRelativePoint(player.MountedCenter, true);
             Vector2 rotationPoint = Vector2.Zero;
+            Projectile.scale = player.GetMeleeScale();
 
             if (player.dead)
             {
@@ -141,6 +142,7 @@ namespace CalamityMod.Projectiles.Melee
                     var source = Projectile.GetSource_FromThis();
                     Projectile bubble = CalamityUtils.ProjectileBarrage(source, Projectile.Center, player.Center, Main.rand.NextBool(), 800f, 800f, 0f, 800f, 10f, ModContent.ProjectileType<TyphonsGreedBubble>(), (int)(Projectile.damage * 1), Projectile.knockBack * 0.5f, Projectile.owner, true);
                     bubble.ai[1] = Main.rand.NextFloat() + 0.5f;
+                    bubble.scale = Projectile.scale;
                 }
             }
         }
@@ -161,7 +163,7 @@ namespace CalamityMod.Projectiles.Melee
             }
             float f = Projectile.rotation - 0.7853982f * (float)Math.Sign(Projectile.velocity.X);
             float rotationFactor = 0f;
-            float collisionRadius = 110f;
+            float collisionRadius = 110f * Projectile.scale;
             if (Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center + f.ToRotationVector2() * -collisionRadius, Projectile.Center + f.ToRotationVector2() * collisionRadius, 23f * Projectile.scale, ref rotationFactor))
             {
                 return true;

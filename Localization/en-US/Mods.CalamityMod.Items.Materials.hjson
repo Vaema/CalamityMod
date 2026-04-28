@@ -175,12 +175,7 @@ Lumenyl: {
 
 MeldBlob: {
 	DisplayName: Meld Blob
-	Tooltip: ""
-}
-
-MeldConstruct: {
-	DisplayName: Meld Construct
-	Tooltip: ""
+	Tooltip: "'Shrieks of distorted memories echo within this mass' "
 }
 
 MiracleMatter: {
