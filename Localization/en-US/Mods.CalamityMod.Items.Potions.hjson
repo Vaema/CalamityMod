@@ -157,6 +157,12 @@ SupremeManaPotion: {
 	Tooltip: ""
 }
 
+TheConcoction: {
+	DisplayName: The Concoction
+	EasterEggText: Removes 500 life
+	Tooltip: ""
+}
+
 ZenPotion: {
 	DisplayName: Zen Potion
 	Tooltip: Vastly decreases enemy spawn rate
@@ -165,6 +171,16 @@ ZenPotion: {
 ZergPotion: {
 	DisplayName: Zerg Potion
 	Tooltip: Vastly increases enemy spawn rate
+}
+
+BaconOil: {
+	DisplayName: Bacon Oil
+	Tooltip:
+		'''
+		Provides "good" mobility that scales with your damage stat boosts
+		Counts as 3 alcohols for {$Buffs.AlcoholPoisoning.DisplayName}
+		{$Common.AlcoholWarning}
+		'''
 }
 
 BloodyMary: {
@@ -455,5 +471,18 @@ ShroomBowl: {
 		'''
 		{$CommonItemTooltip.MediumStats}
 		'He has been grounded'
+		'''
+}
+
+TheSandwich: {
+	DisplayName: The Sandwich
+	Tooltip:
+		'''
+		A sandwich made of the finest bread, cheese, and fish in the land!
+		Minor reductions to all stats
+		{0}% increased damage for every alcohol you are affected by
+		Allows you to drink 2 more alcohols than normal
+		Alcohol effects will not expire while under the effects of The Sandwich
+		'Might actually taste good if it was the only thing you'd ever eaten...'
 		'''
 }

@@ -8,6 +8,11 @@ AlcoholPoisoning: {
 	Description: You drank too much and you are now dying
 }
 
+BaconOilBuff: {
+	DisplayName: Bacon Oil
+	Description: Oh gosh you spilled it all over yourself!
+}
+
 BloodyMaryBuff: {
 	DisplayName: Bloody Mary
 	Description: Increased enemy spawn rates, reduced piercing weapon effectiveness
@@ -735,6 +740,11 @@ Soaring: {
 SulphurskinBuff: {
 	DisplayName: Sulphurskin
 	Description: The sulphuric waters have a lesser effect on you
+}
+
+SwinesWrathBuff: {
+	DisplayName: Swine's Wrath
+	Description: Divine essence is rejecting your body
 }
 
 WeaponImbueBrimstone: {
@@ -1756,6 +1766,15 @@ Shadowflame: {
 ForbiddenStealthSummonTagBuff: {
 	DisplayName: Forbidden Stealth Summon Tag Buff
 	Description: If you're seeing this, something went horribly wrong
+}
+
+Malnourished: {
+	DisplayName: Malnourished
+	Description:
+		'''
+		Minor reductions to all stats
+		Your liver feels stronger!
+		'''
 }
 
 SeaKingsAssurance: {
