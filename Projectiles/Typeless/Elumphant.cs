@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Typeless
         public Vector2 lastProjPos;
         public bool spawnJumpDusts = true;
         public int usedDefenseDivide = 3;
-        public float frozenCubePower = 0; // The base power boost gained fromd defense before scaling adjustments
+        public float frozenCubePower = 0; // The base power boost gained from defense before scaling adjustments
         public bool vis => Owner.Calamity().frozenCubeVisuals;
 
         Vector2 goalPosition;
