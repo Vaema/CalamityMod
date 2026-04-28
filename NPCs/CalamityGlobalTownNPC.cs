@@ -1089,6 +1089,14 @@ namespace CalamityMod.NPCs
                         chat = CalamityUtils.GetTextValue("Vanilla.MerchantChat.Bandit");
                     break;
 
+                case NPCID.Nurse:
+                    if (Main.rand.NextBool(4) && NPC.downedPlantBoss && thief != -1)
+                        chat = CalamityUtils.GetTextValue("Vanilla.NurseChat.PlanteraDefeatedAndBanditPresent");
+                    else if (Main.rand.NextBool(4) && thief != -1)
+                        chat = CalamityUtils.GetTextValue("Vanilla.NurseChat.Bandit");
+
+                    break;
+
                 case NPCID.Painter:
                     if (Main.rand.NextBool(4) && Main.LocalPlayer.ZoneCorrupt)
                         chat = CalamityUtils.GetTextValue("Vanilla.PainterChat.Corruption");

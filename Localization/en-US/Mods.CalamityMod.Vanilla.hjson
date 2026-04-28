@@ -342,6 +342,11 @@ MerchantChat: {
 	Bandit: Have you any idea why I have several Angel Statues in my stock, friend? Please relieve me of them!
 }
 
+NurseChat: {
+	Bandit: You wouldn't happen to be taking stuff from my biohazard container, would you?
+	PlanteraDefeatedAndBanditPresent: Things have been going missing lately. First used needles, then dirty scalpels, and now... waste IV bags?
+}
+
 PainterChat: {
 	Corruption: A little sickness isn't going to stop me from doing my work as an artist!
 	Crimson: There's a surprising art to this area. A sort of horrifying, eldritch feeling. It inspires me!
