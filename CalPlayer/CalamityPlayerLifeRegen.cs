@@ -194,13 +194,14 @@ namespace CalamityMod.CalPlayer
             {
                 int buff = Player.buffType[l];
                 if (BuffDatasets.DebuffDataset[buff] is not null && BuffDatasets.DebuffDataset[buff].AlcoholLevel > 0)
-                    alcoholPoisonLevel += BuffDatasets.DebuffDataset[buff].AlcoholLevel;
+                    alcoholPoisonLevel += BuffDatasets.DebuffDataset[buff].AlcoholLevel + (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.Everclear) ? 1 : 0);
             }
             if (Player.Calamity().ivDrip) // +1 stack of poisoning while IV Drip is equipped
                 alcoholPoisonLevel++;
             if (everclear)
                 totalNegativeLifeRegen += Everclear.RegenLoss;
-
+            if (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.Everclear))
+                totalNegativeLifeRegen += Everclear.RegenLoss;
             // Blanket effect for all alcohols
             if (alcoholPoisonLevel > 0)
             {
@@ -267,7 +268,10 @@ namespace CalamityMod.CalPlayer
             // At the last second, Reaver defense helm reduces DoT debuffs by 20%
             if (reaverDefense)
                 totalNegativeLifeRegen -= (int)(totalNegativeLifeRegen * ReaverHeadTank.SetBonusDebuffDamageReduction);
+
             if (tequilaSunrise)
+                totalNegativeLifeRegen = (int)(totalNegativeLifeRegen * TequilaSunrise.DoTMultiplier);
+            if (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.TequilaSunrise))
                 totalNegativeLifeRegen = (int)(totalNegativeLifeRegen * TequilaSunrise.DoTMultiplier);
 
             Player.lifeRegen -= (int)totalNegativeLifeRegen;
@@ -340,7 +344,18 @@ namespace CalamityMod.CalPlayer
 
                 if (tequilaSunrise)
                     Player.lifeRegenTime += 1800;
+
             }
+
+            var dripPlayer = Player.GetModPlayer<IVDripPlayer>();
+            if (dripPlayer.HasAlcohol(AlcoholType.TequilaSunrise))
+            {
+                if (hadLifeRegenHinderingDebuff && !hasLifeRegenHinderingDebuff)
+                {
+                    Player.lifeRegenTime += 1800;
+                }
+            }
+
 
             #endregion
 

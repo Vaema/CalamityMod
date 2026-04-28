@@ -239,7 +239,10 @@ namespace CalamityMod.CalPlayer
             if (proj.type != ProjectileType<MythrilFlare>())
                 MythrilArmorSetChange.OnHitEffects(target, damageDone, Player);
 
-            if (moscowMule)
+            var ivDripPlayer = Player.GetModPlayer<IVDripPlayer>();
+
+            // "Heavy" Knockback effect
+            if (moscowMule || ivDripPlayer.HasAlcohol(AlcoholType.MoscowMule))
             {
                 var center = Player.Center;
                 if (proj.IsMinionOrSentryRelated)
@@ -254,10 +257,16 @@ namespace CalamityMod.CalPlayer
                 {
                     proj.damage = (int)(proj.damage * (moscowMule ? 0.8f : 1f) * (bloodyMary ? 0.75f : 1f));
                 }
-
+            }
+            if (ivDripPlayer.HasAlcohol(AlcoholType.MoscowMule) || ivDripPlayer.HasAlcohol(AlcoholType.BloodyMary))
+            {
+                if (!(PierceResistNPC.exemptProjectiles.Contains(proj.type) || (PierceResistNPC.singleHitboxExemptProjectiles.ContainsKey(proj.type) && PierceResistNPC.singleHitboxExemptProjectiles[proj.type])))
+                {
+                    proj.damage = (int)(proj.damage * (ivDripPlayer.HasAlcohol(AlcoholType.MoscowMule) ? 0.8f : 1f) * (ivDripPlayer.HasAlcohol(AlcoholType.BloodyMary) ? 0.75f : 1f));
+                }
             }
 
-                if (witheringWeaponEnchant)
+            if (witheringWeaponEnchant)
                 witheringDamageDone += (int)(damageDone * (hit.Crit ? 2D : 1D));
             cgn.TypelessDebuffMultiplier = TypelessDebuffMultiplier;
             cgn.HeatDebuffMultiplier = HeatDebuffMultiplier;

@@ -149,7 +149,8 @@ namespace CalamityMod
                 baseScale += (player.HeldItem.scale - 1);
             if (player.HasBuff(BuffID.Tipsy))
                 baseScale += 0.15f;
-
+            if (player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.Ale) || player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.Sake))
+                baseScale += 0.15f;
 
             return baseScale;
         }

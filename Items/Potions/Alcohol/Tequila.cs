@@ -1,4 +1,6 @@
-﻿using CalamityMod.Buffs.Alcohol;
+﻿using System;
+using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -8,7 +10,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
 {
-    public class Tequila : ModItem, ILocalizedModType
+    public class Tequila : ModItem, ILocalizedModType, IAlcoholItem
     {
         public new string LocalizationCategory => "Items.Potions";
 
@@ -16,7 +18,17 @@ namespace CalamityMod.Items.Potions.Alcohol
         public static float DebuffBoost = 0.5f;
         public static float DebuffLoss = 0.5f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs((DebuffBoost).ToPercent(), DebuffLoss.ToPercent());
+        public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.Tequila.DripEffect").WithFormatArgs((DebuffBoost).ToPercent(), DebuffLoss.ToPercent());
+        public AlcoholType AlcoholVariant => AlcoholType.Tequila;
 
+        public Action<Player, float> IVDripAlcoholEffect => ApplyTequilaEffect;
+
+        private static void ApplyTequilaEffect(Player player, float intensity)
+        {
+            var cplayer = player.Calamity();
+            cplayer.ElectricDebuffMultiplier += Tequila.DebuffBoost;
+            cplayer.ColdDebuffMultiplier -= Tequila.DebuffLoss;
+        }
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;
