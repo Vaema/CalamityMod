@@ -60,7 +60,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient<Lucrecia>().
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<LifeAlloy>(5).
-                AddIngredient(ItemID.FragmentSolar, 5).
+                AddIngredient<GalacticaSingularity>(3).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

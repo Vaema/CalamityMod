@@ -105,7 +105,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient(ItemID.DaedalusStormbow).
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<LifeAlloy>(5).
-                AddIngredient(ItemID.FragmentVortex, 5).
+                AddIngredient<GalacticaSingularity>(3).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }
