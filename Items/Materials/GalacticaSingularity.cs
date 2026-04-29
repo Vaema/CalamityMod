@@ -15,7 +15,6 @@ namespace CalamityMod.Items.Materials
             ItemID.Sets.AnimatesAsSoul[Type] = true;
             ItemID.Sets.ItemNoGravity[Type] = true;
             ItemID.Sets.SortingPriorityMaterials[Type] = 99; // Luminite
-            ItemID.Sets.ItemIconPulse[Type] = true;
         }
 
         public override void SetDefaults()
