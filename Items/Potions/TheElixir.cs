@@ -48,7 +48,7 @@ namespace CalamityMod.Items.Potions
                     Vector2? abyss = CalamityPlayer.GetAbyssPosition(player);
                     if (!abyss.HasValue)
                         return false;
-                    CalamityPlayer.ModTeleport(player, abyss.Value, false, TeleportationStyleID.TeleportationPotion);
+                    CalamityPlayer.ModTeleport(player, abyss.Value, false, TeleportationStyleID.RodOfDiscord);
                 }
                 //If it doesn't fail, just act like a Potion of Return
                 else

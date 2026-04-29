@@ -4300,34 +4300,29 @@ namespace CalamityMod.CalPlayer
             bool canSpawn = false;
             int x = Main.maxTilesX;
             int genLimit = x / 2;
-            int halfWorldXTiles = Abyss.AtLeftSideOfWorld ? genLimit - (genLimit - 135) + 35 : genLimit + (genLimit - 135) - 35;
-            int largerCheckRadius = 100;
-            int smallerCheckRadius = 50;
-            int y = Main.maxTilesY;
-            int teleportStartY = Main.remixWorld ? SulphurousSea.YStart : y - 250;
+
+            int abyssStartX = Abyss.AtLeftSideOfWorld ? genLimit - (genLimit - 135) + 35 : genLimit + (genLimit - 135) - 35;
+            int abyssXRange = 50;
+
+            int teleportStartY = Main.remixWorld ? SulphurousSea.YStart - (int)(Main.UnderworldLayer * 0.6f) : Main.maxTilesY - 300;
             int teleportRangeY = 80;
+
             Player.RandomTeleportationAttemptSettings settings = new Player.RandomTeleportationAttemptSettings
             {
-                mostlySolidFloor = true,
+                mostlySolidFloor = false,
                 avoidAnyLiquid = false,
                 avoidLava = true,
                 avoidHurtTiles = true,
                 avoidWalls = false,
                 attemptsBeforeGivingUp = 1000,
-                maximumFallDistanceFromOrignalPoint = 30
+                maximumFallDistanceFromOrignalPoint = 10
             };
 
-            Vector2 vector = player.CheckForGoodTeleportationSpot(ref canSpawn, halfWorldXTiles - smallerCheckRadius, largerCheckRadius, teleportStartY, teleportRangeY, settings);
-            if (!canSpawn)
-                vector = player.CheckForGoodTeleportationSpot(ref canSpawn, halfWorldXTiles - largerCheckRadius, smallerCheckRadius, teleportStartY, teleportRangeY, settings);
-
-            if (!canSpawn)
-                vector = player.CheckForGoodTeleportationSpot(ref canSpawn, halfWorldXTiles + smallerCheckRadius, smallerCheckRadius, teleportStartY, teleportRangeY, settings);
+            Vector2 vector = player.CheckForGoodTeleportationSpot(ref canSpawn, abyssStartX, abyssXRange, teleportStartY, teleportRangeY, settings);
 
             if (canSpawn)
-            {
                 return (Vector2?)vector;
-            }
+
             return null;
         }
 
