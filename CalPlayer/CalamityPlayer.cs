@@ -1049,6 +1049,10 @@ namespace CalamityMod.CalPlayer
         /// At 0f, the player has regular crit damage. At 1f, the player has +100% crit damage.
         /// </summary>
         public float critDamage = 0;
+        /// <summary>
+        /// Multiplies the amount of coins the player gets from enemies.
+        /// </summary>
+        public float coinDropMult = 1f;
         public bool darkSunRing = false;
         public bool crawCarapace = false;
         public bool baroclaw = false;
@@ -3129,6 +3133,7 @@ namespace CalamityMod.CalPlayer
             holyInfernoFadeIntensity = 0f;
             spiritOriginCritBoost = 0;
             critDamage = 0f;
+            coinDropMult = 1f;
             rage = 0f;
             adrenaline = 0f;
             raiderCritLifespan = 0;

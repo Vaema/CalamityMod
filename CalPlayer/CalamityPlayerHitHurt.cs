@@ -480,6 +480,9 @@ namespace CalamityMod.CalPlayer
         #region Modify Hit NPC
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
+            if (Player.Calamity().coinDropMult != 1)
+                target.Calamity().coinDropMult = Player.Calamity().coinDropMult;
+
             if (target.HasBuff<SmashedEvil>())
             {
                 //This is essentially 10 AP, but independent of armor amount

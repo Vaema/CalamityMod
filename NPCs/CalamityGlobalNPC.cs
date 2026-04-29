@@ -355,6 +355,8 @@ namespace CalamityMod.NPCs
         /// </summary>
         public bool pacified = false;
 
+        public float coinDropMult = 1;
+
         // Soma Prime Shred deals damage with DirectStrikes instead of with direct debuff damage
         // It also stacks, scales with ranged damage, and can crit, meaning it needs to know who applied it most recently
         /// <summary> Tracks how many stacks of the Shred debuff this NPC is inflicted with. </summary>
@@ -611,6 +613,8 @@ namespace CalamityMod.NPCs
             myClone.impalePacketTimer = impalePacketTimer;
 
             myClone.pacified = pacified;
+
+            myClone.coinDropMult = coinDropMult;
 
             myClone.somaShredStacks = somaShredStacks;
             myClone.somaShredApplicator = somaShredApplicator;

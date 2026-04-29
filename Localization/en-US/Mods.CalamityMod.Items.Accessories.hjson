@@ -785,6 +785,7 @@ FishStocks: {
 		Pulls up a view of the fish stocks
 		Provides stats that are multiplied by the state of fish stocks
 		Stats include:
+		+10 defense
 		+15% damage
 		+15% critical strike chance
 		+15% critical strike damage
@@ -792,6 +793,8 @@ FishStocks: {
 		+2HP/s life regeneration
 		+40% mining speed
 		+50 fishing power
+		+1 luck
+		2x coin drops
 		'''
 }
 

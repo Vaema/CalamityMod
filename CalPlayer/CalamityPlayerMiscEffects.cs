@@ -1701,7 +1701,7 @@ namespace CalamityMod.CalPlayer
                     float smallJump = Main.rand.NextBool(4) ? 0.55f : 0;
                     float bigJump = Main.rand.NextBool(isExtreme ? 7 : 10) ? 1.8f : 0;
                     int riseOrFall = Main.rand.NextBool() ? -1 : 1;
-                    float newFishStockPower = Player.controlUp ? 0 : Math.Clamp(fishStockPower + (Main.rand.NextFloat(0.1f, 0.2f) + Math.Max(smallJump, bigJump)) * riseOrFall, -2, 2);
+                    float newFishStockPower = Math.Clamp(fishStockPower + (Main.rand.NextFloat(0.1f, 0.2f) + Math.Max(smallJump, bigJump)) * riseOrFall, -2, 2);
                     fishStockOldPower = // Cycle each power point up as the new point is gotten
                         (fishStockPower,
                         fishStockOldPower.Item1,
@@ -1714,10 +1714,16 @@ namespace CalamityMod.CalPlayer
                 Player.GetDamage<GenericDamageClass>() += 0.15f * fishStockPower;
                 Player.GetCritChance<GenericDamageClass>() += 15 * fishStockPower;
                 Player.Calamity().critDamage += 0.15f * fishStockPower;
+                Player.statDefense += (int)(10 * fishStockPower);
                 Player.endurance += 0.1f * fishStockPower;
                 Player.lifeRegen += (int)(4 * fishStockPower);
                 Player.pickSpeed -= 0.40f * fishStockPower;
                 Player.fishingSkill += (int)(50 * fishStockPower);
+                Player.luckMaximumCap += 1f * fishStockPower;
+                Player.luck += 1f * fishStockPower;
+                float CoinMult = MathF.Abs(fishStockPower) * 2;
+                float givenMult = (fishStockPower < 0 ? (1 / CoinMult) : CoinMult);
+                Player.Calamity().coinDropMult = givenMult;
             }
             // Only put away fish stocks if the stocks are even or higher, or if they've already been started to be put away
             float goalVis = (!fishStocks && (fishStockPower >= 0 || fishStockVisual < 0.9f)) ? 0 : 1;
