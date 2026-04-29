@@ -4325,6 +4325,34 @@ namespace CalamityMod.CalPlayer
 
             return null;
         }
+        public static Vector2? GetDungeonArchivePosition(Player player)
+        {
+            if (WorldgenManagementSystem.DungeonArchivePos == Point.Zero)
+                return null;
+
+            bool canSpawn = false;
+
+            // Define an area around the center to search for a valid spot to tp
+            int rangeX = 10;
+            int rangeY = 30;
+            int teleportStartX = WorldgenManagementSystem.DungeonArchivePos.X - rangeX;
+            int teleportStartY = WorldgenManagementSystem.DungeonArchivePos.Y;
+
+            Player.RandomTeleportationAttemptSettings settings = new Player.RandomTeleportationAttemptSettings
+            {
+                mostlySolidFloor = true,
+                avoidAnyLiquid = true,
+                avoidLava = true,
+                avoidHurtTiles = true,
+                avoidWalls = false,
+                attemptsBeforeGivingUp = 1000,
+                maximumFallDistanceFromOrignalPoint = 30
+            };
+
+            Vector2 vector = player.CheckForGoodTeleportationSpot(ref canSpawn, teleportStartX, rangeX, teleportStartY, rangeY, settings);
+
+            return canSpawn ? vector : null;
+        }
 
         public static void ModTeleport(Player player, Vector2 pos, bool playSound = true, int style = TeleportationStyleID.RecallPotion)
         {

@@ -1,4 +1,5 @@
 ﻿using CalamityMod.CalPlayer;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -41,20 +42,27 @@ namespace CalamityMod.Items.Potions
         {
             if (player.whoAmI == Main.myPlayer)
             {
-                if (Main.rand.NextBool(2))
+                if (Main.rand.NextBool(1))
                 {
-                    //If it fails, inflict the player with 5 seconds of Chaos State
                     player.AddBuff(BuffID.ChaosState, 300, true);
-                    Vector2? abyss = CalamityPlayer.GetAbyssPosition(player);
-                    if (!abyss.HasValue)
+
+                    Vector2? location;
+
+                    bool archiveStoredPositionExists = WorldgenManagementSystem.DungeonArchivePos != Point.Zero;
+                    if (archiveStoredPositionExists && Main.rand.NextBool())
+                        location = CalamityPlayer.GetDungeonArchivePosition(player);
+                    else
+                        location = CalamityPlayer.GetAbyssPosition(player);
+
+                    if (!location.HasValue)
                         return false;
-                    CalamityPlayer.ModTeleport(player, abyss.Value, false, TeleportationStyleID.RodOfDiscord);
+
+                    CalamityPlayer.ModTeleport(player, location.Value, false, TeleportationStyleID.RecallPotion);
                 }
                 //If it doesn't fail, just act like a Potion of Return
                 else
-                {
                     player.DoPotionOfReturnTeleportationAndSetTheComebackPoint();
-                }
+
                 //Dust and Teleport sounds happen regardless of if it fails or not
                 Rectangle rect = player.getRect();
                 int dustAmt = rect.Width * rect.Height / 5;
