@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Magic;
+using CalamityMod.Systems.Collections;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -15,13 +16,14 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void SetStaticDefaults()
         {
             Item.staff[Type] = true;
+            CalamityItemSets.ShowScalingCritDamageTooltip[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 70;
             Item.height = 68;
-            Item.damage = 2800;
+            Item.damage = 1150;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 90;
             Item.useAnimation = Item.useTime = 65;
