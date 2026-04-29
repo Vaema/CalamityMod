@@ -181,52 +181,69 @@ namespace CalamityMod.Projectiles.Typeless
             }
             Projectile.spriteDirection = newDirection;
         }
-        public void GetTarget(bool excludeHitNPCs, float distanceMult = 1) // Target closest NPC to mouse, unless they're too far, then do closest to Elumphant
+        public void GetTarget(bool excludeHitNPCs, float distanceMult = 1, bool leaveBossesLast = false) // Target closest NPC to mouse, unless they're too far, then do closest to Elumphant
         {
             if (excludeHitNPCs)
             {
                 NPC chosenTarget = null;
                 float distance = 0;
-                for (int index = 0; index < Main.npc.Length; index++) // look for a target that isnt one it has already hit
+                if (leaveBossesLast && targeted != null)
+                    targeted = null;
+
+                for (int u = 0; u < ((leaveBossesLast && targeted == null) ? 2 : 1); u++)
                 {
-                    NPC searchedTarget = Main.npc[index];
-                    if (searchedTarget.CanBeChasedBy(null, false) && searchedTarget.HasBuff(FrozenCube.debuff) && !hitNPCs.Contains(searchedTarget) && searchedTarget.active && searchedTarget.life > 0)
+                    bool ignoreBosses = (u == 0) && leaveBossesLast;
+
+                    for (int index = 0; index < Main.npc.Length; index++) // look for a target that isnt one it has already hit
                     {
-                        float targetDistance = Projectile.Center.Distance(new Vector2(searchedTarget.Center.X, Projectile.Center.Y));
-                        if (targetDistance > distance)
+                        NPC searchedTarget = Main.npc[index];
+                        bool bossCheck = !(searchedTarget.boss && ignoreBosses);
+                        if (searchedTarget.CanBeChasedBy(null, false) && searchedTarget.HasBuff(FrozenCube.debuff) && !hitNPCs.Contains(searchedTarget) && searchedTarget.active && searchedTarget.life > 0 && bossCheck)
                         {
-                            distance = targetDistance;
-                            chosenTarget = searchedTarget;
+                            float targetDistance = Projectile.Center.Distance(new Vector2(searchedTarget.Center.X, Projectile.Center.Y));
+                            if (targetDistance > distance)
+                            {
+                                distance = targetDistance;
+                                chosenTarget = searchedTarget;
+                            }
                         }
                     }
+                    targeted = chosenTarget;
                 }
-                targeted = chosenTarget;
             }
             else
             {
                 bool targetFar = (distanceMult != -1);
 
                 NPC chosenTarget = null;
+                if (leaveBossesLast && targeted != null)
+                    targeted = null;
                 float distance = (targetFar ? 0 : maxTargetingDistance);
-                for (int index = 0; index < Main.npc.Length; index++)
-                {
-                    NPC searchedTarget = Main.npc[index];
-                    if (searchedTarget.CanBeChasedBy(null, false) && searchedTarget.active && searchedTarget.life > 0)
-                    {
-                        bool canHit = Collision.CanHit(Owner.Center, 1, 1, searchedTarget.Center, 1, 1);
 
-                        float targetDistance = Owner.Center.Distance(new Vector2(searchedTarget.Center.X, Owner.Center.Y));
-                        // Checks most distant target first, then closest if that fails
-                        bool inRange = (targetFar ? (targetDistance > distance) : (targetDistance < distance));
-                        if (inRange && canHit && targetDistance < maxTargetingDistance)
+                for (int u = 0; u < ((leaveBossesLast && targeted == null) ? 2 : 1); u++)
+                {
+                    bool ignoreBosses = (u == 0) && leaveBossesLast;
+                    for (int index = 0; index < Main.npc.Length; index++)
+                    {
+                        NPC searchedTarget = Main.npc[index];
+                        if (searchedTarget.CanBeChasedBy(null, false) && searchedTarget.active && searchedTarget.life > 0)
                         {
-                            distance = targetDistance;
-                            chosenTarget = searchedTarget;
+                            bool canHit = Collision.CanHit(Owner.Center, 1, 1, searchedTarget.Center, 1, 1);
+
+                            float targetDistance = Owner.Center.Distance(new Vector2(searchedTarget.Center.X, Owner.Center.Y));
+                            // Checks most distant target first, then closest if that fails
+                            bool inRange = (targetFar ? (targetDistance > distance) : (targetDistance < distance));
+                            bool bossCheck = !(searchedTarget.boss && ignoreBosses);
+                            if (inRange && canHit && targetDistance < maxTargetingDistance && bossCheck)
+                            {
+                                distance = targetDistance;
+                                chosenTarget = searchedTarget;
+                            }
                         }
                     }
+                    if (chosenTarget != null)
+                        targeted = chosenTarget;
                 }
-                if (chosenTarget != null)
-                    targeted = chosenTarget;
 
                 if (!ValidDistance())
                     targeted = null;
@@ -241,26 +258,14 @@ namespace CalamityMod.Projectiles.Typeless
         {
             if (!vis)
                 ScaleOpacity(0.4f);
-            if (attackTimer == 0 && Projectile.numHits == 0)
-            {
-                GetTarget(true);
-            }
-            if (attacksDone != 0)
-                Projectile.frame = 2;
-            if (recoiling)
-            {
-                attackTimeAdjusted = (int)(FrozenCube.baseAttackSpeed / GetPower(0.5f));
-                if (Projectile.numHits > 1)
-                    attackTimer = attackTimeAdjusted;
-                Projectile.numHits = 1;
-            }
 
             float attackLerp = Utils.GetLerpValue((int)(Math.Max(attackTimeAdjusted, 2) / 2), Math.Max(attackTimeAdjusted, 2), attackTimer, true);
-            int direction = Owner.ItemAnimationActive ? (Math.Sign(Projectile.Center.DirectionTo(Owner.ClampedMouseWorld()).X)) : (Owner.direction);
-            if (!recoiling)
-                fxFade = (attackLerp <= 0.2f ? 0 : Math.Max(attackLerp, MathHelper.Lerp(fxFade, 1, 0.15f)));
-            else
-                fxFade = MathHelper.Lerp(0f, 1, MathF.Pow(attackLerp, 4));
+
+            if (attackTimer == 0 && Projectile.numHits == 0)
+            {
+                GetTarget(true, 10, true);
+            }
+
             if (targeted == null || (targeted != null && (targeted.life <= 0 || !targeted.active)))
             {
                 if (attackLerp > 0 && !recoiling)
@@ -271,6 +276,23 @@ namespace CalamityMod.Projectiles.Typeless
                 recoiling = true;
                 targeted = null;
             }
+
+            if (attacksDone != 0)
+                Projectile.frame = 2;
+            if (recoiling)
+            {
+                attackTimeAdjusted = (int)(FrozenCube.baseAttackSpeed / GetPower(0.5f));
+                if (Projectile.numHits > 1)
+                    attackTimer = attackTimeAdjusted;
+                Projectile.numHits = 1;
+            }
+
+            
+            int direction = Owner.ItemAnimationActive ? (Math.Sign(Projectile.Center.DirectionTo(Owner.ClampedMouseWorld()).X)) : (Owner.direction);
+            if (!recoiling)
+                fxFade = (attackLerp <= 0.2f ? 0 : Math.Max(attackLerp, MathHelper.Lerp(fxFade, 1, 0.15f)));
+            else
+                fxFade = MathHelper.Lerp(0f, 1, MathF.Pow(attackLerp, 4));
 
             Vector2 basePosition = recoiling ? originalPosition : Projectile.numHits == 0 ? originalPosition : (lastHitNPCPos);
             Vector2 targetPos = recoiling ? lastHitNPCPos : targeted.Center - (Vector2.UnitY * targeted.height / 2);
@@ -655,7 +677,7 @@ namespace CalamityMod.Projectiles.Typeless
                 target.MoveNPC(Vector2.UnitY, 8, false, Owner);
 
                 hitNPCs.Add(target);
-                GetTarget(true);
+                GetTarget(true, 1, true);
                 lastHitNPCPos = target.Center - Vector2.UnitY * (target.height / 2);
 
                 bool lastHit = false;
