@@ -46,20 +46,19 @@ namespace CalamityMod.Items.Potions
             {
                 if (Main.rand.NextBool(4))
                 {
-                    player.AddBuff(BuffID.ChaosState, 300);
-                    player.AddBuff(BuffID.Cursed, 300);
-
                     int roll = Main.rand.Next(3);
                     Vector2? location = roll switch
                     {
-                        1 => CalamityPlayer.GetAbyssPosition(player),
-                        2 => CalamityPlayer.GetTemplePosition(player),
-                        _ => CalamityPlayer.GetDungeonArchivePosition(player)
+                        1 => CalamityPlayer.GetAbyssVoidTeleportPosition(player),
+                        2 => CalamityPlayer.GetTempleTeleportPosition(player),
+                        _ => CalamityPlayer.GetDungeonArchivesTeleportPosition(player)
                     };
 
                     if (!location.HasValue)
                         return false;
 
+                    player.AddBuff(BuffID.ChaosState, 300, false);
+                    player.AddBuff(BuffID.Cursed, 300, false);
                     CalamityPlayer.ModTeleport(player, location.Value, false, TeleportationStyleID.RecallPotion);
                 }
                 //If it doesn't fail, just act like a Potion of Return

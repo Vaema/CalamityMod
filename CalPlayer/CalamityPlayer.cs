@@ -4294,9 +4294,11 @@ namespace CalamityMod.CalPlayer
             return null;
         }
 
-        // For The Elixir random teleportation mechanic.
-        // Same applies for GetDungeonArchivesPosition and GetAbyssPosition.
-        public static Vector2? GetTemplePosition(Player player)
+        /// <summary>
+        /// Returns a random position in the Lihzhard Temple to teleport the player to. <br></br>
+        /// Used primarily for <see cref="Items.Potions.TheElixir"/>.
+        /// </summary>
+        public static Vector2? GetTempleTeleportPosition(Player player)
         {
             int foundX = -1;
             int foundY = -1;
@@ -4335,6 +4337,7 @@ namespace CalamityMod.CalPlayer
                             break;
                         }
                     }
+
                     if (foundX != -1)
                         break;
                 }
@@ -4373,7 +4376,11 @@ namespace CalamityMod.CalPlayer
             return finalTeleportPoint.ToWorldCoordinates() - new Vector2(player.width, player.height);
         }
 
-        public static Vector2? GetAbyssPosition(Player player)
+        /// <summary>
+        /// Returns a random position in the Void (Abyss Layer 4) to teleport the player to. <br></br>
+        /// Used primarily for <see cref="Items.Potions.TheElixir"/>.
+        /// </summary>
+        public static Vector2? GetAbyssVoidTeleportPosition(Player player)
         {
             bool canSpawn = false;
             int halfWorldWidth = Main.maxTilesX / 2;
@@ -4399,7 +4406,11 @@ namespace CalamityMod.CalPlayer
             return canSpawn ? teleportPosition : null;
         }
 
-        public static Vector2? GetDungeonArchivePosition(Player player)
+        /// <summary>
+        /// Returns a random position in the Forsaken Archives to teleport the player to. <br></br>
+        /// Used primarily for <see cref="Items.Potions.TheElixir"/>.
+        /// </summary>
+        public static Vector2? GetDungeonArchivesTeleportPosition(Player player)
         {
             // Define an area around the center to search for a valid spot to tp
             int teleportStartX = WorldgenManagementSystem.DungeonArchivePos.X;
