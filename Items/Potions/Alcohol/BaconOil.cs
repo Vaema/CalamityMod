@@ -1,5 +1,6 @@
-﻿using CalamityMod.Buffs.Alcohol;
-using CalamityMod.Items.Materials;
+﻿using System;
+using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Items.Accessories;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -8,9 +9,17 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
 {
-    public class BaconOil : ModItem, ILocalizedModType
+    public class BaconOil : ModItem, ILocalizedModType, IAlcoholItem
     {
         public new string LocalizationCategory => "Items.Potions";
+        public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.BaconOil.DripEffect");
+        public AlcoholType AlcoholVariant => AlcoholType.BaconOil;
+        public Action<Player, float> IVDripAlcoholEffect => ApplyBaconOilEffect;
+
+        private static void ApplyBaconOilEffect(Player player, float intensity)
+        {
+            // See CalamityPlayer
+        }
 
         public override void SetStaticDefaults()
         {

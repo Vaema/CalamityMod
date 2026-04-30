@@ -190,14 +190,30 @@ namespace CalamityMod.CalPlayer
             #endregion
 
             #region Alcohol
+            var dripPlayer = Player.GetModPlayer<IVDripPlayer>();
+
             for (int l = 0; l < Player.MaxBuffs; l++)
             {
                 int buff = Player.buffType[l];
-                if (BuffDatasets.DebuffDataset[buff] is not null && BuffDatasets.DebuffDataset[buff].AlcoholLevel > 0)
-                    alcoholPoisonLevel += BuffDatasets.DebuffDataset[buff].AlcoholLevel + (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.Everclear) ? 1 : 0);
+                if (buff <= 0) continue;
+
+                var data = BuffDatasets.DebuffDataset[buff];
+                if (data?.AlcoholLevel > 0)
+                    alcoholPoisonLevel += data.AlcoholLevel;
             }
-            if (Player.Calamity().ivDrip) // +1 stack of poisoning while IV Drip is equipped
-                alcoholPoisonLevel++;
+
+            if (dripPlayer.ivDripEquipped && dripPlayer.currentAlcohol != AlcoholType.None)
+            {
+                int ivBuffID = BuffDatasets.GetBuffIDFromAlcoholType(dripPlayer.currentAlcohol);
+
+                if (ivBuffID != -1)
+                {
+                    var ivData = BuffDatasets.DebuffDataset[ivBuffID];
+                    if (ivData?.AlcoholLevel > 0)
+                        alcoholPoisonLevel += ivData.AlcoholLevel;
+                }
+            }
+
             if (everclear)
                 totalNegativeLifeRegen += Everclear.RegenLoss;
             if (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.Everclear))
@@ -347,7 +363,6 @@ namespace CalamityMod.CalPlayer
 
             }
 
-            var dripPlayer = Player.GetModPlayer<IVDripPlayer>();
             if (dripPlayer.HasAlcohol(AlcoholType.TequilaSunrise))
             {
                 if (hadLifeRegenHinderingDebuff && !hasLifeRegenHinderingDebuff)
