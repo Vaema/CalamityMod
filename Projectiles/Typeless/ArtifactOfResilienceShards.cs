@@ -235,7 +235,7 @@ namespace CalamityMod.Projectiles.Typeless
             if (isAttacking)
                 Projectile.DrawProjectileWithBackglow(bColor with { A = 0 } * Projectile.Opacity, Color.White * Projectile.Opacity, 3 * Projectile.scale, tex);
             else
-                Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, lightColor * Projectile.Opacity, Projectile.rotation, tex.Size() * 0.5f, Projectile.scale, SpriteEffects.None, 0);
+                Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition + new Vector2(0, Owner.gfxOffY), null, lightColor * Projectile.Opacity, Projectile.rotation, tex.Size() * 0.5f, Projectile.scale, SpriteEffects.None, 0);
             
             return false;
         }

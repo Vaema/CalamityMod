@@ -121,12 +121,13 @@ namespace CalamityMod.Projectiles.Typeless
             float overPowerScale = Utils.GetLerpValue(RelicOfResilience.baseTimeMax, RelicOfResilience.maxPowerTime, Owner.Calamity().rOfResilienceEffect, true);
             float bScale2 = 0.35f * (chargeScaling + overPowerScale * 0.5f);
 
+            Vector2 drawPos = Projectile.Center + new Vector2(0, Owner.gfxOffY);
             for (int i = 0; i < (maxPower ? 6 : fullPower ? 4 : 2); i++)
             {
-                Main.EntitySpriteDraw(bTexture, Projectile.Center - Main.screenPosition, null, Color.Lerp(drawColor, Color.White, i * 0.15f) with { A = 0 }, MathHelper.PiOver4 * (i % 2 == 0 ? 1 : -1), bTexture.Size() * 0.5f, new Vector2(1 - 0.4f * overPowerScale * (1 + i * 0.3f), 1 + 0.7f * overPowerScale * (1 + i * 0.3f)) * bScale2 * rot2 * CDScale, SpriteEffects.None, 0);
+                Main.EntitySpriteDraw(bTexture, drawPos - Main.screenPosition, null, Color.Lerp(drawColor, Color.White, i * 0.15f) with { A = 0 }, MathHelper.PiOver4 * (i % 2 == 0 ? 1 : -1), bTexture.Size() * 0.5f, new Vector2(1 - 0.4f * overPowerScale * (1 + i * 0.3f), 1 + 0.7f * overPowerScale * (1 + i * 0.3f)) * bScale2 * rot2 * CDScale, SpriteEffects.None, 0);
             }
 
-            Projectile.DrawProjectileWithBackglow(Color.OrangeRed with { A = 0 } * CDScale, Color.White, 3 * rot2 * CDScale * bScale2, rTexture, null, Math.Sign(aimVel.X) < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None);
+            Projectile.DrawProjectileWithBackglow(Color.OrangeRed with { A = 0 } * CDScale, Color.White, 3 * rot2 * CDScale * bScale2, rTexture, null, Math.Sign(aimVel.X) < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, xPos: drawPos.X, yPos: drawPos.Y);
             return false;
         }
         public override bool? CanDamage() => false;
