@@ -1034,12 +1034,10 @@ IVDripOnTheRocks: {
 		'''
 		[EFFECT]
 		[NAME]
-		Counts as an alcohol stack toward Alcohol Poisoning
-		Drinking the same type of alcohol as in the IV drip does not contribute to Alcohol Poisoning
+		Inserted alcohols contribute toward alcohol poisoning
 		{$Common.AlcoholWarning}
 		[c/aaaaaa:Shift-<right> this item in your inventory to empty its contents]
 		[ceffect/drunk:'(drunken mumbling)']
-		      
 		'''
 	Empty: Place an alcoholic beverage on this item in your inventory to pour its contents in
 	CurrentAlcoholText: Filled with

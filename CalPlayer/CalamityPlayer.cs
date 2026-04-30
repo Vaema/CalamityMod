@@ -5326,16 +5326,18 @@ namespace CalamityMod.CalPlayer
             }
             #endregion
 
-            if (Player.Calamity().baconOil && !Player.mount.Active)
+            if ((Player.Calamity().baconOil || Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.BaconOil)) && !Player.mount.Active)
             {
                 Player.noFallDmg = true;
-                
+
+                float stackScale = (Player.Calamity().baconOil && Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.BaconOil)) ? 1.33f : 1;
+
                 float velX = Math.Abs(Player.velocity.X);
                 float velY = Math.Abs(Player.velocity.Y);
 
                 float speedMult = Player.GetBestClassDamage().ApplyTo(1);
-                float maxMoveSpeed = 10.5f * speedMult;
-                float minMoveSpeed = 3; // Minimum move speed to be at if the player can bounce
+                float maxMoveSpeed = 10.5f * speedMult * stackScale;
+                float minMoveSpeed = 3 * stackScale; // Minimum move speed to be at if the player can bounce
                 float hitboxSizeMult = 0.45f;
 
                 bool onPlatform = false;
@@ -5354,9 +5356,9 @@ namespace CalamityMod.CalPlayer
                 bool hitDown =  velY > minMoveSpeed && (Collision.SolidCollision(Player.Bottom + Vector2.UnitY * Player.velocity.Y, (int)(Player.width * hitboxSizeMult), 1) || onPlatform);
                 bool hitUp =  velY > minMoveSpeed && Collision.SolidCollision(Player.Top + Vector2.UnitY * Player.velocity.Y, (int)(Player.width * hitboxSizeMult), 1);
                 bool hitSide = velX > minMoveSpeed && Collision.SolidCollision(Vector2.Lerp(Player.TopLeft, Player.Left, 0.15f) + Vector2.UnitX * Player.velocity.X, 1, (int)(Player.height * hitboxSizeMult)) || Collision.SolidCollision(Vector2.Lerp(Player.TopRight, Player.Right, 0.15f) + Vector2.UnitX * Player.velocity.X, 1, (int)(Player.height * hitboxSizeMult));
-                float acceleration = 0.05f;
+                float acceleration = 0.05f * stackScale;
                 float decceleration = -0.025f / speedMult;
-                float riseSpeed = 0.8f; // The speed the player rises when in water or rain
+                float riseSpeed = 0.8f * stackScale; // The speed the player rises when in water or rain
                 float slipPower = 0.85f; //How strong the slippery effect is
 
                 float bounceReduction = 0.9f;
@@ -5384,7 +5386,7 @@ namespace CalamityMod.CalPlayer
                 {
                     if (baconOilSoundCooldown < soundCDMax)
                         baconOilSoundCooldown += 30;
-                    float pitch = 0.55f * Utils.GetLerpValue(0, soundCDMax, baconOilSoundCooldown, true);
+                    float pitch = (0.55f * stackScale) * Utils.GetLerpValue(0, soundCDMax, baconOilSoundCooldown, true);
                     SoundStyle boyoyoing = new("CalamityMod/Sounds/Item/BaconOilBounce");
                     SoundEngine.PlaySound(boyoyoing with { Volume = 0.45f, Pitch = hitSide ? pitch - 0.3f : pitch, MaxInstances = 5 }, Player.Center);
                 }
