@@ -42,17 +42,34 @@ namespace CalamityMod.Items.Potions
         {
             if (player.whoAmI == Main.myPlayer)
             {
-                if (Main.rand.NextBool(1))
+                if (Main.rand.NextBool(4))
                 {
                     player.AddBuff(BuffID.ChaosState, 300, true);
 
-                    Vector2? location;
+                    Vector2? location = null;
+                    bool archiveExists = WorldgenManagementSystem.DungeonArchivePos != Point.Zero;
 
-                    bool archiveStoredPositionExists = WorldgenManagementSystem.DungeonArchivePos != Point.Zero;
-                    if (archiveStoredPositionExists && Main.rand.NextBool())
-                        location = CalamityPlayer.GetDungeonArchivePosition(player);
+                    // If archive has a valid position stored: 0 = Archive, 1 = Abyss, 2 = Temple
+                    // Otherwise 0 = Abyss, 1 = Temple
+                    int choices = archiveExists ? 3 : 2;
+                    int roll = Main.rand.Next(choices);
+
+                    if (archiveExists)
+                    {
+                        if (roll == 0) 
+                                location = CalamityPlayer.GetDungeonArchivePosition(player);
+                        else if (roll == 1) 
+                            location = CalamityPlayer.GetAbyssPosition(player);
+                        else 
+                            location = CalamityPlayer.GetTemplePosition(player);
+                    }
                     else
-                        location = CalamityPlayer.GetAbyssPosition(player);
+                    {
+                        if (roll == 0) 
+                            location = CalamityPlayer.GetAbyssPosition(player);
+                        else 
+                            location = CalamityPlayer.GetTemplePosition(player);
+                    }
 
                     if (!location.HasValue)
                         return false;

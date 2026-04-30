@@ -4289,12 +4289,50 @@ namespace CalamityMod.CalPlayer
                 vector = player.CheckForGoodTeleportationSpot(ref canSpawn, halfWorldXTiles + smallerCheckRadius, smallerCheckRadius, teleportStartY, teleportRangeY, settings);
 
             if (canSpawn)
-            {
                 return (Vector2?)vector;
-            }
+
             return null;
         }
+        public static Vector2? GetTemplePosition(Player player)
+        {
+            int foundX = -1;
+            int foundY = -1;
 
+            for (int i = 0; i < Main.maxTilesX; i += 2)
+            {
+                for (int j = Main.maxTilesY - 100; j > (int)Main.worldSurface; j--)
+                {
+                    Tile tile = Framing.GetTileSafely(i, j);
+                    if (tile.HasTile && tile.TileType == TileID.LihzahrdAltar)
+                    {
+                        foundX = i;
+                        foundY = j;
+                        break;
+                    }
+                }
+                if (foundX != -1)
+                    break;
+            }
+
+            if (foundX == -1)
+                return null;
+
+            Player.RandomTeleportationAttemptSettings settings = new Player.RandomTeleportationAttemptSettings
+            {
+                mostlySolidFloor = true,
+                avoidAnyLiquid = false,
+                avoidLava = true,
+                avoidHurtTiles = true,
+                avoidWalls = false,
+                attemptsBeforeGivingUp = 1000,
+                maximumFallDistanceFromOrignalPoint = 5
+            };
+
+            // Lastly, convert to world coordinates to circumvent Vanilla preventing teleporting to the Temple
+            Point worldCoords = new(foundX, foundY - 3); // Offset as it spawns you in the bottom left of the tile by default
+            return worldCoords.ToWorldCoordinates();
+
+        }
         public static Vector2? GetAbyssPosition(Player player)
         {
             bool canSpawn = false;
