@@ -29,12 +29,14 @@ namespace CalamityMod.Items.Potions
             Item.DefaultToFood(28, 51, 0, 0, true);
         }
 
-        //The player can't use The Elixir if they have Chaos State. 
-        //This is to ensure if that it fails, they can't simply drink another to escape 
+        // Player is unable to use the item when Chaos State is enabled to prevent spamming the item.
+        // Even though the item also inflicts Cursed, this is kept as a failsafe in the event the player has something equipped that 
+        // provides immunity to Cursed. (i.e Countercurse Mantra or Nazar)
         public override bool CanUseItem(Player player)
         {
-            //if (player.HasBuff(BuffID.ChaosState))
-                //return false;
+            if (player.HasBuff(BuffID.ChaosState))
+                return false;
+
             return base.CanUseItem(player);
         }
 
@@ -44,32 +46,16 @@ namespace CalamityMod.Items.Potions
             {
                 if (Main.rand.NextBool(4))
                 {
-                    player.AddBuff(BuffID.ChaosState, 300, true);
+                    player.AddBuff(BuffID.ChaosState, 300);
+                    player.AddBuff(BuffID.Cursed, 300);
 
-                    Vector2? location = null;
-                    bool archiveExists = WorldgenManagementSystem.DungeonArchivePos != Point.Zero;
-
-                    // If archive has a valid position stored: 0 = Archive, 1 = Abyss, 2 = Temple
-                    // Otherwise 0 = Abyss, 1 = Temple
-                    int choices = archiveExists ? 3 : 2;
-                    int roll = Main.rand.Next(choices);
-
-                    if (archiveExists)
+                    int roll = Main.rand.Next(3);
+                    Vector2? location = roll switch
                     {
-                        if (roll == 0) 
-                                location = CalamityPlayer.GetDungeonArchivePosition(player);
-                        else if (roll == 1) 
-                            location = CalamityPlayer.GetAbyssPosition(player);
-                        else 
-                            location = CalamityPlayer.GetTemplePosition(player);
-                    }
-                    else
-                    {
-                        if (roll == 0) 
-                            location = CalamityPlayer.GetAbyssPosition(player);
-                        else 
-                            location = CalamityPlayer.GetTemplePosition(player);
-                    }
+                        1 => CalamityPlayer.GetAbyssPosition(player),
+                        2 => CalamityPlayer.GetTemplePosition(player),
+                        _ => CalamityPlayer.GetDungeonArchivePosition(player)
+                    };
 
                     if (!location.HasValue)
                         return false;

@@ -4293,53 +4293,92 @@ namespace CalamityMod.CalPlayer
 
             return null;
         }
+
+        // For The Elixir random teleportation mechanic.
+        // Same applies for GetDungeonArchivesPosition and GetAbyssPosition.
         public static Vector2? GetTemplePosition(Player player)
         {
             int foundX = -1;
             int foundY = -1;
+            bool dungeonOnRightSide = Main.dungeonX > Main.spawnTileX;
+            int xSearchEnd = dungeonOnRightSide ? 20 : Main.maxTilesX - 20;
 
-            for (int i = 0; i < Main.maxTilesX; i += 2)
+            if (dungeonOnRightSide)
             {
-                for (int j = Main.maxTilesY - 100; j > (int)Main.worldSurface; j--)
+                for (int i = Main.spawnTileX; i >= xSearchEnd; i -= 2)
                 {
-                    Tile tile = Framing.GetTileSafely(i, j);
-                    if (tile.HasTile && tile.TileType == TileID.LihzahrdAltar)
+                    for (int j = (int)Main.worldSurface; j < Main.maxTilesY - 210; j++)
                     {
-                        foundX = i;
-                        foundY = j;
-                        break;
+                        Tile tile = Framing.GetTileSafely(i, j);
+                        if (tile.HasTile && tile.TileType == TileID.LihzahrdAltar)
+                        {
+                            foundX = i;
+                            foundY = j;
+                            break;
+                        }
                     }
+                    if (foundX != -1)
+                        break;
                 }
-                if (foundX != -1)
-                    break;
+            }
+            else
+            {
+                for (int i = Main.spawnTileX; i <= xSearchEnd; i += 2)
+                {
+                    for (int j = (int)Main.worldSurface; j < Main.maxTilesY - 210; j++)
+                    {
+                        Tile tile = Framing.GetTileSafely(i, j);
+                        if (tile.WallType == WallID.LihzahrdBrickUnsafe)
+                        {
+                            foundX = i;
+                            foundY = j;
+                            break;
+                        }
+                    }
+                    if (foundX != -1)
+                        break;
+                }
             }
 
             if (foundX == -1)
                 return null;
 
-            Player.RandomTeleportationAttemptSettings settings = new Player.RandomTeleportationAttemptSettings
+            int attempts = 25;
+            int rangeX = 300;
+            int rangeY = 300;
+            int randomFluff = 500;
+            Point finalTeleportPoint = Point.Zero;
+            for (int i = 0; i < attempts; i++)
             {
-                mostlySolidFloor = true,
-                avoidAnyLiquid = false,
-                avoidLava = true,
-                avoidHurtTiles = true,
-                avoidWalls = false,
-                attemptsBeforeGivingUp = 1000,
-                maximumFallDistanceFromOrignalPoint = 5
-            };
+                for (int x = 0; x <= rangeX; x++)
+                {
+                    for (int y = 0; y <= rangeY; y++)
+                    {
+                        int teleportPosX = foundX + x + Main.rand.Next(-randomFluff, randomFluff);
+                        int teleportPosY = foundY + y + Main.rand.Next(-randomFluff, randomFluff);
+                        Tile tile = Framing.GetTileSafely(teleportPosX, teleportPosY);
+                        Tile tileAbove = Framing.GetTileSafely(teleportPosX, teleportPosY - 1);
+                        Tile tileBelow = Framing.GetTileSafely(teleportPosX, teleportPosY + 1);
 
-            // Lastly, convert to world coordinates to circumvent Vanilla preventing teleporting to the Temple
-            Point worldCoords = new(foundX, foundY - 3); // Offset as it spawns you in the bottom left of the tile by default
-            return worldCoords.ToWorldCoordinates();
+                        if (!tileAbove.HasTile && tileBelow.HasTile && tile.WallType == WallID.LihzahrdBrickUnsafe)
+                        {
+                            finalTeleportPoint = new(tile.X(), tile.Y());
+                            if (!Collision.SolidCollision(finalTeleportPoint.ToWorldCoordinates(), player.width, player.height))
+                                break;
+                        }
+                    }
+                }
+            }
 
+            return finalTeleportPoint.ToWorldCoordinates() - new Vector2(player.width, player.height);
         }
+
         public static Vector2? GetAbyssPosition(Player player)
         {
             bool canSpawn = false;
-            int x = Main.maxTilesX;
-            int genLimit = x / 2;
+            int halfWorldWidth = Main.maxTilesX / 2;
 
-            int abyssStartX = Abyss.AtLeftSideOfWorld ? genLimit - (genLimit - 135) + 35 : genLimit + (genLimit - 135) - 35;
+            int abyssStartX = Abyss.AtLeftSideOfWorld ? halfWorldWidth - (halfWorldWidth - 135) + 35 : halfWorldWidth + (halfWorldWidth - 135) - 35;
             int abyssXRange = 50;
 
             int teleportStartY = Main.remixWorld ? SulphurousSea.YStart - (int)(Main.UnderworldLayer * 0.6f) : Main.maxTilesY - 300;
@@ -4356,40 +4395,98 @@ namespace CalamityMod.CalPlayer
                 maximumFallDistanceFromOrignalPoint = 10
             };
 
-            Vector2 vector = player.CheckForGoodTeleportationSpot(ref canSpawn, abyssStartX, abyssXRange, teleportStartY, teleportRangeY, settings);
-
-            if (canSpawn)
-                return (Vector2?)vector;
-
-            return null;
+            Vector2 teleportPosition = player.CheckForGoodTeleportationSpot(ref canSpawn, abyssStartX, abyssXRange, teleportStartY, teleportRangeY, settings);
+            return canSpawn ? teleportPosition : null;
         }
+
         public static Vector2? GetDungeonArchivePosition(Player player)
         {
-            if (WorldgenManagementSystem.DungeonArchivePos == Point.Zero)
-                return null;
-
-            bool canSpawn = false;
-
             // Define an area around the center to search for a valid spot to tp
-            int rangeX = 10;
-            int rangeY = 30;
-            int teleportStartX = WorldgenManagementSystem.DungeonArchivePos.X - rangeX;
+            int teleportStartX = WorldgenManagementSystem.DungeonArchivePos.X;
             int teleportStartY = WorldgenManagementSystem.DungeonArchivePos.Y;
 
-            Player.RandomTeleportationAttemptSettings settings = new Player.RandomTeleportationAttemptSettings
+            // Manually search for the Archives from the bottom of the world if the Archive position isn't saved.
+            if (WorldgenManagementSystem.DungeonArchivePos == Point.Zero)
             {
-                mostlySolidFloor = true,
-                avoidAnyLiquid = true,
-                avoidLava = true,
-                avoidHurtTiles = true,
-                avoidWalls = false,
-                attemptsBeforeGivingUp = 1000,
-                maximumFallDistanceFromOrignalPoint = 30
-            };
+                int foundX = -1;
+                int foundY = -1;
+                bool dungeonOnRightSide = Main.dungeonX > Main.spawnTileX;
+                int xSearchStart = dungeonOnRightSide ? Main.maxTilesX - 20 : 20;
 
-            Vector2 vector = player.CheckForGoodTeleportationSpot(ref canSpawn, teleportStartX, rangeX, teleportStartY, rangeY, settings);
+                if (dungeonOnRightSide)
+                {
+                    for (int y = Main.UnderworldLayer; y > (int)Main.rockLayer; y--)
+                    {
+                        for (int x = xSearchStart; x >= Main.maxTilesX / 2; x -= 2)
+                        {
+                            Tile tile = Framing.GetTileSafely(x, y);
+                            if (Main.wallDungeon[tile.WallType] && Main.tileDungeon[tile.TileType])
+                            {
+                                foundX = x;
+                                foundY = y;
+                                break;
+                            }
+                        }
 
-            return canSpawn ? vector : null;
+                        if (foundY != -1)
+                            break;
+                    }
+                }
+                else
+                {
+                    for (int y = Main.UnderworldLayer; y > (int)Main.rockLayer; y--)
+                    {
+                        for (int x = xSearchStart; x <= Main.maxTilesX / 2; x += 2)
+                        {
+                            Tile tile = Framing.GetTileSafely(x, y);
+                            if (Main.wallDungeon[tile.WallType] && Main.tileDungeon[tile.TileType])
+                            {
+                                foundX = x;
+                                foundY = y;
+                                break;
+                            }
+                        }
+
+                        if (foundY != -1)
+                            break;
+                    }
+                }
+
+                if (foundY == -1)
+                    return null;
+
+                teleportStartX = foundX;
+                teleportStartY = foundY;
+            }
+
+            int attempts = 25;
+            int rangeX = 100;
+            int rangeY = 200;
+            int randomFluff = 60;
+            Point finalTeleportPoint = Point.Zero;
+            for (int i = 0; i < attempts; i++)
+            {
+                for (int x = -rangeX; x <= rangeX; x++)
+                {
+                    for (int y = 0; y <= rangeY; y++)
+                    {
+                        int teleportPosX = teleportStartX + x + Main.rand.Next(-randomFluff, randomFluff);
+                        int teleportPosY = teleportStartY + y + Main.rand.Next(-randomFluff, randomFluff);
+                        Tile tile = Framing.GetTileSafely(teleportPosX, teleportPosY);
+                        Tile tileAbove = Framing.GetTileSafely(teleportPosX, teleportPosY - 1);
+                        Tile tileBelow = Framing.GetTileSafely(teleportPosX, teleportPosY + 1);
+
+                        if (!tileAbove.HasTile && tileBelow.HasUnactuatedTile && Main.wallDungeon[tile.WallType])
+                        {
+                            finalTeleportPoint = new(tile.X(), tile.Y());
+                            if (!Collision.SolidCollision(finalTeleportPoint.ToWorldCoordinates(), player.width, player.height))
+                                break;
+                        }
+                    }
+                }
+            }
+
+            return finalTeleportPoint.ToWorldCoordinates() - new Vector2(player.width, player.height);
         }
 
         public static void ModTeleport(Player player, Vector2 pos, bool playSound = true, int style = TeleportationStyleID.RecallPotion)
