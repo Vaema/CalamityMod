@@ -487,6 +487,15 @@ TequilaSunrise: {
 		'''
 }
 
+TheElixir: {
+	DisplayName: The Elixir
+	Tooltip:
+		'''
+		Functions as a Potion of Return
+		Occasionally sends you... [c/AA23C4:somewhere else]
+		'''
+}
+
 Vodka: {
 	DisplayName: Vodka
 	Tooltip:
