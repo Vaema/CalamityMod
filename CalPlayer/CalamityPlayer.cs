@@ -4310,7 +4310,7 @@ namespace CalamityMod.CalPlayer
                     for (int j = (int)Main.worldSurface; j < Main.maxTilesY - 210; j++)
                     {
                         Tile tile = Framing.GetTileSafely(i, j);
-                        if (tile.HasTile && tile.TileType == TileID.LihzahrdAltar)
+                        if (tile.WallType == WallID.LihzahrdBrickUnsafe)
                         {
                             foundX = i;
                             foundY = j;
