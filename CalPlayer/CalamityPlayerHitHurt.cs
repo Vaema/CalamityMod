@@ -1529,6 +1529,7 @@ namespace CalamityMod.CalPlayer
                     Player.AddCooldown(GlobalDodge.ID, cooldownDuration);
                 else
                     Player.AddCooldown(GlobalDodge.ID, cooldownDuration, true, IconToUse);
+                Player.SetImmuneTimeForAllTypes(Player.longInvince ? 120 : 80);
             }
 
             //Dodge activation order is as follows:

@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Weapons.Summon;
-using CalamityMod.Projectiles.BaseProjectiles;
+﻿using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
@@ -92,33 +91,9 @@ namespace CalamityMod.Items.Weapons.Melee
                             {
                                 if (proj2.active && proj2.type == ModContent.ProjectileType<MirrorBlast>() && proj2.owner == player.whoAmI && (proj2.ModProjectile as MirrorBlast).isShard)
                                 {
-                                    proj2.damage = (int)(proj2.damage * (shardCount >= 10 ? 3f : 2f));
-                                    (proj2.ModProjectile as MirrorBlast).shardShield = 0;
-                                    (proj2.ModProjectile as MirrorBlast).shardNum = 11;
-                                    proj2.netUpdate = true;
-                                }
-                            }
-                            reflectTimer = 0;
-                            return;
-                        } else
-                        if (proj.hostile && proj.damage > 0 && proj.Hitbox.IntersectsConeSlowMoreAccurate(player.Center, coneLength, coneRotation, maximumAngle))
-                        {
-                            if (shardCount > 0)
-                            {
-                                SoundEngine.PlaySound(SeekingScorcher.LightShatterSound, player.Center);
-                                SoundEngine.PlaySound(SoundID.DD2_WitherBeastDeath, player.Center);
-                            }
-                            if (shardCount >= 10)
-                            {
-                                player.SetImmuneTimeForAllTypes(player.longInvince ? 60 : 30);
-                            }
-                            proj.Calamity().multiplicativeDR += shardCount / 10f;
-                            proj.Calamity().multiplicativeDRTimer = 60;
-                            foreach (var proj2 in Main.projectile)
-                            {
-                                if (proj2.active && proj2.type == ModContent.ProjectileType<MirrorBlast>() && proj2.owner == player.whoAmI && (proj2.ModProjectile as MirrorBlast).isShard)
-                                {
-                                    proj2.damage = (int)(proj2.damage * (shardCount >= 10 ? 3f : 2f));
+                                    //Don't amplify Evolution shards
+                                    if (proj2.DamageType != DamageClass.Generic)
+                                        proj2.damage = (int)(proj2.damage * (shardCount >= 10 ? 3f : 2f));
                                     (proj2.ModProjectile as MirrorBlast).shardShield = 0;
                                     (proj2.ModProjectile as MirrorBlast).shardNum = 11;
                                     proj2.netUpdate = true;
@@ -127,6 +102,35 @@ namespace CalamityMod.Items.Weapons.Melee
                             reflectTimer = 0;
                             return;
                         }
+                        else
+                            if (proj.hostile && proj.damage > 0 && proj.Hitbox.IntersectsConeSlowMoreAccurate(player.Center, coneLength, coneRotation, maximumAngle))
+                            {
+                                if (shardCount > 0)
+                                {
+                                    SoundEngine.PlaySound(SeekingScorcher.LightShatterSound, player.Center);
+                                    SoundEngine.PlaySound(SoundID.DD2_WitherBeastDeath, player.Center);
+                                }
+                                if (shardCount >= 10)
+                                {
+                                    player.SetImmuneTimeForAllTypes(player.longInvince ? 60 : 30);
+                                }
+                                proj.Calamity().multiplicativeDR += shardCount / 10f;
+                                proj.Calamity().multiplicativeDRTimer = 60;
+                                foreach (var proj2 in Main.projectile)
+                                {
+                                    if (proj2.active && proj2.type == ModContent.ProjectileType<MirrorBlast>() && proj2.owner == player.whoAmI && (proj2.ModProjectile as MirrorBlast).isShard)
+                                    {
+                                        //Don't amplify Evolution shards
+                                        if (proj2.DamageType != DamageClass.Generic)
+                                            proj2.damage = (int)(proj2.damage * (shardCount >= 10 ? 3f : 2f));
+                                        (proj2.ModProjectile as MirrorBlast).shardShield = 0;
+                                        (proj2.ModProjectile as MirrorBlast).shardNum = 11;
+                                        proj2.netUpdate = true;
+                                    }
+                                }
+                                reflectTimer = 0;
+                                return;
+                            }
                     }
                 }
                 reflectTimer--;
@@ -149,9 +153,9 @@ namespace CalamityMod.Items.Weapons.Melee
                         hasShard = true;
                     }
                 }
-                
+
                 if (!alreadyReflecting && hasShard)
-                    SoundEngine.PlaySound(SoundID.DD2_EtherianPortalSpawnEnemy,player.Center);
+                    SoundEngine.PlaySound(SoundID.DD2_EtherianPortalSpawnEnemy, player.Center);
                 return false;
             }
             return base.Shoot(player, source, position, velocity, type, damage, knockback);
