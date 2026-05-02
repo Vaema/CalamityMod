@@ -59,7 +59,6 @@ namespace CalamityMod.Projectiles.Typeless
         public Vector2 lastHitNPCPos;
         public Vector2 lastProjPos;
         public bool spawnJumpDusts = true;
-        public int usedDefenseDivide = 3;
         public float frozenCubePower = 0; // The base power boost gained from defense before scaling adjustments
         public bool vis => Owner.Calamity().frozenCubeVisuals;
 
@@ -131,10 +130,10 @@ namespace CalamityMod.Projectiles.Typeless
         }
         public void SetElumphantPower()
         {
-            int usedDefense = (Owner.statDefense / usedDefenseDivide);
+            int usedDefense = Owner.Calamity().frozenCubeUsedDefense;
             if (time == 0) // Show the player how much defense is being used
                 CombatText.NewText(Projectile.Hitbox, color2, -usedDefense,false, true);
-            Owner.statDefense -= usedDefense;
+
             frozenCubePower = usedDefense * 0.05f; // 1 point of defense = 5% effectiveness
             
             float power = (float)(GetPower(0.0185f, 13f * (1 + frozenCubePower)) - 1);

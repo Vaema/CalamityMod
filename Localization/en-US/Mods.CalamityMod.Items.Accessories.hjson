@@ -2253,7 +2253,7 @@ FrozenCube: {
 		Elumphant's headbutts only target enemies inflicted with [cbuff:CalamityMod/WindChilled]
 		Reduces your defense by 33%, but uses that defense to boost the Elumphant's power and your cold debuff damage
 		[DAMAGELINE]
-		[c/7497ED:What I wanna know is, where's the mammoth?']
+		[c/7497ED:'What I wanna know is, where's the mammoth?']
 		'''
 	EquippedDebuff: Current Cold Debuff boost: +{0}%
 	EquippedElumphant: Current Elumphant Power: +{0}%
