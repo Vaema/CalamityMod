@@ -286,7 +286,8 @@ namespace CalamityMod.CalPlayer
             {
                 if (fishStocks)
                 {
-                    damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.FishStocks" + Main.rand.Next(1, 6 + 1)).ToNetworkText(Player.name));
+                    string year = DateTime.Now.ToString("yy");
+                    damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.FishStocks" + Main.rand.Next(1, 6 + 1)).ToNetworkText(Player.name, year));
                 }
                 if (alcoholPoisoning)
                 {
