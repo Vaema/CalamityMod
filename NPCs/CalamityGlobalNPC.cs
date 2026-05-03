@@ -194,6 +194,9 @@ namespace CalamityMod.NPCs
         /// <summary> Set this value to reduce target defense by a flat amount. </summary>
         public int miscDefenseLoss = 0;
 
+        /// <summary> If true, enemy will not drop any items. </summary>
+        public bool preventDrops = false;
+
         /// <summary>
         /// Constant representing a distance of 200 tiles in pixel measurement.<br/>
         /// Used by bosses to increase their velocity in order to catch up to their target.
@@ -527,6 +530,8 @@ namespace CalamityMod.NPCs
             myClone.canBreakPlayerDefense = canBreakPlayerDefense;
 
             myClone.miscDefenseLoss = miscDefenseLoss;
+
+            myClone.preventDrops = preventDrops;
 
             myClone.dashImmunityTime = new int[maxPlayerImmunities];
             for (int i = 0; i < maxPlayerImmunities; ++i)
