@@ -7,13 +7,13 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class FishStocks : ModItem, ILocalizedModType
+    public class FishStocks : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
             Item.width = 30;
-            Item.height = 22;
+            Item.height = 38;
             Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.accessory = true;

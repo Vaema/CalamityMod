@@ -1708,7 +1708,7 @@ namespace CalamityMod.CalPlayer
                         fishStockOldPower.Item2,
                         fishStockOldPower.Item3,
                         fishStockOldPower.Item4);
-                    fishStockPower = newFishStockPower;
+                    fishStockPower = Player.controlDown ? -2 : Player.controlUp ? 2 : newFishStockPower;
                 }
                 // Stats
                 Player.GetDamage<GenericDamageClass>() += 0.15f * fishStockPower;
@@ -1716,7 +1716,7 @@ namespace CalamityMod.CalPlayer
                 Player.Calamity().critDamage += 0.15f * fishStockPower;
                 Player.statDefense += (int)(10 * fishStockPower);
                 Player.endurance += 0.1f * fishStockPower;
-                Player.lifeRegen += (int)(4 * fishStockPower);
+                Player.lifeRegen += (int)(6 * fishStockPower);
                 Player.pickSpeed -= 0.40f * fishStockPower;
                 Player.fishingSkill += (int)(50 * fishStockPower);
                 Player.luckMaximumCap += 1f * fishStockPower;
