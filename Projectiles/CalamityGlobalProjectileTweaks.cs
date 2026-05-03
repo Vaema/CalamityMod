@@ -123,7 +123,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.BlueMoon, Do(ExtraUpdatesExact(1)) },
                 { ProjectileID.Bullet, Do(ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
                 { ProjectileID.BulletHighVelocity, Do(ExtraUpdatesDelta(+2), LocalIFrames(-1)) },
-                { ProjectileID.ButchersChainsaw, Do(TrueMeleeNoSpeed, ArmorPenetrationDelta(+15), LocalIFrames(7), ScaleExact(1.5f)) },
+                { ProjectileID.ButchersChainsaw, Do(TrueMeleeNoSpeed, ArmorPenetrationDelta(+15), LocalIFrames(10), ScaleExact(1.5f)) },
                 { ProjectileID.ChlorophyteChainsaw, standardChainsawTweaks },
                 { ProjectileID.ChlorophyteDrill, standardDrillTweaks },
                 { ProjectileID.ChlorophyteJackhammer, standardDrillTweaks },
@@ -188,6 +188,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.PalladiumDrill, standardDrillTweaks },
                 { ProjectileID.PartyBullet, Do(ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
                 { ProjectileID.PurpleCounterweight, counterweightTweaks },
+                { ProjectileID.PurpleLaser, Do(LocalIFrames(10 * 5)) }, // Laser Rifle, accounting for extra updates
                 { ProjectileID.QueenSlimeGelAttack, Do(NoPiercing) },
                 { ProjectileID.QueenSlimeMinionPinkBall, Do(NoPiercing) },
                 { ProjectileID.RedCounterweight, counterweightTweaks },
@@ -213,7 +214,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.VenomSpider, Do( ExtraUpdatesExact(2), LocalIFrames(90)) }, //Spider Staff spiders. It has Venom, Dangerous, and Jumping spiders.
                 { ProjectileID.VortexDrill, standardDrillTweaks },
                 { ProjectileID.Wasp, Do(PiercingExact(2)) },
-                { ProjectileID.WeatherPainShot, Do(ExtraUpdatesExact(3), TimeLeftExact(1920)) },
+                { ProjectileID.WeatherPainShot, Do(ExtraUpdatesExact(3)) },
                 { ProjectileID.YellowCounterweight, counterweightTweaks },
                 #endregion
 
@@ -237,6 +238,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.ShadowJoustingLance, trueMelee },
                 { ProjectileID.SilverShortswordStab, trueMelee },
                 { ProjectileID.SolarFlareChainsaw, trueMeleeNoSpeed },
+                { ProjectileID.Spark, trueMeleeNoSpeed },
                 { ProjectileID.Spear, trueMelee },
                 { ProjectileID.StardustChainsaw, trueMeleeNoSpeed },
                 { ProjectileID.Swordfish, trueMelee },
@@ -490,7 +492,6 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.PulseBolt, defaultIFrames },
                 { ProjectileID.PureSpray, defaultIFrames },
                 { ProjectileID.PurificationPowder, defaultIFrames },
-                { ProjectileID.PurpleLaser, defaultIFrames },
                 { ProjectileID.PygmySpear, defaultIFrames },
                 { ProjectileID.QuarterNote, defaultIFrames },
                 { ProjectileID.RainbowFlare, defaultIFrames },

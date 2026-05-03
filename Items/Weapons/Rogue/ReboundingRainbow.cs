@@ -56,7 +56,7 @@ namespace CalamityMod.Items.Weapons.Rogue
                 AddIngredient<SamsaraSlicer>().
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<LifeAlloy>(5).
-                AddIngredient<MeldConstruct>(5).
+                AddIngredient<MeldBlob>(5).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

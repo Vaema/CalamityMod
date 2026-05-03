@@ -72,14 +72,6 @@ namespace CalamityMod.Projectiles.Typeless
 
             if (customKnockback != 0)
                 target.MoveNPC(pushVelocity, customKnockback, hasStongDisplacement, Main.player[Projectile.owner]);
-
-            if (Projectile.owner != -1)
-            {
-                Player Owner = Main.player[Projectile.owner];
-                bool crit = Main.rand.Next(0, 100 + 1) < Owner.GetTotalCritChance(Projectile.DamageType);
-                if (crit)
-                    modifiers.SetCrit();
-            }
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {

@@ -41,12 +41,12 @@ namespace CalamityMod.Projectiles.Magic
                 int attackType = ModContent.ProjectileType<ArtAttackStar>();
                 if (Owner.ownedProjectileCounts[attackType] == 0)
                 {
-                    if (Projectile.ai[0] >= 0f && Owner.CheckMana(Owner.HeldItem, -1, true, false))
+                    if (Projectile.ai[0] >= 1f && Owner.CheckMana(Owner.HeldItem, -1, true, false))
                     {
                         SoundEngine.PlaySound(ArtAttack.UseSound, Owner.Center);
                         Vector2 initialStarVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 15f;
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.ClampedMouseWorld(), initialStarVelocity, attackType, Projectile.damage, Projectile.knockBack, Projectile.owner);
-                        Projectile.ai[0] = -24f;
+                        Projectile.ai[0] -= Owner.HeldItem.useAnimation;
                     }
                     else
                         Projectile.ai[0]++;

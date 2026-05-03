@@ -14,7 +14,6 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    [PierceResistException]
     public class DragonRageStaff : ModProjectile
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<DragonRage>();
@@ -37,6 +36,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             Player player = Main.player[Projectile.owner];
             float spinCycleTime = 50f;
+            Projectile.scale = player.GetMeleeScale();
 
             // If the player is dead, destroy the projectile
             if (player.dead || !player.channel)
@@ -183,7 +183,8 @@ namespace CalamityMod.Projectiles.Melee
                 Vector2 velocity = new Vector2(0f, speed);
                 velocity = velocity.RotatedBy(angleStep * i * Main.rand.NextFloat(0.9f, 1.1f));
 
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<DragonRageFireball>(), Projectile.damage / 8, Projectile.knockBack / 3f, Projectile.owner);
+                Projectile fire = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<DragonRageFireball>(), Projectile.damage / 8, Projectile.knockBack / 3f, Projectile.owner);
+                fire.scale = Projectile.scale;
             }
             Main.player[Projectile.owner].Calamity().dragonRageCooldown = 60;
         }
@@ -238,12 +239,14 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
+            Vector2 newSize = new Point(projHitbox.Width, projHitbox.Height).ToVector2() * Projectile.scale;
+            projHitbox = new Rectangle(projHitbox.X - (int)((newSize.X - projHitbox.Width) / 2f), projHitbox.Y - (int)((newSize.Y - projHitbox.Height) / 2f), (int)newSize.X, (int)newSize.Y);
             if (projHitbox.Intersects(targetHitbox))
             {
                 return true;
             }
             float spinning = Projectile.rotation - MathHelper.PiOver4 * (float)Math.Sign(Projectile.velocity.X);
-            float staffRadiusHit = 110f;
+            float staffRadiusHit = 110f * Projectile.scale;
             float useless = 0f;
             if (Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center + spinning.ToRotationVector2() * -staffRadiusHit, Projectile.Center + spinning.ToRotationVector2() * staffRadiusHit, 23f * Projectile.scale, ref useless))
             {

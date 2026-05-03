@@ -595,7 +595,19 @@ namespace CalamityMod.CalPlayer
         {
             if (proj.npcProj || proj.trap)
                 return;
-                
+
+            //Add raider crit before hit
+            if (!proj.Calamity().stealthStrike && !proj.Calamity().stealthStrikeSubProjectile && raiderCritLifespan > 0f)
+            {
+                if (nanotech)
+                    proj.CritChance += Items.Accessories.Nanotech.RaiderBonus;
+                else if (vampiricTalisman)
+                    proj.CritChance += VampiricTalisman.RaiderBonus;
+                else if (raiderTalisman)
+                    proj.CritChance += RaidersTalisman.RaiderBonus;
+            }
+
+
             modifiers.CritDamage += critDamage;
 
             // All Calamity multipliers are added together to prevent insane exponential stacking
@@ -1624,8 +1636,8 @@ namespace CalamityMod.CalPlayer
 
             #region Player Incoming Damage Multiplier (Increases)
             double damageMult = 1D;
-            if (dArtifact) // Dimensional Soul Artifact increases incoming damage by 15%.
-                damageMult += 0.15;
+            if (crushingEgo)
+                damageMult += 0.2;
             if (enraged) // Demonshade Enrage
                 damageMult += DemonshadeHelm.MultDamageTakenBoost;
 
@@ -2225,7 +2237,7 @@ namespace CalamityMod.CalPlayer
                     SoundEngine.PlaySound(SoundID.Item96, Player.Center);
                 }
 
-                if (gShell) //3 seconds of no dash reduction and reduced defense
+                if (gShell)
                 {
                     if (giantShellPostHit == 0)
                     {
@@ -2242,10 +2254,10 @@ namespace CalamityMod.CalPlayer
                             dust.scale = Main.rand.NextFloat(1.5f, 1.2f);
                         }
                     }
-                    giantShellPostHit = 180;
+                    giantShellPostHit = GiantShell.PostHitCancelDuration;
                 }
 
-                if (tortShell) //3 seconds of no dash reduction and reduced defense
+                if (tortShell)
                 {
                     if (tortShellPostHit == 0)
                     {
@@ -2262,7 +2274,7 @@ namespace CalamityMod.CalPlayer
                             dust.scale = Main.rand.NextFloat(1.6f, 2.2f);
                         }
                     }
-                    tortShellPostHit = 180;
+                    tortShellPostHit = GiantTortoiseShell.PostHitCancelDuration;
                 }
 
                 if (aquaticHeartIce)
@@ -2348,7 +2360,6 @@ namespace CalamityMod.CalPlayer
                             }
                         }
                     }
-
                     fleshTotemManaStorage = 0;
                 }
 
@@ -2877,8 +2888,9 @@ namespace CalamityMod.CalPlayer
                 defenseDamageRecoveryFrames = 0;
 
             // Directly add the base defense damage recovery time to whatever recovery time the player already has.
-            int baseTime = DefenseDamageBaseRecoveryTime * (moonshine ? 3 : 1);
+            int baseTime = DefenseDamageBaseRecoveryTime * (moonshine ? 3 : 1) * (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.Moonshine) ? 3 : 1);
             totalDefenseDamageRecoveryFrames = defenseDamageRecoveryFrames + baseTime;
+
             if (totalDefenseDamageRecoveryFrames > DefenseDamageMaxRecoveryTime)
                 totalDefenseDamageRecoveryFrames = DefenseDamageMaxRecoveryTime;
 

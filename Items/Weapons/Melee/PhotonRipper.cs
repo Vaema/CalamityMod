@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 134;
             Item.height = 54;
-            Item.damage = 3725;
+            Item.damage = 1400;
             Item.crit = 18;
             Item.knockBack = 12f;
             Item.useTime = 5;
@@ -40,7 +40,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shoot = ModContent.ProjectileType<PhotonRipperProjectile>();
             Item.shootSpeed = 1f;
 
-            Item.rare = ModContent.RarityType<BurnishedAuric>();
+            Item.rare = ModContent.RarityType<ExoticRainbow>();
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
         }
 

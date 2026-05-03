@@ -43,6 +43,7 @@ using CalamityMod.Items.PermanentBoosters;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Items.Potions.Food;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.Tools.ClimateChange;
 using CalamityMod.Items.TreasureBags.MiscGrabBags;
@@ -69,6 +70,7 @@ using CalamityMod.Systems;
 using CalamityMod.Systems.Collections;
 using CalamityMod.Systems.Mechanic;
 using CalamityMod.Utilities;
+using CalamityMod.Waters;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -140,6 +142,13 @@ namespace CalamityMod.CalPlayer
         /// </summary>
         public bool heldGaelsLastFrame = false;
         /// <summary>
+        /// Tracks whether or not the player is currently holding Elephant Killer.<br/>
+        /// Used to reset stealth when swapping to this item.
+        /// </summary>
+        public bool heldElephantKillerLastFrame = false;
+        public float elephantKillerJoke = 0;
+        public bool drawingElephantKillerJoke = false;
+        /// <summary>
         /// Tracks whether or not the player currently has Draedon's Heart equipped.<br/>
         /// Used to reset Adrenaline when (un)equipped to prevent exploits.
         /// </summary>
@@ -187,11 +196,11 @@ namespace CalamityMod.CalPlayer
         public enum FishingMinigames
         {
             None,
-            ScrapBobber,
-            NavystoneBobber,
-            SkylineBobber,
-            PerennialBobber,
-            ScoriaBobber,
+            WulfrumBobber,
+            SunkenSinker,
+            AcrobaticBobber,
+            FeralBobber,
+            VolcanicSinker,
             DevourerofCods //Not a fishing minigame but uses the same code as the rest
         }
         public FishingMinigames SelectedFishingMinigame = FishingMinigames.None;
@@ -379,9 +388,12 @@ namespace CalamityMod.CalPlayer
         public int hideOfDeusMeleeBoostTimer = 0;
         /// <summary>
         /// The player's alcohol level. Increased by 1 for each alcohol the player has drank, 2 for Everclear.<br/>
-        /// If this value is greater than 3, the player is inflicted with Alcohol Poisoning.
+        /// If this value is greater than the max (normally 3), the player is inflicted with Alcohol Poisoning.
         /// </summary>
         public int alcoholPoisonLevel = 0;
+        public static int alcoholPoisonMaxBase = 3;
+        /// <summary> The maximum alcohol level the player can reach before getting Alcohol Poisoning. </summary>
+        public int alcoholPoisonMax = alcoholPoisonMaxBase;
         public int dashTimeMod;
         /// <summary>
         /// Timer variable which tracks how long the player has spent outside of Providence's border radius, in frames.<br/>
@@ -589,6 +601,7 @@ namespace CalamityMod.CalPlayer
         public bool lordePet = false;
         public bool frostyBat = false;
         public bool toastyBat = false;
+        public bool starSwallowerPetFroge = false;
         #endregion
 
         #region Rage
@@ -803,6 +816,7 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Accessory
+        public int friendlyMinions = 0;
         public bool shieldOfTheHighRulerDashVelocityBoosted = false;
         public bool yharimsGift = false;
         public bool luxorsGift = false;
@@ -1039,9 +1053,9 @@ namespace CalamityMod.CalPlayer
         public int fallingBootVelCheckTimer = 0;
         public bool voidOfCalamity = false;
         public bool apollyon = false;
-        public bool eArtifact = false;
-        public bool dArtifact = false;
-        public bool auricSArtifact = false;
+        public bool fragmentsOfAnotherWorld = false;
+        public bool crushingEgo = false;
+        public bool fadedIdolatry = false;
         public bool pSoulArtifact = false;
         public bool giantPearl = false;
         public bool shieldOfTheOcean = false;
@@ -1399,6 +1413,7 @@ namespace CalamityMod.CalPlayer
         public bool riptide = false;
         public bool hadopelagicPressure = false;
         public bool fishAlert = false;
+        public bool malnourished = false;
         public bool clamity = false;
         public bool NOU = false;
         public bool absorberAffliction = false;
@@ -1491,6 +1506,8 @@ namespace CalamityMod.CalPlayer
         public bool whiteWine = false;
         public float whiteWineTimer = 0;
         public bool evergreenGin = false;
+        public bool baconOil = false;
+        public int baconOilSoundCooldown = 0;
         public bool tranquilityCandle = false;
         public bool chaosCandle = false;
         public bool blueCandle = false;
@@ -2167,6 +2184,7 @@ namespace CalamityMod.CalPlayer
             externalAuricRejectionImmunity = false;
 
             alcoholPoisonLevel = 0;
+            alcoholPoisonMax = alcoholPoisonMaxBase;
             noLifeRegen = false;
 
             //Stratus Starburst amount management
@@ -2256,6 +2274,7 @@ namespace CalamityMod.CalPlayer
                 if (!pSoulArtifact)
                     pSoulShieldDurability = 0;
             }
+            friendlyMinions = 0;
             pSoulShieldVisible = false;
             roverDrive = false;
             roverDriveShieldVisible = false;
@@ -2293,6 +2312,7 @@ namespace CalamityMod.CalPlayer
             lordePet = false;
             frostyBat = false;
             toastyBat = false;
+            starSwallowerPetFroge = false;
 
             onyxExcavator = false;
             rimehound = false;
@@ -2474,9 +2494,9 @@ namespace CalamityMod.CalPlayer
             baroclaw = false;
             voidOfCalamity = false;
             apollyon = false;
-            eArtifact = false;
-            dArtifact = false;
-            auricSArtifact = false;
+            fragmentsOfAnotherWorld = false;
+            crushingEgo = false;
+            fadedIdolatry = false;
             pSoulArtifact = false;
             giantPearl = false;
             shieldOfTheOcean = false;
@@ -2700,6 +2720,7 @@ namespace CalamityMod.CalPlayer
             riptide = false;
             hadopelagicPressure = false;
             fishAlert = false;
+            malnourished = false;
             clamity = false;
             NOU = false;
             enraged = false;
@@ -2788,6 +2809,7 @@ namespace CalamityMod.CalPlayer
             moscowMule = false;
             whiteWine = false;
             evergreenGin = false;
+            baconOil = false;
 
             tranquilityCandle = false;
             chaosCandle = false;
@@ -3077,6 +3099,7 @@ namespace CalamityMod.CalPlayer
             if (Player.HeldItem.IsAir || Player.HeldItem.fishingPole == 0)
                 consecutiveCaughtFish = 0;
             heldGaelsLastFrame = false;
+            heldElephantKillerLastFrame = false;
             partialLifeRegenCounter = 0f;
             gaelSwipes = 0;
             whitewaterHeal = 0;
@@ -3185,6 +3208,7 @@ namespace CalamityMod.CalPlayer
             riptide = false;
             hadopelagicPressure = false;
             fishAlert = false;
+            malnourished = false;
             clamity = false;
             NOU = false;
             snowmanNoseless = false;
@@ -3300,6 +3324,7 @@ namespace CalamityMod.CalPlayer
             moscowMule = false;
             whiteWine = false;
             evergreenGin = false;
+            baconOil = false;
             tranquilityCandle = false;
             chaosCandle = false;
             blueCandle = false;
@@ -4281,10 +4306,215 @@ namespace CalamityMod.CalPlayer
                 vector = player.CheckForGoodTeleportationSpot(ref canSpawn, halfWorldXTiles + smallerCheckRadius, smallerCheckRadius, teleportStartY, teleportRangeY, settings);
 
             if (canSpawn)
-            {
                 return (Vector2?)vector;
-            }
+
             return null;
+        }
+
+        /// <summary>
+        /// Returns a random position in the Lihzhard Temple to teleport the player to. <br></br>
+        /// Used primarily for <see cref="Items.Potions.TheElixir"/>.
+        /// </summary>
+        public static Vector2? GetTempleTeleportPosition(Player player)
+        {
+            int foundX = -1;
+            int foundY = -1;
+            bool dungeonOnRightSide = Main.dungeonX > Main.spawnTileX;
+            int xSearchEnd = dungeonOnRightSide ? 20 : Main.maxTilesX - 20;
+
+            if (dungeonOnRightSide)
+            {
+                for (int i = Main.spawnTileX; i >= xSearchEnd; i -= 2)
+                {
+                    for (int j = (int)Main.worldSurface; j < Main.maxTilesY - 210; j++)
+                    {
+                        Tile tile = Framing.GetTileSafely(i, j);
+                        if (tile.WallType == WallID.LihzahrdBrickUnsafe)
+                        {
+                            foundX = i;
+                            foundY = j;
+                            break;
+                        }
+                    }
+                    if (foundX != -1)
+                        break;
+                }
+            }
+            else
+            {
+                for (int i = Main.spawnTileX; i <= xSearchEnd; i += 2)
+                {
+                    for (int j = (int)Main.worldSurface; j < Main.maxTilesY - 210; j++)
+                    {
+                        Tile tile = Framing.GetTileSafely(i, j);
+                        if (tile.WallType == WallID.LihzahrdBrickUnsafe)
+                        {
+                            foundX = i;
+                            foundY = j;
+                            break;
+                        }
+                    }
+
+                    if (foundX != -1)
+                        break;
+                }
+            }
+
+            if (foundX == -1)
+                return null;
+
+            int attempts = 25;
+            int rangeX = 300;
+            int rangeY = 300;
+            int randomFluff = 500;
+            Point finalTeleportPoint = Point.Zero;
+            for (int i = 0; i < attempts; i++)
+            {
+                for (int x = 0; x <= rangeX; x++)
+                {
+                    for (int y = 0; y <= rangeY; y++)
+                    {
+                        int teleportPosX = foundX + x + Main.rand.Next(-randomFluff, randomFluff);
+                        int teleportPosY = foundY + y + Main.rand.Next(-randomFluff, randomFluff);
+                        Tile tile = Framing.GetTileSafely(teleportPosX, teleportPosY);
+                        Tile tileAbove = Framing.GetTileSafely(teleportPosX, teleportPosY - 1);
+                        Tile tileBelow = Framing.GetTileSafely(teleportPosX, teleportPosY + 1);
+
+                        if (!tileAbove.HasTile && tileBelow.HasTile && tile.WallType == WallID.LihzahrdBrickUnsafe)
+                        {
+                            finalTeleportPoint = new(tile.X(), tile.Y());
+                            if (!Collision.SolidCollision(finalTeleportPoint.ToWorldCoordinates(), player.width, player.height))
+                                break;
+                        }
+                    }
+                }
+            }
+
+            return finalTeleportPoint.ToWorldCoordinates() - new Vector2(player.width, player.height);
+        }
+
+        /// <summary>
+        /// Returns a random position in the Void (Abyss Layer 4) to teleport the player to. <br></br>
+        /// Used primarily for <see cref="Items.Potions.TheElixir"/>.
+        /// </summary>
+        public static Vector2? GetAbyssVoidTeleportPosition(Player player)
+        {
+            bool canSpawn = false;
+            int halfWorldWidth = Main.maxTilesX / 2;
+
+            int abyssStartX = Abyss.AtLeftSideOfWorld ? halfWorldWidth - (halfWorldWidth - 135) + 35 : halfWorldWidth + (halfWorldWidth - 135) - 35;
+            int abyssXRange = 50;
+
+            int teleportStartY = Main.remixWorld ? SulphurousSea.YStart - (int)(Main.UnderworldLayer * 0.6f) : Main.maxTilesY - 300;
+            int teleportRangeY = 80;
+
+            Player.RandomTeleportationAttemptSettings settings = new Player.RandomTeleportationAttemptSettings
+            {
+                mostlySolidFloor = false,
+                avoidAnyLiquid = false,
+                avoidLava = true,
+                avoidHurtTiles = true,
+                avoidWalls = false,
+                attemptsBeforeGivingUp = 1000,
+                maximumFallDistanceFromOrignalPoint = 10
+            };
+
+            Vector2 teleportPosition = player.CheckForGoodTeleportationSpot(ref canSpawn, abyssStartX, abyssXRange, teleportStartY, teleportRangeY, settings);
+            return canSpawn ? teleportPosition : null;
+        }
+
+        /// <summary>
+        /// Returns a random position in the Forsaken Archives to teleport the player to. <br></br>
+        /// Used primarily for <see cref="Items.Potions.TheElixir"/>.
+        /// </summary>
+        public static Vector2? GetDungeonArchivesTeleportPosition(Player player)
+        {
+            // Define an area around the center to search for a valid spot to tp
+            int teleportStartX = WorldgenManagementSystem.DungeonArchivePos.X;
+            int teleportStartY = WorldgenManagementSystem.DungeonArchivePos.Y;
+
+            // Manually search for the Archives from the bottom of the world if the Archive position isn't saved.
+            if (WorldgenManagementSystem.DungeonArchivePos == Point.Zero)
+            {
+                int foundX = -1;
+                int foundY = -1;
+                bool dungeonOnRightSide = Main.dungeonX > Main.spawnTileX;
+                int xSearchStart = dungeonOnRightSide ? Main.maxTilesX - 20 : 20;
+
+                if (dungeonOnRightSide)
+                {
+                    for (int y = Main.UnderworldLayer; y > (int)Main.rockLayer; y--)
+                    {
+                        for (int x = xSearchStart; x >= Main.maxTilesX / 2; x -= 2)
+                        {
+                            Tile tile = Framing.GetTileSafely(x, y);
+                            if (Main.wallDungeon[tile.WallType] && Main.tileDungeon[tile.TileType])
+                            {
+                                foundX = x;
+                                foundY = y;
+                                break;
+                            }
+                        }
+
+                        if (foundY != -1)
+                            break;
+                    }
+                }
+                else
+                {
+                    for (int y = Main.UnderworldLayer; y > (int)Main.rockLayer; y--)
+                    {
+                        for (int x = xSearchStart; x <= Main.maxTilesX / 2; x += 2)
+                        {
+                            Tile tile = Framing.GetTileSafely(x, y);
+                            if (Main.wallDungeon[tile.WallType] && Main.tileDungeon[tile.TileType])
+                            {
+                                foundX = x;
+                                foundY = y;
+                                break;
+                            }
+                        }
+
+                        if (foundY != -1)
+                            break;
+                    }
+                }
+
+                if (foundY == -1)
+                    return null;
+
+                teleportStartX = foundX;
+                teleportStartY = foundY;
+            }
+
+            int attempts = 25;
+            int rangeX = 100;
+            int rangeY = 200;
+            int randomFluff = 60;
+            Point finalTeleportPoint = Point.Zero;
+            for (int i = 0; i < attempts; i++)
+            {
+                for (int x = -rangeX; x <= rangeX; x++)
+                {
+                    for (int y = 0; y <= rangeY; y++)
+                    {
+                        int teleportPosX = teleportStartX + x + Main.rand.Next(-randomFluff, randomFluff);
+                        int teleportPosY = teleportStartY + y + Main.rand.Next(-randomFluff, randomFluff);
+                        Tile tile = Framing.GetTileSafely(teleportPosX, teleportPosY);
+                        Tile tileAbove = Framing.GetTileSafely(teleportPosX, teleportPosY - 1);
+                        Tile tileBelow = Framing.GetTileSafely(teleportPosX, teleportPosY + 1);
+
+                        if (!tileAbove.HasTile && tileBelow.HasUnactuatedTile && Main.wallDungeon[tile.WallType])
+                        {
+                            finalTeleportPoint = new(tile.X(), tile.Y());
+                            if (!Collision.SolidCollision(finalTeleportPoint.ToWorldCoordinates(), player.width, player.height))
+                                break;
+                        }
+                    }
+                }
+            }
+
+            return finalTeleportPoint.ToWorldCoordinates() - new Vector2(player.width, player.height);
         }
 
         public static void ModTeleport(Player player, Vector2 pos, bool playSound = true, int style = TeleportationStyleID.RecallPotion)
@@ -4603,12 +4833,12 @@ namespace CalamityMod.CalPlayer
             }
 
             //Multiply vertical speed
-            if (redWine)
+            if (redWine || Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.RedWine))
             {
                 if (Player.velocity.Y > 0.2f || Player.velocity.Y < -0.2f)
                 {
                     redWineStoredY = Player.velocity.Y;
-                    Player.velocity.Y *= 1 + RedWine.VerticalSpeedBoost;
+                    Player.velocity.Y *= 1 + (redWine ? RedWine.VerticalSpeedBoost : 0) + (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.RedWine) ? RedWine.VerticalSpeedBoost : 0);
                 }
                 else
                 {
@@ -4857,6 +5087,32 @@ namespace CalamityMod.CalPlayer
                     }
                 }
             }
+
+            if (malnourished) // Has to be here because alcoholPoisonLevel isn't updated until now
+            {
+                alcoholPoisonMax += TheSandwich.alcoholCapBoost;
+                // Gives inverted buffs from well fed
+                Player.statDefense -= 2;
+                Player.GetCritChance<GenericDamageClass>() -= 2;
+                Player.minionKB -= 0.5f;
+                Player.moveSpeed -= 0.05f;
+                // damage nerf/boost happens in PostUpdate
+                Player.pickSpeed += 0.05f;
+
+
+                for (int l = 0; l < Player.MaxBuffs; ++l)
+                {
+                    int buffID = Player.buffType[l];
+                    if ((BuffDatasets.DebuffDataset[buffID] != null && BuffDatasets.DebuffDataset[buffID].AlcoholLevel > 0) || buffID == BuffID.Tipsy)
+                    {
+                        Player.buffTime[l]++;
+                    }
+                }
+
+                if (Player.wellFed)
+                    Player.ClearBuff(ModContent.BuffType<Malnourished>());
+            }
+
             if (moonshine)
                 Player.statLifeMax2 = (int)(Player.statLifeMax2 * (1 + Moonshine.MaxLifePercentBoost));
             ForceVariousEffects();
@@ -4889,7 +5145,7 @@ namespace CalamityMod.CalPlayer
         #region PostUpdateEquips
         public override void PostUpdateEquips()
         {
-
+            var dripPlayer = Player.GetModPlayer<IVDripPlayer>();
             var item = Player.HeldItem;
             if (!(item.IsAir || item.damage <= 0))
             {
@@ -4898,11 +5154,13 @@ namespace CalamityMod.CalPlayer
                     TimeHoldingMelee++;
                     if (TimeHoldingMelee > Whiskey.TimeToDischarge)
                         TimeHoldingMelee = (int)Whiskey.TimeToDischarge;
-                    if (whiskey)
-                    {
-                        Player.GetDamage(DamageClass.Melee) += MathHelper.Lerp(Whiskey.MaxDamageBoost, Whiskey.MinDamageBoost, TimeHoldingMelee / Whiskey.TimeToDischarge);
-                    }
-                } else
+
+                    if (dripPlayer.HasAlcohol(AlcoholType.Whiskey) && whiskey)
+                        Player.GetDamage(DamageClass.Melee) += MathHelper.Lerp(Whiskey.CombinedDamageCeiling, Whiskey.CombinedDamageFloor, TimeHoldingMelee / Whiskey.TimeToDischarge);
+                    else if (whiskey || dripPlayer.HasAlcohol(AlcoholType.Whiskey))
+                        Player.GetDamage(DamageClass.Melee) += MathHelper.Lerp(Whiskey.StandardDamageCeiling, Whiskey.StandardDamageFloor, TimeHoldingMelee / Whiskey.TimeToDischarge);
+                } 
+                else
                 {
                     TimeHoldingMelee -= 2;
                     if (TimeHoldingMelee < 0)
@@ -4912,11 +5170,12 @@ namespace CalamityMod.CalPlayer
                 {
                     TimeHoldingRanged++;
                     if (TimeHoldingRanged > Whiskey.TimeToDischarge)
-                        TimeHoldingRanged = (int)Whiskey.TimeToDischarge; 
-                    if (whiskey)
-                    {
-                        Player.GetDamage(DamageClass.Ranged) += MathHelper.Lerp(Whiskey.MaxDamageBoost, Whiskey.MinDamageBoost, TimeHoldingRanged / Whiskey.TimeToDischarge);
-                    }
+                        TimeHoldingRanged = (int)Whiskey.TimeToDischarge;
+
+                    if (dripPlayer.HasAlcohol(AlcoholType.Whiskey) && whiskey)
+                        Player.GetDamage(DamageClass.Ranged) += MathHelper.Lerp(Whiskey.CombinedDamageCeiling, Whiskey.CombinedDamageFloor, TimeHoldingRanged / Whiskey.TimeToDischarge);
+                    else if (whiskey || dripPlayer.HasAlcohol(AlcoholType.Whiskey))
+                        Player.GetDamage(DamageClass.Ranged) += MathHelper.Lerp(Whiskey.StandardDamageCeiling, Whiskey.StandardDamageFloor, TimeHoldingRanged / Whiskey.TimeToDischarge);
                 }
                 else
                 {
@@ -4929,10 +5188,11 @@ namespace CalamityMod.CalPlayer
                     TimeHoldingMagic++;
                     if (TimeHoldingMagic > Whiskey.TimeToDischarge)
                         TimeHoldingMagic = (int)Whiskey.TimeToDischarge;
-                    if (whiskey)
-                    {
-                        Player.GetDamage(DamageClass.Magic) += MathHelper.Lerp(Whiskey.MaxDamageBoost, Whiskey.MinDamageBoost, TimeHoldingMagic / Whiskey.TimeToDischarge);
-                    }
+
+                    if (dripPlayer.HasAlcohol(AlcoholType.Whiskey) && whiskey)
+                        Player.GetDamage(DamageClass.Magic) += MathHelper.Lerp(Whiskey.CombinedDamageCeiling, Whiskey.CombinedDamageFloor, TimeHoldingMagic / Whiskey.TimeToDischarge);
+                    else if (whiskey || dripPlayer.HasAlcohol(AlcoholType.Whiskey))
+                        Player.GetDamage(DamageClass.Magic) += MathHelper.Lerp(Whiskey.StandardDamageCeiling, Whiskey.StandardDamageFloor, TimeHoldingMagic / Whiskey.TimeToDischarge);
                 }
                 else
                 {
@@ -4945,10 +5205,11 @@ namespace CalamityMod.CalPlayer
                     TimeHoldingSummon++;
                     if (TimeHoldingSummon > Whiskey.TimeToDischarge)
                         TimeHoldingSummon = (int)Whiskey.TimeToDischarge;
-                    if (whiskey)
-                    {
-                        Player.GetDamage(DamageClass.Summon) += MathHelper.Lerp(Whiskey.MaxDamageBoost, Whiskey.MinDamageBoost, TimeHoldingSummon / Whiskey.TimeToDischarge);
-                    }
+
+                    if (dripPlayer.HasAlcohol(AlcoholType.Whiskey) && whiskey)
+                        Player.GetDamage(DamageClass.Summon) += MathHelper.Lerp(Whiskey.CombinedDamageCeiling, Whiskey.CombinedDamageFloor, TimeHoldingSummon / Whiskey.TimeToDischarge);
+                    else if (whiskey || dripPlayer.HasAlcohol(AlcoholType.Whiskey))
+                        Player.GetDamage(DamageClass.Summon) += MathHelper.Lerp(Whiskey.StandardDamageCeiling, Whiskey.StandardDamageFloor, TimeHoldingSummon / Whiskey.TimeToDischarge);
                 }
                 else
                 {
@@ -4961,10 +5222,12 @@ namespace CalamityMod.CalPlayer
                     TimeHoldingRogue++;
                     if (TimeHoldingRogue > Whiskey.TimeToDischarge)
                         TimeHoldingRogue = (int)Whiskey.TimeToDischarge;
-                    if (whiskey)
-                    {
-                        Player.GetDamage(RogueDamageClass.Instance) += MathHelper.Lerp(Whiskey.MaxDamageBoost, Whiskey.MinDamageBoost, TimeHoldingRogue / Whiskey.TimeToDischarge);
-                    }
+
+                    if (dripPlayer.HasAlcohol(AlcoholType.Whiskey) && whiskey)
+                        Player.GetDamage(RogueDamageClass.Instance) += MathHelper.Lerp(Whiskey.CombinedDamageCeiling, Whiskey.CombinedDamageFloor, TimeHoldingRogue / Whiskey.TimeToDischarge);
+                    else if (whiskey || dripPlayer.HasAlcohol(AlcoholType.Whiskey))
+                        Player.GetDamage(RogueDamageClass.Instance) += MathHelper.Lerp(Whiskey.StandardDamageCeiling, Whiskey.StandardDamageFloor, TimeHoldingRogue / Whiskey.TimeToDischarge);
+                    
                 }
                 else
                 {
@@ -4984,6 +5247,10 @@ namespace CalamityMod.CalPlayer
                     TimeHoldingSummon = 0;
                 if (TimeHoldingRogue-- < 0)
                     TimeHoldingRogue = 0;
+            }
+            if (dripPlayer.HasAlcohol(AlcoholType.Moonshine))
+            {
+                Player.statLifeMax2 = (int)(Player.statLifeMax2 * (1 + Moonshine.MaxLifePercentBoost));
             }
 
 
@@ -5121,7 +5388,7 @@ namespace CalamityMod.CalPlayer
             }
 
             //reset the stored Y value for red wine's increased vertical speed
-            if (redWine && (redWineStoredY > 0.2f || redWineStoredY < -0.2f) && (Player.velocity.Y > 0.2f || Player.velocity.Y < -0.2f))
+            if ((redWine || Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.RedWine)) && (redWineStoredY > 0.2f || redWineStoredY < -0.2f) && (Player.velocity.Y > 0.2f || Player.velocity.Y < -0.2f))
             {
                 Player.velocity.Y = redWineStoredY;
             }
@@ -5147,6 +5414,9 @@ namespace CalamityMod.CalPlayer
                 Player.Calamity().frozenCubeUsedDefense = usedDefense;
                 Player.statDefense -= usedDefense;
             }
+
+            if (malnourished) // Has to be here because alcoholPoisonLevel isn't updated until now
+                Player.GetDamage<GenericDamageClass>() += -0.05f + TheSandwich.statBoost * alcoholPoisonLevel;
 
             // Relic of Convergence defense cut
             if (Player.ownedProjectileCounts[ModContent.ProjectileType<RelicOfConvergenceCrystal>()] > 0 && Player.HeldItem.type == ModContent.ItemType<RelicOfConvergence>())
@@ -5204,7 +5474,7 @@ namespace CalamityMod.CalPlayer
                     ((abyssalDivingSuit && Player.IsUnderwater()) ? 0.05f : 0f) +
                     (aquaticHeartWaterBuff ? AquaticHeart.WaterSpeedBoost : 0f) +
                     (laudanum && Player.HasBuff(BuffID.VortexDebuff) ? 0.15f : 0f) +
-                    ((frostFlare && Player.statLife <= (int)(Player.statLifeMax2 * 0.5)) ? 0.15f : 0f) +
+                    ((frostFlare && Player.statLife <= (int)(Player.statLifeMax2 * FrostFlare.HealthRatioThreshold)) ? FrostFlare.AccelerationBoost : 0f) +
                     (dragonScales ? 0.1f : 0f) +
                     (CobaltSet ? CobaltArmorSetChange.SpeedBoostSetBonusPercentage * 0.01f : 0f) +
                     (silvaSet ? SilvaArmor.AccelerationBoost : 0f) +
@@ -5224,7 +5494,7 @@ namespace CalamityMod.CalPlayer
                     (stressPills ? 0.05f : 0f) +
                     ((abyssalDivingSuit && Player.IsUnderwater()) ? 0.05f : 0f) +
                     (aquaticHeartWaterBuff ? AquaticHeart.WaterSpeedBoost : 0f) +
-                    ((frostFlare && Player.statLife <= (int)(Player.statLifeMax2 * 0.5)) ? 0.15f : 0f) +
+                    ((frostFlare && Player.statLife <= (int)(Player.statLifeMax2 * FrostFlare.HealthRatioThreshold)) ? FrostFlare.AccelerationBoost : 0f) +
                     (dragonScales ? 0.1f : 0f) +
                     (CobaltSet ? CobaltArmorSetChange.SpeedBoostSetBonusPercentage * 0.01f : 0f) +
                     (silvaSet ? SilvaArmor.AccelerationBoost : 0f) +
@@ -5279,6 +5549,92 @@ namespace CalamityMod.CalPlayer
             }
             #endregion
 
+            if ((Player.Calamity().baconOil || Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.BaconOil)) && !Player.mount.Active)
+            {
+                Player.noFallDmg = true;
+
+                float stackScale = (Player.Calamity().baconOil && Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.BaconOil)) ? 1.33f : 1;
+
+                float velX = Math.Abs(Player.velocity.X);
+                float velY = Math.Abs(Player.velocity.Y);
+
+                float speedMult = Player.GetBestClassDamage().ApplyTo(1);
+                float maxMoveSpeed = 10.5f * speedMult * stackScale;
+                float minMoveSpeed = 3 * stackScale; // Minimum move speed to be at if the player can bounce
+                float hitboxSizeMult = 0.45f;
+
+                bool onPlatform = false;
+                if (Player.velocity.Y > 0 && !Player.controlDown)
+                {
+                    for (int i = 4; i < 8; i++)
+                    {
+                        Point bottom = (Player.Bottom + Vector2.UnitY * i).ToTileCoordinates();
+                        if (TileID.Sets.Platforms[CalamityUtils.ParanoidTileRetrieval(bottom.X, bottom.Y).TileType])
+                        {
+                            onPlatform = true;
+                        }
+                    }
+                }
+
+                bool hitDown =  velY > minMoveSpeed && (Collision.SolidCollision(Player.Bottom + Vector2.UnitY * Player.velocity.Y, (int)(Player.width * hitboxSizeMult), 1) || onPlatform);
+                bool hitUp =  velY > minMoveSpeed && Collision.SolidCollision(Player.Top + Vector2.UnitY * Player.velocity.Y, (int)(Player.width * hitboxSizeMult), 1);
+                bool hitSide = velX > minMoveSpeed && Collision.SolidCollision(Vector2.Lerp(Player.TopLeft, Player.Left, 0.15f) + Vector2.UnitX * Player.velocity.X, 1, (int)(Player.height * hitboxSizeMult)) || Collision.SolidCollision(Vector2.Lerp(Player.TopRight, Player.Right, 0.15f) + Vector2.UnitX * Player.velocity.X, 1, (int)(Player.height * hitboxSizeMult));
+                float acceleration = 0.05f * stackScale;
+                float decceleration = -0.025f / speedMult;
+                float riseSpeed = 0.8f * stackScale; // The speed the player rises when in water or rain
+                float slipPower = 0.85f; //How strong the slippery effect is
+
+                float bounceReduction = 0.9f;
+                bool makeSound = false;
+                if (hitSide)
+                {
+                    Player.velocity.X = -Player.velocity.X * bounceReduction;
+                    Player.oldVelocity.X = -Player.oldVelocity.X * bounceReduction;
+                    makeSound = true;
+                }
+                if ((hitDown || hitUp))
+                {
+                    if (Player.controlUp)
+                        bounceReduction = 1.3f;
+                    Player.velocity.Y = -Player.velocity.Y * bounceReduction;
+                    Player.oldVelocity.Y = -Player.oldVelocity.Y * bounceReduction;
+                    if (hitDown)
+                    {
+                        Player.RefreshMovementAbilities(true);
+                    }
+                    makeSound = true;
+                }
+                int soundCDMax = 150;
+                if (makeSound && baconOilSoundCooldown < soundCDMax)
+                {
+                    if (baconOilSoundCooldown < soundCDMax)
+                        baconOilSoundCooldown += 30;
+                    float pitch = (0.55f * stackScale) * Utils.GetLerpValue(0, soundCDMax, baconOilSoundCooldown, true);
+                    SoundStyle boyoyoing = new("CalamityMod/Sounds/Item/BaconOilBounce");
+                    SoundEngine.PlaySound(boyoyoing with { Volume = 0.45f, Pitch = hitSide ? pitch - 0.3f : pitch, MaxInstances = 5 }, Player.Center);
+                }
+
+                bool playerMoving = Player.controlLeft || Player.controlRight;
+                bool playerMovingInDirection = (Player.controlLeft && Player.oldVelocity.X < 0) || (Player.controlRight && Player.oldVelocity.X > 0);
+                if (((Player.oldVelocity.X > 0 && Player.velocity.X > 0) || (Player.oldVelocity.X < 0 && Player.velocity.X < 0)))
+                    Player.velocity.X = MathHelper.Clamp(Player.velocity.X + maxMoveSpeed * MathF.Sign(Player.oldVelocity.X) * 
+                        ((playerMovingInDirection || !playerMoving) ? Player.dashDelay == -1 ? decceleration : // If dashing, deccelerate to prevent infinite dash
+                        // If not moving or holding in move direction, accelerate to max speed, otherwise deccelerate
+                        acceleration : decceleration), -maxMoveSpeed, maxMoveSpeed);
+
+                bool raining = Player.Center.Y < Main.worldSurface * 16.0 && Main.raining;
+                if ((Player.wet || raining) && Player.velocity.Y > -maxMoveSpeed)
+                {
+                    Player.velocity.Y -= riseSpeed; // Cover yourself in oil (go up in liquid)
+                }
+
+
+                Vector2 lerpedVel = Vector2.Lerp(Player.velocity, Player.oldVelocity, slipPower);
+                Player.velocity = new Vector2(lerpedVel.X, Player.velocity.Y);
+            }
+            if (baconOilSoundCooldown > 0)
+                baconOilSoundCooldown = (int)MathHelper.Lerp(baconOilSoundCooldown, 0, 0.027f);
+
             Player.oldVelocity = Player.velocity; // Apparently this value is not updated on its own, so we do it
         }
         #endregion
@@ -5310,7 +5666,8 @@ namespace CalamityMod.CalPlayer
                 // Apply weapon modifier stealth strike damage bonus
                 // 01OCT2023: Ozzatron: This is a multiplicative bonus because it is a prefix.
                 // It should be equivalent to x1.15 (or whatever multiplier) on the base damage of the weapon for stealth only.
-                if (rogueItem.StealthStrikePrefixBonus != 0f && StealthStrikeAvailable())
+                bool dontProvideStealthDamage = Player.HeldItem.type == ModContent.ItemType<ElephantKiller>();
+                if (rogueItem.StealthStrikePrefixBonus != 0f && StealthStrikeAvailable() && !dontProvideStealthDamage)
                     damage *= rogueItem.StealthStrikePrefixBonus; // This number centers on 1f, so 1.15f = 1.15x damage.
             }
         }
@@ -5321,6 +5678,8 @@ namespace CalamityMod.CalPlayer
             bool rogue = item.CountsAsClass<RogueDamageClass>();
 
             if (moscowMule)
+                knockback += MoscowMule.KnockbackBoost;
+            if (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.MoscowMule))
                 knockback += MoscowMule.KnockbackBoost;
 
             if (titanHeartMantle && rogue)
@@ -5500,7 +5859,7 @@ namespace CalamityMod.CalPlayer
         {
             if (bladeArmEnchant)
                 return false;
-            if (purpleHaze)
+            if (purpleHaze || Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.PurpleHaze))
             {
                 if (item.CountsAsClass<RogueDamageClass>() && StealthStrikeAvailable())
                 {
@@ -5562,6 +5921,8 @@ namespace CalamityMod.CalPlayer
                         {
                             Main.projectile[p].DamageType = DamageClass.Generic; //Makes it not proc shit like nanotech, extorter and other stuff
                             Main.projectile[p].Calamity().LocketClone = true; //To not have clones trigger effects like Sacrifice's Lifesteal and Final Dawn's stealth generation
+
+                            Projectile.NewProjectile(LocketSource, Main.projectile[p].Center, Vector2.Zero, ModContent.ProjectileType<DoGWeaponTeleportRift>(), 0, 0, Player.whoAmI); // Spawn a little portal!
                         }
 
                         // Handle AI edge-cases. These are like overlapping projectiles and the projectile not spawning at all
@@ -5937,32 +6298,6 @@ namespace CalamityMod.CalPlayer
                 price /= vanillaPriceMult;
             }
         }
-
-        public override void PostNurseHeal(NPC nurse, int health, bool removeDebuffs, int price)
-        {
-            // Remove excess alcohol
-            if (removeDebuffs && alcoholPoisonLevel > 3)
-            {
-                List<int[]> Alcohol = new List<int[]>();
-                for (int i = 0; i < Player.MaxBuffs; i++)
-                {
-                    int buff = Player.buffType[i];
-                    if (CalamityBuffSets.AlcoholStrength.TryGetValue(buff, out int level))
-                        Alcohol.Insert(0, new int[] { i, level });
-                }
-
-                int poison = alcoholPoisonLevel;
-                do
-                {
-                    // Obtain the index:level relationship
-                    int[] relation = Alcohol[0];
-                    Player.DelBuff(relation[0]); // Remove the alcohol
-                    poison -= relation[1]; // Cancel the poison level
-                    Alcohol.RemoveAt(0);
-                }
-                while (poison > 3);
-            }
-        }
         #endregion
 
         #region Rogue Stealth
@@ -6057,6 +6392,10 @@ namespace CalamityMod.CalPlayer
             if (it.type == ItemType<DoomsdayDevice>())
                 playerUsingWeapon = false;
 
+            // Elephant Killer consumes stealth in a special wa- hey maybe this is a sign this class needs some work huh
+            if (it.type == ItemType<ElephantKiller>())
+                playerUsingWeapon = false;
+
             // Animation check depends on whether the item is "clockwork", like Clockwork Assault Rifle.
             // "Clockwork" weapons can chain-fire multiple stealth strikes (really only 2 max) until you run out of stealth.
             bool animationCheck = it.useAnimation == it.useTime
@@ -6123,19 +6462,13 @@ namespace CalamityMod.CalPlayer
             Player.ownedProjectileCounts[ProjectileType<FinalDawnThrow2>()];
 
             // If you are actively using an item, you cannot gain stealth.
-            if (Player.itemAnimation > 0 || finalDawnProjCount > 0)
+            if (Player.itemAnimation > 0 || finalDawnProjCount > 0 || (Player.ownedProjectileCounts[ProjectileType<ElephantKillerThrown>()] > 0 || Player.HeldItem.type == ModContent.ItemType<ElephantKiller>()))
                 return 0f;
 
             if (shadow)
             {
                 stealthGenStandstill += ShadowPotion.StealthRegenBoost;
                 stealthGenMoving += ShadowPotion.StealthRegenBoost;
-            }
-
-            if (eArtifact)
-            {
-                stealthGenStandstill += 0.15f;
-                stealthGenMoving += 0.15f;
             }
 
             // Accessory modifiers can boost these stats

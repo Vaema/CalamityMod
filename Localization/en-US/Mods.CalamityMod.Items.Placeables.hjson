@@ -964,6 +964,11 @@ SeaMinnowJar: {
 	Tooltip: ""
 }
 
+ShroombleCage: {
+	DisplayName: Shroomble Cage
+	Tooltip: ""
+}
+
 SpitefulCandle: {
 	DisplayName: Spiteful Candle
 	Tooltip:
@@ -988,6 +993,15 @@ SunkenIdol: {
 ThaumaticChair: {
 	DisplayName: Thaumatic Chair
 	Tooltip: One of Chloe's finest creations
+}
+
+TheMonument: {
+	DisplayName: The Monument
+	Tooltip:
+		'''
+		A monument celebrating the accomplishments of capitalism
+		Funded by the taxes of nearby Town NPCs, though they may not be too happy about that
+		'''
 }
 
 ThermalTorch: {
@@ -4694,4 +4708,9 @@ UnsafeNavystoneWall: {
 MossyStone: {
 	DisplayName: Mossy Stone
 	Tooltip: ""
+}
+
+GreedPot: {
+	DisplayName: Urn of Avarice
+	Tooltip: Offer your treasures to the Urn, and your avarice may at last be satiated
 }

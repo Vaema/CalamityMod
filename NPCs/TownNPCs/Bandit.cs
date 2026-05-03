@@ -314,6 +314,7 @@ namespace CalamityMod.NPCs.TownNPCs
                 .Add<DeepWounder>(CalamityConditions.DownedCalamitasClone)
                 .Add<GloveOfPrecision>(Condition.DownedPlantera)
                 .Add<GloveOfRecklessness>(Condition.DownedPlantera)
+                .Add<IVDripOnTheRocks>(Condition.DownedPlantera, Condition.NpcIsPresent(NPCID.Nurse))
                 .Add<EtherealExtorter>(Condition.DownedGolem)
                 .Add<CelestialReaper>(Condition.DownedMoonLord)
                 .Add<VeneratedLocket>(CalamityConditions.DownedDevourerOfGods)

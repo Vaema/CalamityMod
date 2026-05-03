@@ -56,6 +56,7 @@ namespace CalamityMod
 
             spawnedBandit = false;
             foundHomePermafrost = false;
+            unlockedTownPig = false;
 
             catName = false;
             dogName = false;
@@ -92,6 +93,8 @@ namespace CalamityMod
                 downed.Add("bandit");
             if (foundHomePermafrost)
                 downed.Add("archmageHome");
+            if (unlockedTownPig)
+                downed.Add("townPig");
 
             #region Save Pet Names
             if (catName)
@@ -143,6 +146,7 @@ namespace CalamityMod
             AcidRainEvent.AcidRainEventIsOngoing = downed.Contains("acidRain");
             spawnedBandit = downed.Contains("bandit");
             foundHomePermafrost = downed.Contains("archmageHome");
+            unlockedTownPig = downed.Contains("townPig");
 
             #region Load Pet Names
             catName = downed.Contains("catName");
@@ -295,6 +299,7 @@ namespace CalamityMod
             flags12[2] = downedNuclearTerror;
             flags12[3] = downedBossRush;
             flags12[4] = DraedonMechdusa;
+            flags12[5] = unlockedTownPig;
 
             writer.Write(flags);
             writer.Write(flags2);
@@ -449,6 +454,7 @@ namespace CalamityMod
             downedNuclearTerror = flags12[2];
             downedBossRush = flags12[3];
             DraedonMechdusa = flags12[4];
+            unlockedTownPig = flags12[5];
 
             RecipeUnlockHandler.ReceiveData(reader);
 

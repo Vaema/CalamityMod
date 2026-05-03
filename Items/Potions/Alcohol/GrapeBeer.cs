@@ -1,5 +1,6 @@
-﻿using CalamityMod.Buffs.Alcohol;
-using CalamityMod.Items.Materials;
+﻿using System;
+using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Items.Accessories;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -8,13 +9,24 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
 {
-    public class GrapeBeer : ModItem, ILocalizedModType
+    public class GrapeBeer : ModItem, ILocalizedModType, IAlcoholItem
     {
         public new string LocalizationCategory => "Items.Potions";
 
-        public static float CritLoss = 50;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(CritLoss);
+        public static float CloseRangeDistance = 80;
+        public static float LongRangeDistance = 1200;
+        public static float CloseRangeDamage = 0.75f;
+        public static float LongRangeDamage = 0.25f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(LongRangeDamage, LongRangeDistance / 16f); 
+        public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.GrapeBeer.DripEffect").WithFormatArgs(LongRangeDamage, LongRangeDistance / 16f);
+        public AlcoholType AlcoholVariant => AlcoholType.GrapeBeer;
 
+        public Action<Player, float> IVDripAlcoholEffect => ApplyGrapeBeerEffect;
+
+        private static void ApplyGrapeBeerEffect(Player player, float intensity)
+        {
+            // See CalamityGlobalProjectile
+        }
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;

@@ -330,13 +330,13 @@ namespace CalamityMod.Projectiles.Ranged
                     int hitsToMinMult = (int)(3 + 5 * damageMult);
                     int knockback = (int)(7 * damageMult * (isMaxPower ? -1 : 1)); // Give heavy knockback at full power
                     int damage = (int)(Projectile.damage * explosionDamageMult * damageMult);
-                    Projectile blast = Projectile.NewProjectileDirect(Owner.GetSource_FromThis(), targeted.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), damage, knockback, Owner.whoAmI, blastSize, minMultiplier, hitsToMinMult);
+                    Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), targeted.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), damage, knockback, Owner.whoAmI, blastSize, minMultiplier, hitsToMinMult);
                     blast.timeLeft = 8;
                     blast.DamageType = DamageClass.Ranged;
                     blast.ArmorPenetration = Projectile.ArmorPenetration;
                 }
                 if (damageMult >= 0.75f)
-                    Owner.SetScreenshake(6f * damageMult);
+                    Owner.SetScreenshake(3f * damageMult);
             }
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
@@ -351,7 +351,6 @@ namespace CalamityMod.Projectiles.Ranged
             }
             if (damageMult >= 0.75f)
             {
-                Owner.SetScreenshake(4f * damageMult);
                 float angle = Main.rand.NextFloat(0, MathHelper.TwoPi);
                 for (int i = -6; i <= 6; i++) // 12
                 {
@@ -380,7 +379,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             modifiers.SourceDamage *= damageMult;
         }
-        public override bool? CanHitNPC(NPC target) => time > 1 && Projectile.numHits == 0;
+        public override bool? CanHitNPC(NPC target) => ((time > 1) ? null : false && Projectile.numHits == 0);
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             float hitboxSize = 20 * Projectile.scale * damageMult;

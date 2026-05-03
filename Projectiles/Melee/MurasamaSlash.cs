@@ -11,7 +11,6 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    [PierceResistException]
     public class MurasamaSlash : ModProjectile, ILocalizedModType
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<Murasama>();
@@ -60,9 +59,10 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (time == 0)
             {
+                Projectile.scale = Owner.GetMeleeScale();
                 if (Main.zenithWorld)
                 {
-                    Projectile.scale = 2;
+                    Projectile.scale *= 2;
                     Projectile.damage = (int)(Projectile.damage * 2);
                 }
                 Projectile.frame = Main.zenithWorld ? 6 : 10;

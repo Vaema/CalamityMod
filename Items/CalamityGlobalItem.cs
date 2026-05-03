@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using CalamityMod.Balancing;
+using CalamityMod.Buffs.Potions;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer;
@@ -328,9 +329,6 @@ namespace CalamityMod.Items
                 if (modPlayer.gloveOfRecklessness)
                     velocity = velocity.RotatedByRandom(MathHelper.ToRadians(12f));
             }
-
-            if (modPlayer.eArtifact && item.CountsAsClass<RangedDamageClass>())
-                velocity *= 1.25f;
         }
 
         public override bool Shoot(Item item, Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockBack)
@@ -616,7 +614,7 @@ namespace CalamityMod.Items
             }
 
             //Mana Potion interactions
-            if (item.healMana > 0)
+            if (item.healMana > 0 || player.HasBuff(ModContent.BuffType<AstralInjectionBuff>()))
             {
                 //If mana potion used, kill all active Crown projectiles 
                 if ((modPlayer.moonCrown || modPlayer.featherCrown) && modPlayer.mageCrownCount > 0)
@@ -886,8 +884,10 @@ namespace CalamityMod.Items
             // This assume all items with a damage hit is a weapon. There appears to be no edge cases for this thus far
             if (player.Calamity().oldFashioned)
                 modifiers.SourceDamage *= OldFashioned.DamageReductionMultiplier;
-            if (player.Calamity().ivDrip)
-                modifiers.SourceDamage *= IVDripOnTheRocks.DamageReductionMultiplier;
+
+            var dripPlayer = player.GetModPlayer<IVDripPlayer>();
+            if (dripPlayer.HasAlcohol(AlcoholType.OldFashioned))
+                modifiers.SourceDamage *= OldFashioned.DamageReductionMultiplier;
         }
 
         public override void OnHitNPC(Item item, Player player, NPC target, NPC.HitInfo hit, int damageDone)
@@ -938,6 +938,8 @@ namespace CalamityMod.Items
         {
             // Xyk 3MARCH2026: Doesn't work on any non use style 1 items currently, Doze will fix it
             if (item.CountsAsClass<MeleeDamageClass>() && player.HasBuff(BuffID.Tipsy))
+                scale += 0.15f;
+            if (item.CountsAsClass<MeleeDamageClass>() && (player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.Ale) || player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.Sake)))
                 scale += 0.15f;
         }
         public override void UpdateArmorSet(Player player, string set)
@@ -1088,13 +1090,8 @@ namespace CalamityMod.Items
                 modPlayer.fairyBoots = true;
 
             // Mana Flower tinker buffs
-            if (item.type == ItemID.MagnetFlower)
-                player.manaCost -= 0.02f;
-            if (item.type == ItemID.ArcaneFlower || item.type == ItemID.ManaCloak)
-                player.manaCost -= 0.04f;
             if (item.type == ItemID.ArcaneFlower)
                 player.GetDamage<MagicDamageClass>() += 0.05f;
-
 
             if (item.type == ItemID.EyeoftheGolem)
             {
@@ -1153,15 +1150,11 @@ namespace CalamityMod.Items
                 if (modPlayer.gloveLevel < 1)
                     modPlayer.gloveLevel = 1;
             }
-            if (item.type == ItemID.PowerGlove)
+            if (item.type == ItemID.PowerGlove || item.type == ItemID.BerserkerGlove)
             {
-                player.GetAttackSpeed<MeleeDamageClass>() -= 0.12f; // Power Glove 10%
+                player.GetAttackSpeed<MeleeDamageClass>() -= 0.12f; // Power/Berserker Glove 12%
                 if (modPlayer.gloveLevel < 2)
                     modPlayer.gloveLevel = 2;
-            }
-            if (item.type == ItemID.BerserkerGlove)
-            {
-                player.GetAttackSpeed<MeleeDamageClass>() -= 0.12f; // Berserker Glove 0%
             }
             if (item.type == ItemID.MechanicalGlove)
             {

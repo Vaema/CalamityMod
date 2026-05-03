@@ -401,6 +401,32 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
+        #region Flail Balance Changes
+        // Make flails be unaffected by player velocity
+        private static void FlailsNoLongerAffectedByPlayerVelocity(On_Projectile.orig_AI_015_Flails orig, Projectile self)
+        {
+            orig(self);
+            if (self.ai[0] == 1f && self.ai[1] == 0f)
+                self.velocity -= Main.player[self.owner].velocity;
+        }
+
+        // Increase Flower Pow's return speed
+        private static void IncreaseFlowerPowRetSpeed(ILContext il)
+        {
+            var cursor = new ILCursor(il);
+            // Move to where Flower Pow receives its specific flail stat changes. This moves it after num2 = 23f
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdcR4(23f), i => i.MatchStloc(6)))
+            {
+                LogFailure("Flower Pow Buff", "Could not move to Flower Pow's specific flail stat changes.");
+                return;
+            }
+
+            // Emit an instruction setting num5 (the return speed) to 21. Vanilla is 16
+            cursor.Emit(OpCodes.Ldc_R4, 21f);
+            cursor.Emit(OpCodes.Stloc, 9);
+        }
+        #endregion
+
         #region Terrarian Projectile Limitation for Extra Updates
         private static void LimitTerrarianProjectiles(ILContext il)
         {
@@ -746,6 +772,82 @@ namespace CalamityMod.ILEditing
                 Main.player[Main.myPlayer].lifeSteal -= healAmount * LifestealCooldownMult;
                 Projectile.NewProjectile(self.GetSource_OnHit(victim, ProjectileSourceID.ToContextString(ProjectileSourceID.VampireKnives)), Position.X, Position.Y, 0f, 0f, ProjectileID.VampireHeal, 0, 0f, self.owner, self.owner, healAmount);
             }
+        }
+        #endregion
+
+        #region Tweak Pygmy Staff Aggro Distance Logic
+        // Code written by Habble
+        private static void PygmyAggroOnClosestPointInHitbox(ILContext context)
+        {
+            // Adjust Pygmy Staff's attack distance logic to be measured from the closest point to the enemy instead of the enemy's center.
+            ILCursor cursor = new(context);
+
+            // Go to the latest newly set variable near the point we wanna be, as that is an easy unique instruction to jump to. 131 is the number assigned to that local variable.
+            if (!cursor.TryGotoNext(i => i.MatchStloc(131)))
+            {
+                LogFailure("Tweaking Pygmy Staff aggro distance logic", "Could not locate unique Stloc(131) instruction nearest to aggro distance check.");
+                return;
+            }
+            // Move before the minion range variable emission so as to receive the value being targetted at it.
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdloc(126)))
+            {
+                LogFailure("Tweaking Pygmy Staff aggro distance logic", "Could not locate the minion range variable.");
+                return;
+            }
+            cursor.Emit(OpCodes.Ldarg_0); // Emits the Projectile entity itself
+            cursor.Emit(OpCodes.Ldloc, 129); // Emits the NPC index via the incremented loop variable
+            cursor.Emit(OpCodes.Ldloc, 6); // Emits the bool containing type check for Pygmies
+            // Replace the distance with a different value calculated off of closest point in hitboxes
+            cursor.EmitDelegate((float distance, Projectile projectile, int npcIndex, bool pygmy) =>
+            {
+                if (!pygmy)
+                    return distance;
+
+                NPC npc = Main.npc[npcIndex];
+                Player player = Main.player[projectile.owner];
+                float finalDistance = npc.Hitbox.ClosestPointInRect(player.Center).Distance(player.Hitbox.ClosestPointInRect(npc.Center));
+                return finalDistance;
+            });
+
+            // That was part 1, time for part 2.
+            // Go directly before the instruction that's meant to receive the distance value of this tagged NPC.
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchStloc(185)))
+            {
+                LogFailure("Tweaking Pygmy Staff aggro distance logic", "Could not locate first unique Stloc(185) instruction.");
+                return;
+            }
+            cursor.Emit(OpCodes.Ldarg_0);
+            cursor.Emit(OpCodes.Ldloc, 181); // Emits the tagged NPC
+            cursor.Emit(OpCodes.Ldloc, 6);
+            // Replace the distance with a different value calculated off of closest point in hitboxes
+            cursor.EmitDelegate((float distance, Projectile projectile, NPC npc, bool pygmy) =>
+            {
+                if (!pygmy)
+                    return distance;
+
+                float finalDistance = npc.Hitbox.ClosestPointInRect(projectile.Center).Distance(projectile.Hitbox.ClosestPointInRect(npc.Center));
+                return finalDistance;
+            });
+
+            // Go directly before the instruction that's meant to receive the distance value of this NPC currently being iterated over.
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchStloc(189)))
+            {
+                LogFailure("Tweaking Pygmy Staff aggro distance logic", "Could not locate first unique Stloc(189) instruction.");
+                return;
+            }
+            cursor.Emit(OpCodes.Ldarg_0);
+            cursor.Emit(OpCodes.Ldloc, 186); // Emits the NPC index via the incremented loop variable
+            cursor.Emit(OpCodes.Ldloc, 6);
+            // Replace the distance with a different value calculated off of closest point in hitboxes
+            cursor.EmitDelegate((float distance, Projectile projectile, int npcIndex, bool pygmy) =>
+            {
+                if (!pygmy)
+                    return distance;
+
+                NPC npc = Main.npc[npcIndex];
+                float finalDistance = npc.Hitbox.ClosestPointInRect(projectile.Center).Distance(projectile.Hitbox.ClosestPointInRect(npc.Center));
+                return finalDistance;
+            });
         }
         #endregion
     }

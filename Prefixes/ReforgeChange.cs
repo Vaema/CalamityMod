@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using CalamityMod.Items.Tools;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Packets;
@@ -29,6 +30,14 @@ namespace CalamityMod.Prefixes
 
         public override int ChoosePrefix(Item item, UnifiedRandom rand)
         {
+            // Voucher override
+            if (VoucherReforgeSystem.ForcedPrefix != -1)
+            {
+                int forced = VoucherReforgeSystem.ForcedPrefix;
+                VoucherReforgeSystem.ForcedPrefix = -1;
+                return forced;
+            }
+
             if (storedPrefix == -1 && item.CountsAsClass<RogueDamageClass>() && (item.maxStack == 1 || item.AllowReforgeForStackableItem))
             {
                 // Crafting (or first reforge of) a rogue weapon has a 75% chance for a random modifier, this check is done by vanilla
