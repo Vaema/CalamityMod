@@ -40,10 +40,13 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (Projectile.ai[0] == 0f)
             {
-                Projectile.ai[0] = Main.rand.NextFloat(40f, 70f);
+                Projectile.ai[0] = Main.rand.NextFloat(20f, 40f);
                 Projectile.ai[1] = Main.rand.NextFloat(35f, 55f);
             }
-            target = Projectile.Center.ClosestNPCAt(1200f);
+            if (target != null && !target.CanBeChasedBy())
+                target = null;
+            if (target is null)
+                target = GetTargetInRange(1200f);
             Projectile.frameCounter++;
             if (Projectile.frameCounter > 4)
             {
@@ -66,6 +69,29 @@ namespace CalamityMod.Projectiles.Melee
             }
         }
 
+
+        NPC GetTargetInRange(float range)
+        {
+            var player = Main.player[Projectile.owner];
+            NPC gotTarget = null;
+            int currentHP = -1;
+            float distance = range;
+            foreach (var npc in Main.ActiveNPCs)
+            {
+                if (Projectile.localNPCImmunity[npc.whoAmI] > 0)
+                    continue;
+                var myDistance = npc.Distance(Projectile.Center);
+
+                if (npc.CanBeChasedBy() && ((myDistance < range && currentHP < npc.life) || (myDistance < distance && currentHP <= npc.life)))
+                {
+                    distance = myDistance;
+                    currentHP = npc.life;
+                    gotTarget = npc;
+                }
+            }
+            return gotTarget;
+
+        }
         public override Color? GetAlpha(Color lightColor) => new Color(200, 200, 200, Projectile.alpha);
 
         public override bool PreDraw(ref Color lightColor)
@@ -147,6 +173,13 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 10;
             Projectile.Damage();
+        }
+
+        public override bool? CanHitNPC(NPC target)
+        {
+            if (this.target != null && target.whoAmI != this.target.whoAmI)
+                return false;
+            return base.CanHitNPC(target);
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)

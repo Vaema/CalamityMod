@@ -1041,7 +1041,7 @@ IVDripOnTheRocks: {
 		'''
 	Empty: Place an alcoholic beverage on this item in your inventory to pour its contents in
 	CurrentAlcoholText: Filled with
-	SakeAndAleText: Increases melee weapon scale by 15%, but decreases melee speed by 10%
+	SakeAndAleText: Increases melee weapon scale by 25%, but decreases melee speed by 10%
 }
 
 JellyChargedBattery: {

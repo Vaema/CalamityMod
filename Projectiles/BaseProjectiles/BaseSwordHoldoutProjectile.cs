@@ -351,8 +351,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             }
             if (useMeleeSize)
             {
-                if (player.meleeScaleGlove) Projectile.scale *= 1.1f;
-                Projectile.scale *= player.HeldItem.scale;
+                Projectile.scale *= player.GetMeleeScale();
             }
             baseScale = Projectile.scale;
             ExistsTime = swingTime + StartupTime + CooldownTime;
