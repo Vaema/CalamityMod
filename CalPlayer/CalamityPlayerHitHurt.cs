@@ -284,7 +284,7 @@ namespace CalamityMod.CalPlayer
 
             if (damage == 10.0 && hitDirection == 0 && damageSource.SourceOtherIndex == 8)
             {
-                if (fishStocks)
+                if (fishStocks && fishStockPower < 0)
                 {
                     string year = DateTime.Now.ToString("yy");
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.FishStocks" + Main.rand.Next(1, 6 + 1)).ToNetworkText(Player.name, year));

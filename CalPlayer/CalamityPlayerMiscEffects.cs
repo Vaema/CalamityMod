@@ -1708,6 +1708,7 @@ namespace CalamityMod.CalPlayer
                         fishStockOldPower.Item2,
                         fishStockOldPower.Item3,
                         fishStockOldPower.Item4);
+                    // TODO: Remove this debug line before deployment
                     fishStockPower = Player.controlDown ? -2 : Player.controlUp ? 2 : newFishStockPower;
                 }
                 // Stats

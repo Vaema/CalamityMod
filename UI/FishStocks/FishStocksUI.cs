@@ -93,7 +93,7 @@ namespace CalamityMod.UI
             Texture2D fishyTexture = player.dead ? fishyWhatTex : (waving ? frame2 ? fishyBye2Tex : fishyBye1Tex : happy ? frame2 ? fishyHappy2Tex : fishyHappy1Tex :
                 panic ? frame2 ? fishyPanic2Tex : fishyPanic1Tex : frame2 ? fishyPoint2Tex : fishyPoint1Tex);
 
-            Vector2 baseUIPosition = (screenPos + new Vector2(-1350 + overlayTex.Width * 1.5f * visual, 275) * UIMult);
+            Vector2 baseUIPosition = (screenPos + new Vector2(-1350 + overlayTex.Width * 1.5f * visual, 275 + 77 * MathF.Ceiling(player.CountBuffs() / 11f)) * UIMult);
             Vector2 fishyDrawPos = baseUIPosition + new Vector2(112, 40) * UIMult;
             
             Vector2 leftEdgePos = baseUIPosition - Vector2.UnitX * overlayTex.Width;
