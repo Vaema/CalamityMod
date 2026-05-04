@@ -45,6 +45,7 @@ using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.AcidRain;
@@ -239,6 +240,21 @@ namespace CalamityMod.CalPlayer
                 rage = 0f;
             }
 
+            bool holdingElephantKiller = Player.HeldItem.type == ModContent.ItemType<ElephantKiller>();
+            if (holdingElephantKiller && !heldElephantKillerLastFrame)
+            {
+                Player.Calamity().rogueStealth = 0;
+                heldElephantKillerLastFrame = true;
+            }
+            else if (!holdingElephantKiller)
+                heldElephantKillerLastFrame = false;
+
+            if (!drawingElephantKillerJoke)
+                elephantKillerJoke = 0;
+            else
+                elephantKillerJoke++;
+            drawingElephantKillerJoke = false;
+
             if (furyFuel < FuryFuelMax && furyRefuelTimer >= 0)
             {
                 furyFuel += (int)furyRefuelTimer;
@@ -257,7 +273,9 @@ namespace CalamityMod.CalPlayer
             }
 
             // Apply stealth damage to rogue.
-            Player.GetDamage<RogueDamageClass>() += stealthDamage;
+            bool dontProvideStealthDamage = Player.HeldItem.type == ModContent.ItemType<ElephantKiller>();
+            if (!dontProvideStealthDamage)
+                Player.GetDamage<RogueDamageClass>() += stealthDamage;
 
             if ((XykVisualsBlue || XykVisualsOrange))
             {
@@ -562,9 +580,16 @@ namespace CalamityMod.CalPlayer
             if (cinnamonRoll && !(Main.getGoodWorld && Main.npc.Any(x=> x.active && x.type == ModContent.NPCType<DevourerofGodsHead>())))
             {
                 if (dashStart)
-                    Player.velocity.X *= 3;
+                    Player.velocity.X *= 2f;
                 else if  (Player.dashDelay == -1)
-                    Player.velocity.X *= 0.8f;
+                    Player.velocity.X *= 0.825f;
+            }
+            if (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.CinnamonRoll) && !(Main.getGoodWorld && Main.npc.Any(x => x.active && x.type == ModContent.NPCType<DevourerofGodsHead>())))
+            {
+                if (dashStart)
+                    Player.velocity.X *= 2f;
+                else if (Player.dashDelay == -1)
+                    Player.velocity.X *= 0.825f;
             }
 
             if (Player.dashDelay == -1)
@@ -1277,6 +1302,18 @@ namespace CalamityMod.CalPlayer
                     }
                 }
             }
+            if (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.Margarita))
+            {
+                if (Main.myPlayer == Player.whoAmI)
+                {
+                    for (int l = 0; l < Player.MaxBuffs; l++)
+                    {
+                        int buffID = Player.buffType[l];
+                        if (Player.buffTime[l] > 2 && CalamityBuffSets.IsDebuff[buffID])
+                            Player.buffTime[l]--;
+                    }
+                }
+            }
 
             // Update the Providence Burn effect drawer if applicable.
             float providenceBurnIntensity = 0f;
@@ -1720,6 +1757,16 @@ namespace CalamityMod.CalPlayer
             }
             if (rOfResilienceCooldown > 0)
                 rOfResilienceCooldown--;
+
+            if (Player.Calamity().friendlyMinions > 0)
+            {
+                int numOfPigs = Player.ownedProjectileCounts[ModContent.ProjectileType<Pigion>()];
+                if (numOfPigs < Player.Calamity().friendlyMinions)
+                {
+                    int pigDamage = 7;
+                    Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, new Vector2(0, -16).RotatedByRandom(MathHelper.Pi), ModContent.ProjectileType<Pigion>(), pigDamage, 0f, Player.whoAmI, 0, numOfPigs + 1);
+                }
+            }
 
             if (transformer && Player.Calamity().transformerCooldown == 0 && transformerDelay == 0) // The code for this acursed thing took much... MUCH, too long to make
             {
@@ -3347,7 +3394,7 @@ namespace CalamityMod.CalPlayer
         #region Other Buff Effects
         private void OtherBuffEffects()
         {
-
+            var dripPlayer = Player.GetModPlayer<IVDripPlayer>();
             if (gravityNormalizer)
             {
                 Player.buffImmune[BuffID.VortexDebuff] = true;
@@ -3535,16 +3582,22 @@ namespace CalamityMod.CalPlayer
             {
                 //this is so janky looking but it's the only way I could get it to work properly
                 if (!(StealthStrikeAvailable() && Player.HeldItem.DamageType == RogueDamageClass.Instance))
-                    Player.GetDamage(DamageClass.Generic) += PurpleHaze.DamageBoost;
+                    Player.GetDamage(DamageClass.Generic) += PurpleHaze.DamageBoost + ((dripPlayer.HasAlcohol(AlcoholType.PurpleHaze) && purpleHaze) ? PurpleHaze.DamageBoost : 0);
                 else 
-                    stealthDamage -= PurpleHaze.StealthDamageLoss;
+                    stealthDamage -= PurpleHaze.StealthDamageLoss + ((dripPlayer.HasAlcohol(AlcoholType.PurpleHaze) && purpleHaze) ? PurpleHaze.StealthDamageLoss : 0);
             }
 
             if (everclear)
                 Player.GetDamage<GenericDamageClass>() += Everclear.DamageBoost;
-
+            if (dripPlayer.HasAlcohol(AlcoholType.Everclear))
+                Player.GetDamage<GenericDamageClass>() += Everclear.DamageBoost;
 
             if (caribbeanRum)
+            {
+                Player.gravity *= CaribbeanRum.GravityMultiplier;
+                Player.moveSpeed += CaribbeanRum.MoveSpeedBoost;
+            }
+            if (dripPlayer.HasAlcohol(AlcoholType.CaribbeanRum))
             {
                 Player.gravity *= CaribbeanRum.GravityMultiplier;
                 Player.moveSpeed += CaribbeanRum.MoveSpeedBoost;
@@ -3555,10 +3608,24 @@ namespace CalamityMod.CalPlayer
                 Player.manaRegenCount += StarBeamRye.ManaRegenBoost;
                 Player.GetDamage<MagicDamageClass>() *= StarBeamRye.MagicDmgMult;
             }
-
-            if (whiteWine)
+            if (dripPlayer.HasAlcohol(AlcoholType.StarBeamRye))
             {
-                Player.wingTimeMax = (int)(Player.wingTimeMax * (1f - WhiteWine.FlightTimeLoss));
+                Player.manaRegenCount += StarBeamRye.ManaRegenBoost;
+                Player.GetDamage<MagicDamageClass>() *= StarBeamRye.MagicDmgMult;
+            }
+
+            if (dripPlayer.HasAlcohol(AlcoholType.Ale) || dripPlayer.HasAlcohol(AlcoholType.Sake))
+            {
+                Player.GetAttackSpeed<MeleeDamageClass>() -= 0.1f;
+                // See CalamityGlobalItem and PlayerUtils for Ale's melee size increase
+            }
+
+            if (whiteWine || dripPlayer.HasAlcohol(AlcoholType.WhiteWine))
+            {
+                if (whiteWine)
+                    Player.wingTimeMax = (int)(Player.wingTimeMax * (1f - WhiteWine.FlightTimeLoss));
+                if (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.WhiteWine))
+                    Player.wingTimeMax = (int)(Player.wingTimeMax * (1f - WhiteWine.FlightTimeLoss));
 
                 float bonus = 0f;
                 float MaxDistance = 640f;
@@ -3570,7 +3637,12 @@ namespace CalamityMod.CalPlayer
                 }
                 else
                     bonus = 0;
-                whiteWineTimer += bonus * WhiteWine.FlightTimeRecoveryAmount;
+
+                if (whiteWine)
+                    whiteWineTimer += bonus * WhiteWine.FlightTimeRecoveryAmount;
+                if (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.WhiteWine))
+                    whiteWineTimer += bonus * WhiteWine.FlightTimeRecoveryAmount;
+
                 while (whiteWineTimer > 1)
                 {
                     if (Player.wingTime < Player.wingTimeMax)
@@ -3580,9 +3652,9 @@ namespace CalamityMod.CalPlayer
              }
 
             if (redWine)
-            {
                 Player.wingTimeMax = (int)(Player.wingTimeMax * (1f - RedWine.FlightTimeLoss));
-            }
+            if (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.RedWine))
+                Player.wingTimeMax = (int)(Player.wingTimeMax * (1f - RedWine.FlightTimeLoss));
 
             if (giantPearl)
             {
@@ -4724,6 +4796,12 @@ namespace CalamityMod.CalPlayer
                 if (Player.statDefense > 0)
                     Player.statDefense -= (int)(Player.statDefense * Everclear.DefenseLossPercent);
             }
+            if (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.Everclear))
+            {
+                if (Player.statDefense > 0)
+                    Player.statDefense -= (int)(Player.statDefense * Everclear.DefenseLossPercent);
+            }
+
             if (DesertProwlerHat.ShroudedInSmoke(Player, out _))
                 Player.statDefense -= (int)(Player.statDefense * DesertProwlerHat.SmokeDefenseMult);
         }

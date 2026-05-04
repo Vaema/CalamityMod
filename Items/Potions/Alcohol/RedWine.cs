@@ -1,4 +1,6 @@
-﻿using CalamityMod.Buffs.Alcohol;
+﻿using System;
+using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Potions.Food;
 using Microsoft.Xna.Framework;
@@ -9,14 +11,23 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
 {
-    public class RedWine : ModItem, ILocalizedModType
+    public class RedWine : ModItem, ILocalizedModType, IAlcoholItem
     {
         public new string LocalizationCategory => "Items.Potions";
 
         public static float VerticalSpeedBoost = 0.1f;
         public static float FlightTimeLoss = 0.25f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(VerticalSpeedBoost.ToPercent(), FlightTimeLoss.ToPercent());
+        public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.RedWine.DripEffect").WithFormatArgs(VerticalSpeedBoost.ToPercent(), FlightTimeLoss.ToPercent());
 
+        public AlcoholType AlcoholVariant => AlcoholType.RedWine;
+
+        public Action<Player, float> IVDripAlcoholEffect => ApplyRedWineEffect;
+
+        private static void ApplyRedWineEffect(Player player, float intensity)
+        {
+            // See CalamityPlayer and CalamityPlayerMiscEffects
+        }
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;

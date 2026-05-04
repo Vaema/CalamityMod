@@ -995,6 +995,15 @@ ThaumaticChair: {
 	Tooltip: One of Chloe's finest creations
 }
 
+TheMonument: {
+	DisplayName: The Monument
+	Tooltip:
+		'''
+		A monument celebrating the accomplishments of capitalism
+		Funded by the taxes of nearby Town NPCs, though they may not be too happy about that
+		'''
+}
+
 ThermalTorch: {
 	DisplayName: Thermal Torch
 	Tooltip:

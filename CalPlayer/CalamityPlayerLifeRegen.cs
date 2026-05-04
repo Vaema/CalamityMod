@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Buffs.Potions;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.DataStructures;
@@ -12,9 +13,7 @@ using CalamityMod.Items.Armor.Silva;
 using CalamityMod.Items.Armor.Tarragon;
 using CalamityMod.Items.Fishing.BrimstoneCragCatches;
 using CalamityMod.Items.Placeables.Furniture;
-using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
-using CalamityMod.Items.Potions.Food;
 using CalamityMod.NPCs;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
@@ -191,17 +190,34 @@ namespace CalamityMod.CalPlayer
             #endregion
 
             #region Alcohol
+            var dripPlayer = Player.GetModPlayer<IVDripPlayer>();
+
             for (int l = 0; l < Player.MaxBuffs; l++)
             {
                 int buff = Player.buffType[l];
-                if (CalamityBuffSets.AlcoholStrength.TryGetValue(buff, out int level))
-                    alcoholPoisonLevel += level;
+                if (buff <= 0) continue;
+
+                var data = BuffDatasets.DebuffDataset[buff];
+                if (data?.AlcoholLevel > 0)
+                    alcoholPoisonLevel += data.AlcoholLevel;
             }
-            if (Player.Calamity().ivDrip) // +1 stack of poisoning while IV Drip is equipped
-                alcoholPoisonLevel++;
+
+            if (dripPlayer.ivDripEquipped && dripPlayer.currentAlcohol != AlcoholType.None)
+            {
+                int ivBuffID = BuffDatasets.GetBuffIDFromAlcoholType(dripPlayer.currentAlcohol);
+
+                if (ivBuffID != -1)
+                {
+                    var ivData = BuffDatasets.DebuffDataset[ivBuffID];
+                    if (ivData?.AlcoholLevel > 0)
+                        alcoholPoisonLevel += ivData.AlcoholLevel;
+                }
+            }
+
             if (everclear)
                 totalNegativeLifeRegen += Everclear.RegenLoss;
-
+            if (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.Everclear))
+                totalNegativeLifeRegen += Everclear.RegenLoss;
             // Blanket effect for all alcohols
             if (alcoholPoisonLevel > 0)
             {
@@ -213,7 +229,7 @@ namespace CalamityMod.CalPlayer
                     Player.fishingSkill += 5;
 
             }
-            if (alcoholPoisonLevel > 3)
+            if (alcoholPoisonLevel > alcoholPoisonMax)
             {
                 // Independently of Calamity's nerfs to Nebula life regen, it is disabled entirely by alcohol poisoning.
                 Player.nebulaLevelLife = 0;
@@ -268,7 +284,10 @@ namespace CalamityMod.CalPlayer
             // At the last second, Reaver defense helm reduces DoT debuffs by 20%
             if (reaverDefense)
                 totalNegativeLifeRegen -= (int)(totalNegativeLifeRegen * ReaverHeadTank.SetBonusDebuffDamageReduction);
+
             if (tequilaSunrise)
+                totalNegativeLifeRegen = (int)(totalNegativeLifeRegen * TequilaSunrise.DoTMultiplier);
+            if (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.TequilaSunrise))
                 totalNegativeLifeRegen = (int)(totalNegativeLifeRegen * TequilaSunrise.DoTMultiplier);
 
             Player.lifeRegen -= (int)totalNegativeLifeRegen;
@@ -341,7 +360,17 @@ namespace CalamityMod.CalPlayer
 
                 if (tequilaSunrise)
                     Player.lifeRegenTime += 1800;
+
             }
+
+            if (dripPlayer.HasAlcohol(AlcoholType.TequilaSunrise))
+            {
+                if (hadLifeRegenHinderingDebuff && !hasLifeRegenHinderingDebuff)
+                {
+                    Player.lifeRegenTime += 1800;
+                }
+            }
+
 
             #endregion
 
@@ -558,12 +587,7 @@ namespace CalamityMod.CalPlayer
             if (community)
             {
                 int regenBoost = 1 + (int)(TheCommunity.CalculatePower() * TheCommunity.RegenMultiplier);
-                bool lesserEffect = false;
-                for (int l = 0; l < Player.MaxBuffs; l++)
-                {
-                    int hasBuff = Player.buffType[l];
-                    lesserEffect = CalamityBuffSets.AlcoholStrength.TryGetValue(hasBuff, out var a);
-                }
+                bool lesserEffect = Player.buffType.Any(i => BuffDatasets.DebuffDataset[i] is not null && BuffDatasets.DebuffDataset[i].AlcoholLevel > 0);
                 if (Player.lifeRegen < 0)
                     Player.lifeRegen += lesserEffect ? 1 : regenBoost;
             }

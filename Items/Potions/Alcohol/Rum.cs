@@ -1,4 +1,6 @@
-﻿using CalamityMod.Buffs.Alcohol;
+﻿using System;
+using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -8,14 +10,22 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
 {
-    public class Rum : ModItem, ILocalizedModType
+    public class Rum : ModItem, ILocalizedModType, IAlcoholItem
     {
         public new string LocalizationCategory => "Items.Potions";
 
         public static float NonMinionBoost = 1.15f;
         public static float MinionBoost = 0.85f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs((NonMinionBoost-1).ToPercent(), (1- MinionBoost).ToPercent());
+        public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.Rum.DripEffect").WithFormatArgs((NonMinionBoost - 1).ToPercent(), (1 - MinionBoost).ToPercent());
+        public AlcoholType AlcoholVariant => AlcoholType.Rum;
 
+        public Action<Player, float> IVDripAlcoholEffect => ApplyRumEffect;
+
+        private static void ApplyRumEffect(Player player, float intensity)
+        {
+            // See CalamityGlobalProjectile
+        }
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;

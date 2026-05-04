@@ -884,8 +884,10 @@ namespace CalamityMod.Items
             // This assume all items with a damage hit is a weapon. There appears to be no edge cases for this thus far
             if (player.Calamity().oldFashioned)
                 modifiers.SourceDamage *= OldFashioned.DamageReductionMultiplier;
-            if (player.Calamity().ivDrip)
-                modifiers.SourceDamage *= IVDripOnTheRocks.DamageReductionMultiplier;
+
+            var dripPlayer = player.GetModPlayer<IVDripPlayer>();
+            if (dripPlayer.HasAlcohol(AlcoholType.OldFashioned))
+                modifiers.SourceDamage *= OldFashioned.DamageReductionMultiplier;
         }
 
         public override void OnHitNPC(Item item, Player player, NPC target, NPC.HitInfo hit, int damageDone)
@@ -936,6 +938,8 @@ namespace CalamityMod.Items
         {
             // Xyk 3MARCH2026: Doesn't work on any non use style 1 items currently, Doze will fix it
             if (item.CountsAsClass<MeleeDamageClass>() && player.HasBuff(BuffID.Tipsy))
+                scale += 0.15f;
+            if (item.CountsAsClass<MeleeDamageClass>() && (player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.Ale) || player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.Sake)))
                 scale += 0.15f;
         }
         public override void UpdateArmorSet(Player player, string set)

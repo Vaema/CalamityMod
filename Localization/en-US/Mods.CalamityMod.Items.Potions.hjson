@@ -157,6 +157,12 @@ SupremeManaPotion: {
 	Tooltip: ""
 }
 
+TheConcoction: {
+	DisplayName: The Concoction
+	EasterEggText: Removes 500 life
+	Tooltip: ""
+}
+
 ZenPotion: {
 	DisplayName: Zen Potion
 	Tooltip: Vastly decreases enemy spawn rate
@@ -167,6 +173,22 @@ ZergPotion: {
 	Tooltip: Vastly increases enemy spawn rate
 }
 
+BaconOil: {
+	DisplayName: Bacon Oil
+	Tooltip:
+		'''
+		Provides "good" mobility that scales with your damage stat boosts
+		Counts as 3 alcohols for {$Buffs.AlcoholPoisoning.DisplayName}
+		{$Common.AlcoholWarning}
+		'''
+	DripEffect:
+		'''
+		Provides "good" mobility that scales with your damage stat boosts
+		Counts as 3 alcohols for {$Buffs.AlcoholPoisoning.DisplayName}
+		When combined with drinking Bacon Oil straight, mobility becomes zanier
+		'''
+}
+
 BloodyMary: {
 	DisplayName: Bloody Mary
 	Tooltip:
@@ -174,6 +196,12 @@ BloodyMary: {
 		Increases enemy spawn rates by 7x
 		Greatly reduces piercing weapon effectiveness
 		{$Common.AlcoholWarning}
+		'''
+	DripEffect:
+		'''
+		Increases enemy spawn rates by 7x
+		Greatly reduces piercing weapon effectiveness
+		When combined with drinking Bloody Mary straight, enemy spawn rates are increased by 10x total
 		'''
 }
 
@@ -185,6 +213,11 @@ CaribbeanRum: {
 		Reduces your gravity by {1}%
 		{$Common.AlcoholWarning}
 		'''
+	DripEffect:
+		'''
+		Increases move speed by {0}%
+		Reduces your gravity by {1}%
+		'''
 }
 
 CinnamonRoll: {
@@ -195,14 +228,10 @@ CinnamonRoll: {
 		Greatly reduces dash distance
 		{$Common.AlcoholWarning}
 		'''
-}
-
-PurpleHaze: {
-	DisplayName: Purple Haze
-	Tooltip:
+	DripEffect:
 		'''
-		For 5 seconds after a stealth strike, all damage increased by {0}%, but stealth strike damage reduced by {1}%
-		{$Common.AlcoholWarning}
+		Greatly increases dash speed
+		Greatly reduces dash distance
 		'''
 }
 
@@ -215,6 +244,12 @@ Everclear: {
 		Counts as 2 alcohols for {$Buffs.AlcoholPoisoning.DisplayName}
 		{$Common.AlcoholWarning}
 		'''
+	DripEffect:
+		'''
+		{0}% increased damage
+		Reduces life regen by {1} HP/s and defense by {2}%
+		Counts as 2 alcohols for {$Buffs.AlcoholPoisoning.DisplayName}
+		'''
 }
 
 EvergreenGin: {
@@ -225,6 +260,11 @@ EvergreenGin: {
 		{1}% decreased Electric and Heat debuff damage
 		{$Common.AlcoholWarning}
 		'''
+	DripEffect:
+		'''
+		{0}% increased Water and Sickness debuff damage
+		{1}% decreased Electric and Heat debuff damage
+		'''
 }
 
 Fireball: {
@@ -234,6 +274,11 @@ Fireball: {
 		{0}% increased Heat debuff damage
 		{1}% decreased Sickness debuff damage
 		{$Common.AlcoholWarning}
+		'''
+	DripEffect:
+		'''
+		{0}% increased Heat debuff damage
+		{1}% decreased Sickness debuff damage
 		'''
 }
 
@@ -246,6 +291,13 @@ GrapeBeer: {
 		This reaches a minimum of {0}x damage at {1} tiles away
 		{$Common.AlcoholWarning}
 		'''
+	DripEffect:
+		'''
+		Bullets, Arrows, Darts, and Rockets gain homing
+		Projectiles deal less damage the further the enemy is
+		This reaches a minimum of {0}x damage at {1} tiles away
+		When combined with drinking Grape Beer straight, homing range is increased
+		'''
 }
 
 Manhattan: {
@@ -256,6 +308,11 @@ Manhattan: {
 		{1}% decreased Water debuff damage
 		{$Common.AlcoholWarning}
 		'''
+	DripEffect:
+		'''
+		{0}% increased Cold debuff damage
+		{1}% decreased Water debuff damage
+		'''
 }
 
 Margarita: {
@@ -265,6 +322,11 @@ Margarita: {
 		Halves duration of harmful debuffs you receive
 		Reduces damage of debuffs you inflict by {0}%
 		{$Common.AlcoholWarning}
+		'''
+	DripEffect:
+		'''
+		Halves duration of harmful debuffs you receive
+		Reduces damage of debuffs you inflict by {0}%
 		'''
 }
 
@@ -277,6 +339,12 @@ Moonshine: {
 		Defense damage takes three times as long to recover
 		{$Common.AlcoholWarning}
 		'''
+	DripEffect:
+		'''
+		Increases maximum health by {0}%
+		Attacks always take at least half your defense worth of defense damage
+		Defense damage takes three times as long to recover
+		'''
 }
 
 MoscowMule: {
@@ -286,6 +354,11 @@ MoscowMule: {
 		{0}% increased knockback, all attacks inflict heavy knockback
 		Reduces the effectiveness of piercing weapons
 		{$Common.AlcoholWarning}
+		'''
+	DripEffect:
+		'''
+		{0}% increased knockback, all attacks inflict heavy knockback
+		Reduces the effectiveness of piercing weapons
 		'''
 }
 
@@ -307,6 +380,21 @@ OldFashioned: {
 		Multiplies all weapon damage by {1}x
 		{$Common.AlcoholWarning}
 		'''
+	DripEffect:
+		'''
+		Multiplies most non-weapon, non-debuff damage by {0}x
+		Multiplies all weapon damage by {1}x
+		'''
+}
+
+PurpleHaze: {
+	DisplayName: Purple Haze
+	Tooltip:
+		'''
+		For 5 seconds after a stealth strike, all damage increased by {0}%, but stealth strike damage reduced by {1}%
+		{$Common.AlcoholWarning}
+		'''
+	DripEffect: For 5 seconds after a stealth strike, all damage increased by {0}%, but stealth strike damage reduced by {1}%
 }
 
 RedWine: {
@@ -316,6 +404,11 @@ RedWine: {
 		{0}% increased vertical speed
 		{1}% reduced flight time
 		{$Common.AlcoholWarning}
+		'''
+	DripEffect:
+		'''
+		{0}% increased vertical speed
+		{1}% reduced flight time
 		'''
 }
 
@@ -327,6 +420,11 @@ Rum: {
 		{1}% decreased minion damage
 		{$Common.AlcoholWarning}
 		'''
+	DripEffect:
+		'''
+		{0}% increased non-minion summon damage
+		{1}% decreased minion damage
+		'''
 }
 
 Screwdriver: {
@@ -336,6 +434,11 @@ Screwdriver: {
 		Greatly increases tile and wall placement range and speed
 		Greatly reduces damage dealt
 		{$Common.AlcoholWarning}
+		'''
+	DripEffect:
+		'''
+		Greatly increases tile and wall placement range and speed
+		Greatly reduces damage dealt
 		'''
 }
 
@@ -347,6 +450,11 @@ StarBeamRye: {
 		Magic weapons deal {0}x damage
 		{$Common.AlcoholWarning}
 		'''
+	DripEffect:
+		'''
+		Increases Mana regeneration, even while using an item
+		Magic weapons deal {0}x damage
+		'''
 }
 
 Tequila: {
@@ -356,6 +464,11 @@ Tequila: {
 		{0}% increased Electric debuff damage
 		{1}% decreased Cold debuff damage
 		{$Common.AlcoholWarning}
+		'''
+	DripEffect:
+		'''
+		{0}% increased Electric debuff damage
+		{1}% decreased Cold debuff damage
 		'''
 }
 
@@ -367,6 +480,20 @@ TequilaSunrise: {
 		{0}% increased damage taken from debuffs
 		{$Common.AlcoholWarning}
 		'''
+	DripEffect:
+		'''
+		Greatly increases natural life regeneration after suffering a damaging debuff
+		{0}% increased damage taken from debuffs
+		'''
+}
+
+TheElixir: {
+	DisplayName: The Elixir
+	Tooltip:
+		'''
+		Functions as a Potion of Return
+		Occasionally sends you... [c/AA23C4:somewhere else]
+		'''
 }
 
 Vodka: {
@@ -376,6 +503,11 @@ Vodka: {
 		{0}% increased Typeless debuff damage
 		{1}% decreased elemental debuff damage
 		{$Common.AlcoholWarning}
+		'''
+	DripEffect:
+		'''
+		{0}% increased Typeless debuff damage
+		{1}% decreased elemental debuff damage
 		'''
 }
 
@@ -389,6 +521,14 @@ Whiskey: {
 		This boost recharges when holding weapons of a different class, taking {3} seconds to fully recharge
 		{$Common.AlcoholWarning}
 		'''
+	DripEffect:
+		'''
+		Provides between {0}% and {1}% damage to the held weapon's class
+		Each class tracks this boost individually
+		This boost lowers the longer you hold weapons of the same class, taking {2} seconds to fully decay
+		This boost recharges when holding weapons of a different class, taking {3} seconds to fully recharge
+		When combined with drinking Whiskey straight, damage varies between {4}% and {5}%
+		'''
 }
 
 WhiteWine: {
@@ -398,6 +538,11 @@ WhiteWine: {
 		You regain flight time the closer you are to an enemy
 		{0}% reduced flight time
 		{$Common.AlcoholWarning}
+		'''
+	DripEffect:
+		'''
+		You regain flight time the closer you are to an enemy
+		{0}% reduced flight time
 		'''
 }
 
@@ -446,5 +591,18 @@ ShroomBowl: {
 		'''
 		{$CommonItemTooltip.MediumStats}
 		'He has been grounded'
+		'''
+}
+
+TheSandwich: {
+	DisplayName: The Sandwich
+	Tooltip:
+		'''
+		A sandwich made of the finest bread, cheese, and fish in the land!
+		Minor reductions to all stats
+		{0}% increased damage for every alcohol you are affected by
+		Allows you to drink 2 more alcohols than normal
+		Alcohol effects will not expire while under the effects of The Sandwich
+		'Might actually taste good if it was the only thing you'd ever eaten...'
 		'''
 }

@@ -1,4 +1,6 @@
-﻿using CalamityMod.Buffs.Alcohol;
+﻿using System;
+using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -8,16 +10,27 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
 {
-    public class Whiskey : ModItem, ILocalizedModType
+    public class Whiskey : ModItem, ILocalizedModType, IAlcoholItem
     {
         public new string LocalizationCategory => "Items.Potions";
 
-        public static float MaxDamageBoost = 0.15f;
-        public static float MinDamageBoost = -0.15f;
+        public static float StandardDamageCeiling = 0.15f;
+        public static float StandardDamageFloor = -0.15f;
         public static float TimeToDischarge = 600;
         public static float TimeToRecharge = 300;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MinDamageBoost.ToPercent(), MaxDamageBoost.ToPercent(), (TimeToDischarge/60).ToString("0.##"), (TimeToRecharge/60).ToString("0.##"));
+        public static float CombinedDamageCeiling = 0.3f;
+        public static float CombinedDamageFloor = -0.3f;
 
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(StandardDamageFloor.ToPercent(), StandardDamageCeiling.ToPercent(), (TimeToDischarge/60).ToString("0.##"), (TimeToRecharge/60).ToString("0.##"));
+        public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.Whiskey.DripEffect").WithFormatArgs(StandardDamageFloor.ToPercent(), StandardDamageCeiling.ToPercent(), (TimeToDischarge / 60).ToString("0.##"), (TimeToRecharge / 60).ToString("0.##"), CombinedDamageFloor.ToPercent(), CombinedDamageCeiling.ToPercent());
+        public AlcoholType AlcoholVariant => AlcoholType.Whiskey;
+
+        public Action<Player, float> IVDripAlcoholEffect => ApplyWhiskeyEffect;
+
+        private static void ApplyWhiskeyEffect(Player player, float intensity)
+        {
+            // See CalamityPlayer
+        }
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;

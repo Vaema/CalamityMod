@@ -105,6 +105,7 @@ namespace CalamityMod.ILEditing
             On_Main.DamageVar_float_int_float += AdjustDamageVariance;
             IL_NPC.ScaleStats_ApplyExpertTweaks += RemoveExpertHardmodeScaling;
             IL_Projectile.Damage += VanillaBossResistChanges;
+            IL_Projectile.AI_026 += PygmyAggroOnClosestPointInHitbox;
             IL_Projectile.AI_099_2 += LimitTerrarianProjectiles;
             On_Projectile.AI_015_Flails += FlailsNoLongerAffectedByPlayerVelocity;
             IL_Projectile.AI_015_Flails += IncreaseFlowerPowRetSpeed;

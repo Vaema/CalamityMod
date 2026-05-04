@@ -51,7 +51,6 @@ DuneSandBallGun.DisplayName: Dunesand Ball
 EarlyBloomBobber.DisplayName: Early Bloom Bobber
 EmpyreanBlast.DisplayName: Empyrean Blast
 EmpyreanEmber.DisplayName: Empyrean Ember
-EmpyreanGlob.DisplayName: Empyeran Glob
 EmpyreanMarble.DisplayName: Empyrean Marble
 EmpyreanStellarDetritus.DisplayName: Empyrean Stellar Detritus
 EnergyShell.DisplayName: Energy Shell
@@ -76,6 +75,7 @@ GodKiller.DisplayName: God Killer
 GodSlayerShrapnel.DisplayName: Flame
 GodSlayerShrapnelRound.DisplayName: Round
 GreenLabSeeker.DisplayName: Seeking Mechanism
+Gunshot.DisplayName: Gunshot
 HeronBobber.DisplayName: Heron Bobber
 HideOfAstrumDeusExplosion.DisplayName: Explosion
 HolyExplosionSupreme.DisplayName: Explosion
@@ -107,6 +107,7 @@ PauldronDash.DisplayName: Pauldron Dash
 PauldronExplosion.DisplayName: Pauldron Explosion
 PearlAuraShard.DisplayName: Prism Shard
 PlaguePulse.DisplayName: Plague Pulse
+Pigion.DisplayName: Pigion
 PinkPearlFalling.DisplayName: Pink Pearl
 PoisonousSeawater.DisplayName: Seawater
 PolypSandBallFalling.DisplayName: Polyp Sand Ball
@@ -152,6 +153,7 @@ TileSlamDamage.DisplayName: Grand Damage
 TitanHeartBoom.DisplayName: Titan Heart Boom
 TransformerAura.DisplayName: Transformer Aura
 TransformerBlob.DisplayName: Transformer Shard
+TrustyOldBobber.DisplayName: Trusty Old Bobber
 UrsaSlash.DisplayName: Ursa Slash
 V8000SoulVisual.DisplayName: V8000 Soul
 VerstaltiteBobber.DisplayName: Verstaltite Bobber
