@@ -561,11 +561,6 @@ Cometfruit: {
 		'''
 }
 
-DeliciousSlop: {
-	DisplayName: Delicious Slop
-	Tooltip: "{$CommonItemTooltip.MajorStats}"
-}
-
 Jackfruit: {
 	DisplayName: Jackfruit
 	Tooltip: "{$CommonItemTooltip.MinorStats}"
@@ -583,6 +578,11 @@ Mangosteen: {
 		{$CommonItemTooltip.MediumStats}
 		'Queen of fruits'
 		'''
+}
+
+QualitySlop: {
+	DisplayName: Quality Slop
+	Tooltip: "{$CommonItemTooltip.MajorStats}"
 }
 
 Salak: {

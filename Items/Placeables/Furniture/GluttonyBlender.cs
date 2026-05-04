@@ -18,10 +18,10 @@ namespace CalamityMod.Items.Placeables.Furniture
         }
     }
 
-    public class DeliciousSlop : ModItem, ILocalizedModType
+    public class QualitySlop : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Potions";
-        public override string Texture => "CalamityMod/Items/Potions/Food/DeliciousMeat"; //Placeholder
+        public override string Texture => "CalamityMod/Items/Potions/Food/QualitySlop";
 
         public override void SetDefaults()
         {
@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Placeables.Furniture
     public class DisgustingSlop : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Misc";
-        public override string Texture => "CalamityMod/Items/Tools/DisgustingMeat"; //Placeholder
+        public override string Texture => "CalamityMod/Items/Materials/DisgustingSlop";
 
         public override void SetStaticDefaults()
         {
