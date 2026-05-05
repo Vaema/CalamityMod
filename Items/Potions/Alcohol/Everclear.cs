@@ -4,6 +4,7 @@ using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -30,16 +31,17 @@ namespace CalamityMod.Items.Potions.Alcohol
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;
-            // Everclear is clear so uhm... yeah?
+            Main.RegisterItemAnimation(Type, new DrawAnimationVertical(int.MaxValue, 3));
             ItemID.Sets.DrinkParticleColors[Type] = new Color[2] {
                 new Color(153, 168, 162, 180),
                 new Color(198, 205, 207, 180)
             };
+            ItemID.Sets.IsFood[Type] = true;
         }
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(14, 42, ModContent.BuffType<EverclearBuff>(), CalamityUtils.MinutesToFrames(6), true);
+            Item.DefaultToFood(16, 52, ModContent.BuffType<EverclearBuff>(), CalamityUtils.MinutesToFrames(6), true);
 
             Item.value = Item.sellPrice(silver: 2);
             Item.rare = ItemRarityID.LightRed;
@@ -53,6 +55,11 @@ namespace CalamityMod.Items.Potions.Alcohol
                 AddIngredient(ItemID.SoulofNight, 10).
                 AddTile(TileID.Kegs).
                 Register();
+        }
+        public override void UseStyle(Player player, Rectangle heldItemFrame)
+        {
+            player.itemLocation.X += 3 * player.direction;
+            player.itemLocation.Y -= 7;
         }
     }
 }
