@@ -66,11 +66,10 @@ namespace CalamityMod.Projectiles.Typeless
 
             float sine = (float)Math.Sin(time * 0.03f * speedMult / MathHelper.Pi);
             float sine2 = (float)Math.Sin(time * (0.03f * 0.5f * speedMult) / MathHelper.Pi);
-            float sineNumberThreeSurelyWeNeedAThirdSineYouWillNotRegretAThirdSine = (float)Math.Sin((Main.GlobalTimeWrappedHourly * attackMult + Owner.Calamity().rOfResilienceOrbitOffset) * (4.5f) / MathHelper.Pi);
-            
+            // Sine number three, surely we need a third sine. You will not regret a third sine
+            float angleDisplacementSine = (float)Math.Sin((Main.GlobalTimeWrappedHourly * attackMult + Owner.Calamity().rOfResilienceOrbitOffset) * (4.5f) / MathHelper.Pi);
 
-
-                float rate = time * 0.004f;
+            float rate = time * 0.004f;
             List<Color> eColors = new List<Color>()
             {
                 Color.Sienna,
@@ -86,7 +85,7 @@ namespace CalamityMod.Projectiles.Typeless
             float goalMult = (Utils.GetLerpValue(-10, 30, Owner.ownedProjectileCounts[ModContent.ProjectileType<ArtifactOfResilienceShards>()], true) * orbitMult);
             shardNumMult = MathHelper.Lerp(shardNumMult, goalMult, 0.01f);
 
-            float displace = new Vector2(25, 0).RotatedBy(sineNumberThreeSurelyWeNeedAThirdSineYouWillNotRegretAThirdSine * 0.5f).ToRotation();
+            float displace = new Vector2(25, 0).RotatedBy(angleDisplacementSine * 0.5f).ToRotation();
             orbitRot = Utils.AngleLerp(orbitRot, displace, 0.01f);
             goalPosition = Owner.Center + (new Vector2(250 * sine * shardNumMult * placementMult * orbit, (125 * orbitSine - 45) * shardNumMult * placementMult * orbit)).RotatedBy(orbitRot);
 
