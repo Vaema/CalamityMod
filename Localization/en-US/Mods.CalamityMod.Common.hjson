@@ -12,6 +12,7 @@ ArmorSetBonusKey: Press {0}
 DoubleTapDown: Double tap {0}
 // Miscellaneous stats/info
 MinionSlotCost: Uses {0} minion slots
+MinionSlotCostSingle: Uses {0} minion slot
 AggroBoost: Enemies are more likely to target you
 AggroReduction: Enemies are less likely to target you
 KnockbackImmunity: Grants immunity to knockback
@@ -23,6 +24,7 @@ AbyssBreathLevel2: Moderately reduces breath loss in the abyss
 AbyssBreathLevel3: Greatly reduces breath loss in the abyss
 AlcoholWarning: Drinking more than 3 different alcohols might not end well with your liver
 ArmorPenetration: Ignores {0} points of enemy Defense
+AverageDamageInfo: This weapon scales with the average of all your damage stats
 CanMineUelibloom: Can mine Uelibloom Ore
 NotConsumable: Not consumable
 SummonTagDamageFlat: "{0} summon tag damage"

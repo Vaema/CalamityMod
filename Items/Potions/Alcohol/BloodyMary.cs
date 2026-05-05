@@ -1,4 +1,7 @@
-﻿using CalamityMod.Buffs.Alcohol;
+﻿using System;
+using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -7,9 +10,25 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
 {
-    public class BloodyMary : ModItem, ILocalizedModType
+    public class BloodyMary : ModItem, ILocalizedModType, IAlcoholItem
     {
         public new string LocalizationCategory => "Items.Potions";
+
+        public static float PierceDamageMultiplier = 0.66f;
+        public static float SpawnRateGateMultiplier = 0.142f;
+        public static float IVDripAdditionalSpawnRateGateMultiplier = 0.7f;
+        public static float SpawnLimitMultiplier = 5f;
+        public static float IVDripAdditionalSpawnLimitMultiplier = 1.5f;        
+        public override LocalizedText Tooltip => base.Tooltip;
+        public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.BloodyMary.DripEffect");
+        public AlcoholType AlcoholVariant => AlcoholType.BloodyMary;
+
+        public Action<Player, float> IVDripAlcoholEffect => ApplyBloodyMaryEffect;
+
+        private static void ApplyBloodyMaryEffect(Player player, float intensity)
+        {
+            // See CalamityPlayerOnHit
+        }
 
         public override void SetStaticDefaults()
         {

@@ -15,6 +15,7 @@ using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Armor.PlagueReaper;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs.Abyss;
@@ -161,7 +162,6 @@ namespace CalamityMod.NPCs
 
         // Heat debuff effects
         public bool IncreasedHeatEffects_Fireball = false;
-        public bool IncreasedHeatEffects_CinnamonRoll = false;
         public int IncreasedHeatEffects_FireBoots = 0;
 
         // Toxic Heart effect
@@ -193,6 +193,9 @@ namespace CalamityMod.NPCs
 
         /// <summary> Set this value to reduce target defense by a flat amount. </summary>
         public int miscDefenseLoss = 0;
+
+        /// <summary> If true, enemy will not drop any items. </summary>
+        public bool preventDrops = false;
 
         /// <summary>
         /// Constant representing a distance of 200 tiles in pixel measurement.<br/>
@@ -252,15 +255,10 @@ namespace CalamityMod.NPCs
         /// <summary> If set to true, allows for manually disabling this NPC's Boss Health Bar, even if they are still active. </summary>
         public bool ShouldCloseHPBar = false;
 
-        /// <summary> Constant representing the cooldown, in frames, before a boss can be affected by a slowing debuff. </summary>
-        public const int slowingDebuffResistanceMin = 1800;
-        /// <summary> Tracks the current slowing debuff cooldown for this NPC. </summary>
-        public int debuffResistanceTimer = 0;
-
         #region Debuffs
         public bool vaporfied = false;
         public bool timeDistortion = false;
-        public bool glacialState = false;
+        public bool frozen = false;
         public bool galvanicCorrosion = false;
         public bool temporalSadness = false;
         public bool eutrophication = false;
@@ -387,7 +385,6 @@ namespace CalamityMod.NPCs
         public int ladHearts = 0;
         public bool relicOfResilienceWeakness = false;
         public bool sagePoison = false;
-        public int sagePoisonDamage = 0;
         public bool vulnerabilityHex = false;
         public bool trueVulnerabilityHex = false;
         public bool banishingFire = false;
@@ -520,7 +517,6 @@ namespace CalamityMod.NPCs
             myClone.IncreasedColdEffects_CryoStone = IncreasedColdEffects_CryoStone;
             myClone.IncreasedElectricityEffects_Unused = IncreasedElectricityEffects_Unused;
             myClone.IncreasedHeatEffects_Fireball = IncreasedHeatEffects_Fireball;
-            myClone.IncreasedHeatEffects_CinnamonRoll = IncreasedHeatEffects_CinnamonRoll;
             myClone.IncreasedHeatEffects_FireBoots = IncreasedHeatEffects_FireBoots;
             myClone.IncreasedSicknessEffects_ToxicHeart = IncreasedSicknessEffects_ToxicHeart;
             myClone.IncreasedWaterEffects_Amulet1 = IncreasedWaterEffects_Amulet1;
@@ -534,6 +530,8 @@ namespace CalamityMod.NPCs
             myClone.canBreakPlayerDefense = canBreakPlayerDefense;
 
             myClone.miscDefenseLoss = miscDefenseLoss;
+
+            myClone.preventDrops = preventDrops;
 
             myClone.dashImmunityTime = new int[maxPlayerImmunities];
             for (int i = 0; i < maxPlayerImmunities; ++i)
@@ -550,11 +548,9 @@ namespace CalamityMod.NPCs
             myClone.CanHaveBossHealthBar = CanHaveBossHealthBar;
             myClone.ShouldCloseHPBar = ShouldCloseHPBar;
 
-            myClone.debuffResistanceTimer = debuffResistanceTimer;
-
             myClone.vaporfied = vaporfied;
             myClone.timeDistortion = timeDistortion;
-            myClone.glacialState = glacialState;
+            myClone.frozen = frozen;
             myClone.galvanicCorrosion = galvanicCorrosion;
             myClone.temporalSadness = temporalSadness;
             myClone.eutrophication = eutrophication;
@@ -636,7 +632,6 @@ namespace CalamityMod.NPCs
             myClone.ladHearts = ladHearts;
             myClone.relicOfResilienceWeakness = relicOfResilienceWeakness;
             myClone.sagePoison = sagePoison;
-            myClone.sagePoisonDamage = sagePoisonDamage;
             myClone.vulnerabilityHex = vulnerabilityHex;
             myClone.trueVulnerabilityHex = trueVulnerabilityHex;
             myClone.banishingFire = banishingFire;
@@ -751,12 +746,9 @@ namespace CalamityMod.NPCs
 
             //Debuff Bool clearing.
             // Doze 2jun2025 - Moved here from PostAI so drawing can read the bools.
-            if (debuffResistanceTimer > 0)
-                debuffResistanceTimer--;
-
             timeDistortion = false;
             galvanicCorrosion = false;
-            glacialState = false;
+            frozen = false;
             temporalSadness = false;
             eutrophication = false;
             webbed = false;
@@ -1217,7 +1209,6 @@ namespace CalamityMod.NPCs
             if (npc.type == NPCID.WallofFleshEye)
                 npc.netAlways = true;
 
-            sagePoisonDamage = 0;
             if (npc.type == NPCID.Golem && (CalamityWorld.revenge || BossRushEvent.BossRushActive))
                 npc.noGravity = true;
 
@@ -1301,7 +1292,10 @@ namespace CalamityMod.NPCs
                         npc.lifeMax *= 4;
                         break;
                     case NPCID.BrainofCthulhu:
-                        npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.75);
+                        npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.95);
+                        break;
+                    case NPCID.Creeper:
+                        npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.1);
                         break;
                     case NPCID.QueenBee:
                         npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.8);
@@ -3324,10 +3318,6 @@ namespace CalamityMod.NPCs
                 laserBurnDamage = 0;
             }
 
-            // Queen Bee is completely immune to having her movement impaired if not in a high difficulty mode.
-            if (npc.type == NPCID.QueenBee && !CalamityWorld.revenge && !BossRushEvent.BossRushActive)
-                return;
-
             // Pearl Aura shard spawning
             // Slowing is handled in the general slowing code below
             if (pearlAura)
@@ -3369,8 +3359,8 @@ namespace CalamityMod.NPCs
             }
             impalePacketTimer++;
 
-            // Apply slowing debuff effects
-            if (debuffResistanceTimer <= 0 || (debuffResistanceTimer > slowingDebuffResistanceMin))
+            // Apply slowing debuff effects, will not apply to bosses
+            if (!(CalamityNPCSets.ImmuneToSlowsAndOtherSpecialEffects[npc.type] || npc.boss))
             {
                 // Slowing debuffs which set a velocity hard cap take priority first.
                 if (vulnerabilityHex)
@@ -3389,7 +3379,7 @@ namespace CalamityMod.NPCs
                 if (webbed)
                     velocitySlownessFactor += 0.15f;
 
-                if (glacialState)
+                if (frozen)
                 {
                     float baseSlownessFactor = 0.1f;
                     if (VulnerableToCold.HasValue)
@@ -3568,8 +3558,6 @@ namespace CalamityMod.NPCs
                         target.AddBuff(BuffType<ArmorCrunch>(), 480);
                     break;
 
-                case NPCID.GolemHead:
-                case NPCID.GolemHeadFree:
                 case NPCID.GolemFistRight:
                 case NPCID.GolemFistLeft:
                     if (CalamityWorld.revenge)
@@ -3761,7 +3749,8 @@ namespace CalamityMod.NPCs
                 // Hitbox criteria were changed to allow long one dimensional projectiles so that Condemnation would work.
                 bool acceptableVelocity = projectile.velocity != Vector2.Zero;
                 bool acceptableHitbox = (projectile.width <= 36) || (projectile.height <= 36);
-                if (bullseye != null && acceptableVelocity && acceptableHitbox)
+                
+                if (bullseye != null && acceptableVelocity && acceptableHitbox && !CalamityProjectileSets.DaawnlightBlacklist[projectile.type])
                 {
                     // Bullseyes are visually different on bosses and thus have larger hitboxes.
                     float bullseyeRadius = npc.IsABoss() ? DaawnlightSpiritOrigin.BossBullseyeRadius : DaawnlightSpiritOrigin.RegularEnemyBullseyeRadius;
@@ -4259,10 +4248,16 @@ namespace CalamityMod.NPCs
                 spawnRate = (int)(spawnRate * 0.25); // 4x spawn rate
                 maxSpawns = (int)(maxSpawns * 4f);
             }
-            if (player.Calamity().bloodyMary)
+            if (player.Calamity().bloodyMary || player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.BloodyMary))
             {
-                spawnRate = (int)(spawnRate * 0.142); // ~7x spawn rate
-                maxSpawns = (int)(maxSpawns * 5f); // Only 5x the cap, however
+                spawnRate = (int)(spawnRate * BloodyMary.SpawnRateGateMultiplier); // ~7x spawn rate
+                maxSpawns = (int)(maxSpawns * BloodyMary.SpawnLimitMultiplier); // 5x spawn rate cap
+            }
+            // Only when BOTH effects are active, also applies the previous spawn rate and limit boosts multiplicatively
+            if (player.Calamity().bloodyMary && player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.BloodyMary))
+            {
+                spawnRate = (int)(spawnRate * BloodyMary.IVDripAdditionalSpawnRateGateMultiplier); // 1.429x spawn rate, total of 10x 
+                maxSpawns = (int)(maxSpawns * BloodyMary.IVDripAdditionalSpawnLimitMultiplier); // 1.5x spawn rate cap
             }
 
             // Reductions
@@ -4881,7 +4876,7 @@ namespace CalamityMod.NPCs
 
             // Calamity debuff coloring effects
             // These are in order of precedence because they override each other.
-            if (glacialState)
+            if (frozen)
                 drawColor = Color.Cyan;
 
             else if (auricRebuke)
@@ -4986,7 +4981,6 @@ namespace CalamityMod.NPCs
             ("CalamityMod/Buffs/StatDebuffs/Crumbling", NPC => NPC.Calamity().crumble),
             ("CalamityMod/Buffs/StatDebuffs/Eutrophication", NPC => NPC.Calamity().eutrophication),
             ("CalamityMod/Buffs/StatDebuffs/GalvanicCorrosion", NPC => NPC.Calamity().galvanicCorrosion),
-            ("CalamityMod/Buffs/StatDebuffs/GlacialState", NPC => NPC.Calamity().glacialState),
             ("CalamityMod/Buffs/StatDebuffs/Irradiated", NPC => NPC.Calamity().irradiated),
             ("CalamityMod/Buffs/StatDebuffs/MarkedforDeath", NPC => NPC.Calamity().markedForDeath),
             ("CalamityMod/Buffs/StatDebuffs/PearlAura", NPC => NPC.Calamity().pearlAura),
@@ -5077,6 +5071,8 @@ namespace CalamityMod.NPCs
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.Confused].Value);
                     if (npc.ichor)
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.Ichor].Value);
+                    if (frozen)
+                        currentDebuffs.Add(TextureAssets.Buff[BuffID.Frozen].Value);
                     if (webbed)
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.Webbed].Value);
                     if (npc.midas)
@@ -5487,7 +5483,7 @@ namespace CalamityMod.NPCs
             if (target.damage > 0 && !target.boss && !target.friendly && !target.dontTakeDamage && target.type != NPCID.Creeper && target.type != NPCType<RavagerClawLeft>() &&
                 target.type != NPCID.MourningWood && target.type != NPCID.Everscream && target.type != NPCID.SantaNK1 && target.type != NPCType<RavagerClawRight>() &&
                 target.type != NPCType<ReaperShark>() && target.type != NPCType<Mauler>() && target.type != NPCType<EidolonWyrmHead>() && target.type != NPCID.GolemFistLeft && target.type != NPCID.GolemFistRight &&
-                target.type != NPCType<PrimordialWyrmHead>() && target.type != NPCType<ColossalSquid>() && target.type != NPCID.DD2Betsy && !CalamityNPCSets.ResistSlowingDebuffsAndOtherSpecialEffects[target.type] && !AcidRainEvent.AllMinibosses.Contains(target.type))
+                target.type != NPCType<PrimordialWyrmHead>() && target.type != NPCType<ColossalSquid>() && target.type != NPCID.DD2Betsy && !CalamityNPCSets.ImmuneToSlowsAndOtherSpecialEffects[target.type] && !AcidRainEvent.AllMinibosses.Contains(target.type))
             {
                 return true;
             }

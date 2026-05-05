@@ -1,5 +1,7 @@
 ﻿using System;
+using CalamityMod.Buffs.Alcohol;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Accessories;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -10,6 +12,7 @@ namespace CalamityMod.DataStructures
     [ReinitializeDuringResizeArrays]
     public static class BuffDatasets
     {
+        private static DebuffData Alch(int level) => new DebuffData() { AlcoholLevel = level };
         public static DebuffData[] DebuffDataset = BuffID.Sets.Factory.CreateNamedSet("DebuffData")
             .Description("Stores DebuffData for a particular debuff")
             .RegisterCustomSet<DebuffData>(null,
@@ -24,8 +27,69 @@ namespace CalamityMod.DataStructures
                 BuffID.Poisoned, DebuffData.Poisoned,
                 BuffID.Venom, DebuffData.AcidVenom,
                 BuffID.Electrified, DebuffData.Electrified,
-                BuffID.Oiled, DebuffData.Oiled
+                BuffID.Oiled, DebuffData.Oiled,
+
+                BuffID.Tipsy, Alch(1),
+                ModContent.BuffType<BloodyMaryBuff>(), Alch(1),
+                ModContent.BuffType<CaribbeanRumBuff>(), Alch(1),
+                ModContent.BuffType<CinnamonRollBuff>(), Alch(1),
+                ModContent.BuffType<EvergreenGinBuff>(), Alch(1),
+                ModContent.BuffType<FireballBuff>(), Alch(1),
+                ModContent.BuffType<GrapeBeerBuff>(), Alch(1),
+                ModContent.BuffType<ManhattanBuff>(), Alch(1),
+                ModContent.BuffType<MargaritaBuff>(), Alch(1),
+                ModContent.BuffType<MoonshineBuff>(), Alch(1),
+                ModContent.BuffType<MoscowMuleBuff>(), Alch(1),
+                ModContent.BuffType<OldFashionedBuff>(), Alch(1),
+                ModContent.BuffType<PurpleHazeBuff>(), Alch(1),
+                ModContent.BuffType<RedWineBuff>(), Alch(1),
+                ModContent.BuffType<RumBuff>(), Alch(1),
+                ModContent.BuffType<ScrewdriverBuff>(), Alch(1),
+                ModContent.BuffType<StarBeamRyeBuff>(), Alch(1),
+                ModContent.BuffType<TequilaBuff>(), Alch(1),
+                ModContent.BuffType<TequilaSunriseBuff>(), Alch(1),
+                ModContent.BuffType<VodkaBuff>(), Alch(1),
+                ModContent.BuffType<WhiskeyBuff>(), Alch(1),
+                ModContent.BuffType<WhiteWineBuff>(), Alch(1),
+
+                ModContent.BuffType<EverclearBuff>(), Alch(2),
+                ModContent.BuffType<BaconOilBuff>(), Alch(3)
             );
+        public static int GetBuffIDFromAlcoholType(AlcoholType type)
+        {
+            return type switch
+            {
+                AlcoholType.BaconOil => ModContent.BuffType<BaconOilBuff>(),
+                AlcoholType.BloodyMary => ModContent.BuffType<BloodyMaryBuff>(),
+                AlcoholType.CaribbeanRum => ModContent.BuffType<CaribbeanRumBuff>(),
+                AlcoholType.CinnamonRoll => ModContent.BuffType<CinnamonRollBuff>(),
+                AlcoholType.Everclear => ModContent.BuffType<EverclearBuff>(),
+                AlcoholType.EvergreenGin => ModContent.BuffType<EvergreenGinBuff>(),
+                AlcoholType.Fireball => ModContent.BuffType<FireballBuff>(),
+                AlcoholType.GrapeBeer => ModContent.BuffType<GrapeBeerBuff>(),
+                AlcoholType.Manhattan => ModContent.BuffType<ManhattanBuff>(),
+                AlcoholType.Margarita => ModContent.BuffType<MargaritaBuff>(),
+                AlcoholType.Moonshine => ModContent.BuffType<MoonshineBuff>(),
+                AlcoholType.MoscowMule => ModContent.BuffType<MoscowMuleBuff>(),
+                AlcoholType.OldFashioned => ModContent.BuffType<OldFashionedBuff>(),
+                AlcoholType.PurpleHaze => ModContent.BuffType<PurpleHazeBuff>(),
+                AlcoholType.RedWine => ModContent.BuffType<RedWineBuff>(),
+                AlcoholType.Rum => ModContent.BuffType<RumBuff>(),
+                AlcoholType.Screwdriver => ModContent.BuffType<ScrewdriverBuff>(),
+                AlcoholType.StarBeamRye => ModContent.BuffType<StarBeamRyeBuff>(),
+                AlcoholType.Tequila => ModContent.BuffType<TequilaBuff>(),
+                AlcoholType.TequilaSunrise => ModContent.BuffType<TequilaSunriseBuff>(),
+                AlcoholType.Vodka => ModContent.BuffType<VodkaBuff>(),
+                AlcoholType.Whiskey => ModContent.BuffType<WhiskeyBuff>(),
+                AlcoholType.WhiteWine => ModContent.BuffType<WhiteWineBuff>(),
+
+                // Vanilla treats both Ale and Sake as the "Tipsy" buff
+                AlcoholType.Ale => BuffID.Tipsy,
+                AlcoholType.Sake => BuffID.Tipsy,
+
+                _ => -1
+            };
+        }
     }
     public class DebuffData
     {
@@ -113,11 +177,10 @@ namespace CalamityMod.DataStructures
         public bool GearCanModifyDebuff = true;
 
         /// <summary>
-        /// UNIMPLEMENTED. WILL BE DONE IN A FUTURE PR
         /// How much alcohol this counts as.
         /// Default is 0, most alcohol is 1, and Everclear is 2
         /// </summary>
-        public float AlcoholLevel = 0f;
+        public int AlcoholLevel = 0;
 
         /// <summary>
         /// UNIMPLEMENTED. WILL BE DONE IN A FUTURE PR

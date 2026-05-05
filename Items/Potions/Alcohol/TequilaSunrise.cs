@@ -1,4 +1,6 @@
-﻿using CalamityMod.Buffs.Alcohol;
+﻿using System;
+using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Ores;
 using Microsoft.Xna.Framework;
@@ -10,13 +12,21 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
 {
-    public class TequilaSunrise : ModItem, ILocalizedModType
+    public class TequilaSunrise : ModItem, ILocalizedModType, IAlcoholItem
     {
         public new string LocalizationCategory => "Items.Potions";
 
         public static float DoTMultiplier = 1.5f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs((DoTMultiplier-1).ToPercent());
+        public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.TequilaSunrise.DripEffect").WithFormatArgs((DoTMultiplier-1).ToPercent());
+        public AlcoholType AlcoholVariant => AlcoholType.TequilaSunrise;
 
+        public Action<Player, float> IVDripAlcoholEffect => ApplyTequilaSunriseEffect;
+
+        private static void ApplyTequilaSunriseEffect(Player player, float intensity)
+        {
+            // See CalamityPlayerLifeRegen
+        }
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;

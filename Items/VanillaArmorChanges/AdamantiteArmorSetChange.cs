@@ -17,17 +17,10 @@ namespace CalamityMod.Items.VanillaArmorChanges
 
         public override string ArmorSetName => "Adamantite";
 
-        public const int MaxManaBoost = 20;
         public const int DefenseBoostMax = 10;
         public const int TimeUntilDecayBeginsAfterAttacking = 60;
         public const int TimeUntilBoostCompletelyDecays = 210; // Unlisted use: this is also the amount of hits to max out defense.
         public const int CritToDRConversionPercent = 25;
-
-        public override void ApplyHeadPieceEffect(Player player)
-        {
-            if (player.armor[0].type == ItemID.AdamantiteHeadgear)
-                player.statManaMax2 += MaxManaBoost;
-        }
 
         public override void UpdateSetBonusText(ref string setBonusText)
         {

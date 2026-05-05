@@ -1,4 +1,6 @@
-﻿using CalamityMod.Buffs.Alcohol;
+﻿using System;
+using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -9,13 +11,21 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
 {
-    public class Moonshine : ModItem, ILocalizedModType
+    public class Moonshine : ModItem, ILocalizedModType, IAlcoholItem
     {
         public new string LocalizationCategory => "Items.Potions";
 
-        public static float MaxLifePercentBoost = 0.33f;
+        public static float MaxLifePercentBoost = 0.25f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MaxLifePercentBoost.ToPercent());
+        public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.Moonshine.DripEffect").WithFormatArgs(MaxLifePercentBoost.ToPercent());
+        public AlcoholType AlcoholVariant => AlcoholType.Moonshine;
 
+        public Action<Player, float> IVDripAlcoholEffect => ApplyMoonshineEffect;
+
+        private static void ApplyMoonshineEffect(Player player, float intensity)
+        {
+            // See CalamityPlayer and CalamityPlayerHitHurt
+        }
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;

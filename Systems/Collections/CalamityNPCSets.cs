@@ -105,19 +105,10 @@ namespace CalamityMod.Systems.Collections
         /// If <see langword="true"/> for an NPC type, then that NPC will have its contact damage set to 0.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        public static bool[] DealsZeroContactDamage = Factory.CreateBoolSet(NPCID.Harpy, NPCID.Salamander, NPCID.Salamander2, NPCID.Salamander3, NPCID.Salamander4, NPCID.Salamander5,
-                NPCID.Salamander6, NPCID.Salamander7, NPCID.Salamander8, NPCID.Salamander9, NPCID.GiantCursedSkull, NPCID.FungiBulb, NPCID.GiantFungiBulb, NPCID.IcyMerman,
-                NPCID.AngryNimbus, NPCID.SandElemental, NPCID.DarkCaster, NPCID.FireImp, NPCID.Tim, NPCID.CultistArcherBlue, NPCID.DesertDjinn, NPCID.DiabolistRed, NPCID.DiabolistWhite,
-                NPCID.Gastropod, NPCID.IceElemental, NPCID.IchorSticker, NPCID.Necromancer, NPCID.NecromancerArmored, NPCID.RaggedCaster, NPCID.RaggedCasterOpenCoat, NPCID.RuneWizard,
-                NPCID.SkeletonArcher, NPCID.SkeletonCommando, NPCID.SkeletonSniper, NPCID.TacticalSkeleton, NPCID.Clown, NPCID.GoblinArcher, NPCID.GoblinSorcerer, NPCID.GoblinSummoner,
-                NPCID.PirateCrossbower, NPCID.PirateDeadeye, NPCID.PirateCaptain, NPCID.SnowmanGangsta, NPCID.SnowBalla, NPCID.DrManFly, NPCID.Eyezor, NPCID.Nailhead, NPCID.BrainScrambler,
-                NPCID.GigaZapper, NPCID.RayGunner, NPCID.ScutlixRider, NPCID.MartianWalker, NPCID.MartianTurret, NPCID.ElfCopter, NPCID.ElfArcher, NPCID.NebulaBrain, NPCID.NebulaSoldier,
-                NPCID.StardustCellSmall, NPCID.StardustJellyfishBig, NPCID.StardustSoldier, NPCID.StardustSpiderBig, NPCID.VortexHornetQueen, NPCID.VortexRifleman, NPCID.VortexSoldier,
+        public static bool[] DealsZeroContactDamage = Factory.CreateBoolSet(NPCID.AngryNimbus, NPCID.DarkCaster, NPCID.FireImp, NPCID.Tim, NPCID.DesertDjinn, NPCID.DiabolistRed, NPCID.DiabolistWhite,
+                NPCID.Necromancer, NPCID.NecromancerArmored, NPCID.RaggedCaster, NPCID.RaggedCasterOpenCoat, NPCID.RuneWizard, NPCID.GoblinSorcerer, NPCID.GoblinSummoner, NPCID.NebulaBrain,
                 NPCID.PirateShipCannon, NPCID.MartianSaucer, NPCID.MartianSaucerCannon, NPCID.MartianSaucerCore, NPCID.MartianSaucerTurret, NPCID.Probe, NPCID.CultistBoss, NPCID.GolemHead,
-                NPCID.GolemHeadFree, NPCID.MoonLordFreeEye, NPCID.BloodSquid, NPCID.PlanterasHook, NPCID.Dandelion, NPCID.DD2DarkMageT1, NPCID.DD2DarkMageT3, NPCID.DD2OgreT2,
-                NPCID.DD2OgreT3, NPCID.DD2GoblinBomberT1, NPCID.DD2GoblinBomberT2, NPCID.DD2GoblinBomberT3, NPCID.DD2JavelinstT1, NPCID.DD2JavelinstT2, NPCID.DD2JavelinstT3,
-                NPCID.DD2KoboldWalkerT2, NPCID.DD2KoboldWalkerT3, NPCID.DD2DrakinT2, NPCID.DD2DrakinT3, NPCID.DD2KoboldFlyerT2, NPCID.DD2KoboldFlyerT3, NPCID.DD2WitherBeastT2,
-                NPCID.DD2WitherBeastT3, NPCID.DD2LightningBugT3, NPCID.MourningWood, NPCID.Pumpking, NPCID.Everscream, NPCID.IceQueen, NPCID.SantaNK1, NPCID.AncientDoom);
+                NPCID.GolemHeadFree, NPCID.MoonLordFreeEye, NPCID.BloodSquid, NPCID.PlanterasHook, NPCID.MourningWood, NPCID.Pumpking, NPCID.Everscream, NPCID.IceQueen, NPCID.SantaNK1, NPCID.AncientDoom);
 
         /// <summary>
         /// If <see langword="true"/> for an NPC type, then that NPC will have its damage reduced by 25% if the world is in Hardmode.<br/>
@@ -177,11 +168,11 @@ namespace CalamityMod.Systems.Collections
                 NPCID.MothronEgg, NPCID.MothronSpawn);
 
         /// <summary>
-        /// If <see langword="true"/> for an NPC type, then the NPC will receive a 30 second global cooldown to slowing debuffs after being inflicted by one.<br/>
+        /// If <see langword="true"/> for an NPC type, then the NPC will not be affected by slowing debuffs.<br/>
         /// Also used to prevent weapon pulling effects and Anarchy Blade's ability to instantly kill enemies that are below 50% health.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        public static bool[] ResistSlowingDebuffsAndOtherSpecialEffects = Factory.CreateBoolSet(NPCID.KingSlime, NPCType<KingSlimeJewelRuby>(),
+        public static bool[] ImmuneToSlowsAndOtherSpecialEffects = Factory.CreateBoolSet(NPCID.KingSlime, NPCType<KingSlimeJewelRuby>(),
                 NPCID.EyeofCthulhu, NPCID.EaterofWorldsHead, NPCID.EaterofWorldsBody, NPCID.EaterofWorldsTail, NPCID.BrainofCthulhu, NPCID.Creeper,
                 NPCID.QueenBee, NPCID.Deerclops, NPCID.SkeletronHead, NPCID.SkeletronHand, NPCID.WallofFlesh, NPCID.WallofFleshEye, NPCID.PirateShipCannon, NPCID.QueenSlimeBoss,
                 NPCID.Probe, NPCID.Retinazer, NPCID.Spazmatism, NPCID.SkeletronPrime, NPCID.PrimeCannon, NPCID.PrimeSaw, NPCID.PrimeLaser, NPCID.PrimeVice, NPCID.Plantera,

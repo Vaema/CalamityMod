@@ -1,4 +1,7 @@
-﻿using CalamityMod.Buffs.Alcohol;
+﻿using System;
+using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -8,14 +11,22 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
 {
-    public class OldFashioned : ModItem, ILocalizedModType
+    public class OldFashioned : ModItem, ILocalizedModType, IAlcoholItem
     {
         public new string LocalizationCategory => "Items.Potions";
 
         public static readonly float DamageBoostMultiplier = 1.25f;
         public static readonly float DamageReductionMultiplier = 0.75f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs((DamageBoostMultiplier).ToString("N2"), (DamageReductionMultiplier).ToString("N2"));
+        public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.OldFashioned.DripEffect").WithFormatArgs(DamageBoostMultiplier.ToString("N2"), DamageReductionMultiplier.ToString("N2"));
+        public AlcoholType AlcoholVariant => AlcoholType.OldFashioned;
 
+        public Action<Player, float> IVDripAlcoholEffect => ApplyOldFashionedEffect;
+
+        private static void ApplyOldFashionedEffect(Player player, float intensity)
+        {
+            // See CalamityGlobalProjectile
+        }
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;

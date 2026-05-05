@@ -1,4 +1,6 @@
-﻿using CalamityMod.Buffs.Alcohol;
+﻿using System;
+using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -9,13 +11,25 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
 {
-    public class EvergreenGin : ModItem, ILocalizedModType
+    public class EvergreenGin : ModItem, ILocalizedModType, IAlcoholItem
     {
         public new string LocalizationCategory => "Items.Potions";
 
         public static float DebuffBoost = 0.5f;
         public static float DebuffLoss = 0.5f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs((DebuffBoost).ToPercent(), DebuffLoss.ToPercent());
+        public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.EvergreenGin.DripEffect").WithFormatArgs((DebuffBoost).ToPercent(), DebuffLoss.ToPercent());
+        public AlcoholType AlcoholVariant => AlcoholType.EvergreenGin;
+
+        public Action<Player, float> IVDripAlcoholEffect => ApplyEvergreenGinEffect;
+        private static void ApplyEvergreenGinEffect(Player player, float intensity)
+        {
+            var cplayer = player.Calamity();
+            cplayer.SicknessDebuffMultiplier += EvergreenGin.DebuffBoost;
+            cplayer.WaterDebuffMultiplier += EvergreenGin.DebuffBoost;
+            cplayer.ElectricDebuffMultiplier -= EvergreenGin.DebuffLoss;
+            cplayer.HeatDebuffMultiplier -= EvergreenGin.DebuffLoss;
+        }
 
         public override void SetStaticDefaults()
         {

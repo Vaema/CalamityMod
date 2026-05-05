@@ -384,7 +384,7 @@ namespace CalamityMod.Projectiles.Rogue
 
                 Vector2 grenadePos = Owner.GetFrontHandPosition(Player.CompositeArmStretchAmount.Full, grenadeRot) + new Vector2(Owner.direction == 1 ? 5 : 5, Owner.direction == 1 ? -38 : 22).RotatedBy(grenadeRot);
 
-                drawPosition = grenadePos - Main.screenPosition;
+                drawPosition = grenadePos - Main.screenPosition + new Vector2(0, Owner.gfxOffY);
                 drawRotation = grenadeRot + (Owner.direction == 1 ? MathHelper.ToRadians(180) : 0);
             }
 

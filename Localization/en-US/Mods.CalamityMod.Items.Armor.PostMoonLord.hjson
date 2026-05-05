@@ -168,7 +168,6 @@ BloodflareBodyArmor: {
 	Tooltip: "{$CommonItemTooltip.PercentIncreasedDamage} and {$CommonItemTooltip.PercentIncreasedCritChance@1}"
 	CommonSetBonus:
 		'''
-		{$Mods.CalamityMod.Vanilla.Armor.SetBonus.Crimson}
 		Enemies below 50% life drop a heart when struck
 		This effect has a 5 second cooldown
 		'''
@@ -243,6 +242,7 @@ BloodflareHeadRogue: {
 		'''
 		{$Common.RogueDamage} and {$Common.RogueCrit@1}
 		{$CommonItemTooltip.PercentIncreasedMovementSpeed@2}
+		Increases regeneration by {3} HP/s
 		'''
 	SetBonus:
 		'''
@@ -252,7 +252,6 @@ BloodflareHeadRogue: {
 	SetBonusEffect:
 		'''
 		Grants {0} defense when above {1}% life
-		Rogue critical strikes have lifesteal
 		{$BloodflareBodyArmor.CommonSetBonus}
 		'''
 }
@@ -423,10 +422,10 @@ GodSlayerChestplate: {
 	Tooltip: "{$CommonItemTooltip.PercentIncreasedDamage} and {$CommonItemTooltip.PercentIncreasedCritChance@1}"
 	CommonSetBonus:
 		'''
-		Press {0} to [c/ff00ff:Dimensional Drive] towards your cursor for 2 seconds
+		Press {0} to [ceffect/dog:Dimensional Drive] towards your cursor for 2 seconds
 		Enemies you dash through take massive damage
-		During [c/ff00ff:Dimensional Drive] you are immune to damage and most debuffs
-		[c/ff00ff:Dimensional Drive] has a {1} second cooldown
+		During [ceffect/dog:Dimensional Drive] you are immune to damage and most debuffs
+		[ceffect/dog:Dimensional Drive] has a {1} second cooldown
 		'''
 }
 

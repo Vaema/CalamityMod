@@ -1,4 +1,7 @@
-﻿using CalamityMod.Buffs.Alcohol;
+﻿using System;
+using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -8,14 +11,22 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
 {
-    public class StarBeamRye : ModItem, ILocalizedModType
+    public class StarBeamRye : ModItem, ILocalizedModType, IAlcoholItem
     {
         public new string LocalizationCategory => "Items.Potions";
 
         public static float MagicDmgMult = 0.9f;
         public static int ManaRegenBoost = 30;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MagicDmgMult);
+        public AlcoholType AlcoholVariant => AlcoholType.StarBeamRye;
+        public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.StarBeamRye.DripEffect").WithFormatArgs(MagicDmgMult);
 
+        public Action<Player, float> IVDripAlcoholEffect => ApplyStarBeamRyeEffect;
+
+        private static void ApplyStarBeamRyeEffect(Player player, float intensity)
+        {
+            // See CalamityPlayerMiscEffects
+        }
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;

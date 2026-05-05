@@ -1,4 +1,6 @@
-﻿using CalamityMod.Buffs.Alcohol;
+﻿using System;
+using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -9,7 +11,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
 {
-    public class Margarita : ModItem, ILocalizedModType
+    public class Margarita : ModItem, ILocalizedModType, IAlcoholItem
     {
         public new string LocalizationCategory => "Items.Potions";
 
@@ -17,7 +19,22 @@ namespace CalamityMod.Items.Potions.Alcohol
         public static float DebuffLoss = 0.5f;
         public static int MinuteDuration = 3; 
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DebuffLoss.ToPercent());
+        public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.Margarita.DripEffect").WithFormatArgs(DebuffLoss.ToPercent());
+        public AlcoholType AlcoholVariant => AlcoholType.Margarita;
 
+        public Action<Player, float> IVDripAlcoholEffect => ApplyMargaritaEffect;
+
+        private static void ApplyMargaritaEffect(Player player, float intensity)
+        {
+            var cplayer = player.Calamity();
+            cplayer.HeatDebuffMultiplier -= Margarita.DebuffLoss;
+            cplayer.SicknessDebuffMultiplier -= Margarita.DebuffLoss;
+            cplayer.ColdDebuffMultiplier -= Margarita.DebuffLoss;
+            cplayer.WaterDebuffMultiplier -= Margarita.DebuffLoss;
+            cplayer.ElectricDebuffMultiplier -= Margarita.DebuffLoss;
+            cplayer.TypelessDebuffMultiplier -= Margarita.DebuffLoss;
+            // Also see CalamityPlayerMiscEffects
+        }
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;

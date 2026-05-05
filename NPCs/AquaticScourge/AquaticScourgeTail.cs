@@ -150,16 +150,6 @@ namespace CalamityMod.NPCs.AquaticScourge
                 enrageScale += 2f;
             }
 
-            // Adjust slowing debuff immunity
-            bool immuneToSlowingDebuffs = getFuckedAI;
-            NPC.buffImmune[ModContent.BuffType<GlacialState>()] = immuneToSlowingDebuffs;
-            NPC.buffImmune[ModContent.BuffType<TemporalSadness>()] = immuneToSlowingDebuffs;
-            NPC.buffImmune[ModContent.BuffType<Eutrophication>()] = immuneToSlowingDebuffs;
-            NPC.buffImmune[ModContent.BuffType<TimeDistortion>()] = immuneToSlowingDebuffs;
-            NPC.buffImmune[ModContent.BuffType<GalvanicCorrosion>()] = immuneToSlowingDebuffs;
-            NPC.buffImmune[ModContent.BuffType<Vaporfied>()] = immuneToSlowingDebuffs;
-            NPC.buffImmune[BuffID.Webbed] = immuneToSlowingDebuffs;
-
             // Kill body and tail
             bool shouldDespawn = true;
             for (int i = 0; i < Main.maxNPCs; i++)

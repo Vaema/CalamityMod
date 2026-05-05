@@ -41,6 +41,7 @@ Slimed.ItemTooltipEnemy: Enhances Heat debuff damage
 Wet.ItemTooltipEnemy: Enhances Electric debuff damage
 Confused.ItemTooltipEnemy: Reverses movement
 Webbed.ItemTooltipEnemy: Slows enemies
+Frozen.ItemTooltipEnemy: Freezes enemies
 
 Electrified: {
 	ItemTooltipPlayer: Electric - 4 DPS. Deals 5x damage to moving players

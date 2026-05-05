@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.width = 40;
             Item.height = 36;
             Item.damage = 14; // same as 1.4 Wand of Sparking
-            Item.mana = 150;
+            Item.mana = 200;
             Item.DamageType = DamageClass.Magic;
             Item.noMelee = true;
             Item.useAnimation = 19;

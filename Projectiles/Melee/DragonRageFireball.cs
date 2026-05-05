@@ -31,7 +31,11 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.timeLeft = lifeTime;
             Projectile.DamageType = DamageClass.Melee;
         }
-
+        public override void ModifyDamageHitbox(ref Rectangle hitbox)
+        {
+            Vector2 newSize = new Point(hitbox.Width, hitbox.Height).ToVector2() * Projectile.scale;
+            hitbox = new Rectangle(hitbox.X - (int)((newSize.X - hitbox.Width) / 2f), hitbox.Y - (int)((newSize.Y - hitbox.Height) / 2f), (int)newSize.X, (int)newSize.Y);
+        }
         public override void AI()
         {
             if (Projectile.ai[0] == 0f)
@@ -76,7 +80,7 @@ namespace CalamityMod.Projectiles.Melee
         public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
-            Projectile.ExpandHitboxBy(80);
+            Projectile.ExpandHitboxBy(80 * Projectile.scale);
             for (int d = 0; d < 5; d++)
             {
                 int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 100, default, 1f);

@@ -1,4 +1,7 @@
-﻿using CalamityMod.Buffs.Alcohol;
+﻿using System;
+using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -9,15 +12,23 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Potions.Alcohol
 {
     [LegacyName("FabsolsVodka")]
-    public class PurpleHaze : ModItem, ILocalizedModType
+    public class PurpleHaze : ModItem, ILocalizedModType, IAlcoholItem
     {
         public new string LocalizationCategory => "Items.Potions";
 
         public static float DamageBoost = 0.25f;
         public static float StealthDamageLoss = 0.25f;
-
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(),StealthDamageLoss.ToPercent());
+        public LocalizedText DripEffectText => Language.GetText("Mods.CalamityMod.Items.Potions.PurpleHaze.DripEffect").WithFormatArgs(DamageBoost.ToPercent(), StealthDamageLoss.ToPercent());
 
+        public AlcoholType AlcoholVariant => AlcoholType.PurpleHaze;
+
+        public Action<Player, float> IVDripAlcoholEffect => ApplyPurpleHazeEffect;
+
+        private static void ApplyPurpleHazeEffect(Player player, float intensity)
+        {
+            // See CalamityPlayer and CalamityPlayerMiscEffects
+        }
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;
