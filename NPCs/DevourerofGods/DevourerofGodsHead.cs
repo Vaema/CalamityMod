@@ -249,12 +249,12 @@ namespace CalamityMod.NPCs.DevourerofGods
 
         public static int LaserWallDamage = 75; // 300
         public static int LaserWallMiddleBeamDamage = 85; // 340
-        public static int FireballDamage = 60; // 240
+        public static int FireballDamage = 55; // 220
 
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 250; // 500
+            NPC.damage = 225; // 450
             NPC.npcSlots = 5f;
             NPC.width = 104;
             NPC.height = 104;
