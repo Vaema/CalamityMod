@@ -405,7 +405,7 @@ DragonRage: {
 	Tooltip:
 		'''
 		Twirls a baton that causes explosions of [cbuff:CalamityMod/Dragonfire] on enemy hits
-		Every ten hits will summon a ring of fireballs
+		Once every two seconds, hits summon a ring of fireballs that target the enemy with the most health
 		'''
 }
 
