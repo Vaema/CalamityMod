@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using CalamityMod.Items.Materials;
+using CalamityMod.Items.Fishing;
+using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Potions;
@@ -10,7 +11,6 @@ using CalamityMod.Items.SummonItems.TownPets;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Prefixes;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -22,14 +22,12 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.TownNPCs
 {
+    [AutoloadHead]
     public class ShadySalesman : ModNPC
     {
-        public override string Texture => "CalamityMod/NPCs/NormalNPCs/Piggy";
-        public override string HeadTexture => "CalamityMod/NPCs/TownNPCs/TownPiggy_Head";
-
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[Type] = 5;
+            Main.npcFrameCount[Type] = 9;
             NPCID.Sets.ShimmerTownTransform[Type] = false;
             NPCID.Sets.NoTownNPCHappiness[Type] = true;
             NPCID.Sets.NPCBestiaryDrawModifiers drawModifiers = new NPCID.Sets.NPCBestiaryDrawModifiers()
@@ -44,8 +42,8 @@ namespace CalamityMod.NPCs.TownNPCs
             NPC.townNPC = true;
             NPC.friendly = true;
             NPC.lavaImmune = false;
-            NPC.width = 26;
-            NPC.height = 26;
+            NPC.width = 48;
+            NPC.height = 64;
             NPC.aiStyle = NPCAIStyleID.Passive;
             NPC.damage = 10;
             NPC.defense = 15;
@@ -139,7 +137,7 @@ namespace CalamityMod.NPCs.TownNPCs
 
             NPCShop shop = new(Type);
             shop.Add<TheHousingContract>()
-                //.Add<RageBait>() Has PR
+                .Add<RageBait>()
                 .Add<TheConcoction>()
                 .Add<CombatVoucher>()
                 .Add<AggressiveVoucher>()
@@ -147,16 +145,15 @@ namespace CalamityMod.NPCs.TownNPCs
                 .Add<UnbreakableVoucher>()
                 .Add<HurriedVoucher>()
                 .Add<OddVoucher>()
-                //.Add<ThePotion>() WIP
-                //.Add<TrustyOldRod>() Has PR
-                //.Add<GluttonyBlender>() Has PR
+                .Add<TheElixir>()
+                .Add<TrustyOldRod>()
+                .Add<GluttonyBlender>()
                 .Add<GreedPot>()
                 .Add<TheMonument>()
-                //.Add<FishStocks>() WIP
+                //.Add<FishStocks>()
                 .Add<TheSandwich>()
                 .Add<BaconOil>()
-                //.Add<ElephantKiller>() Has PR
-                //.Add<FrozenCube>() WIP
+                .Add<ElephantKiller>(Condition.Hardmode)
                 .Add<OmniGun>(Condition.DownedGolem)
                 
                 .Register();
@@ -169,13 +166,9 @@ namespace CalamityMod.NPCs.TownNPCs
                 if (!NPC.IsABestiaryIconDummy)
                 {
                     if (NPC.direction == 1)
-                    {
                         NPC.spriteDirection = -1;
-                    }
-                    if (NPC.direction == -1)
-                    {
+                    else if (NPC.direction == -1)
                         NPC.spriteDirection = 1;
-                    }
 
                     if (NPC.velocity.X == 0f)
                     {
@@ -192,14 +185,12 @@ namespace CalamityMod.NPCs.TownNPCs
                     NPC.frameCounter = 0.0;
                 }
                 if (NPC.frame.Y / frameHeight >= Main.npcFrameCount[Type] - 1)
-                {
                     NPC.frame.Y = frameHeight;
-                }
             }
             else
             {
                 NPC.frameCounter = 0.0;
-                NPC.frame.Y = frameHeight * 2;
+                NPC.frame.Y = 0;
             }
         }
 
