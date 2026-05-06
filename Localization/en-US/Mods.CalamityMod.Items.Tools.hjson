@@ -51,7 +51,7 @@ AridArtifact: {
 		'''
 		Summons a sandstorm
 		The sandstorm will happen shortly after the item is used
-		If used during a sandstorm, the sandstorm will stop some time afterward.
+		If used during a sandstorm, the sandstorm will stop some time afterward
 		'''
 }
 
