@@ -339,7 +339,7 @@ RelicOfResilience: {
 		Holding this item creates orbiting rock shards around you and nearby allies
 		After 5 seconds, the relic will retain orbiting rocks even when not holding the item
 		Continuing to hold the item will steadily increase the number of rocks and defenses until reaching max power
-		While they orbit you, your minimum defense is set to 150 and minimum damage reduction to 10%
+		While they orbit you, your minimum defense is set to 200 and minimum damage reduction to 10%
 		Taking a hit or pressing <right> while holding this item will pull in the shards, then blast them outward, crippling hit enemies
 		This effect has a 10 second cooldown after taking a hit, but recharges faster if holding the item
 		Holding out the shield heavily reduces the damage of all summons
