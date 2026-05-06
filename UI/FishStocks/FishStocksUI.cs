@@ -19,7 +19,7 @@ namespace CalamityMod.UI
         // These values put UI start point roughly at the top center of a 1080p screen. The position is adjusted from there.
         internal const float defaultUIPositionX = 46f;
         internal const float defaultUIPositionY = 1.481f;
-        private static Texture2D lineTex, overlayGraphTex, overlayTex, overlayBorderTex, screenTex, fishyPoint1Tex, fishyPoint2Tex, fishyHappy1Tex, fishyHappy2Tex, fishyPanic1Tex, fishyPanic2Tex, fishyBye1Tex, fishyBye2Tex, fishyWhatTex;
+        private static Asset<Texture2D> lineTex, overlayGraphTex, overlayTex, overlayBorderTex, screenTex, fishyPoint1Tex, fishyPoint2Tex, fishyHappy1Tex, fishyHappy2Tex, fishyPanic1Tex, fishyPanic2Tex, fishyBye1Tex, fishyBye2Tex, fishyWhatTex;
         private static int time = 0;
         private static Color normalColor => Color.Cyan;
         private static Color goodColor => Color.Lime;
@@ -32,20 +32,20 @@ namespace CalamityMod.UI
         public override void OnModLoad()
         {
             string folder = "CalamityMod/UI/FishStocks/";
-            lineTex = ModContent.Request<Texture2D>("CalamityMod/Particles/LineThick", AssetRequestMode.ImmediateLoad).Value;
-            overlayGraphTex = ModContent.Request<Texture2D>(folder + "FishStocksGraphOverlay", AssetRequestMode.ImmediateLoad).Value;
-            overlayTex = ModContent.Request<Texture2D>(folder + "FishStocksOverlay", AssetRequestMode.ImmediateLoad).Value;
-            overlayBorderTex = ModContent.Request<Texture2D>(folder + "FishStocksOverlayBorder", AssetRequestMode.ImmediateLoad).Value;
-            screenTex = ModContent.Request<Texture2D>(folder + "FishStocksScreenOverlay", AssetRequestMode.ImmediateLoad).Value;
-            fishyPoint1Tex = ModContent.Request<Texture2D>(folder + "FishyPoint1", AssetRequestMode.ImmediateLoad).Value;
-            fishyPoint2Tex = ModContent.Request<Texture2D>(folder + "FishyPoint2", AssetRequestMode.ImmediateLoad).Value;
-            fishyHappy1Tex = ModContent.Request<Texture2D>(folder + "FishyHappy1", AssetRequestMode.ImmediateLoad).Value;
-            fishyHappy2Tex = ModContent.Request<Texture2D>(folder + "FishyHappy2", AssetRequestMode.ImmediateLoad).Value;
-            fishyPanic1Tex = ModContent.Request<Texture2D>(folder + "FishyPanic1", AssetRequestMode.ImmediateLoad).Value;
-            fishyPanic2Tex = ModContent.Request<Texture2D>(folder + "FishyPanic2", AssetRequestMode.ImmediateLoad).Value;
-            fishyBye1Tex = ModContent.Request<Texture2D>(folder + "FishyBye1", AssetRequestMode.ImmediateLoad).Value;
-            fishyBye2Tex = ModContent.Request<Texture2D>(folder + "FishyBye2", AssetRequestMode.ImmediateLoad).Value;
-            fishyWhatTex = ModContent.Request<Texture2D>(folder + "FishyWhat", AssetRequestMode.ImmediateLoad).Value;
+            lineTex = ModContent.Request<Texture2D>("CalamityMod/Particles/LineThick");
+            overlayGraphTex = ModContent.Request<Texture2D>(folder + "FishStocksGraphOverlay");
+            overlayTex = ModContent.Request<Texture2D>(folder + "FishStocksOverlay");
+            overlayBorderTex = ModContent.Request<Texture2D>(folder + "FishStocksOverlayBorder");
+            screenTex = ModContent.Request<Texture2D>(folder + "FishStocksScreenOverlay");
+            fishyPoint1Tex = ModContent.Request<Texture2D>(folder + "FishyPoint1");
+            fishyPoint2Tex = ModContent.Request<Texture2D>(folder + "FishyPoint2");
+            fishyHappy1Tex = ModContent.Request<Texture2D>(folder + "FishyHappy1");
+            fishyHappy2Tex = ModContent.Request<Texture2D>(folder + "FishyHappy2");
+            fishyPanic1Tex = ModContent.Request<Texture2D>(folder + "FishyPanic1");
+            fishyPanic2Tex = ModContent.Request<Texture2D>(folder + "FishyPanic2");
+            fishyBye1Tex = ModContent.Request<Texture2D>(folder + "FishyBye1");
+            fishyBye2Tex = ModContent.Request<Texture2D>(folder + "FishyBye2");
+            fishyWhatTex = ModContent.Request<Texture2D>(folder + "FishyWhat");
         }
         public override void UpdateUI(GameTime gameTime)
         {
@@ -70,7 +70,7 @@ namespace CalamityMod.UI
         }
         public static void Draw(SpriteBatch spriteBatch, Player player)
         {
-            if (Main.gameMenu || Main.playerInventory || player.Calamity().fishStockVisual <= 0.001f)
+            if (Main.hideUI || Main.gameMenu || Main.playerInventory || player.Calamity().fishStockVisual <= 0.001f)
                 return;
 
             float baseScale = 0.65f;
@@ -90,14 +90,14 @@ namespace CalamityMod.UI
             bool panic = stocks <= -1f;
             bool happy = stocks >= 1f;
             bool frame2 = time % 60 < 30;
-            Texture2D fishyTexture = player.dead ? fishyWhatTex : (waving ? frame2 ? fishyBye2Tex : fishyBye1Tex : happy ? frame2 ? fishyHappy2Tex : fishyHappy1Tex :
-                panic ? frame2 ? fishyPanic2Tex : fishyPanic1Tex : frame2 ? fishyPoint2Tex : fishyPoint1Tex);
+            Texture2D fishyTexture = player.dead ? fishyWhatTex.Value : (waving ? frame2 ? fishyBye2Tex.Value : fishyBye1Tex.Value : happy ? frame2 ? fishyHappy2Tex.Value : fishyHappy1Tex.Value :
+                panic ? frame2 ? fishyPanic2Tex.Value : fishyPanic1Tex.Value : frame2 ? fishyPoint2Tex.Value : fishyPoint1Tex.Value);
 
-            Vector2 baseUIPosition = (screenPos + new Vector2(-1350 + overlayTex.Width * 1.5f * visual, 275 + 77 * MathF.Ceiling(player.CountBuffs() / 11f)) * UIMult);
+            Vector2 baseUIPosition = (screenPos + new Vector2(-1350 + overlayTex.Width() * 1.5f * visual, 275 + 77 * MathF.Ceiling(player.CountBuffs() / 11f)) * UIMult);
             Vector2 fishyDrawPos = baseUIPosition + new Vector2(112, 40) * UIMult;
             
-            Vector2 leftEdgePos = baseUIPosition - Vector2.UnitX * overlayTex.Width;
-            Vector2 rightEdgePos = baseUIPosition - Vector2.UnitX * overlayTex.Width / 2.7f;
+            Vector2 leftEdgePos = baseUIPosition - Vector2.UnitX * overlayTex.Width();
+            Vector2 rightEdgePos = baseUIPosition - Vector2.UnitX * overlayTex.Width() / 2.7f;
             float fullDist = leftEdgePos.Distance(rightEdgePos) * 0.748f * UIMult;
             int lines = 5;
             int backgroundLines = 12;
@@ -108,25 +108,25 @@ namespace CalamityMod.UI
             PixelationManager.AddPixelatedDrawer((_) => 
             {
                 // Overlay
-                Main.spriteBatch.Draw(overlayTex, baseUIPosition, null, shiftColor, 0f, overlayTex.Size() / 2, UIMult, SpriteEffects.None, 0.1f);
+                Main.spriteBatch.Draw(overlayTex.Value, baseUIPosition, null, shiftColor, 0f, overlayTex.Size() / 2, UIMult, SpriteEffects.None, 0.1f);
 
-                Vector2 xAdjust = (-Vector2.UnitX * overlayTex.Width / 2.565f) * UIMult;
-                float yAdjust = (overlayTex.Height / 4.4f) * UIMult;
+                Vector2 xAdjust = (-Vector2.UnitX * overlayTex.Width() / 2.565f) * UIMult;
+                float yAdjust = (overlayTex.Height() / 4.4f) * UIMult;
                 for (int i = 1; i <= backgroundLines; i++) // background grid
                 {
                     Vector2 start = new Vector2(15 * UIMult + (fullDist / backgroundLines * (i - 1)) - scroll, -yAdjust);
                     Vector2 end = new Vector2(15 * UIMult + (fullDist / backgroundLines * i) - scroll, yAdjust);
                     Vector2 scale = new Vector2(0.1f * UIMult, 0.0103f * start.Distance(end)) * 0.05f;
-                    Main.spriteBatch.Draw(lineTex, baseUIPosition + xAdjust + start, null, shiftColor * 0.2f, 0, new Vector2(lineTex.Width / 2, 0), scale, SpriteEffects.None, 0.2f);
+                    Main.spriteBatch.Draw(lineTex.Value, baseUIPosition + xAdjust + start, null, shiftColor * 0.2f, 0, new Vector2(lineTex.Width() / 2, 0), scale, SpriteEffects.None, 0.2f);
                 }
-                Main.spriteBatch.Draw(lineTex, baseUIPosition + xAdjust, null, shiftColor * 0.3f, -MathHelper.PiOver2, new Vector2(lineTex.Width / 2, 0), new Vector2(0.15f * UIMult, 0.0103f * fullDist * 0.99f) * 0.05f, SpriteEffects.None, 0.2f);
+                Main.spriteBatch.Draw(lineTex.Value, baseUIPosition + xAdjust, null, shiftColor * 0.3f, -MathHelper.PiOver2, new Vector2(lineTex.Width() / 2, 0), new Vector2(0.15f * UIMult, 0.0103f * fullDist * 0.99f) * 0.05f, SpriteEffects.None, 0.2f);
                 for (int i = 1; i <= lines; i++) // The stock graph
                 {
                     float maxHeight = 37f * UIMult;
                     Vector2 start = new Vector2((fullDist / lines) * (i - 1), maxHeight * GetHeight(i - 1, player));
                     Vector2 end = new Vector2((fullDist / lines) * i, maxHeight * GetHeight(i, player));
                     Vector2 scale = new Vector2(0.2f * UIMult, 0.0103f * start.Distance(end)) * 0.05f;
-                    Main.spriteBatch.Draw(lineTex, baseUIPosition + xAdjust + start - Vector2.UnitY * 1f, null, shiftColor, start.DirectionTo(end).ToRotation() - MathHelper.PiOver2, new Vector2(lineTex.Width / 2, 0), scale, SpriteEffects.None, 0.2f);
+                    Main.spriteBatch.Draw(lineTex.Value, baseUIPosition + xAdjust + start - Vector2.UnitY * 1f, null, shiftColor, start.DirectionTo(end).ToRotation() - MathHelper.PiOver2, new Vector2(lineTex.Width() / 2, 0), scale, SpriteEffects.None, 0.2f);
                 }
 
                 // Fishy
@@ -135,7 +135,7 @@ namespace CalamityMod.UI
                 Main.spriteBatch.Draw(fishyTexture, fishyDrawPos + positionOffset, null, Color.Lerp(shiftColor, Color.White, 0.35f), 0f, fishyTexture.Size() / 2, fishyScale, SpriteEffects.None, 0.2f);
 
                 // Graph overlay
-                Main.spriteBatch.Draw(overlayGraphTex, baseUIPosition, null, shiftColor, 0f, overlayGraphTex.Size() / 2, UIMult, SpriteEffects.None, 0.2f);
+                Main.spriteBatch.Draw(overlayGraphTex.Value, baseUIPosition, null, shiftColor, 0f, overlayGraphTex.Size() / 2, UIMult, SpriteEffects.None, 0.2f);
 
             }, Enums.GeneralDrawLayer.AfterEverything, default);
 
@@ -150,10 +150,10 @@ namespace CalamityMod.UI
 
             // Screen overlay
             if (!CalamityClientConfig.Instance.Photosensitivity)
-                Main.spriteBatch.Draw(screenTex, baseUIPosition / Main.UIScale, null, shiftColor * 0.2f * screenFlicker, 0f, screenTex.Size() / 2, UIMult / Main.UIScale, SpriteEffects.None, 0.3f);
+                Main.spriteBatch.Draw(screenTex.Value, baseUIPosition / Main.UIScale, null, shiftColor * 0.2f * screenFlicker, 0f, screenTex.Size() / 2, UIMult / Main.UIScale, SpriteEffects.None, 0.3f);
             
             // Overlay Border
-            Main.spriteBatch.Draw(overlayBorderTex, baseUIPosition / Main.UIScale, null, Color.White, 0f, overlayBorderTex.Size() / 2, UIMult / Main.UIScale, SpriteEffects.None, 0.4f);
+            Main.spriteBatch.Draw(overlayBorderTex.Value, baseUIPosition / Main.UIScale, null, Color.White, 0f, overlayBorderTex.Size() / 2, UIMult / Main.UIScale, SpriteEffects.None, 0.4f);
         }
         public static float GetHeight(int point, Player player)
         {
