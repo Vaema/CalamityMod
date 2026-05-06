@@ -17,7 +17,8 @@ namespace CalamityMod.Items.Tools
         public static readonly SoundStyle BadBuzzer = new SoundStyle("CalamityMod/Sounds/Custom/BadGiftBuzzer") with { Volume = 0.85f };
         public override void SetDefaults()
         {
-            Item.width = Item.height = 20;
+            Item.width = 30;
+            Item.height = 20;
             Item.maxStack = Item.CommonMaxStack;
             Item.useTime = Item.useAnimation = 10;
             Item.useStyle = ItemUseStyleID.Swing;
