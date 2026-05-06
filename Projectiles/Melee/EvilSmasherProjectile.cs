@@ -24,7 +24,7 @@ namespace CalamityMod.Projectiles.Melee
         public override int OffsetDistance => 50;
         public override int CooldownTime { get; set; }
         public override bool AlternateSwings => false;
-        public override bool useMeleeSpeed => false;
+        public override bool useAttackSpeed => false;
         public override SoundStyle? UseSound => SoundID.DD2_MonkStaffSwing with {Volume = 1f};
 
         bool hasSmashedTile = false;

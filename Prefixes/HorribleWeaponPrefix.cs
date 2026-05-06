@@ -9,8 +9,8 @@ namespace CalamityMod.Prefixes
     
     public class Horrible : HorribleWeaponPrefix
     {
-        public override float damageMult => 0.50f;
-        public override float sizeMult => 3f;
+        public override float damageMult => 0.66f;
+        public override float sizeMult => 2f;
     }
     public abstract class HorribleWeaponPrefix : ModPrefix, ILocalizedModType
     {

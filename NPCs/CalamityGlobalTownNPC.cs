@@ -1021,7 +1021,7 @@ namespace CalamityMod.NPCs
 
                 case NPCID.Cyborg:
                     if (Main.rand.NextBool(5) && NPC.downedMoonlord)
-                        chat = CalamityUtils.GetTextValue("Vanilla.CyborgChat.MoonLordDefeated" + Main.rand.Next(1, 2 + 1));
+                        chat = CalamityUtils.GetTextValue("Vanilla.CyborgChat.MoonLordDefeated");
                     else if (Main.rand.NextBool(10) && !DownedBossSystem.downedPlaguebringer && NPC.downedGolemBoss)
                         chat = CalamityUtils.GetTextValue("Vanilla.CyborgChat.MentionPlague");
                     else if (Main.rand.NextBool(10) && Main.raining)
@@ -1038,10 +1038,6 @@ namespace CalamityMod.NPCs
                 case NPCID.Dryad:
                     if (Main.rand.NextBool(5) && DownedBossSystem.downedDoG && Main.eclipse)
                         chat = CalamityUtils.GetTextValue("Vanilla.DryadChat.DarksunEclipse");
-                    else if (Main.rand.NextBool(5) && Main.LocalPlayer.ZoneGlowshroom)
-                    {
-                        chat = CalamityUtils.GetTextValue("Vanilla.DryadChat.Mushroom");
-                    }
                     else if (Main.rand.NextBool(5) && Main.LocalPlayer.Calamity().ZoneSulphur)
                         chat = CalamityUtils.GetTextValue("Vanilla.DryadChat.SulphurSea");
                     else if (Main.rand.NextBool(5) && Main.hardMode)
@@ -1091,6 +1087,14 @@ namespace CalamityMod.NPCs
                         chat = CalamityUtils.GetTextValue("Vanilla.MerchantChat.AcidRain");
                     else if (Main.rand.NextBool(7) && thief != -1)
                         chat = CalamityUtils.GetTextValue("Vanilla.MerchantChat.Bandit");
+                    break;
+
+                case NPCID.Nurse:
+                    if (Main.rand.NextBool(4) && NPC.downedPlantBoss && thief != -1)
+                        chat = CalamityUtils.GetTextValue("Vanilla.NurseChat.PlanteraDefeatedAndBanditPresent");
+                    else if (Main.rand.NextBool(4) && thief != -1)
+                        chat = CalamityUtils.GetTextValue("Vanilla.NurseChat.Bandit");
+
                     break;
 
                 case NPCID.Painter:

@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 118;
             Item.height = 32;
-            Item.damage = 72;
+            Item.damage = 57;
             Item.DamageType = DamageClass.Ranged;
             Item.useAnimation = Item.useTime = 6;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -33,8 +33,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 16f;
             Item.useAmmo = AmmoID.Bullet;
 
-            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
-            Item.rare = ModContent.RarityType<PureGreen>();
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+            Item.rare = ItemRarityID.Yellow;
         }
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
         public override bool CanConsumeAmmo(Item ammo, Player player) => player.ownedProjectileCounts[Item.shoot] > 0 && Main.rand.Next(100) >= AmmoSavedPercent;

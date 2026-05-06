@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Balancing;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.Potions;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Buffs.Summon;
@@ -45,6 +44,7 @@ using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.AcidRain;
@@ -239,6 +239,21 @@ namespace CalamityMod.CalPlayer
                 rage = 0f;
             }
 
+            bool holdingElephantKiller = Player.HeldItem.type == ModContent.ItemType<ElephantKiller>();
+            if (holdingElephantKiller && !heldElephantKillerLastFrame)
+            {
+                Player.Calamity().rogueStealth = 0;
+                heldElephantKillerLastFrame = true;
+            }
+            else if (!holdingElephantKiller)
+                heldElephantKillerLastFrame = false;
+
+            if (!drawingElephantKillerJoke)
+                elephantKillerJoke = 0;
+            else
+                elephantKillerJoke++;
+            drawingElephantKillerJoke = false;
+
             if (furyFuel < FuryFuelMax && furyRefuelTimer >= 0)
             {
                 furyFuel += (int)furyRefuelTimer;
@@ -257,7 +272,9 @@ namespace CalamityMod.CalPlayer
             }
 
             // Apply stealth damage to rogue.
-            Player.GetDamage<RogueDamageClass>() += stealthDamage;
+            bool dontProvideStealthDamage = Player.HeldItem.type == ModContent.ItemType<ElephantKiller>();
+            if (!dontProvideStealthDamage)
+                Player.GetDamage<RogueDamageClass>() += stealthDamage;
 
             if ((XykVisualsBlue || XykVisualsOrange))
             {
@@ -562,9 +579,16 @@ namespace CalamityMod.CalPlayer
             if (cinnamonRoll && !(Main.getGoodWorld && Main.npc.Any(x=> x.active && x.type == ModContent.NPCType<DevourerofGodsHead>())))
             {
                 if (dashStart)
-                    Player.velocity.X *= 3;
+                    Player.velocity.X *= 2f;
                 else if  (Player.dashDelay == -1)
-                    Player.velocity.X *= 0.8f;
+                    Player.velocity.X *= 0.825f;
+            }
+            if (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.CinnamonRoll) && !(Main.getGoodWorld && Main.npc.Any(x => x.active && x.type == ModContent.NPCType<DevourerofGodsHead>())))
+            {
+                if (dashStart)
+                    Player.velocity.X *= 2f;
+                else if (Player.dashDelay == -1)
+                    Player.velocity.X *= 0.825f;
             }
 
             if (Player.dashDelay == -1)
@@ -1277,6 +1301,18 @@ namespace CalamityMod.CalPlayer
                     }
                 }
             }
+            if (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.Margarita))
+            {
+                if (Main.myPlayer == Player.whoAmI)
+                {
+                    for (int l = 0; l < Player.MaxBuffs; l++)
+                    {
+                        int buffID = Player.buffType[l];
+                        if (Player.buffTime[l] > 2 && CalamityBuffSets.IsDebuff[buffID])
+                            Player.buffTime[l]--;
+                    }
+                }
+            }
 
             // Update the Providence Burn effect drawer if applicable.
             float providenceBurnIntensity = 0f;
@@ -1657,46 +1693,59 @@ namespace CalamityMod.CalPlayer
             if (bootLevel > 0)
                 HeatDebuffMultiplier += 0.25f * bootLevel;
 
-            if (rOfResilienceEffect > 0)
-                rOfResilienceEffect--;
-            if (Player.HeldItem.type == ModContent.ItemType<RelicOfResilience>()) // All players close to a player holding RoR get the benefits
+            bool holdingRoR = Player.HeldItem.type == ModContent.ItemType<RelicOfResilience>();
+            bool shieldIsSetup = (rOfResilienceEffect >= RelicOfResilience.baseTimeMax);
+            bool chargedButNotHolding = (rOfResilienceEffect > RelicOfResilience.baseTimeMax && !holdingRoR);
+            bool reduceEffect = (!shieldIsSetup || chargedButNotHolding);
+            if (rOfResilienceEffect > 0 && reduceEffect)
+                { rOfResilienceEffect -= (chargedButNotHolding ? 4 : 1); if (shieldIsSetup && rOfResilienceEffect < RelicOfResilience.baseTimeMax) rOfResilienceEffect = RelicOfResilience.baseTimeMax; if (rOfResilienceEffect < 0) rOfResilienceEffect = 0; }
+            if (holdingRoR) // All players close to a player holding RoR get the benefits
             {
-                if (Player.ownedProjectileCounts[ModContent.ProjectileType<RelicGuard>()] < 1 && !Player.dead)
+                if (Player.ownedProjectileCounts[ModContent.ProjectileType<RelicGuard>()] < 1 && !Player.dead && Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     Projectile relic = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ModContent.ProjectileType<RelicGuard>(), 0, 0f, Player.whoAmI);
                 }
                 for (int index = 0; index < Main.player.Length; index++)
                 {
                     Player fella = Main.player[index];
-                    if (Utils.Distance(fella.Center, Player.Center) < 650 && fella.team == Player.team)
+                    float maxDistancePlayersCanBe = 1000;
+                    bool validEffectBoost = Utils.Distance(fella.Center, Player.Center) < maxDistancePlayersCanBe && fella.team == Player.team && fella.Calamity().rOfResilienceEffect < RelicOfResilience.maxPowerTime
+                        && fella.Calamity().rOfResilienceCooldown == 0 && (fella.Calamity().rOfResilienceEffect > RelicOfResilience.baseTimeMax ? holdingRoR : true);
+                    if (validEffectBoost)
                     {
-                        fella.Calamity().rOfResilienceEffect = (fella != Player ? 480 : 2);
+                        fella.Calamity().rOfResilienceEffect += (reduceEffect ? 2 : 1) + (Player.Calamity().profanedSoulRelicBuff ? 1 : 0); // gets subtracted by 1 every frame, so this goes up by more to keep up
                     }
                 }
             }
+            // Adds a floor for defense and dr, will not ignore defense damage
+            if (Player.Calamity().rOfResilienceCooldown >= RelicOfResilience.baseCooldown / 2|| Player.Calamity().rOfResilienceCooldown == 0)
+            {
+                float fadeInStats = Utils.GetLerpValue(0, RelicOfResilience.baseTimeMax, rOfResilienceEffect, true);
+                float fadeStats = (Player.Calamity().rOfResilienceCooldown == 0 ? fadeInStats : MathF.Pow(Utils.GetLerpValue(RelicOfResilience.baseCooldown / 2, RelicOfResilience.baseCooldown, Player.Calamity().rOfResilienceCooldown, true), 3));
+                float overchargeBoost = 1 + (Utils.GetLerpValue(RelicOfResilience.baseTimeMax, RelicOfResilience.maxPowerTime, rOfResilienceEffect, true) * (Player.Calamity().profanedSoulRelicBuff ? RelicOfResilience.additionalMaxPowerDefensesMult * 5 : RelicOfResilience.additionalMaxPowerDefensesMult)); // The amount of bulk this gives with artifact is way overkill but it is REALLY funny
+                int def = (int)(RelicOfResilience.baseDefenseFloor * overchargeBoost);
+                float dr = RelicOfResilience.baseDrFloor * overchargeBoost;
+                int maxDefFloor = (int)(def * fadeStats);
+                float MaxDRFloor = dr * fadeStats;
+                if (Player.statDefense < maxDefFloor)
+                    Player.statDefense += maxDefFloor - Player.statDefense;
+                if (Player.endurance < MaxDRFloor)
+                    Player.endurance += MaxDRFloor - Player.endurance;
+            }
             if (rOfResilienceEffect > 0)
             {
-                if (Player.Calamity().mouseRight && !Player.mouseInterface && rOfResilienceCooldown == 0)
+                if (Player.Calamity().mouseRight && !Player.mouseInterface && rOfResilienceCooldown == 0 && holdingRoR)
                 {
-                    int cooldownTime = (Player.Calamity().profanedSoulRelicBuff ? 300 : 600);
+                    int cooldownTime = RelicOfResilience.baseCooldown;
                     rOfResilienceCooldown = cooldownTime;
                     Player.AddCooldown(Cooldowns.RelicOfResilienceCooldown.ID, cooldownTime);
                     SoundStyle y = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianRockShieldActivate");
                     SoundEngine.PlaySound(y with { Volume = 0.7f, Pitch = -0.1f }, Player.Center);
                 }
 
-                // Adds a floor for defense and dr at 150 and 10% respectivley, will not ignore defense damage
-                if (Player.Calamity().rOfResilienceCooldown > 300 || Player.Calamity().rOfResilienceCooldown == 0)
-                {
-                    float fadeStats = (Player.Calamity().rOfResilienceCooldown == 0 ? 1 : Utils.GetLerpValue(300, 600, Player.Calamity().rOfResilienceCooldown, true));
-                    int maxDefFloor = (int)(150 * fadeStats);
-                    float MaxDRFloor = 0.10f * fadeStats;
-                    if (Player.statDefense < maxDefFloor)
-                        Player.statDefense += maxDefFloor - Player.statDefense;
-                    if (Player.endurance < MaxDRFloor)
-                        Player.endurance += MaxDRFloor - Player.endurance;
-                }
-
+                int shardBaseCap = (Player.Calamity().profanedSoulRelicBuff ? (int)(RelicOfResilience.baseMaxShardCount * 1.5f) : RelicOfResilience.baseMaxShardCount);
+                float postMaxedShards = MathHelper.Lerp(shardBaseCap, shardBaseCap * RelicOfResilience.maxPowerShardMult, MathF.Pow(Utils.GetLerpValue(RelicOfResilience.baseTimeMax, RelicOfResilience.maxPowerTime, rOfResilienceEffect, true), 2));
+                int maxShards = (int)(postMaxedShards * Utils.GetLerpValue(0, RelicOfResilience.baseTimeMax, rOfResilienceEffect, true));
                 int numOfShards = 0;
                 for (int x = 0; x < Main.maxProjectiles; x++)
                 {
@@ -1706,7 +1755,26 @@ namespace CalamityMod.CalPlayer
                         numOfShards++;
                     }
                 }
-                if (Player.miscCounter % (Player.Calamity().profanedSoulRelicBuff ? 4 : 8) == 0 && numOfShards < (Player.Calamity().profanedSoulRelicBuff ? 75 : 30) && Player.Calamity().rOfResilienceCooldown == 0)
+                float lowestNum = 0;
+                int whoAmI = 0;
+                if (numOfShards > maxShards) // Kill the most recent shard if there's too many
+                {
+                    for (int x = 0; x < Main.maxProjectiles; x++)
+                    {
+                        Projectile projectile = Main.projectile[x];
+                        if (projectile.active && projectile.type == ModContent.ProjectileType<ArtifactOfResilienceShards>() && projectile.ai[1] == 0 && projectile.owner == Player.whoAmI && projectile.ai[2] > lowestNum)
+                        {
+                            whoAmI = projectile.whoAmI;
+                            lowestNum = projectile.ai[2];
+                        }
+                    }
+                    if (whoAmI != 0)
+                    {
+                        Projectile shard = Main.projectile[whoAmI];
+                        shard.ai[1] = -1;
+                    }
+                }
+                if (numOfShards < maxShards && Player.Calamity().rOfResilienceCooldown == 0 && (rOfResilienceEffect >= RelicOfResilience.baseTimeMax || holdingRoR))
                 {
                     if (numOfShards == 0)
                     {
@@ -1714,12 +1782,13 @@ namespace CalamityMod.CalPlayer
                         SoundStyle sound = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianDash");
                         SoundEngine.PlaySound(sound with { Volume = 0.5f, Pitch = -0.3f }, Player.Center);
                     }
-                    int shardDamage = (int)Player.GetBestClassDamage().ApplyTo(420);
-                    Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, new Vector2(1, 0), ModContent.ProjectileType<ArtifactOfResilienceShards>(), shardDamage, 0f, Player.whoAmI, 0, 0, numOfShards + 1);
+                    int shardDamage = (int)Player.GetBestClassDamage().ApplyTo(Player.Calamity().profanedSoulRelicBuff ? RelicOfResilience.shardBaseDamage * 5 : RelicOfResilience.shardBaseDamage);
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                        Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, new Vector2(1, 0), ModContent.ProjectileType<ArtifactOfResilienceShards>(), shardDamage, 0f, Player.whoAmI, 0, 0, numOfShards + 1);
                 }
             }
             if (rOfResilienceCooldown > 0)
-                rOfResilienceCooldown--;
+            { rOfResilienceCooldown -= (holdingRoR ? 2 : 1); if (rOfResilienceCooldown < 0) rOfResilienceCooldown = 0; }
 
             if (Player.Calamity().friendlyMinions > 0)
             {
@@ -3357,6 +3426,7 @@ namespace CalamityMod.CalPlayer
         #region Other Buff Effects
         private void OtherBuffEffects()
         {
+            var dripPlayer = Player.GetModPlayer<IVDripPlayer>();
             if (gravityNormalizer)
             {
                 Player.buffImmune[BuffID.VortexDebuff] = true;
@@ -3544,16 +3614,22 @@ namespace CalamityMod.CalPlayer
             {
                 //this is so janky looking but it's the only way I could get it to work properly
                 if (!(StealthStrikeAvailable() && Player.HeldItem.DamageType == RogueDamageClass.Instance))
-                    Player.GetDamage(DamageClass.Generic) += PurpleHaze.DamageBoost;
+                    Player.GetDamage(DamageClass.Generic) += PurpleHaze.DamageBoost + ((dripPlayer.HasAlcohol(AlcoholType.PurpleHaze) && purpleHaze) ? PurpleHaze.DamageBoost : 0);
                 else 
-                    stealthDamage -= PurpleHaze.StealthDamageLoss;
+                    stealthDamage -= PurpleHaze.StealthDamageLoss + ((dripPlayer.HasAlcohol(AlcoholType.PurpleHaze) && purpleHaze) ? PurpleHaze.StealthDamageLoss : 0);
             }
 
             if (everclear)
                 Player.GetDamage<GenericDamageClass>() += Everclear.DamageBoost;
-
+            if (dripPlayer.HasAlcohol(AlcoholType.Everclear))
+                Player.GetDamage<GenericDamageClass>() += Everclear.DamageBoost;
 
             if (caribbeanRum)
+            {
+                Player.gravity *= CaribbeanRum.GravityMultiplier;
+                Player.moveSpeed += CaribbeanRum.MoveSpeedBoost;
+            }
+            if (dripPlayer.HasAlcohol(AlcoholType.CaribbeanRum))
             {
                 Player.gravity *= CaribbeanRum.GravityMultiplier;
                 Player.moveSpeed += CaribbeanRum.MoveSpeedBoost;
@@ -3564,10 +3640,24 @@ namespace CalamityMod.CalPlayer
                 Player.manaRegenCount += StarBeamRye.ManaRegenBoost;
                 Player.GetDamage<MagicDamageClass>() *= StarBeamRye.MagicDmgMult;
             }
-
-            if (whiteWine)
+            if (dripPlayer.HasAlcohol(AlcoholType.StarBeamRye))
             {
-                Player.wingTimeMax = (int)(Player.wingTimeMax * (1f - WhiteWine.FlightTimeLoss));
+                Player.manaRegenCount += StarBeamRye.ManaRegenBoost;
+                Player.GetDamage<MagicDamageClass>() *= StarBeamRye.MagicDmgMult;
+            }
+
+            if (dripPlayer.HasAlcohol(AlcoholType.Ale) || dripPlayer.HasAlcohol(AlcoholType.Sake))
+            {
+                Player.GetAttackSpeed<MeleeDamageClass>() -= 0.1f;
+                // See CalamityGlobalItem and PlayerUtils for Ale's melee size increase
+            }
+
+            if (whiteWine || dripPlayer.HasAlcohol(AlcoholType.WhiteWine))
+            {
+                if (whiteWine)
+                    Player.wingTimeMax = (int)(Player.wingTimeMax * (1f - WhiteWine.FlightTimeLoss));
+                if (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.WhiteWine))
+                    Player.wingTimeMax = (int)(Player.wingTimeMax * (1f - WhiteWine.FlightTimeLoss));
 
                 float bonus = 0f;
                 float MaxDistance = 640f;
@@ -3579,7 +3669,12 @@ namespace CalamityMod.CalPlayer
                 }
                 else
                     bonus = 0;
-                whiteWineTimer += bonus * WhiteWine.FlightTimeRecoveryAmount;
+
+                if (whiteWine)
+                    whiteWineTimer += bonus * WhiteWine.FlightTimeRecoveryAmount;
+                if (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.WhiteWine))
+                    whiteWineTimer += bonus * WhiteWine.FlightTimeRecoveryAmount;
+
                 while (whiteWineTimer > 1)
                 {
                     if (Player.wingTime < Player.wingTimeMax)
@@ -3589,9 +3684,9 @@ namespace CalamityMod.CalPlayer
              }
 
             if (redWine)
-            {
                 Player.wingTimeMax = (int)(Player.wingTimeMax * (1f - RedWine.FlightTimeLoss));
-            }
+            if (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.RedWine))
+                Player.wingTimeMax = (int)(Player.wingTimeMax * (1f - RedWine.FlightTimeLoss));
 
             if (giantPearl)
             {
@@ -4733,6 +4828,12 @@ namespace CalamityMod.CalPlayer
                 if (Player.statDefense > 0)
                     Player.statDefense -= (int)(Player.statDefense * Everclear.DefenseLossPercent);
             }
+            if (Player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.Everclear))
+            {
+                if (Player.statDefense > 0)
+                    Player.statDefense -= (int)(Player.statDefense * Everclear.DefenseLossPercent);
+            }
+
             if (DesertProwlerHat.ShroudedInSmoke(Player, out _))
                 Player.statDefense -= (int)(Player.statDefense * DesertProwlerHat.SmokeDefenseMult);
         }

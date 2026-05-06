@@ -1032,12 +1032,16 @@ IVDripOnTheRocks: {
 	DisplayName: IV Drip on the Rocks
 	Tooltip:
 		'''
-		Multiplies most non-weapon, non-debuff damage by {0}x
-		Multiplies all weapon damage by {1}x
-		Counts as an alcohol stack toward Alcohol Poisoning
+		[EFFECT]
+		[NAME]
+		Inserted alcohols contribute toward alcohol poisoning
 		{$Common.AlcoholWarning}
+		[c/aaaaaa:Shift-<right> this item in your inventory to empty its contents]
 		[ceffect/drunk:'(drunken mumbling)']
 		'''
+	Empty: Place an alcoholic beverage on this item in your inventory to pour its contents in
+	CurrentAlcoholText: Filled with
+	SakeAndAleText: Increases melee weapon scale by 25%, but decreases melee speed by 10%
 }
 
 JellyChargedBattery: {

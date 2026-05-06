@@ -15,6 +15,7 @@ using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Armor.PlagueReaper;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs.Abyss;
@@ -161,7 +162,6 @@ namespace CalamityMod.NPCs
 
         // Heat debuff effects
         public bool IncreasedHeatEffects_Fireball = false;
-        public bool IncreasedHeatEffects_CinnamonRoll = false;
         public int IncreasedHeatEffects_FireBoots = 0;
 
         // Toxic Heart effect
@@ -193,6 +193,9 @@ namespace CalamityMod.NPCs
 
         /// <summary> Set this value to reduce target defense by a flat amount. </summary>
         public int miscDefenseLoss = 0;
+
+        /// <summary> If true, enemy will not drop any items. </summary>
+        public bool preventDrops = false;
 
         /// <summary>
         /// Constant representing a distance of 200 tiles in pixel measurement.<br/>
@@ -514,7 +517,6 @@ namespace CalamityMod.NPCs
             myClone.IncreasedColdEffects_CryoStone = IncreasedColdEffects_CryoStone;
             myClone.IncreasedElectricityEffects_Unused = IncreasedElectricityEffects_Unused;
             myClone.IncreasedHeatEffects_Fireball = IncreasedHeatEffects_Fireball;
-            myClone.IncreasedHeatEffects_CinnamonRoll = IncreasedHeatEffects_CinnamonRoll;
             myClone.IncreasedHeatEffects_FireBoots = IncreasedHeatEffects_FireBoots;
             myClone.IncreasedSicknessEffects_ToxicHeart = IncreasedSicknessEffects_ToxicHeart;
             myClone.IncreasedWaterEffects_Amulet1 = IncreasedWaterEffects_Amulet1;
@@ -528,6 +530,8 @@ namespace CalamityMod.NPCs
             myClone.canBreakPlayerDefense = canBreakPlayerDefense;
 
             myClone.miscDefenseLoss = miscDefenseLoss;
+
+            myClone.preventDrops = preventDrops;
 
             myClone.dashImmunityTime = new int[maxPlayerImmunities];
             for (int i = 0; i < maxPlayerImmunities; ++i)
@@ -4244,10 +4248,16 @@ namespace CalamityMod.NPCs
                 spawnRate = (int)(spawnRate * 0.25); // 4x spawn rate
                 maxSpawns = (int)(maxSpawns * 4f);
             }
-            if (player.Calamity().bloodyMary)
+            if (player.Calamity().bloodyMary || player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.BloodyMary))
             {
-                spawnRate = (int)(spawnRate * 0.142); // ~7x spawn rate
-                maxSpawns = (int)(maxSpawns * 5f); // Only 5x the cap, however
+                spawnRate = (int)(spawnRate * BloodyMary.SpawnRateGateMultiplier); // ~7x spawn rate
+                maxSpawns = (int)(maxSpawns * BloodyMary.SpawnLimitMultiplier); // 5x spawn rate cap
+            }
+            // Only when BOTH effects are active, also applies the previous spawn rate and limit boosts multiplicatively
+            if (player.Calamity().bloodyMary && player.GetModPlayer<IVDripPlayer>().HasAlcohol(AlcoholType.BloodyMary))
+            {
+                spawnRate = (int)(spawnRate * BloodyMary.IVDripAdditionalSpawnRateGateMultiplier); // 1.429x spawn rate, total of 10x 
+                maxSpawns = (int)(maxSpawns * BloodyMary.IVDripAdditionalSpawnLimitMultiplier); // 1.5x spawn rate cap
             }
 
             // Reductions

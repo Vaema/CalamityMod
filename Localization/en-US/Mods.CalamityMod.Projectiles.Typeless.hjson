@@ -51,7 +51,6 @@ DuneSandBallGun.DisplayName: Dunesand Ball
 EarlyBloomBobber.DisplayName: Early Bloom Bobber
 EmpyreanBlast.DisplayName: Empyrean Blast
 EmpyreanEmber.DisplayName: Empyrean Ember
-EmpyreanGlob.DisplayName: Empyeran Glob
 EmpyreanMarble.DisplayName: Empyrean Marble
 EmpyreanStellarDetritus.DisplayName: Empyrean Stellar Detritus
 EnergyShell.DisplayName: Energy Shell
@@ -72,10 +71,12 @@ FungalClumpMinion.DisplayName: Fungal Clump
 GemTechArmorGem.DisplayName: Trireme's Gem
 GenericElectricSpark.DisplayName: Electric Spark
 GhostlyBolt.DisplayName: Bolt
+GluttonyBlenderAnimation.DisplayName: Gluttony Blender Animation
 GodKiller.DisplayName: God Killer
 GodSlayerShrapnel.DisplayName: Flame
 GodSlayerShrapnelRound.DisplayName: Round
 GreenLabSeeker.DisplayName: Seeking Mechanism
+Gunshot.DisplayName: Gunshot
 HeronBobber.DisplayName: Heron Bobber
 HideOfAstrumDeusExplosion.DisplayName: Explosion
 HolyExplosionSupreme.DisplayName: Explosion
@@ -153,6 +154,7 @@ TileSlamDamage.DisplayName: Grand Damage
 TitanHeartBoom.DisplayName: Titan Heart Boom
 TransformerAura.DisplayName: Transformer Aura
 TransformerBlob.DisplayName: Transformer Shard
+TrustyOldBobber.DisplayName: Trusty Old Bobber
 UrsaSlash.DisplayName: Ursa Slash
 V8000SoulVisual.DisplayName: V8000 Soul
 VerstaltiteBobber.DisplayName: Verstaltite Bobber

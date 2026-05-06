@@ -157,7 +157,7 @@ namespace CalamityMod.Projectiles.Ranged
                         Owner.velocity += -Projectile.velocity * 7f;
 
                         for (int i = 0; i < 8; i++)
-                            Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.5f, 1.5f), ModContent.ProjectileType<OmniShotgunShot>(), (int)(Projectile.damage * 2.6f), Projectile.knockBack, Projectile.owner);
+                            Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.5f, 1.5f), ModContent.ProjectileType<OmniShotgunShot>(), (int)(Projectile.damage * 3f), Projectile.knockBack, Projectile.owner);
                         shotCounter++;
                         if (shotCounter > 11)
                             framesBetweenShots = 30;

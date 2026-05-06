@@ -11,7 +11,7 @@ namespace CalamityMod.Projectiles.Rogue
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/SealedSingularity";
-        public override bool useMeleeSpeed => false;
+        public override bool useAttackSpeed => true;
         public override bool useMeleeSize => false;
         public override int swingWidth => 180;
         public override Item BaseItem => ModContent.GetModItem(ModContent.ItemType<SealedSingularity>()).Item;

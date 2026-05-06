@@ -105,6 +105,7 @@ namespace CalamityMod.ILEditing
             On_Main.DamageVar_float_int_float += AdjustDamageVariance;
             IL_NPC.ScaleStats_ApplyExpertTweaks += RemoveExpertHardmodeScaling;
             IL_Projectile.Damage += VanillaBossResistChanges;
+            IL_Projectile.AI_026 += PygmyAggroOnClosestPointInHitbox;
             IL_Projectile.AI_099_2 += LimitTerrarianProjectiles;
             On_Projectile.AI_015_Flails += FlailsNoLongerAffectedByPlayerVelocity;
             IL_Projectile.AI_015_Flails += IncreaseFlowerPowRetSpeed;
@@ -187,9 +188,6 @@ namespace CalamityMod.ILEditing
 
             // Fix vanilla behaviour of not calling CheckDead for NPCs that realLife is set
             IL_NPC.StrikeNPC_HitInfo_bool_bool += EnsureCheckDeadOnSegments;
-
-            // Change Pygmy Staff minion AI to check distance based on closest points in hitboxes
-            IL_Projectile.AI_026 += PygmyAggroOnClosestPointInHitbox;
 
             //Additional detours that are in their own item files given they are only relevant to these specific items:
             //Rover drive detours on Player.DrawInfernoRings to draw its shield

@@ -405,7 +405,7 @@ DragonRage: {
 	Tooltip:
 		'''
 		Twirls a baton that causes explosions of [cbuff:CalamityMod/Dragonfire] on enemy hits
-		Every ten hits will summon a ring of fireballs
+		Once every two seconds, hits summon a ring of fireballs that target the enemy with the most health
 		'''
 }
 
@@ -779,11 +779,9 @@ Lacerator: {
 		The saw does more damage the more often the yoyo hits, and fades away when not striking enemies
 		Enemies touching the edge of the sawblade get blood orbs torn out of them
 		Picking up these blood orbs reduces the duration of [cbuffplr:PotionSickness]
-		The direction of the saw's spin depends on which direction you originally threw the yoyo
-		[GFB]
+		The direction of the saw's spin depends on which direction you originally threw the yoyo[GFB]
 		'''
-	TooltipNormal: Someone thought this was a viable weapon against DoG at one point lol
-	TooltipGFB: May be a viable weapon against DoG...
+	GFBFlavor: "[c/ff0a0a:May be a viable weapon against DoG...]"
 }
 
 LifehuntScythe: {
