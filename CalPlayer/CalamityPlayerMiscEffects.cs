@@ -16,6 +16,7 @@ using CalamityMod.Events;
 using CalamityMod.ExtraTextures;
 using CalamityMod.Items;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Ammo;
 using CalamityMod.Items.Armor.Aerospec;
 using CalamityMod.Items.Armor.Auric;
@@ -279,14 +280,14 @@ namespace CalamityMod.CalPlayer
             if ((XykVisualsBlue || XykVisualsOrange))
             {
                 bool Orange = XykVisualsOrange;
-                Color effectColor = Orange ? Color.Gold : Color.DodgerBlue;
+                Color effectColor = Orange ? XyksBlessingOrange.baseMainColor : XyksBlessingBlue.baseMainColor;
 
                 float rate = Main.GlobalTimeWrappedHourly * 12;
                 List<Color> eColors = new List<Color>()
                 {
-                    Orange ? new Color(248, 117, 52) : Color.DodgerBlue,
-                    Orange ? Color.Gold : Color.Cyan,
-                    Orange ? Color.Orange : Color.RoyalBlue
+                    Orange ? XyksBlessingOrange.baseMainColor : XyksBlessingBlue.baseMainColor,
+                    Orange ? XyksBlessingOrange.baseAccentColor : XyksBlessingBlue.baseAccentColor,
+                    Orange ? XyksBlessingOrange.baseEffectColor : XyksBlessingBlue.baseEffectColor
                 };
                 int colorIndex = (int)(rate / 2 % eColors.Count);
                 Color currentColor = eColors[colorIndex];
@@ -295,7 +296,10 @@ namespace CalamityMod.CalPlayer
 
                 bool rageOrAdren = (Player.Calamity().rageModeActive || Player.Calamity().adrenalineModeActive);
                 bool rageAndAdren = (Player.Calamity().rageModeActive && Player.Calamity().adrenalineModeActive);
-                Color attemptColor = (rageAndAdren ? new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB) : Player.Calamity().adrenalineModeActive ? Color.MediumSpringGreen : Player.Calamity().rageModeActive ? Color.Crimson : effectColor);
+                Color dashColor = Orange ? XyksBlessingOrange.animEffectColor : XyksBlessingBlue.animEffectColor;
+                Color attemptColor = (rageAndAdren ? new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB) : 
+                    Player.Calamity().adrenalineModeActive ? Color.MediumSpringGreen : Player.Calamity().rageModeActive ? Color.Crimson :
+                    Player.dashDelay == -1 ? dashColor : effectColor);
                 XykFXColor = Color.Lerp(XykFXColor, attemptColor, rageOrAdren ? 0.05f : 0.25f);
 
 

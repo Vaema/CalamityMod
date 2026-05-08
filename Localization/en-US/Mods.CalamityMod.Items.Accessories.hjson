@@ -2234,10 +2234,13 @@ XyksBlessingBlue: {
 	Tooltip:
 		'''
 		Applies visual effects to your dashes, wings, and deaths
-		<right> to transform
+		<right> this item in your inventory to transform it, or Shift-<right> to toggle armor visibility
+		Armor visibility is [TOGGLE]
 		'It's simply too much to turn back now; passion and time have long since stained it.
 		[c/5f8ae1:Have I always been so selfish?']
 		'''
+	ArmorDisabled: "[c/D44748:DISABLED]"
+	ArmorEnabled: "[c/58D447:ENABLED]"
 }
 
 XyksBlessingOrange: {
@@ -2245,10 +2248,13 @@ XyksBlessingOrange: {
 	Tooltip:
 		'''
 		Applies visual effects to your dashes, wings, and deaths
-		<right> to transform
+		<right> this item in your inventory to transform it, or Shift-<right> to toggle armor visibility
+		Armor visibility is [TOGGLE]
 		'Even so, the march of time waits for none. Recall that feeling of fulfillment, and show it to the world.
 		[c/E1B65F:Prove that it was never a waste.']
 		'''
+	ArmorDisabled: "[c/D44748:DISABLED]"
+	ArmorEnabled: "[c/58D447:ENABLED]"
 }
 
 FrozenCube: {

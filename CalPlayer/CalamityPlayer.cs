@@ -5352,6 +5352,9 @@ namespace CalamityMod.CalPlayer
 
         public override void PostUpdate()
         {
+            if (Player.Calamity().XykVisualsBlue || Player.Calamity().XykVisualsOrange)
+                Player.wings = 0;
+
             if (ZoneAbyss && Main.netMode != NetmodeID.Server)
             {
                 //Main aura
