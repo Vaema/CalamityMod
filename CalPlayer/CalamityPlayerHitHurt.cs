@@ -722,7 +722,7 @@ namespace CalamityMod.CalPlayer
             // Whispering Death makes enemies deal less damage
             if (npc.Calamity().whisperingDeath)
             {
-                float damageReductionFromWhisperingDeath = (float)((npc.Calamity().irradiated ? npc.Calamity().irradiatedContactBoost : 1) * 0.1f);
+                float damageReductionFromWhisperingDeath = (float)((npc.Calamity().irradiated ? npc.Calamity().irradiatedContactBoost : 1) * WhisperingDeath.EnemyDamageReduction);
                 if (npc.Calamity().VulnerableToSickness.HasValue)
                 {
                     if (npc.Calamity().VulnerableToSickness.Value)

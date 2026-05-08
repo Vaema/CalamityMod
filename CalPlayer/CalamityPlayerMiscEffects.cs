@@ -3798,7 +3798,7 @@ namespace CalamityMod.CalPlayer
                 Player.lifeMagnet = true;
 
             if (whisperingDeath && !laudanum)
-                Player.GetDamage<GenericDamageClass>() -= 0.2f;
+                Player.GetDamage<GenericDamageClass>() -= WhisperingDeath.PlayerDamageReduction;
 
             if (armorCrunch && !laudanum)
             {
@@ -4411,7 +4411,7 @@ namespace CalamityMod.CalPlayer
                         else if (hasBuff == ModContent.BuffType<WhisperingDeath>())
                         {
                             Player.lifeRegenCount += 5;
-                            Player.GetDamage<GenericDamageClass>() += 0.2f;
+                            Player.GetDamage<GenericDamageClass>() += WhisperingDeath.PlayerDamageReduction;
                         }
 
                         switch (hasBuff)
