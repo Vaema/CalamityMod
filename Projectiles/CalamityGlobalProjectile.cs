@@ -4843,17 +4843,17 @@ namespace CalamityMod.Projectiles
 
         #region Modify Hit Player
         public override void ModifyHitPlayer(Projectile projectile, Player target, ref Player.HurtModifiers modifiers)
-        {
+        {                
+            modifiers.FinalDamage.Flat -= flatDR;
+            modifiers.FinalDamage *= 1f - multiplicativeDR;
+
             // Reduce projectile damage if the enemy is inflicted with Whispering Death
             if (ParentNPCIndex != -1)
             {
                 NPC npc = Main.npc[(int)ParentNPCIndex];
                 if (npc.active && npc.Calamity().whisperingDeath)
-                    modifiers.SourceDamage *= 1f - WhisperingDeath.EnemyDamageReduction;
+                    modifiers.FinalDamage *= 1f - WhisperingDeath.EnemyDamageReduction;
             }
-                
-            modifiers.FinalDamage.Flat -= flatDR;
-            modifiers.FinalDamage *= 1f - multiplicativeDR;
         }
         #endregion
 
