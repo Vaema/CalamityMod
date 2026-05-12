@@ -106,7 +106,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public bool IsAtSeekers => lifeRatio <= 0.2f;
         public bool IsAtSep2 => IsAtHp_BH5 && FinishedBH5;
 
-        public const int PermafrostAbsoluteZeroDamage = 3725;
+        public const int PermafrostAbsoluteZeroDamage = 1400;
         private const float PermafrostPhotonRipperDashVelocity = 6f;
         private const float PermafrostPhotonRipperMinDistanceFromTarget = 64f;
         private const float PermafrostPhotonRipperDashAcceleration = 0.3f;
