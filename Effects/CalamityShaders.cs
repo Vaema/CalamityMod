@@ -257,6 +257,9 @@ namespace CalamityMod.Effects
 
         // A simple chromatic abberation effect shader with support for custom abberation colors.
         internal static Asset<Effect> ChromaticAbberationShader;
+
+        // Distorts a texture using a sine wave of specified amplitude and frequency either vertically or horizontally.
+        internal static Asset<Effect> SineWaveDistortionShader;
         #endregion
 
         #region Big E's Shaders
@@ -519,6 +522,9 @@ namespace CalamityMod.Effects
 
             ChromaticAbberationShader = LoadShader("ChromaticAbberationShader");
             RegisterMiscShader(ChromaticAbberationShader, "ChormaAbberationPass", "ChromaticAbberation");
+
+            SineWaveDistortionShader = LoadShader("SineWaveDistortionShader");
+            RegisterMiscShader(SineWaveDistortionShader, "SinePass", "SineWaveDistortion");
             #endregion
 
             #region Loading Big E's Shaders

@@ -1,18 +1,47 @@
-﻿using CalamityMod.Items.PermanentBoosters;
+﻿using System;
+using CalamityMod.Effects;
+using CalamityMod.Items.PermanentBoosters;
 using CalamityMod.Items.Potions.Food;
+using CalamityMod.Particles;
+using CalamityMod.Systems.Graphic.PixelationSystem;
+using CalamityMod.Utilities.Daybreak;
+using CalamityMod.Utilities.Daybreak.Buffers;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using CalamityMod.Particles;
-using Terraria.DataStructures;
 
 namespace CalamityMod.Items.Tools
 {
     public class DisgustingMeat : ModItem, ILocalizedModType
     {
+        private static Asset<Texture2D> SmallGreyscaleCircle;
+
         public new string LocalizationCategory => "Items.Tools";
+
+        public override void Load()
+        {
+            if (!Main.dedServ)
+            {
+                SmallGreyscaleCircle = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/SmallGreyscaleCircle");
+            }
+        }
+
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.FoodParticleColors[Type] = new Color[6] {
+                new Color(61, 69, 41),
+                new Color(91, 100, 48),
+                new Color(122, 123, 67),
+                new Color(128, 69, 46),
+                new Color(183, 116, 80),
+                new Color(95, 59, 46),
+            };
+        }
 
         public override void SetDefaults()
         {
@@ -22,6 +51,12 @@ namespace CalamityMod.Items.Tools
         }
 
         public override bool AltFunctionUse(Player player) => true;
+
+        public override bool CanUseItem(Player player)
+        {
+            DisgustingMeatAnimationPlayer modPlayer = player.GetModPlayer<DisgustingMeatAnimationPlayer>();
+            return !modPlayer.DoingVomitAnimation;
+        }
 
         public override bool? UseItem(Player player)
         {
@@ -35,6 +70,67 @@ namespace CalamityMod.Items.Tools
             }
 
             return null;
+        }
+
+        public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
+        {
+            // Stink particles and flies coming off of the item while it's in the world (yuck!!) ((:sick:))
+            if (Main.rand.NextBool(25))
+            {
+                int stinkFumesAmt = Main.rand.Next(1, 3);
+                for (int i = 0; i < stinkFumesAmt; i++)
+                {
+                    Vector2 fumesSpawnPosition = Item.Center + Main.rand.NextVector2Circular(Item.width - 8, Item.height - 8);
+                    Color fumesInitialColor = Color.Lerp(Color.OliveDrab, Color.DarkGreen, Main.rand.NextFloat());
+                    Color fumesFadeColor = Color.Lerp(fumesInitialColor, Color.GhostWhite, Main.rand.NextFloat(0.3f, 0.5f));
+                    TimedSmokeParticle fumes = new(fumesSpawnPosition, Vector2.Zero, fumesInitialColor, fumesFadeColor, Main.rand.NextFloat(0.15f, 0.2f), Main.rand.NextFloat(0.4f, 0.6f), Main.rand.Next(45, 60), 0.002f * Main.rand.NextBool().ToDirectionInt(), true);
+                    GeneralParticleHandler.QueueParticleForNextFrame(fumes);
+                }
+            }
+
+            if (Main.rand.NextBool(150))
+            {
+                Vector2 flyGroupSpawnPosition = Item.Top + new Vector2(Main.rand.NextFloat(-16f, 16f), Main.rand.NextFloat(-8f, 0f));
+                int fliesAmt = Main.rand.Next(1, 4);
+                for (int i = 0; i < fliesAmt; i++)
+                {
+                    Vector2 flySpawnPosition = flyGroupSpawnPosition + Main.rand.NextVector2Circular(8f, 8f);
+                    float flyScale = Main.rand.NextFloat(0.8f, 1f);
+                    int flyLifetime = Main.rand.Next(360, 480);
+                    FlyParticle fly = new(flySpawnPosition, flyScale, flyLifetime, Item);
+                    GeneralParticleHandler.QueueParticleForNextFrame(fly);
+                }
+            }
+
+            // Stink lines.
+            spriteBatch.End(out var snapshot);
+
+            using var pixelationLease = RenderTargetPool.Shared.Rent(Main.graphics.GraphicsDevice, Main.screenWidth / 2, Main.screenHeight / 2, RenderTargetDescriptor.Default);
+            using (pixelationLease.Scope(clearColor: Color.Transparent))
+            {
+                Effect sineWaveDistortion = CalamityShaders.SineWaveDistortionShader.Value;
+                sineWaveDistortion.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly * 6f + whoAmI);
+                sineWaveDistortion.Parameters["waveAmplitude"].SetValue(0.25f);
+                sineWaveDistortion.Parameters["waveFrequency"].SetValue(20f);
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, sineWaveDistortion, PixelationManager.PixelationMatrix);
+
+                Main.GetItemDrawFrame(Item.type, out _, out Rectangle itemFrame);
+                Vector2 baseItemDrawOrigin = itemFrame.Size() * 0.5f;
+                Vector2 stinkLineScale = new(0.125f, 0.6f);
+
+                int stinkLineAmt = 2;
+                for (int i = 0; i < stinkLineAmt; i++)
+                {
+                    float riseAndFall = MathHelper.Lerp(4f, -4f, MathF.Sin((float)Main.timeForVisualEffects / 120f + whoAmI + (i * 14)) * 0.5f + 0.5f);
+                    Vector2 stinkLineDrawPosition = Item.Bottom + new Vector2(Utils.Remap(i, 0, stinkLineAmt - 1, -8f, 8f, true) - 4f, -24f + riseAndFall);
+                    spriteBatch.Draw(SmallGreyscaleCircle.Value, stinkLineDrawPosition - Main.screenPosition - new Vector2(0f, baseItemDrawOrigin.Y), null, Color.DarkOliveGreen * 0.82f, 0f, SmallGreyscaleCircle.Size() * 0.5f, stinkLineScale * 0.7f * Item.scale, 0, 0f);
+                }
+
+                spriteBatch.End();
+            }
+
+            spriteBatch.Begin(snapshot);
+            spriteBatch.Draw(pixelationLease.Target, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, 2f, 0, 0f);
         }
     }
 

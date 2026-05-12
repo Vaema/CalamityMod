@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CalamityMod.Effects;
+using CalamityMod.Enums;
 using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Items.Ammo;
 using CalamityMod.Items.Critters;
@@ -44,7 +45,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         private static Asset<Texture2D> MagicStarCircle;
         private static Asset<Texture2D> FadedStarRing;
         private static Asset<Texture2D> DistortionTexture;
-        private static Asset<Texture2D> DivineCornucopiaTexture;
+        private static Asset<Texture2D> DivineMeatTexture;
 
         private static SoundStyle IdleSound = new("CalamityMod/Sounds/Custom/DivineSwine/DivineSwineIdle", 4);
         private static SoundStyle CoinFailSound = new("CalamityMod/Sounds/Custom/DivineSwine/DivineSwineCoinFail", 3);
@@ -99,7 +100,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 MagicStarCircle = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/MagicStarCircle");
                 FadedStarRing = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/FadedStarRing");
                 DistortionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Smudges");
-                DivineCornucopiaTexture = ModContent.Request<Texture2D>("CalamityMod/Items/Potions/Food/DivineCornucopia");
+                DivineMeatTexture = ModContent.Request<Texture2D>("CalamityMod/Items/Potions/Food/DivineMeat");
             }
         }
 
@@ -186,6 +187,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             }
 
             SoundEffects();
+            AmbientParticles();
             AnimateSprite();
 
             Lighting.AddLight(NPC.Center, DivineYellow.ToVector3() * NPC.scale * 0.825f);
@@ -235,6 +237,9 @@ namespace CalamityMod.NPCs.NormalNPCs
                     float idealSpeed = MaxSpeed / IdleMovementVector.Length();
                     NPC.velocity = Vector2.Lerp(NPC.velocity, IdleMovementVector * idealSpeed, MaxAcceleration);
                     IdleMovementTimer--;
+
+                    if (NPC.velocity.Y < 2.2f)
+                        NPC.velocity.Y += 0.022f;
                 }
 
                 NPC.spriteDirection = (NPC.velocity.X > 0).ToDirectionInt();
@@ -269,10 +274,28 @@ namespace CalamityMod.NPCs.NormalNPCs
                 {
                     Vector2 lightSpawnPosition = NPC.Center + Main.rand.NextVector2Unit() * lightSpawnDistance * Main.rand.NextFloat(0.7f, 1f);
                     Vector2 lightVelocity = (NPC.Center - lightSpawnPosition).SafeNormalize(Vector2.UnitY) * Main.rand.NextFloat(3f, 4f);
-                    float lightScale = Main.rand.NextFloat(0.6f, 0.8f) * MathHelper.Clamp(Timer / 180f, 0f, 1f);
+                    float lightScale = Utils.Remap(Timer, 0f, 180f, 0.3f, 0.9f, true);
                     Color lightColor = Color.Lerp(DivineBlue, DivineYellow, Main.rand.NextFloat());
+
                     SquishyLightParticle meatLight = new(lightSpawnPosition, lightVelocity, lightScale, lightColor, Main.rand.Next(30, 45));
                     GeneralParticleHandler.SpawnParticle(meatLight, true, Enums.GeneralDrawLayer.BeforeNPCs);
+                }
+
+                int sparkleSpawnRate = (int)Utils.Remap(Timer, 0f, 180f, 45, 5, true);
+                if (Main.rand.NextBool(sparkleSpawnRate))
+                {
+                    int sparkleAmt = Main.rand.Next(1, 3);
+                    for (int i = 0; i < sparkleAmt; i++)
+                    {
+                        Vector2 spawnPosition = NPC.Center + Main.rand.NextVector2Unit() * lightSpawnDistance * Main.rand.NextFloat(0.8f, 1.2f);
+                        Color drawColorBlue = Color.Lerp(new Color(44, 166, 247), new Color(123, 197, 247), Main.rand.NextFloat());
+                        Color drawColorYellow = Color.Lerp(new Color(249, 197, 42), new Color(249, 221, 142), Main.rand.NextFloat());
+                        Color sparkleColor = Utils.SelectRandom(Main.rand, drawColorBlue, drawColorYellow);
+                        float sparkleScale = Utils.Remap(Timer, 0f, 180f, 0.2f, 0.8f, true);
+
+                        QuickSparkleParticle sparkle = new(spawnPosition, Vector2.Zero, sparkleColor, sparkleScale * Main.rand.NextFloat(0.5f, 1f), Main.rand.Next(20, 30));
+                        GeneralParticleHandler.QueueParticleForNextFrame(sparkle, true);
+                    }
                 }
 
                 if (Timer % 15f == 0f)
@@ -282,13 +305,13 @@ namespace CalamityMod.NPCs.NormalNPCs
                 }
             }
 
-            // Cornucopia granted
+            // Divine meat granted
             if (Timer == 210f)
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    int cornucopia = Item.NewItem(NPC.GetSource_GiftOrReward(), NPC.Center, ModContent.ItemType<DivineCornucopia>());
-                    Main.item[cornucopia].velocity = Vector2.UnitY * -3f;
+                    int meat = Item.NewItem(NPC.GetSource_GiftOrReward(), NPC.Center, ModContent.ItemType<DivineMeat>());
+                    Main.item[meat].velocity = Vector2.UnitY * -3f;
                 }
 
                 CustomPulse meatLightRing = new(NPC.Center, Vector2.Zero, DivineBlue, "CalamityMod/Particles/BloomRing", Vector2.One, 0f, 0f, 3f, 75);
@@ -300,9 +323,15 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                 for (int i = 0; i < 25; i++)
                 {
+                    Color drawColorBlue = Color.Lerp(new Color(44, 166, 247), new Color(123, 197, 247), Main.rand.NextFloat());
+                    Color drawColorYellow = Color.Lerp(new Color(249, 197, 42), new Color(249, 221, 142), Main.rand.NextFloat());
+                    Color sparkleColor = Utils.SelectRandom(Main.rand, drawColorBlue, drawColorYellow);
+                    QuickSparkleParticle meatSparkle = new(NPC.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(13f, 15f), sparkleColor, Main.rand.NextFloat(0.6f, 0.8f), Main.rand.Next(45, 60));
+                    
                     Color lightColor = Color.Lerp(DivineBlue, DivineYellow, Main.rand.NextFloat());
                     SquishyLightParticle meatLight = new(NPC.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(3f, 5f), Main.rand.NextFloat(1.4f, 1.8f), lightColor, Main.rand.Next(45, 60));
-                    GeneralParticleHandler.SpawnParticle(meatLight, true, Enums.GeneralDrawLayer.AfterNPCs);
+                    
+                    GeneralParticleHandler.SpawnParticle(Main.rand.NextBool() ? meatSparkle : meatLight, true, Enums.GeneralDrawLayer.AfterNPCs);
                 }
 
                 // Despawn immediately afterwards.
@@ -330,8 +359,10 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                 for (int i = 0; i < 25; i++)
                 {
+                    QuickSparkleParticle meatSparkle = new(NPC.Center, Main.rand.NextVector2Circular(15f, 15f), Color.White, Main.rand.NextFloat(0.6f, 0.8f), Main.rand.Next(45, 60));
                     SquishyLightParticle meatLight = new(NPC.Center, Main.rand.NextVector2Circular(5f, 5f), Main.rand.NextFloat(0.6f, 0.8f), Color.White, Main.rand.Next(45, 60));
-                    GeneralParticleHandler.SpawnParticle(meatLight, true, Enums.GeneralDrawLayer.AfterNPCs);
+
+                    GeneralParticleHandler.SpawnParticle(Main.rand.NextBool() ? meatSparkle : meatLight, true, Enums.GeneralDrawLayer.AfterNPCs);
                 }
 
                 SoundEngine.PlaySound(SoundID.Item29 with { Volume = 0.1f }, NPC.Center);
@@ -370,6 +401,58 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.velocity = Vector2.Lerp(NPC.velocity, idealVelocity, turnAwayStrength);
         }
 
+        public void AmbientParticles()
+        {
+            if (AIState != (int)BehaviorState.IdleAndFly)
+                return;
+
+            // Feathers, both falling and non falling ones.
+            if (Main.rand.NextBool(70))
+            {
+                int featherAmt = Main.rand.Next(1, 3);
+                for (int i = 0; i < featherAmt; i++)
+                {
+                    Vector2 spawnPosition = NPC.Center + Main.rand.NextVector2Circular(NPC.width, NPC.height);
+                    Vector2 velocity = Vector2.UnitY * Main.rand.NextFloat(0.25f, 0.75f);
+                    Color featherColor = Color.Lerp(Color.Lerp(new Color(27, 103, 155), new Color(83, 184, 255), Main.rand.NextFloat()), new Color(221, 253, 255), Main.rand.NextFloat(0.4f));
+                    float scale = Main.rand.NextFloat(0.8f, 1f);
+                    FeatherParticle feather = new(spawnPosition, velocity, featherColor, scale, Main.rand.Next(360, 480), null, 0.8f, true, false, true);
+
+                    GeneralDrawLayer featherLayer = Utils.SelectRandom(Main.rand, GeneralDrawLayer.BeforeNPCs, GeneralDrawLayer.AfterNPCs);
+                    GeneralParticleHandler.SpawnParticle(feather, manualDrawLayerOverride: featherLayer);
+                }
+            }
+
+            // Small sparkles.
+            if (Main.rand.NextBool(45))
+            {
+                int sparkleAmt = Main.rand.Next(1, 3);
+                for (int i = 0; i < sparkleAmt; i++)
+                {
+                    Vector2 spawnPosition = NPC.Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(80f, 160f);
+                    Color drawColorBlue = Color.Lerp(new Color(44, 166, 247), new Color(123, 197, 247), Main.rand.NextFloat());
+                    Color drawColorYellow = Color.Lerp(new Color(249, 197, 42), new Color(249, 221, 142), Main.rand.NextFloat());
+                    Color sparkleColor = Utils.SelectRandom(Main.rand, drawColorBlue, drawColorYellow);
+
+                    QuickSparkleParticle sparkle = new(spawnPosition, Vector2.Zero, sparkleColor, Main.rand.NextFloat(0.2f, 0.3f), Main.rand.Next(30, 45));
+                    GeneralParticleHandler.QueueParticleForNextFrame(sparkle, true);
+                }
+            }
+        }
+
+        public void AnimateSprite()
+        {
+            if (Timer % 5 == 0f)
+            {
+                FrameY++;
+                if (FrameY >= Main.npcFrameCount[Type] - 1)
+                    FrameY = 0;
+
+                if (FrameY == 5)
+                    NPC.velocity.Y -= (NPC.velocity.X != 0f) ? 2.2f : 0.46f;
+            }
+        }
+
         public void SoundEffects()
         {
             if (NPC.soundDelay == 0 && Main.rand.NextBool(200) && (AIState != (int)BehaviorState.OfferingAccepted || AIState != (int)BehaviorState.OfferingFailed))
@@ -387,19 +470,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             // Fade the music depending on the distance between the player and Divine Swine.
             float musicVolumeInterpolant = Utils.Remap(NPC.Distance(Main.LocalPlayer.Center), 600f, 100f, 1f, 0.2f, true);
             Main.musicFade[Main.curMusic] = musicVolumeInterpolant;
-        }
-
-        public void AnimateSprite()
-        {
-            if (Timer % 5 == 0f)
-            {
-                FrameY++;
-                if (FrameY >= Main.npcFrameCount[Type] - 1)
-                    FrameY = 0;
-
-                if (FrameY == 5)
-                    NPC.velocity.Y -= (NPC.velocity.X != 0f) ? 2.2f : 0.46f;
-            }
         }
 
         private bool SoundCallbackMethod(ActiveSound soundInstance)
@@ -515,6 +585,8 @@ namespace CalamityMod.NPCs.NormalNPCs
                 infoTextShadowColor.A = Main.mouseTextColor;
             }
         }
+
+        public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position) => false;
 
         public override void FindFrame(int frameHeight)
         {
@@ -650,7 +722,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 float rotation = (float)(Main.timeForVisualEffects / MathHelper.Pi * 0.08f) + NPC.whoAmI;
                 Vector2 backglowDrawPosition = drawPosition + Vector2.UnitX.RotatedBy(i * MathHelper.TwoPi / backShadowCount + rotation) * backShadowDistance;
-                spriteBatch.Draw(DivineCornucopiaTexture.Value, backglowDrawPosition, DivineCornucopiaTexture.Value.Frame(1, 3), NPC.GetAlpha(Color.White) * backShadowInterpolant, NPC.rotation, DivineCornucopiaTexture.Value.Frame(1, 3).Size() * 0.5f, 1f, 0, 0f);
+                spriteBatch.Draw(DivineMeatTexture.Value, backglowDrawPosition, DivineMeatTexture.Value.Frame(1, 3), NPC.GetAlpha(Color.White) * backShadowInterpolant, NPC.rotation, DivineMeatTexture.Value.Frame(1, 3).Size() * 0.5f, 1f, 0, 0f);
             }
 
             spriteBatch.SetBlendState(BlendState.AlphaBlend);

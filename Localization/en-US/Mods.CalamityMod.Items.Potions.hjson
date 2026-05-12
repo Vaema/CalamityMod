@@ -416,12 +416,13 @@ Cometfruit: {
 		'''
 }
 
-DivineCornucopia: {
-	DisplayName: Divine Cornucopia
+DivineMeat: {
+	DisplayName: Divine Meat
 	Tooltip:
 		'''
 		{$CommonItemTooltip.MinorStats}
-		'A bottomless wellspring of the finest produce'
+		Not consumabale
+		'A blessed strip of pork that never seems to be entirely consumed...'
 		'''
 }
 
